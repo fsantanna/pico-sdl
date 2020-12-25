@@ -24,12 +24,29 @@ void init () {
     output((Output){ CLEAR });
 }
 
-void input (Input inp) {
+int input (Input inp) {
     switch (inp.sub) {
         case DELAY:
             SDL_Delay(inp.Delay);
-            break;
+            return 0;
+        case EVENT:
+            while (1) {
+                int has;
+                if (inp.Event.timeout == 0) {
+                    has = SDL_WaitEvent(inp.Event.ret);
+                    assert(has);
+                } else {
+                    has = SDL_WaitEventTimeout(inp.Event.ret, inp.Event.timeout);
+                }
+                if (!has) {
+                    return 0;
+                }
+                if (inp.Event.type == inp.Event.ret->type) {
+                    return 1;
+                }
+            }
     }
+    assert(0);
 }
 
 void output (Output out) {

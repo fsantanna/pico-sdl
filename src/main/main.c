@@ -16,7 +16,12 @@ int main (void) {
     output((Output) { SET, .Set={COLOR_FG,.Color_FG={0xFF,0xFF,0xFF,0x00}} });
     output((Output) { CLEAR });
     output((Output) { DRAW, .Draw={PIXEL,.Pixel={0,0}} });
-    input((Input){ DELAY, .Delay=5000 });
+    input((Input){ DELAY, .Delay=2000 });
+
+    // EVENT
+    SDL_Event e;
+    int ok = input((Input){ EVENT, .Event={SDL_KEYUP,0,&e} });
+    assert(ok);
 
     return 0;
 }

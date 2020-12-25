@@ -14,7 +14,8 @@ typedef struct {
 } Pico_4i;
 
 typedef enum {
-    DELAY
+    DELAY,
+    EVENT
 } INPUT;
 
 typedef enum {
@@ -38,7 +39,12 @@ typedef enum {
 typedef struct {
     INPUT sub;
     union {
-        int Delay;     // INPUT_DELAY
+        int Delay;      // INPUT_DELAY
+        struct {        // INPUT_EVENT
+            int type;
+            int timeout;
+            SDL_Event* ret;
+        } Event;
     };
 } Input;
 
@@ -66,5 +72,5 @@ typedef struct {
 } Output;
 
 void init   ();
-void input  (Input inp);
+int  input  (Input inp);
 void output (Output out);
