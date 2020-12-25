@@ -13,14 +13,14 @@ Pico_4i SET_COLOR_FG = {0xFF,0xFF,0xFF,0x00};;
 void init () {
     pico_assert(SDL_Init(SDL_INIT_VIDEO) == 0);
     WIN = SDL_CreateWindow (
-        TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        WIN_DIM, WIN_DIM, SDL_WINDOW_SHOWN
+        _TITLE_, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        _WIN_, _WIN_, SDL_WINDOW_SHOWN
     );
     pico_assert(WIN != NULL);
     SDL_CreateRenderer(WIN, -1, 0);
     pico_assert(REN != NULL);
 
-    output((Output){ SET, .Set={SIZE,.Size={WIN_DIM,WIN_DIM,WIN_DIM/10,WIN_DIM/10}}});
+    output((Output){ SET, .Set={SIZE,.Size={_WIN_,_WIN_,_WIN_/10,_WIN_/10}}});
     output((Output){ CLEAR });
 }
 
@@ -36,6 +36,13 @@ void output (Output out) {
     switch (out.sub) {
         case SET:
             switch (out.Set.sub) {
+                case COLOR_BG:
+                    SET_COLOR_BG = out.Set.Color_BG;
+                    break;
+                case COLOR_FG:
+                    SET_COLOR_FG = out.Set.Color_FG;
+                    break;
+
                 case SIZE: {
                     int win_w = out.Set.Size.win_w;
                     int win_h = out.Set.Size.win_h;
@@ -59,11 +66,8 @@ void output (Output out) {
                     break;
                 }
 
-                case COLOR_BG:
-                    SET_COLOR_BG = out.Set.Color_BG;
-                    break;
-                case COLOR_FG:
-                    SET_COLOR_FG = out.Set.Color_FG;
+                case TITLE:
+                    SDL_SetWindowTitle(WIN, out.Set.Title);
                     break;
             }
             break;

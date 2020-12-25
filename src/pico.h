@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 
-#define TITLE "pico-SDL"
-#define WIN_DIM 510
+#define _TITLE_ "pico-SDL"
+#define _WIN_ 510
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
 typedef struct {
@@ -18,16 +18,17 @@ typedef enum {
 } INPUT;
 
 typedef enum {
-    SET,
     CLEAR,
     DRAW,
+    SET,
     UPDATE
 } OUTPUT;
 
 typedef enum {
-    SIZE,
     COLOR_BG,
-    COLOR_FG
+    COLOR_FG,
+    SIZE,
+    TITLE
 } OUTPUT_SET;
 
 typedef enum {
@@ -47,11 +48,12 @@ typedef struct {
         struct {
             OUTPUT_SET sub;
             union {
+                Pico_4i Color_BG;
+                Pico_4i Color_FG;
                 struct {
                     int win_w, win_h, log_w, log_h;
                 } Size;
-                Pico_4i Color_BG;
-                Pico_4i Color_FG;
+                char* Title;
             };
         } Set;
         struct {

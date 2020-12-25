@@ -3,6 +3,9 @@
 int main (void) {
     init();
 
+    // TITLE
+    output((Output) { SET, .Set={TITLE,.Title="Hello World!"} });
+
     // CLEAR
     output((Output) { SET, .Set={COLOR_BG,.Color_BG={0xFF,0xFF,0xFF,0x00}} });
     output((Output) { CLEAR });
