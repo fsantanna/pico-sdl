@@ -5,6 +5,14 @@
 #define WIN_DIM 510
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
+typedef struct {
+    int v1, v2;
+} Pico_2i;
+
+typedef struct {
+    int v1, v2, v3, v4;
+} Pico_4i;
+
 typedef enum {
     DELAY
 } INPUT;
@@ -42,14 +50,14 @@ typedef struct {
                 struct {
                     int win_w, win_h, log_w, log_h;
                 } Size;
-                SDL_Color Color_BG;
-                SDL_Color Color_FG;
+                Pico_4i Color_BG;
+                Pico_4i Color_FG;
             };
         } Set;
         struct {
             OUTPUT_DRAW sub;
             union {
-                SDL_Point Pixel;
+                Pico_2i Pixel;
             };
         } Draw;
     };

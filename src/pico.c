@@ -7,8 +7,8 @@ int LOG_W, LOG_H;
 #define X(x) ((x)+LOG_W/2)
 #define Y(y) (LOG_H/2-(y))
 
-SDL_Color SET_COLOR_BG = {0x00,0x00,0x00,0x00};
-SDL_Color SET_COLOR_FG = {0xFF,0xFF,0xFF,0x00};;
+Pico_4i SET_COLOR_BG = {0x00,0x00,0x00,0x00};
+Pico_4i SET_COLOR_FG = {0xFF,0xFF,0xFF,0x00};;
 
 void init () {
     pico_assert(SDL_Init(SDL_INIT_VIDEO) == 0);
@@ -69,18 +69,18 @@ void output (Output out) {
             break;
         case CLEAR:
             SDL_SetRenderDrawColor (REN,
-                SET_COLOR_BG.r,
-                SET_COLOR_BG.g,
-                SET_COLOR_BG.b,
-                SET_COLOR_BG.a
+                SET_COLOR_BG.v1,
+                SET_COLOR_BG.v2,
+                SET_COLOR_BG.v3,
+                SET_COLOR_BG.v4
             );
             SDL_RenderClear(REN);
             SDL_RenderPresent(REN);
             SDL_SetRenderDrawColor (REN,
-                SET_COLOR_FG.r,
-                SET_COLOR_FG.g,
-                SET_COLOR_FG.b,
-                SET_COLOR_FG.a
+                SET_COLOR_FG.v1,
+                SET_COLOR_FG.v2,
+                SET_COLOR_FG.v3,
+                SET_COLOR_FG.v4
             );
             break;
         case UPDATE:
@@ -89,8 +89,8 @@ void output (Output out) {
         case DRAW:
             switch (out.Draw.sub) {
                 case PIXEL: {
-                    SDL_Rect rct = { X(out.Draw.Pixel.x), Y(out.Draw.Pixel.y), 1, 1 };
-                    SDL_RenderFillRect(REN, &rct);
+                    Pico_4i rct = { X(out.Draw.Pixel.v1), Y(out.Draw.Pixel.v2), 1, 1 };
+                    SDL_RenderFillRect(REN, (SDL_Rect*)&rct);
                     SDL_RenderPresent(REN);
                     break;
                 }
