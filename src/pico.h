@@ -14,30 +14,30 @@ typedef struct {
 } Pico_4i;
 
 typedef enum {
-    DELAY,
-    EVENT
-} INPUT;
+    PICO_DELAY,
+    PICO_EVENT
+} PICO_INPUT;
 
 typedef enum {
-    CLEAR,
-    DRAW,
-    SET,
-    UPDATE
-} OUTPUT;
+    PICO_CLEAR,
+    PICO_DRAW,
+    PICO_SET,
+    PICO_UPDATE
+} PICO_OUTPUT;
 
 typedef enum {
-    COLOR_BG,
-    COLOR_FG,
-    SIZE,
-    TITLE
-} OUTPUT_SET;
+    PICO_COLOR_BG,
+    PICO_COLOR_FG,
+    PICO_SIZE,
+    PICO_TITLE
+} PICO_OUTPUT_SET;
 
 typedef enum {
-    PIXEL
-} OUTPUT_DRAW;
+    PICO_PIXEL
+} PICO_OUTPUT_DRAW;
 
 typedef struct {
-    INPUT sub;
+    PICO_INPUT sub;
     union {
         int Delay;      // INPUT_DELAY
         struct {        // INPUT_EVENT
@@ -46,13 +46,13 @@ typedef struct {
             SDL_Event* ret;
         } Event;
     };
-} Input;
+} Pico_Input;
 
 typedef struct {
-    OUTPUT sub;
+    PICO_OUTPUT sub;
     union {
         struct {
-            OUTPUT_SET sub;
+            PICO_OUTPUT_SET sub;
             union {
                 Pico_4i Color_BG;
                 Pico_4i Color_FG;
@@ -63,14 +63,14 @@ typedef struct {
             };
         } Set;
         struct {
-            OUTPUT_DRAW sub;
+            PICO_OUTPUT_DRAW sub;
             union {
                 Pico_2i Pixel;
             };
         } Draw;
     };
-} Output;
+} Pico_Output;
 
-void init   ();
-int  input  (Input inp);
-void output (Output out);
+void pico_init   ();
+int  pico_input  (Pico_Input inp);
+void pico_output (Pico_Output out);
