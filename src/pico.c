@@ -96,6 +96,7 @@ void pico_output (Pico_Output out) {
                 case PICO_SIZE: {
                     Pico_2i win = out.Set.Size.win;
                     Pico_2i log = out.Set.Size.log;
+                    assert(log._1!=0 && log._2!=0 && "invalid dimensions");
                     assert(win._1%log._1 == 0 && "invalid dimensions");
                     assert(win._2%log._2 == 0 && "invalid dimensions");
 
