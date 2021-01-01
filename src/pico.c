@@ -1,7 +1,8 @@
 #include "pico.h"
 
-static SDL_Window* WIN;
-static TTF_Font*   FNT;
+static SDL_Window*  WIN;
+static SDL_Texture* TEX;
+static TTF_Font*    FNT;
 
 static int    FNT_H;
 static Pico_2i LOG;
@@ -16,7 +17,11 @@ Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};;
 static void WIN_Present (void) {
     //if (FRAMES_SET) return;
     //WINDOW_Show_Grid();
+    SDL_SetRenderTarget(REN, NULL);
+    SDL_RenderClear(REN);
+    SDL_RenderCopy(REN, TEX, NULL, NULL);
     SDL_RenderPresent(REN);
+    SDL_SetRenderTarget(REN, TEX);
     //SDL_Delay(10);  // prevents flickering in Linux (probably related to double buffering)
 }
 
@@ -27,14 +32,17 @@ void pico_init (void) {
         _WIN_, _WIN_, SDL_WINDOW_SHOWN
     );
     pico_assert(WIN != NULL);
-    SDL_CreateRenderer(WIN, -1, 0);
+
+    // https://stackoverflow.com/questions/19935727/sdl2-how-to-render-with-one-buffer-instead-of-two
+    SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_TARGETTEXTURE);
     pico_assert(REN != NULL);
+    SDL_SetRenderDrawBlendMode(REN,SDL_BLENDMODE_BLEND);
 
     TTF_Init();
 
     pico_output((Pico_Output){ PICO_SET, .Set={PICO_SIZE,.Size={{_WIN_,_WIN_},{_WIN_/10,_WIN_/10}}}});
     pico_output((Pico_Output){ PICO_SET, .Set={PICO_FONT,.Font={"tiny.ttf",_WIN_/50}} });
-    pico_output((Pico_Output){ PICO_CLEAR });
+    //pico_output((Pico_Output){ PICO_CLEAR });
 
     //SDL_Delay(1000);
     //SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
@@ -92,6 +100,12 @@ void pico_output (Pico_Output out) {
                             break;
                         case PICO_COLOR_DRAW:
                             SET_COLOR_DRAW = out.Set.Color.Draw;
+                            SDL_SetRenderDrawColor (REN,
+                                SET_COLOR_DRAW._1,
+                                SET_COLOR_DRAW._2,
+                                SET_COLOR_DRAW._3,
+                                SET_COLOR_DRAW._4
+                            );
                             break;
                     }
                     break;
@@ -111,6 +125,13 @@ void pico_output (Pico_Output out) {
                     assert(log._1!=0 && log._2!=0 && "invalid dimensions");
                     assert(win._1%log._1 == 0 && "invalid dimensions");
                     assert(win._2%log._2 == 0 && "invalid dimensions");
+
+                    TEX = SDL_CreateTexture (
+                            REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+                            log._1, log._2
+                    );
+                    pico_assert(TEX != NULL);
+                    SDL_SetRenderTarget(REN, TEX);
 
                     SDL_SetWindowSize(WIN, win._1, win._2);
                     SDL_RenderSetLogicalSize(REN, log._1, log._2);
