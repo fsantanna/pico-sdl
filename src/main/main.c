@@ -11,13 +11,13 @@ int main (void) {
     pico_output((Pico_Output) { PICO_SET, .Set={PICO_TITLE,.Title="Hello World!"} });
 
     // CLEAR
-    pico_output((Pico_Output) { PICO_SET, .Set={PICO_COLOR,.Color={PICO_COLOR_CLEAR,.Clear={0xFF,0xFF,0xFF,0x00}}} });
+    pico_output((Pico_Output) { PICO_SET, .Set={PICO_COLOR,.Color={PICO_COLOR_CLEAR,.Clear={0xFF,0xFF,0xFF,0xFF}}} });
     pico_output((Pico_Output) { PICO_CLEAR });
     pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
 
     // DRAW_PIXEL
-    pico_output((Pico_Output) { PICO_SET, .Set={PICO_COLOR,.Color={PICO_COLOR_CLEAR,.Clear={0x00,0x00,0x00,0x00}}} });
-    pico_output((Pico_Output) { PICO_SET, .Set={PICO_COLOR,.Color={PICO_COLOR_DRAW,.Draw={0xFF,0xFF,0xFF,0x00}}} });
+    pico_output((Pico_Output) { PICO_SET, .Set={PICO_COLOR,.Color={PICO_COLOR_CLEAR,.Clear={0x00,0x00,0x00,0xFF}}} });
+    pico_output((Pico_Output) { PICO_SET, .Set={PICO_COLOR,.Color={PICO_COLOR_DRAW,.Draw={0xFF,0xFF,0xFF,0xFF}}} });
     pico_output((Pico_Output) { PICO_CLEAR });
     pico_output((Pico_Output) { PICO_DRAW, .Draw={PICO_PIXEL,.Pixel={0,0}} });
     pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });

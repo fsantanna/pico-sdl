@@ -10,8 +10,8 @@ static Pico_2i LOG;
 #define X(x) ((x)+LOG._1/2)
 #define Y(y) (LOG._2/2-(y))
 
-Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0x00};
-Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0x00};;
+Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
+Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};;
 
 static void WIN_Present (void) {
     //if (FRAMES_SET) return;
@@ -150,8 +150,7 @@ void pico_output (Pico_Output out) {
         case PICO_DRAW:
             switch (out.Draw.sub) {
                 case PICO_PIXEL: {
-                    Pico_4i rct = { X(out.Draw.Pixel._1), Y(out.Draw.Pixel._2), 1, 1 };
-                    SDL_RenderFillRect(REN, (SDL_Rect*)&rct);
+                    SDL_RenderDrawPoint(REN, X(out.Draw.Pixel._1), Y(out.Draw.Pixel._2) );
                     WIN_Present();
                     break;
                 }
