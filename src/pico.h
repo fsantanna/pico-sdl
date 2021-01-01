@@ -1,9 +1,12 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #define _TITLE_ "pico-SDL"
 #define _WIN_ 510
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
+
+typedef unsigned char u8;
 
 typedef struct {
     int v1, v2;
@@ -21,19 +24,23 @@ typedef enum {
 typedef enum {
     PICO_CLEAR,
     PICO_DRAW,
-    PICO_SET,
-    PICO_UPDATE
+    PICO_SET
 } PICO_OUTPUT;
 
 typedef enum {
-    PICO_COLOR_BG,
-    PICO_COLOR_FG,
+    PICO_COLOR,
     PICO_SIZE,
     PICO_TITLE
 } PICO_OUTPUT_SET;
 
 typedef enum {
-    PICO_PIXEL
+    PICO_COLOR_CLEAR,
+    PICO_COLOR_DRAW
+} PICO_OUTPUT_SET_COLOR;
+
+typedef enum {
+    PICO_PIXEL,
+    PICO_TEXT
 } PICO_OUTPUT_DRAW;
 
 typedef struct {
@@ -54,8 +61,13 @@ typedef struct {
         struct {
             PICO_OUTPUT_SET sub;
             union {
-                Pico_4i Color_BG;
-                Pico_4i Color_FG;
+                struct {
+                    PICO_OUTPUT_SET_COLOR sub;
+                    union {
+                        Pico_4i Clear;
+                        Pico_4i Draw;
+                    };
+                } Color;
                 struct {
                     int win_w, win_h, log_w, log_h;
                 } Size;
@@ -66,6 +78,10 @@ typedef struct {
             PICO_OUTPUT_DRAW sub;
             union {
                 Pico_2i Pixel;
+                struct {
+                    Pico_2i pos;
+                    const char* txt;
+                } Text;
             };
         } Draw;
     };

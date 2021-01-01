@@ -1,4 +1,4 @@
-LIBS   = -lSDL2 # -lkernel32 -luser32 -lgdi32 -lopengl32
+LIBS   = -lSDL2 -lSDL2_ttf # -lkernel32 -luser32 -lgdi32 -lopengl32
 CFLAGS = -Wall #-Wno-switch #-Wno-return-local-addr
 
 SRC=$(wildcard src/*.c)
