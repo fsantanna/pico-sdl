@@ -6,6 +6,8 @@
 #define _WIN_ 510
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
+#define SDL_ANY 0
+
 typedef unsigned char u8;
 
 typedef struct {
@@ -18,7 +20,8 @@ typedef struct {
 
 typedef enum {
     PICO_DELAY,
-    PICO_EVENT
+    PICO_EVENT,
+    PICO_EVENT_TIMEOUT
 } PICO_INPUT;
 
 typedef enum {
@@ -47,12 +50,16 @@ typedef enum {
 typedef struct {
     PICO_INPUT sub;
     union {
-        int Delay;      // INPUT_DELAY
-        struct {        // INPUT_EVENT
+        int Delay;
+        struct {
+            int type;
+            SDL_Event* ret;
+        } Event;
+        struct {
             int type;
             int timeout;
             SDL_Event* ret;
-        } Event;
+        } Event_Timeout;
     };
 } Pico_Input;
 

@@ -35,6 +35,9 @@ void pico_init (void) {
     pico_output((Pico_Output){ PICO_SET, .Set={PICO_SIZE,.Size={{_WIN_,_WIN_},{_WIN_/10,_WIN_/10}}}});
     pico_output((Pico_Output){ PICO_SET, .Set={PICO_FONT,.Font={"tiny.ttf",_WIN_/50}} });
     pico_output((Pico_Output){ PICO_CLEAR });
+
+    //SDL_Delay(1000);
+    //SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 }
 
 void pico_quit (void) {
@@ -49,19 +52,22 @@ int pico_input (Pico_Input inp) {
         case PICO_DELAY:
             SDL_Delay(inp.Delay);
             return 0;
+
         case PICO_EVENT:
             while (1) {
-                int has;
-                if (inp.Event.timeout == 0) {
-                    has = SDL_WaitEvent(inp.Event.ret);
-                    assert(has);
-                } else {
-                    has = SDL_WaitEventTimeout(inp.Event.ret, inp.Event.timeout);
+                SDL_WaitEvent(inp.Event.ret);
+                if (inp.Event.type==SDL_ANY || inp.Event.type==inp.Event.ret->type) {
+                    return 1;
                 }
+            }
+
+        case PICO_EVENT_TIMEOUT:
+            while (1) {
+                int has = SDL_WaitEventTimeout(inp.Event_Timeout.ret, inp.Event_Timeout.timeout);
                 if (!has) {
                     return 0;
                 }
-                if (inp.Event.type == inp.Event.ret->type) {
+                if (inp.Event_Timeout.type==SDL_ANY || inp.Event_Timeout.type==inp.Event_Timeout.ret->type) {
                     return 1;
                 }
             }

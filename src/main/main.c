@@ -3,6 +3,10 @@
 int main (void) {
     pico_init();
 
+    SDL_Event e1;
+    int ok = pico_input((Pico_Input){ PICO_EVENT, .Event={SDL_KEYUP,&e1} });
+    assert(ok);
+
     // TITLE
     pico_output((Pico_Output) { PICO_SET, .Set={PICO_TITLE,.Title="Hello World!"} });
 
@@ -23,9 +27,8 @@ int main (void) {
     pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
 
     // EVENT
-    SDL_Event e;
-    int ok = pico_input((Pico_Input){ PICO_EVENT, .Event={SDL_KEYUP,0,&e} });
-    assert(ok);
+    SDL_Event e2;
+    pico_input((Pico_Input){ PICO_EVENT_TIMEOUT, .Event_Timeout={SDL_ANY,5000,&e2} });
 
     return 0;
 }
