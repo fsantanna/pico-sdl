@@ -19,7 +19,7 @@ int main (void) {
     pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
 
     // DRAW_TEXT
-    pico_output((Pico_Output) { PICO_DRAW, .Draw={PICO_TEXT,.Text={{0,5},"Hello!"}} });
+    pico_output((Pico_Output) { PICO_DRAW, .Draw={PICO_TEXT,.Text={{0,0},"Hello!"}} });
     pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
 
     // EVENT

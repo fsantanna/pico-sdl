@@ -31,14 +31,10 @@ void pico_init (void) {
     SDL_CreateRenderer(WIN, -1, 0);
     pico_assert(REN != NULL);
 
-    // SET_FONT
-    //emit GRAPHICS_SET_FONT("tiny.ttf", WIN_DIM/50);
     TTF_Init();
-    FNT_H = _WIN_ / 50;
-    FNT = TTF_OpenFont("tiny.ttf", FNT_H);
-    pico_assert(FNT != NULL);
 
     pico_output((Pico_Output){ PICO_SET, .Set={PICO_SIZE,.Size={_WIN_,_WIN_,_WIN_/10,_WIN_/10}}});
+    pico_output((Pico_Output){ PICO_SET, .Set={PICO_FONT,.Font={"tiny.ttf",_WIN_/50}} });
     pico_output((Pico_Output){ PICO_CLEAR });
 }
 
@@ -87,6 +83,15 @@ void pico_output (Pico_Output out) {
                             SET_COLOR_DRAW = out.Set.Color.Draw;
                             break;
                     }
+                    break;
+
+                case PICO_FONT:
+                    FNT_H = out.Set.Font.height;
+                    if (FNT != NULL) {
+                        TTF_CloseFont(FNT);
+                    }
+                    FNT = TTF_OpenFont(out.Set.Font.file, FNT_H);
+                    pico_assert(FNT != NULL);
                     break;
 
                 case PICO_SIZE: {

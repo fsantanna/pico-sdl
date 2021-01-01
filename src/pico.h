@@ -29,6 +29,7 @@ typedef enum {
 
 typedef enum {
     PICO_COLOR,
+    PICO_FONT,
     PICO_SIZE,
     PICO_TITLE
 } PICO_OUTPUT_SET;
@@ -69,7 +70,11 @@ typedef struct {
                     };
                 } Color;
                 struct {
-                    int win_w, win_h, log_w, log_h;
+                    char* file;
+                    int height;
+                } Font;
+                struct {
+                    int win_w, win_h, log_w, log_h; // TODO: Pico2i
                 } Size;
                 char* Title;
             };
