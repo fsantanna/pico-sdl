@@ -9,11 +9,11 @@
 typedef unsigned char u8;
 
 typedef struct {
-    int v1, v2;
+    int _1, _2;
 } Pico_2i;
 
 typedef struct {
-    int v1, v2, v3, v4;
+    int _1, _2, _3, _4;
 } Pico_4i;
 
 typedef enum {
@@ -74,7 +74,8 @@ typedef struct {
                     int height;
                 } Font;
                 struct {
-                    int win_w, win_h, log_w, log_h; // TODO: Pico2i
+                    Pico_2i win;
+                    Pico_2i log;
                 } Size;
                 char* Title;
             };

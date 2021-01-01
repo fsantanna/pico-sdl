@@ -3,13 +3,12 @@
 static SDL_Window* WIN;
 static TTF_Font*   FNT;
 
-static int FNT_H;
-static int LOG_W;
-static int LOG_H;
+static int    FNT_H;
+static Pico_2i LOG;
 
 #define REN  (SDL_GetRenderer(WIN))
-#define X(x) ((x)+LOG_W/2)
-#define Y(y) (LOG_H/2-(y))
+#define X(x) ((x)+LOG._1/2)
+#define Y(y) (LOG._2/2-(y))
 
 Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0x00};
 Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0x00};;
@@ -33,7 +32,7 @@ void pico_init (void) {
 
     TTF_Init();
 
-    pico_output((Pico_Output){ PICO_SET, .Set={PICO_SIZE,.Size={_WIN_,_WIN_,_WIN_/10,_WIN_/10}}});
+    pico_output((Pico_Output){ PICO_SET, .Set={PICO_SIZE,.Size={{_WIN_,_WIN_},{_WIN_/10,_WIN_/10}}}});
     pico_output((Pico_Output){ PICO_SET, .Set={PICO_FONT,.Font={"tiny.ttf",_WIN_/50}} });
     pico_output((Pico_Output){ PICO_CLEAR });
 }
@@ -95,17 +94,14 @@ void pico_output (Pico_Output out) {
                     break;
 
                 case PICO_SIZE: {
-                    int win_w = out.Set.Size.win_w;
-                    int win_h = out.Set.Size.win_h;
-                    int log_w = out.Set.Size.log_w;
-                    int log_h = out.Set.Size.log_h;
-                    assert(win_w%log_w == 0 && "invalid dimensions");
-                    assert(win_h%log_h == 0 && "invalid dimensions");
+                    Pico_2i win = out.Set.Size.win;
+                    Pico_2i log = out.Set.Size.log;
+                    assert(win._1%log._1 == 0 && "invalid dimensions");
+                    assert(win._2%log._2 == 0 && "invalid dimensions");
 
-                    SDL_SetWindowSize(WIN, win_w, win_h);
-                    SDL_RenderSetLogicalSize(REN, log_w, log_h);
-                    LOG_W = log_w;
-                    LOG_H = log_h;
+                    SDL_SetWindowSize(WIN, win._1, win._2);
+                    SDL_RenderSetLogicalSize(REN, log._1, log._2);
+                    LOG = log;
             #if 0
                     // TODO: w/o delay, set_size + clear doesn't work
                     SDL_Delay(500);
@@ -124,24 +120,24 @@ void pico_output (Pico_Output out) {
             break;
         case PICO_CLEAR:
             SDL_SetRenderDrawColor (REN,
-                SET_COLOR_CLEAR.v1,
-                SET_COLOR_CLEAR.v2,
-                SET_COLOR_CLEAR.v3,
-                SET_COLOR_CLEAR.v4
+                SET_COLOR_CLEAR._1,
+                SET_COLOR_CLEAR._2,
+                SET_COLOR_CLEAR._3,
+                SET_COLOR_CLEAR._4
             );
             SDL_RenderClear(REN);
             WIN_Present();
             SDL_SetRenderDrawColor (REN,
-                SET_COLOR_DRAW.v1,
-                SET_COLOR_DRAW.v2,
-                SET_COLOR_DRAW.v3,
-                SET_COLOR_DRAW.v4
+                SET_COLOR_DRAW._1,
+                SET_COLOR_DRAW._2,
+                SET_COLOR_DRAW._3,
+                SET_COLOR_DRAW._4
             );
             break;
         case PICO_DRAW:
             switch (out.Draw.sub) {
                 case PICO_PIXEL: {
-                    Pico_4i rct = { X(out.Draw.Pixel.v1), Y(out.Draw.Pixel.v2), 1, 1 };
+                    Pico_4i rct = { X(out.Draw.Pixel._1), Y(out.Draw.Pixel._2), 1, 1 };
                     SDL_RenderFillRect(REN, (SDL_Rect*)&rct);
                     WIN_Present();
                     break;
@@ -161,8 +157,8 @@ void pico_output (Pico_Output out) {
                     rct.h = sfc->h; // * GRAPHICS_SET_SCALE_H;
 
                     // ANCHOR
-                    rct.x = X(out.Draw.Text.pos.v1); //GRAPHICS_ANCHOR_X(X(ps_->_1),rct.w);
-                    rct.y = Y(out.Draw.Text.pos.v2); //GRAPHICS_ANCHOR_Y(Y(ps_->_2),rct.h);
+                    rct.x = X(out.Draw.Text.pos._1); //GRAPHICS_ANCHOR_X(X(ps_->_1),rct.w);
+                    rct.y = Y(out.Draw.Text.pos._2); //GRAPHICS_ANCHOR_Y(Y(ps_->_2),rct.h);
 
                     SDL_RenderCopy(REN, tex, NULL, &rct);
                     WIN_Present();
