@@ -56,6 +56,9 @@ int pico_input (Pico_Input inp) {
         case PICO_EVENT:
             while (1) {
                 SDL_WaitEvent(inp.Event.ret);
+                if (inp.Event.ret->type == SDL_QUIT) {
+                    exit(0);
+                }
                 if (inp.Event.type==SDL_ANY || inp.Event.type==inp.Event.ret->type) {
                     return 1;
                 }
@@ -66,6 +69,9 @@ int pico_input (Pico_Input inp) {
                 int has = SDL_WaitEventTimeout(inp.Event_Timeout.ret, inp.Event_Timeout.timeout);
                 if (!has) {
                     return 0;
+                }
+                if (inp.Event.ret->type == SDL_QUIT) {
+                    exit(0);
                 }
                 if (inp.Event_Timeout.type==SDL_ANY || inp.Event_Timeout.type==inp.Event_Timeout.ret->type) {
                     return 1;
