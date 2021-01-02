@@ -26,6 +26,18 @@ int main (void) {
     pico_output((Pico_Output) { PICO_DRAW, .Draw={PICO_TEXT,.Text={{0,0},"Hello!"}} });
     pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
 
+    pico_output((Pico_Output) { PICO_CLEAR });
+
+    // WRITE
+    pico_output((Pico_Output) { PICO_SET, .Set={PICO_WRITE_CURSOR,.Write_Cursor={-25,25}} });
+    pico_output((Pico_Output) { PICO_WRITE,   .Write="1 " });
+    pico_output((Pico_Output) { PICO_WRITE,   .Write="2 " });
+    pico_output((Pico_Output) { PICO_WRITELN, .Write="3" });
+    pico_output((Pico_Output) { PICO_WRITELN, .Write="" });
+    pico_output((Pico_Output) { PICO_WRITELN, .Write="pico" });
+
+    pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
+
     // EVENT
     SDL_Event e2;
     pico_input((Pico_Input){ PICO_EVENT_TIMEOUT, .Event_Timeout={SDL_ANY,5000,&e2} });

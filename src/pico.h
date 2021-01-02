@@ -27,14 +27,17 @@ typedef enum {
 typedef enum {
     PICO_CLEAR,
     PICO_DRAW,
-    PICO_SET
+    PICO_SET,
+    PICO_WRITE,
+    PICO_WRITELN
 } PICO_OUTPUT;
 
 typedef enum {
     PICO_COLOR,
     PICO_FONT,
     PICO_SIZE,
-    PICO_TITLE
+    PICO_TITLE,
+    PICO_WRITE_CURSOR
 } PICO_OUTPUT_SET;
 
 typedef enum {
@@ -85,6 +88,7 @@ typedef struct {
                     Pico_2i log;
                 } Size;
                 char* Title;
+                Pico_2i Write_Cursor;
             };
         } Set;
         struct {
@@ -97,6 +101,8 @@ typedef struct {
                 } Text;
             };
         } Draw;
+        char* Write;
+        char* WriteLn;
     };
 } Pico_Output;
 

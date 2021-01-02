@@ -4,15 +4,17 @@ static SDL_Window*  WIN;
 static SDL_Texture* TEX;
 static TTF_Font*    FNT;
 
-static int    FNT_H;
+static int     FNT_H;
 static Pico_2i LOG;
 
 #define REN  (SDL_GetRenderer(WIN))
 #define X(x) ((x)+LOG._1/2)
 #define Y(y) (LOG._2/2-(y))
 
-Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
-Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};;
+Pico_4i SET_COLOR_CLEAR  = {0x00,0x00,0x00,0xFF};
+Pico_4i SET_COLOR_DRAW   = {0xFF,0xFF,0xFF,0xFF};
+Pico_2i SET_WRITE_CURSOR = {0,0};
+Pico_2i CUR_WRITE_CURSOR = {0,0};
 
 static void WIN_Present (void) {
     //if (FRAMES_SET) return;
@@ -150,6 +152,10 @@ void pico_output (Pico_Output out) {
                 case PICO_TITLE:
                     SDL_SetWindowTitle(WIN, out.Set.Title);
                     break;
+
+                case PICO_WRITE_CURSOR:
+                    CUR_WRITE_CURSOR = SET_WRITE_CURSOR = out.Set.Write_Cursor;
+                    break;
             }
             break;
         case PICO_CLEAR:
@@ -201,5 +207,40 @@ void pico_output (Pico_Output out) {
                 }
             }
             break;
+
+        case PICO_WRITE:
+        case PICO_WRITELN: {
+            if (strlen(out.Write) == 0) {
+                if (out.sub == PICO_WRITELN) {
+                    CUR_WRITE_CURSOR._1 = SET_WRITE_CURSOR._1;
+                    CUR_WRITE_CURSOR._2 -= FNT_H;
+                }
+                break;
+            }
+
+            SDL_Surface* sfc = TTF_RenderText_Blended (
+                FNT, out.Write,
+                (SDL_Color) { SET_COLOR_DRAW._1, SET_COLOR_DRAW._2,
+                              SET_COLOR_DRAW._3, SET_COLOR_DRAW._4 }
+            );
+            pico_assert(sfc != NULL);
+            SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
+            pico_assert(tex != NULL);
+
+            int w, h;
+            TTF_SizeText(FNT, out.Write, &w,&h);
+            SDL_Rect rct = { X(CUR_WRITE_CURSOR._1),Y(CUR_WRITE_CURSOR._2), w,h };
+            SDL_RenderCopy(REN, tex, NULL, &rct);
+            WIN_Present();
+
+            CUR_WRITE_CURSOR._1 += w;
+            if (out.sub == PICO_WRITELN) {
+                CUR_WRITE_CURSOR._1 = SET_WRITE_CURSOR._1;
+                CUR_WRITE_CURSOR._2 -= FNT_H;
+            }
+
+            SDL_DestroyTexture(tex);
+            SDL_FreeSurface(sfc);
+        }
     }
 }
