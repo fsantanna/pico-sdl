@@ -26,12 +26,12 @@ int main (void) {
 
     // DRAW_TEXT
     pico_output((Pico_Output) { PICO_DRAW, .Draw={PICO_TEXT,.Text={{0,0},"Hello!"}} });
-    pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
 
+    pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
     pico_output((Pico_Output) { PICO_CLEAR });
 
     // WRITE
-    pico_output((Pico_Output) { PICO_SET, .Set={PICO_WRITE_CURSOR,.Write_Cursor={-25,25}} });
+    pico_output((Pico_Output) { PICO_SET, .Set={PICO_CURSOR,.Cursor={-25,25}} });
     pico_output((Pico_Output) { PICO_WRITE,   .Write="1 " });
     pico_output((Pico_Output) { PICO_WRITE,   .Write="2 " });
     pico_output((Pico_Output) { PICO_WRITELN, .Write="3" });

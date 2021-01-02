@@ -15,10 +15,10 @@ static Pico_2i LOG,PHY;
 #define PHY_LOG_X(x) (x * LOG._1/PHY._1)
 #define PHY_LOG_Y(y) (y * LOG._2/PHY._2)
 
-Pico_4i SET_COLOR_CLEAR  = {0x00,0x00,0x00,0xFF};
-Pico_4i SET_COLOR_DRAW   = {0xFF,0xFF,0xFF,0xFF};
-Pico_2i SET_WRITE_CURSOR = {0,0};
-Pico_2i CUR_WRITE_CURSOR = {0,0};
+Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
+Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};
+Pico_2i SET_CURSOR      = {0,0};
+Pico_2i CUR_CURSOR      = {0,0};
 
 static void WIN_Present (void) {
     //if (FRAMES_SET) return;
@@ -171,8 +171,8 @@ void pico_output (Pico_Output out) {
                     SDL_SetWindowTitle(WIN, out.Set.Title);
                     break;
 
-                case PICO_WRITE_CURSOR:
-                    CUR_WRITE_CURSOR = SET_WRITE_CURSOR = out.Set.Write_Cursor;
+                case PICO_CURSOR:
+                    CUR_CURSOR = SET_CURSOR = out.Set.Cursor;
                     break;
             }
             break;
@@ -230,8 +230,8 @@ void pico_output (Pico_Output out) {
         case PICO_WRITELN: {
             if (strlen(out.Write) == 0) {
                 if (out.sub == PICO_WRITELN) {
-                    CUR_WRITE_CURSOR._1 = SET_WRITE_CURSOR._1;
-                    CUR_WRITE_CURSOR._2 -= FNT_H;
+                    CUR_CURSOR._1 = SET_CURSOR._1;
+                    CUR_CURSOR._2 -= FNT_H;
                 }
                 break;
             }
@@ -247,14 +247,14 @@ void pico_output (Pico_Output out) {
 
             int w, h;
             TTF_SizeText(FNT, out.Write, &w,&h);
-            SDL_Rect rct = { X(CUR_WRITE_CURSOR._1),Y(CUR_WRITE_CURSOR._2), w,h };
+            SDL_Rect rct = { X(CUR_CURSOR._1),Y(CUR_CURSOR._2), w,h };
             SDL_RenderCopy(REN, tex, NULL, &rct);
             WIN_Present();
 
-            CUR_WRITE_CURSOR._1 += w;
+            CUR_CURSOR._1 += w;
             if (out.sub == PICO_WRITELN) {
-                CUR_WRITE_CURSOR._1 = SET_WRITE_CURSOR._1;
-                CUR_WRITE_CURSOR._2 -= FNT_H;
+                CUR_CURSOR._1 = SET_CURSOR._1;
+                CUR_CURSOR._2 -= FNT_H;
             }
 
             SDL_DestroyTexture(tex);
