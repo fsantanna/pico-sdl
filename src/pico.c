@@ -5,11 +5,15 @@ static SDL_Texture* TEX;
 static TTF_Font*    FNT;
 
 static int     FNT_H;
-static Pico_2i LOG;
+static Pico_2i LOG,PHY;
 
 #define REN  (SDL_GetRenderer(WIN))
 #define X(x) ((x)+LOG._1/2)
 #define Y(y) (LOG._2/2-(y))
+#define _X(x) ((x)-LOG._1/2)
+#define _Y(y) (LOG._2/2-(y))
+#define PHY_LOG_X(x) (x * LOG._1/PHY._1)
+#define PHY_LOG_Y(y) (y * LOG._2/PHY._2)
 
 Pico_4i SET_COLOR_CLEAR  = {0x00,0x00,0x00,0xFF};
 Pico_4i SET_COLOR_DRAW   = {0xFF,0xFF,0xFF,0xFF};
@@ -57,6 +61,25 @@ void pico_quit (void) {
     SDL_Quit();
 }
 
+static int event (SDL_Event* e, int xp) {
+    if (e->type == SDL_QUIT) {
+        exit(0);
+    }
+    if (xp!=SDL_ANY && xp!=e->type) {
+        return 0;
+    }
+    switch (e->type) {
+        case SDL_MOUSEBUTTONDOWN:
+            // for some reason, e->button uses physical, not logical screen
+            e->button.x = _X(PHY_LOG_X(e->button.x));
+            e->button.y = _Y(PHY_LOG_Y(e->button.y));
+            break;
+        default:
+            break;
+    }
+    return 1;
+}
+
 int pico_input (Pico_Input inp) {
     switch (inp.sub) {
         case PICO_DELAY:
@@ -66,10 +89,7 @@ int pico_input (Pico_Input inp) {
         case PICO_EVENT:
             while (1) {
                 SDL_WaitEvent(inp.Event.ret);
-                if (inp.Event.ret->type == SDL_QUIT) {
-                    exit(0);
-                }
-                if (inp.Event.type==SDL_ANY || inp.Event.type==inp.Event.ret->type) {
+                if (event(inp.Event.ret, inp.Event.type)) {
                     return 1;
                 }
             }
@@ -80,10 +100,7 @@ int pico_input (Pico_Input inp) {
                 if (!has) {
                     return 0;
                 }
-                if (inp.Event.ret->type == SDL_QUIT) {
-                    exit(0);
-                }
-                if (inp.Event_Timeout.type==SDL_ANY || inp.Event_Timeout.type==inp.Event_Timeout.ret->type) {
+                if (event(inp.Event_Timeout.ret, inp.Event.type)) {
                     return 1;
                 }
             }
@@ -137,6 +154,7 @@ void pico_output (Pico_Output out) {
 
                     SDL_SetWindowSize(WIN, win._1, win._2);
                     SDL_RenderSetLogicalSize(REN, log._1, log._2);
+                    PHY = win;
                     LOG = log;
             #if 0
                     // TODO: w/o delay, set_size + clear doesn't work

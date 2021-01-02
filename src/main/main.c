@@ -13,6 +13,7 @@ int main (void) {
     // CLEAR
     pico_output((Pico_Output) { PICO_SET, .Set={PICO_COLOR,.Color={PICO_COLOR_CLEAR,.Clear={0xFF,0xFF,0xFF,0xFF}}} });
     pico_output((Pico_Output) { PICO_CLEAR });
+
     pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
 
     // DRAW_PIXEL
@@ -20,6 +21,7 @@ int main (void) {
     pico_output((Pico_Output) { PICO_SET, .Set={PICO_COLOR,.Color={PICO_COLOR_DRAW,.Draw={0xFF,0xFF,0xFF,0xFF}}} });
     pico_output((Pico_Output) { PICO_CLEAR });
     pico_output((Pico_Output) { PICO_DRAW, .Draw={PICO_PIXEL,.Pixel={0,0}} });
+
     pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
 
     // DRAW_TEXT
@@ -38,9 +40,18 @@ int main (void) {
 
     pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
 
-    // EVENT
+    // MOUSE
     SDL_Event e2;
-    pico_input((Pico_Input){ PICO_EVENT_TIMEOUT, .Event_Timeout={SDL_ANY,5000,&e2} });
+    pico_input((Pico_Input){ PICO_EVENT, .Event={SDL_MOUSEBUTTONDOWN,&e2} });
+    pico_output((Pico_Output) { PICO_DRAW,
+        .Draw = { PICO_PIXEL, .Pixel={e2.button.x,e2.button.y} }
+    });
+
+    pico_input((Pico_Input){ PICO_DELAY, .Delay=2000 });
+
+    // EVENT
+    SDL_Event e3;
+    pico_input((Pico_Input){ PICO_EVENT_TIMEOUT, .Event_Timeout={SDL_ANY,5000,&e3} });
 
     return 0;
 }
