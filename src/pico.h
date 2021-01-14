@@ -19,40 +19,37 @@ typedef struct {
 } Pico_4i;
 
 typedef enum {
+    // INPUT
+
     PICO_DELAY,
     PICO_EVENT,
-    PICO_EVENT_TIMEOUT
-} PICO_INPUT;
+    PICO_EVENT_TIMEOUT,
 
-typedef enum {
+    // OUTPUT
+
     PICO_CLEAR,
-    PICO_DRAW,
-    PICO_SET,
+
+    PICO_DRAW_PIXEL,
+    PICO_DRAW_TEXT,
+
+    PICO_GET_SIZE,
+
+    PICO_SET_COLOR_CLEAR,
+    PICO_SET_COLOR_DRAW,
+    PICO_SET_CURSOR,
+    PICO_SET_FONT,
+    PICO_SET_SIZE,
+    PICO_SET_TITLE,
+
     PICO_WRITE,
     PICO_WRITELN
-} PICO_OUTPUT;
-
-typedef enum {
-    PICO_COLOR,
-    PICO_CURSOR,
-    PICO_FONT,
-    PICO_SIZE,
-    PICO_TITLE
-} PICO_OUTPUT_SET;
-
-typedef enum {
-    PICO_COLOR_CLEAR,
-    PICO_COLOR_DRAW
-} PICO_OUTPUT_SET_COLOR;
-
-typedef enum {
-    PICO_PIXEL,
-    PICO_TEXT
-} PICO_OUTPUT_DRAW;
+} PICO_IO;
 
 typedef struct {
-    PICO_INPUT sub;
+    PICO_IO sub;
     union {
+        // INPUT
+
         int Delay;
         struct {
             int type;
@@ -63,49 +60,38 @@ typedef struct {
             int timeout;
             SDL_Event* ret;
         } Event_Timeout;
-    };
-} Pico_Input;
 
-typedef struct {
-    PICO_OUTPUT sub;
-    union {
+        // OUTPUT
+
+        Pico_2i Draw_Pixel;
         struct {
-            PICO_OUTPUT_SET sub;
-            union {
-                struct {
-                    PICO_OUTPUT_SET_COLOR sub;
-                    union {
-                        Pico_4i Clear;
-                        Pico_4i Draw;
-                    };
-                } Color;
-                struct {
-                    char* file;
-                    int height;
-                } Font;
-                struct {
-                    Pico_2i win;
-                    Pico_2i log;
-                } Size;
-                char* Title;
-                Pico_2i Cursor;
-            };
-        } Set;
+            Pico_2i pos;
+            const char* txt;
+        } Draw_Text;
+
         struct {
-            PICO_OUTPUT_DRAW sub;
-            union {
-                Pico_2i Pixel;
-                struct {
-                    Pico_2i pos;
-                    const char* txt;
-                } Text;
-            };
-        } Draw;
+            Pico_2i* phy;
+            Pico_2i* log;
+        } Get_Size;
+
+        Pico_4i Set_Color_Clear;
+        Pico_4i Set_Color_Draw;
+        Pico_2i Set_Cursor;
+        struct {
+            char* file;
+            int height;
+        } Set_Font;
+        struct {
+            Pico_2i phy;
+            Pico_2i log;
+        } Set_Size;
+        char* Set_Title;
+
         char* Write;
         char* WriteLn;
     };
-} Pico_Output;
+} Pico_IO;
 
 void pico_init   ();
-int  pico_input  (Pico_Input inp);
-void pico_output (Pico_Output out);
+int  pico_input  (Pico_IO inp);
+void pico_output (Pico_IO out);

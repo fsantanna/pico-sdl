@@ -46,9 +46,9 @@ void pico_init (void) {
 
     TTF_Init();
 
-    pico_output((Pico_Output){ PICO_SET, .Set={PICO_SIZE,.Size={{_WIN_,_WIN_},{_WIN_/10,_WIN_/10}}}});
-    pico_output((Pico_Output){ PICO_SET, .Set={PICO_FONT,.Font={"tiny.ttf",_WIN_/50}} });
-    //pico_output((Pico_Output){ PICO_CLEAR });
+    pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={{_WIN_,_WIN_},{_WIN_/10,_WIN_/10}}});
+    pico_output((Pico_IO){ PICO_SET_FONT,.Set_Font={"tiny.ttf",_WIN_/50} });
+    //pico_output((Pico_IO){ PICO_CLEAR });
 
     //SDL_Delay(1000);
     //SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
@@ -80,7 +80,7 @@ static int event (SDL_Event* e, int xp) {
     return 1;
 }
 
-int pico_input (Pico_Input inp) {
+int pico_input (Pico_IO inp) {
     switch (inp.sub) {
         case PICO_DELAY:
             SDL_Delay(inp.Delay);
@@ -104,78 +104,15 @@ int pico_input (Pico_Input inp) {
                     return 1;
                 }
             }
+
+        default:
+            break;
     }
     assert(0);
 }
 
-void pico_output (Pico_Output out) {
+void pico_output (Pico_IO out) {
     switch (out.sub) {
-        case PICO_SET:
-            switch (out.Set.sub) {
-                case PICO_COLOR:
-                    switch (out.Set.Color.sub) {
-                        case PICO_COLOR_CLEAR:
-                            SET_COLOR_CLEAR = out.Set.Color.Clear;
-                            break;
-                        case PICO_COLOR_DRAW:
-                            SET_COLOR_DRAW = out.Set.Color.Draw;
-                            SDL_SetRenderDrawColor (REN,
-                                SET_COLOR_DRAW._1,
-                                SET_COLOR_DRAW._2,
-                                SET_COLOR_DRAW._3,
-                                SET_COLOR_DRAW._4
-                            );
-                            break;
-                    }
-                    break;
-
-                case PICO_FONT:
-                    FNT_H = out.Set.Font.height;
-                    if (FNT != NULL) {
-                        TTF_CloseFont(FNT);
-                    }
-                    FNT = TTF_OpenFont(out.Set.Font.file, FNT_H);
-                    pico_assert(FNT != NULL);
-                    break;
-
-                case PICO_SIZE: {
-                    Pico_2i win = out.Set.Size.win;
-                    Pico_2i log = out.Set.Size.log;
-                    assert(log._1!=0 && log._2!=0 && "invalid dimensions");
-                    assert(win._1%log._1 == 0 && "invalid dimensions");
-                    assert(win._2%log._2 == 0 && "invalid dimensions");
-
-                    TEX = SDL_CreateTexture (
-                            REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-                            log._1, log._2
-                    );
-                    pico_assert(TEX != NULL);
-                    SDL_SetRenderTarget(REN, TEX);
-
-                    SDL_SetWindowSize(WIN, win._1, win._2);
-                    SDL_RenderSetLogicalSize(REN, log._1, log._2);
-                    PHY = win;
-                    LOG = log;
-            #if 0
-                    // TODO: w/o delay, set_size + clear doesn't work
-                    SDL_Delay(500);
-                    if (!(win_w/log_w>1 && win_h/log_h>1)) {
-                        WINDOW_SET_GRID = 0;
-                    }
-            #endif
-                    pico_output((Pico_Output){PICO_CLEAR});
-                    break;
-                }
-
-                case PICO_TITLE:
-                    SDL_SetWindowTitle(WIN, out.Set.Title);
-                    break;
-
-                case PICO_CURSOR:
-                    CUR_CURSOR = SET_CURSOR = out.Set.Cursor;
-                    break;
-            }
-            break;
         case PICO_CLEAR:
             SDL_SetRenderDrawColor (REN,
                 SET_COLOR_CLEAR._1,
@@ -192,38 +129,95 @@ void pico_output (Pico_Output out) {
                 SET_COLOR_DRAW._4
             );
             break;
-        case PICO_DRAW:
-            switch (out.Draw.sub) {
-                case PICO_PIXEL: {
-                    SDL_RenderDrawPoint(REN, X(out.Draw.Pixel._1), Y(out.Draw.Pixel._2) );
-                    WIN_Present();
-                    break;
-                }
-                case PICO_TEXT: {
-                    u8 r, g, b;
-                    SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
-                    SDL_Surface* sfc = TTF_RenderText_Blended(FNT, out.Draw.Text.txt, (SDL_Color){r,g,b,0xFF});
-                    pico_assert(sfc != NULL);
-                    SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
-                    pico_assert(tex != NULL);
 
-                    SDL_Rect rct;
+        case PICO_GET_SIZE:
+            *out.Get_Size.phy = PHY;
+            *out.Get_Size.log = LOG;
+            break;
 
-                    // SCALE
-                    rct.w = sfc->w; // * GRAPHICS_SET_SCALE_W;
-                    rct.h = sfc->h; // * GRAPHICS_SET_SCALE_H;
+        case PICO_DRAW_PIXEL: {
+            SDL_RenderDrawPoint(REN, X(out.Draw_Pixel._1), Y(out.Draw_Pixel._2) );
+            WIN_Present();
+            break;
+        }
+        case PICO_DRAW_TEXT: {
+            u8 r, g, b;
+            SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
+            SDL_Surface* sfc = TTF_RenderText_Blended(FNT, out.Draw_Text.txt, (SDL_Color){r,g,b,0xFF});
+            pico_assert(sfc != NULL);
+            SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
+            pico_assert(tex != NULL);
 
-                    // ANCHOR
-                    rct.x = X(out.Draw.Text.pos._1); //GRAPHICS_ANCHOR_X(X(ps_->_1),rct.w);
-                    rct.y = Y(out.Draw.Text.pos._2); //GRAPHICS_ANCHOR_Y(Y(ps_->_2),rct.h);
+            SDL_Rect rct;
 
-                    SDL_RenderCopy(REN, tex, NULL, &rct);
-                    WIN_Present();
+            // SCALE
+            rct.w = sfc->w; // * GRAPHICS_SET_SCALE_W;
+            rct.h = sfc->h; // * GRAPHICS_SET_SCALE_H;
 
-                    SDL_DestroyTexture(tex);
-                    SDL_FreeSurface(sfc);
-                }
+            // ANCHOR
+            rct.x = X(out.Draw_Text.pos._1); //GRAPHICS_ANCHOR_X(X(ps_->_1),rct.w);
+            rct.y = Y(out.Draw_Text.pos._2); //GRAPHICS_ANCHOR_Y(Y(ps_->_2),rct.h);
+
+            SDL_RenderCopy(REN, tex, NULL, &rct);
+            WIN_Present();
+
+            SDL_DestroyTexture(tex);
+            SDL_FreeSurface(sfc);
+        }
+
+        case PICO_SET_COLOR_CLEAR:
+            SET_COLOR_CLEAR = out.Set_Color_Clear;
+            break;
+        case PICO_SET_COLOR_DRAW:
+            SET_COLOR_DRAW = out.Set_Color_Draw;
+            SDL_SetRenderDrawColor (REN,
+                SET_COLOR_DRAW._1,
+                SET_COLOR_DRAW._2,
+                SET_COLOR_DRAW._3,
+                SET_COLOR_DRAW._4
+            );
+            break;
+        case PICO_SET_CURSOR:
+            CUR_CURSOR = SET_CURSOR = out.Set_Cursor;
+            break;
+        case PICO_SET_FONT:
+            FNT_H = out.Set_Font.height;
+            if (FNT != NULL) {
+                TTF_CloseFont(FNT);
             }
+            FNT = TTF_OpenFont(out.Set_Font.file, FNT_H);
+            pico_assert(FNT != NULL);
+            break;
+        case PICO_SET_SIZE: {
+            Pico_2i phy = out.Set_Size.phy;
+            Pico_2i log = out.Set_Size.log;
+            assert(log._1!=0 && log._2!=0 && "invalid dimensions");
+            assert(phy._1%log._1 == 0 && "invalid dimensions");
+            assert(phy._2%log._2 == 0 && "invalid dimensions");
+
+            TEX = SDL_CreateTexture (
+                    REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+                    log._1, log._2
+            );
+            pico_assert(TEX != NULL);
+            SDL_SetRenderTarget(REN, TEX);
+
+            SDL_SetWindowSize(WIN, phy._1, phy._2);
+            SDL_RenderSetLogicalSize(REN, log._1, log._2);
+            PHY = phy;
+            LOG = log;
+#if 0
+            // TODO: w/o delay, set_size + clear doesn't work
+            SDL_Delay(500);
+            if (!(win_w/log_w>1 && win_h/log_h>1)) {
+                WINDOW_SET_GRID = 0;
+            }
+#endif
+            pico_output((Pico_IO){PICO_CLEAR});
+            break;
+        }
+        case PICO_SET_TITLE:
+            SDL_SetWindowTitle(WIN, out.Set_Title);
             break;
 
         case PICO_WRITE:
@@ -260,5 +254,8 @@ void pico_output (Pico_Output out) {
             SDL_DestroyTexture(tex);
             SDL_FreeSurface(sfc);
         }
+
+        default:
+            break;
     }
 }
