@@ -62,12 +62,26 @@ void pico_quit (void) {
 }
 
 static int event (SDL_Event* e, int xp) {
-    if (e->type == SDL_QUIT) {
-        exit(0);
+    switch (e->type) {
+        case SDL_QUIT:
+            exit(0);
+
+        case SDL_WINDOWEVENT: {
+            if (e->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                int w = e->window.data1 - e->window.data1 % LOG._1;
+                int h = e->window.data2 - e->window.data2 % LOG._2;
+//printf(">>> (%d,%d) -> (%d,%d)\n", e->window.data1, e->window.data2, w, h);
+                pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={{w,h},{LOG._1,LOG._2}}});
+                return 0;
+                break;
+            }
+        }
     }
+
     if (xp!=SDL_ANY && xp!=e->type) {
         return 0;
     }
+
     switch (e->type) {
         case SDL_MOUSEBUTTONDOWN:
             // for some reason, e->button uses physical, not logical screen
@@ -83,8 +97,17 @@ static int event (SDL_Event* e, int xp) {
 int pico_input (Pico_IO inp) {
     switch (inp.sub) {
         case PICO_DELAY:
-            SDL_Delay(inp.Delay);
-            return 0;
+            while (1) {
+                int old = SDL_GetTicks();
+                SDL_Event e;
+                int has = SDL_WaitEventTimeout(&e, inp.Delay);
+                if (!has) {
+                    return 0;
+                }
+                event(&e, SDL_ANY);
+                int dt = SDL_GetTicks() - old;
+                inp.Delay -= dt;
+            }
 
         case PICO_EVENT:
             while (1) {
@@ -191,6 +214,16 @@ void pico_output (Pico_IO out) {
         case PICO_SET_SIZE: {
             Pico_2i phy = out.Set_Size.phy;
             Pico_2i log = out.Set_Size.log;
+
+            // check resize that was not accepted (due to remainder with logical size)
+            {
+                int w,h;
+                SDL_GetWindowSize(WIN, &w,&h);
+                if (phy._1==w && phy._2==h && log._1==LOG._1 && log._2==LOG._2) {
+                    break;
+                }
+            }
+
             assert(log._1!=0 && log._2!=0 && "invalid dimensions");
             assert(phy._1%log._1 == 0 && "invalid dimensions");
             assert(phy._2%log._2 == 0 && "invalid dimensions");
