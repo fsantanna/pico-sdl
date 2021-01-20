@@ -1,25 +1,31 @@
 #include "pico.h"
 
-static SDL_Window*  WIN;
+SDL_Window*         WIN;
 static SDL_Texture* TEX;
 static TTF_Font*    FNT;
-
-static int     FNT_H;
-static Pico_2i LOG,PHY;
+static int          FNT_H;
 
 #define REN  (SDL_GetRenderer(WIN))
-#define X(x) ((x)+LOG._1/2)
-#define Y(y) (LOG._2/2-(y))
-#define _X(x) ((x)-LOG._1/2)
-#define _Y(y) (LOG._2/2-(y))
-#define PHY_LOG_X(x) (x * LOG._1/PHY._1)
-#define PHY_LOG_Y(y) (y * LOG._2/PHY._2)
+
+#define X(x) ((x)+LOG_X/2)
+#define Y(y) (LOG_Y/2-(y))
+#define _X(x) ((x)-LOG_X/2)
+#define _Y(y) (LOG_Y/2-(y))
+
+#define LOG_X (SET_SIZE._1*SET_ZOOM._1/100)
+#define LOG_Y (SET_SIZE._2*SET_ZOOM._2/100)
+#define PHY_LOG_X(x) (x * LOG_X/SET_SIZE._1)
+#define PHY_LOG_Y(y) (y * LOG_Y/SET_SIZE._2)
 
 static Pico_2i SET_ANCHOR      = { Center, Middle };
 static int     SET_AUTO        = 1;
 static Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
 static Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};
 static Pico_2i SET_CURSOR      = {0,0};
+//static int SET_PAN
+static Pico_2i SET_SIZE        = {_WIN_,_WIN_};
+static Pico_2i SET_ZOOM        = {10,10};
+
 static Pico_2i CUR_CURSOR      = {0,0};
 
 static void WIN_Present (int force) {
@@ -71,7 +77,8 @@ void pico_init (void) {
 
     TTF_Init();
 
-    pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={{_WIN_,_WIN_},{_WIN_/10,_WIN_/10}}});
+    pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={SET_SIZE._1,SET_SIZE._2}});
+    pico_output((Pico_IO){ PICO_SET_ZOOM,.Set_Zoom={SET_ZOOM._1,SET_ZOOM._2}});
     pico_output((Pico_IO){ PICO_SET_FONT,.Set_Font={"tiny.ttf",_WIN_/50} });
     //pico_output((Pico_IO){ PICO_CLEAR });
 
@@ -91,16 +98,15 @@ static int event (SDL_Event* e, int xp) {
         case SDL_QUIT:
             exit(0);
 
+#if 0
         case SDL_WINDOWEVENT: {
             if (e->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                int w = e->window.data1; // - e->window.data1 % LOG._1;
-                int h = e->window.data2; // - e->window.data2 % LOG._2;
-//printf(">>> (%d,%d) -> (%d,%d)\n", e->window.data1, e->window.data2, w, h);
-                pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={{w,h},{LOG._1,LOG._2}}});
+                pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={e->window.data1,e->window.data2}});
                 return 0;
                 break;
             }
         }
+#endif
     }
 
     if (xp!=SDL_ANY && xp!=e->type) {
@@ -179,12 +185,19 @@ void pico_output (Pico_IO out) {
             break;
 
         case PICO_GET_SIZE:
-            *out.Get_Size.phy = PHY;
-            *out.Get_Size.log = LOG;
+            SDL_GetWindowSize(WIN, &out.Get_Size->_1, &out.Get_Size->_2);
             break;
 
         case PICO_DRAW_PIXEL: {
             SDL_RenderDrawPoint(REN, X(out.Draw_Pixel._1), Y(out.Draw_Pixel._2) );
+            WIN_Present(0);
+            break;
+        }
+        case PICO_DRAW_RECT: {
+            SDL_Rect rct = { 0,0, out.Draw_Rect.size._1, out.Draw_Rect.size._2 };
+            rct.x = hanchor(X(out.Draw_Rect.pos._1),rct.w);
+            rct.y = vanchor(Y(out.Draw_Rect.pos._2),rct.h);
+            SDL_RenderFillRect(REN, &rct);
             WIN_Present(0);
             break;
         }
@@ -243,47 +256,30 @@ void pico_output (Pico_IO out) {
             FNT = TTF_OpenFont(out.Set_Font.file, FNT_H);
             pico_assert(FNT != NULL);
             break;
-        case PICO_SET_SIZE: {
-            Pico_2i phy = out.Set_Size.phy;
-            Pico_2i log = out.Set_Size.log;
-
-            // check resize that was not accepted (due to remainder with logical size)
-            {
-                int w,h;
-                SDL_GetWindowSize(WIN, &w,&h);
-                if (phy._1==w && phy._2==h && log._1==LOG._1 && log._2==LOG._2) {
-                    break;
-                }
-            }
-
-            assert(log._1!=0 && log._2!=0 && "invalid dimensions");
-            //assert(phy._1%log._1 == 0 && "invalid dimensions");
-            //assert(phy._2%log._2 == 0 && "invalid dimensions");
-
-            TEX = SDL_CreateTexture (
-                    REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-                    log._1, log._2
-            );
-            pico_assert(TEX != NULL);
-            SDL_SetRenderTarget(REN, TEX);
-
-            SDL_SetWindowSize(WIN, phy._1, phy._2);
-            SDL_RenderSetLogicalSize(REN, log._1, log._2);
-            PHY = phy;
-            LOG = log;
-#if 0
-            // TODO: w/o delay, set_size + clear doesn't work
-            SDL_Delay(500);
-            if (!(win_w/log_w>1 && win_h/log_h>1)) {
-                WINDOW_SET_GRID = 0;
-            }
-#endif
-            pico_output((Pico_IO){PICO_CLEAR});
+        case PICO_SET_SIZE:
+            SET_SIZE = out.Set_Size;
+            SDL_SetWindowSize(WIN, SET_SIZE._1, SET_SIZE._2);
+            pico_output((Pico_IO){ PICO_SET_ZOOM, .Set_Zoom={SET_ZOOM._1,SET_ZOOM._2} });
             break;
-        }
         case PICO_SET_TITLE:
             SDL_SetWindowTitle(WIN, out.Set_Title);
             break;
+        case PICO_SET_ZOOM: {
+            int w,h;
+            SDL_GetWindowSize(WIN, &w, &h);
+            SET_ZOOM = out.Set_Zoom;
+            w = w * SET_ZOOM._1 / 100;
+            h = h * SET_ZOOM._2 / 100;
+            TEX = SDL_CreateTexture (
+                    REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+                    w, h
+            );
+            pico_assert(TEX != NULL);
+            SDL_SetRenderTarget(REN, TEX);
+            SDL_RenderSetLogicalSize(REN, w, h);
+            pico_output((Pico_IO){PICO_CLEAR});
+            break;
+        }
 
         case PICO_WRITE:
         case PICO_WRITELN: {

@@ -38,6 +38,7 @@ typedef enum {
     PICO_CLEAR,
 
     PICO_DRAW_PIXEL,
+    PICO_DRAW_RECT,
     PICO_DRAW_TEXT,
 
     PICO_GET_SIZE,
@@ -52,6 +53,7 @@ typedef enum {
     PICO_SET_FONT,
     PICO_SET_SIZE,
     PICO_SET_TITLE,
+    PICO_SET_ZOOM,
 
     PICO_WRITE,
     PICO_WRITELN
@@ -78,13 +80,14 @@ typedef struct {
         Pico_2i Draw_Pixel;
         struct {
             Pico_2i pos;
+            Pico_2i size;
+        } Draw_Rect;
+        struct {
+            Pico_2i pos;
             const char* txt;
         } Draw_Text;
 
-        struct {
-            Pico_2i* phy;
-            Pico_2i* log;
-        } Get_Size;
+        Pico_2i* Get_Size;
 
         Pico_2i Set_Anchor;
         int     Set_Auto;
@@ -95,11 +98,9 @@ typedef struct {
             char* file;
             int height;
         } Set_Font;
-        struct {
-            Pico_2i phy;
-            Pico_2i log;
-        } Set_Size;
+        Pico_2i Set_Size;
         char* Set_Title;
+        Pico_2i Set_Zoom;
 
         char* Write;
         char* WriteLn;
