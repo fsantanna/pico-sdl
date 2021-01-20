@@ -1,5 +1,7 @@
 #include "pico.h"
 
+#define MAX(x,y) ((x) > (y) ? (x) : (y))
+
 SDL_Window*         WIN;
 static SDL_Texture* TEX;
 static TTF_Font*    FNT;
@@ -7,10 +9,10 @@ static int          FNT_H;
 
 #define REN  (SDL_GetRenderer(WIN))
 
-#define X(x) ((x)+LOG_X/2+SET_PAN._1)
-#define Y(y) (LOG_Y/2-(y)+SET_PAN._2)
-#define _X(x) ((x)-LOG_X/2-SET_PAN._1)
-#define _Y(y) (LOG_Y/2-(y)-SET_PAN._2)
+#define X(x) ((x)+LOG_X/2-SET_PAN._1)
+#define Y(y) (LOG_Y/2-(y)-SET_PAN._2)
+#define _X(x) ((x)-LOG_X/2+SET_PAN._1)
+#define _Y(y) (LOG_Y/2-(y)+SET_PAN._2)
 
 #define LOG_X (SET_SIZE._1*SET_ZOOM._1/100)
 #define LOG_Y (SET_SIZE._2*SET_ZOOM._2/100)
@@ -79,7 +81,7 @@ void pico_init (void) {
 
     pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={SET_SIZE._1,SET_SIZE._2}});
     pico_output((Pico_IO){ PICO_SET_ZOOM,.Set_Zoom={SET_ZOOM._1,SET_ZOOM._2}});
-    pico_output((Pico_IO){ PICO_SET_FONT,.Set_Font={"tiny.ttf",_WIN_/50} });
+    pico_output((Pico_IO){ PICO_SET_FONT,.Set_Font={"tiny.ttf",SET_SIZE._1/50} });
     //pico_output((Pico_IO){ PICO_CLEAR });
 
     //SDL_Delay(1000);
@@ -97,6 +99,51 @@ static int event (SDL_Event* e, int xp) {
     switch (e->type) {
         case SDL_QUIT:
             exit(0);
+
+        case SDL_KEYDOWN: {
+            const unsigned char* state = SDL_GetKeyboardState(NULL);
+            if (!state[SDL_SCANCODE_LCTRL] && !state[SDL_SCANCODE_RCTRL]) {
+                break;
+            }
+            switch (e->key.keysym.sym) {
+                case SDLK_MINUS: {
+                    int x = SET_ZOOM._1;
+                    int y = SET_ZOOM._2;
+                    pico_output((Pico_IO){ PICO_SET_ZOOM,.Set_Zoom={x+5,y+5} });
+                    break;
+                }
+                case SDLK_EQUALS: {
+                    int x = SET_ZOOM._1;
+                    int y = SET_ZOOM._2;
+                    pico_output((Pico_IO){ PICO_SET_ZOOM,.Set_Zoom={x-5,y-5} });
+                    break;
+                }
+                case SDLK_LEFT: {
+                    int x = SET_PAN._1;
+                    int y = SET_PAN._2;
+                    pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={x-5,y} });
+                    break;
+                }
+                case SDLK_RIGHT: {
+                    int x = SET_PAN._1;
+                    int y = SET_PAN._2;
+                    pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={x+5,y} });
+                    break;
+                }
+                case SDLK_UP: {
+                    int x = SET_PAN._1;
+                    int y = SET_PAN._2;
+                    pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={x,y-5} });
+                    break;
+                }
+                case SDLK_DOWN: {
+                    int x = SET_PAN._1;
+                    int y = SET_PAN._2;
+                    pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={x,y+5} });
+                    break;
+                }
+            }
+        }
 
 #if 0
         case SDL_WINDOWEVENT: {
@@ -271,8 +318,8 @@ void pico_output (Pico_IO out) {
             int w,h;
             SDL_GetWindowSize(WIN, &w, &h);
             SET_ZOOM = out.Set_Zoom;
-            w = w * SET_ZOOM._1 / 100;
-            h = h * SET_ZOOM._2 / 100;
+            w = MAX(1, w * SET_ZOOM._1 / 100);
+            h = MAX(1, h * SET_ZOOM._2 / 100);
             TEX = SDL_CreateTexture (
                     REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
                     w, h
