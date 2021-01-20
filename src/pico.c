@@ -9,33 +9,54 @@ static int          FNT_H;
 
 #define REN  (SDL_GetRenderer(WIN))
 
-#define X(x) ((x)+LOG_X/2-SET_PAN._1)
-#define Y(y) (LOG_Y/2-(y)-SET_PAN._2)
-#define _X(x) ((x)-LOG_X/2+SET_PAN._1)
-#define _Y(y) (LOG_Y/2-(y)+SET_PAN._2)
+#define X(x) ((x)+LOG_W/2-SET_PAN._1)
+#define Y(y) (LOG_H/2-(y)-SET_PAN._2)
+#define _X(x) ((x)-LOG_H/2+SET_PAN._1)
+#define _Y(y) (LOG_H/2-(y)+SET_PAN._2)
 
-#define LOG_X (SET_SIZE._1*SET_ZOOM._1/100)
-#define LOG_Y (SET_SIZE._2*SET_ZOOM._2/100)
-#define PHY_LOG_X(x) (x * LOG_X/SET_SIZE._1)
-#define PHY_LOG_Y(y) (y * LOG_Y/SET_SIZE._2)
+#define LOG_W (SET_SIZE._1*SET_ZOOM._1/100)
+#define LOG_H (SET_SIZE._2*SET_ZOOM._2/100)
+#define PHY_LOG_X(x) (x * LOG_W/SET_SIZE._1)
+#define PHY_LOG_Y(y) (y * LOG_H/SET_SIZE._2)
 
 static Pico_2i SET_ANCHOR      = { Center, Middle };
 static int     SET_AUTO        = 1;
 static Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
 static Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};
 static Pico_2i SET_CURSOR      = {0,0};
+static int     SET_GRID        = 1;
 static Pico_2i SET_PAN         = {0,0};
 static Pico_2i SET_SIZE        = {_WIN_,_WIN_};
 static Pico_2i SET_ZOOM        = {10,10};
 
 static Pico_2i CUR_CURSOR      = {0,0};
 
+static void show_grid (void) {
+    if (!SET_GRID) return;
+
+    SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
+
+    for (int i=0; i<=SET_SIZE._1; i+=(SET_SIZE._1/LOG_W)) {
+        SDL_RenderDrawLine(REN, i, 0, i, SET_SIZE._2);
+    }
+    for (int j=0; j<=SET_SIZE._2; j+=(SET_SIZE._2/LOG_H)) {
+        SDL_RenderDrawLine(REN, 0, j, SET_SIZE._1, j);
+    }
+
+    SDL_SetRenderDrawColor (REN,
+        SET_COLOR_DRAW._1,
+        SET_COLOR_DRAW._2,
+        SET_COLOR_DRAW._3,
+        SET_COLOR_DRAW._4
+    );
+}
+
 static void WIN_Present (int force) {
     if (!SET_AUTO && !force) return;
-    //WINDOW_Show_Grid();
     SDL_SetRenderTarget(REN, NULL);
     SDL_RenderClear(REN);
     SDL_RenderCopy(REN, TEX, NULL, NULL);
+    show_grid();
     SDL_RenderPresent(REN);
     SDL_SetRenderTarget(REN, TEX);
 }
@@ -302,6 +323,9 @@ void pico_output (Pico_IO out) {
             }
             FNT = TTF_OpenFont(out.Set_Font.file, FNT_H);
             pico_assert(FNT != NULL);
+            break;
+        case PICO_SET_GRID:
+            SET_GRID = out.Set_Grid;
             break;
         case PICO_SET_PAN:
             SET_PAN = out.Set_Pan;

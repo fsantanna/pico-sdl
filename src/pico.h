@@ -51,6 +51,7 @@ typedef enum {
     PICO_SET_COLOR_DRAW,
     PICO_SET_CURSOR,
     PICO_SET_FONT,
+    PICO_SET_GRID,
     PICO_SET_PAN,
     PICO_SET_SIZE,
     PICO_SET_TITLE,
@@ -95,6 +96,7 @@ typedef struct {
         Pico_4i Set_Color_Clear;
         Pico_4i Set_Color_Draw;
         Pico_2i Set_Cursor;
+        int     Set_Grid;
         struct {
             char* file;
             int height;

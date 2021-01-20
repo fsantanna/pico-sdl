@@ -56,6 +56,9 @@ int main (void) {
     pico_output((Pico_IO) { PICO_GET_SIZE,.Get_Size=&size });
     printf("SIZE=(%d,%d)\n", size._1,size._2);
 
+    // GRID=0
+    pico_output((Pico_IO){ PICO_SET_GRID,.Set_Grid=0 });
+
     // AUTO=0
     pico_output((Pico_IO){ PICO_CLEAR });
     pico_output((Pico_IO){ PICO_SET_AUTO,.Set_Auto=0 });
