@@ -1,9 +1,8 @@
 #include "../pico.h"
 
 int main (void) {
-    pico_init();
+    pico_open();
 
-#if 0
     SDL_Event e1;
     int ok = pico_input((Pico_IO){ PICO_EVENT, .Event={SDL_KEYUP,&e1} });
     assert(ok);
@@ -82,7 +81,6 @@ int main (void) {
 
     // PAN
 
-#endif
     for (int i=0; i<10; i++) {
         pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={i,0} });
         pico_output((Pico_IO){ PICO_CLEAR });
@@ -97,5 +95,6 @@ int main (void) {
         pico_input((Pico_IO){ PICO_DELAY, .Delay=500 });
     }
 
+    pico_close();
     return 0;
 }

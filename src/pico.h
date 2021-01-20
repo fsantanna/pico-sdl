@@ -109,6 +109,7 @@ typedef struct {
     };
 } Pico_IO;
 
-void pico_init   ();
+void pico_open   ();
+void pico_close  ();
 int  pico_input  (Pico_IO inp);
 void pico_output (Pico_IO out);

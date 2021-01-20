@@ -64,7 +64,7 @@ static int vanchor (int y, int h) {
     assert(0);
 }
 
-void pico_init (void) {
+void pico_open (void) {
     pico_assert(SDL_Init(SDL_INIT_VIDEO) == 0);
     WIN = SDL_CreateWindow (
         _TITLE_, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -88,7 +88,7 @@ void pico_init (void) {
     //SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 }
 
-void pico_quit (void) {
+void pico_close (void) {
     TTF_Quit();
     SDL_DestroyRenderer(REN);
     SDL_DestroyWindow(WIN);
