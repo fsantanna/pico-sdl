@@ -34,6 +34,9 @@ typedef enum {
 
     PICO_GET_SIZE,
 
+    PICO_PRESENT,
+
+    PICO_SET_AUTO,
     PICO_SET_COLOR_CLEAR,
     PICO_SET_COLOR_DRAW,
     PICO_SET_CURSOR,
@@ -74,6 +77,7 @@ typedef struct {
             Pico_2i* log;
         } Get_Size;
 
+        int     Set_Auto;
         Pico_4i Set_Color_Clear;
         Pico_4i Set_Color_Draw;
         Pico_2i Set_Cursor;

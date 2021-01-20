@@ -15,20 +15,20 @@ static Pico_2i LOG,PHY;
 #define PHY_LOG_X(x) (x * LOG._1/PHY._1)
 #define PHY_LOG_Y(y) (y * LOG._2/PHY._2)
 
+int     SET_AUTO        = 1;
 Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
 Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};
 Pico_2i SET_CURSOR      = {0,0};
 Pico_2i CUR_CURSOR      = {0,0};
 
-static void WIN_Present (void) {
-    //if (FRAMES_SET) return;
+static void WIN_Present (int force) {
+    if (!SET_AUTO && !force) return;
     //WINDOW_Show_Grid();
     SDL_SetRenderTarget(REN, NULL);
     SDL_RenderClear(REN);
     SDL_RenderCopy(REN, TEX, NULL, NULL);
     SDL_RenderPresent(REN);
     SDL_SetRenderTarget(REN, TEX);
-    //SDL_Delay(10);  // prevents flickering in Linux (probably related to double buffering)
 }
 
 void pico_init (void) {
@@ -144,7 +144,7 @@ void pico_output (Pico_IO out) {
                 SET_COLOR_CLEAR._4
             );
             SDL_RenderClear(REN);
-            WIN_Present();
+            WIN_Present(0);
             SDL_SetRenderDrawColor (REN,
                 SET_COLOR_DRAW._1,
                 SET_COLOR_DRAW._2,
@@ -160,7 +160,7 @@ void pico_output (Pico_IO out) {
 
         case PICO_DRAW_PIXEL: {
             SDL_RenderDrawPoint(REN, X(out.Draw_Pixel._1), Y(out.Draw_Pixel._2) );
-            WIN_Present();
+            WIN_Present(0);
             break;
         }
         case PICO_DRAW_TEXT: {
@@ -182,12 +182,19 @@ void pico_output (Pico_IO out) {
             rct.y = Y(out.Draw_Text.pos._2); //GRAPHICS_ANCHOR_Y(Y(ps_->_2),rct.h);
 
             SDL_RenderCopy(REN, tex, NULL, &rct);
-            WIN_Present();
+            WIN_Present(0);
 
             SDL_DestroyTexture(tex);
             SDL_FreeSurface(sfc);
         }
 
+        case PICO_PRESENT:
+            WIN_Present(1);
+            break;
+
+        case PICO_SET_AUTO:
+            SET_AUTO = out.Set_Auto;
+            break;
         case PICO_SET_COLOR_CLEAR:
             SET_COLOR_CLEAR = out.Set_Color_Clear;
             break;
@@ -276,7 +283,7 @@ void pico_output (Pico_IO out) {
             TTF_SizeText(FNT, out.Write, &w,&h);
             SDL_Rect rct = { X(CUR_CURSOR._1),Y(CUR_CURSOR._2), w,h };
             SDL_RenderCopy(REN, tex, NULL, &rct);
-            WIN_Present();
+            WIN_Present(0);
 
             CUR_CURSOR._1 += w;
             if (out.sub == PICO_WRITELN) {

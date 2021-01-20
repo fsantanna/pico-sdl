@@ -57,5 +57,11 @@ int main (void) {
     pico_output((Pico_IO) { PICO_GET_SIZE,.Get_Size={&phy,&log} });
     printf("PHY=(%d,%d) // LOG=(%d,%d)\n", phy._1,phy._2, log._1,log._2);
 
+    pico_output((Pico_IO){ PICO_SET_AUTO,.Set_Auto=0 });
+    pico_output((Pico_IO) { PICO_WRITELN, .Write="no auto" });
+    pico_output((Pico_IO) { PICO_PRESENT });
+
+    pico_input((Pico_IO){ PICO_DELAY, .Delay=2000 });
+
     return 0;
 }
