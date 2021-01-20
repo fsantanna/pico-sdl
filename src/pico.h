@@ -19,6 +19,14 @@ typedef struct {
 } Pico_4i;
 
 typedef enum {
+    Left, Center, Right
+} HAnchor;
+
+typedef enum {
+    Top, Middle, Bottom
+} VAnchor;
+
+typedef enum {
     // INPUT
 
     PICO_DELAY,
@@ -36,6 +44,7 @@ typedef enum {
 
     PICO_PRESENT,
 
+    PICO_SET_ANCHOR,
     PICO_SET_AUTO,
     PICO_SET_COLOR_CLEAR,
     PICO_SET_COLOR_DRAW,
@@ -77,6 +86,7 @@ typedef struct {
             Pico_2i* log;
         } Get_Size;
 
+        Pico_2i Set_Anchor;
         int     Set_Auto;
         Pico_4i Set_Color_Clear;
         Pico_4i Set_Color_Draw;

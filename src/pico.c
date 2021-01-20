@@ -15,11 +15,12 @@ static Pico_2i LOG,PHY;
 #define PHY_LOG_X(x) (x * LOG._1/PHY._1)
 #define PHY_LOG_Y(y) (y * LOG._2/PHY._2)
 
-int     SET_AUTO        = 1;
-Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
-Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};
-Pico_2i SET_CURSOR      = {0,0};
-Pico_2i CUR_CURSOR      = {0,0};
+static Pico_2i SET_ANCHOR      = { Center, Middle };
+static int     SET_AUTO        = 1;
+static Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
+static Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};
+static Pico_2i SET_CURSOR      = {0,0};
+static Pico_2i CUR_CURSOR      = {0,0};
 
 static void WIN_Present (int force) {
     if (!SET_AUTO && !force) return;
@@ -29,6 +30,30 @@ static void WIN_Present (int force) {
     SDL_RenderCopy(REN, TEX, NULL, NULL);
     SDL_RenderPresent(REN);
     SDL_SetRenderTarget(REN, TEX);
+}
+
+static int hanchor (int x, int w) {
+    switch (SET_ANCHOR._1) {
+        case Left:
+            return x;
+        case Center:
+            return x - w/2;
+        case Right:
+            return x - w + 1;
+    }
+    assert(0);
+}
+
+static int vanchor (int y, int h) {
+    switch (SET_ANCHOR._2) {
+        case Top:
+            return y;
+        case Middle:
+            return y - h/2;
+        case Bottom:
+            return y - h + 1;
+    }
+    assert(0);
 }
 
 void pico_init (void) {
@@ -68,8 +93,8 @@ static int event (SDL_Event* e, int xp) {
 
         case SDL_WINDOWEVENT: {
             if (e->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                int w = e->window.data1 - e->window.data1 % LOG._1;
-                int h = e->window.data2 - e->window.data2 % LOG._2;
+                int w = e->window.data1; // - e->window.data1 % LOG._1;
+                int h = e->window.data2; // - e->window.data2 % LOG._2;
 //printf(">>> (%d,%d) -> (%d,%d)\n", e->window.data1, e->window.data2, w, h);
                 pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={{w,h},{LOG._1,LOG._2}}});
                 return 0;
@@ -178,8 +203,8 @@ void pico_output (Pico_IO out) {
             rct.h = sfc->h; // * GRAPHICS_SET_SCALE_H;
 
             // ANCHOR
-            rct.x = X(out.Draw_Text.pos._1); //GRAPHICS_ANCHOR_X(X(ps_->_1),rct.w);
-            rct.y = Y(out.Draw_Text.pos._2); //GRAPHICS_ANCHOR_Y(Y(ps_->_2),rct.h);
+            rct.x = hanchor( X(out.Draw_Text.pos._1), rct.w );
+            rct.y = vanchor( Y(out.Draw_Text.pos._2), rct.h );
 
             SDL_RenderCopy(REN, tex, NULL, &rct);
             WIN_Present(0);
@@ -232,8 +257,8 @@ void pico_output (Pico_IO out) {
             }
 
             assert(log._1!=0 && log._2!=0 && "invalid dimensions");
-            assert(phy._1%log._1 == 0 && "invalid dimensions");
-            assert(phy._2%log._2 == 0 && "invalid dimensions");
+            //assert(phy._1%log._1 == 0 && "invalid dimensions");
+            //assert(phy._2%log._2 == 0 && "invalid dimensions");
 
             TEX = SDL_CreateTexture (
                     REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,

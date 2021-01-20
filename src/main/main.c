@@ -3,6 +3,7 @@
 int main (void) {
     pico_init();
 
+#if 0
     SDL_Event e1;
     int ok = pico_input((Pico_IO){ PICO_EVENT, .Event={SDL_KEYUP,&e1} });
     assert(ok);
@@ -57,11 +58,27 @@ int main (void) {
     pico_output((Pico_IO) { PICO_GET_SIZE,.Get_Size={&phy,&log} });
     printf("PHY=(%d,%d) // LOG=(%d,%d)\n", phy._1,phy._2, log._1,log._2);
 
+    // AUTO=0
+    pico_output((Pico_IO){ PICO_CLEAR });
     pico_output((Pico_IO){ PICO_SET_AUTO,.Set_Auto=0 });
     pico_output((Pico_IO) { PICO_WRITELN, .Write="no auto" });
     pico_output((Pico_IO) { PICO_PRESENT });
 
     pico_input((Pico_IO){ PICO_DELAY, .Delay=2000 });
+
+    // AUTO=1
+    pico_output((Pico_IO){ PICO_SET_AUTO,.Set_Auto=1 });
+    pico_output((Pico_IO){ PICO_CLEAR });
+#endif
+
+    // ZOOM
+    for (int i=0; i<19; i++) {
+        int mult = 100 - i*5;
+        pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={{_WIN_,_WIN_},{_WIN_*mult/100,_WIN_*mult/100}} });
+        pico_output((Pico_IO){ PICO_CLEAR });
+        pico_output((Pico_IO) { PICO_DRAW_TEXT,.Draw_Text={{0,0},"X"} });
+        pico_input((Pico_IO){ PICO_DELAY, .Delay=200 });
+    }
 
     return 0;
 }
