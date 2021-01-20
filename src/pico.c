@@ -7,10 +7,10 @@ static int          FNT_H;
 
 #define REN  (SDL_GetRenderer(WIN))
 
-#define X(x) ((x)+LOG_X/2)
-#define Y(y) (LOG_Y/2-(y))
-#define _X(x) ((x)-LOG_X/2)
-#define _Y(y) (LOG_Y/2-(y))
+#define X(x) ((x)+LOG_X/2+SET_PAN._1)
+#define Y(y) (LOG_Y/2-(y)+SET_PAN._2)
+#define _X(x) ((x)-LOG_X/2-SET_PAN._1)
+#define _Y(y) (LOG_Y/2-(y)-SET_PAN._2)
 
 #define LOG_X (SET_SIZE._1*SET_ZOOM._1/100)
 #define LOG_Y (SET_SIZE._2*SET_ZOOM._2/100)
@@ -22,7 +22,7 @@ static int     SET_AUTO        = 1;
 static Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
 static Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};
 static Pico_2i SET_CURSOR      = {0,0};
-//static int SET_PAN
+static Pico_2i SET_PAN         = {0,0};
 static Pico_2i SET_SIZE        = {_WIN_,_WIN_};
 static Pico_2i SET_ZOOM        = {10,10};
 
@@ -255,6 +255,9 @@ void pico_output (Pico_IO out) {
             }
             FNT = TTF_OpenFont(out.Set_Font.file, FNT_H);
             pico_assert(FNT != NULL);
+            break;
+        case PICO_SET_PAN:
+            SET_PAN = out.Set_Pan;
             break;
         case PICO_SET_SIZE:
             SET_SIZE = out.Set_Size;

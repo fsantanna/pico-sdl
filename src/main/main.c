@@ -4,7 +4,6 @@ int main (void) {
     pico_init();
 
 #if 0
-#endif
     SDL_Event e1;
     int ok = pico_input((Pico_IO){ PICO_EVENT, .Event={SDL_KEYUP,&e1} });
     assert(ok);
@@ -81,11 +80,22 @@ int main (void) {
         pico_input((Pico_IO){ PICO_DELAY, .Delay=200 });
     }
 
-    pico_output((Pico_IO){ PICO_CLEAR });
-    pico_output((Pico_IO) { PICO_DRAW_TEXT,.Draw_Text={{0,0},"Uma frase bem grande"} });
-    pico_input((Pico_IO){ PICO_DELAY, .Delay=2000 });
-
     // PAN
+
+#endif
+    for (int i=0; i<10; i++) {
+        pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={i,0} });
+        pico_output((Pico_IO){ PICO_CLEAR });
+        pico_output((Pico_IO) { PICO_DRAW_TEXT,.Draw_Text={{0,0},"Uma frase bem grande"} });
+        pico_input((Pico_IO){ PICO_DELAY, .Delay=500 });
+    }
+
+    for (int i=0; i<20; i++) {
+        pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={10-i,-i} });
+        pico_output((Pico_IO){ PICO_CLEAR });
+        pico_output((Pico_IO) { PICO_DRAW_TEXT,.Draw_Text={{0,0},"Uma frase bem grande"} });
+        pico_input((Pico_IO){ PICO_DELAY, .Delay=500 });
+    }
 
     return 0;
 }
