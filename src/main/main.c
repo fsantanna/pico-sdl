@@ -79,6 +79,9 @@ int main (void) {
         pico_output((Pico_IO){ PICO_CLEAR });
         //pico_output((Pico_IO) { PICO_DRAW_TEXT,.Draw_Text={{0,0},"X"} });
         pico_output((Pico_IO) { PICO_DRAW_RECT,.Draw_Rect={{0,0},{25,25}} });
+        pico_output((Pico_IO) { PICO_SET_COLOR_DRAW,.Set_Color_Draw={0xFF,0x00,0x00,0xFF} });
+        pico_output((Pico_IO) { PICO_DRAW_LINE,.Draw_Line={{0,0},{25,25}} });
+        pico_output((Pico_IO) { PICO_SET_COLOR_DRAW,.Set_Color_Draw={0xFF,0xFF,0xFF,0xFF} });
         pico_input((Pico_IO){ PICO_DELAY, .Delay=200 });
     }
 

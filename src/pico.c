@@ -256,6 +256,15 @@ void pico_output (Pico_IO out) {
             SDL_GetWindowSize(WIN, &out.Get_Size->_1, &out.Get_Size->_2);
             break;
 
+        case PICO_DRAW_LINE: {
+            int x1 = X(out.Draw_Line.p1._1);
+            int y1 = Y(out.Draw_Line.p1._2);
+            int x2 = X(out.Draw_Line.p2._1);
+            int y2 = Y(out.Draw_Line.p2._2);
+            SDL_RenderDrawLine(REN, x1,y1, x2,y2);
+            WIN_Present(0);
+            break;
+        }
         case PICO_DRAW_PIXEL: {
             SDL_RenderDrawPoint(REN, X(out.Draw_Pixel._1), Y(out.Draw_Pixel._2) );
             WIN_Present(0);

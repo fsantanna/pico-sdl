@@ -37,6 +37,7 @@ typedef enum {
 
     PICO_CLEAR,
 
+    PICO_DRAW_LINE,
     PICO_DRAW_PIXEL,
     PICO_DRAW_RECT,
     PICO_DRAW_TEXT,
@@ -79,6 +80,10 @@ typedef struct {
 
         // OUTPUT
 
+        struct {
+            Pico_2i p1;
+            Pico_2i p2;
+        } Draw_Line;
         Pico_2i Draw_Pixel;
         struct {
             Pico_2i pos;
