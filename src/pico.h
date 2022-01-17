@@ -63,7 +63,7 @@ typedef enum {
 } PICO_IO;
 
 typedef struct {
-    PICO_IO sub;
+    PICO_IO tag;
     union {
         // INPUT
 
@@ -74,8 +74,8 @@ typedef struct {
         } Event;
         struct {
             int type;
-            int timeout;
             SDL_Event* ret;
+            int timeout;
         } Event_Timeout;
 
         // OUTPUT

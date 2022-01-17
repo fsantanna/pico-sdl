@@ -194,7 +194,7 @@ static int event (SDL_Event* e, int xp) {
 }
 
 int pico_input (Pico_IO inp) {
-    switch (inp.sub) {
+    switch (inp.tag) {
         case PICO_DELAY:
             while (1) {
                 int old = SDL_GetTicks();
@@ -234,7 +234,7 @@ int pico_input (Pico_IO inp) {
 }
 
 void pico_output (Pico_IO out) {
-    switch (out.sub) {
+    switch (out.tag) {
         case PICO_CLEAR:
             SDL_SetRenderDrawColor (REN,
                 SET_COLOR_CLEAR._1,
@@ -367,7 +367,7 @@ void pico_output (Pico_IO out) {
         case PICO_WRITE:
         case PICO_WRITELN: {
             if (strlen(out.Write) == 0) {
-                if (out.sub == PICO_WRITELN) {
+                if (out.tag == PICO_WRITELN) {
                     CUR_CURSOR._1 = SET_CURSOR._1;
                     CUR_CURSOR._2 -= FNT_H;
                 }
@@ -390,7 +390,7 @@ void pico_output (Pico_IO out) {
             WIN_Present(0);
 
             CUR_CURSOR._1 += w;
-            if (out.sub == PICO_WRITELN) {
+            if (out.tag == PICO_WRITELN) {
                 CUR_CURSOR._1 = SET_CURSOR._1;
                 CUR_CURSOR._2 -= FNT_H;
             }
