@@ -19,32 +19,31 @@ typedef struct {
 } Pico_4i;
 
 typedef enum {
-    Left, Center, Right
+    Left=1, Center, Right
 } HAnchor;
 
 typedef enum {
-    Top, Middle, Bottom
+    Bottom=1, Middle, Top
 } VAnchor;
 
 typedef enum {
     // INPUT
 
-    PICO_DELAY,
+    PICO_DELAY = 1,
     PICO_EVENT,
     PICO_EVENT_TIMEOUT,
 
     // OUTPUT
 
+    PICO_PRESENT,
     PICO_CLEAR,
 
-    PICO_DRAW_LINE,
     PICO_DRAW_PIXEL,
+    PICO_DRAW_LINE,
     PICO_DRAW_RECT,
     PICO_DRAW_TEXT,
 
     PICO_GET_SIZE,
-
-    PICO_PRESENT,
 
     PICO_SET_ANCHOR,
     PICO_SET_AUTO,
@@ -68,13 +67,9 @@ typedef struct {
         // INPUT
 
         int Delay;
+        int Event;
         struct {
             int type;
-            SDL_Event* ret;
-        } Event;
-        struct {
-            int type;
-            SDL_Event* ret;
             int timeout;
         } Event_Timeout;
 
@@ -118,5 +113,5 @@ typedef struct {
 
 void pico_open   ();
 void pico_close  ();
-int  pico_input  (Pico_IO inp);
+int pico_input   (SDL_Event* out, Pico_IO inp);
 void pico_output (Pico_IO out);

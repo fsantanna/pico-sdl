@@ -193,7 +193,7 @@ static int event (SDL_Event* e, int xp) {
     return 1;
 }
 
-int pico_input (Pico_IO inp) {
+int pico_input (SDL_Event* out, Pico_IO inp) {
     switch (inp.tag) {
         case PICO_DELAY:
             while (1) {
@@ -210,19 +210,19 @@ int pico_input (Pico_IO inp) {
 
         case PICO_EVENT:
             while (1) {
-                SDL_WaitEvent(inp.Event.ret);
-                if (event(inp.Event.ret, inp.Event.type)) {
+                SDL_WaitEvent(out);
+                if (event(out, inp.Event)) {
                     return 1;
                 }
             }
 
         case PICO_EVENT_TIMEOUT:
             while (1) {
-                int has = SDL_WaitEventTimeout(inp.Event_Timeout.ret, inp.Event_Timeout.timeout);
+                int has = SDL_WaitEventTimeout(out, inp.Event_Timeout.timeout);
                 if (!has) {
                     return 0;
                 }
-                if (event(inp.Event_Timeout.ret, inp.Event.type)) {
+                if (event(out, inp.Event_Timeout.type)) {
                     return 1;
                 }
             }
@@ -235,6 +235,9 @@ int pico_input (Pico_IO inp) {
 
 void pico_output (Pico_IO out) {
     switch (out.tag) {
+        case PICO_PRESENT:
+            WIN_Present(1);
+            break;
         case PICO_CLEAR:
             SDL_SetRenderDrawColor (REN,
                 SET_COLOR_CLEAR._1,
@@ -256,17 +259,17 @@ void pico_output (Pico_IO out) {
             SDL_GetWindowSize(WIN, &out.Get_Size->_1, &out.Get_Size->_2);
             break;
 
+        case PICO_DRAW_PIXEL: {
+            SDL_RenderDrawPoint(REN, X(out.Draw_Pixel._1), Y(out.Draw_Pixel._2) );
+            WIN_Present(0);
+            break;
+        }
         case PICO_DRAW_LINE: {
             int x1 = X(out.Draw_Line.p1._1);
             int y1 = Y(out.Draw_Line.p1._2);
             int x2 = X(out.Draw_Line.p2._1);
             int y2 = Y(out.Draw_Line.p2._2);
             SDL_RenderDrawLine(REN, x1,y1, x2,y2);
-            WIN_Present(0);
-            break;
-        }
-        case PICO_DRAW_PIXEL: {
-            SDL_RenderDrawPoint(REN, X(out.Draw_Pixel._1), Y(out.Draw_Pixel._2) );
             WIN_Present(0);
             break;
         }
@@ -303,10 +306,9 @@ void pico_output (Pico_IO out) {
             SDL_FreeSurface(sfc);
         }
 
-        case PICO_PRESENT:
-            WIN_Present(1);
+        case PICO_SET_ANCHOR:
+            SET_ANCHOR = out.Set_Anchor;
             break;
-
         case PICO_SET_AUTO:
             SET_AUTO = out.Set_Auto;
             break;
