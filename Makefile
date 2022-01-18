@@ -8,3 +8,5 @@ main: $(ALL) src/main/main.c
 
 src: $(ALL) src/main/$(SRC).c
 	gcc -g -o $(SRC) $^ $(CFLAGS) $(LIBS)
+
+.PHONY: main src

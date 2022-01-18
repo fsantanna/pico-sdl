@@ -304,6 +304,7 @@ void pico_output (Pico_IO out) {
 
             SDL_DestroyTexture(tex);
             SDL_FreeSurface(sfc);
+            break;
         }
 
         case PICO_SET_ANCHOR:
@@ -399,6 +400,7 @@ void pico_output (Pico_IO out) {
 
             SDL_DestroyTexture(tex);
             SDL_FreeSurface(sfc);
+            break;
         }
 
         default:
