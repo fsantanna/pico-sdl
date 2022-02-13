@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 
 #define _TITLE_ "pico-SDL"
 #define _WIN_ 510
@@ -42,6 +43,7 @@ typedef enum {
     PICO_DRAW_LINE,
     PICO_DRAW_RECT,
     PICO_DRAW_TEXT,
+    PICO_DRAW_IMAGE,
 
     PICO_GET_SIZE,
 
@@ -88,6 +90,10 @@ typedef struct {
             Pico_2i pos;
             const char* txt;
         } Draw_Text;
+        struct {
+            Pico_2i pos;
+            const char* path;
+        } Draw_Image;
 
         Pico_2i* Get_Size;
 

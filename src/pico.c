@@ -306,6 +306,27 @@ void pico_output (Pico_IO out) {
             SDL_FreeSurface(sfc);
             break;
         }
+        case PICO_DRAW_IMAGE: {
+            SDL_Texture* tex = IMG_LoadTexture(REN, out.Draw_Image.path);
+            pico_assert(tex != NULL);
+
+            SDL_Rect rct;
+            SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
+
+            // SCALE
+            rct.w = rct.w; // * GRAPHICS_SET_SCALE_W;
+            rct.h = rct.h; // * GRAPHICS_SET_SCALE_H;
+
+            // ANCHOR
+            rct.x = hanchor( X(out.Draw_Text.pos._1), rct.w );
+            rct.y = vanchor( Y(out.Draw_Text.pos._2), rct.h );
+
+            SDL_RenderCopy(REN, tex, NULL, &rct);
+            WIN_Present(0);
+
+            SDL_DestroyTexture(tex);
+            break;
+        }
 
         case PICO_SET_ANCHOR:
             SET_ANCHOR = out.Set_Anchor;

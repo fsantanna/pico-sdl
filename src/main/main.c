@@ -16,22 +16,28 @@ int main (void) {
 
     pico_input(NULL, (Pico_IO){ PICO_DELAY, .Delay=2000 });
 
+    // DRAW_IMAGE
+    pico_output((Pico_IO) { PICO_SET_ANCHOR, .Set_Anchor={Center,Middle} });
+    pico_output((Pico_IO) { PICO_DRAW_IMAGE, .Draw_Image={{0,0},"open.png"} });
+
+    pico_input(NULL, (Pico_IO){ PICO_DELAY, .Delay=2000 });
+
     // DRAW_PIXEL
-    pico_output((Pico_IO) { PICO_SET_COLOR_CLEAR,.Set_Color_Clear={0x00,0x00,0x00,0xFF} });
-    pico_output((Pico_IO) { PICO_SET_COLOR_DRAW,.Set_Color_Draw={0xFF,0xFF,0xFF,0xFF} });
+    pico_output((Pico_IO) { PICO_SET_COLOR_CLEAR, .Set_Color_Clear={0x00,0x00,0x00,0xFF} });
+    pico_output((Pico_IO) { PICO_SET_COLOR_DRAW, .Set_Color_Draw={0xFF,0xFF,0xFF,0xFF} });
     pico_output((Pico_IO) { PICO_CLEAR });
-    pico_output((Pico_IO) { PICO_DRAW_PIXEL,.Draw_Pixel={0,0} });
+    pico_output((Pico_IO) { PICO_DRAW_PIXEL, .Draw_Pixel={0,0} });
 
     pico_input(NULL, (Pico_IO){ PICO_DELAY, .Delay=2000 });
 
     // DRAW_TEXT
-    pico_output((Pico_IO) { PICO_DRAW_TEXT,.Draw_Text={{0,0},"Hello!"} });
+    pico_output((Pico_IO) { PICO_DRAW_TEXT, .Draw_Text={{0,0},"Hello!"} });
 
     pico_input(NULL, (Pico_IO){ PICO_DELAY, .Delay=2000 });
     pico_output((Pico_IO) { PICO_CLEAR });
 
     // WRITE
-    pico_output((Pico_IO) { PICO_SET_CURSOR,.Set_Cursor={-25,25} });
+    pico_output((Pico_IO) { PICO_SET_CURSOR, .Set_Cursor={-25,25} });
     pico_output((Pico_IO) { PICO_WRITE,   .Write="1 " });
     pico_output((Pico_IO) { PICO_WRITE,   .Write="2 " });
     pico_output((Pico_IO) { PICO_WRITELN, .Write="3" });
