@@ -183,6 +183,8 @@ static int event (SDL_Event* e, int xp) {
 
     switch (e->type) {
         case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+        case SDL_MOUSEMOTION:
             // for some reason, e->button uses physical, not logical screen
             e->button.x = _X(PHY_LOG_X(e->button.x));
             e->button.y = _Y(PHY_LOG_Y(e->button.y));
