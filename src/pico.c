@@ -70,7 +70,7 @@ static int hanchor (int x, int w) {
         case Right:
             return x - w + 1;
     }
-    assert(0);
+    assert(0 && "bug found");
 }
 
 static int vanchor (int y, int h) {
@@ -82,7 +82,7 @@ static int vanchor (int y, int h) {
         case Bottom:
             return y - h + 1;
     }
-    assert(0);
+    assert(0 && "bug found");
 }
 
 void pico_open (void) {
@@ -116,6 +116,16 @@ void pico_close (void) {
     SDL_Quit();
 }
 
+// Pre-handles input from environment:
+//  - SDL_QUIT: quit
+//  - CTRL_-/=: zoom
+//  - CTRL_L/R/U/D: pan
+//  - receives:
+//      - e:  actual input
+//      - xp: input I was expecting
+//  - returns
+//      - 1: if e matches xp
+//      - 0: otherwise
 static int event (SDL_Event* e, int xp) {
     switch (e->type) {
         case SDL_QUIT:
@@ -175,12 +185,28 @@ static int event (SDL_Event* e, int xp) {
             }
         }
 #endif
+        default:
+            // others are not handled automatically
+            break;
     }
 
-    if (xp!=SDL_ANY && xp!=e->type) {
-        return 0;
+    if (xp == e->type) {
+        // OK
+    } else if (xp == SDL_ANY) {
+        // MAYBE
+        if (e->type==SDL_KEYDOWN       || e->type==SDL_MOUSEBUTTONDOWN ||
+            e->type==SDL_MOUSEBUTTONUP || e->type==SDL_MOUSEMOTION) {
+            // OK
+        } else {
+            // NO
+            return 0;   // not the one I was expecting
+        }
+    } else {
+        // NO
+        return 0;   // not the one I was expecting
     }
 
+    // adjusts SDL -> logical positions
     switch (e->type) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
@@ -195,6 +221,10 @@ static int event (SDL_Event* e, int xp) {
     return 1;
 }
 
+// Wait until "inp" occurs.
+// Saves occurred result to "out".
+// 1 = event expected
+// 0 = timeout
 int pico_input (SDL_Event* out, Pico_IO inp) {
     switch (inp.tag) {
         case PICO_DELAY:
@@ -202,12 +232,14 @@ int pico_input (SDL_Event* out, Pico_IO inp) {
                 int old = SDL_GetTicks();
                 SDL_Event e;
                 int has = SDL_WaitEventTimeout(&e, inp.Delay);
-                if (!has) {
-                    return 0;
+                if (has) {
+                    event(&e, SDL_ANY);
                 }
-                event(&e, SDL_ANY);
                 int dt = SDL_GetTicks() - old;
                 inp.Delay -= dt;
+                if (inp.Delay <= 0) {
+                    return 1;
+                }
             }
 
         case PICO_EVENT:
@@ -232,7 +264,7 @@ int pico_input (SDL_Event* out, Pico_IO inp) {
         default:
             break;
     }
-    assert(0);
+    assert(0 && "bug found");
 }
 
 void pico_output (Pico_IO out) {
@@ -427,6 +459,7 @@ void pico_output (Pico_IO out) {
         }
 
         default:
+            assert(0 && "bug found");
             break;
     }
 }
