@@ -28,53 +28,54 @@ typedef enum {
 } VAnchor;
 
 typedef enum {
-    // INPUT
-
     PICO_INPUT = 1,
-
-    // OUTPUT
-
-    PICO_PRESENT,
-    PICO_CLEAR,
-
-    PICO_DRAW_PIXEL,
-    PICO_DRAW_LINE,
-    PICO_DRAW_RECT,
-    PICO_DRAW_TEXT,
-    PICO_DRAW_IMAGE,
-
-    PICO_GET_SIZE,
-
-    PICO_SET_ANCHOR,
-    PICO_SET_AUTO,
-    PICO_SET_COLOR_CLEAR,
-    PICO_SET_COLOR_DRAW,
-    PICO_SET_CURSOR,
-    PICO_SET_FONT,
-    PICO_SET_GRID,
-    PICO_SET_PAN,
-    PICO_SET_SIZE,
-    PICO_SET_TITLE,
-    PICO_SET_ZOOM,
-
-    PICO_WRITE,
-    PICO_WRITELN
+    PICO_OUTPUT,
 } PICO;
 
-enum {
+typedef enum {
     PICO_INPUT_DELAY = 1,
     PICO_INPUT_EVENT
 } PICO_Input;
 
-enum {
+typedef enum {
     PICO_INPUT_EVENT_FOREVER = 1,
     PICO_INPUT_EVENT_TIMEOUT
 } PICO_Input_Event;
 
+typedef enum {
+    PICO_OUTPUT_DRAW_PIXEL = 1,
+    PICO_OUTPUT_DRAW_LINE,
+    PICO_OUTPUT_DRAW_RECT,
+    PICO_OUTPUT_DRAW_TEXT,
+    PICO_OUTPUT_DRAW_IMAGE
+} PICO_Output_Draw;
+
+typedef enum {
+    PICO_OUTPUT_PRESENT = 1,
+    PICO_OUTPUT_CLEAR,
+    PICO_OUTPUT_DRAW,
+
+    PICO_OUTPUT_GET_SIZE,
+
+    PICO_OUTPUT_SET_ANCHOR,
+    PICO_OUTPUT_SET_AUTO,
+    PICO_OUTPUT_SET_COLOR_CLEAR,
+    PICO_OUTPUT_SET_COLOR_DRAW,
+    PICO_OUTPUT_SET_CURSOR,
+    PICO_OUTPUT_SET_FONT,
+    PICO_OUTPUT_SET_GRID,
+    PICO_OUTPUT_SET_PAN,
+    PICO_OUTPUT_SET_SIZE,
+    PICO_OUTPUT_SET_TITLE,
+    PICO_OUTPUT_SET_ZOOM,
+
+    PICO_OUTPUT_WRITE,
+    PICO_OUTPUT_WRITELN
+} PICO_Output;
+
 typedef struct {
     union {
         // INPUT
-
         struct {
             union {
                 int Delay;
@@ -89,49 +90,56 @@ typedef struct {
                     int tag;
                 } Event;
             };
-            int tag;
+            PICO_Input tag;
         } Input;
 
         // OUTPUT
-
         struct {
-            Pico_2i p1;
-            Pico_2i p2;
-        } Draw_Line;
-        Pico_2i Draw_Pixel;
-        struct {
-            Pico_2i pos;
-            Pico_2i size;
-        } Draw_Rect;
-        struct {
-            Pico_2i pos;
-            const char* txt;
-        } Draw_Text;
-        struct {
-            Pico_2i pos;
-            const char* path;
-        } Draw_Image;
-
-        Pico_2i* Get_Size;
-
-        Pico_2i Set_Anchor;
-        int     Set_Auto;
-        Pico_4i Set_Color_Clear;
-        Pico_4i Set_Color_Draw;
-        Pico_2i Set_Cursor;
-        int     Set_Grid;
-        struct {
-            char* file;
-            int height;
-        } Set_Font;
-        Pico_2i Set_Pan;
-        Pico_2i Set_Size;
-        char* Set_Title;
-        Pico_2i Set_Zoom;
-
-        char* Write;
-        char* WriteLn;
+            union {
+                struct {
+                    union {
+                        struct {
+                            Pico_2i p1;
+                            Pico_2i p2;
+                        } Line;
+                        Pico_2i Pixel;
+                        struct {
+                            Pico_2i pos;
+                            Pico_2i size;
+                        } Rect;
+                        struct {
+                            Pico_2i pos;
+                            const char* txt;
+                        } Text;
+                        struct {
+                            Pico_2i pos;
+                            const char* path;
+                        } Image;
+                    };
+                    PICO_Output_Draw tag;
+                } Draw;
+                Pico_2i* Get_Size;
+                Pico_2i Set_Anchor;
+                int     Set_Auto;
+                Pico_4i Set_Color_Clear;
+                Pico_4i Set_Color_Draw;
+                Pico_2i Set_Cursor;
+                int     Set_Grid;
+                struct {
+                    char* file;
+                    int height;
+                } Set_Font;
+                Pico_2i Set_Pan;
+                Pico_2i Set_Size;
+                char* Set_Title;
+                Pico_2i Set_Zoom;
+                char* Write;
+                char* WriteLn;
+            };
+            PICO_Output tag;
+        } Output;
     };
+
     PICO tag;
 } Pico;
 
