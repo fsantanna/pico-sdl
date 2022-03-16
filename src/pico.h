@@ -69,13 +69,17 @@ typedef enum {
 } PICO_Output_Set;
 
 typedef enum {
+    PICO_OUTPUT_WRITE_NORM = 1,
+    PICO_OUTPUT_WRITE_LINE
+} PICO_Output_Write;
+
+typedef enum {
     PICO_OUTPUT_PRESENT = 1,
     PICO_OUTPUT_CLEAR,
     PICO_OUTPUT_DRAW,
     PICO_OUTPUT_GET,
     PICO_OUTPUT_SET,
-    PICO_OUTPUT_WRITE,
-    PICO_OUTPUT_WRITELN
+    PICO_OUTPUT_WRITE
 } PICO_Output;
 
 typedef struct {
@@ -148,8 +152,13 @@ typedef struct {
                     };
                     PICO_Output_Set tag;
                 } Set;
-                char* Write;
-                char* WriteLn;
+                struct {
+                    union {
+                        char* Norm;
+                        char* Line;
+                    };
+                    PICO_Output_Write tag;
+                } Write;
             };
             PICO_Output tag;
         } Output;

@@ -546,10 +546,9 @@ void pico_output (Pico out) {
             }
             break;
 
-        case PICO_OUTPUT_WRITE:
-        case PICO_OUTPUT_WRITELN: {
-            if (strlen(out.Output.Write) == 0) {
-                if (out.Output.tag == PICO_OUTPUT_WRITELN) {
+        case PICO_OUTPUT_WRITE: {
+            if (strlen(out.Output.Write.Norm) == 0) {
+                if (out.Output.Write.tag == PICO_OUTPUT_WRITE_LINE) {
                     CUR_CURSOR._1 = SET_CURSOR._1;
                     CUR_CURSOR._2 -= FNT_H;
                 }
@@ -557,7 +556,7 @@ void pico_output (Pico out) {
             }
 
             SDL_Surface* sfc = TTF_RenderText_Blended (
-                FNT, out.Output.Write,
+                FNT, out.Output.Write.Norm,
                 (SDL_Color) { SET_COLOR_DRAW._1, SET_COLOR_DRAW._2,
                               SET_COLOR_DRAW._3, SET_COLOR_DRAW._4 }
             );
@@ -566,13 +565,13 @@ void pico_output (Pico out) {
             pico_assert(tex != NULL);
 
             int w, h;
-            TTF_SizeText(FNT, out.Output.Write, &w,&h);
+            TTF_SizeText(FNT, out.Output.Write.Norm, &w,&h);
             SDL_Rect rct = { X(CUR_CURSOR._1),Y(CUR_CURSOR._2), w,h };
             SDL_RenderCopy(REN, tex, NULL, &rct);
             WIN_Present(0);
 
             CUR_CURSOR._1 += w;
-            if (out.Output.tag == PICO_OUTPUT_WRITELN) {
+            if (out.Output.Write.tag == PICO_OUTPUT_WRITE_LINE) {
                 CUR_CURSOR._1 = SET_CURSOR._1;
                 CUR_CURSOR._2 -= FNT_H;
             }
