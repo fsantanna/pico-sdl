@@ -100,10 +100,10 @@ void pico_open (void) {
 
     TTF_Init();
 
-    pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={SET_SIZE._1,SET_SIZE._2}});
-    pico_output((Pico_IO){ PICO_SET_ZOOM,.Set_Zoom={SET_ZOOM._1,SET_ZOOM._2}});
-    pico_output((Pico_IO){ PICO_SET_FONT,.Set_Font={"tiny.ttf",SET_SIZE._1/50} });
-    //pico_output((Pico_IO){ PICO_CLEAR });
+    pico_output((Pico){ .tag=PICO_SET_SIZE,.Set_Size={SET_SIZE._1,SET_SIZE._2}});
+    pico_output((Pico){ .tag=PICO_SET_ZOOM,.Set_Zoom={SET_ZOOM._1,SET_ZOOM._2}});
+    pico_output((Pico){ .tag=PICO_SET_FONT,.Set_Font={"tiny.ttf",SET_SIZE._1/50} });
+    //pico_output((Pico){ PICO_CLEAR });
 
     //SDL_Delay(1000);
     //SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
@@ -140,37 +140,37 @@ static int event (SDL_Event* e, int xp) {
                 case SDLK_MINUS: {
                     int x = SET_ZOOM._1;
                     int y = SET_ZOOM._2;
-                    pico_output((Pico_IO){ PICO_SET_ZOOM,.Set_Zoom={x+5,y+5} });
+                    pico_output((Pico){ .tag=PICO_SET_ZOOM,.Set_Zoom={x+5,y+5} });
                     break;
                 }
                 case SDLK_EQUALS: {
                     int x = SET_ZOOM._1;
                     int y = SET_ZOOM._2;
-                    pico_output((Pico_IO){ PICO_SET_ZOOM,.Set_Zoom={x-5,y-5} });
+                    pico_output((Pico){ .tag=PICO_SET_ZOOM,.Set_Zoom={x-5,y-5} });
                     break;
                 }
                 case SDLK_LEFT: {
                     int x = SET_PAN._1;
                     int y = SET_PAN._2;
-                    pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={x-5,y} });
+                    pico_output((Pico){ .tag=PICO_SET_PAN,.Set_Pan={x-5,y} });
                     break;
                 }
                 case SDLK_RIGHT: {
                     int x = SET_PAN._1;
                     int y = SET_PAN._2;
-                    pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={x+5,y} });
+                    pico_output((Pico){ .tag=PICO_SET_PAN,.Set_Pan={x+5,y} });
                     break;
                 }
                 case SDLK_UP: {
                     int x = SET_PAN._1;
                     int y = SET_PAN._2;
-                    pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={x,y-5} });
+                    pico_output((Pico){ .tag=PICO_SET_PAN,.Set_Pan={x,y-5} });
                     break;
                 }
                 case SDLK_DOWN: {
                     int x = SET_PAN._1;
                     int y = SET_PAN._2;
-                    pico_output((Pico_IO){ PICO_SET_PAN,.Set_Pan={x,y+5} });
+                    pico_output((Pico){ .tag=PICO_SET_PAN,.Set_Pan={x,y+5} });
                     break;
                 }
             }
@@ -179,7 +179,7 @@ static int event (SDL_Event* e, int xp) {
 #if 0
         case SDL_WINDOWEVENT: {
             if (e->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                pico_output((Pico_IO){ PICO_SET_SIZE,.Set_Size={e->window.data1,e->window.data2}});
+                pico_output((Pico){ PICO_SET_SIZE,.Set_Size={e->window.data1,e->window.data2}});
                 return 0;
                 break;
             }
@@ -225,49 +225,58 @@ static int event (SDL_Event* e, int xp) {
 // Saves occurred result to "out".
 // 1 = event expected
 // 0 = timeout
-int pico_input (SDL_Event* out, Pico_IO inp) {
-    switch (inp.tag) {
-        case PICO_DELAY:
+int pico_input (SDL_Event* out, Pico inp) {
+    assert(inp.tag == PICO_INPUT);
+    switch (inp.Input.tag) {
+        case PICO_INPUT_DELAY:
             while (1) {
                 int old = SDL_GetTicks();
                 SDL_Event e;
-                int has = SDL_WaitEventTimeout(&e, inp.Delay);
+                int has = SDL_WaitEventTimeout(&e, inp.Input.Delay);
                 if (has) {
                     event(&e, SDL_ANY);
                 }
                 int dt = SDL_GetTicks() - old;
-                inp.Delay -= dt;
-                if (inp.Delay <= 0) {
+                inp.Input.Delay -= dt;
+                if (inp.Input.Delay <= 0) {
                     return 1;
                 }
             }
+            break;
 
-        case PICO_EVENT:
-            while (1) {
-                SDL_WaitEvent(out);
-                if (event(out, inp.Event)) {
-                    return 1;
-                }
+        case PICO_INPUT_EVENT:
+            switch (inp.Input.Event.tag) {
+                case PICO_INPUT_EVENT_FOREVER:
+                    while (1) {
+                        SDL_WaitEvent(out);
+                        if (event(out, inp.Input.Event.type)) {
+                            return 1;
+                        }
+                    }
+                    break;
+                case PICO_INPUT_EVENT_TIMEOUT:
+                    while (1) {
+                        int has = SDL_WaitEventTimeout(out, inp.Input.Event.Timeout.timeout);
+                        if (!has) {
+                            return 0;
+                        }
+                        if (event(out, inp.Input.Event.Timeout.type)) {
+                            return 1;
+                        }
+                    }
+                    break;
+                default:
+                    assert(0 && "bug found");
             }
-
-        case PICO_EVENT_TIMEOUT:
-            while (1) {
-                int has = SDL_WaitEventTimeout(out, inp.Event_Timeout.timeout);
-                if (!has) {
-                    return 0;
-                }
-                if (event(out, inp.Event_Timeout.type)) {
-                    return 1;
-                }
-            }
+            break;
 
         default:
-            break;
+            assert(0 && "bug found");
     }
     assert(0 && "bug found");
 }
 
-void pico_output (Pico_IO out) {
+void pico_output (Pico out) {
     switch (out.tag) {
         case PICO_PRESENT:
             WIN_Present(1);
@@ -400,7 +409,7 @@ void pico_output (Pico_IO out) {
         case PICO_SET_SIZE:
             SET_SIZE = out.Set_Size;
             SDL_SetWindowSize(WIN, SET_SIZE._1, SET_SIZE._2);
-            pico_output((Pico_IO){ PICO_SET_ZOOM, .Set_Zoom={SET_ZOOM._1,SET_ZOOM._2} });
+            pico_output((Pico){ .tag=PICO_SET_ZOOM, .Set_Zoom={SET_ZOOM._1,SET_ZOOM._2} });
             break;
         case PICO_SET_TITLE:
             SDL_SetWindowTitle(WIN, out.Set_Title);
@@ -418,7 +427,7 @@ void pico_output (Pico_IO out) {
             pico_assert(TEX != NULL);
             SDL_SetRenderTarget(REN, TEX);
             SDL_RenderSetLogicalSize(REN, w, h);
-            pico_output((Pico_IO){PICO_CLEAR});
+            pico_output((Pico){.tag=PICO_CLEAR});
             break;
         }
 

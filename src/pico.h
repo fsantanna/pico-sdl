@@ -30,9 +30,7 @@ typedef enum {
 typedef enum {
     // INPUT
 
-    PICO_DELAY = 1,
-    PICO_EVENT,
-    PICO_EVENT_TIMEOUT,
+    PICO_INPUT = 1,
 
     // OUTPUT
 
@@ -61,19 +59,38 @@ typedef enum {
 
     PICO_WRITE,
     PICO_WRITELN
-} PICO_IO;
+} PICO;
+
+enum {
+    PICO_INPUT_DELAY = 1,
+    PICO_INPUT_EVENT
+} PICO_Input;
+
+enum {
+    PICO_INPUT_EVENT_FOREVER = 1,
+    PICO_INPUT_EVENT_TIMEOUT
+} PICO_Input_Event;
 
 typedef struct {
-    PICO_IO tag;
     union {
         // INPUT
 
-        int Delay;
-        int Event;
         struct {
-            int type;
-            int timeout;
-        } Event_Timeout;
+            union {
+                int Delay;
+                struct {
+                    union {
+                        int type;
+                        struct {
+                            int type;
+                            int timeout;
+                        } Timeout;
+                    };
+                    int tag;
+                } Event;
+            };
+            int tag;
+        } Input;
 
         // OUTPUT
 
@@ -115,9 +132,10 @@ typedef struct {
         char* Write;
         char* WriteLn;
     };
-} Pico_IO;
+    PICO tag;
+} Pico;
 
 void pico_open   ();
 void pico_close  ();
-int pico_input   (SDL_Event* out, Pico_IO inp);
-void pico_output (Pico_IO out);
+int pico_input   (SDL_Event* out, Pico inp);
+void pico_output (Pico out);
