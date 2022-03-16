@@ -474,17 +474,23 @@ void pico_output (Pico out) {
                 case PICO_OUTPUT_SET_AUTO:
                     SET_AUTO = out.Output.Set.Auto;
                     break;
-                case PICO_OUTPUT_SET_COLOR_CLEAR:
-                    SET_COLOR_CLEAR = out.Output.Set.Color_Clear;
-                    break;
-                case PICO_OUTPUT_SET_COLOR_DRAW:
-                    SET_COLOR_DRAW = out.Output.Set.Color_Draw;
-                    SDL_SetRenderDrawColor (REN,
-                        SET_COLOR_DRAW._1,
-                        SET_COLOR_DRAW._2,
-                        SET_COLOR_DRAW._3,
-                        SET_COLOR_DRAW._4
-                    );
+                case PICO_OUTPUT_SET_COLOR:
+                    switch (out.Output.Set.Color.tag) {
+                        case PICO_OUTPUT_SET_COLOR_CLEAR:
+                            SET_COLOR_CLEAR = out.Output.Set.Color.Clear;
+                            break;
+                        case PICO_OUTPUT_SET_COLOR_DRAW:
+                            SET_COLOR_DRAW = out.Output.Set.Color.Draw;
+                            SDL_SetRenderDrawColor (REN,
+                                SET_COLOR_DRAW._1,
+                                SET_COLOR_DRAW._2,
+                                SET_COLOR_DRAW._3,
+                                SET_COLOR_DRAW._4
+                            );
+                            break;
+                        default:
+                            assert(0 && "bug found");
+                    }
                     break;
                 case PICO_OUTPUT_SET_CURSOR:
                     CUR_CURSOR = SET_CURSOR = out.Output.Set.Cursor;

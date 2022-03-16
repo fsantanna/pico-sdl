@@ -55,10 +55,14 @@ typedef enum {
 } PICO_Output_Get;
 
 typedef enum {
+    PICO_OUTPUT_SET_COLOR_CLEAR = 1,
+    PICO_OUTPUT_SET_COLOR_DRAW
+} PICO_Output_Set_Color;
+
+typedef enum {
     PICO_OUTPUT_SET_ANCHOR = 1,
     PICO_OUTPUT_SET_AUTO,
-    PICO_OUTPUT_SET_COLOR_CLEAR,
-    PICO_OUTPUT_SET_COLOR_DRAW,
+    PICO_OUTPUT_SET_COLOR,
     PICO_OUTPUT_SET_CURSOR,
     PICO_OUTPUT_SET_FONT,
     PICO_OUTPUT_SET_GRID,
@@ -137,8 +141,13 @@ typedef struct {
                     union {
                         Pico_2i Anchor;
                         int     Auto;
-                        Pico_4i Color_Clear;
-                        Pico_4i Color_Draw;
+                        struct {
+                            union {
+                                Pico_4i Clear;
+                                Pico_4i Draw;
+                            };
+                            PICO_Output_Set_Color tag;
+                        } Color;
                         Pico_2i Cursor;
                         int     Grid;
                         struct {
