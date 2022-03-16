@@ -51,13 +51,7 @@ typedef enum {
 } PICO_Output_Draw;
 
 typedef enum {
-    PICO_OUTPUT_PRESENT = 1,
-    PICO_OUTPUT_CLEAR,
-    PICO_OUTPUT_DRAW,
-
-    PICO_OUTPUT_GET_SIZE,
-
-    PICO_OUTPUT_SET_ANCHOR,
+    PICO_OUTPUT_SET_ANCHOR = 1,
     PICO_OUTPUT_SET_AUTO,
     PICO_OUTPUT_SET_COLOR_CLEAR,
     PICO_OUTPUT_SET_COLOR_DRAW,
@@ -68,7 +62,14 @@ typedef enum {
     PICO_OUTPUT_SET_SIZE,
     PICO_OUTPUT_SET_TITLE,
     PICO_OUTPUT_SET_ZOOM,
+} PICO_Output_Set;
 
+typedef enum {
+    PICO_OUTPUT_PRESENT = 1,
+    PICO_OUTPUT_CLEAR,
+    PICO_OUTPUT_DRAW,
+    PICO_OUTPUT_GET_SIZE,
+    PICO_OUTPUT_SET,
     PICO_OUTPUT_WRITE,
     PICO_OUTPUT_WRITELN
 } PICO_Output;
@@ -119,20 +120,25 @@ typedef struct {
                     PICO_Output_Draw tag;
                 } Draw;
                 Pico_2i* Get_Size;
-                Pico_2i Set_Anchor;
-                int     Set_Auto;
-                Pico_4i Set_Color_Clear;
-                Pico_4i Set_Color_Draw;
-                Pico_2i Set_Cursor;
-                int     Set_Grid;
                 struct {
-                    char* file;
-                    int height;
-                } Set_Font;
-                Pico_2i Set_Pan;
-                Pico_2i Set_Size;
-                char* Set_Title;
-                Pico_2i Set_Zoom;
+                    union {
+                        Pico_2i Anchor;
+                        int     Auto;
+                        Pico_4i Color_Clear;
+                        Pico_4i Color_Draw;
+                        Pico_2i Cursor;
+                        int     Grid;
+                        struct {
+                            char* file;
+                            int height;
+                        } Font;
+                        Pico_2i Pan;
+                        Pico_2i Size;
+                        char* Title;
+                        Pico_2i Zoom;
+                    };
+                    PICO_Output_Set tag;
+                } Set;
                 char* Write;
                 char* WriteLn;
             };

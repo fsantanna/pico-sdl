@@ -103,22 +103,31 @@ void pico_open (void) {
     pico_output((Pico) {
         .tag = PICO_OUTPUT,
         .Output = {
-            .tag = PICO_OUTPUT_SET_SIZE,
-            .Set_Size = { SET_SIZE._1,SET_SIZE._2 }
+            .tag = PICO_OUTPUT_SET,
+            .Set = {
+                .tag = PICO_OUTPUT_SET_SIZE,
+                .Size = { SET_SIZE._1,SET_SIZE._2 }
+            }
         }
     });
     pico_output((Pico) {
         .tag = PICO_OUTPUT,
         .Output = {
-            .tag = PICO_OUTPUT_SET_ZOOM,
-            .Set_Zoom = { SET_ZOOM._1, SET_ZOOM._2 }
+            .tag = PICO_OUTPUT_SET,
+            .Set = {
+                .tag = PICO_OUTPUT_SET_ZOOM,
+                .Zoom = { SET_ZOOM._1, SET_ZOOM._2 }
+            }
         }
     });
     pico_output((Pico) {
         .tag = PICO_OUTPUT,
         .Output = {
-            .tag = PICO_OUTPUT_SET_FONT,
-            .Set_Font = { "tiny.ttf", SET_SIZE._1/50 }
+            .tag = PICO_OUTPUT_SET,
+            .Set = {
+                .tag = PICO_OUTPUT_SET_FONT,
+                .Font = { "tiny.ttf", SET_SIZE._1/50 }
+            }
         }
     });
     //pico_output((Pico){ PICO_OUTPUT_CLEAR });
@@ -161,8 +170,11 @@ static int event (SDL_Event* e, int xp) {
                     pico_output((Pico) {
                         .tag = PICO_OUTPUT,
                         .Output = {
-                            .tag = PICO_OUTPUT_SET_ZOOM,
-                            .Set_Zoom = { x+5, y+5 }
+                            .tag = PICO_OUTPUT_SET,
+                            .Set = {
+                                .tag = PICO_OUTPUT_SET_ZOOM,
+                                .Zoom = { x+5, y+5 }
+                            }
                         }
                     });
                     break;
@@ -173,8 +185,11 @@ static int event (SDL_Event* e, int xp) {
                     pico_output((Pico) {
                         .tag = PICO_OUTPUT,
                         .Output = {
-                            .tag = PICO_OUTPUT_SET_ZOOM,
-                            .Set_Zoom = { x-5, y-5 }
+                            .tag = PICO_OUTPUT_SET,
+                            .Set = {
+                                .tag = PICO_OUTPUT_SET_ZOOM,
+                                .Zoom = { x-5, y-5 }
+                            }
                         }
                     });
                     break;
@@ -185,8 +200,11 @@ static int event (SDL_Event* e, int xp) {
                     pico_output((Pico) {
                         .tag = PICO_OUTPUT,
                         .Output = {
-                            .tag = PICO_OUTPUT_SET_PAN,
-                            .Set_Pan = { x-5, y }
+                            .tag = PICO_OUTPUT_SET,
+                            .Set = {
+                                .tag = PICO_OUTPUT_SET_PAN,
+                                .Pan = { x-5, y }
+                            }
                         }
                     });
                     break;
@@ -197,8 +215,11 @@ static int event (SDL_Event* e, int xp) {
                     pico_output((Pico) {
                         .tag = PICO_OUTPUT,
                         .Output = {
-                            .tag = PICO_OUTPUT_SET_PAN,
-                            .Set_Pan = { x+5, y }
+                            .tag = PICO_OUTPUT_SET,
+                            .Set = {
+                                .tag = PICO_OUTPUT_SET_PAN,
+                                .Pan = { x+5, y }
+                            }
                         }
                     });
                     break;
@@ -209,8 +230,11 @@ static int event (SDL_Event* e, int xp) {
                     pico_output((Pico) {
                         .tag = PICO_OUTPUT,
                         .Output = {
-                            .tag = PICO_OUTPUT_SET_PAN,
-                            .Set_Pan = { x, y-5 }
+                            .tag = PICO_OUTPUT_SET,
+                            .Set = {
+                                .tag = PICO_OUTPUT_SET_PAN,
+                                .Pan = { x, y-5 }
+                            }
                         }
                     });
                     break;
@@ -221,8 +245,11 @@ static int event (SDL_Event* e, int xp) {
                     pico_output((Pico) {
                         .tag = PICO_OUTPUT,
                         .Output = {
-                            .tag = PICO_OUTPUT_SET_PAN,
-                            .Set_Pan = { x, y+5 }
+                            .tag = PICO_OUTPUT_SET,
+                            .Set = {
+                                .tag = PICO_OUTPUT_SET_PAN,
+                                .Pan = { x, y+5 }
+                            }
                         }
                     });
                     break;
@@ -233,7 +260,7 @@ static int event (SDL_Event* e, int xp) {
 #if 0
         case SDL_WINDOWEVENT: {
             if (e->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                pico_output((Pico){ PICO_OUTPUT_SET_SIZE,.Set_Size={e->window.data1,e->window.data2}});
+                pico_output((Pico){ PICO_OUTPUT_SET_SIZE,.Set.Size={e->window.data1,e->window.data2}});
                 return 0;
                 break;
             }
@@ -433,77 +460,85 @@ void pico_output (Pico out) {
             SDL_GetWindowSize(WIN, &out.Output.Get_Size->_1, &out.Output.Get_Size->_2);
             break;
 
-
-        case PICO_OUTPUT_SET_ANCHOR:
-            SET_ANCHOR = out.Output.Set_Anchor;
-            break;
-        case PICO_OUTPUT_SET_AUTO:
-            SET_AUTO = out.Output.Set_Auto;
-            break;
-        case PICO_OUTPUT_SET_COLOR_CLEAR:
-            SET_COLOR_CLEAR = out.Output.Set_Color_Clear;
-            break;
-        case PICO_OUTPUT_SET_COLOR_DRAW:
-            SET_COLOR_DRAW = out.Output.Set_Color_Draw;
-            SDL_SetRenderDrawColor (REN,
-                SET_COLOR_DRAW._1,
-                SET_COLOR_DRAW._2,
-                SET_COLOR_DRAW._3,
-                SET_COLOR_DRAW._4
-            );
-            break;
-        case PICO_OUTPUT_SET_CURSOR:
-            CUR_CURSOR = SET_CURSOR = out.Output.Set_Cursor;
-            break;
-        case PICO_OUTPUT_SET_FONT:
-            FNT_H = out.Output.Set_Font.height;
-            if (FNT != NULL) {
-                TTF_CloseFont(FNT);
+        case PICO_OUTPUT_SET:
+            switch (out.Output.Set.tag) {
+                case PICO_OUTPUT_SET_ANCHOR:
+                    SET_ANCHOR = out.Output.Set.Anchor;
+                    break;
+                case PICO_OUTPUT_SET_AUTO:
+                    SET_AUTO = out.Output.Set.Auto;
+                    break;
+                case PICO_OUTPUT_SET_COLOR_CLEAR:
+                    SET_COLOR_CLEAR = out.Output.Set.Color_Clear;
+                    break;
+                case PICO_OUTPUT_SET_COLOR_DRAW:
+                    SET_COLOR_DRAW = out.Output.Set.Color_Draw;
+                    SDL_SetRenderDrawColor (REN,
+                        SET_COLOR_DRAW._1,
+                        SET_COLOR_DRAW._2,
+                        SET_COLOR_DRAW._3,
+                        SET_COLOR_DRAW._4
+                    );
+                    break;
+                case PICO_OUTPUT_SET_CURSOR:
+                    CUR_CURSOR = SET_CURSOR = out.Output.Set.Cursor;
+                    break;
+                case PICO_OUTPUT_SET_FONT:
+                    FNT_H = out.Output.Set.Font.height;
+                    if (FNT != NULL) {
+                        TTF_CloseFont(FNT);
+                    }
+                    FNT = TTF_OpenFont(out.Output.Set.Font.file, FNT_H);
+                    pico_assert(FNT != NULL);
+                    break;
+                case PICO_OUTPUT_SET_GRID:
+                    SET_GRID = out.Output.Set.Grid;
+                    break;
+                case PICO_OUTPUT_SET_PAN:
+                    SET_PAN = out.Output.Set.Pan;
+                    break;
+                case PICO_OUTPUT_SET_SIZE:
+                    SET_SIZE = out.Output.Set.Size;
+                    SDL_SetWindowSize(WIN, SET_SIZE._1, SET_SIZE._2);
+                    pico_output((Pico) {
+                        .tag = PICO_OUTPUT,
+                        .Output = {
+                            .tag = PICO_OUTPUT_SET,
+                            .Set = {
+                                .tag = PICO_OUTPUT_SET_ZOOM,
+                                .Zoom = { SET_ZOOM._1, SET_ZOOM._2 }
+                            }
+                        }
+                    });
+                    break;
+                case PICO_OUTPUT_SET_TITLE:
+                    SDL_SetWindowTitle(WIN, out.Output.Set.Title);
+                    break;
+                case PICO_OUTPUT_SET_ZOOM: {
+                    int w,h;
+                    SDL_GetWindowSize(WIN, &w, &h);
+                    SET_ZOOM = out.Output.Set.Zoom;
+                    w = MAX(1, w * SET_ZOOM._1 / 100);
+                    h = MAX(1, h * SET_ZOOM._2 / 100);
+                    TEX = SDL_CreateTexture (
+                            REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+                            w, h
+                    );
+                    pico_assert(TEX != NULL);
+                    SDL_SetRenderTarget(REN, TEX);
+                    SDL_RenderSetLogicalSize(REN, w, h);
+                    pico_output((Pico) {
+                        .tag = PICO_OUTPUT,
+                        .Output = {
+                            .tag = PICO_OUTPUT_CLEAR,
+                        }
+                    });
+                    break;
+                }
+                default:
+                    assert(0 && "bug found");
             }
-            FNT = TTF_OpenFont(out.Output.Set_Font.file, FNT_H);
-            pico_assert(FNT != NULL);
             break;
-        case PICO_OUTPUT_SET_GRID:
-            SET_GRID = out.Output.Set_Grid;
-            break;
-        case PICO_OUTPUT_SET_PAN:
-            SET_PAN = out.Output.Set_Pan;
-            break;
-        case PICO_OUTPUT_SET_SIZE:
-            SET_SIZE = out.Output.Set_Size;
-            SDL_SetWindowSize(WIN, SET_SIZE._1, SET_SIZE._2);
-            pico_output((Pico) {
-                .tag = PICO_OUTPUT,
-                .Output = {
-                    .tag = PICO_OUTPUT_SET_ZOOM,
-                    .Set_Zoom = { SET_ZOOM._1, SET_ZOOM._2 }
-                }
-            });
-            break;
-        case PICO_OUTPUT_SET_TITLE:
-            SDL_SetWindowTitle(WIN, out.Output.Set_Title);
-            break;
-        case PICO_OUTPUT_SET_ZOOM: {
-            int w,h;
-            SDL_GetWindowSize(WIN, &w, &h);
-            SET_ZOOM = out.Output.Set_Zoom;
-            w = MAX(1, w * SET_ZOOM._1 / 100);
-            h = MAX(1, h * SET_ZOOM._2 / 100);
-            TEX = SDL_CreateTexture (
-                    REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-                    w, h
-            );
-            pico_assert(TEX != NULL);
-            SDL_SetRenderTarget(REN, TEX);
-            SDL_RenderSetLogicalSize(REN, w, h);
-            pico_output((Pico) {
-                .tag = PICO_OUTPUT,
-                .Output = {
-                    .tag = PICO_OUTPUT_CLEAR,
-                }
-            });
-            break;
-        }
 
         case PICO_OUTPUT_WRITE:
         case PICO_OUTPUT_WRITELN: {
