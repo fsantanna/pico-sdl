@@ -51,6 +51,10 @@ typedef enum {
 } PICO_Output_Draw;
 
 typedef enum {
+    PICO_OUTPUT_GET_SIZE = 1,
+} PICO_Output_Get;
+
+typedef enum {
     PICO_OUTPUT_SET_ANCHOR = 1,
     PICO_OUTPUT_SET_AUTO,
     PICO_OUTPUT_SET_COLOR_CLEAR,
@@ -68,7 +72,7 @@ typedef enum {
     PICO_OUTPUT_PRESENT = 1,
     PICO_OUTPUT_CLEAR,
     PICO_OUTPUT_DRAW,
-    PICO_OUTPUT_GET_SIZE,
+    PICO_OUTPUT_GET,
     PICO_OUTPUT_SET,
     PICO_OUTPUT_WRITE,
     PICO_OUTPUT_WRITELN
@@ -119,7 +123,12 @@ typedef struct {
                     };
                     PICO_Output_Draw tag;
                 } Draw;
-                Pico_2i* Get_Size;
+                struct {
+                    union {
+                        Pico_2i* Size;
+                    };
+                    PICO_Output_Get tag;
+                } Get;
                 struct {
                     union {
                         Pico_2i Anchor;

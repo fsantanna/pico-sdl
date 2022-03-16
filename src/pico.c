@@ -456,8 +456,14 @@ void pico_output (Pico out) {
             }
             break;
 
-        case PICO_OUTPUT_GET_SIZE:
-            SDL_GetWindowSize(WIN, &out.Output.Get_Size->_1, &out.Output.Get_Size->_2);
+        case PICO_OUTPUT_GET:
+            switch (out.Output.Get.tag) {
+                case PICO_OUTPUT_GET_SIZE:
+                    SDL_GetWindowSize(WIN, &out.Output.Get.Size->_1, &out.Output.Get.Size->_2);
+                    break;
+                default:
+                    assert(0 && "bug found");
+            }
             break;
 
         case PICO_OUTPUT_SET:
