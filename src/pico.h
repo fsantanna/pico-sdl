@@ -51,7 +51,12 @@ typedef enum {
 } PICO_Output_Draw;
 
 typedef enum {
-    PICO_OUTPUT_GET_SIZE = 1,
+    PICO_OUTPUT_GET_SIZE_WINDOW = 1,
+    PICO_OUTPUT_GET_SIZE_IMAGE
+} PICO_Output_Get_Size;
+
+typedef enum {
+    PICO_OUTPUT_GET_SIZE = 1
 } PICO_Output_Get;
 
 typedef enum {
@@ -133,7 +138,16 @@ typedef struct {
                 } Draw;
                 struct {
                     union {
-                        Pico_2i* Size;
+                        struct {
+                            union {
+                                Pico_2i* Window;
+                                struct {
+                                    Pico_2i* size;
+                                    char* path;
+                                } Image;
+                            };
+                            PICO_Output_Get_Size tag;
+                        } Size;
                     };
                     PICO_Output_Get tag;
                 } Get;

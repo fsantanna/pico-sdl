@@ -458,9 +458,24 @@ void pico_output (Pico out) {
 
         case PICO_OUTPUT_GET:
             switch (out.Output.Get.tag) {
-                case PICO_OUTPUT_GET_SIZE:
-                    SDL_GetWindowSize(WIN, &out.Output.Get.Size->_1, &out.Output.Get.Size->_2);
+                case PICO_OUTPUT_GET_SIZE: {
+                    switch (out.Output.Get.Size.tag) {
+                        case PICO_OUTPUT_GET_SIZE_WINDOW:
+                            SDL_GetWindowSize(WIN, &out.Output.Get.Size.Window->_1, &out.Output.Get.Size.Window->_2);
+                            break;
+                        case PICO_OUTPUT_GET_SIZE_IMAGE: {
+                            SDL_Texture* tex = IMG_LoadTexture(REN, out.Output.Get.Size.Image.path);
+                            pico_assert(tex != NULL);
+                            SDL_Rect rct;
+                            SDL_QueryTexture(tex, NULL, NULL,
+                                &out.Output.Get.Size.Image.size->_1, &out.Output.Get.Size.Image.size->_2);
+                            break;
+                        }
+                        default:
+                            assert(0 && "bug found");
+                    }
                     break;
+                }
                 default:
                     assert(0 && "bug found");
             }
