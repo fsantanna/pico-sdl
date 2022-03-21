@@ -11,7 +11,7 @@ static int          FNT_H;
 
 #define X(x) ((x)+LOG_W/2-SET_PAN._1)
 #define Y(y) (LOG_H/2-(y)-SET_PAN._2)
-#define _X(x) ((x)-LOG_H/2+SET_PAN._1)
+#define _X(x) ((x)-LOG_W/2+SET_PAN._1)
 #define _Y(y) (LOG_H/2-(y)+SET_PAN._2)
 
 #define LOG_W (SET_SIZE._1*SET_ZOOM._1/100)
