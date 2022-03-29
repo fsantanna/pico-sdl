@@ -28,6 +28,7 @@ static int     SET_GRID        = 1;
 static Pico_2i SET_PAN         = {0,0};
 static Pico_2i SET_SIZE        = {_WIN_,_WIN_};
 static Pico_2i SET_ZOOM        = {10,10};
+static Pico_4i SET_IMAGE       = {0,0,0,0};
 
 static Pico_2i CUR_CURSOR      = {0,0};
 
@@ -521,6 +522,9 @@ void pico_output (Pico out) {
                 case PICO_OUTPUT_SET_GRID:
                     SET_GRID = out.Output.Set.Grid;
                     break;
+                case PICO_OUTPUT_SET_IMAGE:
+                    SET_IMAGE = out.Output.Set.Image;
+                    break;
                 case PICO_OUTPUT_SET_PAN:
                     SET_PAN = out.Output.Set.Pan;
                     break;
@@ -588,7 +592,12 @@ void pico_output (Pico out) {
             int w, h;
             TTF_SizeText(FNT, out.Output.Write.Norm, &w,&h);
             SDL_Rect rct = { X(CUR_CURSOR._1),Y(CUR_CURSOR._2), w,h };
-            SDL_RenderCopy(REN, tex, NULL, &rct);
+            if (SET_IMAGE._1==0 && SET_IMAGE._2==0 && SET_IMAGE._3==0 && SET_IMAGE._4==0) {
+                SDL_RenderCopy(REN, tex, NULL, &rct);
+            } else {
+assert(0);
+                SDL_RenderCopy(REN, tex, &SET_IMAGE, &rct);
+            }
             WIN_Present(0);
 
             CUR_CURSOR._1 += w;

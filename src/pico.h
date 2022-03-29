@@ -71,6 +71,7 @@ typedef enum {
     PICO_OUTPUT_SET_CURSOR,
     PICO_OUTPUT_SET_FONT,
     PICO_OUTPUT_SET_GRID,
+    PICO_OUTPUT_SET_IMAGE,
     PICO_OUTPUT_SET_PAN,
     PICO_OUTPUT_SET_SIZE,
     PICO_OUTPUT_SET_TITLE,
@@ -163,11 +164,12 @@ typedef struct {
                             PICO_Output_Set_Color tag;
                         } Color;
                         Pico_2i Cursor;
-                        int     Grid;
                         struct {
                             char* file;
                             int height;
                         } Font;
+                        int     Grid;
+                        Pico_4i Image;
                         Pico_2i Pan;
                         Pico_2i Size;
                         char* Title;
