@@ -25,10 +25,11 @@ static Pico_4i SET_COLOR_CLEAR = {0x00,0x00,0x00,0xFF};
 static Pico_4i SET_COLOR_DRAW  = {0xFF,0xFF,0xFF,0xFF};
 static Pico_2i SET_CURSOR      = {0,0};
 static int     SET_GRID        = 1;
+static Pico_4i SET_IMAGE_CROP  = {0,0,0,0};
+static Pico_2i SET_IMAGE_SIZE  = {0,0};
 static Pico_2i SET_PAN         = {0,0};
 static Pico_2i SET_SIZE        = {_WIN_,_WIN_};
 static Pico_2i SET_ZOOM        = {10,10};
-static Pico_4i SET_IMAGE       = {0,0,0,0};
 
 static Pico_2i CUR_CURSOR      = {0,0};
 
@@ -434,8 +435,23 @@ void pico_output (Pico out) {
                     SDL_Texture* tex = IMG_LoadTexture(REN, out.Output.Draw.Image.path);
                     pico_assert(tex != NULL);
 
+                    int defsize = (SET_IMAGE_SIZE._1==0 && SET_IMAGE_SIZE._2==0);
+                    int defcrop = (SET_IMAGE_CROP._1==0 && SET_IMAGE_CROP._2==0 && SET_IMAGE_CROP._3==0 && SET_IMAGE_CROP._4==0);
+
                     SDL_Rect rct;
-                    SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
+                    if (defsize) {
+                        SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
+                    } else {
+                        rct.w = SET_IMAGE_SIZE._1;
+                        rct.h = SET_IMAGE_SIZE._2;
+                    }
+
+                    SDL_Rect* crp;
+                    if (defcrop) {
+                        crp = NULL;
+                    } else {
+                        crp = (SDL_Rect*) &SET_IMAGE_CROP;
+                    }
 
                     // SCALE
                     rct.w = rct.w; // * GRAPHICS_SET_SCALE_W;
@@ -445,7 +461,8 @@ void pico_output (Pico out) {
                     rct.x = hanchor( X(out.Output.Draw.Image.pos._1), rct.w );
                     rct.y = vanchor( Y(out.Output.Draw.Image.pos._2), rct.h );
 
-                    SDL_RenderCopy(REN, tex, NULL, &rct);
+                    SDL_RenderCopy(REN, tex, crp, &rct);
+
                     WIN_Present(0);
 
                     SDL_DestroyTexture(tex);
@@ -523,7 +540,16 @@ void pico_output (Pico out) {
                     SET_GRID = out.Output.Set.Grid;
                     break;
                 case PICO_OUTPUT_SET_IMAGE:
-                    SET_IMAGE = out.Output.Set.Image;
+                    switch (out.Output.Set.Image.tag) {
+                        case PICO_OUTPUT_SET_IMAGE_CROP:
+                            SET_IMAGE_CROP = out.Output.Set.Image.Crop;
+                            break;
+                        case PICO_OUTPUT_SET_IMAGE_SIZE:
+                            SET_IMAGE_SIZE = out.Output.Set.Image.Size;
+                            break;
+                        default:
+                            assert(0 && "bug found");
+                    }
                     break;
                 case PICO_OUTPUT_SET_PAN:
                     SET_PAN = out.Output.Set.Pan;
@@ -592,12 +618,7 @@ void pico_output (Pico out) {
             int w, h;
             TTF_SizeText(FNT, out.Output.Write.Norm, &w,&h);
             SDL_Rect rct = { X(CUR_CURSOR._1),Y(CUR_CURSOR._2), w,h };
-            if (SET_IMAGE._1==0 && SET_IMAGE._2==0 && SET_IMAGE._3==0 && SET_IMAGE._4==0) {
-                SDL_RenderCopy(REN, tex, NULL, &rct);
-            } else {
-assert(0);
-                SDL_RenderCopy(REN, tex, &SET_IMAGE, &rct);
-            }
+            SDL_RenderCopy(REN, tex, NULL, &rct);
             WIN_Present(0);
 
             CUR_CURSOR._1 += w;

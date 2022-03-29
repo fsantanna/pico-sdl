@@ -65,6 +65,11 @@ typedef enum {
 } PICO_Output_Set_Color;
 
 typedef enum {
+    PICO_OUTPUT_SET_IMAGE_CROP = 1,
+    PICO_OUTPUT_SET_IMAGE_SIZE
+} PICO_Output_Set_Image;
+
+typedef enum {
     PICO_OUTPUT_SET_ANCHOR = 1,
     PICO_OUTPUT_SET_AUTO,
     PICO_OUTPUT_SET_COLOR,
@@ -169,7 +174,13 @@ typedef struct {
                             int height;
                         } Font;
                         int     Grid;
-                        Pico_4i Image;
+                        struct {
+                            union {
+                                Pico_4i Crop;
+                                Pico_2i Size;
+                            };
+                            PICO_Output_Set_Image tag;
+                        } Image;
                         Pico_2i Pan;
                         Pico_2i Size;
                         char* Title;
