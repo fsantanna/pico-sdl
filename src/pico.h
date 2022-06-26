@@ -97,7 +97,7 @@ typedef struct Pico_Input {
         int Delay;
         struct {
             union {
-                int type;
+                int type;   // TODO: type -> Forever
                 struct {
                     int type;
                     int timeout;
