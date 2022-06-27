@@ -606,3 +606,11 @@ void pico_output (Pico_Output out) {
             break;
     }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+int pico_isPointVsRect (SDL_Point pt, SDL_Rect r) {
+    int rw = r.w / 2;
+    int rh = r.h / 2;
+    return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
+}
