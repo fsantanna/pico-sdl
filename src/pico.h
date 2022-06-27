@@ -34,7 +34,8 @@ typedef enum {
 
 typedef enum {
     PICO_INPUT_EVENT_FOREVER = 1,
-    PICO_INPUT_EVENT_TIMEOUT
+    PICO_INPUT_EVENT_TIMEOUT,
+    PICO_INPUT_EVENT_POLL
 } PICO_Input_Event;
 
 typedef enum {

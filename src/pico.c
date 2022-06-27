@@ -301,6 +301,11 @@ int pico_input (SDL_Event* out, Pico_Input inp) {
 
         case PICO_INPUT_EVENT:
             switch (inp.Event.tag) {
+                case PICO_INPUT_EVENT_POLL: {
+                    int has = SDL_PollEvent(out);
+                    if (!has) return 0;
+                    return event(out, inp.Event.type);
+                }
                 case PICO_INPUT_EVENT_FOREVER:
                     while (1) {
                         SDL_WaitEvent(out);
