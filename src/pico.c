@@ -14,8 +14,8 @@ static int          FNT_H;
 #define _X(x) ((x)-LOG_W/2+SET_PAN._1)
 #define _Y(y) (LOG_H/2-(y)+SET_PAN._2)
 
-#define LOG_W (SET_SIZE._1*SET_ZOOM._1/100)
-#define LOG_H (SET_SIZE._2*SET_ZOOM._2/100)
+#define LOG_W (SET_SIZE._1/SET_PIXEL._1)
+#define LOG_H (SET_SIZE._2/SET_PIXEL._2)
 #define PHY_LOG_X(x) (x * LOG_W/SET_SIZE._1)
 #define PHY_LOG_Y(y) (y * LOG_H/SET_SIZE._2)
 
@@ -29,7 +29,7 @@ static Pico_4i SET_IMAGE_CROP  = {0,0,0,0};
 static Pico_2i SET_IMAGE_SIZE  = {0,0};
 static Pico_2i SET_PAN         = {0,0};
 static Pico_2i SET_SIZE        = {_WIN_,_WIN_};
-static Pico_2i SET_ZOOM        = {10,10};
+static Pico_2i SET_PIXEL       = {10,10};
 
 static Pico_2i CUR_CURSOR      = {0,0};
 
@@ -112,8 +112,8 @@ void pico_open (void) {
     pico_output((Pico_Output) {
         .tag = PICO_OUTPUT_SET,
         .Set = {
-            .tag = PICO_OUTPUT_SET_ZOOM,
-            .Zoom = { SET_ZOOM._1, SET_ZOOM._2 }
+            .tag = PICO_OUTPUT_SET_PIXEL,
+            .Pixel = { SET_PIXEL._1, SET_PIXEL._2 }
         }
     });
     pico_output((Pico_Output) {
@@ -138,7 +138,7 @@ void pico_close (void) {
 
 // Pre-handles input from environment:
 //  - SDL_QUIT: quit
-//  - CTRL_-/=: zoom
+//  - CTRL_-/=: pixel
 //  - CTRL_L/R/U/D: pan
 //  - receives:
 //      - e:  actual input
@@ -158,25 +158,25 @@ static int event (SDL_Event* e, int xp) {
             }
             switch (e->key.keysym.sym) {
                 case SDLK_MINUS: {
-                    int x = SET_ZOOM._1;
-                    int y = SET_ZOOM._2;
+                    int x = SET_PIXEL._1;
+                    int y = SET_PIXEL._2;
                     pico_output((Pico_Output) {
                         .tag = PICO_OUTPUT_SET,
                         .Set = {
-                            .tag = PICO_OUTPUT_SET_ZOOM,
-                            .Zoom = { x+5, y+5 }
+                            .tag = PICO_OUTPUT_SET_PIXEL,
+                            .Pixel = { x-1, y-1 }
                         }
                     });
                     break;
                 }
                 case SDLK_EQUALS: {
-                    int x = SET_ZOOM._1;
-                    int y = SET_ZOOM._2;
+                    int x = SET_PIXEL._1;
+                    int y = SET_PIXEL._2;
                     pico_output((Pico_Output) {
                         .tag = PICO_OUTPUT_SET,
                         .Set = {
-                            .tag = PICO_OUTPUT_SET_ZOOM,
-                            .Zoom = { x-5, y-5 }
+                            .tag = PICO_OUTPUT_SET_PIXEL,
+                            .Pixel = { x+1, y+1 }
                         }
                     });
                     break;
@@ -414,19 +414,24 @@ void pico_output (Pico_Output out) {
                     int defsize = (SET_IMAGE_SIZE._1==0 && SET_IMAGE_SIZE._2==0);
                     int defcrop = (SET_IMAGE_CROP._1==0 && SET_IMAGE_CROP._2==0 && SET_IMAGE_CROP._3==0 && SET_IMAGE_CROP._4==0);
 
-                    SDL_Rect rct;
-                    if (defsize) {
-                        SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
-                    } else {
-                        rct.w = SET_IMAGE_SIZE._1;
-                        rct.h = SET_IMAGE_SIZE._2;
-                    }
-
                     SDL_Rect* crp;
                     if (defcrop) {
                         crp = NULL;
                     } else {
                         crp = (SDL_Rect*) &SET_IMAGE_CROP;
+                    }
+
+                    SDL_Rect rct;
+                    if (defsize) {
+                        if (defcrop) {
+                            SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
+                        } else {
+                            rct.w = crp->w;
+                            rct.h = crp->h;
+                        }
+                    } else {
+                        rct.w = SET_IMAGE_SIZE._1;
+                        rct.h = SET_IMAGE_SIZE._2;
                     }
 
                     // SCALE
@@ -535,20 +540,20 @@ void pico_output (Pico_Output out) {
                     pico_output((Pico_Output) {
                         .tag = PICO_OUTPUT_SET,
                         .Set = {
-                            .tag = PICO_OUTPUT_SET_ZOOM,
-                            .Zoom = { SET_ZOOM._1, SET_ZOOM._2 }
+                            .tag = PICO_OUTPUT_SET_PIXEL,
+                            .Pixel = { SET_PIXEL._1, SET_PIXEL._2 }
                         }
                     });
                     break;
                 case PICO_OUTPUT_SET_TITLE:
                     SDL_SetWindowTitle(WIN, out.Set.Title);
                     break;
-                case PICO_OUTPUT_SET_ZOOM: {
+                case PICO_OUTPUT_SET_PIXEL: {
                     int w,h;
                     SDL_GetWindowSize(WIN, &w, &h);
-                    SET_ZOOM = out.Set.Zoom;
-                    w = MAX(1, w * SET_ZOOM._1 / 100);
-                    h = MAX(1, h * SET_ZOOM._2 / 100);
+                    SET_PIXEL = out.Set.Pixel;
+                    w = MAX(1, w/SET_PIXEL._1);
+                    h = MAX(1, h/SET_PIXEL._2);
                     TEX = SDL_CreateTexture (
                             REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
                             w, h

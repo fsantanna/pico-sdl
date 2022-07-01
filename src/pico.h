@@ -12,21 +12,37 @@
 #define pico_input_event_poll(inp,evt) \
     pico_input(inp, (Pico_Input){ .tag=PICO_INPUT_EVENT, .Event={.tag=PICO_INPUT_EVENT_POLL,.type=evt} });
 
-#define pico_output_set_auto(v)             \
+#define pico_output_set_auto(v) \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_AUTO,.Auto=v} });
-#define pico_output_set_color_clear(r,g,b)  \
+#define pico_output_set_color_clear_rgb(r,g,b) \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_COLOR,.Color={.tag=PICO_OUTPUT_SET_COLOR_CLEAR,.Clear=(Pico_4i){r,g,b,0xFF}}} });
-#define pico_output_set_color_draw(r,g,b)   \
+#define pico_output_set_color_draw_rgb(r,g,b) \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_COLOR,.Color={.tag=PICO_OUTPUT_SET_COLOR_DRAW,.Draw=(Pico_4i){r,g,b,0xFF}}} });
+#define pico_output_set_grid(v) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_GRID,.Grid=v} });
+#define pico_output_set_image_crop(rct) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_IMAGE,.Image={.tag=PICO_OUTPUT_SET_IMAGE_CROP,.Crop=rct}} });
+#define pico_output_set_image_crop_xywh(x,y,w,h) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_IMAGE,.Image={.tag=PICO_OUTPUT_SET_IMAGE_CROP,.Crop=(Pico_4i){x,y,w,h}}} });
+#define pico_output_set_image_size_wh(w,h) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_IMAGE,.Image={.tag=PICO_OUTPUT_SET_IMAGE_SIZE,.Size=(Pico_2i){w,h}}} });
+#define pico_output_set_size_wh(w,h) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_SIZE,.Size=(Pico_2i){w,h}} });
+#define pico_output_set_pixel_xy(x,y) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_PIXEL,.Pixel=(Pico_2i){x,y}} });
 
-#define pico_output_clear()             \
+#define pico_output_clear() \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_CLEAR })
-#define pico_output_present()           \
+#define pico_output_present() \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_PRESENT })
-#define pico_output_draw_pixel(v)       \
+#define pico_output_draw_pixel(v) \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_PIXEL, .Pixel=v}})
-#define pico_output_draw_rect(pos,dim)  \
+#define pico_output_draw_pixel_xy(x,y) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_PIXEL, .Pixel=(Pico_2i){x,y}}})
+#define pico_output_draw_rect(pos,dim) \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_RECT, .Rect={pos,dim}}})
+#define pico_output_draw_image(pos,path) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_IMAGE, .Image={pos,path}}})
 
 typedef unsigned char u8;
 
@@ -93,9 +109,9 @@ typedef enum {
     PICO_OUTPUT_SET_GRID,
     PICO_OUTPUT_SET_IMAGE,
     PICO_OUTPUT_SET_PAN,
+    PICO_OUTPUT_SET_PIXEL,
     PICO_OUTPUT_SET_SIZE,
     PICO_OUTPUT_SET_TITLE,
-    PICO_OUTPUT_SET_ZOOM,
 } PICO_Output_Set;
 
 typedef enum {
@@ -193,9 +209,9 @@ typedef struct Pico_Output {
                     PICO_Output_Set_Image tag;
                 } Image;
                 Pico_2i Pan;
+                Pico_2i Pixel;
                 Pico_2i Size;
                 char* Title;
-                Pico_2i Zoom;
             };
             PICO_Output_Set tag;
         } Set;

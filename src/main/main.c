@@ -227,9 +227,8 @@ int main (void) {
     });
     pico_output((Pico_Output){ .tag=PICO_OUTPUT_CLEAR });
 
-    // ZOOM
-    for (int i=0; i<19; i++) {
-        int pct = 100 - i*5;
+    // PIXEL
+    for (int i=1; i<=20; i++) {
         pico_output((Pico_Output) {
             .tag = PICO_OUTPUT_SET,
             .Set = {
@@ -240,8 +239,8 @@ int main (void) {
         pico_output((Pico_Output){
             .tag = PICO_OUTPUT_SET,
             .Set = {
-                .tag = PICO_OUTPUT_SET_ZOOM,
-                .Zoom = {pct,pct}
+                .tag = PICO_OUTPUT_SET_PIXEL,
+                .Pixel = {i,i}
             }
         });
         pico_output((Pico_Output){ .tag=PICO_OUTPUT_CLEAR });
