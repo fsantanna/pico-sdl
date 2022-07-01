@@ -9,8 +9,8 @@
 
 #define SDL_ANY 0
 
-#define pico_input_event_poll(v)    \
-    pico_input(&inp, (Pico_Input){ .tag=PICO_INPUT_EVENT, .Event={.tag=PICO_INPUT_EVENT_POLL,.type=SDL_ANY} });
+#define pico_input_event_poll(inp,evt) \
+    pico_input(inp, (Pico_Input){ .tag=PICO_INPUT_EVENT, .Event={.tag=PICO_INPUT_EVENT_POLL,.type=evt} });
 
 #define pico_output_set_auto(v)             \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_AUTO,.Auto=v} });
