@@ -609,8 +609,8 @@ void pico_output (Pico_Output out) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-int pico_isPointVsRect (SDL_Point pt, SDL_Rect r) {
-    int rw = r.w / 2;
-    int rh = r.h / 2;
-    return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
+int pico_isPointVsRect (Pico_2i pt, Pico_4i r) {
+    int rw = r._3 / 2;
+    int rh = r._4 / 2;
+    return !(pt._1<r._1-rw || pt._1>r._1+rw || pt._2<r._2-rh || pt._2>r._2+rh);
 }

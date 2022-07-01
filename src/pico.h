@@ -9,6 +9,25 @@
 
 #define SDL_ANY 0
 
+#define pico_input_event_poll(v)    \
+    pico_input(&inp, (Pico_Input){ .tag=PICO_INPUT_EVENT, .Event={.tag=PICO_INPUT_EVENT_POLL,.type=SDL_ANY} });
+
+#define pico_output_set_auto(v)             \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_AUTO,.Auto=v} });
+#define pico_output_set_color_clear(r,g,b)  \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_COLOR,.Color={.tag=PICO_OUTPUT_SET_COLOR_CLEAR,.Clear=(Pico_4i){r,g,b,0xFF}}} });
+#define pico_output_set_color_draw(r,g,b)   \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_COLOR,.Color={.tag=PICO_OUTPUT_SET_COLOR_DRAW,.Draw=(Pico_4i){r,g,b,0xFF}}} });
+
+#define pico_output_clear()             \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_CLEAR })
+#define pico_output_present()           \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_PRESENT })
+#define pico_output_draw_pixel(v)       \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_PIXEL, .Pixel=v}})
+#define pico_output_draw_rect(pos,dim)  \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_RECT, .Rect={pos,dim}}})
+
 typedef unsigned char u8;
 
 typedef struct {
@@ -195,4 +214,4 @@ void pico_open   ();
 void pico_close  ();
 int pico_input   (SDL_Event* out, Pico_Input inp);
 void pico_output (Pico_Output out);
-int pico_isPointVsRect (SDL_Point pt, SDL_Rect r);
+int pico_isPointVsRect (Pico_2i pt, Pico_4i r);
