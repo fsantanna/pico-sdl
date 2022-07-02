@@ -28,8 +28,8 @@
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_IMAGE,.Image={.tag=PICO_OUTPUT_SET_IMAGE_SIZE,.Size=(Pico_2i){w,h}}} });
 #define pico_output_set_size_wh(w,h) \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_SIZE,.Size=(Pico_2i){w,h}} });
-#define pico_output_set_pixel_xy(x,y) \
-    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_PIXEL,.Pixel=(Pico_2i){x,y}} });
+#define pico_output_set_pixel_wh(w,h) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_SET, .Set={.tag=PICO_OUTPUT_SET_PIXEL,.Pixel=(Pico_2i){w,h}} });
 
 #define pico_output_clear() \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_CLEAR })
@@ -41,6 +41,8 @@
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_PIXEL, .Pixel=(Pico_2i){x,y}}})
 #define pico_output_draw_rect(pos,dim) \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_RECT, .Rect={pos,dim}}})
+#define pico_output_draw_rect_xywh(x,y,w,h) \
+    pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_RECT, .Rect={{x,y},{w,h}}}})
 #define pico_output_draw_image(pos,path) \
     pico_output((Pico_Output) { .tag=PICO_OUTPUT_DRAW, .Draw={.tag=PICO_OUTPUT_DRAW_IMAGE, .Image={pos,path}}})
 
