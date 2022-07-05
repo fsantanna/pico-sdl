@@ -160,23 +160,29 @@ static int event (SDL_Event* e, int xp) {
                 case SDLK_MINUS: {
                     int x = SET_PIXEL._1;
                     int y = SET_PIXEL._2;
-                    pico_output((Pico_Output) {
-                        .tag = PICO_OUTPUT_SET,
-                        .Set = {
-                            .tag = PICO_OUTPUT_SET_PIXEL,
-                            .Pixel = { x-1, y-1 }
-                        }
-                    });
+                    do { x--; } while (SET_SIZE._1%x != 0);
+                    do { y--; } while (SET_SIZE._2%y != 0);
+                    if (x>1 && y>1) {
+                        pico_output((Pico_Output) {
+                            .tag = PICO_OUTPUT_SET,
+                            .Set = {
+                                .tag = PICO_OUTPUT_SET_PIXEL,
+                                .Pixel = { x, y }
+                            }
+                        });
+                    }
                     break;
                 }
                 case SDLK_EQUALS: {
                     int x = SET_PIXEL._1;
                     int y = SET_PIXEL._2;
+                    do { x++; } while (SET_SIZE._1%x != 0);
+                    do { y++; } while (SET_SIZE._2%y != 0);
                     pico_output((Pico_Output) {
                         .tag = PICO_OUTPUT_SET,
                         .Set = {
                             .tag = PICO_OUTPUT_SET_PIXEL,
-                            .Pixel = { x+1, y+1 }
+                            .Pixel = { x, y }
                         }
                     });
                     break;
@@ -536,6 +542,8 @@ void pico_output (Pico_Output out) {
                     break;
                 case PICO_OUTPUT_SET_SIZE:
                     SET_SIZE = out.Set.Size;
+                    assert(SET_SIZE._1%SET_PIXEL._1 == 0);
+                    assert(SET_SIZE._2%SET_PIXEL._2 == 0);
                     SDL_SetWindowSize(WIN, SET_SIZE._1, SET_SIZE._2);
                     pico_output((Pico_Output) {
                         .tag = PICO_OUTPUT_SET,
@@ -552,6 +560,8 @@ void pico_output (Pico_Output out) {
                     int w,h;
                     SDL_GetWindowSize(WIN, &w, &h);
                     SET_PIXEL = out.Set.Pixel;
+                    assert(w%SET_PIXEL._1 == 0);
+                    assert(h%SET_PIXEL._2 == 0);
                     w = MAX(1, w/SET_PIXEL._1);
                     h = MAX(1, h/SET_PIXEL._2);
                     TEX = SDL_CreateTexture (
