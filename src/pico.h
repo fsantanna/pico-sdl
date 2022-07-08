@@ -234,4 +234,5 @@ void pico_open   ();
 void pico_close  ();
 int pico_input   (SDL_Event* out, Pico_Input inp);
 void pico_output (Pico_Output out);
+int pico_event_from_sdl (SDL_Event* e, int xp);
 int pico_isPointVsRect (Pico_2i pt, Pico_4i r);

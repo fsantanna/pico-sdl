@@ -146,7 +146,7 @@ void pico_close (void) {
 //  - returns
 //      - 1: if e matches xp
 //      - 0: otherwise
-static int event (SDL_Event* e, int xp) {
+int pico_event_from_sdl (SDL_Event* e, int xp) {
     switch (e->type) {
         case SDL_QUIT:
             exit(0);
@@ -295,7 +295,7 @@ int pico_input (SDL_Event* out, Pico_Input inp) {
                 SDL_Event e;
                 int has = SDL_WaitEventTimeout(&e, inp.Delay);
                 if (has) {
-                    event(&e, SDL_ANY);
+                    pico_event_from_sdl(&e, SDL_ANY);
                 }
                 int dt = SDL_GetTicks() - old;
                 inp.Delay -= dt;
@@ -310,12 +310,12 @@ int pico_input (SDL_Event* out, Pico_Input inp) {
                 case PICO_INPUT_EVENT_POLL: {
                     int has = SDL_PollEvent(out);
                     if (!has) return 0;
-                    return event(out, inp.Event.type);
+                    return pico_event_from_sdl(out, inp.Event.type);
                 }
                 case PICO_INPUT_EVENT_FOREVER:
                     while (1) {
                         SDL_WaitEvent(out);
-                        if (event(out, inp.Event.type)) {
+                        if (pico_event_from_sdl(out, inp.Event.type)) {
                             return 1;
                         }
                     }
@@ -326,7 +326,7 @@ int pico_input (SDL_Event* out, Pico_Input inp) {
                         if (!has) {
                             return 0;
                         }
-                        if (event(out, inp.Event.Timeout.type)) {
+                        if (pico_event_from_sdl(out, inp.Event.Timeout.type)) {
                             return 1;
                         }
                     }
