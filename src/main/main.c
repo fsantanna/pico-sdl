@@ -186,7 +186,6 @@ int main (void) {
             }
         }
     });
-    printf("SIZE=(%d,%d)\n", size._1,size._2);
 
     // GRID=0
     pico_output((Pico_Output){
@@ -236,13 +235,15 @@ int main (void) {
                 .Size = {_WIN_,_WIN_},
             },
         });
-        pico_output((Pico_Output){
-            .tag = PICO_OUTPUT_SET,
-            .Set = {
-                .tag = PICO_OUTPUT_SET_PIXEL,
-                .Pixel = {i,i}
-            }
-        });
+        if (_WIN_%i == 0) {
+            pico_output((Pico_Output){
+                .tag = PICO_OUTPUT_SET,
+                .Set = {
+                    .tag = PICO_OUTPUT_SET_PIXEL,
+                    .Pixel = {i,i}
+                }
+            });
+        }
         pico_output((Pico_Output){ .tag=PICO_OUTPUT_CLEAR });
         pico_output((Pico_Output) {
             .tag = PICO_OUTPUT_DRAW,
