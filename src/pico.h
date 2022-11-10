@@ -60,11 +60,11 @@ typedef struct {
 
 typedef enum {
     Left=1, Center, Right
-} HAnchor;
+} Pico_HAnchor;
 
 typedef enum {
     Bottom=1, Middle, Top
-} VAnchor;
+} Pico_VAnchor;
 
 typedef enum {
     PICO_INPUT_DELAY = 1,
@@ -131,6 +131,27 @@ typedef enum {
     PICO_OUTPUT_SET,
     PICO_OUTPUT_WRITE
 } PICO_Output;
+
+// INPUT
+void pico_input_delay         (int ms);
+void pico_input_event         (SDL_Event* evt, int type);
+int  pico_input_event_ask     (SDL_Event* evt, int type);
+int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
+
+// OUTPUT
+void pico_output_clear      (void);
+void pico_output_draw_image (SDL_Point pos, char* path);
+void pico_output_draw_pixel (SDL_Point pos);
+void pico_output_draw_text  (SDL_Point pos, char* text);
+void pico_output_write      (SDL_Point pos, char* text);
+void pico_output_writeln    (SDL_Point pos, char* text);
+
+// STATE
+void pico_state_set_anchor      (Pico_HAnchor h, Pico_VAnchor v);
+void pico_state_set_color_clear (SDL_Color color);
+void pico_state_set_color_draw  (SDL_Color color);
+void pico_state_set_cursor      (SDL_Point pos);
+void pico_state_set_title       (char* title);
 
 typedef struct Pico_Input {
     union {

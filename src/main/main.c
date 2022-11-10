@@ -4,175 +4,57 @@ int main (void) {
     pico_open();
 
     SDL_Event e1;
-    int ok = pico_input(&e1, (Pico_Input) {
-        .tag = PICO_INPUT_EVENT,
-        .Event = {
-            .tag = PICO_INPUT_EVENT_FOREVER,
-            .type = SDL_KEYUP
-        }
-    });
-    assert(ok);
+    pico_input_event(&e1, SDL_KEYUP);
 
     // TITLE
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_SET,
-        .Set = {
-            .tag = PICO_OUTPUT_SET_TITLE,
-            .Title = "Hello World!"
-        }
-    });
+    pico_state_set_title("Hello World!");
 
     // CLEAR
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_SET,
-        .Set = {
-            .tag = PICO_OUTPUT_SET_COLOR,
-            .Color = {
-                .tag = PICO_OUTPUT_SET_COLOR_CLEAR,
-                .Clear = {0xFF,0xFF,0xFF,0xFF}
-            }
-        }
-    });
-    pico_output((Pico_Output) { .tag=PICO_OUTPUT_CLEAR });
+    pico_state_set_color_clear({0xFF,0xFF,0xFF,0xFF});
+    pico_output_clear();
 
-    pico_input(NULL, (Pico_Input){ .tag=PICO_INPUT_DELAY, .Delay=2000 });
+    pico_input_delay(2000);
 
     // DRAW_IMAGE
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_SET,
-        .Set = {
-            .tag = PICO_OUTPUT_SET_ANCHOR,
-            .Anchor = {Center,Middle}
-        }
-    });
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_DRAW,
-        .Draw = {
-            .tag = PICO_OUTPUT_DRAW_IMAGE,
-            .Image = {{0,0},"open.png"}
-        }
-    });
+    pico_state_set_anchor(Center,Middle);
+    pico_output_draw_image((SDL_Point){0,0},"open.png");
 
-    pico_input(NULL, (Pico_Input){ .tag=PICO_INPUT_DELAY, .Delay=2000 });
+    pico_input_delay(2000);
 
     // DRAW_PIXEL
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_SET,
-        .Set = {
-            .tag = PICO_OUTPUT_SET_COLOR,
-            .Color = {
-                .tag = PICO_OUTPUT_SET_COLOR_CLEAR,
-                .Clear = {0x00,0x00,0x00,0xFF}
-            }
-        }
-    });
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_SET,
-        .Set = {
-            .tag = PICO_OUTPUT_SET_COLOR,
-            .Color = {
-                .tag = PICO_OUTPUT_SET_COLOR_DRAW,
-                .Draw = {0xFF,0xFF,0xFF,0xFF}
-            }
-        }
-    });
-    pico_output((Pico_Output) { .tag=PICO_OUTPUT_CLEAR });
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_DRAW,
-        .Draw = {
-            .tag = PICO_OUTPUT_DRAW_PIXEL,
-            .Pixel={0,0}
-        }
-    });
+    pico_state_set_color_clear((SDL_Color){0x00,0x00,0x00,0xFF});
+    pico_state_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF}});
+    pico_output_clear();
+    pico_output_draw_pixel((SDL_Point){0,0});
 
-    pico_input(NULL, (Pico_Input){ .tag=PICO_INPUT_DELAY, .Delay=2000 });
+    pico_input_delay(2000);
 
     // DRAW_TEXT
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_DRAW,
-        .Draw = {
-            .tag = PICO_OUTPUT_DRAW_TEXT,
-            .Text = {{0,0},"Hello!"}
-        }
-    });
+    pico_output_draw_text((SDL_Point){0,0}, "Hello!"});
 
-    pico_input(NULL, (Pico_Input){ .tag=PICO_INPUT_DELAY, .Delay=2000 });
-    pico_output((Pico_Output) { .tag=PICO_OUTPUT_CLEAR });
+    pico_input_delay(2000);
+    pico_output_clear();
 
     // WRITE
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_SET,
-        .Set = {
-            .tag = PICO_OUTPUT_SET_CURSOR,
-            .Cursor={-25,25}
-        }
-    });
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_WRITE,
-        .Write = {
-            .tag = PICO_OUTPUT_WRITE_NORM,
-            .Norm = "1 "
-        }
-    });
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_WRITE,
-        .Write = {
-            .tag = PICO_OUTPUT_WRITE_NORM,
-            .Norm = "2 "
-        }
-    });
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_WRITE,
-        .Write = {
-            .tag = PICO_OUTPUT_WRITE_LINE,
-            .Line = "3"
-        }
-    });
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_WRITE,
-        .Write = {
-            .tag = PICO_OUTPUT_WRITE_LINE,
-            .Line = ""
-        }
-    });
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_WRITE,
-        .Write = {
-            .tag = PICO_OUTPUT_WRITE_LINE,
-            .Line = "pico"
-        }
-    });
+    pico_state_set_cursor((SDL_Point){-25,25});
+    pico_output_write("1 ");
+    pico_output_write("2 ");
+    pico_output_writeln("3");
+    pico_output_writeln("")
+    pico_output_writeln("pico");
 
-    pico_input(NULL, (Pico_Input){ .tag=PICO_INPUT_DELAY, .Delay=2000 });
+    pico_input_delay(2000);
 
     // MOUSE
     SDL_Event e2;
-    pico_input(&e2, (Pico_Input){
-        .tag = PICO_INPUT_EVENT,
-        .Event = {
-            .tag = PICO_INPUT_EVENT_FOREVER,
-            .type = SDL_MOUSEBUTTONDOWN
-        }
-    });
-    pico_output((Pico_Output) {
-        .tag = PICO_OUTPUT_DRAW,
-        .Draw = {
-            .tag = PICO_OUTPUT_DRAW_PIXEL,
-            .Pixel = {e2.button.x,e2.button.y}
-        }
-    });
+    pico_input_event(&e2, SDL_MOUSEBUTTONDOWN);
+    pico_output_draw_pixel((SDL_Point){e2.button.x,e2.button.y});
 
-    pico_input(NULL, (Pico_Input){ .tag=PICO_INPUT_DELAY, .Delay=2000 });
+    pico_input_delay(2000);
 
     // EVENT
     SDL_Event e3;
-    pico_input(&e3, (Pico_Input){
-        .tag = PICO_INPUT_EVENT,
-        .Event = {
-            .tag = PICO_INPUT_EVENT_TIMEOUT,
-            .Timeout = {SDL_ANY,5000}
-        }
-    });
+    pico_input_event_timeout(&e2, SDL_ANY, 5000);
 
     // GET SIZE
     Pico_2i size;
