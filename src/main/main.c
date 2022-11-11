@@ -7,7 +7,7 @@ int main (void) {
     pico_input_event(&e1, SDL_KEYUP);
 
     // TITLE
-    pico_state_set_title("Hello World!");
+    pico_state_set_title("Testing...");
 
     // CLEAR
     pico_state_set_color_clear((SDL_Color){0xFF,0xFF,0xFF,0xFF});
