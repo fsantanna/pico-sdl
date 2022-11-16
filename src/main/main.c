@@ -79,7 +79,7 @@ int main (void) {
     for (int i=1; i<=20; i++) {
         pico_state_set_size((SDL_Point){_WIN_,_WIN_});
         if (_WIN_%i == 0) {
-            pico_state_set_pixel_size((SDL_Point){i,i});
+            pico_state_set_size_pixel((SDL_Point){i,i});
         }
         pico_output_clear();
         pico_output_draw_text((SDL_Point){0,0}, "X");

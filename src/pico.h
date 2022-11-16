@@ -39,18 +39,18 @@ void pico_output_write      (char* text);
 void pico_output_writeln    (char* text);
 
 // STATE
-void pico_state_get_image_size  (char* file, SDL_Point* size);
 void pico_state_get_size        (SDL_Point* size);
+void pico_state_get_size_image  (char* file, SDL_Point* size);
 void pico_state_set_anchor      (Pico_HAnchor h, Pico_VAnchor v);
 void pico_state_set_auto        (int on);
 void pico_state_set_color_clear (SDL_Color color);
 void pico_state_set_color_draw  (SDL_Color color);
 void pico_state_set_cursor      (SDL_Point pos);
 void pico_state_set_image_crop  (SDL_Rect crop);
-void pico_state_set_image_size  (SDL_Point size);
 void pico_state_set_font        (char* file, int h);
 void pico_state_set_grid        (int on);
 void pico_state_set_pan         (SDL_Point pos);
-void pico_state_set_pixel_size  (SDL_Point size);
 void pico_state_set_size        (SDL_Point size);
+void pico_state_set_size_image  (SDL_Point size);
+void pico_state_set_size_pixel  (SDL_Point size);
 void pico_state_set_title       (char* title);
