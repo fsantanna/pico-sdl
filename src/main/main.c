@@ -58,7 +58,7 @@ int main (void) {
 
     // GET SIZE
     SDL_Point size;
-    pico_state_get_window_size(&size);
+    pico_state_get_size(&size);
 
     // GRID=0
     pico_state_set_grid(0);
@@ -77,7 +77,7 @@ int main (void) {
 
     // PIXEL
     for (int i=1; i<=20; i++) {
-        pico_state_set_window_size((SDL_Point){_WIN_,_WIN_});
+        pico_state_set_size((SDL_Point){_WIN_,_WIN_});
         if (_WIN_%i == 0) {
             pico_state_set_pixel_size((SDL_Point){i,i});
         }

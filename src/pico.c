@@ -15,10 +15,10 @@ static SDL_Point    CUR_CURSOR = {0,0};
 #define _X(v) ((v)-LOG_W/2+S.pan.x)
 #define _Y(v) (LOG_H/2-(v)+S.pan.y)
 
-#define LOG_W (S.window_size.x/S.pixel_size.x)
-#define LOG_H (S.window_size.y/S.pixel_size.y)
-#define PHY_LOG_X(v) (v * LOG_W/S.window_size.x)
-#define PHY_LOG_Y(v) (v * LOG_H/S.window_size.y)
+#define LOG_W (S.size.x/S.pixel_size.x)
+#define LOG_H (S.size.y/S.pixel_size.y)
+#define PHY_LOG_X(v) (v * LOG_W/S.size.x)
+#define PHY_LOG_Y(v) (v * LOG_H/S.size.y)
 
 static struct {
     SDL_Point anchor;
@@ -30,8 +30,8 @@ static struct {
     SDL_Rect  image_crop;
     SDL_Point image_size;
     SDL_Point pan;
-    SDL_Point window_size;
     SDL_Point pixel_size;
+    SDL_Point size;
 } S = {
     { Center, Middle },
     1,
@@ -42,8 +42,8 @@ static struct {
     {0,0,0,0},
     {0,0},
     {0,0},
-    {_WIN_,_WIN_},
-    {10,10}
+    {10,10},
+    {_WIN_,_WIN_}
 };
 
 static void show_grid (void) {
@@ -51,11 +51,11 @@ static void show_grid (void) {
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
-    for (int i=0; i<=S.window_size.x; i+=(S.window_size.x/LOG_W)) {
-        SDL_RenderDrawLine(REN, i, 0, i, S.window_size.y);
+    for (int i=0; i<=S.size.x; i+=(S.size.x/LOG_W)) {
+        SDL_RenderDrawLine(REN, i, 0, i, S.size.y);
     }
-    for (int j=0; j<=S.window_size.y; j+=(S.window_size.y/LOG_H)) {
-        SDL_RenderDrawLine(REN, 0, j, S.window_size.x, j);
+    for (int j=0; j<=S.size.y; j+=(S.size.y/LOG_H)) {
+        SDL_RenderDrawLine(REN, 0, j, S.size.x, j);
     }
 
     SDL_SetRenderDrawColor (REN,
@@ -116,9 +116,9 @@ void pico_init (int on) {
 
         TTF_Init();
 
-        pico_state_set_window_size(S.window_size);
+        pico_state_set_size(S.size);
         pico_state_set_pixel_size(S.pixel_size);
-        pico_state_set_font("tiny.ttf", S.window_size.x/50);
+        pico_state_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
 
         //SDL_Delay(1000);
@@ -155,8 +155,8 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
                 case SDLK_MINUS: {
                     int x = S.pixel_size.x;
                     int y = S.pixel_size.y;
-                    do { x--; } while (S.window_size.x%x != 0);
-                    do { y--; } while (S.window_size.y%y != 0);
+                    do { x--; } while (S.size.x%x != 0);
+                    do { y--; } while (S.size.y%y != 0);
                     if (x>1 && y>1) {
                         pico_state_set_pixel_size((SDL_Point){x, y});
                     }
@@ -165,8 +165,8 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
                 case SDLK_EQUALS: {
                     int x = S.pixel_size.x;
                     int y = S.pixel_size.y;
-                    do { x++; } while (S.window_size.x%x != 0);
-                    do { y++; } while (S.window_size.y%y != 0);
+                    do { x++; } while (S.size.x%x != 0);
+                    do { y++; } while (S.size.y%y != 0);
                     pico_state_set_pixel_size((SDL_Point){x, y});
                     break;
                 }
@@ -192,7 +192,7 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
 #if 0
         case SDL_WINDOWEVENT: {
             if (e->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                pico_state_set_window_size((SDL_Point){e->window.data1,e->window.data2});
+                pico_state_set_size((SDL_Point){e->window.data1,e->window.data2});
                 return 0;
                 break;
             }
@@ -435,15 +435,19 @@ void pico_output_writeln (char* text) {
 
 // STATE
 
+// GET
+
 void pico_state_get_image_size (char* file, SDL_Point* size) {
     SDL_Texture* tex = IMG_LoadTexture(REN, file);
     pico_assert(tex != NULL);
     SDL_QueryTexture(tex, NULL, NULL, &size->x, &size->y);
 }
 
-void pico_state_get_window_size (SDL_Point* size) {
+void pico_state_get_size (SDL_Point* size) {
     SDL_GetWindowSize(WIN, &size->x, &size->y);
 }
+
+// SET
 
 void pico_state_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
     S.anchor = (SDL_Point) {h, v};
@@ -497,18 +501,6 @@ void pico_state_set_pixel_size (SDL_Point size) {
     pico_output_clear();
 }
 
-void pico_state_set_title (char* title) {
-    SDL_SetWindowTitle(WIN, title);
-}
-
-void pico_state_set_window_size (SDL_Point size) {
-    S.window_size = size;
-    assert(S.window_size.x%S.pixel_size.x == 0);
-    assert(S.window_size.y%S.pixel_size.y == 0);
-    SDL_SetWindowSize(WIN, S.window_size.x, S.window_size.y);
-    pico_state_set_pixel_size((SDL_Point){ S.pixel_size.x, S.pixel_size.y });
-}
-
 void pico_state_set_font (char* file, int h) {
     FNT_H = h;
     if (FNT != NULL) {
@@ -524,6 +516,18 @@ void pico_state_set_image_crop (SDL_Rect crop) {
 
 void pico_state_set_image_size (SDL_Point size) {
     S.image_size = size;
+}
+
+void pico_state_set_size (SDL_Point size) {
+    S.size = size;
+    assert(S.size.x%S.pixel_size.x == 0);
+    assert(S.size.y%S.pixel_size.y == 0);
+    SDL_SetWindowSize(WIN, S.size.x, S.size.y);
+    pico_state_set_pixel_size((SDL_Point){ S.pixel_size.x, S.pixel_size.y });
+}
+
+void pico_state_set_title (char* title) {
+    SDL_SetWindowTitle(WIN, title);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
