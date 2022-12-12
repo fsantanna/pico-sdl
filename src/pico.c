@@ -124,6 +124,9 @@ void pico_init (int on) {
         //SDL_Delay(1000);
         //SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
     } else {
+        if (FNT != NULL) {
+            TTF_CloseFont(FNT);
+        }
         TTF_Quit();
         SDL_DestroyRenderer(REN);
         SDL_DestroyWindow(WIN);
@@ -144,7 +147,9 @@ void pico_init (int on) {
 int pico_event_from_sdl (SDL_Event* e, int xp) {
     switch (e->type) {
         case SDL_QUIT:
-            exit(0);
+            if (S.autom) {
+                exit(0);
+            }
 
         case SDL_KEYDOWN: {
             const unsigned char* state = SDL_GetKeyboardState(NULL);
@@ -208,7 +213,8 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
     } else if (xp == SDL_ANY) {
         // MAYBE
         if (e->type==SDL_KEYDOWN       || e->type==SDL_MOUSEBUTTONDOWN ||
-            e->type==SDL_MOUSEBUTTONUP || e->type==SDL_MOUSEMOTION) {
+            e->type==SDL_MOUSEBUTTONUP || e->type==SDL_MOUSEMOTION ||
+            e->type==SDL_QUIT) {
             // OK
         } else {
             // NO
