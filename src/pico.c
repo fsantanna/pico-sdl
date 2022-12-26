@@ -21,7 +21,7 @@ static SDL_Point    CUR_CURSOR = {0,0};
 #define PHY_LOG_X(v) (v * LOG_W/S.size.x)
 #define PHY_LOG_Y(v) (v * LOG_H/S.size.y)
 
-static pico_table* _pico_table;
+static pico_hash* _pico_hash;
 
 static struct {
     SDL_Point anchor;
@@ -105,7 +105,7 @@ static int vanchor (int y, int h) {
 
 void pico_init (int on) {
     if (on) {
-        _pico_table = pico_table_create(PICO_HASH);
+        _pico_hash = pico_hash_create(PICO_HASH);
         pico_assert(SDL_Init(SDL_INIT_VIDEO) == 0);
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -135,7 +135,7 @@ void pico_init (int on) {
         SDL_DestroyRenderer(REN);
         SDL_DestroyWindow(WIN);
         SDL_Quit();
-        pico_table_destroy(_pico_table);
+        pico_hash_destroy(_pico_hash);
     }
 }
 
@@ -350,10 +350,10 @@ void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
 void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache) {
     SDL_Texture* tex = NULL;
     if (cache) {
-        tex = pico_table_get(_pico_table, path);
+        tex = pico_hash_get(_pico_hash, path);
         if (tex == NULL) {
             tex = IMG_LoadTexture(REN, path);
-            pico_table_add(_pico_table, path, tex);
+            pico_hash_add(_pico_hash, path, tex);
         }
     } else {
         tex = IMG_LoadTexture(REN, path);

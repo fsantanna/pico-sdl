@@ -2,25 +2,25 @@
 #include <string.h>
 #include "hash.h"
 
-typedef struct pico_table_pair {
+typedef struct pico_hash_pair {
     char *key;
     void *value;
-    struct pico_table_pair *next;
-} pico_table_pair;
+    struct pico_hash_pair *next;
+} pico_hash_pair;
 
-typedef struct pico_table {
-    pico_table_pair **buckets;
+typedef struct pico_hash {
+    pico_hash_pair **buckets;
     size_t num_buckets;
-} pico_table;
+} pico_hash;
 
-pico_table* pico_table_create (size_t num_buckets) {
-    pico_table *table = malloc(sizeof(pico_table));
+pico_hash* pico_hash_create (size_t num_buckets) {
+    pico_hash *table = malloc(sizeof(pico_hash));
     if (table == NULL) {
         return NULL;
     }
 
     table->num_buckets = num_buckets;
-    table->buckets = calloc(table->num_buckets, sizeof(pico_table_pair *));
+    table->buckets = calloc(table->num_buckets, sizeof(pico_hash_pair *));
     if (table->buckets == NULL) {
         free(table);
         return NULL;
@@ -29,9 +29,9 @@ pico_table* pico_table_create (size_t num_buckets) {
     return table;
 }
 
-void pico_table_destroy (pico_table *table) {
-    pico_table_pair *pair;
-    pico_table_pair *tmp;
+void pico_hash_destroy (pico_hash *table) {
+    pico_hash_pair *pair;
+    pico_hash_pair *tmp;
     for (size_t i = 0; i < table->num_buckets; i++) {
         pair = table->buckets[i];
         while (pair != NULL) {
@@ -45,7 +45,7 @@ void pico_table_destroy (pico_table *table) {
     free(table);
 }
 
-size_t _pico_table_hash (const char *str, size_t num_buckets) {
+size_t _pico_hash_hash (const char *str, size_t num_buckets) {
     size_t hash = 0;
     for (const char *p = str; *p != '\0'; p++) {
         hash = (hash << 5) + hash + *p;
@@ -53,11 +53,11 @@ size_t _pico_table_hash (const char *str, size_t num_buckets) {
     return hash % num_buckets;
 }
 
-int pico_table_add (pico_table *table, const char *key, void *value) {
-    size_t index = _pico_table_hash(key, table->num_buckets);
+int pico_hash_add (pico_hash *table, const char *key, void *value) {
+    size_t index = _pico_hash_hash(key, table->num_buckets);
 
     // Check if the key already exists in the hash table
-    pico_table_pair *pair = table->buckets[index];
+    pico_hash_pair *pair = table->buckets[index];
     while (pair != NULL) {
         if (strcmp(pair->key, key) == 0) {
             // Key already exists in the hash table, update the value
@@ -68,7 +68,7 @@ int pico_table_add (pico_table *table, const char *key, void *value) {
     }
 
     // Key does not exist in the hash table, add a new key-value pair
-    pair = malloc(sizeof(pico_table_pair));
+    pair = malloc(sizeof(pico_hash_pair));
     if (pair == NULL) {
         return 0;
     }
@@ -86,12 +86,12 @@ int pico_table_add (pico_table *table, const char *key, void *value) {
     return 1;
 }
 
-int pico_table_rem (pico_table* table, const char *key) {
-    size_t index = _pico_table_hash(key, table->num_buckets);
+int pico_hash_rem (pico_hash* table, const char *key) {
+    size_t index = _pico_hash_hash(key, table->num_buckets);
 
     // Search for the key-value pair in the linked list at the appropriate index
-    pico_table_pair *pair = table->buckets[index];
-    pico_table_pair *prev = NULL;
+    pico_hash_pair *pair = table->buckets[index];
+    pico_hash_pair *prev = NULL;
     while (pair != NULL) {
         if (strcmp(pair->key, key) == 0) {
             // Key found, remove the key-value pair from the linked list
@@ -114,11 +114,11 @@ int pico_table_rem (pico_table* table, const char *key) {
     return 0;
 }
 
-void* pico_table_get (pico_table* table, const char* key) {
-  size_t index = _pico_table_hash(key, table->num_buckets);
+void* pico_hash_get (pico_hash* table, const char* key) {
+  size_t index = _pico_hash_hash(key, table->num_buckets);
 
   // Search for the key-value pair in the linked list at the appropriate index
-  pico_table_pair *pair = table->buckets[index];
+  pico_hash_pair *pair = table->buckets[index];
   while (pair != NULL) {
     if (strcmp(pair->key, key) == 0) {
       // Key found, return the value
