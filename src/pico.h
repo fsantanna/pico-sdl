@@ -3,8 +3,10 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
-#define _TITLE_ "pico-SDL"
-#define _WIN_ 510
+#define PICO_TITLE "pico-SDL"
+#define PICO_WIN   510
+#define PICO_HASH  128
+
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
 #define SDL_ANY 0
@@ -37,6 +39,8 @@ void pico_output_draw_text  (SDL_Point pos, char* text);
 void pico_output_present    (void);
 void pico_output_write      (char* text);
 void pico_output_writeln    (char* text);
+
+void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache);
 
 // STATE
 void pico_state_get_size        (SDL_Point* size);

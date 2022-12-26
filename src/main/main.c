@@ -77,8 +77,8 @@ int main (void) {
 
     // PIXEL
     for (int i=1; i<=20; i++) {
-        pico_state_set_size((SDL_Point){_WIN_,_WIN_});
-        if (_WIN_%i == 0) {
+        pico_state_set_size((SDL_Point){PICO_WIN,PICO_WIN});
+        if (PICO_WIN%i == 0) {
             pico_state_set_size_pixel((SDL_Point){i,i});
         }
         pico_output_clear();

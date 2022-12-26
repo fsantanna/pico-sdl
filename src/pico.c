@@ -1,3 +1,4 @@
+#include "hash.h"
 #include "pico.h"
 
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
@@ -20,6 +21,8 @@ static SDL_Point    CUR_CURSOR = {0,0};
 #define PHY_LOG_X(v) (v * LOG_W/S.size.x)
 #define PHY_LOG_Y(v) (v * LOG_H/S.size.y)
 
+static pico_table* _pico_table;
+
 static struct {
     SDL_Point anchor;
     int       autom;
@@ -41,7 +44,7 @@ static struct {
     1,
     {0,0,0,0},
     {0,0},
-    {_WIN_,_WIN_},
+    {PICO_WIN,PICO_WIN},
     {0,0},
     {10,10}
 };
@@ -102,10 +105,11 @@ static int vanchor (int y, int h) {
 
 void pico_init (int on) {
     if (on) {
+        _pico_table = pico_table_create(PICO_HASH);
         pico_assert(SDL_Init(SDL_INIT_VIDEO) == 0);
         WIN = SDL_CreateWindow (
-            _TITLE_, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            _WIN_, _WIN_, SDL_WINDOW_SHOWN
+            PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+            PICO_WIN, PICO_WIN, SDL_WINDOW_SHOWN
         );
         pico_assert(WIN != NULL);
 
@@ -131,6 +135,7 @@ void pico_init (int on) {
         SDL_DestroyRenderer(REN);
         SDL_DestroyWindow(WIN);
         SDL_Quit();
+        pico_table_destroy(_pico_table);
     }
 }
 
@@ -303,10 +308,7 @@ void pico_output_clear (void) {
     );
 }
 
-void pico_output_draw_image (SDL_Point pos, char* path) {
-    SDL_Texture* tex = IMG_LoadTexture(REN, path);
-    pico_assert(tex != NULL);
-
+void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
     int defsize = (S.size_image.x==0 && S.size_image.y==0);
     int defcrop = (S.image_crop.x==0 && S.image_crop.y==0 &&
                    S.image_crop.w==0 && S.image_crop.h==0);
@@ -343,7 +345,30 @@ void pico_output_draw_image (SDL_Point pos, char* path) {
 
     WIN_Present(0);
 
-    SDL_DestroyTexture(tex);
+}
+
+void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache) {
+    SDL_Texture* tex = NULL;
+    if (cache) {
+        tex = pico_table_get(_pico_table, path);
+        if (tex == NULL) {
+            tex = IMG_LoadTexture(REN, path);
+            pico_table_add(_pico_table, path, tex);
+        }
+    } else {
+        tex = IMG_LoadTexture(REN, path);
+    }
+    pico_assert(tex != NULL);
+
+    _pico_output_draw_image_tex(pos, tex);
+
+    if (!cache) {
+        SDL_DestroyTexture(tex);
+    }
+}
+
+void pico_output_draw_image (SDL_Point pos, char* path) {
+    _pico_output_draw_image_cache(pos, path, 1);
 }
 
 void pico_output_draw_line (SDL_Point p1, SDL_Point p2) {
