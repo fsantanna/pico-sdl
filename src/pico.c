@@ -217,7 +217,7 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
         // OK
     } else if (xp == SDL_ANY) {
         // MAYBE
-        if (e->type==SDL_KEYDOWN       || e->type==SDL_MOUSEBUTTONDOWN ||
+        if (e->type==SDL_KEYDOWN || e->type==SDL_KEYUP || e->type==SDL_MOUSEBUTTONDOWN ||
             e->type==SDL_MOUSEBUTTONUP || e->type==SDL_MOUSEMOTION ||
             e->type==SDL_QUIT) {
             // OK
