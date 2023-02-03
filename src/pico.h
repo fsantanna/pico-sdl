@@ -1,7 +1,5 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
 
 #define PICO_TITLE "pico-SDL"
 #define PICO_WIN   510
@@ -35,12 +33,15 @@ void pico_output_draw_image (SDL_Point pos, char* path);
 void pico_output_draw_line  (SDL_Point p1, SDL_Point p2);
 void pico_output_draw_pixel (SDL_Point pos);
 void pico_output_draw_rect  (SDL_Rect rect);
+void pico_output_draw_oval  (SDL_Rect rect);
 void pico_output_draw_text  (SDL_Point pos, char* text);
 void pico_output_present    (void);
+void pico_output_sound      (char* path);
 void pico_output_write      (char* text);
 void pico_output_writeln    (char* text);
 
 void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache);
+void _pico_output_sound_cache (char* path, int cache);
 
 // STATE
 void pico_state_get_size        (SDL_Point* size);

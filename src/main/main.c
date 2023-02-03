@@ -9,6 +9,9 @@ int main (void) {
     // TITLE
     pico_state_set_title("Testing...");
 
+    // SOUND
+    pico_output_sound("start.wav");
+
     // CLEAR
     pico_state_set_color_clear((SDL_Color){0xFF,0xFF,0xFF,0xFF});
     pico_output_clear();
@@ -21,11 +24,13 @@ int main (void) {
 
     pico_input_delay(2000);
 
-    // DRAW_PIXEL
+    // DRAW_PIXEL/RECT/OVAL
     pico_state_set_color_clear((SDL_Color){0x00,0x00,0x00,0xFF});
     pico_state_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
     pico_output_clear();
     pico_output_draw_pixel((SDL_Point){0,0});
+    pico_output_draw_rect((SDL_Rect){ 20, 20,10,5});
+    pico_output_draw_oval((SDL_Rect){0,0,5,10});
 
     pico_input_delay(2000);
 
@@ -75,7 +80,7 @@ int main (void) {
     pico_state_set_auto(1);
     pico_output_clear();
 
-    // PIXEL
+    // DRAW_RECT
     for (int i=1; i<=20; i++) {
         pico_state_set_size((SDL_Point){PICO_WIN,PICO_WIN});
         if (PICO_WIN%i == 0) {

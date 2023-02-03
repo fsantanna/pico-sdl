@@ -1,3 +1,8 @@
+#include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
+
 #include "hash.h"
 #include "pico.h"
 
@@ -119,6 +124,7 @@ void pico_init (int on) {
         SDL_SetRenderDrawBlendMode(REN,SDL_BLENDMODE_BLEND);
 
         TTF_Init();
+        Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
 
         pico_state_set_size(S.size);
         pico_state_set_size_pixel(S.size_pixel);
@@ -131,6 +137,7 @@ void pico_init (int on) {
         if (FNT != NULL) {
             TTF_CloseFont(FNT);
         }
+        Mix_CloseAudio();
         TTF_Quit();
         SDL_DestroyRenderer(REN);
         SDL_DestroyWindow(WIN);
@@ -391,6 +398,20 @@ void pico_output_draw_rect (SDL_Rect rect) {
     WIN_Present(0);
 }
 
+void pico_output_draw_oval (SDL_Rect rect) {
+    SDL_Rect out = {
+        hanchor(X(rect.x),rect.w),
+        vanchor(Y(rect.y),rect.h),
+        rect.w, rect.h
+    };
+    filledEllipseRGBA (
+        REN,
+        out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
+        S.color_draw.r, S.color_draw.g, S.color_draw.b, S.color_draw.a
+    );
+    WIN_Present(0);
+}
+
 void pico_output_draw_text  (SDL_Point pos, char* text) {
     uint8_t r, g, b;
     SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
@@ -419,6 +440,31 @@ void pico_output_draw_text  (SDL_Point pos, char* text) {
 
 void pico_output_present (void) {
     WIN_Present(1);
+}
+
+void _pico_output_sound_cache (char* path, int cache) {
+    Mix_Chunk* mix = NULL;
+
+    if (cache) {
+        mix = pico_hash_get(_pico_hash, path);
+        if (mix == NULL) {
+            mix = Mix_LoadWAV(path);
+            pico_hash_add(_pico_hash, path, mix);
+        }
+    } else {
+        mix = Mix_LoadWAV(path);
+    }
+    pico_assert(mix != NULL);
+
+    Mix_PlayChannel(-1, mix, 0);
+
+    if (!cache) {
+        Mix_FreeChunk(mix);
+    }
+}
+
+void pico_output_sound (char* path) {
+    _pico_output_sound_cache(path, 1);
 }
 
 void pico_output_write_aux (char* text, int isln) {
