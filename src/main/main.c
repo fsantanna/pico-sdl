@@ -35,6 +35,7 @@ int main (void) {
     pico_input_delay(2000);
 
     // DRAW_TEXT
+    pico_state_set_font("tiny.ttf", 10);
     pico_output_draw_text((SDL_Point){0,0}, "Hello!");
 
     pico_input_delay(2000);

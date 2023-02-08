@@ -10,7 +10,7 @@
 
 SDL_Window*         WIN;
 static SDL_Texture* TEX;
-static TTF_Font*    FNT;
+static TTF_Font*    FNT = NULL;
 static int          FNT_H;
 static SDL_Point    CUR_CURSOR = {0,0};
 
@@ -415,6 +415,7 @@ void pico_output_draw_oval (SDL_Rect rect) {
 void pico_output_draw_text  (SDL_Point pos, char* text) {
     uint8_t r, g, b;
     SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
+    assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended(FNT, text,
                                               (SDL_Color){r,g,b,0xFF});
     pico_assert(sfc != NULL);
@@ -476,6 +477,7 @@ void pico_output_write_aux (char* text, int isln) {
         return;
     }
 
+    assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended (
         FNT, text,
         (SDL_Color) { S.color_draw.r, S.color_draw.g,
