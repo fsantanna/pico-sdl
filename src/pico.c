@@ -128,7 +128,7 @@ void pico_init (int on) {
 
         pico_state_set_size(S.size);
         pico_state_set_size_pixel(S.size_pixel);
-        pico_state_set_font("tiny.ttf", S.size.x/50);
+        //pico_state_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
 
         //SDL_Delay(1000);
