@@ -518,16 +518,19 @@ void pico_output_writeln (char* text) {
 
 // GET
 
-void pico_state_get_size (SDL_Point* size) {
-    assert(0 && "TODO");
-    //size->x = WIN_W;
-    //size->y = WIN_H;
-}
-
 void pico_state_get_size_image (char* file, SDL_Point* size) {
     SDL_Texture* tex = IMG_LoadTexture(REN, file);
     pico_assert(tex != NULL);
     SDL_QueryTexture(tex, NULL, NULL, &size->x, &size->y);
+}
+
+void pico_state_get_size_window (SDL_Point* log, SDL_Point* phy) {
+    if (log != NULL) {
+        *log = LOG;
+    }
+    if (phy != NULL) {
+        *phy = PHY;
+    }
 }
 
 // SET

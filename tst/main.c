@@ -29,7 +29,7 @@ int main (void) {
     pico_state_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
     pico_output_clear();
     pico_output_draw_pixel((SDL_Point){0,0});
-    pico_output_draw_rect((SDL_Rect){ 20, 20,10,5});
+    pico_output_draw_rect((SDL_Rect){ 25, 25,10,5});
     pico_output_draw_oval((SDL_Rect){0,0,5,10});
 
     pico_input_delay(2000);
@@ -42,7 +42,7 @@ int main (void) {
     pico_output_clear();
 
     // WRITE
-    pico_state_set_cursor((SDL_Point){-25,25});
+    pico_state_set_cursor((SDL_Point){-30,30});
     pico_output_write("1 ");
     pico_output_write("2 ");
     pico_output_writeln("3");
@@ -62,10 +62,6 @@ int main (void) {
     SDL_Event e3;
     pico_input_event_timeout(&e3, SDL_ANY, 5000);
 
-    // GET SIZE
-    SDL_Point size;
-    pico_state_get_size(&size);
-
     // GRID=0
     pico_state_set_grid(0);
 
@@ -81,17 +77,20 @@ int main (void) {
     pico_state_set_auto(1);
     pico_output_clear();
 
+    // GET SIZE
+    SDL_Point log, phy;
+    pico_state_get_size_window(&log, &phy);
+
     // DRAW_RECT
     for (int i=1; i<=20; i++) {
-        pico_state_set_size((SDL_Point){PICO_WIN,PICO_WIN});
-        if (PICO_WIN%i == 0) {
-            pico_state_set_size_pixel((SDL_Point){i,i});
-        }
+        log.x *= 0.9;
+        log.y *= 0.9;
+        pico_state_set_size_window(log, phy);
         pico_output_clear();
         pico_output_draw_text((SDL_Point){0,0}, "X");
-        pico_output_draw_rect((SDL_Rect){0,0,25,25});
+        pico_output_draw_rect((SDL_Rect){0,0,30,30});
         pico_state_set_color_draw((SDL_Color){0xFF,0x00,0x00,0xFF});
-        pico_output_draw_line((SDL_Point){0,0}, (SDL_Point){25,25});
+        pico_output_draw_line((SDL_Point){0,0}, (SDL_Point){30,30});
         pico_state_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
         pico_input_delay(200);
     }

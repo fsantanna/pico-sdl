@@ -47,7 +47,7 @@ void _pico_output_sound_cache (char* path, int cache);
 
 // STATE
 void pico_state_get_size_image  (char* file, SDL_Point* size);
-void pico_state_get_size_window (SDL_Point* size);
+void pico_state_get_size_window (SDL_Point* log, SDL_Point* phy);
 void pico_state_set_anchor      (Pico_HAnchor h, Pico_VAnchor v);
 void pico_state_set_auto        (int on);
 void pico_state_set_color_clear (SDL_Color color);
