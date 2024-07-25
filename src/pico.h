@@ -3,7 +3,8 @@
 #include <SDL2/SDL.h>
 
 #define PICO_TITLE "pico-SDL"
-#define PICO_WIN   510
+#define PICO_WIN   610
+#define PICO_LOG   61
 #define PICO_HASH  128
 
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
@@ -45,8 +46,8 @@ void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache);
 void _pico_output_sound_cache (char* path, int cache);
 
 // STATE
-void pico_state_get_size        (SDL_Point* size);
 void pico_state_get_size_image  (char* file, SDL_Point* size);
+void pico_state_get_size_window (SDL_Point* size);
 void pico_state_set_anchor      (Pico_HAnchor h, Pico_VAnchor v);
 void pico_state_set_auto        (int on);
 void pico_state_set_color_clear (SDL_Color color);
@@ -56,7 +57,6 @@ void pico_state_set_image_crop  (SDL_Rect crop);
 void pico_state_set_font        (char* file, int h);
 void pico_state_set_grid        (int on);
 void pico_state_set_pan         (SDL_Point pos);
-void pico_state_set_size        (SDL_Point size);
 void pico_state_set_size_image  (SDL_Point size);
-void pico_state_set_size_pixel  (SDL_Point size);
+void pico_state_set_size_window (SDL_Point log, SDL_Point win);
 void pico_state_set_title       (char* title);
