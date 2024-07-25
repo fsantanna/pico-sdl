@@ -23,13 +23,11 @@ static SDL_Point    CUR_CURSOR = {0,0};
 
 #define LOG ({SDL_Point log; SDL_RenderGetLogicalSize(REN, &log.x, &log.y); log;})
 #define PHY ({SDL_Point phy; SDL_GetWindowSize(WIN, &phy.x, &phy.y); phy;})
-#define PHY_LOG(phy) ({float x,y; SDL_RenderWindowToLogical(REN, phy.x,phy.y,&x,&y); (SDL_Point){x,y};})
 
 static pico_hash* _pico_hash;
 
 static struct {
     SDL_Point anchor;
-    int       autom;
     SDL_Color color_clear;
     SDL_Color color_draw;
     SDL_Point cursor;
@@ -39,7 +37,6 @@ static struct {
     SDL_Point size_image;
 } S = {
     { Center, Middle },
-    1,
     {0x00,0x00,0x00,0xFF},
     {0xFF,0xFF,0xFF,0xFF},
     {0,0},
@@ -72,29 +69,6 @@ static void show_grid (void) {
         S.color_draw.b,
         S.color_draw.a
     );
-}
-
-static void WIN_Clear (void) {
-    SDL_SetRenderDrawColor (REN,
-        S.color_clear.r,
-        S.color_clear.g,
-        S.color_clear.b,
-        S.color_clear.a
-    );
-    SDL_RenderClear(REN);
-    SDL_SetRenderDrawColor (REN,
-        S.color_draw.r,
-        S.color_draw.g,
-        S.color_draw.b,
-        S.color_draw.a
-    );
-}
-
-static void WIN_Present (int force) {
-    if (!S.autom && !force) return;
-    show_grid();
-    SDL_RenderPresent(REN);
-    WIN_Clear();
 }
 
 static int hanchor (int x, int w) {
@@ -173,11 +147,6 @@ void pico_init (int on) {
 //      - 0: otherwise
 int pico_event_from_sdl (SDL_Event* e, int xp) {
     switch (e->type) {
-        case SDL_QUIT:
-            if (S.autom) {
-                exit(0);
-            }
-
         case SDL_KEYDOWN: {
             const unsigned char* state = SDL_GetKeyboardState(NULL);
             if (!state[SDL_SCANCODE_LCTRL] && !state[SDL_SCANCODE_RCTRL]) {
@@ -252,14 +221,10 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
     switch (e->type) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
-        case SDL_MOUSEMOTION: {
-            // for some reason, e->button uses physical, not logical screen
-            SDL_Point phy = { e->button.x, e->button.y };
-            SDL_Point log = PHY_LOG(phy);
-            e->button.x = _X(log.x);
-            e->button.y = _Y(log.y);
+        case SDL_MOUSEMOTION:
+            e->button.x = _X(e->button.x);
+            e->button.y = _Y(e->button.y);
             break;
-        }
         default:
             break;
     }
@@ -286,8 +251,12 @@ void pico_input_delay (int ms) {
 
 void pico_input_event (SDL_Event* evt, int type) {
     while (1) {
-        SDL_WaitEvent(evt);
-        if (pico_event_from_sdl(evt, type)) {
+        SDL_Event x;
+        SDL_WaitEvent(&x);
+        if (pico_event_from_sdl(&x, type)) {
+            if (evt != NULL) {
+                *evt = x;
+            }
             return;
         }
     }
@@ -312,9 +281,24 @@ int pico_input_event_timeout (SDL_Event* evt, int type, int timeout) {
 
 // OUTPUT
 
+static void WIN_Clear (void) {
+    SDL_SetRenderDrawColor (REN,
+        S.color_clear.r,
+        S.color_clear.g,
+        S.color_clear.b,
+        S.color_clear.a
+    );
+    SDL_RenderClear(REN);
+    SDL_SetRenderDrawColor (REN,
+        S.color_draw.r,
+        S.color_draw.g,
+        S.color_draw.b,
+        S.color_draw.a
+    );
+}
+
 void pico_output_clear (void) {
     WIN_Clear();
-    WIN_Present(0);
 }
 
 void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
@@ -351,9 +335,6 @@ void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
     rct.y = vanchor( Y(pos.y), rct.h );
 
     SDL_RenderCopy(REN, tex, crp, &rct);
-
-    WIN_Present(0);
-
 }
 
 void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache) {
@@ -382,12 +363,10 @@ void pico_output_draw_image (SDL_Point pos, char* path) {
 
 void pico_output_draw_line (SDL_Point p1, SDL_Point p2) {
     SDL_RenderDrawLine(REN, X(p1.x),Y(p1.y), X(p2.x),Y(p2.y));
-    WIN_Present(0);
 }
 
 void pico_output_draw_pixel (SDL_Point pos) {
     SDL_RenderDrawPoint(REN, X(pos.x), Y(pos.y) );
-    WIN_Present(0);
 }
 
 void pico_output_draw_rect (SDL_Rect rect) {
@@ -397,7 +376,6 @@ void pico_output_draw_rect (SDL_Rect rect) {
         rect.w, rect.h
     };
     SDL_RenderFillRect(REN, &out);
-    WIN_Present(0);
 }
 
 void pico_output_draw_oval (SDL_Rect rect) {
@@ -411,10 +389,9 @@ void pico_output_draw_oval (SDL_Rect rect) {
         out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
         S.color_draw.r, S.color_draw.g, S.color_draw.b, S.color_draw.a
     );
-    WIN_Present(0);
 }
 
-void pico_output_draw_text  (SDL_Point pos, char* text) {
+void pico_output_draw_text (SDL_Point pos, char* text) {
     uint8_t r, g, b;
     SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
     assert(FNT != NULL);
@@ -435,14 +412,15 @@ void pico_output_draw_text  (SDL_Point pos, char* text) {
     rct.y = vanchor( Y(pos.y), rct.h );
 
     SDL_RenderCopy(REN, tex, NULL, &rct);
-    WIN_Present(0);
 
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(sfc);
 }
 
 void pico_output_present (void) {
-    WIN_Present(1);
+    show_grid();
+    SDL_RenderPresent(REN);
+    WIN_Clear();
 }
 
 void _pico_output_sound_cache (char* path, int cache) {
@@ -493,7 +471,6 @@ void pico_output_write_aux (char* text, int isln) {
     TTF_SizeText(FNT, text, &w,&h);
     SDL_Rect rct = { X(CUR_CURSOR.x),Y(CUR_CURSOR.y), w,h };
     SDL_RenderCopy(REN, tex, NULL, &rct);
-    WIN_Present(0);
 
     CUR_CURSOR.x += w;
     if (isln) {
@@ -539,10 +516,6 @@ void pico_state_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
     S.anchor = (SDL_Point) {h, v};
 }
 
-void pico_state_set_auto (int on) {
-    S.autom = on;
-}
-
 void pico_state_set_color_clear (SDL_Color color) {
     S.color_clear = color;
 }
@@ -581,7 +554,8 @@ void pico_state_set_font (char* file, int h) {
 void pico_state_set_size_window (SDL_Point log, SDL_Point phy) {
     SDL_SetWindowSize(WIN, phy.x, phy.y);
     SDL_RenderSetLogicalSize(REN, log.x, log.y);
-    pico_output_clear();
+    WIN_Clear();
+    pico_output_present();
 }
 
 void pico_state_set_image_crop (SDL_Rect crop) {

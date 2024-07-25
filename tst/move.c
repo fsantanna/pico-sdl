@@ -9,10 +9,8 @@ int main (void) {
         pico_state_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_pixel((SDL_Point){x,y});
 
+        pico_output_present();
         pico_input_delay(200);
-
-        pico_state_set_color_draw((SDL_Color){0x00,0x00,0x00,0xFF});
-        pico_output_draw_pixel((SDL_Point){x,y});
 
         y = y+1;
     }
