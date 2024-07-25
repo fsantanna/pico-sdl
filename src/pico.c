@@ -49,19 +49,39 @@ static struct {
     {0,0}
 };
 
-static void show_grid (SDL_Point log) {
+static void show_grid (void) {
     if (!S.grid) return;
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
+    SDL_Point log = LOG;
     SDL_Point phy = PHY;
+
+    SDL_RenderSetLogicalSize(REN, phy.x, phy.y);
     for (int i=0; i<=phy.x; i+=(phy.x/log.x)) {
         SDL_RenderDrawLine(REN, i, 0, i, phy.y);
     }
     for (int j=0; j<=phy.y; j+=(phy.y/log.y)) {
         SDL_RenderDrawLine(REN, 0, j, phy.x, j);
     }
+    SDL_RenderSetLogicalSize(REN, log.x, log.y);
 
+    SDL_SetRenderDrawColor (REN,
+        S.color_draw.r,
+        S.color_draw.g,
+        S.color_draw.b,
+        S.color_draw.a
+    );
+}
+
+static void WIN_Clear (void) {
+    SDL_SetRenderDrawColor (REN,
+        S.color_clear.r,
+        S.color_clear.g,
+        S.color_clear.b,
+        S.color_clear.a
+    );
+    SDL_RenderClear(REN);
     SDL_SetRenderDrawColor (REN,
         S.color_draw.r,
         S.color_draw.g,
@@ -72,15 +92,9 @@ static void show_grid (SDL_Point log) {
 
 static void WIN_Present (int force) {
     if (!S.autom && !force) return;
-    SDL_Point log;
-    SDL_RenderGetLogicalSize(REN, &log.x, &log.y);
-    SDL_SetRenderTarget(REN, NULL);
-    SDL_RenderClear(REN);
-    SDL_RenderCopy(REN, TEX, NULL, NULL);
-    show_grid(log);
+    show_grid();
     SDL_RenderPresent(REN);
-    assert(0 == SDL_SetRenderTarget(REN, TEX));
-    assert(0 == SDL_RenderSetLogicalSize(REN, log.x, log.y));
+    WIN_Clear();
 }
 
 static int hanchor (int x, int w) {
@@ -299,20 +313,8 @@ int pico_input_event_timeout (SDL_Event* evt, int type, int timeout) {
 // OUTPUT
 
 void pico_output_clear (void) {
-    SDL_SetRenderDrawColor (REN,
-        S.color_clear.r,
-        S.color_clear.g,
-        S.color_clear.b,
-        S.color_clear.a
-    );
-    SDL_RenderClear(REN);
+    WIN_Clear();
     WIN_Present(0);
-    SDL_SetRenderDrawColor (REN,
-        S.color_draw.r,
-        S.color_draw.g,
-        S.color_draw.b,
-        S.color_draw.a
-    );
 }
 
 void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
@@ -575,13 +577,7 @@ void pico_state_set_font (char* file, int h) {
 
 void pico_state_set_size_window (SDL_Point log, SDL_Point phy) {
     SDL_SetWindowSize(WIN, phy.x, phy.y);
-    TEX = SDL_CreateTexture (
-            REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-            phy.x, phy.y
-    );
-    pico_assert(TEX != NULL);
-    assert(0 == SDL_SetRenderTarget(REN, TEX));
-    assert(0 == SDL_RenderSetLogicalSize(REN, log.x, log.y));
+    SDL_RenderSetLogicalSize(REN, log.x, log.y);
     pico_output_clear();
 }
 
