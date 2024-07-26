@@ -80,13 +80,13 @@ int main (void) {
 
     // GET SIZE
     SDL_Point log, phy;
-    pico_get_window_size(&log, &phy);
+    pico_get_size(&log, &phy);
 
     // DRAW_RECT
     for (int i=1; i<=20; i++) {
         log.x -= 1;
         log.y -= 1;
-        pico_set_size_window(log, phy);
+        pico_set_size(log, phy);
         pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((SDL_Rect){0,0,30,30});
         pico_set_color_draw((SDL_Color){0xFF,0x00,0x00,0xFF});
@@ -98,7 +98,7 @@ int main (void) {
     for (int i=1; i<=20; i++) {
         log.x += 1;
         log.y += 1;
-        pico_set_size_window(log, phy);
+        pico_set_size(log, phy);
         pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((SDL_Rect){0,0,30,30});
         pico_set_color_draw((SDL_Color){0xFF,0x00,0x00,0xFF});

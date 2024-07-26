@@ -16,10 +16,10 @@ static SDL_Point    CUR_CURSOR = {0,0};
 
 #define REN  (SDL_GetRenderer(WIN))
 
-#define X(v) ((v)+LOG.x/2-S.pan.x)
-#define Y(v) (LOG.y/2-(v)-S.pan.y)
-#define _X(v) ((v)-LOG.x/2+S.pan.x)
-#define _Y(v) (LOG.y/2-(v)+S.pan.y)
+#define  X(v) ((v)-S.pan.x)
+#define  Y(v) ((v)-S.pan.y)
+#define _X(v) ((v)+S.pan.x)
+#define _Y(v) ((v)+S.pan.y)
 
 #define LOG ({SDL_Point log; SDL_RenderGetLogicalSize(REN, &log.x, &log.y); log;})
 #define PHY ({SDL_Point phy; SDL_GetWindowSize(WIN, &phy.x, &phy.y); phy;})
@@ -28,21 +28,23 @@ static pico_hash* _pico_hash;
 
 static struct {
     SDL_Point anchor;
-    SDL_Color color_clear;
-    SDL_Color color_draw;
+    struct {
+        SDL_Color clear;
+        SDL_Color draw;
+    } color;
     SDL_Point cursor;
-    int       grid;
-    SDL_Rect  image_crop;
+    int grid;
+    struct {
+        SDL_Rect  crop;
+        SDL_Point size;
+    } image;
     SDL_Point pan;
-    SDL_Point size_image;
 } S = {
     { Center, Middle },
-    {0x00,0x00,0x00,0xFF},
-    {0xFF,0xFF,0xFF,0xFF},
+    { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
     {0,0},
     1,
-    {0,0,0,0},
-    {0,0},
+    { {0,0,0,0}, {0,0} },
     {0,0}
 };
 
@@ -64,10 +66,10 @@ static void show_grid (void) {
     SDL_RenderSetLogicalSize(REN, log.x, log.y);
 
     SDL_SetRenderDrawColor (REN,
-        S.color_draw.r,
-        S.color_draw.g,
-        S.color_draw.b,
-        S.color_draw.a
+        S.color.draw.r,
+        S.color.draw.g,
+        S.color.draw.b,
+        S.color.draw.a
     );
 }
 
@@ -101,7 +103,7 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            PICO_WIN, PICO_WIN, SDL_WINDOW_SHOWN
+            PICO_WIN_X, PICO_WIN_Y, SDL_WINDOW_SHOWN
         );
         pico_assert(WIN != NULL);
 
@@ -112,9 +114,9 @@ void pico_init (int on) {
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
 
-        pico_set_size_window (
-            (SDL_Point) { PICO_LOG, PICO_LOG },
-            (SDL_Point) { PICO_WIN, PICO_WIN }
+        pico_set_size (
+            (SDL_Point) { PICO_LOG_X, PICO_LOG_Y },
+            (SDL_Point) { PICO_WIN_X, PICO_WIN_Y }
         );
         //pico_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
@@ -156,14 +158,14 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
                     SDL_Point log = LOG;
                     log.x *= 0.9;
                     log.y *= 0.9;
-                    pico_set_size_window(log, PHY);
+                    pico_set_size(log, PHY);
                     break;
                 }
                 case SDLK_EQUALS: {
                     SDL_Point log = LOG;
                     log.x *= 1.1;
                     log.y *= 1.1;
-                    pico_set_size_window(log, PHY);
+                    pico_set_size(log, PHY);
                     break;
                 }
                 case SDLK_LEFT: {
@@ -282,17 +284,17 @@ int pico_input_event_timeout (SDL_Event* evt, int type, int timeout) {
 
 static void WIN_Clear (void) {
     SDL_SetRenderDrawColor (REN,
-        S.color_clear.r,
-        S.color_clear.g,
-        S.color_clear.b,
-        S.color_clear.a
+        S.color.clear.r,
+        S.color.clear.g,
+        S.color.clear.b,
+        S.color.clear.a
     );
     SDL_RenderClear(REN);
     SDL_SetRenderDrawColor (REN,
-        S.color_draw.r,
-        S.color_draw.g,
-        S.color_draw.b,
-        S.color_draw.a
+        S.color.draw.r,
+        S.color.draw.g,
+        S.color.draw.b,
+        S.color.draw.a
     );
 }
 
@@ -301,15 +303,15 @@ void pico_output_clear (void) {
 }
 
 void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
-    int defsize = (S.size_image.x==0 && S.size_image.y==0);
-    int defcrop = (S.image_crop.x==0 && S.image_crop.y==0 &&
-                   S.image_crop.w==0 && S.image_crop.h==0);
+    int defsize = (S.image.size.x==0 && S.image.size.y==0);
+    int defcrop = (S.image.crop.x==0 && S.image.crop.y==0 &&
+                   S.image.crop.w==0 && S.image.crop.h==0);
 
     SDL_Rect* crp;
     if (defcrop) {
         crp = NULL;
     } else {
-        crp = (SDL_Rect*) &S.image_crop;
+        crp = (SDL_Rect*) &S.image.crop;
     }
 
     SDL_Rect rct;
@@ -321,8 +323,8 @@ void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
             rct.h = crp->h;
         }
     } else {
-        rct.w = S.size_image.x;
-        rct.h = S.size_image.y;
+        rct.w = S.image.size.x;
+        rct.h = S.image.size.y;
     }
 
     // SCALE
@@ -386,7 +388,7 @@ void pico_output_draw_oval (SDL_Rect rect) {
     filledEllipseRGBA (
         REN,
         out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
-        S.color_draw.r, S.color_draw.g, S.color_draw.b, S.color_draw.a
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
     );
 }
 
@@ -459,8 +461,8 @@ void pico_output_write_aux (char* text, int isln) {
     pico_assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended (
         FNT, text,
-        (SDL_Color) { S.color_draw.r, S.color_draw.g,
-                      S.color_draw.b, S.color_draw.a }
+        (SDL_Color) { S.color.draw.r, S.color.draw.g,
+                      S.color.draw.b, S.color.draw.a }
     );
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
@@ -494,7 +496,7 @@ void pico_output_writeln (char* text) {
 
 // GET
 
-int pico_get_window_fullscreen (void) {
+int pico_get_fullscreen (void) {
     return SDL_GetWindowFlags(WIN) & SDL_WINDOW_FULLSCREEN_DESKTOP;
 }
 
@@ -504,7 +506,7 @@ void pico_get_image_size (char* file, SDL_Point* size) {
     SDL_QueryTexture(tex, NULL, NULL, &size->x, &size->y);
 }
 
-void pico_get_window_size (SDL_Point* log, SDL_Point* phy) {
+void pico_get_size (SDL_Point* log, SDL_Point* phy) {
     if (log != NULL) {
         *log = LOG;
     }
@@ -520,16 +522,16 @@ void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
 }
 
 void pico_set_color_clear (SDL_Color color) {
-    S.color_clear = color;
+    S.color.clear = color;
 }
 
 void pico_set_color_draw  (SDL_Color color) {
-    S.color_draw = color;
+    S.color.draw = color;
     SDL_SetRenderDrawColor (REN,
-        S.color_draw.r,
-        S.color_draw.g,
-        S.color_draw.b,
-        S.color_draw.a
+        S.color.draw.r,
+        S.color.draw.g,
+        S.color.draw.b,
+        S.color.draw.a
     );
 }
 
@@ -554,20 +556,20 @@ void pico_set_font (char* file, int h) {
     pico_assert(FNT != NULL);
 }
 
-void pico_set_size_fullscreen (int on) {
+void pico_set_fullscreen (int on) {
     static SDL_Point old;
-    SDL_WindowFlags cur = pico_get_window_fullscreen();
+    SDL_WindowFlags cur = pico_get_fullscreen();
     assert(on != cur);
     if (on) {
         old = PHY;
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
     } else {
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
-        pico_set_size_window(LOG, old);
+        pico_set_size(LOG, old);
     }
 }
 
-void pico_set_size_window (SDL_Point log, SDL_Point phy) {
+void pico_set_size (SDL_Point log, SDL_Point phy) {
     SDL_SetWindowSize(WIN, phy.x, phy.y);
     SDL_RenderSetLogicalSize(REN, log.x, log.y);
     WIN_Clear();
@@ -575,11 +577,11 @@ void pico_set_size_window (SDL_Point log, SDL_Point phy) {
 }
 
 void pico_set_image_crop (SDL_Rect crop) {
-    S.image_crop = crop;
+    S.image.crop = crop;
 }
 
-void pico_set_size_image (SDL_Point size) {
-    S.size_image = size;
+void pico_set_image_size (SDL_Point size) {
+    S.image.size = size;
 }
 
 void pico_set_title (char* title) {
@@ -588,8 +590,13 @@ void pico_set_title (char* title) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-int pico_isPointVsRect (SDL_Point pt, SDL_Rect r) {
+int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r) {
     int rw = r.w / 2;
     int rh = r.h / 2;
     return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
+}
+
+SDL_Point pico_pct_to_point (float x, float y) {
+    SDL_Point log = LOG;
+    return (SDL_Point) { log.x*x, log.y*y };
 }

@@ -3,8 +3,10 @@
 #include <SDL2/SDL.h>
 
 #define PICO_TITLE "pico-SDL"
-#define PICO_WIN   610
-#define PICO_LOG   61
+#define PICO_WIN_X 640
+#define PICO_WIN_Y 360
+#define PICO_LOG_X  64
+#define PICO_LOG_Y  36
 #define PICO_HASH  128
 
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
@@ -21,7 +23,8 @@ typedef enum {
 
 void pico_init (int on);
 int pico_event_from_sdl (SDL_Event* e, int xp);
-int pico_isPointVsRect (SDL_Point pt, SDL_Rect r);
+int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
+SDL_Point pico_pct_to_point (float x, float y);
 
 // INPUT
 void pico_input_delay         (int ms);
@@ -46,18 +49,20 @@ void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache);
 void _pico_output_sound_cache (char* path, int cache);
 
 // STATE
+
 void pico_get_image_size  (char* file, SDL_Point* size);
-int  pico_get_window_fullscreen (void);
-void pico_get_window_size (SDL_Point* log, SDL_Point* phy);
+int  pico_get_fullscreen (void);
+void pico_get_size (SDL_Point* log, SDL_Point* phy);
+
 void pico_set_anchor      (Pico_HAnchor h, Pico_VAnchor v);
 void pico_set_color_clear (SDL_Color color);
 void pico_set_color_draw  (SDL_Color color);
 void pico_set_cursor      (SDL_Point pos);
-void pico_set_image_crop  (SDL_Rect crop);
 void pico_set_font        (char* file, int h);
+void pico_set_fullscreen  (int on);
 void pico_set_grid        (int on);
+void pico_set_image_crop  (SDL_Rect crop);
+void pico_set_image_size  (SDL_Point size);
 void pico_set_pan         (SDL_Point pos);
-void pico_set_size_fullscreen (int on);
-void pico_set_size_image  (SDL_Point size);
-void pico_set_size_window (SDL_Point log, SDL_Point win);
+void pico_set_size        (SDL_Point log, SDL_Point win);
 void pico_set_title       (char* title);

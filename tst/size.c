@@ -2,29 +2,23 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_grid(0);
+    pico_set_title("Size - Fullscreen");
 
-    SDL_Point log = { 301, 301 };
-    SDL_Point phy = { 301, 301 };
-    pico_set_size_window(log, phy);
-
-    pico_output_draw_rect((SDL_Rect){0,0,100,100});
+    SDL_Point pt  = pico_pct_to_point(0.5, 0.5);
+    SDL_Rect  rct = {pt.x, pt.y, 32, 18};
+    pico_output_draw_rect(rct);
     pico_output_present();
     pico_input_event(NULL, SDL_KEYDOWN);
 
-    debug();
-    pico_set_size_fullscreen(1);
-    debug();
+    pico_set_fullscreen(1);
 
-    pico_output_draw_rect((SDL_Rect){0,0,100,100});
+    pico_output_draw_rect(rct);
     pico_output_present();
     pico_input_event(NULL, SDL_KEYDOWN);
 
-    debug();
-    pico_set_size_fullscreen(0);
-    debug();
+    pico_set_fullscreen(0);
 
-    pico_output_draw_rect((SDL_Rect){0,0,100,100});
+    pico_output_draw_rect(rct);
     pico_output_present();
     pico_input_event(NULL, SDL_KEYDOWN);
 
