@@ -16,10 +16,8 @@ static SDL_Point    CUR_CURSOR = {0,0};
 
 #define REN  (SDL_GetRenderer(WIN))
 
-#define  X(v) ((v)-S.pan.x)
-#define  Y(v) ((v)-S.pan.y)
-#define _X(v) ((v)+S.pan.x)
-#define _Y(v) ((v)+S.pan.y)
+#define X(v,w) (hanchor(v,w)-S.pan.x)
+#define Y(v,h) (vanchor(v,h)-S.pan.y)
 
 #define LOG ({SDL_Point log; SDL_RenderGetLogicalSize(REN, &log.x, &log.y); log;})
 #define PHY ({SDL_Point phy; SDL_GetWindowSize(WIN, &phy.x, &phy.y); phy;})
@@ -80,7 +78,7 @@ static int hanchor (int x, int w) {
         case Center:
             return x - w/2;
         case Right:
-            return x - w + 1;
+            return x - w; // + 1;
     }
     assert(0 && "bug found");
 }
@@ -92,7 +90,7 @@ static int vanchor (int y, int h) {
         case Middle:
             return y - h/2;
         case Bottom:
-            return y - h + 1;
+            return y - h; // + 1;
     }
     assert(0 && "bug found");
 }
@@ -103,7 +101,7 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            PICO_WIN_X, PICO_WIN_Y, SDL_WINDOW_SHOWN
+            PICO_PHY_X, PICO_PHY_Y, SDL_WINDOW_SHOWN
         );
         pico_assert(WIN != NULL);
 
@@ -116,7 +114,7 @@ void pico_init (int on) {
 
         pico_set_size (
             (SDL_Point) { PICO_LOG_X, PICO_LOG_Y },
-            (SDL_Point) { PICO_WIN_X, PICO_WIN_Y }
+            (SDL_Point) { PICO_PHY_X, PICO_PHY_Y }
         );
         //pico_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
@@ -223,8 +221,8 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:
-            e->button.x = _X(e->button.x);
-            e->button.y = _Y(e->button.y);
+            e->button.x = e->button.x + S.pan.x;
+            e->button.y = e->button.y + S.pan.y;
             break;
         default:
             break;
@@ -331,9 +329,9 @@ void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
     rct.w = rct.w; // * GRAPHICS_SET_SCALE_W;
     rct.h = rct.h; // * GRAPHICS_SET_SCALE_H;
 
-    // ANCHOR
-    rct.x = hanchor( X(pos.x), rct.w );
-    rct.y = vanchor( Y(pos.y), rct.h );
+    // ANCHOR / PAN
+    rct.x = X(pos.x, rct.w);
+    rct.y = Y(pos.y, rct.h);
 
     SDL_RenderCopy(REN, tex, crp, &rct);
 }
@@ -363,17 +361,17 @@ void pico_output_draw_image (SDL_Point pos, char* path) {
 }
 
 void pico_output_draw_line (SDL_Point p1, SDL_Point p2) {
-    SDL_RenderDrawLine(REN, X(p1.x),Y(p1.y), X(p2.x),Y(p2.y));
+    SDL_RenderDrawLine(REN, X(p1.x,1),Y(p1.y,1), X(p2.x,1),Y(p2.y,1));
 }
 
 void pico_output_draw_pixel (SDL_Point pos) {
-    SDL_RenderDrawPoint(REN, X(pos.x), Y(pos.y) );
+    SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
 }
 
 void pico_output_draw_rect (SDL_Rect rect) {
     SDL_Rect out = {
-        hanchor(X(rect.x),rect.w),
-        vanchor(Y(rect.y),rect.h),
+        X(rect.x, rect.w),
+        Y(rect.y, rect.h),
         rect.w, rect.h
     };
     SDL_RenderFillRect(REN, &out);
@@ -381,8 +379,8 @@ void pico_output_draw_rect (SDL_Rect rect) {
 
 void pico_output_draw_oval (SDL_Rect rect) {
     SDL_Rect out = {
-        hanchor(X(rect.x),rect.w),
-        vanchor(Y(rect.y),rect.h),
+        X(rect.x, rect.w),
+        Y(rect.y, rect.h),
         rect.w, rect.h
     };
     filledEllipseRGBA (
@@ -409,8 +407,8 @@ void pico_output_draw_text (SDL_Point pos, char* text) {
     rct.h = sfc->h; // * GRAPHICS_SET_SCALE_H;
 
     // ANCHOR
-    rct.x = hanchor( X(pos.x), rct.w );
-    rct.y = vanchor( Y(pos.y), rct.h );
+    rct.x = X(pos.x, rct.w);
+    rct.y = Y(pos.y, rct.h);
 
     SDL_RenderCopy(REN, tex, NULL, &rct);
 
@@ -453,7 +451,7 @@ void pico_output_write_aux (char* text, int isln) {
     if (strlen(text) == 0) {
         if (isln) {
             CUR_CURSOR.x = S.cursor.x;
-            CUR_CURSOR.y -= FNT_H;
+            CUR_CURSOR.y += FNT_H;
         }
         return;
     }
@@ -470,13 +468,13 @@ void pico_output_write_aux (char* text, int isln) {
 
     int w, h;
     TTF_SizeText(FNT, text, &w,&h);
-    SDL_Rect rct = { X(CUR_CURSOR.x),Y(CUR_CURSOR.y), w,h };
+    SDL_Rect rct = { X(CUR_CURSOR.x,0),Y(CUR_CURSOR.y,0), w,h };
     SDL_RenderCopy(REN, tex, NULL, &rct);
 
     CUR_CURSOR.x += w;
     if (isln) {
         CUR_CURSOR.x = S.cursor.x;
-        CUR_CURSOR.y -= FNT_H;
+        CUR_CURSOR.y += FNT_H;
     }
 
     SDL_DestroyTexture(tex);

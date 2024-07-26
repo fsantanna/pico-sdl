@@ -3,8 +3,8 @@
 #include <SDL2/SDL.h>
 
 #define PICO_TITLE "pico-SDL"
-#define PICO_WIN_X 640
-#define PICO_WIN_Y 360
+#define PICO_PHY_X 640
+#define PICO_PHY_Y 360
 #define PICO_LOG_X  64
 #define PICO_LOG_Y  36
 #define PICO_HASH  128

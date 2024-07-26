@@ -6,6 +6,7 @@ int main (void) {
 
     SDL_Event e1;
     pico_input_event(&e1, SDL_KEYUP);       // wait any key press
+    SDL_Point pt = pico_pct_to_point(0.5, 0.5);
 
     // TITLE
     pico_set_title("Testing...");     // change window title
@@ -22,7 +23,7 @@ int main (void) {
 
     // DRAW_IMAGE
     pico_set_anchor(Center,Middle);
-    pico_output_draw_image((SDL_Point){0,0},"open.png");
+    pico_output_draw_image(pt,"open.png");
 
     pico_output_present();                  // show centered image
     pico_input_delay(2000);
@@ -31,21 +32,24 @@ int main (void) {
     pico_set_color_clear((SDL_Color){0x00,0x00,0x00,0xFF});
     pico_output_clear();
     pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
-    pico_output_draw_pixel((SDL_Point){0,0});
-    pico_output_draw_rect((SDL_Rect){ 20,20, 10,5});
-    pico_output_draw_oval((SDL_Rect){-20,-20, 5,10});
+    pico_output_draw_pixel(pt);
+    SDL_Point rct = pico_pct_to_point(3/4.0, 1/4.0);
+    pico_output_draw_rect((SDL_Rect){ rct.x,rct.y, 10,5});
+    SDL_Point ova = pico_pct_to_point(1/4.0, 3/4.0);
+    pico_output_draw_oval((SDL_Rect){ova.x,ova.y, 5,10});
 
     pico_output_present();                  // show oval -> pixel -> rect
     pico_input_delay(2000);
 
     // DRAW_TEXT
-    pico_output_draw_text((SDL_Point){0,0}, "Hello!");
+    pico_output_draw_text(pt, "Hello!");
 
     pico_output_present();                  // show centered Hello World
     pico_input_delay(2000);
 
     // WRITE
-    pico_set_cursor((SDL_Point){-30,30});
+    SDL_Point up = pico_pct_to_point(1/10.0, 1/10.0);
+    pico_set_cursor(up);
     pico_output_write("1 ");
     pico_output_write("2 ");
     pico_output_writeln("3");
@@ -87,11 +91,12 @@ int main (void) {
         log.x -= 1;
         log.y -= 1;
         pico_set_size(log, phy);
+        SDL_Point ct = pico_pct_to_point(0.5, 0.5);
         pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
-        pico_output_draw_rect((SDL_Rect){0,0,30,30});
+        pico_output_draw_rect((SDL_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((SDL_Color){0xFF,0x00,0x00,0xFF});
-        pico_output_draw_text((SDL_Point){-15,15}, "X");
-        pico_output_draw_line((SDL_Point){0,0}, (SDL_Point){30,30});
+        pico_output_draw_text(pico_pct_to_point(1/4.0,3/4.0), "X");
+        pico_output_draw_line(ct, pico_pct_to_point(1,0));
         pico_output_present();
         pico_input_delay(250);
     }
@@ -99,11 +104,12 @@ int main (void) {
         log.x += 1;
         log.y += 1;
         pico_set_size(log, phy);
+        SDL_Point ct = pico_pct_to_point(0.5, 0.5);
         pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
-        pico_output_draw_rect((SDL_Rect){0,0,30,30});
+        pico_output_draw_rect((SDL_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((SDL_Color){0xFF,0x00,0x00,0xFF});
-        pico_output_draw_text((SDL_Point){-15,15}, "X");
-        pico_output_draw_line((SDL_Point){0,0}, (SDL_Point){30,30});
+        pico_output_draw_text(pico_pct_to_point(1/4.0,3/4.0), "X");
+        pico_output_draw_line(ct, pico_pct_to_point(1,0));
         pico_output_present();
         pico_input_delay(250);
     }
@@ -113,14 +119,14 @@ int main (void) {
 
     for (int i=0; i<10; i++) {
         pico_set_pan((SDL_Point){i,0});
-        pico_output_draw_text((SDL_Point){0,0}, "Uma frase bem grande");
+        pico_output_draw_text(pt, "Uma frase bem grande");
         pico_output_present();
         pico_input_delay(500);
     }
 
     for (int i=0; i<20; i++) {
         pico_set_pan((SDL_Point){10-i,-i});
-        pico_output_draw_text((SDL_Point){0,0}, "Uma frase bem grande");
+        pico_output_draw_text(pt, "Uma frase bem grande");
         pico_output_present();
         pico_input_delay(500);
     }
