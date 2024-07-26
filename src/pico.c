@@ -105,10 +105,9 @@ void pico_init (int on) {
         );
         pico_assert(WIN != NULL);
 
-        // https://stackoverflow.com/questions/19935727/sdl2-how-to-render-with-one-buffer-instead-of-two
-        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_TARGETTEXTURE);
+        //SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED);
+        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
         pico_assert(REN != NULL);
-        SDL_SetRenderDrawBlendMode(REN,SDL_BLENDMODE_BLEND);
 
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
@@ -495,7 +494,9 @@ void pico_output_writeln (char* text) {
 
 // GET
 
-void pico_state_get_size_image (char* file, SDL_Point* size) {
+int pico_get_window_fullscreen (void) {
+    return SDL_GetWindowFlags(WIN) & SDL_WINDOW_FULLSCREEN_DESKTOP;
+}
     SDL_Texture* tex = IMG_LoadTexture(REN, file);
     pico_assert(tex != NULL);
     SDL_QueryTexture(tex, NULL, NULL, &size->x, &size->y);
@@ -551,7 +552,18 @@ void pico_state_set_font (char* file, int h) {
     pico_assert(FNT != NULL);
 }
 
-void pico_state_set_size_window (SDL_Point log, SDL_Point phy) {
+void pico_set_size_fullscreen (int on) {
+    static SDL_Point old;
+    SDL_WindowFlags cur = pico_get_window_fullscreen();
+    assert(on != cur);
+    if (on) {
+        old = PHY;
+        pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
+    } else {
+        pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
+        pico_set_size_window(LOG, old);
+    }
+}
     SDL_SetWindowSize(WIN, phy.x, phy.y);
     SDL_RenderSetLogicalSize(REN, log.x, log.y);
     WIN_Clear();
