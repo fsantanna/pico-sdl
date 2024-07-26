@@ -98,7 +98,7 @@ static int vanchor (int y, int h) {
 void pico_init (int on) {
     if (on) {
         _pico_hash = pico_hash_create(PICO_HASH);
-        pico_assert(SDL_Init(SDL_INIT_VIDEO) == 0);
+        pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             PICO_WIN, PICO_WIN, SDL_WINDOW_SHOWN
@@ -112,11 +112,11 @@ void pico_init (int on) {
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
 
-        pico_state_set_size_window (
+        pico_set_size_window (
             (SDL_Point) { PICO_LOG, PICO_LOG },
             (SDL_Point) { PICO_WIN, PICO_WIN }
         );
-        //pico_state_set_font("tiny.ttf", S.size.x/50);
+        //pico_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
 
         //SDL_Delay(1000);
@@ -156,30 +156,30 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
                     SDL_Point log = LOG;
                     log.x *= 0.9;
                     log.y *= 0.9;
-                    pico_state_set_size_window(log, PHY);
+                    pico_set_size_window(log, PHY);
                     break;
                 }
                 case SDLK_EQUALS: {
                     SDL_Point log = LOG;
                     log.x *= 1.1;
                     log.y *= 1.1;
-                    pico_state_set_size_window(log, PHY);
+                    pico_set_size_window(log, PHY);
                     break;
                 }
                 case SDLK_LEFT: {
-                    pico_state_set_pan((SDL_Point){S.pan.x-5, S.pan.y});
+                    pico_set_pan((SDL_Point){S.pan.x-5, S.pan.y});
                     break;
                 }
                 case SDLK_RIGHT: {
-                    pico_state_set_pan((SDL_Point){S.pan.x+5, S.pan.y});
+                    pico_set_pan((SDL_Point){S.pan.x+5, S.pan.y});
                     break;
                 }
                 case SDLK_UP: {
-                    pico_state_set_pan((SDL_Point){S.pan.x, S.pan.y-5});
+                    pico_set_pan((SDL_Point){S.pan.x, S.pan.y-5});
                     break;
                 }
                 case SDLK_DOWN: {
-                    pico_state_set_pan((SDL_Point){S.pan.x, S.pan.y+5});
+                    pico_set_pan((SDL_Point){S.pan.x, S.pan.y+5});
                     break;
                 }
             }
@@ -188,7 +188,7 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
 #if 0
         case SDL_WINDOWEVENT: {
             if (e->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                pico_state_set_size((SDL_Point){e->window.data1,e->window.data2});
+                pico_set_size((SDL_Point){e->window.data1,e->window.data2});
                 return 0;
                 break;
             }
@@ -393,7 +393,7 @@ void pico_output_draw_oval (SDL_Rect rect) {
 void pico_output_draw_text (SDL_Point pos, char* text) {
     uint8_t r, g, b;
     SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
-    assert(FNT != NULL);
+    pico_assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended(FNT, text,
                                               (SDL_Color){r,g,b,0xFF});
     pico_assert(sfc != NULL);
@@ -456,7 +456,7 @@ void pico_output_write_aux (char* text, int isln) {
         return;
     }
 
-    assert(FNT != NULL);
+    pico_assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended (
         FNT, text,
         (SDL_Color) { S.color_draw.r, S.color_draw.g,
@@ -497,12 +497,14 @@ void pico_output_writeln (char* text) {
 int pico_get_window_fullscreen (void) {
     return SDL_GetWindowFlags(WIN) & SDL_WINDOW_FULLSCREEN_DESKTOP;
 }
+
+void pico_get_image_size (char* file, SDL_Point* size) {
     SDL_Texture* tex = IMG_LoadTexture(REN, file);
     pico_assert(tex != NULL);
     SDL_QueryTexture(tex, NULL, NULL, &size->x, &size->y);
 }
 
-void pico_state_get_size_window (SDL_Point* log, SDL_Point* phy) {
+void pico_get_window_size (SDL_Point* log, SDL_Point* phy) {
     if (log != NULL) {
         *log = LOG;
     }
@@ -513,15 +515,15 @@ void pico_state_get_size_window (SDL_Point* log, SDL_Point* phy) {
 
 // SET
 
-void pico_state_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
+void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
     S.anchor = (SDL_Point) {h, v};
 }
 
-void pico_state_set_color_clear (SDL_Color color) {
+void pico_set_color_clear (SDL_Color color) {
     S.color_clear = color;
 }
 
-void pico_state_set_color_draw  (SDL_Color color) {
+void pico_set_color_draw  (SDL_Color color) {
     S.color_draw = color;
     SDL_SetRenderDrawColor (REN,
         S.color_draw.r,
@@ -531,19 +533,19 @@ void pico_state_set_color_draw  (SDL_Color color) {
     );
 }
 
-void pico_state_set_cursor (SDL_Point pos) {
+void pico_set_cursor (SDL_Point pos) {
     CUR_CURSOR = S.cursor = pos;
 }
 
-void pico_state_set_grid (int on) {
+void pico_set_grid (int on) {
     S.grid = on;
 }
 
-void pico_state_set_pan (SDL_Point pos) {
+void pico_set_pan (SDL_Point pos) {
     S.pan = pos;
 }
 
-void pico_state_set_font (char* file, int h) {
+void pico_set_font (char* file, int h) {
     FNT_H = h;
     if (FNT != NULL) {
         TTF_CloseFont(FNT);
@@ -564,21 +566,23 @@ void pico_set_size_fullscreen (int on) {
         pico_set_size_window(LOG, old);
     }
 }
+
+void pico_set_size_window (SDL_Point log, SDL_Point phy) {
     SDL_SetWindowSize(WIN, phy.x, phy.y);
     SDL_RenderSetLogicalSize(REN, log.x, log.y);
     WIN_Clear();
     pico_output_present();
 }
 
-void pico_state_set_image_crop (SDL_Rect crop) {
+void pico_set_image_crop (SDL_Rect crop) {
     S.image_crop = crop;
 }
 
-void pico_state_set_size_image (SDL_Point size) {
+void pico_set_size_image (SDL_Point size) {
     S.size_image = size;
 }
 
-void pico_state_set_title (char* title) {
+void pico_set_title (char* title) {
     SDL_SetWindowTitle(WIN, title);
 }
 
