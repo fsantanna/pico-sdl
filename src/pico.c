@@ -481,6 +481,15 @@ void pico_output_write_aux (char* text, int isln) {
     SDL_FreeSurface(sfc);
 }
 
+void pico_output_show (int on) {
+    if (on) {
+        SDL_ShowWindow(WIN);
+        pico_output_present();
+    } else {
+        SDL_HideWindow(WIN);
+    }
+}
+
 void pico_output_write (char* text) {
     pico_output_write_aux(text, 0);
 }
