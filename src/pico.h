@@ -53,6 +53,7 @@ void _pico_output_sound_cache (char* path, int cache);
 int  pico_get_fullscreen  (void);
 void pico_get_image_size  (char* file, SDL_Point* size);
 void pico_get_size        (SDL_Point* phy, SDL_Point* log);
+Uint32 pico_get_ticks     (void);
 
 void pico_set_anchor      (Pico_HAnchor h, Pico_VAnchor v);
 void pico_set_color_clear (SDL_Color color);

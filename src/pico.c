@@ -513,6 +513,10 @@ void pico_get_size (SDL_Point* phy, SDL_Point* log) {
     }
 }
 
+Uint32 pico_get_ticks (void) {
+    return SDL_GetTicks();
+}
+
 // SET
 
 void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
