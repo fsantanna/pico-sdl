@@ -42,7 +42,6 @@ void pico_output_draw_oval  (SDL_Rect rect);
 void pico_output_draw_text  (SDL_Point pos, char* text);
 void pico_output_present    (void);
 void pico_output_sound      (char* path);
-void pico_output_show       (int on);
 void pico_output_write      (char* text);
 void pico_output_writeln    (char* text);
 
@@ -66,4 +65,5 @@ void pico_set_image_crop  (SDL_Rect crop);
 void pico_set_image_size  (SDL_Point size);
 void pico_set_pan         (SDL_Point pos);
 void pico_set_size        (SDL_Point phy, SDL_Point log);
+void pico_set_show        (int on);
 void pico_set_title       (char* title);

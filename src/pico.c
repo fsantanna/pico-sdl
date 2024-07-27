@@ -481,15 +481,6 @@ void pico_output_write_aux (char* text, int isln) {
     SDL_FreeSurface(sfc);
 }
 
-void pico_output_show (int on) {
-    if (on) {
-        SDL_ShowWindow(WIN);
-        pico_output_present();
-    } else {
-        SDL_HideWindow(WIN);
-    }
-}
-
 void pico_output_write (char* text) {
     pico_output_write_aux(text, 0);
 }
@@ -550,6 +541,14 @@ void pico_set_grid (int on) {
     S.grid = on;
 }
 
+void pico_set_image_crop (SDL_Rect crop) {
+    S.image.crop = crop;
+}
+
+void pico_set_image_size (SDL_Point size) {
+    S.image.size = size;
+}
+
 void pico_set_pan (SDL_Point pos) {
     S.pan = pos;
 }
@@ -587,12 +586,13 @@ void pico_set_size (SDL_Point phy, SDL_Point log) {
     pico_output_present();
 }
 
-void pico_set_image_crop (SDL_Rect crop) {
-    S.image.crop = crop;
-}
-
-void pico_set_image_size (SDL_Point size) {
-    S.image.size = size;
+void pico_set_show (int on) {
+    if (on) {
+        SDL_ShowWindow(WIN);
+        pico_output_present();
+    } else {
+        SDL_HideWindow(WIN);
+    }
 }
 
 void pico_set_title (char* title) {
