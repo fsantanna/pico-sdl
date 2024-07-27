@@ -582,6 +582,9 @@ void pico_set_size (SDL_Point phy, SDL_Point log) {
     if (log.x!=0 && log.y!=0) {
         SDL_RenderSetLogicalSize(REN, log.x, log.y);
     }
+    if (phy.x==log.x || phy.y==log.y) {
+        pico_set_grid(0);
+    }
     WIN_Clear();
     pico_output_present();
 }
