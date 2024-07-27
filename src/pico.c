@@ -607,7 +607,7 @@ int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r) {
     return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
 }
 
-SDL_Point pico_pct_to_point (float x, float y) {
+SDL_Point pico_pct_to_pos (float x, float y) {
     SDL_Point log = LOG;
     return (SDL_Point) { log.x*x, log.y*y };
 }

@@ -7,7 +7,7 @@ int main (void) {
 
 
     // PIXELS
-    SDL_Point pt = pico_pct_to_point(0.5, 0.5);
+    SDL_Point pt = pico_pct_to_pos(0.5, 0.5);
     {
         pico_set_anchor(Center,Middle);
         pico_output_draw_pixel(pt);
