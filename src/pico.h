@@ -51,9 +51,9 @@ void _pico_output_sound_cache (char* path, int cache);
 
 // STATE
 
+int  pico_get_fullscreen  (void);
 void pico_get_image_size  (char* file, SDL_Point* size);
-int  pico_get_fullscreen (void);
-void pico_get_size (SDL_Point* log, SDL_Point* phy);
+void pico_get_size        (SDL_Point* log, SDL_Point* phy);
 
 void pico_set_anchor      (Pico_HAnchor h, Pico_VAnchor v);
 void pico_set_color_clear (SDL_Color color);
@@ -65,5 +65,5 @@ void pico_set_grid        (int on);
 void pico_set_image_crop  (SDL_Rect crop);
 void pico_set_image_size  (SDL_Point size);
 void pico_set_pan         (SDL_Point pos);
-void pico_set_size        (SDL_Point log, SDL_Point win);
+void pico_set_size        (SDL_Point phy, SDL_Point log);
 void pico_set_title       (char* title);

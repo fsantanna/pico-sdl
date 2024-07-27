@@ -3,7 +3,7 @@
 int main (void) {
     pico_init(1);
     pico_set_title("Anchoring...");
-    pico_set_size((SDL_Point){10,10}, (SDL_Point){200,200});
+    pico_set_size((SDL_Point){200,200}, (SDL_Point){10,10});
 
 
     // PIXELS

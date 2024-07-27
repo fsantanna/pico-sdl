@@ -16,6 +16,15 @@ int main (void) {
     pico_output_present();
     pico_input_event(NULL, SDL_KEYDOWN);
 
+    pico_set_size((SDL_Point){0,0}, (SDL_Point){128,72});
+
+    pt  = pico_pct_to_point(0.5, 0.5);
+    rct = (SDL_Rect) {pt.x, pt.y, 32, 18};
+    pico_output_draw_rect(rct);
+    pico_output_draw_rect(rct);
+    pico_output_present();
+    pico_input_event(NULL, SDL_KEYDOWN);
+
     pico_set_fullscreen(0);
 
     pico_output_draw_rect(rct);
