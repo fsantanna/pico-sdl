@@ -513,7 +513,7 @@ void pico_get_image_size (char* file, SDL_Point* size) {
     SDL_QueryTexture(tex, NULL, NULL, &size->x, &size->y);
 }
 
-void pico_get_size (SDL_Point* log, SDL_Point* phy) {
+void pico_get_size (SDL_Point* phy, SDL_Point* log) {
     if (log != NULL) {
         *log = LOG;
     }
