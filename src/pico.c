@@ -591,8 +591,11 @@ void pico_set_font (char* file, int h) {
 }
 
 void pico_set_size (SDL_Point size) {
-    pico_set_size_internal(size);
-    pico_set_size_external(size);
+    SDL_SetWindowSize(WIN, size.x, size.y);
+    SDL_RenderSetLogicalSize(REN, size.x, size.y);
+    pico_set_grid(0);
+    WIN_Clear();
+    pico_output_present();
 }
 
 void pico_set_size_external (SDL_Point phy) {
