@@ -373,7 +373,7 @@ void pico_output_draw_rect (SDL_Rect rect) {
         Y(rect.y, rect.h),
         rect.w, rect.h
     };
-    SDL_RenderFillRect(REN, &out);
+    SDL_RenderDrawRect(REN, &out);
 }
 
 void pico_output_draw_oval (SDL_Rect rect) {
@@ -615,5 +615,9 @@ int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r) {
 
 SDL_Point pico_pct_to_pos (float x, float y) {
     SDL_Point log = LOG;
-    return (SDL_Point) { log.x*x, log.y*y };
+    return pico_pct_to_pos_x((SDL_Rect){log.x/2,log.y/2,log.x,log.y}, x, y);
+}
+
+SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y) {
+    return (SDL_Point) { r.x-r.w/2 + r.w*x, r.y-r.h/2 + r.h*y };
 }

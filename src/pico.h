@@ -25,6 +25,7 @@ void pico_init (int on);
 int pico_event_from_sdl (SDL_Event* e, int xp);
 int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
 SDL_Point pico_pct_to_pos (float x, float y);
+SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
 
 // INPUT
 void pico_input_delay         (int ms);
