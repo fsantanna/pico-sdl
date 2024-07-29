@@ -14,15 +14,15 @@
 #define SDL_ANY 0
 
 typedef enum {
-    Fill, Stroke
+    PICO_FILL, PICO_STROKE
 } Pico_Style;
 
 typedef enum {
-    Left=1, Center, Right
+    PICO_LEFT=1, PICO_CENTER, PICO_RIGHT
 } Pico_HAnchor;
 
 typedef enum {
-    Bottom=1, Middle, Top
+    PICO_BOTTOM=1, PICO_MIDDLE, PICO_TOP
 } Pico_VAnchor;
 
 void pico_init (int on);

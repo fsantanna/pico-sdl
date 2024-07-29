@@ -39,13 +39,13 @@ static struct {
     SDL_Point pan;
     Pico_Style style;
 } S = {
-    { Center, Middle },
+    { PICO_CENTER, PICO_MIDDLE },
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
     {0,0},
     1,
     { {0,0,0,0}, {0,0} },
     {0,0},
-    Fill
+    PICO_FILL
 };
 
 static void show_grid (void) {
@@ -75,11 +75,11 @@ static void show_grid (void) {
 
 static int hanchor (int x, int w) {
     switch (S.anchor.x) {
-        case Left:
+        case PICO_LEFT:
             return x;
-        case Center:
+        case PICO_CENTER:
             return x - w/2;
-        case Right:
+        case PICO_RIGHT:
             return x - w; // + 1;
     }
     assert(0 && "bug found");
@@ -87,11 +87,11 @@ static int hanchor (int x, int w) {
 
 static int vanchor (int y, int h) {
     switch (S.anchor.y) {
-        case Top:
+        case PICO_TOP:
             return y;
-        case Middle:
+        case PICO_MIDDLE:
             return y - h/2;
-        case Bottom:
+        case PICO_BOTTOM:
             return y - h; // + 1;
     }
     assert(0 && "bug found");
@@ -376,10 +376,10 @@ void pico_output_draw_rect (SDL_Rect rect) {
         rect.w, rect.h
     };
     switch (S.style) {
-        case Fill:
+        case PICO_FILL:
             SDL_RenderFillRect(REN, &out);
             break;
-        case Stroke:
+        case PICO_STROKE:
             SDL_RenderDrawRect(REN, &out);
             break;
     }
@@ -392,14 +392,14 @@ void pico_output_draw_oval (SDL_Rect rect) {
         rect.w, rect.h
     };
     switch (S.style) {
-        case Fill:
+        case PICO_FILL:
             filledEllipseRGBA (
                 REN,
                 out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
-        case Stroke:
+        case PICO_STROKE:
             ellipseRGBA (
                 REN,
                 out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,

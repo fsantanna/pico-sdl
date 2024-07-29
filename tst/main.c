@@ -22,7 +22,7 @@ int main (void) {
     pico_input_delay(2000);
 
     // DRAW_IMAGE
-    pico_set_anchor(Center,Middle);
+    pico_set_anchor(PICO_CENTER, PICO_MIDDLE);
     pico_output_draw_image(pt,"open.png");
 
     pico_output_present();                  // show centered image
