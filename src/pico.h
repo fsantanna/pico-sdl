@@ -56,6 +56,7 @@ void _pico_output_sound_cache (char* path, int cache);
 // STATE
 
 SDL_Point pico_get_image_size    (char* file);
+SDL_Point pico_get_size          (void);
 SDL_Point pico_get_size_external (void);
 SDL_Point pico_get_size_internal (void);
 Uint32    pico_get_ticks         (void);
@@ -69,6 +70,7 @@ void pico_set_grid          (int on);
 void pico_set_image_crop    (SDL_Rect crop);
 void pico_set_image_size    (SDL_Point size);
 void pico_set_pan           (SDL_Point pos);
+void pico_set_size          (SDL_Point size);
 void pico_set_size_external (SDL_Point phy);
 void pico_set_size_internal (SDL_Point log);
 void pico_set_show          (int on);

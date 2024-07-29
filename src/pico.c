@@ -521,6 +521,13 @@ SDL_Point pico_get_image_size (char* file) {
     return size;
 }
 
+SDL_Point pico_get_size (void) {
+    SDL_Point phy = pico_get_size_external();
+    SDL_Point log = pico_get_size_internal();
+    assert(phy.x==log.x && phy.y==log.y);
+    return phy;
+}
+
 SDL_Point pico_get_size_external (void) {
     //return SDL_GetWindowFlags(WIN) & SDL_WINDOW_FULLSCREEN_DESKTOP;
     return PHY;
@@ -581,6 +588,11 @@ void pico_set_font (char* file, int h) {
     }
     FNT = TTF_OpenFont(file, FNT_H);
     pico_assert(FNT != NULL);
+}
+
+void pico_set_size (SDL_Point size) {
+    pico_set_size_internal(size);
+    pico_set_size_external(size);
 }
 
 void pico_set_size_external (SDL_Point phy) {
