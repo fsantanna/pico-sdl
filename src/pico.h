@@ -14,6 +14,10 @@
 #define SDL_ANY 0
 
 typedef enum {
+    Fill, Stroke
+} Pico_Style;
+
+typedef enum {
     Left=1, Center, Right
 } Pico_HAnchor;
 
@@ -51,7 +55,6 @@ void _pico_output_sound_cache (char* path, int cache);
 
 // STATE
 
-int       pico_get_fullscreen    (void);
 SDL_Point pico_get_image_size    (char* file);
 SDL_Point pico_get_size_external (void);
 SDL_Point pico_get_size_internal (void);
@@ -69,4 +72,5 @@ void pico_set_pan           (SDL_Point pos);
 void pico_set_size_external (SDL_Point phy);
 void pico_set_size_internal (SDL_Point log);
 void pico_set_show          (int on);
+void pico_set_style         (Pico_Style style);
 void pico_set_title         (char* title);

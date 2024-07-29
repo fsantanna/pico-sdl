@@ -37,13 +37,15 @@ static struct {
         SDL_Point size;
     } image;
     SDL_Point pan;
+    Pico_Style style;
 } S = {
     { Center, Middle },
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
     {0,0},
     1,
     { {0,0,0,0}, {0,0} },
-    {0,0}
+    {0,0},
+    Fill
 };
 
 static void show_grid (void) {
@@ -373,7 +375,14 @@ void pico_output_draw_rect (SDL_Rect rect) {
         Y(rect.y, rect.h),
         rect.w, rect.h
     };
-    SDL_RenderDrawRect(REN, &out);
+    switch (S.style) {
+        case Fill:
+            SDL_RenderFillRect(REN, &out);
+            break;
+        case Stroke:
+            SDL_RenderDrawRect(REN, &out);
+            break;
+    }
 }
 
 void pico_output_draw_oval (SDL_Rect rect) {
@@ -382,11 +391,22 @@ void pico_output_draw_oval (SDL_Rect rect) {
         Y(rect.y, rect.h),
         rect.w, rect.h
     };
-    filledEllipseRGBA (
-        REN,
-        out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
-    );
+    switch (S.style) {
+        case Fill:
+            filledEllipseRGBA (
+                REN,
+                out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
+            );
+            break;
+        case Stroke:
+            ellipseRGBA (
+                REN,
+                out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
+            );
+            break;
+    }
 }
 
 void pico_output_draw_text (SDL_Point pos, char* text) {
@@ -493,10 +513,6 @@ void pico_output_writeln (char* text) {
 
 // GET
 
-int pico_get_fullscreen (void) {
-    return SDL_GetWindowFlags(WIN) & SDL_WINDOW_FULLSCREEN_DESKTOP;
-}
-
 SDL_Point pico_get_image_size (char* file) {
     SDL_Texture* tex = IMG_LoadTexture(REN, file);
     pico_assert(tex != NULL);
@@ -506,6 +522,7 @@ SDL_Point pico_get_image_size (char* file) {
 }
 
 SDL_Point pico_get_size_external (void) {
+    //return SDL_GetWindowFlags(WIN) & SDL_WINDOW_FULLSCREEN_DESKTOP;
     return PHY;
 }
 
@@ -599,6 +616,10 @@ void pico_set_show (int on) {
     } else {
         SDL_HideWindow(WIN);
     }
+}
+
+void pico_set_style (Pico_Style style) {
+    S.style = style;
 }
 
 void pico_set_title (char* title) {
