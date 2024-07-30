@@ -302,25 +302,27 @@ void pico_output_clear (void) {
 }
 
 void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
-    int defsize = (S.image.size.x==0 && S.image.size.y==0);
-    int defcrop = (S.image.crop.x==0 && S.image.crop.y==0 &&
-                   S.image.crop.w==0 && S.image.crop.h==0);
+    SDL_Rect rct;
+    SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
 
-    SDL_Rect* crp;
-    if (defcrop) {
-        crp = NULL;
-    } else {
-        crp = (SDL_Rect*) &S.image.crop;
+    SDL_Rect crp = S.image.crop;
+    if (S.image.crop.w == 0) {
+        crp.w = rct.w;
+    }
+    if (S.image.crop.h == 0) {
+        crp.h = rct.h;
     }
 
-    SDL_Rect rct;
-    if (defsize) {
-        if (defcrop) {
-            SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
-        } else {
-            rct.w = crp->w;
-            rct.h = crp->h;
-        }
+    if (S.image.size.x==0 && S.image.size.y==0) {
+        // normal image size
+    } else if (S.image.size.x == 0) {
+        // adjust w based on h
+        rct.w = rct.w * (S.image.size.y / (float)rct.h);
+        rct.h = S.image.size.y;
+    } else if (S.image.size.y == 0) {
+        // adjust h based on w
+        rct.h = rct.h * (S.image.size.x / (float)rct.w);
+        rct.w = S.image.size.x;
     } else {
         rct.w = S.image.size.x;
         rct.h = S.image.size.y;
@@ -334,7 +336,7 @@ void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
     rct.x = X(pos.x, rct.w);
     rct.y = Y(pos.y, rct.h);
 
-    SDL_RenderCopy(REN, tex, crp, &rct);
+    SDL_RenderCopy(REN, tex, &crp, &rct);
 }
 
 void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache) {
