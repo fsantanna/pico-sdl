@@ -315,6 +315,8 @@ void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
 
     if (S.image.size.x==0 && S.image.size.y==0) {
         // normal image size
+        rct.w = crp.w;  // (or copy from crop)
+        rct.h = crp.h;  // (or copy from crop)
     } else if (S.image.size.x == 0) {
         // adjust w based on h
         rct.w = rct.w * (S.image.size.y / (float)rct.h);
