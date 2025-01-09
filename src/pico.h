@@ -2,6 +2,10 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define PICO_TITLE "pico-SDL"
 #define PICO_PHY_X 640
 #define PICO_PHY_Y 360
@@ -76,3 +80,7 @@ void pico_set_size_internal (SDL_Point log);
 void pico_set_show          (int on);
 void pico_set_style         (Pico_Style style);
 void pico_set_title         (char* title);
+
+#ifdef __cplusplus
+}
+#endif
