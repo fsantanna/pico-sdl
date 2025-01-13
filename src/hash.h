@@ -1,3 +1,6 @@
+#ifndef PICO_HASH_H
+#define PICO_HASH_H
+
 #include <stdlib.h>
 #include <stddef.h>
 
@@ -35,3 +38,5 @@ void* pico_hash_get (pico_hash* table, const char* key);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // PICO_HASH_H
