@@ -1,3 +1,6 @@
+#ifndef PICO_H
+#define PICO_H
+
 #include <stdio.h>
 #include <assert.h>
 #include <SDL2/SDL.h>
@@ -84,3 +87,6 @@ void pico_set_title         (char* title);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // PICO_H
+
