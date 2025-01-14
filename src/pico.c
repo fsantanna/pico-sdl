@@ -200,7 +200,7 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
             break;
     }
 
-    if (xp == e->type) {
+    if (xp == (int)e->type) {
         // OK
     } else if (xp == SDL_ANY) {
         // MAYBE
