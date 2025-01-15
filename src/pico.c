@@ -9,7 +9,7 @@
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 SDL_Window*         WIN;
-static SDL_Texture* TEX;
+//static SDL_Texture* TEX;
 static TTF_Font*    FNT = NULL;
 static int          FNT_H;
 static SDL_Point    CUR_CURSOR = {0,0};
