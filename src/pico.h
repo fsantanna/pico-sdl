@@ -45,17 +45,18 @@ int  pico_input_event_ask     (SDL_Event* evt, int type);
 int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 
 // OUTPUT
-void pico_output_clear      (void);
-void pico_output_draw_image (SDL_Point pos, const char* path);
-void pico_output_draw_line  (SDL_Point p1, SDL_Point p2);
-void pico_output_draw_pixel (SDL_Point pos);
-void pico_output_draw_rect  (SDL_Rect rect);
-void pico_output_draw_oval  (SDL_Rect rect);
-void pico_output_draw_text  (SDL_Point pos, const char* text);
-void pico_output_present    (void);
-void pico_output_sound      (const char* path);
-void pico_output_write      (const char* text);
-void pico_output_writeln    (const char* text);
+void pico_output_clear       (void);
+void pico_output_draw_image  (SDL_Point pos, const char* path);
+void pico_output_draw_line   (SDL_Point p1, SDL_Point p2);
+void pico_output_draw_pixel  (SDL_Point pos);
+void pico_output_draw_pixels (const SDL_Point* apos, int count);
+void pico_output_draw_rect   (SDL_Rect rect);
+void pico_output_draw_oval   (SDL_Rect rect);
+void pico_output_draw_text   (SDL_Point pos, const char* text);
+void pico_output_present     (void);
+void pico_output_sound       (const char* path);
+void pico_output_write       (const char* text);
+void pico_output_writeln     (const char* text);
 
 void _pico_output_draw_image_cache (SDL_Point pos, const char* path, int cache);
 void _pico_output_sound_cache (const char* path, int cache);

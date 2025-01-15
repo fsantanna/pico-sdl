@@ -373,6 +373,17 @@ void pico_output_draw_pixel (SDL_Point pos) {
     SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
 }
 
+void pico_output_draw_pixels (const SDL_Point* apos, int count) {
+    SDL_Point *apos_fixed = malloc(count * sizeof(SDL_Point));
+    for (int i = 0; i < count; i++) {
+        apos_fixed[i].x = X(apos[i].x,1);
+        apos_fixed[i].y = Y(apos[i].y,1);
+    }
+
+    SDL_RenderDrawPoints(REN, apos_fixed, count);
+    free(apos_fixed);
+}
+
 void pico_output_draw_rect (SDL_Rect rect) {
     SDL_Rect out = {
         X(rect.x, rect.w),
