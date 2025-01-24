@@ -70,6 +70,7 @@ SDL_Point pico_get_size_internal (void);
 Uint32    pico_get_ticks         (void);
 
 void pico_set_anchor        (Pico_HAnchor h, Pico_VAnchor v);
+void pico_set_blend         (SDL_BlendMode mode);
 void pico_set_color_clear   (SDL_Color color);
 void pico_set_color_draw    (SDL_Color color);
 void pico_set_cursor        (SDL_Point pos);

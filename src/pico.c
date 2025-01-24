@@ -561,6 +561,11 @@ void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
     S.anchor = (SDL_Point) {h, v};
 }
 
+void pico_set_blend (SDL_BlendMode mode) {
+    int ret = SDL_SetRenderDrawBlendMode(SDL_GetRenderer(WIN), mode);
+    pico_assert(ret != 0);
+}
+
 void pico_set_color_clear (SDL_Color color) {
     S.color.clear = color;
 }
