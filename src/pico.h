@@ -109,15 +109,31 @@ typedef enum {
     PICO_BOTTOM=1, PICO_MIDDLE, PICO_TOP
 } Pico_VAnchor;
 
-SDL_Point pico_get_image_size    (const char* file);
-SDL_Point pico_get_size          (void);
+SDL_Point pico_get_image_size (const char* file);
+
+/// @brief Returns the application window size (physical size). If it's
+/// different than the game canvas size (logical size), the program crashes.
+/// @sa pico_get_size_external
+/// @sa pico_get_size_internal
+SDL_Point pico_get_size (void);
+
+/// @brief Returns the application window size (physical size)
+/// @sa pico_get_size_internal
+/// @sa pico_get_size
 SDL_Point pico_get_size_external (void);
+
+/// @brief Returns the game canvas size (logical size)
+/// @sa pico_get_size_external
+/// @sa pico_get_size
 SDL_Point pico_get_size_internal (void);
-Uint32    pico_get_ticks         (void);
+
+/// @brief Returns the amount of ticks that passed since pico was initialized.
+Uint32 pico_get_ticks (void);
 
 /// @brief Sets the anchor of objects that will be drawn.
 /// @param h Horizontal anchor. X axis.
 /// @param v Vertical anchor. Y axis.
+///
 /// @b Example
 /// @code
 /// pico_set_anchor(PICO_LEFT, PICO_TOP);
@@ -132,12 +148,37 @@ void pico_set_grid          (int on);
 void pico_set_image_crop    (SDL_Rect crop);
 void pico_set_image_size    (SDL_Point size);
 void pico_set_pan           (SDL_Point pos);
-void pico_set_size          (SDL_Point size);
+
+/// @brief Sets the application window size (physical size) and the game canvas
+/// size (logical size).
+/// @param size: the new size to be set
+/// @sa pico_set_size_external
+/// @sa pico_set_size_internal
+void pico_set_size (SDL_Point size);
+
+/// @brief Sets the application window size (physical size)
+/// @param phy: the new physical size to be set
+/// @sa pico_set_size_internal
+/// @sa pico_set_size
 void pico_set_size_external (SDL_Point phy);
+
+/// @brief Sets the game canvas size (logical size)
+/// @param log: the new logical size to be set
+/// @sa pico_set_size_internal
+/// @sa pico_set_size
 void pico_set_size_internal (SDL_Point log);
-void pico_set_show          (int on);
-void pico_set_style         (Pico_Style style);
-void pico_set_title         (const char* title);
+
+/// @brief Shows or hides the aplication window.
+/// @param on: 1 to show, or 0 to hide
+void pico_set_show (int on);
+
+/// @brief 
+/// @param style 
+void pico_set_style (Pico_Style style);
+
+/// @brief Sets the aplication title
+/// @param title: the new title to be set
+void pico_set_title (const char* title);
 
 /// @}
 

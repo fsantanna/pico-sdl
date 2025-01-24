@@ -40,10 +40,10 @@ int pico_hash_add (pico_hash* table, const char* key, void* value);
 /// @return 1 if the value was removed successfully, or 0 if an error occurred.
 int pico_hash_rem (pico_hash* table, const char* key);
 
-/// @brief Returns the value associated with the given key in the hash table.
+/// @brief Returns the value associated with the given key in the hash table,
+/// or NULL if the key doesn't exist.
 /// @param table: pointer to the hash table
 /// @param key: the key of the value to retrieve
-/// @return the value associated with the given key in the hash table, or NULL if the key does not exist.
 void* pico_hash_get (pico_hash* table, const char* key);
 
 /// @}
