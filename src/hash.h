@@ -1,3 +1,6 @@
+/// @file hash.h
+/// @brief Contains @ref Hash module
+
 #ifndef PICO_HASH_H
 #define PICO_HASH_H
 
@@ -9,7 +12,7 @@ extern "C" {
 #endif
 
 /// @defgroup Hash
-/// @brief Hashing functionality used by pico to index assets.
+/// @brief Hashing functionality used by pico to index assets. Include @ref hash.h.
 /// @{
 
 struct pico_hash;

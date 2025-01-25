@@ -1,3 +1,6 @@
+/// @file pico.h
+/// @brief Contains @ref Input, @ref Output and @ref State modules
+
 #ifndef PICO_H
 #define PICO_H
 
@@ -21,7 +24,7 @@ extern "C" {
 #define SDL_ANY 0
 
 /// @brief Initializes and terminates pico.
-/// @param on: 1 to initialize and 0 to terminate
+/// @param on: 1 to initialize, or 0 to terminate
 void pico_init (int on);
 int pico_event_from_sdl (SDL_Event* e, int xp);
 int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
@@ -29,18 +32,18 @@ SDL_Point pico_pct_to_pos (float x, float y);
 SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
 
 /// @defgroup Input
-/// @brief Event handling.
+/// @brief Event handling. Include @ref pico.h.
 /// @{
 
-void pico_input_delay         (int ms);
-void pico_input_event         (SDL_Event* evt, int type);
-int  pico_input_event_ask     (SDL_Event* evt, int type);
+void pico_input_delay (int ms);
+void pico_input_event (SDL_Event* evt, int type);
+int  pico_input_event_ask (SDL_Event* evt, int type);
 int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 
 /// @}
 
 /// @defgroup Output
-/// @brief Draw images and primitives, play sounds, etc.
+/// @brief Draw images and primitives, play sounds, etc. Include @ref pico.h.
 /// @{
 
 /// @brief Clears screen with color set by @ref pico_set_color_clear.
@@ -79,6 +82,7 @@ void pico_output_draw_oval (SDL_Rect rect);
 void pico_output_draw_text (SDL_Point pos, const char* text);
 
 /// @brief Shows the user what has been drawn to the screen since its last call.
+/// @todo Make better brief for this function
 void pico_output_present (void);
 
 /// @brief Plays a sound.
@@ -94,7 +98,7 @@ void _pico_output_sound_cache (const char* path, int cache);
 /// @}
 
 /// @defgroup State
-/// @brief All getters and setters.
+/// @brief All getters and setters. Include @ref pico.h.
 /// @{
 
 typedef enum {
@@ -181,7 +185,6 @@ void pico_set_style (Pico_Style style);
 void pico_set_title (const char* title);
 
 /// @}
-
 
 #ifdef __cplusplus
 }
