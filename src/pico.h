@@ -14,23 +14,41 @@
 extern "C" {
 #endif
 
-#define PICO_TITLE "pico-SDL"
-#define PICO_PHY_X 640
-#define PICO_PHY_Y 360
-#define PICO_LOG_X  64
-#define PICO_LOG_Y  36
-#define PICO_HASH  128
-
 // TODO: Document me
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
 #define SDL_ANY 0
 
+/// @defgroup Init
+/// @brief Functions and default values used in initialization. Include @ref pico.h.
+/// @{
+
+/// @brief Default window title
+#define PICO_TITLE "pico-SDL"
+
+/// @brief Default physical window width.
+#define PICO_PHY_X 640
+
+/// @brief Default physical window height.
+#define PICO_PHY_Y 360
+
+/// @brief Default logical window width.
+#define PICO_LOG_X  64
+
+/// @brief Default logical window height.
+#define PICO_LOG_Y  36
+
+/// @brief Default amount of buckets of internal hash object.
+/// @sa Hash
+#define PICO_HASH  128
+
 /// @brief Initializes and terminates pico.
 /// @param on: 1 to initialize, or 0 to terminate
 ///
-/// @include pico_init.c
+/// @include init.c
 void pico_init (int on);
+
+/// @}
 
 // TODO: Document me
 int pico_event_from_sdl (SDL_Event* e, int xp);
@@ -101,8 +119,7 @@ void pico_output_draw_oval (SDL_Rect rect);
 /// @param text: the text to draw
 void pico_output_draw_text (SDL_Point pos, const char* text);
 
-/// @brief Shows the user what has been drawn to the screen since its last call.
-/// @todo Make better brief for this function
+/// @brief Shows what has been drawn to the screen since last call to @ref pico_output_clear
 void pico_output_present (void);
 
 /// @brief Plays a sound.
@@ -140,18 +157,18 @@ typedef enum {
 /// @param file: path to image file
 SDL_Point pico_get_image_size (const char* file);
 
-/// @brief Returns the window size (physical size). If it's
-/// different than the game canvas size (logical size), the program crashes.
+/// @brief Returns the physical window size. If it's different than the
+/// logical window size, the program crashes.
 /// @sa pico_get_size_external
 /// @sa pico_get_size_internal
 SDL_Point pico_get_size (void);
 
-/// @brief Returns the window size (physical size)
+/// @brief Returns the physical window size.
 /// @sa pico_get_size_internal
 /// @sa pico_get_size
 SDL_Point pico_get_size_external (void);
 
-/// @brief Returns the game canvas size (logical size)
+/// @brief Returns the logical window size.
 /// @sa pico_get_size_external
 /// @sa pico_get_size
 SDL_Point pico_get_size_internal (void);
@@ -200,20 +217,19 @@ void pico_set_image_size (SDL_Point size);
 // TODO: Document me
 void pico_set_pan (SDL_Point pos);
 
-/// @brief Changes the window size (physical size) and the game
-/// canvas size (logical size).
+/// @brief Changes the physical window size and the logical window size.
 /// @param size: new size to set
 /// @sa pico_set_size_external
 /// @sa pico_set_size_internal
 void pico_set_size (SDL_Point size);
 
-/// @brief Changes the window size (physical size).
+/// @brief Changes the physical window size.
 /// @param phy: new physical size to set
 /// @sa pico_set_size_internal
 /// @sa pico_set_size
 void pico_set_size_external (SDL_Point phy);
 
-/// @brief Changes the game canvas size (logical size).
+/// @brief Changes the logical window size.
 /// @param log: new logical size to set
 /// @sa pico_set_size_external
 /// @sa pico_set_size
