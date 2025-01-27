@@ -1,5 +1,5 @@
 /// @file hash.h
-/// @brief Contains @ref Hash module
+/// @brief Contains @ref Hash module.
 
 #ifndef PICO_HASH_H
 #define PICO_HASH_H

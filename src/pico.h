@@ -1,5 +1,7 @@
 /// @file pico.h
-/// @brief Contains @ref Input, @ref Output and @ref State modules
+/// @brief Contains @ref Input, @ref Output and @ref State modules.
+
+// TODO: Code examples for all functions.
 
 #ifndef PICO_H
 #define PICO_H
@@ -19,6 +21,7 @@ extern "C" {
 #define PICO_LOG_Y  36
 #define PICO_HASH  128
 
+// TODO: Document me
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
 #define SDL_ANY 0
@@ -26,18 +29,33 @@ extern "C" {
 /// @brief Initializes and terminates pico.
 /// @param on: 1 to initialize, or 0 to terminate
 void pico_init (int on);
+
+// TODO: Document me
 int pico_event_from_sdl (SDL_Event* e, int xp);
+
+// TODO: Document me
 int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
+
+// TODO: Document me
 SDL_Point pico_pct_to_pos (float x, float y);
+
+// TODO: Document me
 SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
 
 /// @defgroup Input
 /// @brief Event handling. Include @ref pico.h.
 /// @{
 
+// TODO: Document me
 void pico_input_delay (int ms);
+
+// TODO: Document me
 void pico_input_event (SDL_Event* evt, int type);
+
+// TODO: Document me
 int  pico_input_event_ask (SDL_Event* evt, int type);
+
+// TODO: Document me
 int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 
 /// @}
@@ -78,7 +96,7 @@ void pico_output_draw_oval (SDL_Rect rect);
 
 /// @brief Draws text. The string can't be empty.
 /// @param pos: the position to draw the text
-/// @param text: the text to be drawn
+/// @param text: the text to draw
 void pico_output_draw_text (SDL_Point pos, const char* text);
 
 /// @brief Shows the user what has been drawn to the screen since its last call.
@@ -89,8 +107,11 @@ void pico_output_present (void);
 /// @param path: path to the audio file
 void pico_output_sound (const char* path);
 
-void pico_output_write       (const char* text);
-void pico_output_writeln     (const char* text);
+// TODO: Document me
+void pico_output_write (const char* text);
+
+// TODO: Document me
+void pico_output_writeln (const char* text);
 
 void _pico_output_draw_image_cache (SDL_Point pos, const char* path, int cache);
 void _pico_output_sound_cache (const char* path, int cache);
@@ -113,15 +134,17 @@ typedef enum {
     PICO_BOTTOM=1, PICO_MIDDLE, PICO_TOP
 } Pico_VAnchor;
 
+/// @brief Returns the size of a given image.
+/// @param file: path to image file
 SDL_Point pico_get_image_size (const char* file);
 
-/// @brief Returns the application window size (physical size). If it's
+/// @brief Returns the window size (physical size). If it's
 /// different than the game canvas size (logical size), the program crashes.
 /// @sa pico_get_size_external
 /// @sa pico_get_size_internal
 SDL_Point pico_get_size (void);
 
-/// @brief Returns the application window size (physical size)
+/// @brief Returns the window size (physical size)
 /// @sa pico_get_size_internal
 /// @sa pico_get_size
 SDL_Point pico_get_size_external (void);
@@ -134,41 +157,63 @@ SDL_Point pico_get_size_internal (void);
 /// @brief Returns the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
 
-/// @brief Sets the anchor of objects that will be drawn.
+// TODO: Document me better
+/// @brief Changes the anchor of objects that will be drawn.
 /// @param h Horizontal anchor. X axis.
 /// @param v Vertical anchor. Y axis.
-///
-/// @b Example
-/// @code
-/// pico_set_anchor(PICO_LEFT, PICO_TOP);
-/// @endcode
-void pico_set_anchor        (Pico_HAnchor h, Pico_VAnchor v);
-void pico_set_blend         (SDL_BlendMode mode);
-void pico_set_color_clear   (SDL_Color color);
-void pico_set_color_draw    (SDL_Color color);
-void pico_set_cursor        (SDL_Point pos);
-void pico_set_font          (const char* file, int h);
-void pico_set_grid          (int on);
-void pico_set_image_crop    (SDL_Rect crop);
-void pico_set_image_size    (SDL_Point size);
-void pico_set_pan           (SDL_Point pos);
+void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v);
 
-/// @brief Sets the application window size (physical size) and the game canvas
-/// size (logical size).
-/// @param size: the new size to be set
+/// @brief Changes the blend modes.
+/// @param mode: new blend mode
+void pico_set_blend (SDL_BlendMode mode);
+
+/// @brief Changes the color used to clear the screen.
+/// @param color: new color to use
+/// @sa pico_output_clear
+void pico_set_color_clear (SDL_Color color);
+
+/// @brief Changes the color used to draw objects.
+/// @param color: new color to use
+void pico_set_color_draw (SDL_Color color);
+
+// TODO: Document me
+void pico_set_cursor (SDL_Point pos);
+
+/// @brief Changes the font that pico will use to draw texts.
+/// @param file: path to font file
+/// @param h: point size of the font
+void pico_set_font (const char* file, int h);
+
+/// @brief Shows or hides quadrangular grid in the game canvas.
+/// @param on: 1 to show it, or 0 to hide it
+void pico_set_grid (int on);
+
+/// @brief Selects a section of the image to draw.
+/// @param crop: section to select
+void pico_set_image_crop (SDL_Rect crop);
+
+// TODO: Document me
+void pico_set_image_size (SDL_Point size);
+
+// TODO: Document me
+void pico_set_pan (SDL_Point pos);
+
+/// @brief Changes the window size (physical size) and the game
+/// canvas size (logical size).
+/// @param size: new size to set
 /// @sa pico_set_size_external
 /// @sa pico_set_size_internal
 void pico_set_size (SDL_Point size);
 
-/// @brief Sets the application window size (physical size)
-/// @param phy: the new physical size to be set
+/// @brief Changes the window size (physical size).
+/// @param phy: new physical size to set
 /// @sa pico_set_size_internal
 /// @sa pico_set_size
 void pico_set_size_external (SDL_Point phy);
 
-/// @brief Sets the game canvas size (logical size)
-/// @param log: the new logical size to be set
-/// @sa pico_set_size_internal
+/// @brief Changes the game canvas size (logical size).
+/// @param log: new logical size to set
+/// @sa pico_set_size_external
 /// @sa pico_set_size
 void pico_set_size_internal (SDL_Point log);
 
@@ -176,12 +221,12 @@ void pico_set_size_internal (SDL_Point log);
 /// @param on: 1 to show, or 0 to hide
 void pico_set_show (int on);
 
-/// @brief 
-/// @param style 
+/// @brief Changes the style used to draw objects.
+/// @param style: new style to use
 void pico_set_style (Pico_Style style);
 
-/// @brief Sets the aplication title
-/// @param title: the new title to be set
+/// @brief Changes the aplication title
+/// @param title: new title to set
 void pico_set_title (const char* title);
 
 /// @}
