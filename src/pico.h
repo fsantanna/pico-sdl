@@ -28,6 +28,8 @@ extern "C" {
 
 /// @brief Initializes and terminates pico.
 /// @param on: 1 to initialize, or 0 to terminate
+///
+/// @include pico_init.c
 void pico_init (int on);
 
 // TODO: Document me
