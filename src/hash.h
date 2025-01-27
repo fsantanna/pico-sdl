@@ -1,5 +1,5 @@
 /// @file hash.h
-/// @brief Contains @ref Hash module.
+/// @brief Modules: @ref Hash.
 
 #ifndef PICO_HASH_H
 #define PICO_HASH_H
@@ -12,12 +12,12 @@ extern "C" {
 #endif
 
 /// @defgroup Hash
-/// @brief Hashing functionality used by pico to index assets. Include @ref hash.h.
+/// @brief Hashing functionality used internally to manage assets. Files: @ref hash.h.
 /// @{
 
 struct pico_hash;
 
-/// @brief Alias to a hidden struct. Access done via functions.
+/// @brief Alias to a hidden struct of a hash object.
 typedef struct pico_hash pico_hash;
 
 /// @brief Creates a new hash table.

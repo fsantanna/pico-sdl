@@ -1,5 +1,5 @@
 /// @file pico.h
-/// @brief Contains @ref Input, @ref Output and @ref State modules.
+/// @brief Modules: @ref Init, @ref Input, @ref Output and @ref State.
 
 // TODO: Code examples for all functions.
 
@@ -20,7 +20,7 @@ extern "C" {
 #define SDL_ANY 0
 
 /// @defgroup Init
-/// @brief Functions and default values used in initialization. Include @ref pico.h.
+/// @brief Functions and values used in initialization. Files: @ref pico.h.
 /// @{
 
 /// @brief Default window title
@@ -63,7 +63,7 @@ SDL_Point pico_pct_to_pos (float x, float y);
 SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
 
 /// @defgroup Input
-/// @brief Event handling. Include @ref pico.h.
+/// @brief Event handling. Files: @ref pico.h.
 /// @{
 
 // TODO: Document me
@@ -81,7 +81,7 @@ int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 /// @}
 
 /// @defgroup Output
-/// @brief Draw images and primitives, play sounds, etc. Include @ref pico.h.
+/// @brief Draw images and primitives, play sounds, etc. Files: @ref pico.h.
 /// @{
 
 /// @brief Clears screen with color set by @ref pico_set_color_clear.
@@ -138,7 +138,7 @@ void _pico_output_sound_cache (const char* path, int cache);
 /// @}
 
 /// @defgroup State
-/// @brief All getters and setters. Include @ref pico.h.
+/// @brief All getters and setters. Files: @ref pico.h.
 /// @{
 
 typedef enum {
@@ -157,8 +157,8 @@ typedef enum {
 /// @param file: path to image file
 SDL_Point pico_get_image_size (const char* file);
 
-/// @brief Returns the physical window size. If it's different than the
-/// logical window size, the program crashes.
+/// @brief Returns the physical window size.
+/// If it's different than the logical window size, the program crashes.
 /// @sa pico_get_size_external
 /// @sa pico_get_size_internal
 SDL_Point pico_get_size (void);
@@ -176,10 +176,11 @@ SDL_Point pico_get_size_internal (void);
 /// @brief Returns the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
 
-// TODO: Document me better
-/// @brief Changes the anchor of objects that will be drawn.
-/// @param h Horizontal anchor. X axis.
-/// @param v Vertical anchor. Y axis.
+/// @brief Changes the coordinate system (anchor) of objects to draw.
+/// @param h: x-axis anchor
+/// @param v: y-axis anchor
+///
+/// @include anchor.c
 void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v);
 
 /// @brief Changes the blend modes.
@@ -198,12 +199,12 @@ void pico_set_color_draw (SDL_Color color);
 // TODO: Document me
 void pico_set_cursor (SDL_Point pos);
 
-/// @brief Changes the font that pico will use to draw texts.
+/// @brief Changes the font that pico uses to draw texts.
 /// @param file: path to font file
 /// @param h: point size of the font
 void pico_set_font (const char* file, int h);
 
-/// @brief Shows or hides quadrangular grid in the game canvas.
+/// @brief Toggles a square grid in the game canvas.
 /// @param on: 1 to show it, or 0 to hide it
 void pico_set_grid (int on);
 
@@ -235,7 +236,7 @@ void pico_set_size_external (SDL_Point phy);
 /// @sa pico_set_size
 void pico_set_size_internal (SDL_Point log);
 
-/// @brief Shows or hides the aplication window.
+/// @brief Toggles the aplication window visibility.
 /// @param on: 1 to show, or 0 to hide
 void pico_set_show (int on);
 
