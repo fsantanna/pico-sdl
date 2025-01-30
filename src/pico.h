@@ -14,7 +14,8 @@
 extern "C" {
 #endif
 
-// TODO: Document me
+/// @brief Asserts condition and shows SDL error on failure
+/// @param x: condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
 #define SDL_ANY 0
@@ -88,41 +89,43 @@ int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 void pico_output_clear (void);
 
 /// @brief Draws an image.
-/// @param pos: position where to draw the image
+/// This function uses caching, so the file is actually loaded only once.
+/// @param pos: drawing position
 /// @param path: path to the image file
 void pico_output_draw_image (SDL_Point pos, const char* path);
 
-/// @brief Draws a line.
+/// @brief Draws a line segment.
 /// @param p1: first point
 /// @param p2: second point
 void pico_output_draw_line (SDL_Point p1, SDL_Point p2);
 
 /// @brief Draws a single pixel.
-/// @param pos: the position of the pixel in game coordinates
+/// @param pos: drawing position
 void pico_output_draw_pixel (SDL_Point pos);
 
 /// @brief Draws a batch of pixels.
-/// @param apos: array of pixels
+/// @param apos: array of positions
 /// @param count: amount of pixels to draw
 void pico_output_draw_pixels (const SDL_Point* apos, int count);
 
 /// @brief Draws a rectangle.
-/// @param rect: the rectangle to draw
+/// @param rect: rectangle to draw
 void pico_output_draw_rect (SDL_Rect rect);
 
-/// @brief Draws an ellipse that fits exatcly inside the rectangle.
+/// @brief Draws an ellipse.
 /// @param rect: bounds of the ellipse
 void pico_output_draw_oval (SDL_Rect rect);
 
 /// @brief Draws text. The string can't be empty.
-/// @param pos: the position to draw the text
-/// @param text: the text to draw
+/// @param pos: drawing position
+/// @param text: text to draw
 void pico_output_draw_text (SDL_Point pos, const char* text);
 
-/// @brief Shows what has been drawn to the screen since last call to @ref pico_output_clear
+/// @brief Shows what has been drawn onto the screen.
 void pico_output_present (void);
 
 /// @brief Plays a sound.
+/// This function uses caching, so the file is actually loaded only once.
 /// @param path: path to the audio file
 void pico_output_sound (const char* path);
 
@@ -176,6 +179,7 @@ SDL_Point pico_get_size_internal (void);
 /// @brief Returns the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
 
+// TODO: Document me better
 /// @brief Changes the coordinate system (anchor) of objects to draw.
 /// @param h: x-axis anchor
 /// @param v: y-axis anchor
@@ -183,33 +187,33 @@ Uint32 pico_get_ticks (void);
 /// @include anchor.c
 void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v);
 
-/// @brief Changes the blend modes.
+/// @brief Changes the alpha blending mode.
 /// @param mode: new blend mode
 void pico_set_blend (SDL_BlendMode mode);
 
 /// @brief Changes the color used to clear the screen.
-/// @param color: new color to use
+/// @param color: new color
 /// @sa pico_output_clear
 void pico_set_color_clear (SDL_Color color);
 
 /// @brief Changes the color used to draw objects.
-/// @param color: new color to use
+/// @param color: new color
 void pico_set_color_draw (SDL_Color color);
 
 // TODO: Document me
 void pico_set_cursor (SDL_Point pos);
 
-/// @brief Changes the font that pico uses to draw texts.
+/// @brief Changes the font used to draw texts.
 /// @param file: path to font file
-/// @param h: point size of the font
+/// @param h: size of the font
 void pico_set_font (const char* file, int h);
 
-/// @brief Toggles a square grid in the game canvas.
+/// @brief Toggles a grid on top of logical pixels.
 /// @param on: 1 to show it, or 0 to hide it
 void pico_set_grid (int on);
 
-/// @brief Selects a section of the image to draw.
-/// @param crop: section to select
+/// @brief Changes the cropping that is applied to images before drawing them.
+/// @param crop: cropping region, which may have 0 area to disable cropping
 void pico_set_image_crop (SDL_Rect crop);
 
 // TODO: Document me
@@ -219,19 +223,19 @@ void pico_set_image_size (SDL_Point size);
 void pico_set_pan (SDL_Point pos);
 
 /// @brief Changes the physical window size and the logical window size.
-/// @param size: new size to set
+/// @param size: new size
 /// @sa pico_set_size_external
 /// @sa pico_set_size_internal
 void pico_set_size (SDL_Point size);
 
 /// @brief Changes the physical window size.
-/// @param phy: new physical size to set
+/// @param phy: new physical size
 /// @sa pico_set_size_internal
 /// @sa pico_set_size
 void pico_set_size_external (SDL_Point phy);
 
 /// @brief Changes the logical window size.
-/// @param log: new logical size to set
+/// @param log: new logical size
 /// @sa pico_set_size_external
 /// @sa pico_set_size
 void pico_set_size_internal (SDL_Point log);
