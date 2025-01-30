@@ -216,7 +216,8 @@ void pico_set_grid (int on);
 /// @param crop: cropping region, which may have 0 area to disable cropping
 void pico_set_image_crop (SDL_Rect crop);
 
-// TODO: Document me
+/// @brief Changes what size images should be when drawn.
+/// @param size: new size, which may be (0, 0) to disable resizing
 void pico_set_image_size (SDL_Point size);
 
 // TODO: Document me
