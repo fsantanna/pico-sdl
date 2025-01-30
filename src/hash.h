@@ -1,5 +1,12 @@
+#ifndef PICO_HASH_H
+#define PICO_HASH_H
+
 #include <stdlib.h>
 #include <stddef.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct pico_hash;
 typedef struct pico_hash pico_hash;
@@ -27,3 +34,9 @@ int pico_hash_rem (pico_hash* table, const char* key);
 // table: pointer to the hash table
 // key: the key of the value to retrieve
 void* pico_hash_get (pico_hash* table, const char* key);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // PICO_HASH_H

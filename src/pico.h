@@ -1,6 +1,13 @@
+#ifndef PICO_H
+#define PICO_H
+
 #include <stdio.h>
 #include <assert.h>
 #include <SDL2/SDL.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define PICO_TITLE "pico-SDL"
 #define PICO_PHY_X 640
@@ -39,23 +46,23 @@ int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 
 // OUTPUT
 void pico_output_clear      (void);
-void pico_output_draw_image (SDL_Point pos, char* path);
+void pico_output_draw_image (SDL_Point pos, const char* path);
 void pico_output_draw_line  (SDL_Point p1, SDL_Point p2);
 void pico_output_draw_pixel (SDL_Point pos);
 void pico_output_draw_rect  (SDL_Rect rect);
 void pico_output_draw_oval  (SDL_Rect rect);
-void pico_output_draw_text  (SDL_Point pos, char* text);
+void pico_output_draw_text  (SDL_Point pos, const char* text);
 void pico_output_present    (void);
-void pico_output_sound      (char* path);
-void pico_output_write      (char* text);
-void pico_output_writeln    (char* text);
+void pico_output_sound      (const char* path);
+void pico_output_write      (const char* text);
+void pico_output_writeln    (const char* text);
 
-void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache);
-void _pico_output_sound_cache (char* path, int cache);
+void _pico_output_draw_image_cache (SDL_Point pos, const char* path, int cache);
+void _pico_output_sound_cache (const char* path, int cache);
 
 // STATE
 
-SDL_Point pico_get_image_size    (char* file);
+SDL_Point pico_get_image_size    (const char* file);
 SDL_Point pico_get_size          (void);
 SDL_Point pico_get_size_external (void);
 SDL_Point pico_get_size_internal (void);
@@ -65,7 +72,7 @@ void pico_set_anchor        (Pico_HAnchor h, Pico_VAnchor v);
 void pico_set_color_clear   (SDL_Color color);
 void pico_set_color_draw    (SDL_Color color);
 void pico_set_cursor        (SDL_Point pos);
-void pico_set_font          (char* file, int h);
+void pico_set_font          (const char* file, int h);
 void pico_set_grid          (int on);
 void pico_set_image_crop    (SDL_Rect crop);
 void pico_set_image_size    (SDL_Point size);
@@ -75,4 +82,11 @@ void pico_set_size_external (SDL_Point phy);
 void pico_set_size_internal (SDL_Point log);
 void pico_set_show          (int on);
 void pico_set_style         (Pico_Style style);
-void pico_set_title         (char* title);
+void pico_set_title         (const char* title);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // PICO_H
+
