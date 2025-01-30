@@ -18,30 +18,18 @@ extern "C" {
 /// @param x: condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
+#define PICO_TITLE "pico-SDL"
+#define PICO_PHY_X 640
+#define PICO_PHY_Y 360
+#define PICO_LOG_X  64
+#define PICO_LOG_Y  36
+#define PICO_HASH  128
+
 #define SDL_ANY 0
 
 /// @defgroup Init
-/// @brief Functions and values used in initialization. Files: @ref pico.h.
+/// @brief Functions and values used in initialization.
 /// @{
-
-/// @brief Default window title
-#define PICO_TITLE "pico-SDL"
-
-/// @brief Default physical window width.
-#define PICO_PHY_X 640
-
-/// @brief Default physical window height.
-#define PICO_PHY_Y 360
-
-/// @brief Default logical window width.
-#define PICO_LOG_X  64
-
-/// @brief Default logical window height.
-#define PICO_LOG_Y  36
-
-/// @brief Default amount of buckets of internal hash object.
-/// @sa Hash
-#define PICO_HASH  128
 
 /// @brief Initializes and terminates pico.
 /// @param on: 1 to initialize, or 0 to terminate
@@ -50,9 +38,6 @@ extern "C" {
 void pico_init (int on);
 
 /// @}
-
-// TODO: Document me
-int pico_event_from_sdl (SDL_Event* e, int xp);
 
 // TODO: Document me
 int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
@@ -64,7 +49,7 @@ SDL_Point pico_pct_to_pos (float x, float y);
 SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
 
 /// @defgroup Input
-/// @brief Event handling. Files: @ref pico.h.
+/// @brief Event handling.
 /// @{
 
 // TODO: Document me
@@ -82,7 +67,7 @@ int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 /// @}
 
 /// @defgroup Output
-/// @brief Draw images and primitives, play sounds, etc. Files: @ref pico.h.
+/// @brief Draw images and primitives, play sounds, etc.
 /// @{
 
 /// @brief Clears screen with color set by @ref pico_set_color_clear.
@@ -141,7 +126,7 @@ void _pico_output_sound_cache (const char* path, int cache);
 /// @}
 
 /// @defgroup State
-/// @brief All getters and setters. Files: @ref pico.h.
+/// @brief All getters and setters.
 /// @{
 
 typedef enum {
