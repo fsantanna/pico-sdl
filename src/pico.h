@@ -36,6 +36,7 @@ extern "C" {
 ///
 /// @include init.c
 void pico_init (int on);
+/// @example init.c
 
 /// @}
 
