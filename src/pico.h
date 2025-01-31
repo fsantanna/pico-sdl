@@ -31,7 +31,7 @@ extern "C" {
 void pico_init (int on);
 /// @example init.c
 
-/// @{
+/// @}
 
 /// @defgroup Utils
 /// @brief Utilities for users
