@@ -117,6 +117,8 @@ void pico_init (int on) {
         pico_set_size_internal((SDL_Point) { PICO_LOG_X, PICO_LOG_Y });
         pico_set_size_external((SDL_Point) { PICO_PHY_X, PICO_PHY_Y });
 
+        SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
+
         //pico_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
 
@@ -424,11 +426,11 @@ void pico_output_draw_oval (SDL_Rect rect) {
 }
 
 void pico_output_draw_text (SDL_Point pos, const char* text) {
-    uint8_t r, g, b;
-    SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
+    uint8_t r, g, b, a;
+    SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
     pico_assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended(FNT, text,
-                                              (SDL_Color){r,g,b,0xFF});
+                                              (SDL_Color){r,g,b,a});
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
