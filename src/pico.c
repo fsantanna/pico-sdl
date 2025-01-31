@@ -373,6 +373,16 @@ void pico_output_draw_pixel (SDL_Point pos) {
     SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
 }
 
+void pico_output_draw_pixels (const SDL_Point* poss, int count) {
+    SDL_Point vec[count];
+    for (int i=0; i<count; i++) {
+        vec[i].x = X(poss[i].x,1);
+        vec[i].y = Y(poss[i].y,1);
+    }
+
+    SDL_RenderDrawPoints(REN, vec, count);
+}
+
 void pico_output_draw_rect (SDL_Rect rect) {
     SDL_Rect out = {
         X(rect.x, rect.w),
