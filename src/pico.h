@@ -56,16 +56,32 @@ SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
 /// @brief Event handling.
 /// @{
 
-// TODO: Document me
+/// @brief Stops the program until a given number of milliseconds have passed.
+/// @param ms: milliseconds to wait
 void pico_input_delay (int ms);
 
-// TODO: Document me
+/// @brief Stops the program until an event occurs.
+/// @param evt: where to save the event data, or NULL to ignore
+/// @param type: type of event to wait for (SDL_EventType), where 0 means any type.
+/// @sa pico_input_event_ask
+/// @sa pico_input_event_timeout
 void pico_input_event (SDL_Event* evt, int type);
 
-// TODO: Document me
+/// @brief Checks if an event has occured.
+/// @param evt: where to save the event data, or NULL to ignore
+/// @param type: type of event to check the occurence (SDL_EventType), where 0 means any type
+/// @return 1 if the given type of event has occurred, or 0 otherwise
+/// @sa pico_input_event
+/// @sa pico_input_event_timeout
 int  pico_input_event_ask (SDL_Event* evt, int type);
 
-// TODO: Document me
+/// @brief Stops the program until an event occurs or a timeout is reached.
+/// @param evt: where to save the event data, or NULL to ignore
+/// @param type: type of event to wait for (SDL_EventType), where 0 means any type
+/// @param timeout: time limit to wait for events in milliseconds
+/// @return 1 if the given type of event has occurred, or 0 otherwise
+/// @sa pico_input_event
+/// @sa pico_input_event_timeout
 int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 
 /// @}
