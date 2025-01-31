@@ -11,10 +11,6 @@
 extern "C" {
 #endif
 
-/// @brief Asserts condition and shows SDL error on failure
-/// @param x: condition to assert
-#define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
-
 #define PICO_TITLE "pico-SDL"
 #define PICO_PHY_X 640
 #define PICO_PHY_Y 360
@@ -35,7 +31,15 @@ extern "C" {
 void pico_init (int on);
 /// @example init.c
 
-/// @}
+/// @{
+
+/// @defgroup Utils
+/// @brief Utilities for users
+/// @{
+
+/// @brief Asserts condition and shows SDL error on failure
+/// @param x: condition to assert
+#define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
 // TODO: Document me
 int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
@@ -45,6 +49,8 @@ SDL_Point pico_pct_to_pos (float x, float y);
 
 // TODO: Document me
 SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
+
+/// @}
 
 /// @defgroup Input
 /// @brief Event handling.
