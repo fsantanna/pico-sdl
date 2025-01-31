@@ -249,7 +249,10 @@ void pico_set_title (const char* title);
 /// @param x: condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
-// TODO: Document me
+/// @brief Checks if a point is inside a rectangle.
+/// @param pt: point
+/// @param r: rectangle
+/// @return 1 if pt is inside r, or 0 otherwise
 int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
 
 // TODO: Document me
