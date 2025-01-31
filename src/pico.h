@@ -1,6 +1,3 @@
-/// @file pico.h
-/// @brief Modules: @ref Init, @ref Input, @ref Output and @ref State.
-
 // TODO: Code examples for all functions.
 
 #ifndef PICO_H
