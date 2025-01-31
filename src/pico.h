@@ -33,25 +33,6 @@ void pico_init (int on);
 
 /// @}
 
-/// @defgroup Utils
-/// @brief Utilities for users
-/// @{
-
-/// @brief Asserts condition and shows SDL error on failure
-/// @param x: condition to assert
-#define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
-
-// TODO: Document me
-int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
-
-// TODO: Document me
-SDL_Point pico_pct_to_pos (float x, float y);
-
-// TODO: Document me
-SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
-
-/// @}
-
 /// @defgroup Input
 /// @brief Event handling.
 /// @{
@@ -257,6 +238,25 @@ void pico_set_style (Pico_Style style);
 /// @brief Changes the aplication title
 /// @param title: new title to set
 void pico_set_title (const char* title);
+
+/// @}
+
+/// @defgroup Utils
+/// @brief Utilities for users
+/// @{
+
+/// @brief Asserts condition and shows SDL error on failure
+/// @param x: condition to assert
+#define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
+
+// TODO: Document me
+int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
+
+// TODO: Document me
+SDL_Point pico_pct_to_pos (float x, float y);
+
+// TODO: Document me
+SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
 
 /// @}
 
