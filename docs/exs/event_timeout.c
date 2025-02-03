@@ -6,7 +6,7 @@ int main() {
     SDL_Event event;
 
     printf("Waiting for an event for the next 2 seconds...\n");
-    int happened = pico_input_event_timeout(&event, 0, 2000);
+    int happened = pico_input_event_timeout(&event, 0, 5000);
     if (happened) {
         printf("Event detected! Type: %d\n", event.type);
     }
