@@ -1,6 +1,3 @@
-/// @file hash.h
-/// @brief Modules: @ref Hash.
-
 #ifndef PICO_HASH_H
 #define PICO_HASH_H
 
