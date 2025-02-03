@@ -64,7 +64,7 @@ int  pico_input_event_ask (SDL_Event* evt, int type);
 /// @param timeout: time limit to wait for events in milliseconds
 /// @return 1 if the given type of event has occurred, or 0 otherwise
 /// @sa pico_input_event
-/// @sa pico_input_event_timeout
+/// @sa pico_input_event_ask
 int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 /// @example event_timeout.c
 
