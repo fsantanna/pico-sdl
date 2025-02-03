@@ -40,6 +40,7 @@ void pico_init (int on);
 /// @brief Stops the program until a given number of milliseconds have passed.
 /// @param ms: milliseconds to wait
 void pico_input_delay (int ms);
+/// @example delay.c
 
 /// @brief Stops the program until an event occurs.
 /// @param evt: where to save the event data, or NULL to ignore
@@ -47,6 +48,7 @@ void pico_input_delay (int ms);
 /// @sa pico_input_event_ask
 /// @sa pico_input_event_timeout
 void pico_input_event (SDL_Event* evt, int type);
+/// @example event.c
 
 /// @brief Checks if an event has occured.
 /// @param evt: where to save the event data, or NULL to ignore
@@ -64,6 +66,7 @@ int  pico_input_event_ask (SDL_Event* evt, int type);
 /// @sa pico_input_event
 /// @sa pico_input_event_timeout
 int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
+/// @example event_timeout.c
 
 /// @}
 
