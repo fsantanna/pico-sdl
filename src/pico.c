@@ -375,14 +375,14 @@ void pico_output_draw_pixel (SDL_Point pos) {
     SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
 }
 
-void pico_output_draw_pixels (const SDL_Point* apos, int count) {
-    SDL_Point apos_fixed[count];
-    for (int i = 0; i < count; i++) {
-        apos_fixed[i].x = X(apos[i].x,1);
-        apos_fixed[i].y = Y(apos[i].y,1);
+void pico_output_draw_pixels (const SDL_Point* poss, int count) {
+    SDL_Point vec[count];
+    for (int i=0; i<count; i++) {
+        vec[i].x = X(poss[i].x,1);
+        vec[i].y = Y(poss[i].y,1);
     }
 
-    SDL_RenderDrawPoints(REN, apos_fixed, count);
+    SDL_RenderDrawPoints(REN, vec, count);
 }
 
 void pico_output_draw_rect (SDL_Rect rect) {
@@ -426,11 +426,11 @@ void pico_output_draw_oval (SDL_Rect rect) {
 }
 
 void pico_output_draw_text (SDL_Point pos, const char* text) {
-    uint8_t r, g, b;
-    SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
+    uint8_t r, g, b, a;
+    SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
     pico_assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended(FNT, text,
-                                              (SDL_Color){r,g,b,0xFF});
+                                              (SDL_Color){r,g,b,a});
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
