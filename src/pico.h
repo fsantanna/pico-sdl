@@ -25,9 +25,8 @@ extern "C" {
 /// @{
 
 /// @brief Initializes and terminates pico.
-/// @param on: 1 to initialize, or 0 to terminate
-///
 /// @include init.c
+/// @param on: 1 to initialize, or 0 to terminate
 void pico_init (int on);
 /// @example init.c
 
@@ -38,13 +37,15 @@ void pico_init (int on);
 /// @{
 
 /// @brief Stops the program until a given number of milliseconds have passed.
+/// @include delay.c
 /// @param ms: milliseconds to wait
 void pico_input_delay (int ms);
 /// @example delay.c
 
 /// @brief Stops the program until an event occurs.
+/// @include event.c
 /// @param evt: where to save the event data, or NULL to ignore
-/// @param type: type of event to wait for (SDL_EventType), where 0 means any type.
+/// @param type: type of event to wait for (SDL_EventType), where 0 means any type
 /// @sa pico_input_event_ask
 /// @sa pico_input_event_timeout
 void pico_input_event (SDL_Event* evt, int type);
@@ -59,6 +60,7 @@ void pico_input_event (SDL_Event* evt, int type);
 int  pico_input_event_ask (SDL_Event* evt, int type);
 
 /// @brief Stops the program until an event occurs or a timeout is reached.
+/// @include event_timeout.c
 /// @param evt: where to save the event data, or NULL to ignore
 /// @param type: type of event to wait for (SDL_EventType), where 0 means any type
 /// @param timeout: time limit to wait for events in milliseconds
@@ -209,7 +211,8 @@ void pico_set_image_crop (SDL_Rect crop);
 /// @param size: new size, which may be (0, 0) to disable resizing
 void pico_set_image_size (SDL_Point size);
 
-// TODO: Document me
+/// @brief Changes the point of view on the logical window.
+/// @param pos: new point of view
 void pico_set_pan (SDL_Point pos);
 
 /// @brief Changes the physical window size and the logical window size.
