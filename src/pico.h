@@ -20,6 +20,12 @@ extern "C" {
 
 #define SDL_ANY 0
 
+/// @example init.c
+/// @example delay.c
+/// @example event.c
+/// @example event_timeout.c
+/// @example event_loop.c
+
 /// @defgroup Init
 /// @brief Functions and values used in initialization.
 /// @{
@@ -28,7 +34,6 @@ extern "C" {
 /// @include init.c
 /// @param on 1 to initialize, or 0 to terminate
 void pico_init (int on);
-/// @example init.c
 
 /// @}
 
@@ -40,7 +45,6 @@ void pico_init (int on);
 /// @include delay.c
 /// @param ms milliseconds to wait
 void pico_input_delay (int ms);
-/// @example delay.c
 
 /// @brief Stops the program until an event occurs.
 /// @include event.c
@@ -49,7 +53,6 @@ void pico_input_delay (int ms);
 /// @sa pico_input_event_ask
 /// @sa pico_input_event_timeout
 void pico_input_event (SDL_Event* evt, int type);
-/// @example event.c
 
 /// @brief Checks if an event has occured.
 /// @param evt where to save the event data, or NULL to ignore
@@ -68,7 +71,6 @@ int  pico_input_event_ask (SDL_Event* evt, int type);
 /// @sa pico_input_event
 /// @sa pico_input_event_ask
 int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
-/// @example event_timeout.c
 
 /// @}
 
@@ -172,10 +174,9 @@ Uint32 pico_get_ticks (void);
 
 // TODO Document me better
 /// @brief Changes the coordinate system (anchor) of objects to draw.
+/// @include anchor.c
 /// @param h x-axis anchor
 /// @param v y-axis anchor
-///
-/// @include anchor.c
 void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v);
 
 /// @brief Changes the color used to clear the screen.
