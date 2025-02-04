@@ -1,7 +1,7 @@
 # pico-sdl documentation
 ### What is pico-sdl?
 
-pico-sdl is an abstraction layer over SDL2, created by Francisco Sant'Anna and inspired by pico-8. It abstracts lower-level SDL concepts like Renderers and Textures while wrapping its features and extensions (image, ttf, mixer and gfx) into a unified API.
+pico-sdl is an abstraction layer over SDL2, inspired by pico-8. It abstracts lower-level SDL concepts like Renderers and Textures while wrapping its features and extensions (image, ttf, mixer and gfx) into a unified API.
 
 ---
 
