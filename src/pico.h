@@ -49,6 +49,7 @@ void pico_output_clear      (void);
 void pico_output_draw_image (SDL_Point pos, const char* path);
 void pico_output_draw_line  (SDL_Point p1, SDL_Point p2);
 void pico_output_draw_pixel (SDL_Point pos);
+void pico_output_draw_pixels (const SDL_Point* poss, int count);
 void pico_output_draw_rect  (SDL_Rect rect);
 void pico_output_draw_oval  (SDL_Rect rect);
 void pico_output_draw_text  (SDL_Point pos, const char* text);
