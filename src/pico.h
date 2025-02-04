@@ -178,10 +178,6 @@ Uint32 pico_get_ticks (void);
 /// @include anchor.c
 void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v);
 
-/// @brief Changes the alpha blending mode.
-/// @param mode new blend mode
-void pico_set_blend (SDL_BlendMode mode);
-
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
 /// @sa pico_output_clear

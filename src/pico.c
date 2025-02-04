@@ -117,6 +117,8 @@ void pico_init (int on) {
         pico_set_size_internal((SDL_Point) { PICO_LOG_X, PICO_LOG_Y });
         pico_set_size_external((SDL_Point) { PICO_PHY_X, PICO_PHY_Y });
 
+        SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
+
         //pico_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
 
@@ -559,11 +561,6 @@ Uint32 pico_get_ticks (void) {
 
 void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
     S.anchor = (SDL_Point) {h, v};
-}
-
-void pico_set_blend (SDL_BlendMode mode) {
-    int ret = SDL_SetRenderDrawBlendMode(SDL_GetRenderer(WIN), mode);
-    pico_assert(ret != 0);
 }
 
 void pico_set_color_clear (SDL_Color color) {
