@@ -122,10 +122,18 @@ void pico_output_present (void);
 /// @param path path to the audio file
 void pico_output_sound (const char* path);
 
-// TODO Document me
+/// @brief Draws text with an internal cursor as reference, like in a text editor.
+/// The cursor automatically goes from (x, y) to (x + len_text * FNT_SIZE, y).
+/// @param text text to draw
+/// @sa pico_set_cursor
+/// @sa pico_output_writeln
 void pico_output_write (const char* text);
 
-// TODO Document me
+/// @brief Draws a line of text with an internal cursor as reference, like in a text editor.
+/// The cursor automatically goes from (x, y) to (x, y + FNT_SIZE).
+/// @param text text to draw
+/// @sa pico_set_cursor
+/// @sa pico_output_write
 void pico_output_writeln (const char* text);
 
 void _pico_output_draw_image_cache (SDL_Point pos, const char* path, int cache);
@@ -188,7 +196,10 @@ void pico_set_color_clear (SDL_Color color);
 /// @param color new color
 void pico_set_color_draw (SDL_Color color);
 
-// TODO Document me
+/// @brief Sets the position of the text cursor.
+/// @param pos new cursor position
+/// @sa pico_output_write
+/// @sa pico_output_writeln
 void pico_set_cursor (SDL_Point pos);
 
 /// @brief Changes the font used to draw texts.
