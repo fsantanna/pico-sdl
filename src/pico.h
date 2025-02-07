@@ -180,8 +180,7 @@ SDL_Point pico_get_size_internal (void);
 /// @brief Returns the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
 
-// TODO Document me better
-/// @brief Changes the coordinate system (anchor) of objects to draw.
+/// @brief Changes the reference point used to draw objects (center, topleft, etc).
 /// @include anchor.c
 /// @param h x-axis anchor
 /// @param v y-axis anchor
