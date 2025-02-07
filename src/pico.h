@@ -122,15 +122,15 @@ void pico_output_present (void);
 /// @param path path to the audio file
 void pico_output_sound (const char* path);
 
-/// @brief Draws text with an internal cursor as reference, like in a text editor.
-/// The cursor automatically goes from (x, y) to (x + len_text * FNT_SIZE, y).
+/// @brief Draws text with an internal cursor as reference, like in text editors.
+/// The cursor position updates to (x + len_text * FNT_SIZE, y).
 /// @param text text to draw
 /// @sa pico_set_cursor
 /// @sa pico_output_writeln
 void pico_output_write (const char* text);
 
-/// @brief Draws a line of text with an internal cursor as reference, like in a text editor.
-/// The cursor automatically goes from (x, y) to (x, y + FNT_SIZE).
+/// @brief Draws a line of text with an internal cursor as reference, like in text editors.
+/// The cursor position updates to (x, y + FNT_SIZE).
 /// @param text text to draw
 /// @sa pico_set_cursor
 /// @sa pico_output_write
