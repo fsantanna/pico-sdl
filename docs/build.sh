@@ -9,7 +9,8 @@ command_exists() {
 
 command_exists doxygen
 
-DOXYGEN_LAYOUT_FILE="docs/layout-1.9.xml" doxygen Doxyfile
+DOXYGEN_LAYOUT_FILE="layout-1.9.xml" doxygen Doxyfile
 
-command_exists zip
-zip docs.zip -r docs/html
+if command -v zip >/dev/null 2>&1; then
+    zip docs.zip -r html/
+fi
