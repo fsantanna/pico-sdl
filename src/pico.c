@@ -117,6 +117,8 @@ void pico_init (int on) {
         pico_set_size_internal((SDL_Point) { PICO_LOG_X, PICO_LOG_Y });
         pico_set_size_external((SDL_Point) { PICO_PHY_X, PICO_PHY_Y });
 
+        SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
+
         //pico_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
 
@@ -373,14 +375,14 @@ void pico_output_draw_pixel (SDL_Point pos) {
     SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
 }
 
-void pico_output_draw_pixels (const SDL_Point* apos, int count) {
-    SDL_Point apos_fixed[count];
-    for (int i = 0; i < count; i++) {
-        apos_fixed[i].x = X(apos[i].x,1);
-        apos_fixed[i].y = Y(apos[i].y,1);
+void pico_output_draw_pixels (const SDL_Point* poss, int count) {
+    SDL_Point vec[count];
+    for (int i=0; i<count; i++) {
+        vec[i].x = X(poss[i].x,1);
+        vec[i].y = Y(poss[i].y,1);
     }
 
-    SDL_RenderDrawPoints(REN, apos_fixed, count);
+    SDL_RenderDrawPoints(REN, vec, count);
 }
 
 void pico_output_draw_rect (SDL_Rect rect) {
@@ -424,11 +426,11 @@ void pico_output_draw_oval (SDL_Rect rect) {
 }
 
 void pico_output_draw_text (SDL_Point pos, const char* text) {
-    uint8_t r, g, b;
-    SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
+    uint8_t r, g, b, a;
+    SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
     pico_assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended(FNT, text,
-                                              (SDL_Color){r,g,b,0xFF});
+                                              (SDL_Color){r,g,b,a});
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
@@ -559,11 +561,6 @@ Uint32 pico_get_ticks (void) {
 
 void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
     S.anchor = (SDL_Point) {h, v};
-}
-
-void pico_set_blend (SDL_BlendMode mode) {
-    int ret = SDL_SetRenderDrawBlendMode(SDL_GetRenderer(WIN), mode);
-    pico_assert(ret != 0);
 }
 
 void pico_set_color_clear (SDL_Color color) {
