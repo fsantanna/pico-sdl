@@ -114,8 +114,10 @@ void pico_init (int on) {
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
 
-        pico_set_size_internal((SDL_Point) { PICO_LOG_X, PICO_LOG_Y });
-        pico_set_size_external((SDL_Point) { PICO_PHY_X, PICO_PHY_Y });
+        pico_set_size (
+            (SDL_Point) { PICO_PHY_X, PICO_PHY_Y },
+            (SDL_Point) { PICO_LOG_X, PICO_LOG_Y }
+        );
 
         //pico_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
@@ -157,14 +159,14 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
                     SDL_Point log = LOG;
                     log.x *= 0.9;
                     log.y *= 0.9;
-                    pico_set_size_internal(log);
+                    pico_set_size(PHY, log);
                     break;
                 }
                 case SDLK_EQUALS: {
                     SDL_Point log = LOG;
                     log.x *= 1.1;
                     log.y *= 1.1;
-                    pico_set_size_internal(log);
+                    pico_set_size(PHY, log);
                     break;
                 }
                 case SDLK_LEFT: {
@@ -582,33 +584,23 @@ void pico_set_font (char* file, int h) {
     pico_assert(FNT != NULL);
 }
 
-void pico_set_size (SDL_Point size) {
-    SDL_SetWindowSize(WIN, size.x, size.y);
-    SDL_RenderSetLogicalSize(REN, size.x, size.y);
-    pico_set_grid(0);
-    WIN_Clear();
-    pico_output_present();
-}
-
-void pico_set_size_external (SDL_Point phy) {
-    SDL_Point log = LOG;
-    if (phy.x==0 && phy.y==0) {
-        pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
-        phy = PHY;
-    } else {
-        pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
-        SDL_SetWindowSize(WIN, phy.x, phy.y);
+void pico_set_size (SDL_Point phy, SDL_Point log) {
+    // physical
+    {
+        if (phy.x==0 && phy.y==0) {
+            pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
+            phy = PHY;
+        } else {
+            pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
+            SDL_SetWindowSize(WIN, phy.x, phy.y);
+        }
     }
-    if (phy.x==log.x || phy.y==log.y) {
-        pico_set_grid(0);
-    }
-    WIN_Clear();
-    pico_output_present();
-}
 
-void pico_set_size_internal (SDL_Point log) {
-    SDL_Point phy = PHY;
-    SDL_RenderSetLogicalSize(REN, log.x, log.y);
+    // logical
+    {
+        SDL_RenderSetLogicalSize(REN, log.x, log.y);
+    }
+
     if (phy.x==log.x || phy.y==log.y) {
         pico_set_grid(0);
     }
