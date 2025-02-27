@@ -25,6 +25,11 @@ typedef enum {
     PICO_BOTTOM=1, PICO_MIDDLE, PICO_TOP
 } Pico_VAnchor;
 
+typedef struct Pico_Size {
+    SDL_Point phy;
+    SDL_Point log;
+} Pico_Size;
+
 void pico_init (int on);
 int pico_event_from_sdl (SDL_Event* e, int xp);
 int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
@@ -55,11 +60,9 @@ void _pico_output_sound_cache (char* path, int cache);
 
 // STATE
 
-SDL_Point pico_get_image_size    (char* file);
-SDL_Point pico_get_size          (void);
-SDL_Point pico_get_size_external (void);
-SDL_Point pico_get_size_internal (void);
-Uint32    pico_get_ticks         (void);
+SDL_Point pico_get_image_size (char* file);
+Pico_Size pico_get_size       (void);
+Uint32    pico_get_ticks      (void);
 
 void pico_set_anchor        (Pico_HAnchor h, Pico_VAnchor v);
 void pico_set_color_clear   (SDL_Color color);

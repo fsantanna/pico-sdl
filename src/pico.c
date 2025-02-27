@@ -525,20 +525,8 @@ SDL_Point pico_get_image_size (char* file) {
     return size;
 }
 
-SDL_Point pico_get_size (void) {
-    SDL_Point phy = pico_get_size_external();
-    SDL_Point log = pico_get_size_internal();
-    assert(phy.x==log.x && phy.y==log.y);
-    return phy;
-}
-
-SDL_Point pico_get_size_external (void) {
-    //return SDL_GetWindowFlags(WIN) & SDL_WINDOW_FULLSCREEN_DESKTOP;
-    return PHY;
-}
-
-SDL_Point pico_get_size_internal (void) {
-    return LOG;
+Pico_Size pico_get_size (void) {
+    return (Pico_Size) { PHY, LOG };
 }
 
 Uint32 pico_get_ticks (void) {
