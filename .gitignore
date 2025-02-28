@@ -1,2 +1,4 @@
 *.exe
 *.swp
+docs/html/
+.vscode/

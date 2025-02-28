@@ -9,7 +9,7 @@
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 SDL_Window*         WIN;
-static SDL_Texture* TEX;
+//static SDL_Texture* TEX;
 static TTF_Font*    FNT = NULL;
 static int          FNT_H;
 static SDL_Point    CUR_CURSOR = {0,0};
@@ -119,6 +119,8 @@ void pico_init (int on) {
             (SDL_Point) { PICO_LOG_X, PICO_LOG_Y }
         );
 
+        SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
+
         //pico_set_font("tiny.ttf", S.size.x/50);
         //pico_output_clear();
 
@@ -202,7 +204,7 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
             break;
     }
 
-    if (xp == e->type) {
+    if (xp == (int)e->type) {
         // OK
     } else if (xp == SDL_ANY) {
         // MAYBE
@@ -343,7 +345,7 @@ void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
     SDL_RenderCopy(REN, tex, &crp, &rct);
 }
 
-void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache) {
+void _pico_output_draw_image_cache (SDL_Point pos, const char* path, int cache) {
     SDL_Texture* tex = NULL;
     if (cache) {
         tex = pico_hash_get(_pico_hash, path);
@@ -363,7 +365,7 @@ void _pico_output_draw_image_cache (SDL_Point pos, char* path, int cache) {
     }
 }
 
-void pico_output_draw_image (SDL_Point pos, char* path) {
+void pico_output_draw_image (SDL_Point pos, const char* path) {
     _pico_output_draw_image_cache(pos, path, 1);
 }
 
@@ -373,6 +375,16 @@ void pico_output_draw_line (SDL_Point p1, SDL_Point p2) {
 
 void pico_output_draw_pixel (SDL_Point pos) {
     SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
+}
+
+void pico_output_draw_pixels (const SDL_Point* poss, int count) {
+    SDL_Point vec[count];
+    for (int i=0; i<count; i++) {
+        vec[i].x = X(poss[i].x,1);
+        vec[i].y = Y(poss[i].y,1);
+    }
+
+    SDL_RenderDrawPoints(REN, vec, count);
 }
 
 void pico_output_draw_rect (SDL_Rect rect) {
@@ -415,12 +427,12 @@ void pico_output_draw_oval (SDL_Rect rect) {
     }
 }
 
-void pico_output_draw_text (SDL_Point pos, char* text) {
-    uint8_t r, g, b;
-    SDL_GetRenderDrawColor(REN, &r,&g,&b, NULL);
+void pico_output_draw_text (SDL_Point pos, const char* text) {
+    uint8_t r, g, b, a;
+    SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
     pico_assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended(FNT, text,
-                                              (SDL_Color){r,g,b,0xFF});
+                                              (SDL_Color){r,g,b,a});
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
@@ -447,7 +459,7 @@ void pico_output_present (void) {
     WIN_Clear();
 }
 
-void _pico_output_sound_cache (char* path, int cache) {
+void _pico_output_sound_cache (const char* path, int cache) {
     Mix_Chunk* mix = NULL;
 
     if (cache) {
@@ -468,11 +480,11 @@ void _pico_output_sound_cache (char* path, int cache) {
     }
 }
 
-void pico_output_sound (char* path) {
+void pico_output_sound (const char* path) {
     _pico_output_sound_cache(path, 1);
 }
 
-void pico_output_write_aux (char* text, int isln) {
+void pico_output_write_aux (const char* text, int isln) {
     if (strlen(text) == 0) {
         if (isln) {
             CUR_CURSOR.x = S.cursor.x;
@@ -506,11 +518,11 @@ void pico_output_write_aux (char* text, int isln) {
     SDL_FreeSurface(sfc);
 }
 
-void pico_output_write (char* text) {
+void pico_output_write (const char* text) {
     pico_output_write_aux(text, 0);
 }
 
-void pico_output_writeln (char* text) {
+void pico_output_writeln (const char* text) {
     pico_output_write_aux(text, 1);
 }
 
@@ -519,7 +531,7 @@ void pico_output_writeln (char* text) {
 
 // GET
 
-SDL_Point pico_get_image_size (char* file) {
+SDL_Point pico_get_image_size (const char* file) {
     SDL_Texture* tex = IMG_LoadTexture(REN, file);
     pico_assert(tex != NULL);
     SDL_Point size;
@@ -575,7 +587,7 @@ void pico_set_pan (SDL_Point pos) {
     S.pan = pos;
 }
 
-void pico_set_font (char* file, int h) {
+void pico_set_font (const char* file, int h) {
     FNT_H = h;
     if (FNT != NULL) {
         TTF_CloseFont(FNT);
@@ -621,7 +633,7 @@ void pico_set_style (Pico_Style style) {
     S.style = style;
 }
 
-void pico_set_title (char* title) {
+void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
 }
 
