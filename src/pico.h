@@ -10,10 +10,8 @@ extern "C" {
 #include <SDL2/SDL.h>
 
 #define PICO_TITLE "pico-SDL"
-#define PICO_PHY_X 640
-#define PICO_PHY_Y 360
-#define PICO_LOG_X  64
-#define PICO_LOG_Y  36
+#define PICO_SIZE_PHY ((SDL_Point) {640,360})
+#define PICO_SIZE_LOG ((SDL_Point) { 64, 36})
 #define PICO_HASH  128
 
 #define SDL_ANY 0
@@ -44,6 +42,9 @@ typedef struct Pico_Size {
     SDL_Point phy;
     SDL_Point log;
 } Pico_Size;
+
+#define PICO_SIZE_KEEP       ((Pico_Size) {0,0})
+#define PICO_SIZE_FULLSCREEN ((Pico_Size) {0,1})
 
 /// @}
 

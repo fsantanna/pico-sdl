@@ -97,13 +97,32 @@ static int vanchor (int y, int h) {
     assert(0 && "bug found");
 }
 
+// UTILS
+
+int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r) {
+    int rw = r.w / 2;
+    int rh = r.h / 2;
+    return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
+}
+
+SDL_Point pico_pct_to_pos (float x, float y) {
+    SDL_Point log = LOG;
+    return pico_pct_to_pos_x((SDL_Rect){log.x/2,log.y/2,log.x,log.y}, x, y);
+}
+
+SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y) {
+    return (SDL_Point) { r.x-r.w/2 + r.w*x, r.y-r.h/2 + r.h*y };
+}
+
+// INIT
+
 void pico_init (int on) {
     if (on) {
         _pico_hash = pico_hash_create(PICO_HASH);
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            PICO_PHY_X, PICO_PHY_Y, SDL_WINDOW_SHOWN
+            PICO_SIZE_PHY.x, PICO_SIZE_PHY.y, SDL_WINDOW_SHOWN
         );
         pico_assert(WIN != NULL);
 
@@ -114,10 +133,7 @@ void pico_init (int on) {
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
 
-        pico_set_size (
-            (SDL_Point) { PICO_PHY_X, PICO_PHY_Y },
-            (SDL_Point) { PICO_LOG_X, PICO_LOG_Y }
-        );
+        pico_set_size(PICO_SIZE_PHY, PICO_SIZE_LOG);
 
         SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
 
@@ -139,6 +155,8 @@ void pico_init (int on) {
     }
 }
 
+// INPUT
+
 // Pre-handles input from environment:
 //  - SDL_QUIT: quit
 //  - CTRL_-/=: pixel
@@ -149,7 +167,7 @@ void pico_init (int on) {
 //  - returns
 //      - 1: if e matches xp
 //      - 0: otherwise
-int pico_event_from_sdl (SDL_Event* e, int xp) {
+static int event_from_sdl (SDL_Event* e, int xp) {
     switch (e->type) {
         case SDL_KEYDOWN: {
             const unsigned char* state = SDL_GetKeyboardState(NULL);
@@ -161,14 +179,14 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
                     SDL_Point log = LOG;
                     log.x *= 0.9;
                     log.y *= 0.9;
-                    pico_set_size(PHY, log);
+                    pico_set_size(PICO_SIZE_KEEP, log);
                     break;
                 }
                 case SDLK_EQUALS: {
                     SDL_Point log = LOG;
                     log.x *= 1.1;
                     log.y *= 1.1;
-                    pico_set_size(PHY, log);
+                    pico_set_size(PICO_SIZE_KEEP, log);
                     break;
                 }
                 case SDLK_LEFT: {
@@ -235,15 +253,13 @@ int pico_event_from_sdl (SDL_Event* e, int xp) {
     return 1;
 }
 
-// INPUT
-
 void pico_input_delay (int ms) {
     while (1) {
         int old = SDL_GetTicks();
         SDL_Event e;
         int has = SDL_WaitEventTimeout(&e, ms);
         if (has) {
-            pico_event_from_sdl(&e, SDL_ANY);
+            event_from_sdl(&e, SDL_ANY);
         }
         int dt = SDL_GetTicks() - old;
         ms -= dt;
@@ -257,7 +273,7 @@ void pico_input_event (SDL_Event* evt, int type) {
     while (1) {
         SDL_Event x;
         SDL_WaitEvent(&x);
-        if (pico_event_from_sdl(&x, type)) {
+        if (event_from_sdl(&x, type)) {
             if (evt != NULL) {
                 *evt = x;
             }
@@ -269,7 +285,7 @@ void pico_input_event (SDL_Event* evt, int type) {
 int pico_input_event_ask (SDL_Event* evt, int type) {
     int has = SDL_PollEvent(evt);
     if (!has) return 0;
-    return pico_event_from_sdl(evt, type);
+    return event_from_sdl(evt, type);
 }
 
 int pico_input_event_timeout (SDL_Event* evt, int type, int timeout) {
@@ -277,7 +293,7 @@ int pico_input_event_timeout (SDL_Event* evt, int type, int timeout) {
     if (!has) {
         return 0;
     }
-    if (pico_event_from_sdl(evt, type)) {
+    if (event_from_sdl(evt, type)) {
         return 1;
     }
     return 0;
@@ -305,7 +321,7 @@ void pico_output_clear (void) {
     WIN_Clear();
 }
 
-void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
+static void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
     SDL_Rect rct;
     SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
 
@@ -345,7 +361,7 @@ void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
     SDL_RenderCopy(REN, tex, &crp, &rct);
 }
 
-void _pico_output_draw_image_cache (SDL_Point pos, const char* path, int cache) {
+static void _pico_output_draw_image_cache (SDL_Point pos, const char* path, int cache) {
     SDL_Texture* tex = NULL;
     if (cache) {
         tex = pico_hash_get(_pico_hash, path);
@@ -459,7 +475,7 @@ void pico_output_present (void) {
     WIN_Clear();
 }
 
-void _pico_output_sound_cache (const char* path, int cache) {
+static void _pico_output_sound_cache (const char* path, int cache) {
     Mix_Chunk* mix = NULL;
 
     if (cache) {
@@ -484,7 +500,7 @@ void pico_output_sound (const char* path) {
     _pico_output_sound_cache(path, 1);
 }
 
-void pico_output_write_aux (const char* text, int isln) {
+static void _pico_output_write_aux (const char* text, int isln) {
     if (strlen(text) == 0) {
         if (isln) {
             CUR_CURSOR.x = S.cursor.x;
@@ -519,11 +535,11 @@ void pico_output_write_aux (const char* text, int isln) {
 }
 
 void pico_output_write (const char* text) {
-    pico_output_write_aux(text, 0);
+    _pico_output_write_aux(text, 0);
 }
 
 void pico_output_writeln (const char* text) {
-    pico_output_write_aux(text, 1);
+    _pico_output_write_aux(text, 1);
 }
 
 
@@ -571,6 +587,15 @@ void pico_set_cursor (SDL_Point pos) {
     CUR_CURSOR = S.cursor = pos;
 }
 
+void pico_set_font (const char* file, int h) {
+    FNT_H = h;
+    if (FNT != NULL) {
+        TTF_CloseFont(FNT);
+    }
+    FNT = TTF_OpenFont(file, FNT_H);
+    pico_assert(FNT != NULL);
+}
+
 void pico_set_grid (int on) {
     S.grid = on;
 }
@@ -587,19 +612,12 @@ void pico_set_pan (SDL_Point pos) {
     S.pan = pos;
 }
 
-void pico_set_font (const char* file, int h) {
-    FNT_H = h;
-    if (FNT != NULL) {
-        TTF_CloseFont(FNT);
-    }
-    FNT = TTF_OpenFont(file, FNT_H);
-    pico_assert(FNT != NULL);
-}
-
 void pico_set_size (SDL_Point phy, SDL_Point log) {
     // physical
     {
-        if (phy.x==0 && phy.y==0) {
+        if (phy.x==PICO_SIZE_KEEP.x && phy.y==PICO_SIZE_KEEP.y) {
+            // keep
+        } else if (phy.x==PICO_SIZE_FULLSCREEN.x && phy.y==PICO_SIZE_FULLSCREEN.y) {
             pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
             phy = PHY;
         } else {
@@ -609,11 +627,13 @@ void pico_set_size (SDL_Point phy, SDL_Point log) {
     }
 
     // logical
-    {
+    if (log.x==PICO_SIZE_KEEP.x && log.y==PICO_SIZE_KEEP.y) {
+        // keep
+    } else {
         SDL_RenderSetLogicalSize(REN, log.x, log.y);
     }
 
-    if (phy.x==log.x || phy.y==log.y) {
+    if (PHY.x==LOG.x || PHY.y==LOG.y) {
         pico_set_grid(0);
     }
     WIN_Clear();
@@ -635,21 +655,4 @@ void pico_set_style (Pico_Style style) {
 
 void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r) {
-    int rw = r.w / 2;
-    int rh = r.h / 2;
-    return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
-}
-
-SDL_Point pico_pct_to_pos (float x, float y) {
-    SDL_Point log = LOG;
-    return pico_pct_to_pos_x((SDL_Rect){log.x/2,log.y/2,log.x,log.y}, x, y);
-}
-
-SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y) {
-    return (SDL_Point) { r.x-r.w/2 + r.w*x, r.y-r.h/2 + r.h*y };
 }

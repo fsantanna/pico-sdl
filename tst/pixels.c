@@ -3,8 +3,7 @@
 int main (void) {
     pico_init(1);
     pico_set_title("pixels");
-    pico_set_size_internal((SDL_Point){5, 5});
-    pico_set_size_external((SDL_Point){100, 100});
+    pico_set_size((SDL_Point){100, 100}, (SDL_Point){5, 5});
 
     SDL_Point pixels[9] = {
         {1, 1}, {2, 1}, {3, 1},
