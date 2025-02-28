@@ -43,8 +43,8 @@ typedef struct Pico_Size {
     SDL_Point log;
 } Pico_Size;
 
-#define PICO_SIZE_KEEP       ((Pico_Size) {0,0})
-#define PICO_SIZE_FULLSCREEN ((Pico_Size) {0,1})
+#define PICO_SIZE_KEEP       ((SDL_Point) {0,0})
+#define PICO_SIZE_FULLSCREEN ((SDL_Point) {0,1})
 
 /// @}
 

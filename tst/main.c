@@ -83,7 +83,7 @@ int main (void) {
     pico_input_delay(2000);
 
     // GET SIZE
-    Pico_Size log = pico_get_size();
+    SDL_Point log = pico_get_size().log;
 
     // DRAW_RECT
     for (int i=1; i<=20; i++) {
