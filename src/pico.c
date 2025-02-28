@@ -628,6 +628,7 @@ void pico_set_font (const char* file, int h) {
 
 void pico_set_grid (int on) {
     S.grid = on;
+    _pico_output_present(0);
 }
 
 void pico_set_image_crop (SDL_Rect crop) {
@@ -668,14 +669,13 @@ void pico_set_size (SDL_Point phy, SDL_Point log) {
     }
 
     reset_texture();
-    pico_output_clear();
-    pico_output_present();
+    _pico_output_present(0);
 }
 
 void pico_set_show (int on) {
     if (on) {
         SDL_ShowWindow(WIN);
-        pico_output_present();
+        _pico_output_present(0);
     } else {
         SDL_HideWindow(WIN);
     }
