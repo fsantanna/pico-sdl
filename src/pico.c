@@ -73,14 +73,6 @@ static int vanchor (int y, int h) {
     assert(0 && "bug found");
 }
 
-static void reset_texture () {
-    TEX = SDL_CreateTexture (
-            REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-            LOG.x, LOG.y
-    );
-    pico_assert(TEX != NULL);
-}
-
 // UTILS
 
 int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r) {
@@ -668,7 +660,12 @@ void pico_set_size (SDL_Point phy, SDL_Point log) {
         pico_set_grid(0);
     }
 
-    reset_texture();
+    TEX = SDL_CreateTexture (
+            REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+            LOG.x, LOG.y
+    );
+    pico_assert(TEX != NULL);
+
     _pico_output_present(0);
 }
 
