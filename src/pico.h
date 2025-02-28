@@ -200,6 +200,10 @@ void pico_set_cursor (SDL_Point pos);
 /// @param h size of the font
 void pico_set_font (const char* file, int h);
 
+/// @brief Toggles the expert mode.
+/// @param on 1 to enable it, or 0 to disable it
+void pico_set_expert (int on);
+
 /// @brief Toggles a grid on top of logical pixels.
 /// @param on 1 to show it, or 0 to hide it
 void pico_set_grid (int on);
