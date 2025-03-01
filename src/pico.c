@@ -147,6 +147,13 @@ void pico_init (int on) {
 //      - 0: otherwise
 static int event_from_sdl (SDL_Event* e, int xp) {
     switch (e->type) {
+        case SDL_QUIT: {
+            if (!S.expert) {
+                exit(0);
+            }
+            break;
+        }
+
         case SDL_KEYDOWN: {
             const unsigned char* state = SDL_GetKeyboardState(NULL);
             if (!state[SDL_SCANCODE_LCTRL] && !state[SDL_SCANCODE_RCTRL]) {
