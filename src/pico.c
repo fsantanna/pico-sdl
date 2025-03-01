@@ -14,7 +14,7 @@ static TTF_Font*    FNT = NULL;
 static int          FNT_H;
 static Pico_Pos     CUR_CURSOR = {0,0};
 
-#define REN  (SDL_GetRenderer(WIN))
+#define REN (SDL_GetRenderer(WIN))
 
 #define X(v,w) (hanchor(v,w)-S.pan.x)
 #define Y(v,h) (vanchor(v,h)-S.pan.y)
@@ -460,8 +460,10 @@ static void show_grid (void) {
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
-    Pico_Dim log = LOG;
+    SDL_SetRenderTarget(REN, TEX);      // HACK-01: LOG fails w/ this line
     Pico_Dim phy = PHY;
+    Pico_Dim log = LOG;
+    SDL_SetRenderTarget(REN, NULL);     // HACK-01
 
     SDL_RenderSetLogicalSize(REN, phy.x, phy.y);
     for (int i=0; i<=phy.x; i+=(phy.x/log.x)) {
@@ -483,7 +485,7 @@ static void show_grid (void) {
 static void _pico_output_present (int force) {
     if (S.expert && !force) return;
     SDL_SetRenderTarget(REN, NULL);
-    SDL_RenderClear(REN);
+    //SDL_RenderClear(REN);
     SDL_RenderCopy(REN, TEX, NULL, NULL);
     show_grid();
     SDL_RenderPresent(REN);
@@ -656,17 +658,17 @@ void pico_set_size (Pico_Dim phy, Pico_Dim log) {
         // keep
     } else {
         SDL_RenderSetLogicalSize(REN, log.x, log.y);
+        TEX = SDL_CreateTexture (
+                REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+                log.x, log.y
+        );
+        pico_assert(TEX != NULL);
+
     }
 
     if (PHY.x==LOG.x || PHY.y==LOG.y) {
         pico_set_grid(0);
     }
-
-    TEX = SDL_CreateTexture (
-            REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-            LOG.x, LOG.y
-    );
-    pico_assert(TEX != NULL);
 
     _pico_output_present(0);
 }
