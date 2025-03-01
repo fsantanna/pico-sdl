@@ -4,17 +4,18 @@ int main (void) {
     pico_init(1);
     pico_set_title("Moving Around");
 
-    int x=0, y=0;
+    Pico_Pos pos = pico_pct_to_pos(0.5, 0.5);
     while (1) {
-        pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
-        pico_output_draw_pixel((SDL_Point){x,y});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_output_draw_pixel(pos);
 
         pico_input_delay(200);
 
-        pico_set_color_draw((SDL_Color){0x00,0x00,0x00,0xFF});
-        pico_output_draw_pixel((SDL_Point){x,y});
+        //pico_set_color_draw((Pico_Color){0x00,0x00,0x00,0xFF});
+        //pico_output_draw_pixel(pos);
 
-        y = y+1;
+        pos.x += rand()%3 - 1;
+        pos.y += rand()%3 - 1;
     }
 
     pico_init(0);
