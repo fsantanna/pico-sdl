@@ -4,7 +4,7 @@ int main (void) {
     pico_init(1);
     pico_set_title("Moving Around");
 
-    Pico_Pos pos = pico_pct_to_pos(0.5, 0.5);
+    Pico_Pos pos = pico_pct_to_pos(50, 50);
     while (1) {
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_pixel(pos);

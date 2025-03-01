@@ -260,10 +260,10 @@ void pico_set_title (const char* title);
 int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r);
 
 // TODO Document me
-Pico_Pos pico_pct_to_pos (float x, float y);
+Pico_Pos pico_pct_to_pos (int x, int y);
 
 // TODO Document me
-Pico_Pos pico_pct_to_pos_x (Pico_Rect r, float x, float y);
+Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y);
 
 /// @}
 

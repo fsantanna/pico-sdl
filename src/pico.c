@@ -83,13 +83,13 @@ int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
     return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
 }
 
-Pico_Pos pico_pct_to_pos (float x, float y) {
+Pico_Pos pico_pct_to_pos (int x, int y) {
     Pico_Dim log = LOG;
-    return pico_pct_to_pos_x((Pico_Rect){log.x/2,log.y/2,log.x,log.y}, x, y);
+    return pico_pct_to_pos_ext((Pico_Rect){log.x/2,log.y/2,log.x,log.y}, x, y);
 }
 
-Pico_Pos pico_pct_to_pos_x (Pico_Rect r, float x, float y) {
-    return (Pico_Pos) { r.x-r.w/2 + r.w*x, r.y-r.h/2 + r.h*y };
+Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y) {
+    return (Pico_Pos) { r.x-r.w/2 + r.w*x/100, r.y-r.h/2 + r.h*y/100 };
 }
 
 // INIT
