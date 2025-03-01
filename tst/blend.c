@@ -8,23 +8,23 @@ int main (void) {
     pico_set_anchor(PICO_LEFT, PICO_TOP);
     
     pico_output_clear();
-    pico_set_color_draw((SDL_Color){255,255,255,255});
-    pico_output_draw_text((SDL_Point){0, 0}, "opaque");
-    pico_output_present();
+    pico_set_color_draw((Pico_Color){255,255,255,255});
+    pico_output_draw_text((Pico_Pos){0, 0}, "opaque");
+
     pico_input_event(NULL, SDL_KEYDOWN);
 
     pico_output_clear();
-    pico_set_color_draw((SDL_Color){255,255,255,122});
-    pico_output_draw_text((SDL_Point){0, 0}, "dimmed");
-    pico_output_present();
+    pico_set_color_draw((Pico_Color){255,255,255,122});
+    pico_output_draw_text((Pico_Pos){0, 0}, "dimmed");
+
     pico_input_event(NULL, SDL_KEYDOWN);
 
     pico_output_clear();
-    pico_set_color_draw((SDL_Color){255,255,255,255});
-    pico_output_draw_text((SDL_Point){0, 0}, "dimmed by rect");
-    pico_set_color_draw((SDL_Color){0,0,0,122});
-    pico_output_draw_rect((SDL_Rect){0, 0, 112, 8});
-    pico_output_present();
+    pico_set_color_draw((Pico_Color){255,255,255,255});
+    pico_output_draw_text((Pico_Pos){0, 0}, "dimmed by rect");
+    pico_set_color_draw((Pico_Color){0,0,0,122});
+    pico_output_draw_rect((Pico_Rect){0, 0, 112, 8});
+
     pico_input_event(NULL, SDL_KEYDOWN);
 
     pico_init(0);
