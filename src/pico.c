@@ -29,8 +29,8 @@ typedef SDL_Point Pico_Anchor;
 static struct {
     Pico_Anchor anchor;
     struct {
-        SDL_Color clear;
-        SDL_Color draw;
+        Pico_Color clear;
+        Pico_Color draw;
     } color;
     Pico_Pos cursor;
     int expert;
@@ -433,7 +433,7 @@ void pico_output_draw_text (Pico_Pos pos, const char* text) {
     SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
     pico_assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended(FNT, text,
-                                              (SDL_Color){r,g,b,a});
+                                              (Pico_Color){r,g,b,a});
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
@@ -531,8 +531,8 @@ static void _pico_output_write_aux (const char* text, int isln) {
     pico_assert(FNT != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended (
         FNT, text,
-        (SDL_Color) { S.color.draw.r, S.color.draw.g,
-                      S.color.draw.b, S.color.draw.a }
+        (Pico_Color) { S.color.draw.r, S.color.draw.g,
+                       S.color.draw.b, S.color.draw.a }
     );
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
@@ -589,11 +589,11 @@ void pico_set_anchor (Pico_Anchor_X x, Pico_Anchor_Y y) {
     S.anchor = (Pico_Anchor) {x, y};
 }
 
-void pico_set_color_clear (SDL_Color color) {
+void pico_set_color_clear (Pico_Color color) {
     S.color.clear = color;
 }
 
-void pico_set_color_draw  (SDL_Color color) {
+void pico_set_color_draw  (Pico_Color color) {
     S.color.draw = color;
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,

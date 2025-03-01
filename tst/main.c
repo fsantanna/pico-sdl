@@ -21,7 +21,7 @@ int main (void) {
     pico_input_delay(2000);
 
     // CLEAR
-    pico_set_color_clear((SDL_Color){0xFF,0xFF,0xFF,0xFF});
+    pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF,0xFF});
     pico_output_clear();
 
     puts("shows white screen");
@@ -35,8 +35,8 @@ int main (void) {
     pico_input_delay(2000);
 
     // DRAW_PIXEL/RECT/OVAL
-    pico_set_color_clear((SDL_Color){0x00,0x00,0x00,0xFF});
-    pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
+    pico_set_color_clear((Pico_Color){0x00,0x00,0x00,0xFF});
+    pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
     pico_output_clear();
     pico_output_draw_pixel(pt);
     Pico_Pos rct = pico_pct_to_pos(3/4.0, 1/4.0);
@@ -113,9 +113,9 @@ int main (void) {
         pico_set_size(PICO_SIZE_KEEP, log);
         Pico_Pos ct = pico_pct_to_pos(0.5, 0.5);
         pico_output_clear();
-        pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
-        pico_set_color_draw((SDL_Color){0xFF,0x00,0x00,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
         pico_output_draw_text(pico_pct_to_pos(1/4.0,3/4.0), "X");
         pico_output_draw_line(ct, pico_pct_to_pos(1,0));
         pico_input_delay(250);
@@ -127,14 +127,14 @@ int main (void) {
         pico_set_size(PICO_SIZE_KEEP, log);
         Pico_Pos ct = pico_pct_to_pos(0.5, 0.5);
         pico_output_clear();
-        pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
-        pico_set_color_draw((SDL_Color){0xFF,0x00,0x00,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
         pico_output_draw_text(pico_pct_to_pos(1/4.0,3/4.0), "X");
         pico_output_draw_line(ct, pico_pct_to_pos(1,0));
         pico_input_delay(250);
     }
-    pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
+    pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
 
     // PAN
 

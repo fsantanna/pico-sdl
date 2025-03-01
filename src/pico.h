@@ -29,6 +29,7 @@ extern "C" {
 typedef SDL_Point Pico_Pos;
 typedef SDL_Point Pico_Dim;
 typedef SDL_Rect  Pico_Rect;
+typedef SDL_Color Pico_Color;
 
 typedef enum {
     PICO_FILL, PICO_STROKE
@@ -187,11 +188,11 @@ void pico_set_anchor (Pico_Anchor_X x, Pico_Anchor_Y v);
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
 /// @sa pico_output_clear
-void pico_set_color_clear (SDL_Color color);
+void pico_set_color_clear (Pico_Color color);
 
 /// @brief Changes the color used to draw objects.
 /// @param color new color
-void pico_set_color_draw (SDL_Color color);
+void pico_set_color_draw (Pico_Color color);
 
 /// @brief Sets the position of the text cursor.
 /// @param pos new cursor position
