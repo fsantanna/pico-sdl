@@ -40,9 +40,9 @@ int main (void) {
     pico_output_clear();
     pico_output_draw_pixel(pt);
     Pico_Pos rct = pico_pct_to_pos(3/4.0, 1/4.0);
-    pico_output_draw_rect((SDL_Rect){ rct.x,rct.y, 10,5});
+    pico_output_draw_rect((Pico_Rect){ rct.x,rct.y, 10,5});
     Pico_Pos ova = pico_pct_to_pos(1/4.0, 3/4.0);
-    pico_output_draw_oval((SDL_Rect){ova.x,ova.y, 5,10});
+    pico_output_draw_oval((Pico_Rect){ova.x,ova.y, 5,10});
 
     puts("shows oval -> pixel -> rect");
     pico_input_delay(2000);
@@ -114,7 +114,7 @@ int main (void) {
         Pico_Pos ct = pico_pct_to_pos(0.5, 0.5);
         pico_output_clear();
         pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
-        pico_output_draw_rect((SDL_Rect){ct.x,ct.y,10,10});
+        pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((SDL_Color){0xFF,0x00,0x00,0xFF});
         pico_output_draw_text(pico_pct_to_pos(1/4.0,3/4.0), "X");
         pico_output_draw_line(ct, pico_pct_to_pos(1,0));
@@ -128,7 +128,7 @@ int main (void) {
         Pico_Pos ct = pico_pct_to_pos(0.5, 0.5);
         pico_output_clear();
         pico_set_color_draw((SDL_Color){0xFF,0xFF,0xFF,0xFF});
-        pico_output_draw_rect((SDL_Rect){ct.x,ct.y,10,10});
+        pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((SDL_Color){0xFF,0x00,0x00,0xFF});
         pico_output_draw_text(pico_pct_to_pos(1/4.0,3/4.0), "X");
         pico_output_draw_line(ct, pico_pct_to_pos(1,0));

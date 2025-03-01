@@ -36,8 +36,8 @@ static struct {
     int expert;
     int grid;
     struct {
-        SDL_Rect crop;
-        Pico_Dim size;
+        Pico_Rect crop;
+        Pico_Dim  size;
     } image;
     Pico_Pos pan;
     Pico_Style style;
@@ -77,7 +77,7 @@ static int vanchor (int y, int h) {
 
 // UTILS
 
-int pico_is_point_in_rect (Pico_Pos pt, SDL_Rect r) {
+int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
     int rw = r.w / 2;
     int rh = r.h / 2;
     return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
@@ -85,10 +85,10 @@ int pico_is_point_in_rect (Pico_Pos pt, SDL_Rect r) {
 
 Pico_Pos pico_pct_to_pos (float x, float y) {
     Pico_Dim log = LOG;
-    return pico_pct_to_pos_x((SDL_Rect){log.x/2,log.y/2,log.x,log.y}, x, y);
+    return pico_pct_to_pos_x((Pico_Rect){log.x/2,log.y/2,log.x,log.y}, x, y);
 }
 
-Pico_Pos pico_pct_to_pos_x (SDL_Rect r, float x, float y) {
+Pico_Pos pico_pct_to_pos_x (Pico_Rect r, float x, float y) {
     return (Pico_Pos) { r.x-r.w/2 + r.w*x, r.y-r.h/2 + r.h*y };
 }
 
@@ -302,10 +302,10 @@ void pico_output_clear (void) {
 }
 
 static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex) {
-    SDL_Rect rct;
+    Pico_Rect rct;
     SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
 
-    SDL_Rect crp = S.image.crop;
+    Pico_Rect crp = S.image.crop;
     if (S.image.crop.w == 0) {
         crp.w = rct.w;
     }
@@ -386,8 +386,8 @@ void pico_output_draw_pixels (const Pico_Pos* poss, int count) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_rect (SDL_Rect rect) {
-    SDL_Rect out = {
+void pico_output_draw_rect (Pico_Rect rect) {
+    Pico_Rect out = {
         X(rect.x, rect.w),
         Y(rect.y, rect.h),
         rect.w, rect.h
@@ -403,8 +403,8 @@ void pico_output_draw_rect (SDL_Rect rect) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_oval (SDL_Rect rect) {
-    SDL_Rect out = {
+void pico_output_draw_oval (Pico_Rect rect) {
+    Pico_Rect out = {
         X(rect.x, rect.w),
         Y(rect.y, rect.h),
         rect.w, rect.h
@@ -438,7 +438,7 @@ void pico_output_draw_text (Pico_Pos pos, const char* text) {
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
 
-    SDL_Rect rct;
+    Pico_Rect rct;
 
     // SCALE
     rct.w = sfc->w; // * GRAPHICS_SET_SCALE_W;
@@ -540,7 +540,7 @@ static void _pico_output_write_aux (const char* text, int isln) {
 
     int w, h;
     TTF_SizeText(FNT, text, &w,&h);
-    SDL_Rect rct = { X(CUR_CURSOR.x,0),Y(CUR_CURSOR.y,0), w,h };
+    Pico_Rect rct = { X(CUR_CURSOR.x,0),Y(CUR_CURSOR.y,0), w,h };
     SDL_RenderCopy(REN, tex, NULL, &rct);
     _pico_output_present(0);
 
@@ -625,7 +625,7 @@ void pico_set_grid (int on) {
     _pico_output_present(0);
 }
 
-void pico_set_image_crop (SDL_Rect crop) {
+void pico_set_image_crop (Pico_Rect crop) {
     S.image.crop = crop;
 }
 

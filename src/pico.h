@@ -28,6 +28,7 @@ extern "C" {
 
 typedef SDL_Point Pico_Pos;
 typedef SDL_Point Pico_Dim;
+typedef SDL_Rect  Pico_Rect;
 
 typedef enum {
     PICO_FILL, PICO_STROKE
@@ -128,11 +129,11 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw
-void pico_output_draw_rect (SDL_Rect rect);
+void pico_output_draw_rect (Pico_Rect rect);
 
 /// @brief Draws an ellipse.
 /// @param rect bounds of the ellipse
-void pico_output_draw_oval (SDL_Rect rect);
+void pico_output_draw_oval (Pico_Rect rect);
 
 /// @brief Draws text. The string can't be empty.
 /// @param pos drawing position
@@ -213,7 +214,7 @@ void pico_set_grid (int on);
 
 /// @brief Changes the cropping that is applied to images before drawing them.
 /// @param crop cropping region, which may have 0 area to disable cropping
-void pico_set_image_crop (SDL_Rect crop);
+void pico_set_image_crop (Pico_Rect crop);
 
 /// @brief Changes what size images should be when drawn.
 /// @param size new size, which may be (0, 0) to disable resizing
@@ -255,13 +256,13 @@ void pico_set_title (const char* title);
 /// @param pt point
 /// @param r rectangle
 /// @return 1 if pt is inside r, or 0 otherwise
-int pico_is_point_in_rect (Pico_Pos pt, SDL_Rect r);
+int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r);
 
 // TODO Document me
 Pico_Pos pico_pct_to_pos (float x, float y);
 
 // TODO Document me
-Pico_Pos pico_pct_to_pos_x (SDL_Rect r, float x, float y);
+Pico_Pos pico_pct_to_pos_x (Pico_Rect r, float x, float y);
 
 /// @}
 
