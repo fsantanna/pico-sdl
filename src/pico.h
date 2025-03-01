@@ -10,8 +10,8 @@ extern "C" {
 #include <SDL2/SDL.h>
 
 #define PICO_TITLE "pico-SDL"
-#define PICO_SIZE_PHY ((SDL_Point) {640,360})
-#define PICO_SIZE_LOG ((SDL_Point) { 64, 36})
+#define PICO_DIM_PHY ((Pico_Dim) {640,360})
+#define PICO_DIM_LOG ((Pico_Dim) { 64, 36})
 #define PICO_HASH  128
 
 #define SDL_ANY 0
@@ -26,25 +26,28 @@ extern "C" {
 /// @brief TODO.
 /// @{
 
+typedef SDL_Point Pico_Pos;
+typedef SDL_Point Pico_Dim;
+
 typedef enum {
     PICO_FILL, PICO_STROKE
 } Pico_Style;
 
 typedef enum {
     PICO_LEFT=1, PICO_CENTER, PICO_RIGHT
-} Pico_HAnchor;
+} Pico_Anchor_X;
 
 typedef enum {
     PICO_BOTTOM=1, PICO_MIDDLE, PICO_TOP
-} Pico_VAnchor;
+} Pico_Anchor_Y;
 
 typedef struct Pico_Size {
-    SDL_Point phy;
-    SDL_Point log;
+    Pico_Dim phy;
+    Pico_Dim log;
 } Pico_Size;
 
-#define PICO_SIZE_KEEP       ((SDL_Point) {0,0})
-#define PICO_SIZE_FULLSCREEN ((SDL_Point) {0,1})
+#define PICO_SIZE_KEEP       ((Pico_Dim) {0,0})
+#define PICO_SIZE_FULLSCREEN ((Pico_Dim) {0,1})
 
 /// @}
 
@@ -107,21 +110,21 @@ void pico_output_clear (void);
 /// This function uses caching, so the file is actually loaded only once.
 /// @param pos drawing position
 /// @param path path to the image file
-void pico_output_draw_image (SDL_Point pos, const char* path);
+void pico_output_draw_image (Pico_Pos pos, const char* path);
 
 /// @brief Draws a line segment.
 /// @param p1 first point
 /// @param p2 second point
-void pico_output_draw_line (SDL_Point p1, SDL_Point p2);
+void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2);
 
 /// @brief Draws a single pixel.
 /// @param pos drawing position
-void pico_output_draw_pixel (SDL_Point pos);
+void pico_output_draw_pixel (Pico_Pos pos);
 
 /// @brief Draws a batch of pixels.
 /// @param apos array of positions
 /// @param count amount of pixels to draw
-void pico_output_draw_pixels (const SDL_Point* apos, int count);
+void pico_output_draw_pixels (const Pico_Pos* apos, int count);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw
@@ -134,7 +137,7 @@ void pico_output_draw_oval (SDL_Rect rect);
 /// @brief Draws text. The string can't be empty.
 /// @param pos drawing position
 /// @param text text to draw
-void pico_output_draw_text (SDL_Point pos, const char* text);
+void pico_output_draw_text (Pico_Pos pos, const char* text);
 
 /// @brief Shows what has been drawn onto the screen.
 void pico_output_present (void);
@@ -166,7 +169,7 @@ void pico_output_writeln (const char* text);
 
 /// @brief Returns the size of a given image.
 /// @param file path to image file
-SDL_Point pico_get_image_size (const char* file);
+Pico_Dim pico_get_image_size (const char* file);
 
 /// @brief Returns the physical and logical window size.
 Pico_Size pico_get_size (void);
@@ -178,7 +181,7 @@ Uint32 pico_get_ticks (void);
 /// @include anchor.c
 /// @param h x-axis anchor
 /// @param v y-axis anchor
-void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v);
+void pico_set_anchor (Pico_Anchor_X x, Pico_Anchor_Y v);
 
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
@@ -193,7 +196,7 @@ void pico_set_color_draw (SDL_Color color);
 /// @param pos new cursor position
 /// @sa pico_output_write
 /// @sa pico_output_writeln
-void pico_set_cursor (SDL_Point pos);
+void pico_set_cursor (Pico_Pos pos);
 
 /// @brief Changes the font used to draw texts.
 /// @param file path to font file
@@ -214,17 +217,17 @@ void pico_set_image_crop (SDL_Rect crop);
 
 /// @brief Changes what size images should be when drawn.
 /// @param size new size, which may be (0, 0) to disable resizing
-void pico_set_image_size (SDL_Point size);
+void pico_set_image_size (Pico_Dim size);
 
 /// @brief Changes the point of view on the logical window.
 /// @param pos new point of view
-void pico_set_pan (SDL_Point pos);
+void pico_set_pan (Pico_Pos pos);
 
 /// @brief Changes the physical and logical window sizes.
 /// @param phy new physical size
 /// @param log new logical size
 /// @sa pico_get_size
-void pico_set_size (SDL_Point phy, SDL_Point log);
+void pico_set_size (Pico_Dim phy, Pico_Dim log);
 
 /// @brief Toggles the aplication window visibility.
 /// @param on 1 to show, or 0 to hide
@@ -252,13 +255,13 @@ void pico_set_title (const char* title);
 /// @param pt point
 /// @param r rectangle
 /// @return 1 if pt is inside r, or 0 otherwise
-int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r);
+int pico_is_point_in_rect (Pico_Pos pt, SDL_Rect r);
 
 // TODO Document me
-SDL_Point pico_pct_to_pos (float x, float y);
+Pico_Pos pico_pct_to_pos (float x, float y);
 
 // TODO Document me
-SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y);
+Pico_Pos pico_pct_to_pos_x (SDL_Rect r, float x, float y);
 
 /// @}
 

@@ -12,32 +12,34 @@ SDL_Window*         WIN;
 static SDL_Texture* TEX;
 static TTF_Font*    FNT = NULL;
 static int          FNT_H;
-static SDL_Point    CUR_CURSOR = {0,0};
+static Pico_Pos     CUR_CURSOR = {0,0};
 
 #define REN  (SDL_GetRenderer(WIN))
 
 #define X(v,w) (hanchor(v,w)-S.pan.x)
 #define Y(v,h) (vanchor(v,h)-S.pan.y)
 
-#define LOG ({SDL_Point log; SDL_RenderGetLogicalSize(REN, &log.x, &log.y); log;})
-#define PHY ({SDL_Point phy; SDL_GetWindowSize(WIN, &phy.x, &phy.y); phy;})
+#define LOG ({Pico_Dim log; SDL_RenderGetLogicalSize(REN, &log.x, &log.y); log;})
+#define PHY ({Pico_Dim phy; SDL_GetWindowSize(WIN, &phy.x, &phy.y); phy;})
 
 static pico_hash* _pico_hash;
 
+typedef SDL_Point Pico_Anchor;
+
 static struct {
-    SDL_Point anchor;
+    Pico_Anchor anchor;
     struct {
         SDL_Color clear;
         SDL_Color draw;
     } color;
-    SDL_Point cursor;
+    Pico_Pos cursor;
     int expert;
     int grid;
     struct {
-        SDL_Rect  crop;
-        SDL_Point size;
+        SDL_Rect crop;
+        Pico_Dim size;
     } image;
-    SDL_Point pan;
+    Pico_Pos pan;
     Pico_Style style;
 } S = {
     { PICO_CENTER, PICO_MIDDLE },
@@ -75,19 +77,19 @@ static int vanchor (int y, int h) {
 
 // UTILS
 
-int pico_is_point_in_rect (SDL_Point pt, SDL_Rect r) {
+int pico_is_point_in_rect (Pico_Pos pt, SDL_Rect r) {
     int rw = r.w / 2;
     int rh = r.h / 2;
     return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
 }
 
-SDL_Point pico_pct_to_pos (float x, float y) {
-    SDL_Point log = LOG;
+Pico_Pos pico_pct_to_pos (float x, float y) {
+    Pico_Dim log = LOG;
     return pico_pct_to_pos_x((SDL_Rect){log.x/2,log.y/2,log.x,log.y}, x, y);
 }
 
-SDL_Point pico_pct_to_pos_x (SDL_Rect r, float x, float y) {
-    return (SDL_Point) { r.x-r.w/2 + r.w*x, r.y-r.h/2 + r.h*y };
+Pico_Pos pico_pct_to_pos_x (SDL_Rect r, float x, float y) {
+    return (Pico_Pos) { r.x-r.w/2 + r.w*x, r.y-r.h/2 + r.h*y };
 }
 
 // INIT
@@ -98,7 +100,7 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            PICO_SIZE_PHY.x, PICO_SIZE_PHY.y, SDL_WINDOW_SHOWN
+            PICO_DIM_PHY.x, PICO_DIM_PHY.y, SDL_WINDOW_SHOWN
         );
         pico_assert(WIN != NULL);
 
@@ -109,7 +111,7 @@ void pico_init (int on) {
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
 
-        pico_set_size(PICO_SIZE_PHY, PICO_SIZE_LOG);
+        pico_set_size(PICO_DIM_PHY, PICO_DIM_LOG);
 
         SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
 
@@ -152,33 +154,33 @@ static int event_from_sdl (SDL_Event* e, int xp) {
             }
             switch (e->key.keysym.sym) {
                 case SDLK_MINUS: {
-                    SDL_Point log = LOG;
+                    Pico_Dim log = LOG;
                     log.x *= 0.9;
                     log.y *= 0.9;
                     pico_set_size(PICO_SIZE_KEEP, log);
                     break;
                 }
                 case SDLK_EQUALS: {
-                    SDL_Point log = LOG;
+                    Pico_Dim log = LOG;
                     log.x *= 1.1;
                     log.y *= 1.1;
                     pico_set_size(PICO_SIZE_KEEP, log);
                     break;
                 }
                 case SDLK_LEFT: {
-                    pico_set_pan((SDL_Point){S.pan.x-5, S.pan.y});
+                    pico_set_pan((Pico_Pos){S.pan.x-5, S.pan.y});
                     break;
                 }
                 case SDLK_RIGHT: {
-                    pico_set_pan((SDL_Point){S.pan.x+5, S.pan.y});
+                    pico_set_pan((Pico_Pos){S.pan.x+5, S.pan.y});
                     break;
                 }
                 case SDLK_UP: {
-                    pico_set_pan((SDL_Point){S.pan.x, S.pan.y-5});
+                    pico_set_pan((Pico_Pos){S.pan.x, S.pan.y-5});
                     break;
                 }
                 case SDLK_DOWN: {
-                    pico_set_pan((SDL_Point){S.pan.x, S.pan.y+5});
+                    pico_set_pan((Pico_Pos){S.pan.x, S.pan.y+5});
                     break;
                 }
             }
@@ -299,7 +301,7 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-static void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
+static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex) {
     SDL_Rect rct;
     SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
 
@@ -340,7 +342,7 @@ static void _pico_output_draw_image_tex (SDL_Point pos, SDL_Texture* tex) {
     _pico_output_present(0);
 }
 
-static void _pico_output_draw_image_cache (SDL_Point pos, const char* path, int cache) {
+static void _pico_output_draw_image_cache (Pico_Pos pos, const char* path, int cache) {
     SDL_Texture* tex = NULL;
     if (cache) {
         tex = pico_hash_get(_pico_hash, path);
@@ -360,22 +362,22 @@ static void _pico_output_draw_image_cache (SDL_Point pos, const char* path, int 
     }
 }
 
-void pico_output_draw_image (SDL_Point pos, const char* path) {
+void pico_output_draw_image (Pico_Pos pos, const char* path) {
     _pico_output_draw_image_cache(pos, path, 1);
 }
 
-void pico_output_draw_line (SDL_Point p1, SDL_Point p2) {
+void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     SDL_RenderDrawLine(REN, X(p1.x,1),Y(p1.y,1), X(p2.x,1),Y(p2.y,1));
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixel (SDL_Point pos) {
+void pico_output_draw_pixel (Pico_Pos pos) {
     SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixels (const SDL_Point* poss, int count) {
-    SDL_Point vec[count];
+void pico_output_draw_pixels (const Pico_Pos* poss, int count) {
+    Pico_Pos vec[count];
     for (int i=0; i<count; i++) {
         vec[i].x = X(poss[i].x,1);
         vec[i].y = Y(poss[i].y,1);
@@ -426,7 +428,7 @@ void pico_output_draw_oval (SDL_Rect rect) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_text (SDL_Point pos, const char* text) {
+void pico_output_draw_text (Pico_Pos pos, const char* text) {
     uint8_t r, g, b, a;
     SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
     pico_assert(FNT != NULL);
@@ -458,8 +460,8 @@ static void show_grid (void) {
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
-    SDL_Point log = LOG;
-    SDL_Point phy = PHY;
+    Pico_Dim log = LOG;
+    Pico_Dim phy = PHY;
 
     SDL_RenderSetLogicalSize(REN, phy.x, phy.y);
     for (int i=0; i<=phy.x; i+=(phy.x/log.x)) {
@@ -565,10 +567,10 @@ void pico_output_writeln (const char* text) {
 
 // GET
 
-SDL_Point pico_get_image_size (const char* file) {
+Pico_Dim pico_get_image_size (const char* file) {
     SDL_Texture* tex = IMG_LoadTexture(REN, file);
     pico_assert(tex != NULL);
-    SDL_Point size;
+    Pico_Dim size;
     SDL_QueryTexture(tex, NULL, NULL, &size.x, &size.y);
     return size;
 }
@@ -583,8 +585,8 @@ Uint32 pico_get_ticks (void) {
 
 // SET
 
-void pico_set_anchor (Pico_HAnchor h, Pico_VAnchor v) {
-    S.anchor = (SDL_Point) {h, v};
+void pico_set_anchor (Pico_Anchor_X x, Pico_Anchor_Y y) {
+    S.anchor = (Pico_Anchor) {x, y};
 }
 
 void pico_set_color_clear (SDL_Color color) {
@@ -601,7 +603,7 @@ void pico_set_color_draw  (SDL_Color color) {
     );
 }
 
-void pico_set_cursor (SDL_Point pos) {
+void pico_set_cursor (Pico_Pos pos) {
     CUR_CURSOR = S.cursor = pos;
 }
 
@@ -627,15 +629,15 @@ void pico_set_image_crop (SDL_Rect crop) {
     S.image.crop = crop;
 }
 
-void pico_set_image_size (SDL_Point size) {
+void pico_set_image_size (Pico_Dim size) {
     S.image.size = size;
 }
 
-void pico_set_pan (SDL_Point pos) {
+void pico_set_pan (Pico_Pos pos) {
     S.pan = pos;
 }
 
-void pico_set_size (SDL_Point phy, SDL_Point log) {
+void pico_set_size (Pico_Dim phy, Pico_Dim log) {
     // physical
     {
         if (phy.x==PICO_SIZE_KEEP.x && phy.y==PICO_SIZE_KEEP.y) {
