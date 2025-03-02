@@ -223,7 +223,7 @@ void pico_set_image_size (Pico_Dim size);
 
 /// @brief Changes the point of view on the logical window.
 /// @param pos new point of view
-void pico_set_pan (Pico_Pos pos);
+void pico_set_scroll (Pico_Pos pos);
 
 /// @brief Changes the physical and logical window sizes.
 /// @param phy new physical size

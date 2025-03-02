@@ -13,8 +13,8 @@ static SDL_Texture* TEX;
 
 #define REN (SDL_GetRenderer(WIN))
 
-#define X(v,w) (hanchor(v,w)-S.pan.x)
-#define Y(v,h) (vanchor(v,h)-S.pan.y)
+#define X(v,w) (hanchor(v,w)-S.scroll.x)
+#define Y(v,h) (vanchor(v,h)-S.scroll.y)
 
 #define LOG ({Pico_Dim log; SDL_RenderGetLogicalSize(REN, &log.x, &log.y); log;})
 #define PHY ({Pico_Dim phy; SDL_GetWindowSize(WIN, &phy.x, &phy.y); phy;})
@@ -43,7 +43,7 @@ static struct {
         Pico_Rect crop;
         Pico_Dim  size;
     } image;
-    Pico_Pos pan;
+    Pico_Pos scroll;
     Pico_Style style;
 } S = {
     { PICO_CENTER, PICO_MIDDLE },
@@ -138,7 +138,7 @@ void pico_init (int on) {
 // Pre-handles input from environment:
 //  - SDL_QUIT: quit
 //  - CTRL_-/=: pixel
-//  - CTRL_L/R/U/D: pan
+//  - CTRL_L/R/U/D: scroll
 //  - receives:
 //      - e:  actual input
 //      - xp: input I was expecting
@@ -162,7 +162,7 @@ static int event_from_sdl (SDL_Event* e, int xp) {
             switch (e->key.keysym.sym) {
                 case SDLK_0: {
                     pico_set_size(PICO_DIM_PHY, PICO_DIM_LOG);
-                    pico_set_pan((Pico_Pos){0, 0});
+                    pico_set_scroll((Pico_Pos){0, 0});
                     break;
                 }
                 case SDLK_MINUS: {
@@ -180,19 +180,19 @@ static int event_from_sdl (SDL_Event* e, int xp) {
                     break;
                 }
                 case SDLK_LEFT: {
-                    pico_set_pan((Pico_Pos){S.pan.x-5, S.pan.y});
+                    pico_set_scroll((Pico_Pos){S.scroll.x-5, S.scroll.y});
                     break;
                 }
                 case SDLK_RIGHT: {
-                    pico_set_pan((Pico_Pos){S.pan.x+5, S.pan.y});
+                    pico_set_scroll((Pico_Pos){S.scroll.x+5, S.scroll.y});
                     break;
                 }
                 case SDLK_UP: {
-                    pico_set_pan((Pico_Pos){S.pan.x, S.pan.y-5});
+                    pico_set_scroll((Pico_Pos){S.scroll.x, S.scroll.y-5});
                     break;
                 }
                 case SDLK_DOWN: {
-                    pico_set_pan((Pico_Pos){S.pan.x, S.pan.y+5});
+                    pico_set_scroll((Pico_Pos){S.scroll.x, S.scroll.y+5});
                     break;
                 }
             }
@@ -234,8 +234,8 @@ static int event_from_sdl (SDL_Event* e, int xp) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:
-            e->button.x = e->button.x + S.pan.x;
-            e->button.y = e->button.y + S.pan.y;
+            e->button.x = e->button.x + S.scroll.x;
+            e->button.y = e->button.y + S.scroll.y;
             break;
         default:
             break;
@@ -658,8 +658,8 @@ void pico_set_image_size (Pico_Dim size) {
     S.image.size = size;
 }
 
-void pico_set_pan (Pico_Pos pos) {
-    S.pan = pos;
+void pico_set_scroll (Pico_Pos pos) {
+    S.scroll = pos;
 }
 
 void pico_set_size (Pico_Dim phy, Pico_Dim log) {
