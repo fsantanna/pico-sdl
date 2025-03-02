@@ -3,7 +3,6 @@
 int main (void) {
     pico_init(1);
     pico_set_title("Blend");
-    pico_set_font("tiny.ttf", 8);
     pico_set_grid(0);
     pico_set_anchor(PICO_LEFT, PICO_TOP);
     

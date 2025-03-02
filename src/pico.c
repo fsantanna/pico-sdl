@@ -104,22 +104,16 @@ void pico_init (int on) {
         );
         pico_assert(WIN != NULL);
 
-        //SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED);
-        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
+        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED);
+        //SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
         pico_assert(REN != NULL);
+        SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
 
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
 
         pico_set_size(PICO_DIM_PHY, PICO_DIM_LOG);
-
-        SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
-
-        //pico_set_font("tiny.ttf", S.size.x/50);
-        //pico_output_clear();
-
-        //SDL_Delay(1000);
-        //SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        pico_set_font(NULL, 0);
     } else {
         if (FNT != NULL) {
             TTF_CloseFont(FNT);
@@ -621,6 +615,17 @@ void pico_set_expert (int on) {
 }
 
 void pico_set_font (const char* file, int h) {
+    if (file == NULL) {
+        static char _file[255];
+        strcpy(_file, __FILE__);
+        _file[strlen(_file) - strlen("pico.c") - 1] = '\0';
+        strcat(_file, "/../tiny.ttf");
+        file = _file;
+        puts(file);
+    }
+    if (h == 0) {
+        h = MAX(8, LOG.y/10);
+    }
     FNT_H = h;
     if (FNT != NULL) {
         TTF_CloseFont(FNT);

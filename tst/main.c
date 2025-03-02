@@ -2,7 +2,6 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_font("tiny.ttf", 10);
     Pico_Pos pt = pico_pct_to_pos(50, 50);
     puts("shows dark screen");
 
