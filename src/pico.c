@@ -16,7 +16,6 @@ static SDL_Texture* TEX;
 #define X(v,w) (hanchor(v,w)-S.scroll.x)
 #define Y(v,h) (vanchor(v,h)-S.scroll.y)
 
-#define LOG ({Pico_Dim log; SDL_RenderGetLogicalSize(REN, &log.x, &log.y); log;})
 #define PHY ({Pico_Dim phy; SDL_GetWindowSize(WIN, &phy.x, &phy.y); phy;})
 
 static pico_hash* _pico_hash;
@@ -44,7 +43,12 @@ static struct {
         Pico_Dim  size;
     } image;
     Pico_Pos scroll;
+    struct {
+        Pico_Dim org;
+        Pico_Dim cur;
+    } size;
     Pico_Style style;
+    Pico_Dim zoom;
 } S = {
     { PICO_CENTER, PICO_MIDDLE },
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
@@ -54,7 +58,9 @@ static struct {
     1,
     { {0,0,0,0}, {0,0} },
     {0, 0},
-    PICO_FILL
+    { {0,0}, {0,0} },
+    PICO_FILL,
+    {100, 100}
 };
 
 static int hanchor (int x, int w) {
@@ -90,8 +96,9 @@ int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
 }
 
 Pico_Pos pico_pct_to_pos (int x, int y) {
-    Pico_Dim log = LOG;
-    return pico_pct_to_pos_ext((Pico_Rect){log.x/2,log.y/2,log.x,log.y}, x, y);
+    return pico_pct_to_pos_ext (
+        (Pico_Rect){ S.size.cur.x/2, S.size.cur.y/2, S.size.cur.x, S.size.cur.y},
+        x, y);
 }
 
 Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y) {
@@ -137,7 +144,7 @@ void pico_init (int on) {
 
 // Pre-handles input from environment:
 //  - SDL_QUIT: quit
-//  - CTRL_-/=: pixel
+//  - CTRL_-/=: zoom
 //  - CTRL_L/R/U/D: scroll
 //  - receives:
 //      - e:  actual input
@@ -161,38 +168,50 @@ static int event_from_sdl (SDL_Event* e, int xp) {
             }
             switch (e->key.keysym.sym) {
                 case SDLK_0: {
-                    pico_set_size(PICO_DIM_PHY, PICO_DIM_LOG);
+                    pico_set_zoom((Pico_Dim){100, 100});
                     pico_set_scroll((Pico_Pos){0, 0});
                     break;
                 }
                 case SDLK_MINUS: {
-                    Pico_Dim log = LOG;
-                    log.x *= 1.1;
-                    log.y *= 1.1;
-                    pico_set_size(PICO_SIZE_KEEP, log);
+                    pico_set_zoom ((Pico_Dim) {
+                        S.zoom.x + 10,
+                        S.zoom.y + 10
+                    });
                     break;
                 }
                 case SDLK_EQUALS: {
-                    Pico_Dim log = LOG;
-                    log.x *= 0.9;
-                    log.y *= 0.9;
-                    pico_set_size(PICO_SIZE_KEEP, log);
+                    pico_set_zoom ((Pico_Dim) {
+                        MAX(1, S.zoom.x-10),
+                        MAX(1, S.zoom.y-10)
+                    });
                     break;
                 }
                 case SDLK_LEFT: {
-                    pico_set_scroll((Pico_Pos){S.scroll.x-5, S.scroll.y});
+                    pico_set_scroll ((Pico_Pos) {
+                        S.scroll.x - MAX(1, S.size.cur.x/20),
+                        S.scroll.y
+                    });
                     break;
                 }
                 case SDLK_RIGHT: {
-                    pico_set_scroll((Pico_Pos){S.scroll.x+5, S.scroll.y});
+                    pico_set_scroll ((Pico_Pos) {
+                        S.scroll.x + MAX(1, S.size.cur.x/20),
+                        S.scroll.y
+                    });
                     break;
                 }
                 case SDLK_UP: {
-                    pico_set_scroll((Pico_Pos){S.scroll.x, S.scroll.y-5});
+                    pico_set_scroll ((Pico_Pos) {
+                        S.scroll.x,
+                        S.scroll.y - MAX(1, S.size.cur.y/20)
+                    });
                     break;
                 }
                 case SDLK_DOWN: {
-                    pico_set_scroll((Pico_Pos){S.scroll.x, S.scroll.y+5});
+                    pico_set_scroll ((Pico_Pos) {
+                        S.scroll.x,
+                        S.scroll.y + MAX(1, S.size.cur.y/20)
+                    });
                     break;
                 }
             }
@@ -472,19 +491,15 @@ static void show_grid (void) {
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
-    SDL_SetRenderTarget(REN, TEX);      // HACK-01: LOG fails w/ this line
     Pico_Dim phy = PHY;
-    Pico_Dim log = LOG;
-    SDL_SetRenderTarget(REN, NULL);     // HACK-01
-
     SDL_RenderSetLogicalSize(REN, phy.x, phy.y);
-    for (int i=0; i<=phy.x; i+=(phy.x/log.x)) {
+    for (int i=0; i<=phy.x; i+=(phy.x/S.size.cur.x)) {
         SDL_RenderDrawLine(REN, i, 0, i, phy.y);
     }
-    for (int j=0; j<=phy.y; j+=(phy.y/log.y)) {
+    for (int j=0; j<=phy.y; j+=(phy.y/S.size.cur.y)) {
         SDL_RenderDrawLine(REN, 0, j, phy.x, j);
     }
-    SDL_RenderSetLogicalSize(REN, log.x, log.y);
+    SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
 
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,
@@ -590,7 +605,7 @@ Pico_Dim pico_get_image_size (const char* file) {
 }
 
 Pico_Size pico_get_size (void) {
-    return (Pico_Size) { PHY, LOG };
+    return (Pico_Size) { PHY, S.size.org };
 }
 
 Uint32 pico_get_ticks (void) {
@@ -635,7 +650,7 @@ void pico_set_font (const char* file, int h) {
         file = _file;
     }
     if (h == 0) {
-        h = MAX(8, LOG.y/10);
+        h = MAX(8, S.size.cur.y/10);
     }
     S.font.h = h;
     if (S.font.ttf != NULL) {
@@ -662,7 +677,7 @@ void pico_set_scroll (Pico_Pos pos) {
     S.scroll = pos;
 }
 
-void pico_set_size (Pico_Dim phy, Pico_Dim log) {
+void _pico_set_size (Pico_Dim phy, Pico_Dim log) {
     // physical
     {
         if (phy.x==PICO_SIZE_KEEP.x && phy.y==PICO_SIZE_KEEP.y) {
@@ -680,20 +695,25 @@ void pico_set_size (Pico_Dim phy, Pico_Dim log) {
     if (log.x==PICO_SIZE_KEEP.x && log.y==PICO_SIZE_KEEP.y) {
         // keep
     } else {
-        SDL_RenderSetLogicalSize(REN, log.x, log.y);
+        S.size.cur = log;
+        SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
         TEX = SDL_CreateTexture (
                 REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-                log.x, log.y
+                S.size.cur.x, S.size.cur.y
         );
         pico_assert(TEX != NULL);
-
     }
 
-    if (PHY.x==LOG.x || PHY.y==LOG.y) {
+    if (PHY.x==S.size.cur.x || PHY.y==S.size.cur.y) {
         pico_set_grid(0);
     }
 
     _pico_output_present(0);
+}
+
+void pico_set_size (Pico_Dim phy, Pico_Dim log) {
+    S.size.org = log;
+    _pico_set_size(phy, log);
 }
 
 void pico_set_show (int on) {
@@ -711,4 +731,12 @@ void pico_set_style (Pico_Style style) {
 
 void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
+}
+
+void pico_set_zoom (Pico_Dim zoom) {
+    S.zoom = zoom;
+    _pico_set_size (
+        PICO_SIZE_KEEP,
+        (Pico_Dim){ S.size.org.x*zoom.x/100, S.size.org.y*zoom.y/100 }
+    );
 }

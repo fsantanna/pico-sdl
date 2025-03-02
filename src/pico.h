@@ -173,11 +173,17 @@ void pico_output_writeln (const char* text);
 /// @param file path to image file
 Pico_Dim pico_get_image_size (const char* file);
 
+/// @brief TODO
+Pico_Pos pico_get_scroll (void);
+
 /// @brief Returns the physical and logical window size.
 Pico_Size pico_get_size (void);
 
 /// @brief Returns the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
+
+/// @brief TODO
+Pico_Dim pico_get_zoom (void);
 
 /// @brief Changes the reference point used to draw objects (center, topleft, etc).
 /// @include anchor.c
@@ -242,6 +248,10 @@ void pico_set_style (Pico_Style style);
 /// @brief Changes the aplication title
 /// @param title new title to set
 void pico_set_title (const char* title);
+
+/// @brief TODO
+/// @param TODO
+void pico_set_zoom (Pico_Dim zoom);
 
 /// @}
 
