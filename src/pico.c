@@ -10,9 +10,6 @@
 
 SDL_Window*         WIN;
 static SDL_Texture* TEX;
-static TTF_Font*    FNT = NULL;
-static int          FNT_H;
-static Pico_Pos     CUR_CURSOR = {0,0};
 
 #define REN (SDL_GetRenderer(WIN))
 
@@ -32,8 +29,15 @@ static struct {
         Pico_Color clear;
         Pico_Color draw;
     } color;
-    Pico_Pos cursor;
+    struct {
+        int x;
+        Pico_Pos cur;
+    } cursor;
     int expert;
+    struct {
+        TTF_Font* ttf;
+        int h;
+    } font;
     int grid;
     struct {
         Pico_Rect crop;
@@ -44,10 +48,12 @@ static struct {
 } S = {
     { PICO_CENTER, PICO_MIDDLE },
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
-    {0,0},
-    0, 1,
+    {0, {0,0}},
+    0,
+    {NULL, 0},
+    1,
     { {0,0,0,0}, {0,0} },
-    {0,0},
+    {0, 0},
     PICO_FILL
 };
 
@@ -115,8 +121,8 @@ void pico_init (int on) {
         pico_set_size(PICO_DIM_PHY, PICO_DIM_LOG);
         pico_set_font(NULL, 0);
     } else {
-        if (FNT != NULL) {
-            TTF_CloseFont(FNT);
+        if (S.font.ttf != NULL) {
+            TTF_CloseFont(S.font.ttf);
         }
         Mix_CloseAudio();
         TTF_Quit();
@@ -432,8 +438,8 @@ void pico_output_draw_oval (Pico_Rect rect) {
 void pico_output_draw_text (Pico_Pos pos, const char* text) {
     uint8_t r, g, b, a;
     SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
-    pico_assert(FNT != NULL);
-    SDL_Surface* sfc = TTF_RenderText_Blended(FNT, text,
+    pico_assert(S.font.ttf != NULL);
+    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
                                               (Pico_Color){r,g,b,a});
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
@@ -525,15 +531,15 @@ void pico_output_sound (const char* path) {
 static void _pico_output_write_aux (const char* text, int isln) {
     if (strlen(text) == 0) {
         if (isln) {
-            CUR_CURSOR.x = S.cursor.x;
-            CUR_CURSOR.y += FNT_H;
+            S.cursor.cur.x = S.cursor.x;
+            S.cursor.cur.y += S.font.h;
         }
         return;
     }
 
-    pico_assert(FNT != NULL);
+    pico_assert(S.font.ttf != NULL);
     SDL_Surface* sfc = TTF_RenderText_Blended (
-        FNT, text,
+        S.font.ttf, text,
         (Pico_Color) { S.color.draw.r, S.color.draw.g,
                        S.color.draw.b, S.color.draw.a }
     );
@@ -542,15 +548,15 @@ static void _pico_output_write_aux (const char* text, int isln) {
     pico_assert(tex != NULL);
 
     int w, h;
-    TTF_SizeText(FNT, text, &w,&h);
-    Pico_Rect rct = { X(CUR_CURSOR.x,0),Y(CUR_CURSOR.y,0), w,h };
+    TTF_SizeText(S.font.ttf, text, &w,&h);
+    Pico_Rect rct = { X(S.cursor.cur.x,0),Y(S.cursor.cur.y,0), w,h };
     SDL_RenderCopy(REN, tex, NULL, &rct);
     _pico_output_present(0);
 
-    CUR_CURSOR.x += w;
+    S.cursor.cur.x += w;
     if (isln) {
-        CUR_CURSOR.x = S.cursor.x;
-        CUR_CURSOR.y += FNT_H;
+        S.cursor.cur.x = S.cursor.x;
+        S.cursor.cur.y += S.font.h;
     }
 
     SDL_DestroyTexture(tex);
@@ -607,7 +613,8 @@ void pico_set_color_draw  (Pico_Color color) {
 }
 
 void pico_set_cursor (Pico_Pos pos) {
-    CUR_CURSOR = S.cursor = pos;
+    S.cursor.cur = pos;
+    S.cursor.x   = pos.x;
 }
 
 void pico_set_expert (int on) {
@@ -621,17 +628,16 @@ void pico_set_font (const char* file, int h) {
         _file[strlen(_file) - strlen("pico.c") - 1] = '\0';
         strcat(_file, "/../tiny.ttf");
         file = _file;
-        puts(file);
     }
     if (h == 0) {
         h = MAX(8, LOG.y/10);
     }
-    FNT_H = h;
-    if (FNT != NULL) {
-        TTF_CloseFont(FNT);
+    S.font.h = h;
+    if (S.font.ttf != NULL) {
+        TTF_CloseFont(S.font.ttf);
     }
-    FNT = TTF_OpenFont(file, FNT_H);
-    pico_assert(FNT != NULL);
+    S.font.ttf = TTF_OpenFont(file, S.font.h);
+    pico_assert(S.font.ttf != NULL);
 }
 
 void pico_set_grid (int on) {
