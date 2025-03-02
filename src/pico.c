@@ -8,7 +8,7 @@
 
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
-SDL_Window*         WIN;
+static SDL_Window*  WIN;
 static SDL_Texture* TEX;
 
 #define REN (SDL_GetRenderer(WIN))
@@ -160,17 +160,22 @@ static int event_from_sdl (SDL_Event* e, int xp) {
                 break;
             }
             switch (e->key.keysym.sym) {
+                case SDLK_0: {
+                    pico_set_size(PICO_DIM_PHY, PICO_DIM_LOG);
+                    pico_set_pan((Pico_Pos){0, 0});
+                    break;
+                }
                 case SDLK_MINUS: {
                     Pico_Dim log = LOG;
-                    log.x *= 0.9;
-                    log.y *= 0.9;
+                    log.x *= 1.1;
+                    log.y *= 1.1;
                     pico_set_size(PICO_SIZE_KEEP, log);
                     break;
                 }
                 case SDLK_EQUALS: {
                     Pico_Dim log = LOG;
-                    log.x *= 1.1;
-                    log.y *= 1.1;
+                    log.x *= 0.9;
+                    log.y *= 0.9;
                     pico_set_size(PICO_SIZE_KEEP, log);
                     break;
                 }
@@ -492,7 +497,7 @@ static void show_grid (void) {
 static void _pico_output_present (int force) {
     if (S.expert && !force) return;
     SDL_SetRenderTarget(REN, NULL);
-    //SDL_RenderClear(REN);
+    SDL_RenderClear(REN);
     SDL_RenderCopy(REN, TEX, NULL, NULL);
     show_grid();
     SDL_RenderPresent(REN);
