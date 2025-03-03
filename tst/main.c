@@ -137,21 +137,13 @@ int main (void) {
 
     // PAN
 
-    puts("pans left");
-    for (int i=0; i<10; i++) {
-        pico_set_pan((Pico_Pos){i,0});
-        pico_output_clear();
-        pico_output_draw_text(pt, "Uma frase bem grande");
-        pico_input_delay(500);
-    }
-
-    puts("pans right/down (TODO)");
+    puts("scrolls right/down");
     for (int i=0; i<20; i++) {
-        pico_set_pan((Pico_Pos){10-i,-i});
+        Pico_Pos v = {-i,-i};
+        pico_set_scroll((Pico_Pos){10-i,10-i});
         pico_output_clear();
-        pico_output_draw_text(pt, "Uma frase bem grande");
-        pico_output_present();
-        pico_input_delay(500);
+        pico_output_draw_text(pt, "Uma frase bem grande...");
+        pico_input_delay(250);
     }
 
     pico_init(0);
