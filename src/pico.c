@@ -13,8 +13,8 @@ static SDL_Texture* TEX;
 
 #define REN (SDL_GetRenderer(WIN))
 
-#define X(v,w) (hanchor(v,w)-S.scroll.x)
-#define Y(v,h) (vanchor(v,h)-S.scroll.y)
+#define X(v,w) ((hanchor(v,w) - S.scroll.x) * 100/S.zoom.x)
+#define Y(v,h) ((vanchor(v,h) - S.scroll.y) * 100/S.zoom.y)
 
 #define PHY ({Pico_Dim phy; SDL_GetWindowSize(WIN, &phy.x, &phy.y); phy;})
 
@@ -97,7 +97,7 @@ int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
 
 Pico_Pos pico_pct_to_pos (int x, int y) {
     return pico_pct_to_pos_ext (
-        (Pico_Rect){ S.size.cur.x/2, S.size.cur.y/2, S.size.cur.x, S.size.cur.y},
+        (Pico_Rect){ S.size.org.x/2, S.size.org.y/2, S.size.org.x, S.size.org.y},
         x, y);
 }
 
