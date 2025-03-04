@@ -13,8 +13,8 @@ static SDL_Texture* TEX;
 
 #define REN (SDL_GetRenderer(WIN))
 
-#define X(v,w) ((hanchor(v,w) - S.scroll.x) * 100/S.zoom.x)
-#define Y(v,h) ((vanchor(v,h) - S.scroll.y) * 100/S.zoom.y)
+#define X(v,w) (hanchor(v,w) - S.scroll.x)
+#define Y(v,h) (vanchor(v,h) - S.scroll.y)
 
 #define PHY ({Pico_Dim phy; SDL_GetWindowSize(WIN, &phy.x, &phy.y); phy;})
 
@@ -253,8 +253,8 @@ static int event_from_sdl (SDL_Event* e, int xp) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:
-            e->button.x = e->button.x + S.scroll.x;
-            e->button.y = e->button.y + S.scroll.y;
+            e->button.x = (e->button.x + S.scroll.x);
+            e->button.y = (e->button.y + S.scroll.y);
             break;
         default:
             break;
@@ -736,8 +736,16 @@ void pico_set_title (const char* title) {
 
 void pico_set_zoom (Pico_Dim zoom) {
     S.zoom = zoom;
+    pico_set_scroll ((Pico_Pos) {
+        S.scroll.x - (S.size.org.x - S.size.cur.x)/2,
+        S.scroll.y - (S.size.org.y - S.size.cur.y)/2
+    });
     _pico_set_size (
         PICO_SIZE_KEEP,
         (Pico_Dim){ S.size.org.x*100/zoom.x, S.size.org.y*100/zoom.y }
     );
+    pico_set_scroll ((Pico_Pos) {
+        S.scroll.x + (S.size.org.x - S.size.cur.x)/2,
+        S.scroll.y + (S.size.org.y - S.size.cur.y)/2
+    });
 }
