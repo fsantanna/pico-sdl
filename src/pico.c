@@ -174,15 +174,15 @@ static int event_from_sdl (SDL_Event* e, int xp) {
                 }
                 case SDLK_MINUS: {
                     pico_set_zoom ((Pico_Dim) {
-                        S.zoom.x + 10,
-                        S.zoom.y + 10
+                        MAX(1, S.zoom.x-10),
+                        MAX(1, S.zoom.y-10)
                     });
                     break;
                 }
                 case SDLK_EQUALS: {
                     pico_set_zoom ((Pico_Dim) {
-                        MAX(1, S.zoom.x-10),
-                        MAX(1, S.zoom.y-10)
+                        S.zoom.x + 10,
+                        S.zoom.y + 10
                     });
                     break;
                 }
@@ -738,6 +738,6 @@ void pico_set_zoom (Pico_Dim zoom) {
     S.zoom = zoom;
     _pico_set_size (
         PICO_SIZE_KEEP,
-        (Pico_Dim){ S.size.org.x*zoom.x/100, S.size.org.y*zoom.y/100 }
+        (Pico_Dim){ S.size.org.x*100/zoom.x, S.size.org.y*100/zoom.y }
     );
 }
