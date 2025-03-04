@@ -512,6 +512,7 @@ static void show_grid (void) {
 static void _pico_output_present (int force) {
     if (S.expert && !force) return;
     SDL_SetRenderTarget(REN, NULL);
+    SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
     SDL_RenderCopy(REN, TEX, NULL, NULL);
     show_grid();
