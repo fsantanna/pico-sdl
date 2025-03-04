@@ -651,7 +651,7 @@ void pico_set_font (const char* file, int h) {
         file = _file;
     }
     if (h == 0) {
-        h = MAX(8, S.size.cur.y/10);
+        h = MAX(8, S.size.org.y/10);
     }
     S.font.h = h;
     if (S.font.ttf != NULL) {
