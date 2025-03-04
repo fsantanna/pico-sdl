@@ -179,6 +179,9 @@ Pico_Pos pico_get_scroll (void);
 /// @brief Returns the physical and logical window size.
 Pico_Size pico_get_size (void);
 
+/// @brief TODO
+Pico_Style pico_get_style (void);
+
 /// @brief Returns the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
 

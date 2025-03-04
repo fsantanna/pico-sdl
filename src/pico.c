@@ -609,6 +609,10 @@ Pico_Size pico_get_size (void) {
     return (Pico_Size) { PHY, S.size.org };
 }
 
+Pico_Style pico_get_style (void) {
+    return S.style;
+}
+
 Uint32 pico_get_ticks (void) {
     return SDL_GetTicks();
 }
