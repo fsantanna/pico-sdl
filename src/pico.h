@@ -266,16 +266,24 @@ void pico_set_zoom (Pico_Dim zoom);
 /// @param x condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
-/// @brief Checks if a point is inside a rectangle.
+/// @brief Checks if a point is inside a rectangle
 /// @param pt point
 /// @param r rectangle
 /// @return 1 if pt is inside r, or 0 otherwise
 int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r);
 
-// TODO Document me
+/// @brief Returns a screen coordinate based on percentage values.
+/// @param x an integer ranging from 0 to 100
+/// @param y an integer ranging from 0 to 100
+/// @sa pico_pct_to_pos_ext
 Pico_Pos pico_pct_to_pos (int x, int y);
 
-// TODO Document me
+/// @brief Returns a screen coordinate based on percentage values.
+// The coordinate returned will be inside the given rectangle.
+/// @param r the reference rectangle
+/// @param x an integer ranging from 0 to 100
+/// @param y an integer ranging from 0 to 100
+/// @sa pico_pct_to_pos
 Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y);
 
 /// @}
