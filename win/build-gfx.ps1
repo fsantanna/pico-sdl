@@ -1,5 +1,5 @@
 # safety check for correct number of arguments
-if ( $args.Length -ne 3) {
+if ($args.Length -ne 3) {
     Write-Host "Pass the path to the root dirs of gcc, SDL2 and SDL2_gfx!"
     exit
 }
@@ -9,10 +9,10 @@ $SDL_PATH = $args[1]
 $SDL_GFX_PATH = $args[2]
 
 # setting up environment
-$env:PATH = "$env:PATH;$GCC_PATH\bin"
-$env:CPATH = "$env:CPATH;$SDL_PATH\x86_64-w64-mingw32\include\SDL2"
-$env:LIBRARY_PATH = "$env:LIBRARY_PATH;$SDL_PATH\x86_64-w64-mingw32\lib"
-$env:LD_LIBRARY_PATH = "$env:LD_LIBRARY_PATH;$SDL_PATH\x86_64-w64-mingw32\lib"
+$env:PATH = "$GCC_PATH\bin;$env:PATH"
+$env:CPATH = "$SDL_PATH\x86_64-w64-mingw32\include\SDL2;$env:CPATH"
+$env:LIBRARY_PATH = "$SDL_PATH\x86_64-w64-mingw32\lib;$env:LIBRARY_PATH"
+$env:LD_LIBRARY_PATH = "$SDL_PATH\x86_64-w64-mingw32\bin;$env:LD_LIBRARY_PATH"
 
 $before = $(Get-Location)
 Set-Location -Path $SDL_GFX_PATH
