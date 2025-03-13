@@ -5,7 +5,7 @@ if (-not (Test-Path $DOWNLOAD_DIR)) {
     New-Item -ItemType Directory -Path $DOWNLOAD_DIR
 }
 
-$urls = @(
+$URLS = @(
     "https://github.com/libsdl-org/SDL/releases/download/release-2.32.2/SDL2-devel-2.32.2-mingw.zip",
     "https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.8/SDL2_image-devel-2.8.8-mingw.zip",
     "https://github.com/libsdl-org/SDL_ttf/releases/download/release-2.24.0/SDL2_ttf-devel-2.24.0-mingw.zip",
@@ -16,7 +16,7 @@ $urls = @(
 )
 
 # download each file
-foreach ($url in $urls) {
+foreach ($url in $URLS) {
     # Extract the filename from the URL
     $file = [System.IO.Path]::GetFileName($url)
     $downloadPath = Join-Path $DOWNLOAD_DIR $file

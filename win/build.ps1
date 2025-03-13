@@ -2,15 +2,10 @@ $GCC_PATH = Read-Host "Absolute path to the root dir of gcc (mingw64): "
 $VSCODE_PATH = Read-Host "Absolute path to the root dir of vscode: "
 $SDL_PATH = Read-Host "Absolute path to the root dir of SDL2: "
 $SDL_GFX_PATH = Read-Host "Absolute path to the root dir of SDL2_gfx: "
-$PACK_DIR = "release"
+$PACK_DIR = "IDE-release"
 $SDL_PACK_DIR = "$PACK_DIR\SDL2"
 
-$LIB_PATHS = @(
-    $SDL_PATH
-    "SDL2_image"
-    "SDL2_ttf"
-    "SDL2_mixer"
-)
+$LIB_PATHS = @($SDL_PATH, "SDL2_image", "SDL2_ttf", "SDL2_mixer")
 for ($i = 1; $i -lt $LIB_PATHS.Length; $i++) {
     $LIB_PATHS[$i] = Read-Host "Absolute path to the root dir of $($LIB_PATHS[$i]): "
 }
