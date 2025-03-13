@@ -2,4 +2,6 @@
 *.swp
 docs/html/
 .vscode/
+
 win/downloads
+win/SDL2
