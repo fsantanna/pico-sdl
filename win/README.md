@@ -7,7 +7,7 @@ cd win
 .\download.ps1 {download-path}
 ```
 
-`download.ps1` will download all required files to {download-path} and open {download-path} in explorer when finished.
+`download.ps1` will download files to {download-path} and open {download-path} in explorer when finished.
 
 list of downloads (zips):
 * SDL2
@@ -18,7 +18,7 @@ list of downloads (zips):
 * gcc
 * vscode
 
-Extract each one of the zips.  
+Extract each one of these zips.  
 **IMPORTANT:** Extract vscode to a subfolder and name it `vscode`.
 
 ```sh
