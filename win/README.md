@@ -1,6 +1,7 @@
 # Windows Release
 
-You need to be in a powershell terminal.
+Powershell is required to follow these steps.  
+**IMPORTANT:** Don't use a vscode terminal.
 
 ```sh
 cd win
