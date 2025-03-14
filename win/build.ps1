@@ -89,6 +89,8 @@ Write-Host ""
 # ##############################################################################
 # PACKING RELEASE FILE
 
+Write-Host "Creating release file ..."
+
 Compress-Archive -Path `
     "$SDL_PATH\x86_64-w64-mingw32\include",
     "$SDL_IMG_PATH\x86_64-w64-mingw32\include",
@@ -104,3 +106,5 @@ Compress-Archive -Path `
     ..\build\bin,
     activate.ps1, activate.bat, $GCC_PATH, $VSCODE_PATH `
     -DestinationPath $args[0]
+
+Write-Host "Done."
