@@ -5,7 +5,7 @@ Powershell is required to follow these steps.
 
 ```sh
 cd win
-.\download.ps1 {download-path}
+powershell .\download.ps1 {download-path}
 ```
 
 `download.ps1` will download files to {download-path} and open {download-path} in explorer when finished.
@@ -23,7 +23,7 @@ Extract each one of these zips.
 **IMPORTANT:** Extract vscode to a subfolder and name it `vscode`.
 
 ```sh
-.\build.ps1 {release-filepath}
+powershell .\build.ps1 {release-filepath}
 ```
 
 `build.ps1` will build SDL2_gfx, pico-sdl and make {release-filepath}.
