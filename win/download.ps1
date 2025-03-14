@@ -1,4 +1,9 @@
-$DOWNLOAD_DIR = "downloads"
+if ($args.Length -ne 1) {
+    Write-Host "Give a path where to download the files"
+    exit
+}
+
+$DOWNLOAD_DIR = $args[0]
 
 # Create directory if it doesn't exist
 if (-not (Test-Path $DOWNLOAD_DIR)) {
