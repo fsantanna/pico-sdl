@@ -5,7 +5,6 @@ if ($args.Length -ne 1) {
 
 $GCC_PATH = Read-Host "Absolute path to gcc (mingw64)"
 $VSCODE_PATH = Read-Host "Absolute path to vscode"
-$VSCODE_EXT_PATH = "$VSCODE_PATH\..\cpptools.vsix"
 # SDL libraries
 $SDL_PATH = Read-Host "Absolute path to SDL2"
 $SDL_IMG_PATH = Read-Host "Absolute path to SDL2_image"
@@ -20,11 +19,13 @@ $env:PATH = "$GCC_PATH\bin;$VSCODE_PATH\bin;$env:PATH"
 
 Write-Host ""
 
-if (-not (Test-Path $VSCODE_EXT_PATH)) {
+Push-Location -Path $VSCODE_PATH
+
+if (-not (Test-Path ..\cpptools.vsix)) {
     Write-Host "Downloading vscode cpptools ..."
 
     Invoke-WebRequest -Uri "https://github.com/microsoft/vscode-cpptools/releases/download/v1.23.6/cpptools-windows-x64.vsix" `
-        -OutFile $VSCODE_EXT_PATH
+        -OutFile ..\cpptools.vsix
 } else {
     Write-Host "vscode cpptools was already downloaded."
 }
@@ -32,8 +33,10 @@ if (-not (Test-Path $VSCODE_EXT_PATH)) {
 Write-Host "Done."
 Write-Host ""
 
-New-Item -ItemType Directory -Path "$VSCODE_PATH\data" -Force | Out-Null
-code --install-extension $VSCODE_EXT_PATH
+New-Item -ItemType Directory -Path data -Force | Out-Null
+code --install-extension ..\cpptools.vsix
+
+Pop-Location
 
 Write-Host ""
 
