@@ -26,5 +26,4 @@ Extract each one of these zips.
 powershell .\build.ps1 {release-filepath}
 ```
 
-`build.ps1` will setup vscode, build SDL2_gfx, build pico-sdl and make {release-filepath}.  
-This script asks you for the root paths of each folder your extracted at runtime.
+`build.ps1` will setup vscode, build SDL2_gfx, build pico-sdl and make {release-filepath}. This script asks you for the root paths of each folder your extracted at runtime.
