@@ -1,7 +1,7 @@
 *.exe
 *.swp
+*.zip
+
 docs/html/
 .vscode/
-
-win/downloads
-win/release
+build/
