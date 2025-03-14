@@ -11,6 +11,8 @@ $SDL_GFX_PATH = Read-Host "Absolute path to SDL2_gfx"
 
 $env:PATH = "$GCC_PATH\bin;$env:PATH"
 
+New-Item -ItemType Directory -Path "$VSCODE_PATH\data" -Force | Out-Null
+Write-Host "Made vscode portable (created data directory)"
 
 ##############################################################################
 # BUILDING SDL2_gfx
@@ -83,6 +85,8 @@ Compress-Archive -Path `
     "$SDL_MIX_PATH\x86_64-w64-mingw32\bin",
     "$SDL_GFX_PATH\build\bin",
     ..\build\bin,
+    activate.ps1,
+    activate.bat,
     $GCC_PATH,
     $VSCODE_PATH `
     -DestinationPath "$WORKING_DIR\pico-sdl_IDE.zip"
