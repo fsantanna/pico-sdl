@@ -34,7 +34,7 @@ Write-Host "Done."
 Write-Host ""
 
 New-Item -ItemType Directory -Path data -Force | Out-Null
-code --install-extension ..\cpptools.vsix
+.\bin\code --install-extension ..\cpptools.vsix
 
 Pop-Location
 
