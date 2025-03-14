@@ -28,11 +28,11 @@ New-Item -ItemType Directory -Path build\bin, build\include\SDL2, build\lib -For
 Set-Location -Path build
 
 gcc -c -fPIC ..\SDL2_framerate.c ..\SDL2_gfxPrimitives.c ..\SDL2_imageFilter.c ..\SDL2_rotozoom.c `
-    -I$SDL_PATH\x86_64-w64-mingw32\include\SDL2
+    -I"$SDL_PATH\x86_64-w64-mingw32\include\SDL2"
 
 gcc -shared -o bin\libSDL2_gfx.dll "-Wl,--out-implib,lib\libSDL2_gfx.a" `
     SDL2_framerate.o SDL2_gfxPrimitives.o SDL2_imageFilter.o SDL2_rotozoom.o `
-    -L$SDL_PATH\x86_64-w64-mingw32\bin -lSDL2
+    -L"$SDL_PATH\x86_64-w64-mingw32\bin" -lSDL2
 
 Copy-Item -Path ..\*.h -Destination include\SDL2
 
