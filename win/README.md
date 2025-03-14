@@ -19,10 +19,11 @@ list of downloads (zips):
 * vscode
 
 Extract each one of the zips.  
-**IMPORTANT:** Extract vscode to a folder and name it `vscode`.
+**IMPORTANT:** Extract vscode to a subfolder and name it `vscode`.
 
 ```sh
 .\build.ps1 {release-filepath}
 ```
 
-`build.ps1` will ask you for the paths to all the folders you extracted. It builds SDL2_gfx, pico-sdl and packs everything in {release-filepath}
+`build.ps1` will build SDL2_gfx, pico-sdl and make {release-filepath}.
+It asks you for the root paths of each folder your extracted at runtime.
