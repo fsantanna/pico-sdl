@@ -4,12 +4,6 @@ if ($args.Length -ne 1) {
 }
 
 $DOWNLOAD_DIR = $args[0]
-
-# Create directory if it doesn't exist
-if (-not (Test-Path $DOWNLOAD_DIR)) {
-    New-Item -ItemType Directory -Path $DOWNLOAD_DIR
-}
-
 $URLS = @(
     "https://github.com/libsdl-org/SDL/releases/download/release-2.32.2/SDL2-devel-2.32.2-mingw.zip",
     "https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.8/SDL2_image-devel-2.8.8-mingw.zip",
@@ -20,7 +14,10 @@ $URLS = @(
     "https://vscode.download.prss.microsoft.com/dbazure/download/stable/2fc07b811f760549dab9be9d2bedd06c51dfcb9a/VSCode-win32-x64-1.98.1.zip"
 )
 
-# download each file
+if (-not (Test-Path $DOWNLOAD_DIR)) {
+    New-Item -ItemType Directory -Path $DOWNLOAD_DIR
+}
+
 foreach ($url in $URLS) {
     # Extract the filename from the URL
     $file = [System.IO.Path]::GetFileName($url)
@@ -38,5 +35,4 @@ foreach ($url in $URLS) {
     Write-Host ""
 }
 
-# Open the downloads folder
 Invoke-Item -Path $DOWNLOAD_DIR
