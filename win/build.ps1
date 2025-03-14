@@ -12,7 +12,7 @@ $SDL_TTF_PATH = Read-Host "Absolute path to SDL2_ttf"
 $SDL_MIX_PATH = Read-Host "Absolute path to SDL2_mixer"
 $SDL_GFX_PATH = Read-Host "Absolute path to SDL2_gfx"
 
-$env:PATH = "$GCC_PATH\bin;$VSCODE_PATH\bin;$env:PATH"
+$env:PATH = "$GCC_PATH\bin;$env:PATH"
 
 ##############################################################################
 # SETUP VSCODE
