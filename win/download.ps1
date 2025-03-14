@@ -1,5 +1,5 @@
 if ($args.Length -ne 1) {
-    Write-Host "Give a path where to download the files"
+    Write-Host "Give a folder where to download the files"
     exit
 }
 

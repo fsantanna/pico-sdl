@@ -1,4 +1,7 @@
-$WORKING_DIR = Split-Path -Parent $MyInvocation.MyCommand.Definition
+if ($args.Length -ne 1) {
+    Write-Host "Give the filepath where to pack the release"
+    exit
+}
 
 $GCC_PATH = Read-Host "Absolute path to gcc (mingw64)"
 $VSCODE_PATH = Read-Host "Absolute path to vscode"
@@ -70,7 +73,7 @@ Write-Host "Done."
 Write-Host ""
 
 # ##############################################################################
-# MAKING RELEASE
+# PACKING RELEASE FILE
 
 Compress-Archive -Path `
     "$SDL_PATH\x86_64-w64-mingw32\include",
@@ -85,8 +88,5 @@ Compress-Archive -Path `
     "$SDL_MIX_PATH\x86_64-w64-mingw32\bin",
     "$SDL_GFX_PATH\build\bin",
     ..\build\bin,
-    activate.ps1,
-    activate.bat,
-    $GCC_PATH,
-    $VSCODE_PATH `
-    -DestinationPath "$WORKING_DIR\pico-sdl_IDE.zip"
+    activate.ps1, activate.bat, $GCC_PATH, $VSCODE_PATH `
+    -DestinationPath $args[0]
