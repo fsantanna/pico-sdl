@@ -12,15 +12,29 @@ $SDL_TTF_PATH = Read-Host "Absolute path to SDL2_ttf"
 $SDL_MIX_PATH = Read-Host "Absolute path to SDL2_mixer"
 $SDL_GFX_PATH = Read-Host "Absolute path to SDL2_gfx"
 
-$env:PATH = "$GCC_PATH\bin;$env:PATH"
+$env:PATH = "$GCC_PATH\bin;$VSCODE_PATH\bin;$env:PATH"
+
+##############################################################################
+# SETUP VSCODE
+
+Write-Host ""
+Write-Host "Downloading vscode cpptools ..."
+
+Invoke-WebRequest -Uri "https://github.com/microsoft/vscode-cpptools/releases/download/v1.23.6/cpptools-windows-x64.vsix" `
+    -OutFile "$VSCODE_PATH\cpptools.vsix"
+
+Write-Host "Done."
+Write-Host ""
 
 New-Item -ItemType Directory -Path "$VSCODE_PATH\data" -Force | Out-Null
-Write-Host "Made vscode portable (created data directory)"
+code --install-extension "$VSCODE_PATH\cpptools.vsix"
+Remove-Item -Path "$VSCODE_PATH\cpptools.vsix"
+
+Write-Host ""
 
 ##############################################################################
 # BUILDING SDL2_gfx
 
-Write-Host ""
 Write-Host "Building SDL2_gfx ..."
 
 Push-Location -Path $SDL_GFX_PATH
