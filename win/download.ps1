@@ -15,7 +15,7 @@ $URLS = @(
 )
 
 if (-not (Test-Path $DOWNLOAD_DIR)) {
-    New-Item -ItemType Directory -Path $DOWNLOAD_DIR
+    New-Item -ItemType Directory -Path $DOWNLOAD_DIR -Force | Out-Null
 }
 
 foreach ($url in $URLS) {
