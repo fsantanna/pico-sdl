@@ -1,75 +1,88 @@
-$GCC_PATH = Read-Host "Absolute path to the root dir of gcc (mingw64): "
-$VSCODE_PATH = Read-Host "Absolute path to the root dir of vscode: "
-$SDL_PATH = Read-Host "Absolute path to the root dir of SDL2: "
-$SDL_GFX_PATH = Read-Host "Absolute path to the root dir of SDL2_gfx: "
-$PACK_DIR = "IDE-release"
-$SDL_PACK_DIR = "$PACK_DIR\SDL2"
+$WORKING_DIR = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
-$LIB_PATHS = @($SDL_PATH, "SDL2_image", "SDL2_ttf", "SDL2_mixer")
-for ($i = 1; $i -lt $LIB_PATHS.Length; $i++) {
-    $LIB_PATHS[$i] = Read-Host "Absolute path to the root dir of $($LIB_PATHS[$i]): "
-}
+$GCC_PATH = Read-Host "Absolute path to gcc (mingw64)"
+$VSCODE_PATH = Read-Host "Absolute path to vscode"
+# SDL libraries
+$SDL_PATH = Read-Host "Absolute path to SDL2"
+$SDL_IMG_PATH = Read-Host "Absolute path to SDL2_image"
+$SDL_TTF_PATH = Read-Host "Absolute path to SDL2_ttf"
+$SDL_MIX_PATH = Read-Host "Absolute path to SDL2_mixer"
+$SDL_GFX_PATH = Read-Host "Absolute path to SDL2_gfx"
+
+$env:PATH = "$GCC_PATH\bin;$env:PATH"
+
 
 ##############################################################################
 # BUILDING SDL2_gfx
 
+Write-Host ""
 Write-Host "Building SDL2_gfx ..."
 
-# setting up environment
-$env:PATH = "$GCC_PATH\bin;$env:PATH"
-$env:CPATH = "$SDL_PATH\x86_64-w64-mingw32\include\SDL2;$env:CPATH"
-$env:LIBRARY_PATH = "$SDL_PATH\x86_64-w64-mingw32\lib;$env:LIBRARY_PATH"
-$env:LD_LIBRARY_PATH = "$SDL_PATH\x86_64-w64-mingw32\bin;$env:LD_LIBRARY_PATH"
+Push-Location -Path $SDL_GFX_PATH
+New-Item -ItemType Directory -Path build\bin, build\include\SDL2, build\lib -Force | Out-Null
+Set-Location -Path build
 
-# save working directory and go to sdl2_gfx location
-$before = $(Get-Location)
-Set-Location -Path $SDL_GFX_PATH
+gcc -c -fPIC ..\SDL2_framerate.c ..\SDL2_gfxPrimitives.c ..\SDL2_imageFilter.c ..\SDL2_rotozoom.c `
+    -I$SDL_PATH\x86_64-w64-mingw32\include\SDL2
 
-# compile gfx into a shared library
-gcc -fPIC -c SDL2_framerate.c SDL2_gfxPrimitives.c SDL2_imageFilter.c SDL2_rotozoom.c
-gcc -shared -o SDL2_gfx.dll SDL2_framerate.o SDL2_gfxPrimitives.o SDL2_imageFilter.o SDL2_rotozoom.o -lSDL2
-ar rcs SDL2_gfx.a SDL2_framerate.o SDL2_gfxPrimitives.o SDL2_imageFilter.o SDL2_rotozoom.o
+gcc -shared -o bin\libSDL2_gfx.dll "-Wl,--out-implib,lib\libSDL2_gfx.a" `
+    SDL2_framerate.o SDL2_gfxPrimitives.o SDL2_imageFilter.o SDL2_rotozoom.o `
+    -L$SDL_PATH\x86_64-w64-mingw32\bin -lSDL2
 
-# go back to working directory
-Set-Location -Path $before
+Copy-Item -Path ..\*.h -Destination include\SDL2
+
+Pop-Location
 
 Write-Host "Done."
 Write-Host ""
 
 ##############################################################################
-# PACKING SDL LIBRARIES
+# BUILDING PICO-SDL
 
-Write-Host "Packing SDL2 libraries ..."
+Write-Host "Building pico-sdl ..."
 
-# Create directory if it doesn't exist
-if (-not (Test-Path $SDL_PACK_DIR)) {
-    New-Item -ItemType Directory -Path $SDL_PACK_DIR
-}
+Push-Location -Path ..
+New-Item -ItemType Directory -Path build\bin, build\include -Force | Out-Null
+Set-Location -Path build
 
-# for each library (except SDL2_gfx)
-foreach ($lib_path in $LIB_PATHS) {
-    $lib_path = "$lib_path\x86_64-w64-mingw32"
+gcc -fPIC -c ..\src\pico.c ..\src\hash.c `
+    -I"$SDL_PATH\x86_64-w64-mingw32\include" `
+    -I"$SDL_PATH\x86_64-w64-mingw32\include\SDL2" `
+    -I"$SDL_IMG_PATH\x86_64-w64-mingw32\include" `
+    -I"$SDL_TTF_PATH\x86_64-w64-mingw32\include" `
+    -I"$SDL_MIX_PATH\x86_64-w64-mingw32\include" `
+    -I"$SDL_GFX_PATH\build\include"
+    gcc -shared -o bin\libpico-sdl.dll pico.o hash.o `
+    -L"$SDL_PATH\x86_64-w64-mingw32\lib" `
+    -L"$SDL_IMG_PATH\x86_64-w64-mingw32\lib" `
+    -L"$SDL_TTF_PATH\x86_64-w64-mingw32\lib" `
+    -L"$SDL_MIX_PATH\x86_64-w64-mingw32\lib" `
+    -L"$SDL_GFX_PATH\build\lib" `
+    -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_gfx
 
-    Copy-Item -Path "$lib_path\bin" -Destination $SDL_PACK_DIR -Recurse -ErrorAction SilentlyContinue
-    Copy-Item -Path "$lib_path\include" -Destination $SDL_PACK_DIR -Recurse -ErrorAction SilentlyContinue
-    Copy-Item -Path "$lib_path\lib" -Destination $SDL_PACK_DIR -Recurse -ErrorAction SilentlyContinue
-}
+Copy-Item -Path ..\src\*.h -Destination include
 
-# pack SDL2_gfx
-Copy-Item -Path "$SDL_GFX_PATH\SDL2_gfx.dll" -Destination "$SDL_PACK_DIR\bin" -ErrorAction SilentlyContinue
-Copy-Item -Path "$SDL_GFX_PATH\*.h" -Destination "$SDL_PACK_DIR\include\SDL2" -ErrorAction SilentlyContinue
-Copy-Item -Path "$SDL_GFX_PATH\SDL2_gfx.a" -Destination "$SDL_PACK_DIR\lib" -ErrorAction SilentlyContinue
-
-Write-Host "Done."
-Write-Host ""
-
-##############################################################################
-# MOVING GCC AND VSCODE
-
-Write-Host "Moving gcc and vscode to release folder ..."
-
-Move-Item -Path "$GCC_PATH" -Destination "$PACK_DIR\gcc" -ErrorAction SilentlyContinue
-Move-Item -Path "$VSCODE_PATH" -Destination "$PACK_DIR\vscode" -ErrorAction SilentlyContinue
+Pop-Location
 
 Write-Host "Done."
 Write-Host ""
+
+# ##############################################################################
+# MAKING RELEASE
+
+Compress-Archive -Path `
+    "$SDL_PATH\x86_64-w64-mingw32\include",
+    "$SDL_IMG_PATH\x86_64-w64-mingw32\include",
+    "$SDL_TTF_PATH\x86_64-w64-mingw32\include",
+    "$SDL_MIX_PATH\x86_64-w64-mingw32\include",
+    ..\build\include,
+    "$SDL_GFX_PATH\build\include",
+    "$SDL_PATH\x86_64-w64-mingw32\bin",
+    "$SDL_IMG_PATH\x86_64-w64-mingw32\bin",
+    "$SDL_TTF_PATH\x86_64-w64-mingw32\bin",
+    "$SDL_MIX_PATH\x86_64-w64-mingw32\bin",
+    "$SDL_GFX_PATH\build\bin",
+    ..\build\bin,
+    $GCC_PATH,
+    $VSCODE_PATH `
+    -DestinationPath "$WORKING_DIR\pico-sdl_IDE.zip"
