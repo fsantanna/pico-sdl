@@ -64,9 +64,8 @@ This allows programmers to fallback to SDL whenever required.
 [4]: https://en.wikipedia.org/wiki/Logo_(programming_language)
 [5]: https://en.wikipedia.org/wiki/PICO-8
 
-# TODO
+# COMPILE & EXECUTE
 
 ```
-gcc -o main.exe tst/main.c src/pico.c src/hash.c -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
-./main.exe
+./pico tst/main.c
 ```

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+PICO=$(dirname "$0")
+
+EXE=$(basename -- "$1")
+EXE="${EXE%.*}"
+
+gcc -o "$EXE" "$1" "$PICO/src/pico.c" "$PICO/src/hash.c" -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
+
+"./$EXE"
