@@ -139,7 +139,6 @@ int main (void) {
 
     puts("scrolls right/down");
     for (int i=0; i<20; i++) {
-        Pico_Pos v = {-i,-i};
         pico_set_scroll((Pico_Pos){10-i,10-i});
         pico_output_clear();
         pico_output_draw_text(pt, "Uma frase bem grande...");

@@ -64,7 +64,9 @@ This allows programmers to fallback to SDL whenever required.
 [4]: https://en.wikipedia.org/wiki/Logo_(programming_language)
 [5]: https://en.wikipedia.org/wiki/PICO-8
 
-# Install
+# Install & Execute
+
+## Install
 
 Install SDL:
 
@@ -79,15 +81,15 @@ git clone https://github.com/fsantanna/pico-sdl
 cd pico-sdl/
 ```
 
-# Compile & Execute (automatic)
+## Execute (automatic)
 
 ```
 ./pico-sdl tst/main.c
 ```
 
-# Compile & Execute (manual)
+## Compile & Execute (manual)
 
 ```
-gcc -o main.exe tst/main.c src/pico.c src/hash.c -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
-./main.exe
+gcc -o tst/main.exe tst/main.c src/pico.c src/dir.c src/hash.c -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
+tst/main.exe
 ```

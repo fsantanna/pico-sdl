@@ -1,8 +1,11 @@
+#include <unistd.h>
+
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
+#include "dir.h"
 #include "hash.h"
 #include "pico.h"
 
@@ -108,6 +111,9 @@ Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y) {
 // INIT
 
 void pico_init (int on) {
+    char* dir = pico_dir_exe_get();
+    assert(dir!=NULL && "cannot determine execution path");
+    assert(chdir(dir)==0 && "cannot determine execution path");
     if (on) {
         _pico_hash = pico_hash_create(PICO_HASH);
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
