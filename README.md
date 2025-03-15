@@ -11,7 +11,7 @@
 - `pico_get_*` and `pico_set_*` for the library state,
     such as modifying the drawing color, and window title.
 
-The following example draws an `X` slowly on screen with instant feedback:
+The following example draws an `X` on screen gradually with instant feedback:
 
 <picture>
 <img align="right" src="x.gif">
