@@ -1,4 +1,4 @@
-#include "../src/pico.h"
+#include "pico.h"
 
 int main (void) {
     pico_init(1);

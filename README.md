@@ -18,7 +18,7 @@ The following example draws an `X` on screen gradually with instant feedback:
 </picture>
 
 ```
-#include <pico.h>
+#include "pico.h"
 
 int main (void) {
     pico_init(1);
@@ -81,15 +81,8 @@ git clone https://github.com/fsantanna/pico-sdl
 cd pico-sdl/
 ```
 
-## Execute (automatic)
+## Execute
 
 ```
 ./pico-sdl tst/main.c
-```
-
-## Compile & Execute (manual)
-
-```
-gcc -o tst/main.exe tst/main.c src/pico.c src/dir.c src/hash.c -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
-tst/main.exe
 ```
