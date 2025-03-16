@@ -603,6 +603,10 @@ void pico_output_writeln (const char* text) {
 
 // GET
 
+Pico_Color pico_get_color_draw (void) {
+    return S.color.draw;
+}
+
 Pico_Dim pico_get_image_size (const char* file) {
     SDL_Texture* tex = IMG_LoadTexture(REN, file);
     pico_assert(tex != NULL);

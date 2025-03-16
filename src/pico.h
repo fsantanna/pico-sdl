@@ -169,6 +169,9 @@ void pico_output_writeln (const char* text);
 /// @brief All getters and setters.
 /// @{
 
+/// TODO
+Pico_Color pico_get_color_draw (void);
+
 /// @brief Returns the size of a given image.
 /// @param file path to image file
 Pico_Dim pico_get_image_size (const char* file);
