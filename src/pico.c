@@ -338,6 +338,20 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
+void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size) {
+    Pico_Color old = pico_get_color_draw();
+    int x = X(pos.x, size.x);
+    int y = Y(pos.y, size.y);
+    for (int l=0; l<size.y; l++) {
+        for (int c=0; c<size.x; c++) {
+            int i = size.x*l + c;
+            pico_set_color_draw(buffer[i]);
+            pico_output_draw_pixel((Pico_Pos){x+c, y+l});
+        }
+    }
+    pico_set_color_draw(old);
+}
+
 static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex) {
     Pico_Rect rct;
     SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);

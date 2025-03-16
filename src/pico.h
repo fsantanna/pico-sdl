@@ -108,6 +108,10 @@ int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
 /// @brief Clears screen with color set by @ref pico_set_color_clear.
 void pico_output_clear (void);
 
+/// TODO
+void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size);
+
+
 /// @brief Draws an image.
 /// This function uses caching, so the file is actually loaded only once.
 /// @param pos drawing position
