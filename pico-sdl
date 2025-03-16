@@ -1,8 +1,8 @@
 #!/bin/sh
 
-PICO=$(dirname -- "$0")     # path of pico-sdl root
+PICO=$(dirname $(realpath "$0"))    # path of pico-sdl root
 
-DIR=$(dirname -- "$1")      # path of source file
+DIR=$(dirname -- "$1")              # path of source file
 EXE=$(basename -- "$1")
 EXE="${EXE%.*}"
 
