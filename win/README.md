@@ -49,7 +49,7 @@ gcc -shared -o libSDL2_gfx.dll "-Wl,--out-implib,libSDL2_gfx.a" SDL2_framerate.o
 
 Copy *SDL2_gfx/libSDL2_gfx.dll* to *x86_64-w64-mingw32/bin*
 
-Copy all .h files in *SDL2_gfx* to *x86_64-w64-mingw32/include/SDL2*
+Copy all .h files (5) in *SDL2_gfx* to *x86_64-w64-mingw32/include/SDL2*
 
 Copy *SDL2_gfx/libSDL2_gfx.a* to *x86_64-w64-mingw32/lib*
 
