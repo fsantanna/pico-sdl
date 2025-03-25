@@ -72,11 +72,11 @@ code --install-extension {cpptools.vsix path}
 
 Create a new directory named *pico-sdl-win64*.
 
-Rename *x86_64-w64-mingw32* to *SDL* and copy it to *pico-sdl-win64*.
+Rename *x86_64-w64-mingw32* to *SDL* and move it to *pico-sdl-win64*.
 
-Move (or copy) *vscode* to *pico-sdl-win64*.
+Move *vscode* to *pico-sdl-win64*.
 
-Move (or copy) *mingw64* to *pico-sdl-win64*.
+Move *mingw64* to *pico-sdl-win64*.
 
 Copy *pico-sdl/win/run.ps1* to *pico-sdl-win64*.
 
