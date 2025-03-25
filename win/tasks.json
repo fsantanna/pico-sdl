@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "pico-sdl run",
+            "type": "shell",
+            "command": "gcc ${input:program} -DSDL_MAIN_HANDLED -lmingw32 -lSDL2main -lSDL2 -lSDL2_gfx -lSDL2_image -lSDL2_ttf -lSDL2_mixer",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "program",
+            "description": "program:",
+            "default": "tst/main.c",
+            "type": "promptString"
+        }
+    ]
+}
