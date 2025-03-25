@@ -37,7 +37,6 @@ Add it to "path":
 cd {x86_64-w64-mingw32 path}
 $env:CPATH = "$PWD\include;$PWD\include\SDL2;$env:CPATH"
 $env:LIBRARY_PATH = "$PWD\lib;$env:LIBRARY_PATH"
-$env:LD_LIBRARY_PATH = "$PWD\bin;$env:LD_LIBRARY_PATH"
 ```
 
 Now compile SDL2_gfx with gcc:
