@@ -9,6 +9,7 @@
 #include "hash.h"
 #include "pico.h"
 
+#define SDL_ANY PICO_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 static SDL_Window*  WIN;
@@ -158,7 +159,7 @@ void pico_init (int on) {
 //  - returns
 //      - 1: if e matches xp
 //      - 0: otherwise
-static int event_from_sdl (SDL_Event* e, int xp) {
+static int event_from_sdl (Pico_Event* e, int xp) {
     switch (e->type) {
         case SDL_QUIT: {
             if (!S.expert) {
@@ -271,7 +272,7 @@ static int event_from_sdl (SDL_Event* e, int xp) {
 void pico_input_delay (int ms) {
     while (1) {
         int old = SDL_GetTicks();
-        SDL_Event e;
+        Pico_Event e;
         int has = SDL_WaitEventTimeout(&e, ms);
         if (has) {
             event_from_sdl(&e, SDL_ANY);
@@ -284,9 +285,9 @@ void pico_input_delay (int ms) {
     }
 }
 
-void pico_input_event (SDL_Event* evt, int type) {
+void pico_input_event (Pico_Event* evt, int type) {
     while (1) {
-        SDL_Event x;
+        Pico_Event x;
         SDL_WaitEvent(&x);
         if (event_from_sdl(&x, type)) {
             if (evt != NULL) {
@@ -297,13 +298,13 @@ void pico_input_event (SDL_Event* evt, int type) {
     }
 }
 
-int pico_input_event_ask (SDL_Event* evt, int type) {
+int pico_input_event_ask (Pico_Event* evt, int type) {
     int has = SDL_PollEvent(evt);
     if (!has) return 0;
     return event_from_sdl(evt, type);
 }
 
-int pico_input_event_timeout (SDL_Event* evt, int type, int timeout) {
+int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
     int has = SDL_WaitEventTimeout(evt, timeout);
     if (!has) {
         return 0;
