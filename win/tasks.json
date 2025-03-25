@@ -2,16 +2,21 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "pico-sdl run",
+            "label": "Build pico-sdl program",
             "type": "shell",
-            "command": "gcc src/pico.c src/hash.c src/dir.c ${input:program} -DSDL_MAIN_HANDLED -lmingw32 -lSDL2main -lSDL2 -lSDL2_gfx -lSDL2_image -lSDL2_ttf -lSDL2_mixer; ./a.exe",
+            "command": "gcc src/pico.c src/hash.c src/dir.c ${input:program} -DSDL_MAIN_HANDLED -lmingw32 -lSDL2main -lSDL2 -lSDL2_gfx -lSDL2_image -lSDL2_ttf -lSDL2_mixer",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "isBackground": false,
             "problemMatcher": []
         }
     ],
     "inputs": [
         {
             "id": "program",
-            "description": "program:",
+            "description": "program",
             "default": "tst/main.c",
             "type": "promptString"
         }
