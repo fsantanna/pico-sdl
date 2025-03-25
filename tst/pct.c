@@ -10,7 +10,7 @@ int main (void) {
         Pico_Rect rct = {pt.x, pt.y, 32, 18};
         pico_output_clear();
         pico_output_draw_rect(rct);
-        pico_input_event(NULL, SDL_KEYDOWN);
+        pico_input_event(NULL, PICO_KEYDOWN);
     }
 
     {
@@ -27,7 +27,7 @@ int main (void) {
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
         pico_output_draw_rect(rct2);
 
-        pico_input_event(NULL, SDL_KEYDOWN);
+        pico_input_event(NULL, PICO_KEYDOWN);
     }
 
     pico_init(0);
