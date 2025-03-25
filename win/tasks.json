@@ -4,7 +4,7 @@
         {
             "label": "pico-sdl run",
             "type": "shell",
-            "command": "gcc ${input:program} -DSDL_MAIN_HANDLED -lmingw32 -lSDL2main -lSDL2 -lSDL2_gfx -lSDL2_image -lSDL2_ttf -lSDL2_mixer",
+            "command": "gcc src/pico.c src/hash.c src/dir.c ${input:program} -DSDL_MAIN_HANDLED -lmingw32 -lSDL2main -lSDL2 -lSDL2_gfx -lSDL2_image -lSDL2_ttf -lSDL2_mixer; ./a.exe",
             "problemMatcher": []
         }
     ],
