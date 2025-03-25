@@ -68,6 +68,8 @@ This allows programmers to fallback to SDL whenever required.
 
 ## Install
 
+### Linux
+
 Install SDL:
 
 ```
@@ -81,8 +83,24 @@ git clone https://github.com/fsantanna/pico-sdl
 cd pico-sdl/
 ```
 
+### Windows
+
+Download [pico-sdl-win64.zip]() from the releases page and extract it.
+
+Open powershell in the directory you extracted.
+
 ## Execute
 
+### Linux
 ```
 ./pico-sdl tst/main.c
 ```
+
+### Windows
+
+Run the IDE:
+```
+powershell .\run.ps1
+```
+
+Hit F5, type the path to your program, then hit enter.
