@@ -5,4 +5,5 @@ $env:CPATH = "$WORKING_DIR\include;$env:CPATH"
 $env:LIBRARY_PATH = "$WORKING_DIR\bin;$env:LIBRARY_PATH"
 $env:LD_LIBRARY_PATH = "$WORKING_DIR\bin;$env:LD_LIBRARY_PATH"
 
+code .
 Write-Host "Pico IDE activated!"
