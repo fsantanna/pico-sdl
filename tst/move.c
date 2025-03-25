@@ -1,17 +1,21 @@
-#include "../src/pico.h"
+#include "pico.h"
 
 int main (void) {
     pico_init(1);
     pico_set_title("Moving Around");
 
-    SDL_Point pt = pico_pct_to_pos(0.5, 0.5);
+    Pico_Pos pos = pico_pct_to_pos(50, 50);
     while (1) {
-        pico_output_draw_pixel(pt);
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_output_draw_pixel(pos);
 
-        pico_output_present();
         pico_input_delay(200);
 
-        pt.y--;
+        //pico_set_color_draw((Pico_Color){0x00,0x00,0x00,0xFF});
+        //pico_output_draw_pixel(pos);
+
+        pos.x += rand()%3 - 1;
+        pos.y += rand()%3 - 1;
     }
 
     pico_init(0);

@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run pico-sdl program",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/a.exe",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build pico-sdl program"
+        }
+    ]
+}
