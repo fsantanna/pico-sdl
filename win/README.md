@@ -44,7 +44,7 @@ Now compile SDL2_gfx with gcc:
 ```sh
 cd {SDL2_gfx path}
 gcc -c -fPIC SDL2_framerate.c SDL2_gfxPrimitives.c SDL2_imageFilter.c SDL2_rotozoom.c
-gcc -shared -o libSDL2_gfx.dll "-Wl,--out-implib,lib\libSDL2_gfx.a" SDL2_framerate.o SDL2_gfxPrimitives.o SDL2_imageFilter.o SDL2_rotozoom.o -lSDL2
+gcc -shared -o libSDL2_gfx.dll "-Wl,--out-implib,libSDL2_gfx.a" SDL2_framerate.o SDL2_gfxPrimitives.o SDL2_imageFilter.o SDL2_rotozoom.o -lSDL2
 ```
 
 Copy *SDL2_gfx/libSDL2_gfx.dll* to *x86_64-w64-mingw32/bin*
