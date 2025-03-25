@@ -77,9 +77,13 @@ Move *vscode* to *pico-sdl-win64*.
 
 Move *mingw64* to *pico-sdl-win64*.
 
-Copy *pico-sdl/win/run.ps1* to *pico-sdl-win64*.
+Copy *pico-sdl/win/run.bat* to *pico-sdl-win64*.
 
-Create a directory inside *pico-sdl-win64* named .vscode and copy *pico-sdl/win/tasks.json* to it.
+Create a directory inside *pico-sdl-win64* named .vscode.
+
+Copy *pico-sdl/win/tasks.json* to *pico-sdl-win64/.vscode*.
+
+Copy *pico-sdl/win/launch.json* to *pico-sdl-win64/.vscode*.
 
 Copy *pico-sdl/src* to *pico-sdl-win64*.
 
