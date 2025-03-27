@@ -1,16 +1,14 @@
-# Get the path of the pico-sdl root
-try {
-    $PICO = Split-Path -Parent (Resolve-Path $PS.\pico-sdlRoot)
-} catch {
-    Write-Host "Error: Unable to resolve pico-sdl root path."
-    exit 1
-}
+$PICO = $PSScriptRoot
 
 # Get the path and name of the source file
 if (-not $args[0]) {
     Write-Host "Usage: .\pico-sdl.ps1 <source_file.c>"
     exit 1
 }
+
+$env:PATH = "$PICO\SDL\bin;$PICO\mingw64\bin;" + $env:PATH
+$env:CPATH = "$PICO\src;$PICO\SDL\include;$PICO\SDL\include\SDL2;" + $env:CPATH
+$env:LIBRARY_PATH = "$PICO\SDL\lib;" + $env:LIBRARY_PATH
 
 $SRC = Resolve-Path $args[0]
 $DIR = Split-Path -Parent $SRC
