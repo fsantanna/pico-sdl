@@ -6,3 +6,4 @@ SET CPATH=%RUN_DIR%src;%RUN_DIR%SDL\include;%RUN_DIR%SDL\include\SDL2;%CPATH%
 SET LIBRARY_PATH=%RUN_DIR%SDL\lib;%LIBRARY_PATH%
 
 code .
+exit
