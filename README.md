@@ -100,4 +100,7 @@ Open the directory you extracted in explorer.
 
 Double-click on run.bat and wait for vscode to open.
 
-Hit F5 to compile and run the active file.
+Now you can either hit F5 to compile and run the active file, or open powershell in vscode terminal to use the CLI:
+```
+.\pico-sdl.ps1 {your program}
+```
