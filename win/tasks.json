@@ -4,7 +4,7 @@
         {
             "label": "Build pico-sdl program",
             "type": "shell",
-            "command": "gcc src/pico.c src/hash.c src/dir.c ${file} -o ${fileDirname}/${fileBasenameNoExtension} -DSDL_MAIN_HANDLED -lmingw32 -lSDL2main -lSDL2 -lSDL2_gfx -lSDL2_image -lSDL2_ttf -lSDL2_mixer",
+            "command": "gcc src/pico.c src/hash.c src/dir.c ${file} -Isrc -o ${fileDirname}/${fileBasenameNoExtension} -DSDL_MAIN_HANDLED -lmingw32 -lSDL2main -lSDL2 -lSDL2_gfx -lSDL2_image -lSDL2_ttf -lSDL2_mixer",
             "group": {
                 "kind": "build",
                 "isDefault": true
