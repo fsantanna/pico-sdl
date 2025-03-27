@@ -88,6 +88,8 @@ Create a directory inside *pico-sdl-win64-{version}* named .vscode.
 
 Copy all .json files inside *pico-sdl/win* to *pico-sdl-win64-{version}/.vscode*.
 
+Copy *pico-sdl/win/pico-sdl.ps1* to *pico-sdl-win64*.
+
 Copy *pico-sdl/src* to *pico-sdl-win64-{version}*.
 
 Copy *pico-sdl/tiny.ttf* to *pico-sdl-win64-{version}*.
@@ -95,3 +97,4 @@ Copy *pico-sdl/tiny.ttf* to *pico-sdl-win64-{version}*.
 Copy *pico-sdl/tst* to *pico-sdl-win64-{version}*.
 
 Create the .zip *pico-sdl-win64-{version}*.
+
