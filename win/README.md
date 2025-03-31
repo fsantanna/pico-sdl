@@ -1,7 +1,7 @@
 # Build the windows release
 
 Open a powershell window.  
-**IMPORTANT:** You will need to use it multiple times with changes in environment variables. So keep it open.
+**IMPORTANT:** You will need to use it multiple times to set environment variables. So keep it open.
 
 ## Donwload and extract
 
