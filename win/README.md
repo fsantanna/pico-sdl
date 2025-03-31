@@ -25,6 +25,7 @@ git clone https://github.com/fsantanna/pico-sdl
 
 ## Adding gcc to path
 
+**NOTE:** If you already have a working gcc build, you may skip this step.
 You will find a directory named *mingw64* inside where you extracted gcc.  
 Add it to path in powershell:
 ```sh
