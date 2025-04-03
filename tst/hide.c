@@ -3,7 +3,7 @@
 int main (void) {
     pico_init(1);
     pico_set_title("Show - Hide");
-    pico_input_event(NULL, SDL_KEYDOWN);
+    pico_input_event(NULL, PICO_KEYDOWN);
 
     pico_set_show(0);
     puts("hidden");
@@ -11,7 +11,7 @@ int main (void) {
 
     pico_set_show(1);
     puts("shown");
-    pico_input_event(NULL, SDL_KEYDOWN);
+    pico_input_event(NULL, PICO_KEYDOWN);
 
     pico_set_show(0);
     puts("hidden");

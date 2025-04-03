@@ -25,7 +25,7 @@ int main (void) {
     pico_output_draw_buffer(p1, buffer, (Pico_Dim){3,3});
 
     printf("press any key\n");
-    pico_input_event(NULL, SDL_KEYDOWN);
+    pico_input_event(NULL, PICO_KEYDOWN);
 
     puts("bottom right multi-color '.x.xxx.x.' over white");
     pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
@@ -35,7 +35,7 @@ int main (void) {
     pico_output_draw_buffer(p2, buffer, (Pico_Dim){9,1});
     
     printf("press any key\n");
-    pico_input_event(NULL, SDL_KEYDOWN);
+    pico_input_event(NULL, PICO_KEYDOWN);
 
     pico_init(0);
     return 0;

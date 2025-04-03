@@ -24,8 +24,8 @@ int main (void) {
     pico_output_clear();
     draw();
     {
-        SDL_Event e;
-        pico_input_event(&e, SDL_MOUSEBUTTONDOWN);
+        Pico_Event e;
+        pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
         printf(">>> (%d,%d)\n", e.button.x, e.button.y);
     }
 
@@ -33,8 +33,8 @@ int main (void) {
     pico_output_clear();
     draw();
     {
-        SDL_Event e;
-        pico_input_event(&e, SDL_MOUSEBUTTONDOWN);
+        Pico_Event e;
+        pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
         printf(">>> (%d,%d)\n", e.button.x, e.button.y);
     }
 
@@ -42,8 +42,8 @@ int main (void) {
     pico_output_clear();
     draw();
     {
-        SDL_Event e;
-        pico_input_event(&e, SDL_MOUSEBUTTONDOWN);
+        Pico_Event e;
+        pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
         printf(">>> (%d,%d)\n", e.button.x, e.button.y);
     }
 

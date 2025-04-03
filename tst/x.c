@@ -4,7 +4,7 @@ int main (void) {
     pico_init(1);
     pico_set_size((Pico_Dim){160,160}, (Pico_Dim){16,16});
     pico_output_clear();
-    pico_input_event(NULL, SDL_KEYUP);
+    pico_input_event(NULL, PICO_KEYUP);
     for (int i=0; i<16; i++) {
         pico_output_draw_pixel((Pico_Pos) {i, i});
         pico_output_draw_pixel((Pico_Pos) {15-i, i});
