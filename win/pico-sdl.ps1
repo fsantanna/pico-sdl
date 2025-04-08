@@ -6,15 +6,6 @@ if (-not $args[0]) {
     exit 1
 }
 
-# store previous environment variables values
-$ogPATH = $env:PATH
-$ogCPATH = $env:CPATH
-$ogLIBRARY_PATH = $env:LIBRARY_PATH
-
-$env:PATH = "$PICO\SDL\bin;$PICO\mingw64\bin;" + $env:PATH
-$env:CPATH = "$PICO\src;$PICO\SDL\include;$PICO\SDL\include\SDL2;" + $env:CPATH
-$env:LIBRARY_PATH = "$PICO\SDL\lib;" + $env:LIBRARY_PATH
-
 $SRC = Resolve-Path $args[0]
 $DIR = Split-Path -Parent $SRC
 $EXE = [System.IO.Path]::GetFileNameWithoutExtension($SRC)
@@ -27,9 +18,3 @@ gcc -Wall -o "$DIR\$EXE.exe" "$SRC" `
 
 # Run the compiled executable
 Start-Process -NoNewWindow -Wait -FilePath "$DIR\$EXE.exe"
-
-# restore previous environment variables values
-$env:PATH = $ogPATH
-$env:CPATH = $ogCPATH
-$env:LIBRARY_PATH = $ogLIBRARY_PATH
-
