@@ -18,7 +18,7 @@ Download the required files (Direct download links):
 Extract all the compressed files to a working directory.  
 **IMPORTANT:** Extract vscode to a subdirectory and name it *vscode*.
 
-```
+```sh
 cd {working dir}
 git clone https://github.com/fsantanna/pico-sdl
 ```
@@ -26,6 +26,7 @@ git clone https://github.com/fsantanna/pico-sdl
 ## Adding gcc to path
 
 **NOTE:** If you already have a working gcc build, you may skip this step.
+
 You will find a directory named *mingw64* inside where you extracted gcc.  
 Add it to path in powershell:
 ```sh
@@ -45,18 +46,19 @@ $env:CPATH = "$PWD\include;$PWD\include\SDL2;$env:CPATH"
 $env:LIBRARY_PATH = "$PWD\lib;$env:LIBRARY_PATH"
 ```
 
-Now compile SDL2_gfx with gcc:
+Compile SDL2_gfx with gcc:
 ```sh
 cd {SDL2_gfx path}
 gcc -c -fPIC SDL2_framerate.c SDL2_gfxPrimitives.c SDL2_imageFilter.c SDL2_rotozoom.c
 gcc -shared -o libSDL2_gfx.dll "-Wl,--out-implib,libSDL2_gfx.a" SDL2_framerate.o SDL2_gfxPrimitives.o SDL2_imageFilter.o SDL2_rotozoom.o -lSDL2
 ```
 
-Copy *SDL2_gfx/libSDL2_gfx.dll* to *x86_64-w64-mingw32/bin*
-
-Copy all .h files (5) in *SDL2_gfx* to *x86_64-w64-mingw32/include/SDL2*
-
-Copy *SDL2_gfx/libSDL2_gfx.a* to *x86_64-w64-mingw32/lib*
+Copy SDL2_gfx files to *x86_64-w64-mingw32*:
+```sh
+cp libSDL2_gfx.dll {x86_64-w64-mingw32 path}/bin
+cp libSDL2_gfx.a {x86_64-w64-mingw32 path}/lib
+cp *.h {x86_64-w64-mingw32 path}/include/SDL2
+```
 
 ## Setup vscode
 
@@ -75,27 +77,18 @@ code --install-extension {cpptools.vsix path}
 
 ## Packing release file
 
-Create a new directory named *pico-sdl-win64-{version}*.
+```sh
+cd {working dir}
+mkdir pico-sdl-win64-{version}
+cp pico-sdl/src pico-sdl-win64-{version}
+cp pico-sdl/tst pico-sdl-win64-{version}
+cp pico-sdl/tiny.ttf pico-sdl-win64-{version}
+cp pico-sdl/win/*.ps1 pico-sdl-win64-{version}
+mkdir pico-sdl/.vscode
+cp pico-sdl/win/*.json pico-sdl-win64-{version}/.vscode
+mv vscode pico-sdl-win64-{version}
+mv mingw64 pico-sdl-win64-{version}
+Compress-Archive -Path pico-sdl-win64-{version} -DestinationPath pico-sdl-win64-{version}.zip
+```
 
-Rename *x86_64-w64-mingw32* to *SDL* and move it to *pico-sdl-win64-{version}*.
-
-Move *vscode* to *pico-sdl-win64-{version}*.
-
-Move *mingw64* to *pico-sdl-win64-{version}*.
-
-Copy *pico-sdl/win/run.bat* to *pico-sdl-win64-{version}*.
-
-Create a directory inside *pico-sdl-win64-{version}* named .vscode.
-
-Copy all .json files inside *pico-sdl/win* to *pico-sdl-win64-{version}/.vscode*.
-
-Copy *pico-sdl/win/pico-sdl.ps1* to *pico-sdl-win64*.
-
-Copy *pico-sdl/src* to *pico-sdl-win64-{version}*.
-
-Copy *pico-sdl/tiny.ttf* to *pico-sdl-win64-{version}*.
-
-Copy *pico-sdl/tst* to *pico-sdl-win64-{version}*.
-
-Create the .zip *pico-sdl-win64-{version}*.
-
+Pack *pico-sdl-win64-{version}* into a .zip
