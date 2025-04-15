@@ -87,7 +87,7 @@ cd pico-sdl/
 
 Download [pico-sdl-win64.zip]() from the releases page and extract it.
 
-Open the directory you extracted in explorer.
+Run pico-sdl-ide.ps1 with powershell.
 
 ## Execute
 
@@ -98,6 +98,9 @@ Open the directory you extracted in explorer.
 
 ### Windows
 
-Double-click on run.bat and wait for vscode to open.
+You can hit F5 to compile and run the active file.
 
-Hit F5, type the path to your program, then hit enter.
+You can also open vscode terminal to use pico-sdl-cmd:
+```
+pico-sdl-cmd {path to your program}
+```
