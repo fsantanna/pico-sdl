@@ -5,9 +5,9 @@ int main (void) {
     Pico_Pos pt = pico_pct_to_pos(50, 50);
     puts("shows dark screen");
 
-    SDL_Event e1;
+    Pico_Event e1;
     puts("waits any key press");
-    pico_input_event(&e1, SDL_KEYUP);
+    pico_input_event(&e1, PICO_KEYUP);
 
     // TITLE
     puts("changes window title to \"Testing...\"");
@@ -70,18 +70,18 @@ int main (void) {
     pico_input_delay(2000);
 
     // MOUSE
-    SDL_Event e2;
+    Pico_Event e2;
     puts("waits mouse click");
-    pico_input_event(&e2, SDL_MOUSEBUTTONDOWN);
+    pico_input_event(&e2, PICO_MOUSEBUTTONDOWN);
     pico_output_draw_pixel((Pico_Pos){e2.button.x,e2.button.y});
 
     puts("shows pixel over mouse");
     pico_input_delay(2000);
 
     // EVENT
-    SDL_Event e3;
+    Pico_Event e3;
     puts("waits more 2 seconds");
-    pico_input_event_timeout(&e3, SDL_ANY, 2000);
+    pico_input_event_timeout(&e3, PICO_ANY, 2000);
 
     // GRID=0
     pico_set_grid(0);

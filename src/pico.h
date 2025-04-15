@@ -8,13 +8,13 @@ extern "C" {
 #include <stdio.h>
 #include <assert.h>
 #include <SDL2/SDL.h>
+#include "keys.h"
+#include "events.h"
 
 #define PICO_TITLE "pico-SDL"
 #define PICO_DIM_PHY ((Pico_Dim) {640,360})
 #define PICO_DIM_LOG ((Pico_Dim) { 64, 36})
 #define PICO_HASH  128
-
-#define SDL_ANY 0
 
 /// @example init.c
 /// @example delay.c
@@ -76,28 +76,28 @@ void pico_input_delay (int ms);
 /// @brief Stops the program until an event occurs.
 /// @include event.c
 /// @param evt where to save the event data, or NULL to ignore
-/// @param type type of event to wait for (SDL_EventType), where 0 means any type
+/// @param type type of event to wait for (Pico_EventType)
 /// @sa pico_input_event_ask
 /// @sa pico_input_event_timeout
-void pico_input_event (SDL_Event* evt, int type);
+void pico_input_event (Pico_Event* evt, int type);
 
 /// @brief Checks if an event has occured.
 /// @param evt where to save the event data, or NULL to ignore
-/// @param type type of event to check the occurence (SDL_EventType), where 0 means any type
+/// @param type type of event to check the occurence (Pico_EventType)
 /// @return 1 if the given type of event has occurred, or 0 otherwise
 /// @sa pico_input_event
 /// @sa pico_input_event_timeout
-int  pico_input_event_ask (SDL_Event* evt, int type);
+int  pico_input_event_ask (Pico_Event* evt, int type);
 
 /// @brief Stops the program until an event occurs or a timeout is reached.
 /// @include event_timeout.c
 /// @param evt where to save the event data, or NULL to ignore
-/// @param type type of event to wait for (SDL_EventType), where 0 means any type
+/// @param type type of event to wait for (Pico_EventType)
 /// @param timeout time limit to wait for events in milliseconds
 /// @return 1 if the given type of event has occurred, or 0 otherwise
 /// @sa pico_input_event
 /// @sa pico_input_event_ask
-int  pico_input_event_timeout (SDL_Event* evt, int type, int timeout);
+int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 
 /// @}
 

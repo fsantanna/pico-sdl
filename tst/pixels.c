@@ -12,13 +12,13 @@ int main (void) {
     };
 
     printf("press any key to start\n");
-    pico_input_event(NULL, SDL_KEYDOWN);
+    pico_input_event(NULL, PICO_KEYDOWN);
     
     for (int i = 1; i <= 9; i++) {
         pico_output_clear();
         pico_output_draw_pixels(pixels, i);
         printf("%d pixels\n", i);
-        pico_input_event(NULL, SDL_KEYDOWN);
+        pico_input_event(NULL, PICO_KEYDOWN);
     }
 
     pico_init(0);
