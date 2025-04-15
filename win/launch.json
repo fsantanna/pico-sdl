@@ -5,8 +5,8 @@
             "name": "Run pico-sdl program",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/a.exe",
-            "cwd": "${workspaceFolder}",
+            "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
+            "cwd": "${fileDirname}",
             "preLaunchTask": "Build pico-sdl program"
         }
     ]
