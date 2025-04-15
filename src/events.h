@@ -32,7 +32,7 @@ typedef enum Pico_EventType {
     PICO_TEXTEDITING = SDL_TEXTEDITING, /**< Keyboard text editing (composition) */
     PICO_TEXTINPUT = SDL_TEXTINPUT, /**< Keyboard text input */
     PICO_KEYMAPCHANGED = SDL_KEYMAPCHANGED,  /**< Keymap changed due to input language or keyboard layout. */
-    PICO_TEXTEDITING_EXT = SDL_TEXTEDITING_EXT, /**< Extended keyboard text editing (composition) */
+    //PICO_TEXTEDITING_EXT = SDL_TEXTEDITING_EXT, /**< Extended keyboard text editing (composition) */
 
     /* Mouse events */
     PICO_MOUSEMOTION = SDL_MOUSEMOTION,         /**< Mouse moved */
@@ -48,7 +48,7 @@ typedef enum Pico_EventType {
     PICO_JOYBUTTONUP = SDL_JOYBUTTONUP,             /**< Joystick button released */
     PICO_JOYDEVICEADDED = SDL_JOYDEVICEADDED,       /**< A new joystick has been inserted into the system */
     PICO_JOYDEVICEREMOVED = SDL_JOYDEVICEREMOVED,   /**< An opened joystick has been removed */
-    PICO_JOYBATTERYUPDATED = SDL_JOYBATTERYUPDATED, /**< Joystick battery level change */
+    //PICO_JOYBATTERYUPDATED = SDL_JOYBATTERYUPDATED, /**< Joystick battery level change */
 
     /* Game controller events */
     PICO_CONTROLLERAXISMOTION = SDL_CONTROLLERAXISMOTION,                 /**< Game controller axis motion */
@@ -61,7 +61,7 @@ typedef enum Pico_EventType {
     PICO_CONTROLLERTOUCHPADMOTION = SDL_CONTROLLERTOUCHPADMOTION,         /**< Game controller touchpad finger was moved */
     PICO_CONTROLLERTOUCHPADUP = SDL_CONTROLLERTOUCHPADUP,                 /**< Game controller touchpad finger was lifted */
     PICO_CONTROLLERSENSORUPDATE = SDL_CONTROLLERSENSORUPDATE,             /**< Game controller sensor was updated */
-    PICO_CONTROLLERSTEAMHANDLEUPDATED = SDL_CONTROLLERSTEAMHANDLEUPDATED, /**< Game controller Steam handle has changed */
+    //PICO_CONTROLLERSTEAMHANDLEUPDATED = SDL_CONTROLLERSTEAMHANDLEUPDATED, /**< Game controller Steam handle has changed */
 
     /* Touch events */
     PICO_FINGERDOWN = SDL_FINGERDOWN,
