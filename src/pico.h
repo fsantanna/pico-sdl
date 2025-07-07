@@ -199,7 +199,7 @@ Pico_Dim pico_get_zoom (void);
 /// @include anchor.c
 /// @param h x-axis anchor
 /// @param v y-axis anchor
-void pico_set_anchor (Pico_Anchor_X x, Pico_Anchor_Y v);
+void pico_set_anchor (Pico_Anchor_X h, Pico_Anchor_Y v);
 
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
@@ -292,6 +292,8 @@ Pico_Pos pico_pct_to_pos (int x, int y);
 /// @param y an integer ranging from 0 to 100
 /// @sa pico_pct_to_pos
 Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y);
+
+Pico_Pos pico_pct_to_pos_ext2 (Pico_Rect r, int x, int y, Pico_Anchor_X h, Pico_Anchor_Y v);
 
 /// @}
 
