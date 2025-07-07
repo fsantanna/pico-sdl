@@ -109,13 +109,6 @@ Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y) {
     return (Pico_Pos) { r.x-r.w/2 + r.w*x/100, r.y-r.h/2 + r.h*y/100 };
 }
 
-Pico_Pos pico_pct_to_pos_ext2 (Pico_Rect r, int x, int y, int hanchor, int vanchor) {
-  Pico_Pos pt = pico_pct_to_pos_ext(r, x, y);
-  int dha = hanchor - S.anchor.x;
-  int dva = vanchor - S.anchor.y;
-  return (Pico_Pos) { pt.x+(dha*r.w)/2, pt.y-(dva*r.h)/2 };
-}
-
 // INIT
 
 void pico_init (int on) {
