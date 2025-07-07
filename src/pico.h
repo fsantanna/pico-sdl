@@ -293,6 +293,8 @@ Pico_Pos pico_pct_to_pos (int x, int y);
 /// @sa pico_pct_to_pos
 Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y);
 
+Pico_Pos pico_nested_anchor(Pico_Pos pt, Pico_Rect r, int hanchor, int vanchor);
+
 /// @}
 
 #ifdef __cplusplus
