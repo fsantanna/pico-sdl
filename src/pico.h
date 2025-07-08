@@ -35,13 +35,10 @@ typedef enum {
     PICO_FILL, PICO_STROKE
 } Pico_Style;
 
-typedef enum {
-    PICO_LEFT=1, PICO_CENTER, PICO_RIGHT
-} Pico_Anchor_X;
-
-typedef enum {
-    PICO_BOTTOM=1, PICO_MIDDLE, PICO_TOP
-} Pico_Anchor_Y;
+typedef struct Pico_Anchor {
+    enum { PICO_LEFT=1, PICO_CENTER, PICO_RIGHT } x;
+    enum { PICO_BOTTOM=1, PICO_MIDDLE, PICO_TOP } y;
+} Pico_Anchor;
 
 typedef struct Pico_Size {
     Pico_Dim phy;
@@ -199,7 +196,7 @@ Pico_Dim pico_get_zoom (void);
 /// @include anchor.c
 /// @param h x-axis anchor
 /// @param v y-axis anchor
-void pico_set_anchor (Pico_Anchor_X h, Pico_Anchor_Y v);
+void pico_set_anchor (Pico_Anchor anchor);
 
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
@@ -292,8 +289,6 @@ Pico_Pos pico_pct_to_pos (int x, int y);
 /// @param y an integer ranging from 0 to 100
 /// @sa pico_pct_to_pos
 Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y);
-
-Pico_Pos pico_pct_to_pos_ext2 (Pico_Rect r, int x, int y, Pico_Anchor_X h, Pico_Anchor_Y v);
 
 /// @}
 

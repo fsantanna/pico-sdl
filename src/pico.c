@@ -24,8 +24,6 @@ static SDL_Texture* TEX;
 
 static pico_hash* _pico_hash;
 
-typedef SDL_Point Pico_Anchor;
-
 static struct {
     Pico_Anchor anchor;
     struct {
@@ -100,18 +98,18 @@ int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
 }
 
 Pico_Pos pico_pct_to_pos (int x, int y) {
-    return pico_pct_to_pos_ext (
+    Pico_Anchor old = S.anchor;
+    S.anchor = (Pico_Anchor) {PICO_CENTER, PICO_MIDDLE};
+    Pico_Pos pt = pico_pct_to_pos_ext (
         (Pico_Rect){ S.size.org.x/2, S.size.org.y/2, S.size.org.x, S.size.org.y},
         x, y);
+    S.anchor = (Pico_Anchor) {old.x, old.y};
+    return pt;
 }
 
 Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y) {
-    return (Pico_Pos) { r.x-r.w/2 + r.w*x/100, r.y-r.h/2 + r.h*y/100 };
-}
-
-Pico_Pos pico_pct_to_pos_ext2 (Pico_Rect r, int x, int y, Pico_Anchor_X h, Pico_Anchor_Y v) {
-    Pico_Pos pt = pico_pct_to_pos_ext(r, x, y);
-    switch (h) {
+    Pico_Pos pt = { r.x-r.w/2 + r.w*x/100, r.y-r.h/2 + r.h*y/100 };
+    switch (S.anchor.x) {
         case PICO_LEFT:
             pt.x += r.w/2;
             break;
@@ -120,7 +118,7 @@ Pico_Pos pico_pct_to_pos_ext2 (Pico_Rect r, int x, int y, Pico_Anchor_X h, Pico_
             break;
         default: ;
     }
-    switch (v) {
+    switch (S.anchor.y) {
         case PICO_TOP:
             pt.y += r.h/2;
             break;
@@ -667,8 +665,8 @@ Uint32 pico_get_ticks (void) {
 
 // SET
 
-void pico_set_anchor (Pico_Anchor_X x, Pico_Anchor_Y y) {
-    S.anchor = (Pico_Anchor) {x, y};
+void pico_set_anchor (Pico_Anchor anchor) {
+    S.anchor = anchor;
 }
 
 void pico_set_color_clear (Pico_Color color) {
