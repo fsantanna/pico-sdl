@@ -290,6 +290,8 @@ Pico_Pos pico_pct_to_pos (int x, int y);
 /// @sa pico_pct_to_pos
 Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y);
 
+Pico_Pos pico_off_to_pos (Pico_Rect r, int x, int y);
+
 /// @}
 
 #ifdef __cplusplus

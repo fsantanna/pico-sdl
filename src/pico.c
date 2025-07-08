@@ -130,6 +130,10 @@ Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y) {
     return pt;
 }
 
+Pico_Pos pico_off_to_pos (Pico_Rect r, int x, int y) {
+    return pico_pct_to_pos_ext(r, r.x + 100*x/r.w, r.x + 100*x/r.w);
+}
+
 // INIT
 
 void pico_init (int on) {
