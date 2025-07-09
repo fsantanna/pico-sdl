@@ -131,7 +131,26 @@ Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y) {
 }
 
 Pico_Pos pico_off_to_pos (Pico_Rect r, int x, int y) {
-    return pico_pct_to_pos_ext(r, r.x + 100*x/r.w, r.x + 100*x/r.w);
+    Pico_Pos pt = { r.x-r.w/2 + x, r.y-r.h/2 + y };
+    switch (S.anchor.x) {
+        case PICO_LEFT:
+            pt.x += r.w/2;
+            break;
+        case PICO_RIGHT:
+            pt.x -= r.w/2;
+            break;
+        default: ;
+    }
+    switch (S.anchor.y) {
+        case PICO_TOP:
+            pt.y += r.h/2;
+            break;
+        case PICO_BOTTOM:
+            pt.y -= r.h/2;
+            break;
+        default: ;
+    }
+    return pt;
 }
 
 // INIT
