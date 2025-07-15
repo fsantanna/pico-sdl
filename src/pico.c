@@ -582,6 +582,12 @@ static void _pico_output_present (int force) {
     SDL_RenderCopy(REN, TEX, NULL, NULL);
     show_grid();
     SDL_RenderPresent(REN);
+    SDL_SetRenderDrawColor (REN,
+        S.color.draw.r,
+        S.color.draw.g,
+        S.color.draw.b,
+        S.color.draw.a
+    );
     SDL_SetRenderTarget(REN, TEX);
 }
 
