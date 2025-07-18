@@ -3,7 +3,7 @@
 int main (void) {
     pico_init(1);
     pico_set_title("Image - Size - Crop");
-    Pico_Pos cnt = pico_pct_to_pos(50, 50);
+    Pico_Pos cnt = pico_pos(50, 50);
     pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF,0xFF});
 
     pico_output_clear();

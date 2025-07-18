@@ -6,7 +6,7 @@ int main (void) {
     pico_set_size((Pico_Dim){200,200}, (Pico_Dim){10,10});
 
     // PIXELS
-    Pico_Pos pt = pico_pct_to_pos(50, 50);
+    Pico_Pos pt = pico_pos(50, 50);
     {
         pico_set_anchor((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
         pico_output_clear();

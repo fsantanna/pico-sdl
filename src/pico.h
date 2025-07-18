@@ -279,16 +279,16 @@ int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r);
 /// @brief Returns a screen coordinate based on percentage values.
 /// @param x an integer ranging from 0 to 100
 /// @param y an integer ranging from 0 to 100
-/// @sa pico_pct_to_pos_ext
-Pico_Pos pico_pct_to_pos (int x, int y);
+/// @sa pico_pos_ext
+Pico_Pos pico_pos (int x, int y);
 
 /// @brief Returns a screen coordinate based on percentage values.
 // The coordinate returned will be inside the given rectangle.
 /// @param r the reference rectangle
 /// @param x an integer ranging from 0 to 100
 /// @param y an integer ranging from 0 to 100
-/// @sa pico_pct_to_pos
-Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y);
+/// @sa pico_pos
+Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y);
 
 /// @}
 

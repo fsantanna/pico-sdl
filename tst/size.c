@@ -4,7 +4,7 @@ int main (void) {
     pico_init(1);
     pico_set_title("Size - Fullscreen");
     Pico_Size size = pico_get_size();
-    Pico_Pos pt1 = pico_pct_to_pos(50, 50);
+    Pico_Pos pt1 = pico_pos(50, 50);
     Pico_Rect rct1 = {pt1.x, pt1.y, 32, 18};
 
     puts("no fullscreen - less pixels");
@@ -20,7 +20,7 @@ int main (void) {
 
     puts("no fullscreen - more pixels");
     pico_set_size(size.phy, (Pico_Dim){128,72});
-    Pico_Pos pt2  = pico_pct_to_pos(50, 50);
+    Pico_Pos pt2  = pico_pos(50, 50);
     Pico_Rect rct2 = {pt2.x, pt2.y, 32, 18};
     pico_output_draw_rect(rct2);
 

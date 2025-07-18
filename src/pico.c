@@ -97,17 +97,17 @@ int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
     return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
 }
 
-Pico_Pos pico_pct_to_pos (int x, int y) {
+Pico_Pos pico_pos (int x, int y) {
     Pico_Anchor old = S.anchor;
     S.anchor = (Pico_Anchor) {PICO_CENTER, PICO_MIDDLE};
-    Pico_Pos pt = pico_pct_to_pos_ext (
+    Pico_Pos pt = pico_pos_ext (
         (Pico_Rect){ S.size.org.x/2, S.size.org.y/2, S.size.org.x, S.size.org.y},
         x, y);
     S.anchor = (Pico_Anchor) {old.x, old.y};
     return pt;
 }
 
-Pico_Pos pico_pct_to_pos_ext (Pico_Rect r, int x, int y) {
+Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y) {
     Pico_Pos pt = { r.x-r.w/2 + r.w*x/100, r.y-r.h/2 + r.h*y/100 };
     switch (S.anchor.x) {
         case PICO_LEFT:

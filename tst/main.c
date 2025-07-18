@@ -2,7 +2,7 @@
 
 int main (void) {
     pico_init(1);
-    Pico_Pos pt = pico_pct_to_pos(50, 50);
+    Pico_Pos pt = pico_pos(50, 50);
     puts("shows dark screen");
 
     Pico_Event e1;
@@ -38,9 +38,9 @@ int main (void) {
     pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
     pico_output_clear();
     pico_output_draw_pixel(pt);
-    Pico_Pos rct = pico_pct_to_pos(75, 25);
+    Pico_Pos rct = pico_pos(75, 25);
     pico_output_draw_rect((Pico_Rect){ rct.x,rct.y, 10,5});
-    Pico_Pos ova = pico_pct_to_pos(25, 75);
+    Pico_Pos ova = pico_pos(25, 75);
     pico_output_draw_oval((Pico_Rect){ova.x,ova.y, 5,10});
 
     puts("shows oval -> pixel -> rect");
@@ -54,7 +54,7 @@ int main (void) {
     pico_output_clear();
 
     // WRITE
-    Pico_Pos up = pico_pct_to_pos(10, 10);
+    Pico_Pos up = pico_pos(10, 10);
     pico_set_cursor(up);
     pico_output_write("1 ");
     pico_input_delay(200);
@@ -110,13 +110,13 @@ int main (void) {
         log.x -= 1;
         log.y -= 1;
         pico_set_size(PICO_SIZE_KEEP, log);
-        Pico_Pos ct = pico_pct_to_pos(50, 50);
+        Pico_Pos ct = pico_pos(50, 50);
         pico_output_clear();
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
-        pico_output_draw_text(pico_pct_to_pos(25,75), "X");
-        pico_output_draw_line(ct, pico_pct_to_pos(100,0));
+        pico_output_draw_text(pico_pos(25,75), "X");
+        pico_output_draw_line(ct, pico_pos(100,0));
         pico_input_delay(250);
     }
     puts("decreases zoom");
@@ -124,13 +124,13 @@ int main (void) {
         log.x += 1;
         log.y += 1;
         pico_set_size(PICO_SIZE_KEEP, log);
-        Pico_Pos ct = pico_pct_to_pos(50, 50);
+        Pico_Pos ct = pico_pos(50, 50);
         pico_output_clear();
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
-        pico_output_draw_text(pico_pct_to_pos(25,75), "X");
-        pico_output_draw_line(ct, pico_pct_to_pos(100,0));
+        pico_output_draw_text(pico_pos(25,75), "X");
+        pico_output_draw_line(ct, pico_pos(100,0));
         pico_input_delay(250);
     }
     pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});

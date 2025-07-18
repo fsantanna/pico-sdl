@@ -21,7 +21,7 @@ int main (void) {
     };
 
     puts("centered transparent multi-color '+' over black");
-    Pico_Pos p1 = pico_pct_to_pos(50,50);
+    Pico_Pos p1 = pico_pos(50,50);
     pico_output_draw_buffer(p1, buffer, (Pico_Dim){3,3});
 
     printf("press any key\n");
@@ -30,7 +30,7 @@ int main (void) {
     puts("bottom right multi-color '.x.xxx.x.' over white");
     pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
     pico_output_clear();
-    Pico_Pos p2 = pico_pct_to_pos(100,100);
+    Pico_Pos p2 = pico_pos(100,100);
     pico_set_anchor(PICO_RIGHT, PICO_BOTTOM);
     pico_output_draw_buffer(p2, buffer, (Pico_Dim){9,1});
     
