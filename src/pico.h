@@ -173,7 +173,7 @@ void pico_output_writeln (const char* text);
 // GET
 
 /// @brief Gets the reference point used to draw objects (center, topleft, etc).
-Pico_Anchor pico_set_anchor (void);
+Pico_Anchor pico_get_anchor (void);
 
 /// @brief Gets the color set to clear the screen.
 /// @sa pico_output_clear

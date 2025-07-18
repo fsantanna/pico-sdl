@@ -646,7 +646,7 @@ void pico_output_writeln (const char* text) {
 
 // GET
 
-Pico_Anchor pico_set_anchor (void) {
+Pico_Anchor pico_get_anchor (void) {
     return S.anchor;
 }
 
