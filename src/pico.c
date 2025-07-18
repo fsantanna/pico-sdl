@@ -646,6 +646,10 @@ void pico_output_writeln (const char* text) {
 
 // GET
 
+Pico_Anchor pico_set_anchor (void) {
+    return S.anchor;
+}
+
 Pico_Color pico_get_color_clear (void) {
     return S.color.clear;
 }
