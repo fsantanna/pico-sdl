@@ -170,27 +170,61 @@ void pico_output_writeln (const char* text);
 /// @brief All getters and setters.
 /// @{
 
-/// TODO
+// GET
+
+/// @brief Gets the color set to clear the screen.
+/// @sa pico_output_clear
+/// @sa pico_set_color_clear
+Pico_Color pico_get_color_clear (void);
+
+/// @brief Gets the color set to draw.
+/// @sa pico_set_color_draw
 Pico_Color pico_get_color_draw (void);
 
-/// @brief Returns the size of a given image.
+/// @brief Gets the position of the text cursor.
+/// @sa pico_output_write
+/// @sa pico_output_writeln
+Pico_Pos pico_get_cursor (void);
+
+/// @brief Checks the state of expert mode.
+int pico_get_expert (void);
+
+/// @brief Gets the font used to draw texts.
+const char* pico_get_font (void);
+
+/// @brief Checks the state of the logical pixel grid.
+int pico_get_grid (void);
+
+/// @brief Gets the cropping applied to images before drawing them.
+Pico_Rect pico_get_image_crop (void);
+
+/// @brief Gets the size of a given image.
 /// @param file path to image file
 Pico_Dim pico_get_image_size (const char* file);
 
 /// @brief TODO
 Pico_Pos pico_get_scroll (void);
 
-/// @brief Returns the physical and logical window size.
+/// @brief Gets the physical and logical window size.
 Pico_Size pico_get_size (void);
+
+/// @brief Checks if the aplication window is visible.
+int pico_get_show (void);
 
 /// @brief TODO
 Pico_Style pico_get_style (void);
 
-/// @brief Returns the amount of ticks that passed since pico was initialized.
+/// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
+
+/// @brief Changes the aplication title
+/// @param title new title to set
+const char* pico_get_title (void);
 
 /// @brief TODO
 Pico_Dim pico_get_zoom (void);
+
+// SET
 
 /// @brief Changes the reference point used to draw objects (center, topleft, etc).
 /// @include anchor.c
@@ -213,14 +247,14 @@ void pico_set_color_draw (Pico_Color color);
 /// @sa pico_output_writeln
 void pico_set_cursor (Pico_Pos pos);
 
+/// @brief Toggles the expert mode.
+/// @param on 1 to enable it, or 0 to disable it
+void pico_set_expert (int on);
+
 /// @brief Changes the font used to draw texts.
 /// @param file path to font file
 /// @param h size of the font
 void pico_set_font (const char* file, int h);
-
-/// @brief Toggles the expert mode.
-/// @param on 1 to enable it, or 0 to disable it
-void pico_set_expert (int on);
 
 /// @brief Toggles a grid on top of logical pixels.
 /// @param on 1 to show it, or 0 to hide it

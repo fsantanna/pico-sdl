@@ -1,3 +1,4 @@
+#include <SDL2/SDL_video.h>
 #include <unistd.h>
 
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -645,8 +646,32 @@ void pico_output_writeln (const char* text) {
 
 // GET
 
+Pico_Color pico_get_color_clear (void) {
+    return S.color.clear;
+}
+
 Pico_Color pico_get_color_draw (void) {
     return S.color.draw;
+}
+
+Pico_Pos pico_get_cursor (void) {
+    return S.cursor.cur;
+}
+
+int pico_get_expert (void) {
+    return S.expert;
+}
+
+const char* pico_get_font (void) {
+    return TTF_FontFaceFamilyName(S.font.ttf);
+}
+
+int pico_get_grid (void) {
+    return S.grid;
+}
+
+Pico_Rect pico_get_image_crop (void) {
+    return S.image.crop;
 }
 
 Pico_Dim pico_get_image_size (const char* file) {
@@ -657,8 +682,16 @@ Pico_Dim pico_get_image_size (const char* file) {
     return size;
 }
 
+Pico_Pos pico_get_scroll (void) {
+    return S.scroll;
+}
+
 Pico_Size pico_get_size (void) {
     return (Pico_Size) { PHY, S.size.org };
+}
+
+int pico_get_show (void) {
+    return SDL_GetWindowFlags(WIN) & SDL_WINDOW_SHOWN;
 }
 
 Pico_Style pico_get_style (void) {
@@ -667,6 +700,10 @@ Pico_Style pico_get_style (void) {
 
 Uint32 pico_get_ticks (void) {
     return SDL_GetTicks();
+}
+
+const char* pico_get_title (void) {
+    return SDL_GetWindowTitle(WIN);
 }
 
 // SET
