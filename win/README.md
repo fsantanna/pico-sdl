@@ -11,7 +11,7 @@ Download the required files (Direct download links):
 * [SDL2_image devel mingw (zip)](https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.8/SDL2_image-devel-2.8.8-mingw.zip)
 * [SDL2_ttf devel mingw (zip)](https://github.com/libsdl-org/SDL_ttf/releases/download/release-2.24.0/SDL2_ttf-devel-2.24.0-mingw.zip)
 * [SDL2_mixer devel mingw (zip)](https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.8.1/SDL2_mixer-devel-2.8.1-mingw.zip)
-* [SDL2_gfx source code (zip)](http://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-1.0.4.zip)
+* [SDL2_gfx source code (zip)](https://sourceforge.net/projects/sdl2gfx/files/latest/download)
 * [vscode (zip)](https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-archive)
 * [vscode cpptools extension (.vsix file)](https://github.com/microsoft/vscode-cpptools/releases/download/v1.23.6/cpptools-windows-x64.vsix)
 
