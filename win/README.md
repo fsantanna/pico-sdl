@@ -3,9 +3,11 @@
 Open a powershell window.  
 **IMPORTANT:** You will need to use it multiple times to set environment variables. So keep it open.
 
+Create a working directory and cd into it
+
 ## Donwload and extract
 
-Download the required files to a working directory (Direct download links):
+Download the required files to your working directory:
 * pico-sdl (do a git clone)
 * [gcc (7z)](https://github.com/niXman/mingw-builds-binaries/releases/download/14.2.0-rt_v12-rev2/x86_64-14.2.0-release-win32-seh-ucrt-rt_v12-rev2.7z)
 * [SDL2 devel mingw (zip)](https://github.com/libsdl-org/SDL/releases/download/release-2.32.2/SDL2-devel-2.32.2-mingw.zip)
@@ -18,11 +20,6 @@ Download the required files to a working directory (Direct download links):
 
 Extract all the compressed files.  
 **IMPORTANT:** Extract vscode to a subdirectory named *vscode* inside your working directory.
-
-```sh
-cd {working dir}
-git clone https://github.com/fsantanna/pico-sdl
-```
 
 ## Adding gcc to path
 
