@@ -5,7 +5,8 @@ Open a powershell window.
 
 ## Donwload and extract
 
-Download the required files (Direct download links):
+Download the required files to a working directory (Direct download links):
+* pico-sdl (do a git clone)
 * [gcc (7z)](https://github.com/niXman/mingw-builds-binaries/releases/download/14.2.0-rt_v12-rev2/x86_64-14.2.0-release-win32-seh-ucrt-rt_v12-rev2.7z)
 * [SDL2 devel mingw (zip)](https://github.com/libsdl-org/SDL/releases/download/release-2.32.2/SDL2-devel-2.32.2-mingw.zip)
 * [SDL2_image devel mingw (zip)](https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.8/SDL2_image-devel-2.8.8-mingw.zip)
@@ -15,8 +16,8 @@ Download the required files (Direct download links):
 * [vscode (zip)](https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-archive)
 * [vscode cpptools extension (.vsix file)](https://github.com/microsoft/vscode-cpptools/releases/download/v1.23.6/cpptools-windows-x64.vsix)
 
-Extract all the compressed files to a working directory.  
-**IMPORTANT:** Extract vscode to a subdirectory and name it *vscode*.
+Extract all the compressed files.  
+**IMPORTANT:** Extract vscode to a subdirectory named *vscode* inside your working directory.
 
 ```sh
 cd {working dir}
