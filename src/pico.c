@@ -243,6 +243,11 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     });
                     break;
                 }
+                case SDLK_g: {
+                    S.grid = !S.grid;
+                    pico_set_grid(S.grid);
+                    break;
+                }
             }
         }
 
