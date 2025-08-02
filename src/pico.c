@@ -1,5 +1,6 @@
 #include <SDL2/SDL_video.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
@@ -604,6 +605,37 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 
     if (!cache) {
         Mix_FreeChunk(mix);
+    }
+}
+
+void pico_output_screenshot (const char* path) {
+    pico_output_screenshot_ext(
+        path,
+        (Pico_Rect){0,0,S.size.org.x,S.size.org.y}
+    );
+}
+
+void pico_output_screenshot_ext (const char* path, Pico_Rect r) {
+    int len = 64
+    char name[len+1] = "";
+
+    if (path && strlen(path) > 0) {
+        strncpy(name, path, len);
+    } else {
+        const char *fmt = "pico-sdl-%Y-%m-%d_%H%M%S.png";
+        time_t rawtime = time(NULL);
+        strftime(name, len, fmt, localtime(&rawtime));
+    }
+
+    void *pixels = malloc(4*r.w*r.h);
+    SDL_RenderReadPixels(REN, &r, SDL_PIXELFORMAT_RGBA8888, pixels, 4*r.w);
+    SDL_Surface *sfc = SDL_CreateRGBSurfaceFrom(pixels, r.w, r.h, 32, 4*r.w,
+                                                0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+    int res = IMG_SavePNG(sfc, name);
+    free(pixels);
+    SDL_FreeSurface(sfc);
+    if (res != 0) {
+        puts("error saving screenshot");
     }
 }
 

@@ -145,6 +145,12 @@ void pico_output_draw_text (Pico_Pos pos, const char* text);
 /// @brief Shows what has been drawn onto the screen.
 void pico_output_present (void);
 
+// TODO: Document me
+void pico_output_screenshot (const char* path);
+
+// TODO: Document me
+void pico_output_screenshot_ext (const char* path, Pico_Rect r);
+
 /// @brief Plays a sound.
 /// This function uses caching, so the file is actually loaded only once.
 /// @param path path to the audio file
