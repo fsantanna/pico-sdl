@@ -31,7 +31,8 @@ int main (void) {
         }
     }
 
-    
+    puts("assert error:");
+    pico_dim(-1, -1);
 
     pico_init(0);
     return 0;
