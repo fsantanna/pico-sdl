@@ -257,6 +257,10 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     pico_set_grid(!S.grid);
                     break;
                 }
+                case SDLK_s: {
+                    pico_output_screenshot(NULL);
+                    break;
+                }
             }
         }
 
