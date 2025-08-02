@@ -92,6 +92,15 @@ static int vanchor (int y, int h) {
 
 // UTILS
 
+Pico_Dim pico_dim (int x, int y) {
+    return pico_dim_ext(S.size.org, x, y);
+}
+
+Pico_Dim pico_dim_ext (Pico_Dim d, int x, int y) {
+    assert(0 <= x && 0 <= y && "negative dimentions");
+    return (Pico_Dim){ (x*d.x)/100, (y*d.y)/100};
+}
+
 int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
     int rw = r.w / 2;
     int rh = r.h / 2;

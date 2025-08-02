@@ -307,6 +307,12 @@ void pico_set_zoom (Pico_Dim zoom);
 /// @param x condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
+// TODO: document me
+Pico_Dim pico_dim(int x, int y);
+
+// TODO: document me
+Pico_Dim pico_dim_ext(Pico_Dim d, int x, int y);
+
 /// @brief Checks if a point is inside a rectangle
 /// @param pt point
 /// @param r rectangle
