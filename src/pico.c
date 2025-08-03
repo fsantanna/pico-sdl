@@ -93,36 +93,17 @@ int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
 }
 
 Pico_Pos pico_pos (int x, int y) {
-    Pico_Anchor old = S.anchor;
-    S.anchor = (Pico_Anchor) {PICO_CENTER, PICO_MIDDLE};
-    Pico_Pos pt = pico_pos_ext (
+    return pico_pos_ext (
         (Pico_Rect){ S.size.org.x/2, S.size.org.y/2, S.size.org.x, S.size.org.y},
-        x, y);
-    S.anchor = (Pico_Anchor) {old.x, old.y};
-    return pt;
+        x, y
+    );
 }
 
 Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y) {
-    Pico_Pos pt = { r.x-r.w/2 + r.w*x/100, r.y-r.h/2 + r.h*y/100 };
-    switch (S.anchor.x) {
-        case PICO_LEFT:
-            pt.x += r.w/2;
-            break;
-        case PICO_RIGHT:
-            pt.x -= r.w/2;
-            break;
-        default: ;
-    }
-    switch (S.anchor.y) {
-        case PICO_TOP:
-            pt.y += r.h/2;
-            break;
-        case PICO_BOTTOM:
-            pt.y -= r.h/2;
-            break;
-        default: ;
-    }
-    return pt;
+    return (Pico_Pos) {
+        hanchor(r.x, r.w) + (r.w*x)/100,
+        vanchor(r.y, r.h) + (r.h*y)/100
+    };
 }
 
 // INIT
