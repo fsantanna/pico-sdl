@@ -146,10 +146,10 @@ void pico_output_draw_text (Pico_Pos pos, const char* text);
 void pico_output_present (void);
 
 // TODO: Document me
-void pico_output_screenshot (const char* path);
+const char* pico_output_screenshot (const char* path);
 
 // TODO: Document me
-void pico_output_screenshot_ext (const char* path, Pico_Rect r);
+const char* pico_output_screenshot_ext (const char* path, Pico_Rect r);
 
 /// @brief Plays a sound.
 /// This function uses caching, so the file is actually loaded only once.
