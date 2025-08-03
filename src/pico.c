@@ -615,7 +615,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 const char* pico_output_screenshot (const char* path) {
     return pico_output_screenshot_ext(
         path,
-        (Pico_Rect){0,0,S.size.org.x,S.size.org.y}
+        (Pico_Rect){0,0,S.size.cur.x,S.size.cur.y}
     );
 }
 

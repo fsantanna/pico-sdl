@@ -21,6 +21,20 @@ int main (void) {
     assert(pico_output_screenshot_ext(NULL, (Pico_Rect){0, 0, 50, 30}) != NULL);
     pico_input_event(NULL, PICO_KEYDOWN);
 
+    pico_set_zoom((Pico_Dim){200, 200});
+
+    puts("zoomed screen");
+    pico_set_color_draw((Pico_Color){0,200,0,255});
+    pico_output_draw_rect((Pico_Rect){40, 5, 10, 10});
+    assert(pico_output_screenshot(NULL) != NULL);
+    pico_input_event(NULL, PICO_KEYDOWN);
+
+    puts("part of zoomed screen");
+    pico_set_color_draw((Pico_Color){0,200,0,255});
+    pico_output_draw_rect((Pico_Rect){0, 0, 10, 10});
+    assert(pico_output_screenshot_ext(NULL, (Pico_Rect){0, 0, 10, 10}) != NULL);
+    pico_input_event(NULL, PICO_KEYDOWN);
+
     pico_init(0);
     return 0;
 }
