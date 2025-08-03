@@ -68,27 +68,11 @@ static struct {
 };
 
 static int hanchor (int x, int w) {
-    switch (S.anchor.x) {
-        case PICO_LEFT:
-            return x;
-        case PICO_CENTER:
-            return x - w/2;
-        case PICO_RIGHT:
-            return x - w; // + 1;
-    }
-    assert(0 && "bug found");
+    return x - (S.anchor.x*w)/100;
 }
 
 static int vanchor (int y, int h) {
-    switch (S.anchor.y) {
-        case PICO_TOP:
-            return y;
-        case PICO_MIDDLE:
-            return y - h/2;
-        case PICO_BOTTOM:
-            return y - h; // + 1;
-    }
-    assert(0 && "bug found");
+    return y - (S.anchor.y*h)/100;
 }
 
 // UTILS
