@@ -87,9 +87,11 @@ Pico_Dim pico_dim_ext (Pico_Dim d, int x, int y) {
 }
 
 int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
-    int rw = r.w / 2;
-    int rh = r.h / 2;
-    return !(pt.x<r.x-rw || pt.x>r.x+rw || pt.y<r.y-rh || pt.y>r.y+rh);
+    r.x = hanchor(r.x, r.w);
+    r.y = vanchor(r.y, r.h);
+    pt.x = hanchor(pt.x, 1);
+    pt.y = vanchor(pt.y, 1);
+    return !(pt.x<r.x || pt.x>=r.x+r.w || pt.y<r.y || pt.y>=r.y+r.h);
 }
 
 Pico_Pos pico_pos (int x, int y) {
