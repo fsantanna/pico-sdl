@@ -621,7 +621,7 @@ const char* pico_output_screenshot (const char* path) {
 
 const char* pico_output_screenshot_ext (const char* path, Pico_Rect r) {
     const char* ret;
-    if (path == NULL) {
+    if (path != NULL) {
         ret = path;
     } else {
         static char _path_[32] = "";
@@ -635,7 +635,7 @@ const char* pico_output_screenshot_ext (const char* path, Pico_Rect r) {
     SDL_RenderReadPixels(REN, &r, SDL_PIXELFORMAT_RGBA8888, buf, 4*r.w);
     SDL_Surface *sfc = SDL_CreateRGBSurfaceFrom(buf, r.w, r.h, 32, 4*r.w,
                                                 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
-    assert(IMG_SavePNG(sfc,ret)!=0 && "saving screenshot");
+    assert(IMG_SavePNG(sfc,ret)==0 && "saving screenshot");
     free(buf);
     SDL_FreeSurface(sfc);
     return ret;
