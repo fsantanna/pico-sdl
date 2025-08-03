@@ -30,15 +30,18 @@ typedef SDL_Point Pico_Pos;
 typedef SDL_Point Pico_Dim;
 typedef SDL_Rect  Pico_Rect;
 typedef SDL_Color Pico_Color;
+typedef SDL_Point Pico_Anchor;
+
+#define PICO_LEFT   0
+#define PICO_CENTER 50
+#define PICO_RIGHT  100
+#define PICO_TOP    0
+#define PICO_MIDDLE 50
+#define PICO_BOTTOM 100
 
 typedef enum PICO_STYLE {
     PICO_FILL, PICO_STROKE
 } PICO_STYLE;
-
-typedef struct Pico_Anchor {
-    enum { PICO_LEFT=1, PICO_CENTER, PICO_RIGHT } x;
-    enum { PICO_BOTTOM=1, PICO_MIDDLE, PICO_TOP } y;
-} Pico_Anchor;
 
 typedef struct Pico_Size {
     Pico_Dim phy;
