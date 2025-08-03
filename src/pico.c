@@ -95,10 +95,14 @@ int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
 }
 
 Pico_Pos pico_pos (int x, int y) {
-    return pico_pos_ext (
+    Pico_Anchor old = S.anchor;
+    S.anchor = (Pico_Anchor) {PICO_CENTER, PICO_MIDDLE};
+    Pico_Pos pt = pico_pos_ext (
         (Pico_Rect){ S.size.org.x/2, S.size.org.y/2, S.size.org.x, S.size.org.y},
         x, y
     );
+    S.anchor = old;
+    return pt;
 }
 
 Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y) {
