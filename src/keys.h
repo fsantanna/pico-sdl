@@ -5,7 +5,7 @@
 
 typedef SDL_Keymod Pico_Keymod;
 
-typedef enum Pico_Key {
+typedef enum PICO_KEY {
     PICOK_UNKNOWN = SDLK_UNKNOWN,
 
     PICOK_RETURN = SDLK_RETURN,
@@ -269,6 +269,6 @@ typedef enum Pico_Key {
     /*PICOK_SOFTRIGHT = SDLK_SOFTRIGHT,*/
     /*PICOK_CALL = SDLK_CALL,*/
     /*PICOK_ENDCALL = SDLK_ENDCALL*/
-} Pico_Key;
+} PICO_KEY;
 
 #endif // PICO_KEYS_H

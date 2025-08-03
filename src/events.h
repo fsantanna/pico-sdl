@@ -5,7 +5,7 @@
 
 typedef SDL_Event Pico_Event;
 
-typedef enum Pico_EventType {
+typedef enum PICO_EVENT {
     PICO_ANY = 0, /**< Wait for any event */
 
     /* Application events */
@@ -94,6 +94,6 @@ typedef enum Pico_EventType {
     PICO_RENDER_DEVICE_RESET = SDL_RENDER_DEVICE_RESET,   /**< The device has been reset and all textures need to be recreated */
 
     PICO_SDL_USEREVENT = SDL_USEREVENT, /**< For expert users. See SDL_EventType::SDL_USEREVENT */
-} Pico_EventType;
+} PICO_EVENT;
 
 #endif // PICO_EVENTS_H

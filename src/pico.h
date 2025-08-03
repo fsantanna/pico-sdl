@@ -31,9 +31,9 @@ typedef SDL_Point Pico_Dim;
 typedef SDL_Rect  Pico_Rect;
 typedef SDL_Color Pico_Color;
 
-typedef enum {
+typedef enum PICO_STYLE {
     PICO_FILL, PICO_STROKE
-} Pico_Style;
+} PICO_STYLE;
 
 typedef struct Pico_Anchor {
     enum { PICO_LEFT=1, PICO_CENTER, PICO_RIGHT } x;
@@ -221,7 +221,7 @@ Pico_Size pico_get_size (void);
 int pico_get_show (void);
 
 /// @brief TODO
-Pico_Style pico_get_style (void);
+PICO_STYLE pico_get_style (void);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
@@ -293,7 +293,7 @@ void pico_set_show (int on);
 
 /// @brief Changes the style used to draw objects.
 /// @param style new style to use
-void pico_set_style (Pico_Style style);
+void pico_set_style (PICO_STYLE style);
 
 /// @brief Changes the aplication title
 /// @param title new title to set

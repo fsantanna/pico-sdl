@@ -51,7 +51,7 @@ static struct {
         Pico_Dim org;
         Pico_Dim cur;
     } size;
-    Pico_Style style;
+    PICO_STYLE style;
     Pico_Dim zoom;
 } S = {
     { PICO_CENTER, PICO_MIDDLE },
@@ -745,7 +745,7 @@ int pico_get_show (void) {
     return SDL_GetWindowFlags(WIN) & SDL_WINDOW_SHOWN;
 }
 
-Pico_Style pico_get_style (void) {
+PICO_STYLE pico_get_style (void) {
     return S.style;
 }
 
@@ -870,7 +870,7 @@ void pico_set_show (int on) {
     }
 }
 
-void pico_set_style (Pico_Style style) {
+void pico_set_style (PICO_STYLE style) {
     S.style = style;
 }
 
