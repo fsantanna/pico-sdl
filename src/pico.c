@@ -86,7 +86,7 @@ Pico_Dim pico_dim_ext (Pico_Dim d, int x, int y) {
     return (Pico_Dim){ (x*d.x)/100, (y*d.y)/100};
 }
 
-int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r) {
+int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
     r.x = hanchor(r.x, r.w);
     r.y = vanchor(r.y, r.h);
     pt.x = hanchor(pt.x, 1);

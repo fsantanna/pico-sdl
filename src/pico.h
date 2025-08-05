@@ -322,11 +322,11 @@ Pico_Dim pico_dim(int x, int y);
 // TODO: document me
 Pico_Dim pico_dim_ext(Pico_Dim d, int x, int y);
 
-/// @brief Checks if a point is inside a rectangle
+/// @brief Checks if a point is inside a rectangle.
 /// @param pt point
 /// @param r rectangle
 /// @return 1 if pt is inside r, or 0 otherwise
-int pico_is_point_in_rect (Pico_Pos pt, Pico_Rect r);
+int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r);
 
 /// @brief Returns a screen coordinate based on percentage values.
 /// @param x an integer ranging from 0 to 100
