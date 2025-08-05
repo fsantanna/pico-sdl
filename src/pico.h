@@ -43,6 +43,10 @@ typedef enum PICO_STYLE {
     PICO_FILL, PICO_STROKE
 } PICO_STYLE;
 
+typedef enum PICO_FLIP {
+    PICO_NOFLIP, PICO_HFLIP, PICO_VFLIP
+} PICO_FLIP;
+
 typedef struct Pico_Size {
     Pico_Dim phy;
     Pico_Dim log;
@@ -201,6 +205,9 @@ Pico_Pos pico_get_cursor (void);
 /// @brief Checks the state of expert mode.
 int pico_get_expert (void);
 
+// TODO: document me
+PICO_FLIP pico_get_flip ();
+
 /// @brief Gets the font used to draw texts.
 const char* pico_get_font (void);
 
@@ -213,6 +220,9 @@ Pico_Rect pico_get_image_crop (void);
 /// @brief Gets the size of a given image.
 /// @param file path to image file
 Pico_Dim pico_get_image_size (const char* file);
+
+// TODO: document me
+float pico_get_rotate();
 
 /// @brief TODO
 Pico_Pos pico_get_scroll (void);
@@ -263,6 +273,9 @@ void pico_set_cursor (Pico_Pos pos);
 /// @param on 1 to enable it, or 0 to disable it
 void pico_set_expert (int on);
 
+// TODO: document me
+void pico_set_flip (PICO_FLIP flip);
+
 /// @brief Changes the font used to draw texts.
 /// @param file path to font file
 /// @param h size of the font
@@ -279,6 +292,9 @@ void pico_set_image_crop (Pico_Rect crop);
 /// @brief Changes what size images should be when drawn.
 /// @param size new size, which may be (0, 0) to disable resizing
 void pico_set_image_size (Pico_Dim size);
+
+// TODO: document me
+void pico_set_rotate(float angle);
 
 /// @brief Changes the point of view on the logical window.
 /// @param pos new point of view

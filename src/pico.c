@@ -1,3 +1,4 @@
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <unistd.h>
 #include <time.h>
@@ -52,6 +53,8 @@ static struct {
         Pico_Dim cur;
     } size;
     PICO_STYLE style;
+    PICO_FLIP flip;
+    float angle;
     Pico_Dim zoom;
 } S = {
     { PICO_CENTER, PICO_MIDDLE },
@@ -700,6 +703,11 @@ int pico_get_expert (void) {
     return S.expert;
 }
 
+// TODO: implement me
+PICO_FLIP pico_get_flip () {
+    return PICO_NOFLIP;
+}
+
 const char* pico_get_font (void) {
     return TTF_FontFaceFamilyName(S.font.ttf);
 }
@@ -718,6 +726,11 @@ Pico_Dim pico_get_image_size (const char* file) {
     Pico_Dim size;
     SDL_QueryTexture(tex, NULL, NULL, &size.x, &size.y);
     return size;
+}
+
+// TODO: implement me
+float pico_get_rotate () {
+    return 0;
 }
 
 Pico_Pos pico_get_scroll (void) {
@@ -773,6 +786,11 @@ void pico_set_expert (int on) {
     S.expert = on;
 }
 
+// TODO: implement me
+void pico_set_flip (PICO_FLIP flip) {
+
+}
+
 void pico_set_font (const char* file, int h) {
     if (file == NULL) {
         static char _file[255];
@@ -803,6 +821,11 @@ void pico_set_image_crop (Pico_Rect crop) {
 
 void pico_set_image_size (Pico_Dim size) {
     S.image.size = size;
+}
+
+// TODO: implement me
+void pico_set_rotate (float angle) {
+    
 }
 
 void pico_set_scroll (Pico_Pos pos) {
