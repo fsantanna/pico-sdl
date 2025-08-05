@@ -342,6 +342,23 @@ Pico_Pos pico_pos (int x, int y);
 /// @sa pico_pos
 Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y);
 
+/// @brief Checks if two rectangles overlap.
+/// Assumes that both rectangles use the same anchor.
+/// @param r1 rectangle 1
+/// @param r2 rectangle 2
+/// @return 1 if r1 and r2 overlap, or 0 otherwise
+/// @sa pico_rect_vs_rect_ext
+int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2);
+
+/// @brief Checks if two rectangles with different anchors overlap.
+/// @param r1 rectangle 1
+/// @param a1 anchor for r1
+/// @param r2 rectangle 2
+/// @param a1 anchor for r2
+/// @return 1 if r1 and r2 overlap, or 0 otherwise
+/// @sa pico_pos_vs_rect
+int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Anchor a1, Pico_Rect r2, Pico_Anchor a2);
+
 /// @}
 
 #ifdef __cplusplus

@@ -112,6 +112,22 @@ Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y) {
     };
 }
 
+int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2) {
+    return SDL_HasIntersection(&r1, &r2);
+}
+
+int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Anchor a1, Pico_Rect r2, Pico_Anchor a2) {
+    Pico_Anchor old = S.anchor;
+    S.anchor = a1;
+    r1.x = hanchor(r1.x, r1.w);
+    r1.y = vanchor(r1.y, r1.h);
+    S.anchor = a2;
+    r2.x = hanchor(r2.x, r2.w);
+    r2.y = vanchor(r2.y, r2.h);
+    S.anchor = old;
+    return SDL_HasIntersection(&r1, &r2);
+}
+
 // INIT
 
 void pico_init (int on) {
