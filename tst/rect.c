@@ -16,7 +16,7 @@ int main() {
         for (int y = r.y-r.w/2-1; y < r.y+r.h/2+2; y++) {
             for (int x = r.x-r.w/2-1; x < r.x+r.w/2+2; x++) {
                 Pico_Pos pt = {x, y};
-                int in = pico_is_point_in_rect(pt, r);
+                int in = pico_pos_vs_rect(pt, r);
                 puts(in ? "in  " : "out ");
                 pico_set_color_draw((Pico_Color){255,0,0,255});
                 pico_output_draw_pixel(pt);
@@ -41,7 +41,7 @@ int main() {
         for (int y = r.y-1; y < r.y+r.h+1; y++) {
             for (int x = r.x-1; x < r.x+r.w+1; x++) {
                 Pico_Pos pt = {x, y};
-                int in = pico_is_point_in_rect(pt, r);
+                int in = pico_pos_vs_rect(pt, r);
                 puts(in ? "in  " : "out ");
                 pico_set_color_draw((Pico_Color){255,0,0,255});
                 pico_output_draw_pixel(pt);
@@ -67,7 +67,7 @@ int main() {
         for (int y = r.y-r.h; y < r.y+2; y++) {
             for (int x = r.x-r.w; x < r.x+2; x++) {
                 Pico_Pos pt = {x, y};
-                int in = pico_is_point_in_rect(pt, r);
+                int in = pico_pos_vs_rect(pt, r);
                 puts(in ? "in  " : "out ");
                 pico_set_color_draw((Pico_Color){255,0,0,255});
                 pico_output_draw_pixel(pt);
