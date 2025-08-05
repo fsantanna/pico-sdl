@@ -67,6 +67,8 @@ static struct {
     {0, 0},
     { {0,0}, {0,0} },
     PICO_FILL,
+    PICO_NOFLIP,
+    0.0f,
     {100, 100}
 };
 
@@ -703,9 +705,8 @@ int pico_get_expert (void) {
     return S.expert;
 }
 
-// TODO: implement me
 PICO_FLIP pico_get_flip () {
-    return PICO_NOFLIP;
+    return S.flip;
 }
 
 const char* pico_get_font (void) {
@@ -728,9 +729,8 @@ Pico_Dim pico_get_image_size (const char* file) {
     return size;
 }
 
-// TODO: implement me
 float pico_get_rotate () {
-    return 0;
+    return S.angle;
 }
 
 Pico_Pos pico_get_scroll (void) {
@@ -786,9 +786,8 @@ void pico_set_expert (int on) {
     S.expert = on;
 }
 
-// TODO: implement me
 void pico_set_flip (PICO_FLIP flip) {
-
+    S.flip = flip;
 }
 
 void pico_set_font (const char* file, int h) {
@@ -823,9 +822,8 @@ void pico_set_image_size (Pico_Dim size) {
     S.image.size = size;
 }
 
-// TODO: implement me
 void pico_set_rotate (float angle) {
-    
+    S.angle = angle;
 }
 
 void pico_set_scroll (Pico_Pos pos) {
