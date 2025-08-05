@@ -422,7 +422,7 @@ static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex) {
     rct.x = X(pos.x, rct.w);
     rct.y = Y(pos.y, rct.h);
 
-    SDL_RenderCopy(REN, tex, &crp, &rct);
+    SDL_RenderCopyEx(REN, tex, &crp, &rct, S.angle, NULL, (SDL_RendererFlip)S.flip);
     _pico_output_present(0);
 }
 
@@ -532,7 +532,7 @@ void pico_output_draw_text (Pico_Pos pos, const char* text) {
     rct.x = X(pos.x, rct.w);
     rct.y = Y(pos.y, rct.h);
 
-    SDL_RenderCopy(REN, tex, NULL, &rct);
+    SDL_RenderCopyEx(REN, tex, NULL, &rct, S.angle, NULL, (SDL_RendererFlip)S.flip);
     _pico_output_present(0);
 
     SDL_DestroyTexture(tex);
