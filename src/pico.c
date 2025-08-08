@@ -849,11 +849,12 @@ void _pico_set_size (Pico_Dim phy, Pico_Dim log) {
         // keep
     } else {
         S.size.cur = log;
-        SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
+        SDL_DestroyTexture(TEX);
         TEX = SDL_CreateTexture (
-                REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-                S.size.cur.x, S.size.cur.y
+            REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+            S.size.cur.x, S.size.cur.y
         );
+        SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
         pico_assert(TEX != NULL);
     }
 
