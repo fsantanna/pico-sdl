@@ -513,6 +513,8 @@ void pico_output_draw_oval (Pico_Rect rect) {
 }
 
 void pico_output_draw_text (Pico_Pos pos, const char* text) {
+    if (!text || text[0] == '\0') return;
+
     uint8_t r, g, b, a;
     SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
     pico_assert(S.font.ttf != NULL);
