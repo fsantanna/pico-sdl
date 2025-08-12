@@ -236,6 +236,9 @@ int pico_get_show (void);
 /// @brief TODO
 PICO_STYLE pico_get_style (void);
 
+/// @brief TODO
+Pico_Dim pico_get_text_size (const char* text);
+
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
 

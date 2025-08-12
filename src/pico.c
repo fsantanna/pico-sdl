@@ -751,6 +751,19 @@ PICO_STYLE pico_get_style (void) {
     return S.style;
 }
 
+Pico_Dim pico_get_text_size (const char* text) {
+    if (!text || text[0] == '\0') {
+        return (Pico_Dim){0, 0};
+    }
+
+    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
+                                              (Pico_Color){0,0,0,255});
+    pico_assert(sfc != NULL);
+    Pico_Dim size = {sfc->w, sfc->h};
+    SDL_FreeSurface(sfc);
+    return size;
+}
+
 Uint32 pico_get_ticks (void) {
     return SDL_GetTicks();
 }
