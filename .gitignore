@@ -2,6 +2,5 @@
 *.swp
 *.zip
 
-docs/html/
 .vscode/
 build/
