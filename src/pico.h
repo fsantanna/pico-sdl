@@ -205,7 +205,8 @@ Pico_Pos pico_get_cursor (void);
 /// @brief Checks the state of expert mode.
 int pico_get_expert (void);
 
-// TODO: document me
+/// @brief Gets the flipping value used to draw objects.
+/// @sa PICO_FLIP
 PICO_FLIP pico_get_flip ();
 
 /// @brief Gets the font used to draw texts.
@@ -221,7 +222,7 @@ Pico_Rect pico_get_image_crop (void);
 /// @param file path to image file
 Pico_Dim pico_get_image_size (const char* file);
 
-// TODO: document me
+/// @brief Gets the rotation angle used to draw objects (in degrees).
 float pico_get_rotate();
 
 /// @brief TODO
@@ -236,14 +237,14 @@ int pico_get_show (void);
 /// @brief TODO
 PICO_STYLE pico_get_style (void);
 
-/// @brief TODO
+/// @brief Gets the size of a given text.
+/// @param text text to measure
 Pico_Dim pico_get_text_size (const char* text);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
 
-/// @brief Changes the aplication title
-/// @param title new title to set
+/// @brief Gets the aplication title.
 const char* pico_get_title (void);
 
 /// @brief TODO
