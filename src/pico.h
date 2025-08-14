@@ -112,14 +112,18 @@ int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 /// @brief Clears screen with color set by @ref pico_set_color_clear.
 void pico_output_clear (void);
 
-/// TODO
+/// @brief Draws an image that is managed by the user.
+/// @param pos drawing postion
+/// @param buffer the image
+/// @param size size of the image
+/// @sa pico_output_draw_image
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size);
-
 
 /// @brief Draws an image.
 /// This function uses caching, so the file is actually loaded only once.
 /// @param pos drawing position
 /// @param path path to the image file
+/// @sa pico_output_draw_buffer
 void pico_output_draw_image (Pico_Pos pos, const char* path);
 
 /// @brief Draws a line segment.
@@ -227,7 +231,7 @@ Pico_Rect pico_get_image_crop (void);
 /// @param file path to image file
 Pico_Dim pico_get_image_size (const char* file);
 
-/// @brief Gets the rotation angle used to draw objects (in degrees).
+/// @brief Gets the rotation angle of objects (in degrees).
 float pico_get_rotate();
 
 /// @brief TODO
@@ -239,7 +243,7 @@ Pico_Size pico_get_size (void);
 /// @brief Checks if the aplication window is visible.
 int pico_get_show (void);
 
-/// @brief TODO
+/// @brief Gets the drawing style.
 PICO_STYLE pico_get_style (void);
 
 /// @brief Gets the size of a given text.
@@ -302,7 +306,7 @@ void pico_set_image_crop (Pico_Rect crop);
 /// @param size new size, which may be (0, 0) to disable resizing
 void pico_set_image_size (Pico_Dim size);
 
-// TODO: document me
+/// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate(float angle);
 
 /// @brief Changes the point of view on the logical window.
@@ -319,12 +323,12 @@ void pico_set_size (Pico_Dim phy, Pico_Dim log);
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
 
-/// @brief Changes the style used to draw objects.
-/// @param style new style to use
+/// @brief Changes the drawing style
+/// @param style new style
 void pico_set_style (PICO_STYLE style);
 
 /// @brief Changes the aplication title
-/// @param title new title to set
+/// @param title new title
 void pico_set_title (const char* title);
 
 /// @brief TODO
