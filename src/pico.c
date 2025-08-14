@@ -487,6 +487,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
     _pico_output_present(0);
 }
 
+// TODO: revise me
 void pico_output_draw_rtri (Pico_Rect rect) {
     Pico_Rect out = {
         X(rect.x, rect.w),
@@ -498,8 +499,8 @@ void pico_output_draw_rtri (Pico_Rect rect) {
             filledTrigonRGBA (
                 REN,
                 out.x, out.y,
-                out.x, out.y + out.h,
-                out.x + out.w, out.y + out.h,
+                out.x, out.y + out.h - 1,
+                out.x + out.w - 1, out.y + out.h - 1,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
@@ -507,8 +508,8 @@ void pico_output_draw_rtri (Pico_Rect rect) {
             trigonRGBA (
                 REN,
                 out.x, out.y,
-                out.x, out.y + out.h,
-                out.x + out.w, out.y + out.h,
+                out.x, out.y + out.h - 1,
+                out.x + out.w - 1, out.y + out.h - 1,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
