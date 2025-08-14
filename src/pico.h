@@ -152,10 +152,15 @@ void pico_output_draw_text (Pico_Pos pos, const char* text);
 /// @brief Shows what has been drawn onto the screen.
 void pico_output_present (void);
 
-// TODO: Document me
+/// @brief Takes a screenshot.
+/// @param path screenshot filepath (NULL uses timestamp in the name)
+/// @return The filepath of the screenshot.
 const char* pico_output_screenshot (const char* path);
 
-// TODO: Document me
+/// @brief Takes a screenshot from a specific portion of the screen.
+/// @param path screenshot filepath (NULL uses timestamp in the name)
+/// @param r region to screenshot, in logical pixels
+/// @return The filepath of the screenshot.
 const char* pico_output_screenshot_ext (const char* path, Pico_Rect r);
 
 /// @brief Plays a sound.
