@@ -487,6 +487,35 @@ void pico_output_draw_rect (Pico_Rect rect) {
     _pico_output_present(0);
 }
 
+void pico_output_draw_rtri (Pico_Rect rect) {
+    Pico_Rect out = {
+        X(rect.x, rect.w),
+        Y(rect.y, rect.h),
+        rect.w, rect.h
+    };
+    switch (S.style) {
+        case PICO_FILL:
+            filledTrigonRGBA (
+                REN,
+                out.x, out.y,
+                out.x, out.y + out.h,
+                out.x + out.w, out.y + out.h,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
+            );
+            break;
+        case PICO_STROKE:
+            trigonRGBA (
+                REN,
+                out.x, out.y,
+                out.x, out.y + out.h,
+                out.x + out.w, out.y + out.h,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
+            );
+            break;
+    }
+    _pico_output_present(0);
+}
+
 void pico_output_draw_oval (Pico_Rect rect) {
     Pico_Rect out = {
         X(rect.x, rect.w),
@@ -505,6 +534,33 @@ void pico_output_draw_oval (Pico_Rect rect) {
             ellipseRGBA (
                 REN,
                 out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
+            );
+            break;
+    }
+    _pico_output_present(0);
+}
+
+void pico_output_draw_poly (const Pico_Pos* apos, int count) {
+    Sint16 xs[count], ys[count];
+    for (int i = 0; i < count; i++) {
+        xs[i] = X(apos[i].x, 1);
+        ys[i] = Y(apos[i].y, 1);
+    }
+    switch (S.style) {
+        case PICO_FILL:
+            filledPolygonRGBA(
+                REN,
+                xs, ys,
+                count,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
+            );
+            break;
+        case PICO_STROKE:
+            polygonRGBA(
+                REN,
+                xs, ys,
+                count,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;

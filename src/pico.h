@@ -144,9 +144,18 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count);
 /// @param rect rectangle to draw
 void pico_output_draw_rect (Pico_Rect rect);
 
+/// @brief Draws a triangle with a right angle at bottom-left.
+/// @param rect bounds of the triangle
+void pico_output_draw_rtri (Pico_Rect rect);
+
 /// @brief Draws an ellipse.
 /// @param rect bounds of the ellipse
 void pico_output_draw_oval (Pico_Rect rect);
+
+/// @brief Draws a generic polygon.
+/// @param apos array of vertices
+/// @param count amount of vertices
+void pico_output_draw_poly (const Pico_Pos* apos, int count);
 
 /// @brief Draws text. The string can't be empty.
 /// @param pos drawing position
