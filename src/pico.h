@@ -225,7 +225,7 @@ int pico_get_expert (void);
 
 /// @brief Gets the flipping value used to draw objects.
 /// @sa PICO_FLIP
-PICO_FLIP pico_get_flip ();
+PICO_FLIP pico_get_flip (void);
 
 /// @brief Gets the font used to draw texts.
 const char* pico_get_font (void);
@@ -241,7 +241,7 @@ Pico_Rect pico_get_image_crop (void);
 Pico_Dim pico_get_image_size (const char* file);
 
 /// @brief Gets the rotation angle of objects (in degrees).
-float pico_get_rotate();
+float pico_get_rotate (void);
 
 /// @brief TODO
 Pico_Pos pico_get_scroll (void);
