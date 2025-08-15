@@ -450,6 +450,7 @@ void pico_output_draw_image (Pico_Pos pos, const char* path) {
     _pico_output_draw_image_cache(pos, path, 1);
 }
 
+// TODO: Test me for flip and rotate
 void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     p1 = (Pico_Pos){X(p1.x,1), Y(p1.y,1)};
     p2 = (Pico_Pos){X(p2.x,1), Y(p2.y,1)};
@@ -496,6 +497,7 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
     _pico_output_present(0);
 }
 
+// TODO: Test me for flip and rotate
 void pico_output_draw_rect (Pico_Rect rect) {
     Pico_Rect out = {
         X(rect.x, rect.w),
@@ -524,7 +526,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
     _pico_output_present(0);
 }
 
-// TODO: revise me
+// TODO: Test me for flip and rotate
 void pico_output_draw_tri (Pico_Rect rect) {
     Pico_Rect out = {
         X(rect.x, rect.w),
@@ -571,6 +573,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
     _pico_output_present(0);
 }
 
+// TODO: Test me for flip and rotate
 void pico_output_draw_oval (Pico_Rect rect) {
     Pico_Rect out = {
         X(rect.x, rect.w),
