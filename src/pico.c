@@ -570,7 +570,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
 }
 
 void pico_output_draw_text (Pico_Pos pos, const char* text) {
-    if (!text || text[0] == '\0') return;
+    if (text[0] == '\0') return;
 
     uint8_t r, g, b, a;
     SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
