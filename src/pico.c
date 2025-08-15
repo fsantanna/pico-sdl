@@ -451,7 +451,33 @@ void pico_output_draw_image (Pico_Pos pos, const char* path) {
 }
 
 void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
-    SDL_RenderDrawLine(REN, X(p1.x,1),Y(p1.y,1), X(p2.x,1),Y(p2.y,1));
+    p1 = (Pico_Pos){X(p1.x,1), Y(p1.y,1)};
+    p2 = (Pico_Pos){X(p2.x,1), Y(p2.y,1)};
+
+    Pico_Rect out = {
+        SDL_min(p1.x, p2.x),
+        SDL_min(p1.y, p2.y),
+        SDL_abs(p1.x - p2.x) + 1,
+        SDL_abs(p1.y - p2.y) + 1
+    };
+    SDL_Texture* aux = SDL_CreateTexture (
+        REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+        out.w, out.h
+    );
+
+    SDL_SetRenderTarget(REN, aux);
+    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
+    SDL_RenderClear(REN);
+    SDL_SetRenderDrawColor (REN,
+        S.color.draw.r,
+        S.color.draw.g,
+        S.color.draw.b,
+        S.color.draw.a
+    );
+    SDL_RenderDrawLine(REN, p1.x-out.x,p1.y-out.y, p2.x-out.x,p2.y-out.y);
+    SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
 
