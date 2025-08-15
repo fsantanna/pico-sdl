@@ -372,17 +372,21 @@ void pico_output_clear (void) {
 }
 
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size) {
-    Pico_Color old = pico_get_color_draw();
-    int x = X(pos.x, size.x);
-    int y = Y(pos.y, size.y);
-    for (int l=0; l<size.y; l++) {
-        for (int c=0; c<size.x; c++) {
-            int i = size.x*l + c;
-            pico_set_color_draw(buffer[i]);
-            pico_output_draw_pixel((Pico_Pos){x+c, y+l});
-        }
-    }
-    pico_set_color_draw(old);
+    Pico_Rect out = {
+        X(pos.x,size.x),
+        Y(pos.y,size.y),
+        size.x,
+        size.y
+    };
+    SDL_Texture* aux = SDL_CreateTexture (
+        REN, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING,
+        size.x, size.y
+    );
+    
+    pico_assert(SDL_UpdateTexture(aux, NULL, buffer, 4*size.x)==0);
+    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_DestroyTexture(aux);
+    _pico_output_present(0);
 }
 
 static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex) {
