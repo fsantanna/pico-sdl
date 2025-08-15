@@ -354,10 +354,17 @@ void pico_set_zoom (Pico_Dim zoom);
 /// @param x condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
-// TODO: document me
+/// @brief Returns a size relative to the screen size.
+/// @param x percentage that may go out of [0,100]
+/// @param y percentage that may go out of [0,100]
+/// @sa pico_dim_ext
 Pico_Dim pico_dim(int x, int y);
 
-// TODO: document me
+/// @brief Returns a size relative to the given rectangle's size.
+/// @param r the reference rectangle
+/// @param x percentage that may go out of [0,100]
+/// @param y percentage that may go out of [0,100]
+/// @sa pico_dim
 Pico_Dim pico_dim_ext(Pico_Dim d, int x, int y);
 
 /// @brief Checks if a point is inside a rectangle.
@@ -366,17 +373,16 @@ Pico_Dim pico_dim_ext(Pico_Dim d, int x, int y);
 /// @return 1 if pt is inside r, or 0 otherwise
 int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r);
 
-/// @brief Returns a screen coordinate based on percentage values.
-/// @param x an integer ranging from 0 to 100
-/// @param y an integer ranging from 0 to 100
+/// @brief Returns a coordinate relative to the screen rectangle.
+/// @param x percentage that may go out of [0,100]
+/// @param y percentage that may go out of [0,100]
 /// @sa pico_pos_ext
 Pico_Pos pico_pos (int x, int y);
 
-/// @brief Returns a screen coordinate based on percentage values.
-// The coordinate returned will be inside the given rectangle.
+/// @brief Returns a coordinate relative to the given rectangle's position.
 /// @param r the reference rectangle
-/// @param x an integer ranging from 0 to 100
-/// @param y an integer ranging from 0 to 100
+/// @param x percentage that may go out of [0,100]
+/// @param y percentage that may go out of [0,100]
 /// @sa pico_pos
 Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y);
 
