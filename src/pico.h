@@ -146,7 +146,7 @@ void pico_output_draw_rect (Pico_Rect rect);
 
 /// @brief Draws a triangle with a right angle at bottom-left.
 /// @param rect bounds of the triangle
-void pico_output_draw_rtri (Pico_Rect rect);
+void pico_output_draw_tri (Pico_Rect rect);
 
 /// @brief Draws an ellipse.
 /// @param rect bounds of the ellipse
