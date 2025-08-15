@@ -476,14 +476,25 @@ void pico_output_draw_rect (Pico_Rect rect) {
         Y(rect.y, rect.h),
         rect.w, rect.h
     };
+    SDL_Texture* aux = SDL_CreateTexture (
+        REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+        out.w, out.h
+    );
+
+    SDL_SetRenderTarget(REN, aux);
+    rect.x = 0;
+    rect.y = 0;
     switch (S.style) {
         case PICO_FILL:
-            SDL_RenderFillRect(REN, &out);
+            SDL_RenderFillRect(REN, &rect);
             break;
         case PICO_STROKE:
-            SDL_RenderDrawRect(REN, &out);
+            SDL_RenderDrawRect(REN, &rect);
             break;
     }
+    SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
 
@@ -494,26 +505,43 @@ void pico_output_draw_tri (Pico_Rect rect) {
         Y(rect.y, rect.h),
         rect.w, rect.h
     };
+    SDL_Texture* aux = SDL_CreateTexture (
+        REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+        out.w, out.h
+    );
+
+    SDL_SetRenderTarget(REN, aux);
+    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
+    SDL_RenderClear(REN);
+    SDL_SetRenderDrawColor (REN,
+        S.color.draw.r,
+        S.color.draw.g,
+        S.color.draw.b,
+        S.color.draw.a
+    );
     switch (S.style) {
         case PICO_FILL:
             filledTrigonRGBA (
                 REN,
-                out.x, out.y,
-                out.x, out.y + out.h - 1,
-                out.x + out.w - 1, out.y + out.h - 1,
+                0, 0,
+                0, out.h - 1,
+                out.w - 1, out.h - 1,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
         case PICO_STROKE:
             trigonRGBA (
                 REN,
-                out.x, out.y,
-                out.x, out.y + out.h - 1,
-                out.x + out.w - 1, out.y + out.h - 1,
+                0, 0,
+                0, out.h - 1,
+                out.w - 1, out.h - 1,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
     }
+    SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
 
@@ -523,22 +551,39 @@ void pico_output_draw_oval (Pico_Rect rect) {
         Y(rect.y, rect.h),
         rect.w, rect.h
     };
+    SDL_Texture* aux = SDL_CreateTexture (
+        REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+        out.w, out.h
+    );
+
+    SDL_SetRenderTarget(REN, aux);
+    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
+    SDL_RenderClear(REN);
+    SDL_SetRenderDrawColor (REN,
+        S.color.draw.r,
+        S.color.draw.g,
+        S.color.draw.b,
+        S.color.draw.a
+    );
     switch (S.style) {
         case PICO_FILL:
             filledEllipseRGBA (
                 REN,
-                out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
+                out.w/2, out.h/2, out.w/2, out.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
         case PICO_STROKE:
             ellipseRGBA (
                 REN,
-                out.x+out.w/2, out.y+out.h/2, out.w/2, out.h/2,
+                out.w/2, out.h/2, out.w/2, out.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
     }
+    SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
 
