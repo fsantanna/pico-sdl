@@ -460,11 +460,11 @@ void pico_output_draw_pixel (Pico_Pos pos) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixels (const Pico_Pos* poss, int count) {
+void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
     Pico_Pos vec[count];
     for (int i=0; i<count; i++) {
-        vec[i].x = X(poss[i].x,1);
-        vec[i].y = Y(poss[i].y,1);
+        vec[i].x = X(apos[i].x,1);
+        vec[i].y = Y(apos[i].y,1);
     }
     SDL_RenderDrawPoints(REN, vec, count);
     _pico_output_present(0);
