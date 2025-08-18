@@ -50,6 +50,32 @@ int main (void) {
         pico_input_event(NULL, PICO_KEYDOWN);
     }
 
+    {
+        puts("rect at -10/-10 (top-left)");
+        pico_output_clear();
+
+        Pico_Pos pt = pico_pos(-10, -10);
+        Pico_Rect rct = {pt.x, pt.y, 10, 10};
+        pico_set_anchor((Pico_Anchor){PICO_LEFT, PICO_TOP});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_output_draw_rect(rct);
+
+        pico_input_event(NULL, PICO_KEYDOWN);
+    }
+
+    {
+        puts("rect at 110/110 (bottom-right)");
+        pico_output_clear();
+
+        Pico_Pos pt = pico_pos(110, 110);
+        Pico_Rect rct = {pt.x, pt.y, 10, 10};
+        pico_set_anchor((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_output_draw_rect(rct);
+
+        pico_input_event(NULL, PICO_KEYDOWN);
+    }
+
     pico_init(0);
     return 0;
 }
