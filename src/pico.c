@@ -842,7 +842,7 @@ int pico_get_expert (void) {
     return S.expert;
 }
 
-PICO_FLIP pico_get_flip () {
+PICO_FLIP pico_get_flip (void) {
     return S.flip;
 }
 
@@ -866,7 +866,7 @@ Pico_Dim pico_get_image_size (const char* file) {
     return size;
 }
 
-float pico_get_rotate () {
+float pico_get_rotate (void) {
     return S.angle;
 }
 
