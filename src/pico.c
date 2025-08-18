@@ -53,7 +53,7 @@ static struct {
         Pico_Dim cur;
     } size;
     PICO_STYLE style;
-    PICO_FLIP flip;
+    Pico_Flip flip;
     float angle;
     Pico_Dim zoom;
 } S = {
@@ -67,7 +67,7 @@ static struct {
     {0, 0},
     { {0,0}, {0,0} },
     PICO_FILL,
-    PICO_NOFLIP,
+    {0, 0},
     0.0f,
     {100, 100}
 };
@@ -384,7 +384,12 @@ void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim 
     );
     
     pico_assert(SDL_UpdateTexture(aux, NULL, buffer, 4*size.x)==0);
-    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_RenderCopyEx(REN, aux,
+        NULL, &out,
+        S.angle + (S.flip.x ? 180 : 0),
+        NULL,
+        S.flip.y ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE
+    );
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -426,7 +431,12 @@ static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex) {
     rct.x = X(pos.x, rct.w);
     rct.y = Y(pos.y, rct.h);
 
-    SDL_RenderCopyEx(REN, tex, &crp, &rct, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_RenderCopyEx(REN, tex,
+        &crp, &rct,
+        S.angle + (S.flip.x ? 180 : 0),
+        NULL,
+        S.flip.y ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE
+    );
     _pico_output_present(0);
 }
 
@@ -481,7 +491,12 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     );
     SDL_RenderDrawLine(REN, p1.x-out.x,p1.y-out.y, p2.x-out.x,p2.y-out.y);
     SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_RenderCopyEx(REN, aux,
+        NULL, &out,
+        S.angle + (S.flip.x ? 180 : 0),
+        NULL,
+        S.flip.y ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE
+    );
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -525,7 +540,12 @@ void pico_output_draw_rect (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_RenderCopyEx(REN, aux,
+        NULL, &out,
+        S.angle + (S.flip.x ? 180 : 0),
+        NULL,
+        S.flip.y ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE
+    );
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -572,7 +592,12 @@ void pico_output_draw_tri (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_RenderCopyEx(REN, aux,
+        NULL, &out,
+        S.angle + (S.flip.x ? 180 : 0),
+        NULL,
+        S.flip.y ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE
+    );
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -615,7 +640,12 @@ void pico_output_draw_oval (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderCopyEx(REN, aux, NULL, &out, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_RenderCopyEx(REN, aux,
+        NULL, &out,
+        S.angle + (S.flip.x ? 180 : 0),
+        NULL,
+        S.flip.y ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE
+    );
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -669,7 +699,12 @@ void pico_output_draw_text (Pico_Pos pos, const char* text) {
     rct.x = X(pos.x, rct.w);
     rct.y = Y(pos.y, rct.h);
 
-    SDL_RenderCopyEx(REN, tex, NULL, &rct, S.angle, NULL, (SDL_RendererFlip)S.flip);
+    SDL_RenderCopyEx(REN, tex,
+        NULL, &rct,
+        S.angle + (S.flip.x ? 180 : 0),
+        NULL,
+        S.flip.y ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE
+    );
     _pico_output_present(0);
 
     SDL_DestroyTexture(tex);
@@ -842,7 +877,7 @@ int pico_get_expert (void) {
     return S.expert;
 }
 
-PICO_FLIP pico_get_flip (void) {
+Pico_Flip pico_get_flip (void) {
     return S.flip;
 }
 
@@ -936,7 +971,7 @@ void pico_set_expert (int on) {
     S.expert = on;
 }
 
-void pico_set_flip (PICO_FLIP flip) {
+void pico_set_flip (Pico_Flip flip) {
     S.flip = flip;
 }
 

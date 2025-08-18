@@ -43,9 +43,9 @@ typedef enum PICO_STYLE {
     PICO_FILL, PICO_STROKE
 } PICO_STYLE;
 
-typedef enum PICO_FLIP {
-    PICO_NOFLIP, PICO_HFLIP, PICO_VFLIP
-} PICO_FLIP;
+typedef struct Pico_Flip {
+    bool x, y;
+} Pico_Flip;
 
 typedef struct Pico_Size {
     Pico_Dim phy;
@@ -224,8 +224,8 @@ Pico_Pos pico_get_cursor (void);
 int pico_get_expert (void);
 
 /// @brief Gets the flipping value used to draw objects.
-/// @sa PICO_FLIP
-PICO_FLIP pico_get_flip (void);
+/// @sa Pico_Flip
+Pico_Flip pico_get_flip (void);
 
 /// @brief Gets the font used to draw texts.
 const char* pico_get_font (void);
@@ -296,7 +296,7 @@ void pico_set_cursor (Pico_Pos pos);
 void pico_set_expert (int on);
 
 // TODO: document me
-void pico_set_flip (PICO_FLIP flip);
+void pico_set_flip (Pico_Flip flip);
 
 /// @brief Changes the font used to draw texts.
 /// @param file path to font file
