@@ -371,19 +371,19 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex);
+static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex);
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom((void*)buffer, size.x, size.y, 32,
                                                           4*size.x, SDL_PIXELFORMAT_RGBA32);
     SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
 
-    _pico_output_draw_image_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux);
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
 
-static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex) {
+static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex) {
     Pico_Rect rct;
     SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
 
@@ -442,7 +442,7 @@ static void _pico_output_draw_image_cache (Pico_Pos pos, const char* path, int c
     }
     pico_assert(tex != NULL);
 
-    _pico_output_draw_image_tex(pos, tex);
+    _pico_output_draw_tex(pos, tex);
 
     if (!cache) {
         SDL_DestroyTexture(tex);
@@ -476,7 +476,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     SDL_RenderCopy(REN, TEX, &rect, NULL);
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
-    _pico_output_draw_image_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -519,7 +519,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    _pico_output_draw_image_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -555,7 +555,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    _pico_output_draw_image_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -587,7 +587,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    _pico_output_draw_image_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
