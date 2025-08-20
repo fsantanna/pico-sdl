@@ -44,9 +44,6 @@ static struct {
     } font;
     int grid;
     Pico_Rect crop;
-    struct {
-        Pico_Dim  size;
-    } image;
     Pico_Pos scroll;
     struct {
         Pico_Dim org;
@@ -366,24 +363,26 @@ static void _pico_output_clear (void) {
 }
 
 static void _pico_output_present (int force);
+
 void pico_output_clear (void) {
     _pico_output_clear();
     _pico_output_present(0);
 }
 
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex);
+static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim size);
+
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom((void*)buffer, size.x, size.y, 32,
                                                           4*size.x, SDL_PIXELFORMAT_RGBA32);
     SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
 
-    _pico_output_draw_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux, size);
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
 
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex) {
+static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim size) {
     Pico_Rect rct;
     SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
 
@@ -395,21 +394,21 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex) {
         crp.h = rct.h;
     }
 
-    if (S.image.size.x==0 && S.image.size.y==0) {
+    if (size.x==0 && size.y==0) {
         // normal image size
         rct.w = crp.w;  // (or copy from crop)
         rct.h = crp.h;  // (or copy from crop)
-    } else if (S.image.size.x == 0) {
+    } else if (size.x == 0) {
         // adjust w based on h
-        rct.w = rct.w * (S.image.size.y / (float)rct.h);
-        rct.h = S.image.size.y;
-    } else if (S.image.size.y == 0) {
+        rct.w = rct.w * (size.y / (float)rct.h);
+        rct.h = size.y;
+    } else if (size.y == 0) {
         // adjust h based on w
-        rct.h = rct.h * (S.image.size.x / (float)rct.w);
-        rct.w = S.image.size.x;
+        rct.h = rct.h * (size.x / (float)rct.w);
+        rct.w = size.x;
     } else {
-        rct.w = S.image.size.x;
-        rct.h = S.image.size.y;
+        rct.w = size.x;
+        rct.h = size.y;
     }
 
     // SCALE
@@ -476,7 +475,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     SDL_RenderCopy(REN, TEX, &rect, NULL);
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
-    _pico_output_draw_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -519,7 +518,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    _pico_output_draw_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -555,7 +554,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    _pico_output_draw_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -587,7 +586,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    _pico_output_draw_tex(pos, aux);
+    _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
