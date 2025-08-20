@@ -4,3 +4,6 @@
 
 .vscode/
 build/
+
+tst/out/*
+!tst/out/.gitkeep
