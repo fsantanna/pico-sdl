@@ -1,4 +1,5 @@
 #include "pico.h"
+#include "tst.c"
 
 int main (void) {
     pico_init(1);
@@ -11,8 +12,7 @@ int main (void) {
         Pico_Pos pt = pico_pos(50, 50);
         pico_output_clear();
         pico_output_draw_pixel(pt);
-        puts("pixel centralizado - center/middle - fica 1px pra dir/baixo");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("pixel50x50y_center");
     }
 
     {
@@ -20,8 +20,7 @@ int main (void) {
         Pico_Pos pt = pico_pos(50, 50);
         pico_output_clear();
         pico_output_draw_pixel(pt);
-        puts("pixel centralizado - left/top - fica 1px pra dir/baixo");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("pixel50x50y_lefttop");
     }
 
     {
@@ -29,8 +28,7 @@ int main (void) {
         Pico_Pos pt = pico_pos(50, 50);
         pico_output_clear();
         pico_output_draw_pixel(pt);
-        puts("pixel centralizado - right/bottom - fica 1px pra esq/cima");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("pixel50x50y_rightbottom");
     }
 
     // RECTS
@@ -40,8 +38,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        puts("retangulo centralizado - fica exato");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("rect50x50y_center");
     }
 
     {
@@ -50,8 +47,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        puts("retangulo left/top - sobra uma lin/col");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("rect50x50y_lefttop");
     }
 
     {
@@ -60,8 +56,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        puts("retangulo right/bottom - sobra uma lin/col");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("rect50x50y_rightbottom");
     }
 
     {
@@ -70,29 +65,26 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        puts("retangulo right/middle - sobra uma col");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("rect50x50y_rightcenter");
     }
 
-    // RECTS out of [0,100]
     {
         pico_set_anchor((Pico_Anchor){25, 25});
         Pico_Pos pt = pico_pos(20, 20);
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        puts("ancora 25/25 - top-left 10/10");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("rect20x20y_25x25y");
     }
-
+    
+    // RECTS out of [0,100]
     {
         pico_set_anchor((Pico_Anchor){-25, -25});
         Pico_Pos pt = pico_pos(50, 50);
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        puts("ancora -25/-25 - top-left 60/60");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("rect20x20y_-25x-25y");
     }
 
     {
@@ -101,8 +93,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        puts("retangulo 125/125 - bottom-right 40/40");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_assert_output("rect50x50y_125x125y");
     }
 
     pico_init(0);
