@@ -236,10 +236,6 @@ const char* pico_get_font (void);
 /// @brief Checks the state of the logical pixel grid.
 int pico_get_grid (void);
 
-/// @brief Gets the size of a given image.
-/// @param file path to image file
-Pico_Dim pico_get_image_size (const char* file);
-
 /// @brief Gets the rotation angle of objects (in degrees).
 float pico_get_rotate (void);
 
@@ -249,15 +245,20 @@ Pico_Pos pico_get_scroll (void);
 /// @brief Gets the physical and logical window size.
 Pico_Size pico_get_size (void);
 
+/// @brief Gets the size of a given image.
+/// @param file path to image file
+Pico_Dim pico_get_size_image (const char* file);
+
+/// @brief Gets the size of a given text.
+/// @param text text to measure
+Pico_Dim pico_get_size_text (const char* text);
+
 /// @brief Checks if the aplication window is visible.
 int pico_get_show (void);
 
 /// @brief Gets the drawing style.
 PICO_STYLE pico_get_style (void);
 
-/// @brief Gets the size of a given text.
-/// @param text text to measure
-Pico_Dim pico_get_text_size (const char* text);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
@@ -313,7 +314,7 @@ void pico_set_grid (int on);
 
 /// @brief Changes what size images should be when drawn.
 /// @param size new size, which may be (0, 0) to disable resizing
-void pico_set_image_size (Pico_Dim size);
+void pico_set_size_image (Pico_Dim size);
 
 /// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate(float angle);

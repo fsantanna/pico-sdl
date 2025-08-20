@@ -835,14 +835,6 @@ Pico_Rect pico_get_image_crop (void) {
     return S.crop;
 }
 
-Pico_Dim pico_get_image_size (const char* file) {
-    SDL_Texture* tex = IMG_LoadTexture(REN, file);
-    pico_assert(tex != NULL);
-    Pico_Dim size;
-    SDL_QueryTexture(tex, NULL, NULL, &size.x, &size.y);
-    return size;
-}
-
 float pico_get_rotate (void) {
     return S.angle;
 }
@@ -855,15 +847,15 @@ Pico_Size pico_get_size (void) {
     return (Pico_Size) { PHY, S.size.org };
 }
 
-int pico_get_show (void) {
-    return SDL_GetWindowFlags(WIN) & SDL_WINDOW_SHOWN;
+Pico_Dim pico_get_size_image (const char* file) {
+    SDL_Texture* tex = IMG_LoadTexture(REN, file);
+    pico_assert(tex != NULL);
+    Pico_Dim size;
+    SDL_QueryTexture(tex, NULL, NULL, &size.x, &size.y);
+    return size;
 }
 
-PICO_STYLE pico_get_style (void) {
-    return S.style;
-}
-
-Pico_Dim pico_get_text_size (const char* text) {
+Pico_Dim pico_get_size_text (const char* text) {
     if (!text || text[0] == '\0') {
         return (Pico_Dim){0, 0};
     }
@@ -874,6 +866,14 @@ Pico_Dim pico_get_text_size (const char* text) {
     Pico_Dim size = {sfc->w, sfc->h};
     SDL_FreeSurface(sfc);
     return size;
+}
+
+int pico_get_show (void) {
+    return SDL_GetWindowFlags(WIN) & SDL_WINDOW_SHOWN;
+}
+
+PICO_STYLE pico_get_style (void) {
+    return S.style;
 }
 
 Uint32 pico_get_ticks (void) {
@@ -945,7 +945,7 @@ void pico_set_image_crop (Pico_Rect crop) {
     S.crop = crop;
 }
 
-void pico_set_image_size (Pico_Dim size) {
+void pico_set_size_image (Pico_Dim size) {
     S.image.size = size;
 }
 
