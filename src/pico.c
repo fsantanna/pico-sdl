@@ -831,7 +831,7 @@ int pico_get_grid (void) {
     return S.grid;
 }
 
-Pico_Rect pico_get_image_crop (void) {
+Pico_Rect pico_get_crop (void) {
     return S.crop;
 }
 
@@ -941,7 +941,7 @@ void pico_set_grid (int on) {
     _pico_output_present(0);
 }
 
-void pico_set_image_crop (Pico_Rect crop) {
+void pico_set_crop (Pico_Rect crop) {
     S.crop = crop;
 }
 
