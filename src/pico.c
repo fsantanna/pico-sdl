@@ -371,25 +371,15 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
+static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex);
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size) {
-    Pico_Rect out = {
-        X(pos.x,size.x),
-        Y(pos.y,size.y),
-        size.x,
-        size.y
-    };
     SDL_Texture* aux = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING,
         size.x, size.y
     );
     
     pico_assert(SDL_UpdateTexture(aux, NULL, buffer, 4*size.x)==0);
-    SDL_RenderCopyEx(REN, aux,
-        NULL, &out,
-        S.angle + (S.flip.x && S.flip.y ? 180 : 0),
-        NULL,
-        S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
-    );
+    _pico_output_draw_image_tex(pos, aux);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -466,37 +456,19 @@ void pico_output_draw_image (Pico_Pos pos, const char* path) {
 
 // TODO: Test me for flip and rotate
 void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
-    p1 = (Pico_Pos){X(p1.x,1), Y(p1.y,1)};
-    p2 = (Pico_Pos){X(p2.x,1), Y(p2.y,1)};
-
-    Pico_Rect out = {
+    Pico_Pos pos = {
         SDL_min(p1.x, p2.x),
-        SDL_min(p1.y, p2.y),
-        SDL_abs(p1.x - p2.x) + 1,
-        SDL_abs(p1.y - p2.y) + 1
+        SDL_min(p1.y, p2.y)
     };
     SDL_Texture* aux = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        out.w, out.h
+        SDL_abs(p1.x - p2.x) + 1, SDL_abs(p1.y - p2.y) + 1
     );
 
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
-    SDL_RenderClear(REN);
-    SDL_SetRenderDrawColor (REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
-    SDL_RenderDrawLine(REN, p1.x-out.x,p1.y-out.y, p2.x-out.x,p2.y-out.y);
+    SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderCopyEx(REN, aux,
-        NULL, &out,
-        S.angle + (S.flip.x && S.flip.y ? 180 : 0),
-        NULL,
-        S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
-    );
+    _pico_output_draw_image_tex(pos, aux);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -518,16 +490,12 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
 
 // TODO: Test me for flip and rotate
 void pico_output_draw_rect (Pico_Rect rect) {
-    Pico_Rect out = {
-        X(rect.x, rect.w),
-        Y(rect.y, rect.h),
-        rect.w, rect.h
-    };
+    Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        out.w, out.h
+        rect.w, rect.h
     );
-
+    
     SDL_SetRenderTarget(REN, aux);
     rect.x = 0;
     rect.y = 0;
@@ -540,112 +508,69 @@ void pico_output_draw_rect (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderCopyEx(REN, aux,
-        NULL, &out,
-        S.angle + (S.flip.x && S.flip.y ? 180 : 0),
-        NULL,
-        S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
-    );
+    _pico_output_draw_image_tex(pos, aux);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
 
 // TODO: Test me for flip and rotate
 void pico_output_draw_tri (Pico_Rect rect) {
-    Pico_Rect out = {
-        X(rect.x, rect.w),
-        Y(rect.y, rect.h),
-        rect.w, rect.h
-    };
+    Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        out.w, out.h
+        rect.w, rect.h
     );
 
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
-    SDL_RenderClear(REN);
-    SDL_SetRenderDrawColor (REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
     switch (S.style) {
         case PICO_FILL:
-            filledTrigonRGBA (
-                REN,
+            filledTrigonRGBA (REN,
                 0, 0,
-                0, out.h - 1,
-                out.w - 1, out.h - 1,
+                0, rect.h - 1,
+                rect.w - 1, rect.h - 1,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
         case PICO_STROKE:
-            trigonRGBA (
-                REN,
+            trigonRGBA (REN,
                 0, 0,
-                0, out.h - 1,
-                out.w - 1, out.h - 1,
+                0, rect.h - 1,
+                rect.w - 1, rect.h - 1,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderCopyEx(REN, aux,
-        NULL, &out,
-        S.angle + (S.flip.x && S.flip.y ? 180 : 0),
-        NULL,
-        S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
-    );
+    _pico_output_draw_image_tex(pos, aux);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
 
 // TODO: Test me for flip and rotate
 void pico_output_draw_oval (Pico_Rect rect) {
-    Pico_Rect out = {
-        X(rect.x, rect.w),
-        Y(rect.y, rect.h),
-        rect.w, rect.h
-    };
+    Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        out.w, out.h
+        rect.w, rect.h
     );
 
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
-    SDL_RenderClear(REN);
-    SDL_SetRenderDrawColor (REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
     switch (S.style) {
         case PICO_FILL:
-            filledEllipseRGBA (
-                REN,
-                out.w/2, out.h/2, out.w/2, out.h/2,
+            filledEllipseRGBA (REN,
+                rect.w/2, rect.h/2, rect.w/2, rect.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
         case PICO_STROKE:
-            ellipseRGBA (
-                REN,
-                out.w/2, out.h/2, out.w/2, out.h/2,
+            ellipseRGBA (REN,
+                rect.w/2, rect.h/2, rect.w/2, rect.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderCopyEx(REN, aux,
-        NULL, &out,
-        S.angle + (S.flip.x && S.flip.y ? 180 : 0),
-        NULL,
-        S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
-    );
+    _pico_output_draw_image_tex(pos, aux);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
