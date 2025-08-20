@@ -43,8 +43,8 @@ static struct {
         int h;
     } font;
     int grid;
+    Pico_Rect crop;
     struct {
-        Pico_Rect crop;
         Pico_Dim  size;
     } image;
     Pico_Pos scroll;
@@ -387,11 +387,11 @@ static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex) {
     Pico_Rect rct;
     SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
 
-    Pico_Rect crp = S.image.crop;
-    if (S.image.crop.w == 0) {
+    Pico_Rect crp = S.crop;
+    if (S.crop.w == 0) {
         crp.w = rct.w;
     }
-    if (S.image.crop.h == 0) {
+    if (S.crop.h == 0) {
         crp.h = rct.h;
     }
 
@@ -832,7 +832,7 @@ int pico_get_grid (void) {
 }
 
 Pico_Rect pico_get_image_crop (void) {
-    return S.image.crop;
+    return S.crop;
 }
 
 Pico_Dim pico_get_image_size (const char* file) {
@@ -942,7 +942,7 @@ void pico_set_grid (int on) {
 }
 
 void pico_set_image_crop (Pico_Rect crop) {
-    S.image.crop = crop;
+    S.crop = crop;
 }
 
 void pico_set_image_size (Pico_Dim size) {

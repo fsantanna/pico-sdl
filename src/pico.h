@@ -215,6 +215,9 @@ Pico_Color pico_get_color_clear (void);
 /// @sa pico_set_color_draw
 Pico_Color pico_get_color_draw (void);
 
+/// @brief Gets the cropping applied to images before drawing them.
+Pico_Rect pico_get_crop (void);
+
 /// @brief Gets the position of the text cursor.
 /// @sa pico_output_write
 /// @sa pico_output_writeln
@@ -232,9 +235,6 @@ const char* pico_get_font (void);
 
 /// @brief Checks the state of the logical pixel grid.
 int pico_get_grid (void);
-
-/// @brief Gets the cropping applied to images before drawing them.
-Pico_Rect pico_get_image_crop (void);
 
 /// @brief Gets the size of a given image.
 /// @param file path to image file
@@ -285,6 +285,10 @@ void pico_set_color_clear (Pico_Color color);
 /// @param color new color
 void pico_set_color_draw (Pico_Color color);
 
+/// @brief Changes the cropping that is applied to images before drawing them.
+/// @param crop cropping region, which may have 0 area to disable cropping
+void pico_set_crop (Pico_Rect crop);
+
 /// @brief Sets the position of the text cursor.
 /// @param pos new cursor position
 /// @sa pico_output_write
@@ -306,10 +310,6 @@ void pico_set_font (const char* file, int h);
 /// @brief Toggles a grid on top of logical pixels.
 /// @param on 1 to show it, or 0 to hide it
 void pico_set_grid (int on);
-
-/// @brief Changes the cropping that is applied to images before drawing them.
-/// @param crop cropping region, which may have 0 area to disable cropping
-void pico_set_image_crop (Pico_Rect crop);
 
 /// @brief Changes what size images should be when drawn.
 /// @param size new size, which may be (0, 0) to disable resizing
