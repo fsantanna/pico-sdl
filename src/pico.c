@@ -428,28 +428,21 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim size
     _pico_output_present(0);
 }
 
-static void _pico_output_draw_image_cache (Pico_Pos pos, const char* path, int cache) {
-    SDL_Texture* tex = NULL;
-    if (cache) {
-        tex = pico_hash_get(_pico_hash, path);
-        if (tex == NULL) {
-            tex = IMG_LoadTexture(REN, path);
-            pico_hash_add(_pico_hash, path, tex);
-        }
+void pico_output_draw_image (Pico_Pos pos, const char* path) {
+    pico_output_draw_image_ext(pos, path, PICO_SIZE_KEEP);
+}
+
+void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim size) {
+    SDL_Texture* tex = pico_hash_get(_pico_hash, path);
+    if (tex == NULL) {
+        tex = IMG_LoadTexture(REN, path);
+        pico_hash_add(_pico_hash, path, tex);
     } else {
         tex = IMG_LoadTexture(REN, path);
     }
     pico_assert(tex != NULL);
 
-    _pico_output_draw_tex(pos, tex);
-
-    if (!cache) {
-        SDL_DestroyTexture(tex);
-    }
-}
-
-void pico_output_draw_image (Pico_Pos pos, const char* path) {
-    _pico_output_draw_image_cache(pos, path, 1);
+    _pico_output_draw_tex(pos, tex, size);
 }
 
 // TODO: Test me for flip and rotate

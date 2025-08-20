@@ -117,6 +117,7 @@ void pico_output_clear (void);
 /// @param buffer the image
 /// @param size size of the image
 /// @sa pico_output_draw_image
+/// @sa pico_output_draw_image_ext
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size);
 
 /// @brief Draws an image.
@@ -124,7 +125,18 @@ void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim 
 /// @param pos drawing position
 /// @param path path to the image file
 /// @sa pico_output_draw_buffer
+/// @sa pico_output_draw_image_ext
 void pico_output_draw_image (Pico_Pos pos, const char* path);
+
+/// @brief Draws an image with the specified size.
+/// This function uses caching, so the file is actually loaded only once.
+/// pico_set_scale does not affect this draw call.
+/// @param pos drawing position
+/// @param path path to the image file
+/// @param size image size
+/// @sa pico_output_draw_buffer
+/// @sa pico_output_draw_image
+void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim size);
 
 /// @brief Draws a line segment.
 /// @param p1 first point
