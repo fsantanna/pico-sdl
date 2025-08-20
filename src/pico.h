@@ -259,7 +259,6 @@ int pico_get_show (void);
 /// @brief Gets the drawing style.
 PICO_STYLE pico_get_style (void);
 
-
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
 
@@ -317,7 +316,7 @@ void pico_set_grid (int on);
 void pico_set_size_image (Pico_Dim size);
 
 /// @brief Sets the rotation angle of objects (in degrees).
-void pico_set_rotate(float angle);
+void pico_set_rotate (float angle);
 
 /// @brief Changes the point of view on the logical window.
 /// @param pos new point of view
@@ -359,14 +358,14 @@ void pico_set_zoom (Pico_Dim zoom);
 /// @param x percentage that may go out of [0,100]
 /// @param y percentage that may go out of [0,100]
 /// @sa pico_dim_ext
-Pico_Dim pico_dim(int x, int y);
+Pico_Dim pico_dim (int x, int y);
 
 /// @brief Returns a size relative to the given rectangle's size.
 /// @param r the reference rectangle
 /// @param x percentage that may go out of [0,100]
 /// @param y percentage that may go out of [0,100]
 /// @sa pico_dim
-Pico_Dim pico_dim_ext(Pico_Dim d, int x, int y);
+Pico_Dim pico_dim_ext (Pico_Dim d, int x, int y);
 
 /// @brief Checks if a point is inside a rectangle.
 /// @param pt point
