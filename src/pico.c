@@ -945,10 +945,6 @@ void pico_set_crop (Pico_Rect crop) {
     S.crop = crop;
 }
 
-void pico_set_size_image (Pico_Dim size) {
-    S.image.size = size;
-}
-
 void pico_set_rotate (float angle) {
     S.angle = angle;
 }

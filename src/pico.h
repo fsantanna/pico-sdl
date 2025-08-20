@@ -311,10 +311,6 @@ void pico_set_font (const char* file, int h);
 /// @param on 1 to show it, or 0 to hide it
 void pico_set_grid (int on);
 
-/// @brief Changes what size images should be when drawn.
-/// @param size new size, which may be (0, 0) to disable resizing
-void pico_set_size_image (Pico_Dim size);
-
 /// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate (float angle);
 
