@@ -373,13 +373,12 @@ void pico_output_clear (void) {
 
 static void _pico_output_draw_image_tex (Pico_Pos pos, SDL_Texture* tex);
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size) {
-    SDL_Texture* aux = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING,
-        size.x, size.y
-    );
-    
-    pico_assert(SDL_UpdateTexture(aux, NULL, buffer, 4*size.x)==0);
+    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom((void*)buffer, size.x, size.y, 32,
+                                                          4*size.x, SDL_PIXELFORMAT_RGBA32);
+    SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
+
     _pico_output_draw_image_tex(pos, aux);
+    SDL_FreeSurface(sfc);
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -460,12 +459,21 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
         SDL_min(p1.x, p2.x),
         SDL_min(p1.y, p2.y)
     };
-    SDL_Texture* aux = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        SDL_abs(p1.x - p2.x) + 1, SDL_abs(p1.y - p2.y) + 1
+    Pico_Rect rect = {
+        pos.x,
+        pos.y,
+        SDL_abs(p1.x - p2.x) + 1,
+        SDL_abs(p1.y - p2.y) + 1
+    };
+    SDL_Texture* aux = SDL_CreateTexture (REN,
+        SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+        rect.w, rect.h
     );
 
     SDL_SetRenderTarget(REN, aux);
+    rect.x = X(rect.x,rect.w);
+    rect.y = Y(rect.y,rect.h);
+    SDL_RenderCopy(REN, TEX, &rect, NULL);
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
     _pico_output_draw_image_tex(pos, aux);
@@ -491,12 +499,15 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_rect (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
-    SDL_Texture* aux = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+    SDL_Texture* aux = SDL_CreateTexture (REN,
+        SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         rect.w, rect.h
     );
     
     SDL_SetRenderTarget(REN, aux);
+    rect.x = X(rect.x,rect.w);
+    rect.y = Y(rect.y,rect.h);
+    SDL_RenderCopy(REN, TEX, &rect, NULL);
     rect.x = 0;
     rect.y = 0;
     switch (S.style) {
@@ -516,12 +527,15 @@ void pico_output_draw_rect (Pico_Rect rect) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_tri (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
-    SDL_Texture* aux = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+    SDL_Texture* aux = SDL_CreateTexture (REN,
+        SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         rect.w, rect.h
     );
 
     SDL_SetRenderTarget(REN, aux);
+    rect.x = X(rect.x,rect.w);
+    rect.y = Y(rect.y,rect.h);
+    SDL_RenderCopy(REN, TEX, &rect, NULL);
     switch (S.style) {
         case PICO_FILL:
             filledTrigonRGBA (REN,
@@ -550,11 +564,14 @@ void pico_output_draw_tri (Pico_Rect rect) {
 void pico_output_draw_oval (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         rect.w, rect.h
     );
 
     SDL_SetRenderTarget(REN, aux);
+    rect.x = X(rect.x,rect.w);
+    rect.y = Y(rect.y,rect.h);
+    SDL_RenderCopy(REN, TEX, &rect, NULL);
     switch (S.style) {
         case PICO_FILL:
             filledEllipseRGBA (REN,
@@ -721,9 +738,9 @@ const char* pico_output_screenshot_ext (const char* path, Pico_Rect r) {
     }
 
     void* buf = malloc(4*r.w*r.h);
-    SDL_RenderReadPixels(REN, &r, SDL_PIXELFORMAT_RGBA8888, buf, 4*r.w);
-    SDL_Surface *sfc = SDL_CreateRGBSurfaceFrom(buf, r.w, r.h, 32, 4*r.w,
-                                                0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+    SDL_RenderReadPixels(REN, &r, SDL_PIXELFORMAT_RGBA32, buf, 4*r.w);
+    SDL_Surface *sfc = SDL_CreateRGBSurfaceWithFormatFrom(buf, r.w, r.h, 32, 4*r.w,
+                                                          SDL_PIXELFORMAT_RGBA32);
     assert(IMG_SavePNG(sfc,ret)==0 && "saving screenshot");
     free(buf);
     SDL_FreeSurface(sfc);
@@ -961,7 +978,7 @@ void _pico_set_size (Pico_Dim phy, Pico_Dim log) {
         S.size.cur = log;
         SDL_DestroyTexture(TEX);
         TEX = SDL_CreateTexture (
-            REN, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+            REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
             S.size.cur.x, S.size.cur.y
         );
         SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
