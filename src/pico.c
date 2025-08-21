@@ -468,7 +468,10 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     SDL_RenderCopy(REN, TEX, &rect, NULL);
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
+    Pico_Anchor old = S.anchor;
+    S.anchor = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
+    S.anchor = old;
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
