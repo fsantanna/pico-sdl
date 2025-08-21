@@ -612,33 +612,19 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
 }
 
 void pico_output_draw_text (Pico_Pos pos, const char* text) {
+    pico_output_draw_text_ext(pos, text, PICO_SIZE_KEEP);
+}
+
+void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size) {
     if (text[0] == '\0') return;
 
-    uint8_t r, g, b, a;
-    SDL_GetRenderDrawColor(REN, &r,&g,&b,&a);
     pico_assert(S.font.ttf != NULL);
-    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
-                                              (Pico_Color){r,g,b,a});
+    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text, S.color.draw);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
 
-    Pico_Rect rct;
-
-    // SCALE
-    rct.w = sfc->w; // * GRAPHICS_SET_SCALE_W;
-    rct.h = sfc->h; // * GRAPHICS_SET_SCALE_H;
-
-    // ANCHOR
-    rct.x = X(pos.x, rct.w);
-    rct.y = Y(pos.y, rct.h);
-
-    SDL_RenderCopyEx(REN, tex,
-        NULL, &rct,
-        S.angle + (S.flip.x && S.flip.y ? 180 : 0),
-        NULL,
-        S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
-    );
+    _pico_output_draw_tex(pos, tex, size);
     _pico_output_present(0);
 
     SDL_DestroyTexture(tex);

@@ -130,7 +130,6 @@ void pico_output_draw_image (Pico_Pos pos, const char* path);
 
 /// @brief Draws an image with the specified size.
 /// This function uses caching, so the file is actually loaded only once.
-/// pico_set_scale does not affect this draw call.
 /// @param pos drawing position
 /// @param path path to the image file
 /// @param size image size
@@ -169,10 +168,18 @@ void pico_output_draw_oval (Pico_Rect rect);
 /// @param count amount of vertices
 void pico_output_draw_poly (const Pico_Pos* apos, int count);
 
-/// @brief Draws text. The string can't be empty.
+/// @brief Draws text.
 /// @param pos drawing position
 /// @param text text to draw
+/// @sa pico_output_draw_text_ext
 void pico_output_draw_text (Pico_Pos pos, const char* text);
+
+/// @brief Draws text with the specified size.
+/// @param pos drawing position
+/// @param text text to draw
+/// @param size image size
+/// @sa pico_output_draw_text
+void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size);
 
 /// @brief Shows what has been drawn onto the screen.
 void pico_output_present (void);
