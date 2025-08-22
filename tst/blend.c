@@ -1,5 +1,4 @@
 #include "pico.h"
-#define PICO_DEBUG_TESTS
 #include "tst.c"
 
 int main (void) {
@@ -17,7 +16,6 @@ int main (void) {
             pico_output_draw_pixel(pos);
             pico_input_delay(50);
             if (a == 120) {
-                puts("screenshot pixel");
                 _pico_check_assert("pixel_dimmed");
             }
         }
@@ -31,7 +29,6 @@ int main (void) {
             pico_output_draw_text(pos, "SOME TEXT");
             pico_input_delay(50);
             if (a == 120) {
-                puts("screenshot text");
                 _pico_check_assert("text_dimmed");
             }
         }
@@ -45,7 +42,6 @@ int main (void) {
             pico_output_draw_rect(rct);
             pico_input_delay(50);
             if (a == 120) {
-                puts("screenshot rect");
                 _pico_check_assert("rect_dimmed");
             }
         }
@@ -59,7 +55,6 @@ int main (void) {
             pico_output_draw_oval(rct);
             pico_input_delay(50);
             if (a == 120) {
-                puts("screenshot oval");
                 _pico_check_assert("oval_dimmed");
             }
         }
@@ -73,7 +68,6 @@ int main (void) {
             pico_output_draw_tri(rct);
             pico_input_delay(50);
             if (a == 120) {
-                puts("screenshot tri");
                 _pico_check_assert("tri_dimmed");
             }
         }
@@ -89,7 +83,6 @@ int main (void) {
             pico_output_draw_line(p1, p2);
             pico_input_delay(50);
             if (a == 120) {
-                puts("screenshot line");
                 _pico_check_assert("line_dimmed");
             }
         }
@@ -104,7 +97,6 @@ int main (void) {
             pico_output_draw_poly(poly, 3);
             pico_input_delay(50);
             if (a == 120) {
-                puts("screenshot poly");
                 _pico_check_assert("poly_dimmed");
             }
         }
