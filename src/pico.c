@@ -607,29 +607,54 @@ void pico_output_draw_oval (Pico_Rect rect) {
 }
 
 void pico_output_draw_poly (const Pico_Pos* apos, int count) {
-    Sint16 xs[count], ys[count];
+    Sint16 ax[count], ay[count];
+    int minx = INT_MAX, maxx = INT_MIN, miny = INT_MAX, maxy = INT_MIN;
     for (int i = 0; i < count; i++) {
-        xs[i] = X(apos[i].x, 1);
-        ys[i] = Y(apos[i].y, 1);
+        ax[i] = hanchor(apos[i].x, 1);
+        ay[i] = vanchor(apos[i].y, 1);
+        minx = SDL_min(ax[i], minx);
+        maxx = SDL_max(ax[i], maxx);
+        miny = SDL_min(ay[i], miny);
+        maxy = SDL_max(ay[i], maxy);
     }
+
+    for (int i = 0; i < count; i++) {
+        ax[i] -= minx;
+        ay[i] -= miny;
+    }
+
+    Pico_Pos pos = {minx, miny};
+    SDL_Texture* aux = SDL_CreateTexture (
+        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+        maxx - minx + 1, maxy - miny + 1
+    );
+
+    SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(REN, aux);
+    Pico_Color clr = S.color.clear;
+    pico_set_color_clear((Pico_Color){0, 0, 0, 0});
+    _pico_output_clear();
+    pico_set_color_clear(clr);
     switch (S.style) {
         case PICO_FILL:
-            filledPolygonRGBA(
-                REN,
-                xs, ys,
-                count,
+            filledPolygonRGBA(REN,
+                ax, ay, count,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
         case PICO_STROKE:
-            polygonRGBA(
-                REN,
-                xs, ys,
-                count,
+            polygonRGBA(REN,
+                ax, ay, count,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.color.draw.a
             );
             break;
     }
+    SDL_SetRenderTarget(REN, TEX);
+    Pico_Anchor anc = S.anchor;
+    pico_set_anchor((Pico_Anchor){PICO_LEFT, PICO_TOP});
+    _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
+    pico_set_anchor(anc);
+    SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
 
