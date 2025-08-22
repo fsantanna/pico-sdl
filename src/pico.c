@@ -459,20 +459,16 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
 
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
-    SDL_RenderClear(REN);
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
+    Pico_Color clr = S.color.clear;
+    S.color.clear = (Pico_Color){0, 0, 0, 0};
+    _pico_output_clear();
+    S.color.clear = clr;
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
-    Pico_Anchor old = S.anchor;
+    Pico_Anchor anc = S.anchor;
     S.anchor = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
-    S.anchor = old;
+    S.anchor = anc;
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -502,14 +498,10 @@ void pico_output_draw_rect (Pico_Rect rect) {
 
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
-    SDL_RenderClear(REN);
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
+    Pico_Color clr = S.color.clear;
+    S.color.clear = (Pico_Color){0, 0, 0, 0};
+    _pico_output_clear();
+    S.color.clear = clr;
     rect.x = 0;
     rect.y = 0;
     switch (S.style) {
@@ -536,14 +528,10 @@ void pico_output_draw_tri (Pico_Rect rect) {
 
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
-    SDL_RenderClear(REN);
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
+    Pico_Color clr = S.color.clear;
+    S.color.clear = (Pico_Color){0, 0, 0, 0};
+    _pico_output_clear();
+    S.color.clear = clr;
     switch (S.style) {
         case PICO_FILL:
             filledTrigonRGBA (REN,
@@ -578,14 +566,10 @@ void pico_output_draw_oval (Pico_Rect rect) {
 
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);
-    SDL_RenderClear(REN);
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
+    Pico_Color clr = S.color.clear;
+    S.color.clear = (Pico_Color){0, 0, 0, 0};
+    _pico_output_clear();
+    S.color.clear = clr;
     switch (S.style) {
         case PICO_FILL:
             filledEllipseRGBA (REN,
@@ -617,7 +601,6 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
         miny = SDL_min(ay[i], miny);
         maxy = SDL_max(ay[i], maxy);
     }
-
     for (int i = 0; i < count; i++) {
         ax[i] -= minx;
         ay[i] -= miny;
@@ -632,9 +615,9 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
     Pico_Color clr = S.color.clear;
-    pico_set_color_clear((Pico_Color){0, 0, 0, 0});
+    S.color.clear = (Pico_Color){0, 0, 0, 0};
     _pico_output_clear();
-    pico_set_color_clear(clr);
+    S.color.clear = clr;
     switch (S.style) {
         case PICO_FILL:
             filledPolygonRGBA(REN,
@@ -651,9 +634,9 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
     }
     SDL_SetRenderTarget(REN, TEX);
     Pico_Anchor anc = S.anchor;
-    pico_set_anchor((Pico_Anchor){PICO_LEFT, PICO_TOP});
+    S.anchor = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
-    pico_set_anchor(anc);
+    S.anchor = anc;
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
