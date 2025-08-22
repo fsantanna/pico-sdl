@@ -155,6 +155,7 @@ void pico_init (int on) {
 
         pico_set_size(PICO_DIM_PHY, PICO_DIM_LOG);
         pico_set_font(NULL, 0);
+        pico_output_clear();
     } else {
         if (S.font.ttf != NULL) {
             TTF_CloseFont(S.font.ttf);
