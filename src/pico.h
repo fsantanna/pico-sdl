@@ -219,8 +219,11 @@ void pico_output_writeln (const char* text);
 
 // GET
 
-/// @brief Gets the reference point used to draw objects (center, topleft, etc).
-Pico_Anchor pico_get_anchor (void);
+/// @brief Gets the reference to draw objects (center, topleft, etc).
+Pico_Anchor pico_get_anchor_draw (void);
+
+/// @brief Gets the reference to draw objects (center, topleft, etc).
+Pico_Anchor pico_get_anchor_rotate (void);
 
 /// @brief Gets the color set to clear the screen.
 /// @sa pico_output_clear
@@ -286,11 +289,17 @@ Pico_Dim pico_get_zoom (void);
 
 // SET
 
-/// @brief Changes the reference point used to draw objects (center, topleft, etc).
+/// @brief Changes the reference to draw objects (center, topleft, etc).
 /// @include anchor.c
 /// @param h x-axis anchor
 /// @param v y-axis anchor
-void pico_set_anchor (Pico_Anchor anchor);
+void pico_set_anchor_draw (Pico_Anchor anchor);
+
+/// @brief Changes the reference to rotate objects (center, topleft, etc).
+/// @include anchor.c
+/// @param h x-axis anchor
+/// @param v y-axis anchor
+void pico_set_anchor_rotate (Pico_Anchor anchor);
 
 /// @brief Changes the color used to clear the screen.
 /// @param color new color

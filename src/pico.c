@@ -28,7 +28,10 @@ static SDL_Texture* TEX;
 static pico_hash* _pico_hash;
 
 static struct {
-    Pico_Anchor anchor;
+    struct {
+        Pico_Anchor draw;
+        Pico_Anchor rotate;
+    } anchor;
     struct {
         Pico_Color clear;
         Pico_Color draw;
@@ -54,7 +57,7 @@ static struct {
     float angle;
     Pico_Dim zoom;
 } S = {
-    { PICO_CENTER, PICO_MIDDLE },
+    { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
     {0, {0,0}},
     0,
@@ -70,11 +73,11 @@ static struct {
 };
 
 static int hanchor (int x, int w) {
-    return x - (S.anchor.x*w)/100;
+    return x - (S.anchor.draw.x*w)/100;
 }
 
 static int vanchor (int y, int h) {
-    return y - (S.anchor.y*h)/100;
+    return y - (S.anchor.draw.y*h)/100;
 }
 
 // UTILS
@@ -97,13 +100,13 @@ int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
 }
 
 Pico_Pos pico_pos (int x, int y) {
-    Pico_Anchor old = S.anchor;
-    S.anchor = (Pico_Anchor) {PICO_CENTER, PICO_MIDDLE};
+    Pico_Anchor old = S.anchor.draw;
+    S.anchor.draw = (Pico_Anchor) {PICO_CENTER, PICO_MIDDLE};
     Pico_Pos pt = pico_pos_ext (
         (Pico_Rect){ S.size.org.x/2, S.size.org.y/2, S.size.org.x, S.size.org.y},
         x, y
     );
-    S.anchor = old;
+    S.anchor.draw = old;
     return pt;
 }
 
@@ -119,14 +122,14 @@ int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2) {
 }
 
 int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Anchor a1, Pico_Rect r2, Pico_Anchor a2) {
-    Pico_Anchor old = S.anchor;
-    S.anchor = a1;
+    Pico_Anchor old = S.anchor.draw;
+    S.anchor.draw = a1;
     r1.x = hanchor(r1.x, r1.w);
     r1.y = vanchor(r1.y, r1.h);
-    S.anchor = a2;
+    S.anchor.draw = a2;
     r2.x = hanchor(r2.x, r2.w);
     r2.y = vanchor(r2.y, r2.h);
-    S.anchor = old;
+    S.anchor.draw = old;
     return SDL_HasIntersection(&r1, &r2);
 }
 
@@ -465,10 +468,10 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     S.color.clear = clr;
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
-    Pico_Anchor anc = S.anchor;
-    S.anchor = (Pico_Anchor){PICO_LEFT, PICO_TOP};
+    Pico_Anchor anc = S.anchor.draw;
+    S.anchor.draw = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
-    S.anchor = anc;
+    S.anchor.draw = anc;
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -636,10 +639,10 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
-    Pico_Anchor anc = S.anchor;
-    S.anchor = (Pico_Anchor){PICO_LEFT, PICO_TOP};
+    Pico_Anchor anc = S.anchor.draw;
+    S.anchor.draw = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
-    S.anchor = anc;
+    S.anchor.draw = anc;
     SDL_DestroyTexture(aux);
     _pico_output_present(0);
 }
@@ -810,8 +813,12 @@ void pico_output_writeln (const char* text) {
 
 // GET
 
-Pico_Anchor pico_get_anchor (void) {
-    return S.anchor;
+Pico_Anchor pico_get_anchor_draw (void) {
+    return S.anchor.draw;
+}
+
+Pico_Anchor pico_get_anchor_rotate (void) {
+    return S.anchor.rotate;
 }
 
 Pico_Color pico_get_color_clear (void) {
@@ -897,8 +904,12 @@ const char* pico_get_title (void) {
 
 // SET
 
-void pico_set_anchor (Pico_Anchor anchor) {
-    S.anchor = anchor;
+void pico_set_anchor_draw (Pico_Anchor anchor) {
+    S.anchor.draw = anchor;
+}
+
+void pico_set_anchor_rotate (Pico_Anchor anchor) {
+    S.anchor.rotate = anchor;
 }
 
 void pico_set_color_clear (Pico_Color color) {
