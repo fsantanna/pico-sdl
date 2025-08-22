@@ -423,10 +423,16 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim size
     rct.x = X(pos.x, rct.w);
     rct.y = Y(pos.y, rct.h);
 
+    // ROTATE
+    Pico_Pos rot = {
+        (S.anchor.rotate.x*rct.w)/100,
+        (S.anchor.rotate.y*rct.h)/100
+    };
+
     SDL_RenderCopyEx(REN, tex,
         &crp, &rct,
         S.angle + (S.flip.x && S.flip.y ? 180 : 0),
-        NULL,
+        &rot,
         S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
     );
     _pico_output_present(0);
