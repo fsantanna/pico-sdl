@@ -2,13 +2,13 @@
 #include <SDL2/SDL_image.h>
 #include <string.h>
 
-void _pico_gen_output(const char *msg) {
+void _pico_check_generate (const char *msg) {
     char fmt[256] = "";
     sprintf(fmt, "expected/%s.png", msg);
     pico_output_screenshot(fmt);
 }
 
-void _pico_assert_output(const char *msg) {
+void _pico_check_assert (const char *msg) {
     char fmt1[256] = "", fmt2[256] = "";
     sprintf(fmt1, "output/%s.png", msg);
     sprintf(fmt2, "expected/%s.png", msg);
