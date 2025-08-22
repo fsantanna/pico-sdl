@@ -54,7 +54,7 @@ static struct {
     } size;
     PICO_STYLE style;
     Pico_Flip flip;
-    float angle;
+    int angle;
     Pico_Dim zoom;
 } S = {
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
@@ -859,7 +859,7 @@ Pico_Rect pico_get_crop (void) {
     return S.crop;
 }
 
-float pico_get_rotate (void) {
+int pico_get_rotate (void) {
     return S.angle;
 }
 
@@ -973,7 +973,7 @@ void pico_set_crop (Pico_Rect crop) {
     S.crop = crop;
 }
 
-void pico_set_rotate (float angle) {
+void pico_set_rotate (int angle) {
     S.angle = angle;
 }
 

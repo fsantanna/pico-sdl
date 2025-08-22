@@ -256,7 +256,7 @@ const char* pico_get_font (void);
 int pico_get_grid (void);
 
 /// @brief Gets the rotation angle of objects (in degrees).
-float pico_get_rotate (void);
+int pico_get_rotate (void);
 
 /// @brief TODO
 Pico_Pos pico_get_scroll (void);
@@ -337,7 +337,7 @@ void pico_set_font (const char* file, int h);
 void pico_set_grid (int on);
 
 /// @brief Sets the rotation angle of objects (in degrees).
-void pico_set_rotate (float angle);
+void pico_set_rotate (int angle);
 
 /// @brief Changes the point of view on the logical window.
 /// @param pos new point of view
