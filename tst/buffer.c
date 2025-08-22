@@ -21,17 +21,23 @@ int main (void) {
         { 0x00, 0x00, 0x00, 0x00 },
     };
     
-    Pico_Pos p1 = pico_pos(50,50);
-    pico_output_clear();
-    pico_output_draw_buffer(p1, buffer, (Pico_Dim){3,3});
-    _pico_assert_output("buf3w3h_center_black");
+    {
+        puts("centered 3x3 on black - 1dir/1baixo");
+        Pico_Pos p1 = pico_pos(50,50);
+        pico_output_clear();
+        pico_output_draw_buffer(p1, buffer, (Pico_Dim){3,3});
+        _pico_check_assert("buf3w3h_center_black");
+    }
 
-    pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
-    Pico_Pos p2 = pico_pos(100,100);
-    pico_set_anchor((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
-    pico_output_clear();
-    pico_output_draw_buffer(p2, buffer, (Pico_Dim){9,1});
-    _pico_assert_output("buf9w1h_rightbottom_white");
+    {
+        puts("bottomright 9x1 on white");
+        pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
+        pico_output_clear();
+        Pico_Pos p2 = pico_pos(100,100);
+        pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
+        pico_output_draw_buffer(p2, buffer, (Pico_Dim){9,1});
+        _pico_check_assert("buf9w1h_rightbottom_white");
+    }
 
     pico_init(0);
     return 0;
