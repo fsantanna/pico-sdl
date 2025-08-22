@@ -5,5 +5,5 @@
 .vscode/
 build/
 
-tst/out/*
-!tst/out/.gitkeep
+tst/output/*
+!tst/output/.gitkeep
