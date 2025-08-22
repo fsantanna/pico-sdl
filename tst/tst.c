@@ -1,5 +1,6 @@
 #include "pico.h"
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_surface.h>
 #include <string.h>
 
 void _pico_check_generate (const char *msg) {
@@ -17,4 +18,6 @@ void _pico_check_assert (const char *msg) {
     SDL_Surface *sfc1 = IMG_Load(fmt1);
     SDL_Surface *sfc2 = IMG_Load(fmt2);
     assert(memcmp(sfc1->pixels, sfc2->pixels, sfc1->pitch*sfc1->h) == 0);
+    SDL_FreeSurface(sfc1);
+    SDL_FreeSurface(sfc2);
 }
