@@ -449,8 +449,8 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim size) 
 // TODO: Test me for flip and rotate
 void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     Pico_Pos pos = {
-        SDL_min(p1.x, p2.x),
-        SDL_min(p1.y, p2.y)
+        hanchor(SDL_min(p1.x,p2.x),1),
+        vanchor(SDL_min(p1.y,p2.y),1)
     };
     SDL_Texture* aux = SDL_CreateTexture (REN,
         SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
@@ -594,8 +594,8 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
     Sint16 ax[count], ay[count];
     int minx = INT_MAX, maxx = INT_MIN, miny = INT_MAX, maxy = INT_MIN;
     for (int i = 0; i < count; i++) {
-        ax[i] = hanchor(apos[i].x, 1);
-        ay[i] = vanchor(apos[i].y, 1);
+        ax[i] = apos[i].x;
+        ay[i] = apos[i].y;
         minx = SDL_min(ax[i], minx);
         maxx = SDL_max(ax[i], maxx);
         miny = SDL_min(ay[i], miny);
@@ -606,7 +606,10 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
         ay[i] -= miny;
     }
 
-    Pico_Pos pos = {minx, miny};
+    Pico_Pos pos = {
+        hanchor(minx,1),
+        vanchor(miny,1)
+    };
     SDL_Texture* aux = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         maxx - minx + 1, maxy - miny + 1
