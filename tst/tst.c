@@ -20,4 +20,9 @@ void _pico_check_assert (const char *msg) {
     assert(memcmp(sfc1->pixels, sfc2->pixels, sfc1->pitch*sfc1->h) == 0);
     SDL_FreeSurface(sfc1);
     SDL_FreeSurface(sfc2);
+
+#ifdef PICO_DEBUG_TESTS
+    puts("debug: press any key");
+    pico_input_event(NULL, PICO_KEYDOWN);
+#endif
 }
