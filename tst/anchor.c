@@ -13,7 +13,7 @@ int main (void) {
         Pico_Pos pt = pico_pos(50, 50);
         pico_output_clear();
         pico_output_draw_pixel(pt);
-        _pico_check_assert("pixel50x50y_center");
+        _pico_check("pixel50x50y_center");
     }
 
     {
@@ -22,7 +22,7 @@ int main (void) {
         Pico_Pos pt = pico_pos(50, 50);
         pico_output_clear();
         pico_output_draw_pixel(pt);
-        _pico_check_assert("pixel50x50y_lefttop");
+        _pico_check("pixel50x50y_lefttop");
     }
 
     {
@@ -31,7 +31,7 @@ int main (void) {
         Pico_Pos pt = pico_pos(50, 50);
         pico_output_clear();
         pico_output_draw_pixel(pt);
-        _pico_check_assert("pixel50x50y_rightbottom");
+        _pico_check("pixel50x50y_rightbottom");
     }
 
     // RECTS
@@ -42,7 +42,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        _pico_check_assert("rect50x50y_center");
+        _pico_check("rect50x50y_center");
     }
 
     {
@@ -52,7 +52,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        _pico_check_assert("rect50x50y_lefttop");
+        _pico_check("rect50x50y_lefttop");
     }
 
     {
@@ -62,7 +62,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        _pico_check_assert("rect50x50y_rightbottom");
+        _pico_check("rect50x50y_rightbottom");
     }
 
     {
@@ -72,7 +72,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        _pico_check_assert("rect50x50y_rightcenter");
+        _pico_check("rect50x50y_rightcenter");
     }
 
     {
@@ -82,7 +82,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        _pico_check_assert("rect20x20y_25x25y");
+        _pico_check("rect20x20y_25x25y");
     }
     
     // RECTS out of [0,100]
@@ -93,7 +93,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        _pico_check_assert("rect20x20y_-25x-25y");
+        _pico_check("rect20x20y_-25x-25y");
     }
 
     {
@@ -103,7 +103,7 @@ int main (void) {
         Pico_Rect rct = { pt.x, pt.y, 4, 4 };
         pico_output_clear();
         pico_output_draw_rect(rct);
-        _pico_check_assert("rect50x50y_125x125y");
+        _pico_check("rect50x50y_125x125y");
     }
 
     pico_init(0);

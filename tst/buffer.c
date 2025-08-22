@@ -26,7 +26,7 @@ int main (void) {
         Pico_Pos p1 = pico_pos(50,50);
         pico_output_clear();
         pico_output_draw_buffer(p1, buffer, (Pico_Dim){3,3});
-        _pico_check_assert("buf3w3h_center_black");
+        _pico_check("buf3w3h_center_black");
     }
 
     {
@@ -36,7 +36,7 @@ int main (void) {
         Pico_Pos p2 = pico_pos(100,100);
         pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
         pico_output_draw_buffer(p2, buffer, (Pico_Dim){9,1});
-        _pico_check_assert("buf9w1h_rightbottom_white");
+        _pico_check("buf9w1h_rightbottom_white");
     }
 
     pico_init(0);

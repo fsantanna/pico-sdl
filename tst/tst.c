@@ -1,10 +1,8 @@
 #include "pico.h"
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_surface.h>
+#include <stdlib.h>
 #include <string.h>
-
-// #define PICO_CHECK_GENERATE
-// #define PICO_CHECK_DEBUG
 
 void _pico_check_generate (const char *msg) {
     char fmt[256] = "";
@@ -27,15 +25,15 @@ void _pico_check_assert (const char *msg) {
     SDL_FreeSurface(sfc2);
 }
 
-void pico_check (const char *msg) {
-#ifdef PICO_CHECK_GENERATE
-    _pico_check_generate(msg);
-#else
-    _pico_check_assert(msg);
-#endif
+void _pico_check (const char *msg) {
+    if (getenv("PICO_CHECK_GENERATE")) {
+        _pico_check_generate(msg);
+    } else {
+        _pico_check_assert(msg);
+    }
 
-#ifdef PICO_CHECK_DEBUG
-    puts("debug: press any key");
-    pico_input_event(NULL, PICO_KEYDOWN);
-#endif
+    if (getenv("PICO_CHECK_DEBUG")) {
+        puts("debug: press any key");
+        pico_input_event(NULL, PICO_KEYDOWN);
+    }
 }
