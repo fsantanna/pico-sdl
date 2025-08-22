@@ -10,7 +10,7 @@ void _pico_gen_output(const char *msg) {
 
 void _pico_assert_output(const char *msg) {
     char fmt1[256] = "", fmt2[256] = "";
-    sprintf(fmt1, "out/%s.png", msg);
+    sprintf(fmt1, "output/%s.png", msg);
     sprintf(fmt2, "expected/%s.png", msg);
 
     pico_output_screenshot(fmt1);
