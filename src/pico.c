@@ -1,6 +1,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <unistd.h>
+#include <limits.h>
 #include <time.h>
 
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -56,6 +57,7 @@ static struct {
     Pico_Flip flip;
     int angle;
     Pico_Dim zoom;
+    Pico_Dim scale;
 } S = {
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
@@ -69,6 +71,7 @@ static struct {
     PICO_FILL,
     {0, 0},
     0.0f,
+    {100, 100},
     {100, 100}
 };
 
@@ -416,8 +419,8 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim size
     }
 
     // SCALE
-    rct.w = rct.w; // * GRAPHICS_SET_SCALE_W;
-    rct.h = rct.h; // * GRAPHICS_SET_SCALE_H;
+    rct.w = (S.scale.x*rct.w)/100; // * GRAPHICS_SET_SCALE_W;
+    rct.h = (S.scale.y*rct.h)/100; // * GRAPHICS_SET_SCALE_H;
 
     // ANCHOR / PAN
     rct.x = X(pos.x, rct.w);
@@ -863,6 +866,10 @@ int pico_get_rotate (void) {
     return S.angle;
 }
 
+Pico_Dim pico_get_scale (void) {
+    return S.scale;
+}
+
 Pico_Pos pico_get_scroll (void) {
     return S.scroll;
 }
@@ -975,6 +982,11 @@ void pico_set_crop (Pico_Rect crop) {
 
 void pico_set_rotate (int angle) {
     S.angle = angle;
+}
+
+void pico_set_scale (Pico_Dim scale) {
+    // TODO: checks???
+    S.scale = scale;
 }
 
 void pico_set_scroll (Pico_Pos pos) {

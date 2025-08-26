@@ -259,6 +259,9 @@ int pico_get_grid (void);
 int pico_get_rotate (void);
 
 /// @brief TODO
+Pico_Dim pico_get_scale (void);
+
+/// @brief TODO
 Pico_Pos pico_get_scroll (void);
 
 /// @brief Gets the physical and logical window size.
@@ -338,6 +341,8 @@ void pico_set_grid (int on);
 
 /// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate (int angle);
+
+void pico_set_scale (Pico_Dim scale);
 
 /// @brief Changes the point of view on the logical window.
 /// @param pos new point of view
