@@ -32,6 +32,7 @@ typedef SDL_Rect  Pico_Rect;
 typedef SDL_Color Pico_Color;
 typedef SDL_Point Pico_Anchor;
 typedef SDL_Point Pico_Flip;
+typedef SDL_Point Pico_Pct;
 
 #define PICO_LEFT   0
 #define PICO_CENTER 50
@@ -259,7 +260,7 @@ int pico_get_grid (void);
 int pico_get_rotate (void);
 
 /// @brief TODO
-Pico_Dim pico_get_scale (void);
+Pico_Pct pico_get_scale (void);
 
 /// @brief TODO
 Pico_Pos pico_get_scroll (void);
@@ -288,7 +289,7 @@ Uint32 pico_get_ticks (void);
 const char* pico_get_title (void);
 
 /// @brief TODO
-Pico_Dim pico_get_zoom (void);
+Pico_Pct pico_get_zoom (void);
 
 // SET
 
@@ -342,7 +343,7 @@ void pico_set_grid (int on);
 /// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate (int angle);
 
-void pico_set_scale (Pico_Dim scale);
+void pico_set_scale (Pico_Pct scale);
 
 /// @brief Changes the point of view on the logical window.
 /// @param pos new point of view
@@ -368,7 +369,7 @@ void pico_set_title (const char* title);
 
 /// @brief TODO
 /// @param TODO
-void pico_set_zoom (Pico_Dim zoom);
+void pico_set_zoom (Pico_Pct zoom);
 
 /// @}
 
@@ -381,17 +382,15 @@ void pico_set_zoom (Pico_Dim zoom);
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
 /// @brief Returns a size relative to the screen size.
-/// @param x percentage that may go out of [0,100]
-/// @param y percentage that may go out of [0,100]
+/// @param pct percentage that may go out of [0,100]
 /// @sa pico_dim_ext
-Pico_Dim pico_dim (int x, int y);
+Pico_Dim pico_dim (Pico_Pct pct);
 
 /// @brief Returns a size relative to the given rectangle's size.
 /// @param r the reference rectangle
-/// @param x percentage that may go out of [0,100]
-/// @param y percentage that may go out of [0,100]
+/// @param pct percentage that may go out of [0,100]
 /// @sa pico_dim
-Pico_Dim pico_dim_ext (Pico_Dim d, int x, int y);
+Pico_Dim pico_dim_ext (Pico_Dim d, Pico_Pct pct);
 
 /// @brief Checks if a point is inside a rectangle.
 /// Assumes that both primitives use the same anchor.
@@ -409,17 +408,16 @@ int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r);
 int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Anchor ap, Pico_Rect r, Pico_Anchor ar);
 
 /// @brief Returns a coordinate relative to the screen rectangle.
-/// @param x percentage that may go out of [0,100]
-/// @param y percentage that may go out of [0,100]
+/// @param pct percentage that may go out of [0,100]
 /// @sa pico_pos_ext
-Pico_Pos pico_pos (int x, int y);
+Pico_Pos pico_pos (Pico_Pct pct);
 
 /// @brief Returns a coordinate relative to the given rectangle's position.
 /// @param r the reference rectangle
 /// @param x percentage that may go out of [0,100]
 /// @param y percentage that may go out of [0,100]
 /// @sa pico_pos
-Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y);
+Pico_Pos pico_pos_ext (Pico_Rect r, Pico_Pct pct);
 
 /// @brief Checks if two rectangles overlap.
 /// Assumes that both rectangles use the same anchor.

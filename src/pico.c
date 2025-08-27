@@ -56,8 +56,8 @@ static struct {
     PICO_STYLE style;
     Pico_Flip flip;
     int angle;
-    Pico_Dim zoom;
-    Pico_Dim scale;
+    Pico_Pct zoom;
+    Pico_Pct scale;
 } S = {
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
@@ -85,13 +85,13 @@ static int vanchor (int y, int h) {
 
 // UTILS
 
-Pico_Dim pico_dim (int x, int y) {
-    return pico_dim_ext(S.size.org, x, y);
+Pico_Dim pico_dim (Pico_Pct pct) {
+    return pico_dim_ext(S.size.org, pct);
 }
 
-Pico_Dim pico_dim_ext (Pico_Dim d, int x, int y) {
+Pico_Dim pico_dim_ext (Pico_Dim d, Pico_Pct pct) {
     assert(0 <= x && 0 <= y && "negative dimentions");
-    return (Pico_Dim){ (x*d.x)/100, (y*d.y)/100};
+    return (Pico_Dim){ (pct.x*d.x)/100, (pct.y*d.y)/100};
 }
 
 int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
@@ -111,21 +111,21 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Anchor ap, Pico_Rect r, Pico_Anchor 
     return SDL_PointInRect(&pt, &r);
 }
 
-Pico_Pos pico_pos (int x, int y) {
+Pico_Pos pico_pos (Pico_Pct pct) {
     Pico_Anchor old = S.anchor.draw;
     S.anchor.draw = (Pico_Anchor) {PICO_CENTER, PICO_MIDDLE};
     Pico_Pos pt = pico_pos_ext (
         (Pico_Rect){ S.size.org.x/2, S.size.org.y/2, S.size.org.x, S.size.org.y},
-        x, y
+        pct 
     );
     S.anchor.draw = old;
     return pt;
 }
 
-Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y) {
+Pico_Pos pico_pos_ext (Pico_Rect r, Pico_Pct pct) {
     return (Pico_Pos) {
-        hanchor(r.x, r.w) + (r.w*x)/100,
-        vanchor(r.y, r.h) + (r.h*y)/100
+        hanchor(r.x,r.w) + (pct.x*r.w)/100,
+        vanchor(r.y,r.h) + (pct.y*r.h)/100
     };
 }
 
@@ -213,19 +213,19 @@ static int event_from_sdl (Pico_Event* e, int xp) {
             }
             switch (e->key.keysym.sym) {
                 case SDLK_0: {
-                    pico_set_zoom((Pico_Dim){100, 100});
+                    pico_set_zoom((Pico_Pct){100, 100});
                     pico_set_scroll((Pico_Pos){0, 0});
                     break;
                 }
                 case SDLK_MINUS: {
-                    pico_set_zoom ((Pico_Dim) {
+                    pico_set_zoom ((Pico_Pct) {
                         MAX(1, S.zoom.x-10),
                         MAX(1, S.zoom.y-10)
                     });
                     break;
                 }
                 case SDLK_EQUALS: {
-                    pico_set_zoom ((Pico_Dim) {
+                    pico_set_zoom ((Pico_Pct) {
                         S.zoom.x + 10,
                         S.zoom.y + 10
                     });
@@ -876,7 +876,7 @@ int pico_get_rotate (void) {
     return S.angle;
 }
 
-Pico_Dim pico_get_scale (void) {
+Pico_Pct pico_get_scale (void) {
     return S.scale;
 }
 
@@ -923,6 +923,10 @@ Uint32 pico_get_ticks (void) {
 
 const char* pico_get_title (void) {
     return SDL_GetWindowTitle(WIN);
+}
+
+Pico_Pct pico_get_zoom (void) {
+    return S.zoom;
 }
 
 // SET
@@ -994,7 +998,7 @@ void pico_set_rotate (int angle) {
     S.angle = angle;
 }
 
-void pico_set_scale (Pico_Dim scale) {
+void pico_set_scale (Pico_Pct scale) {
     // TODO: checks???
     S.scale = scale;
 }
@@ -1060,7 +1064,7 @@ void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
 }
 
-void pico_set_zoom (Pico_Dim zoom) {
+void pico_set_zoom (Pico_Pct zoom) {
     S.zoom = zoom;
     pico_set_scroll ((Pico_Pos) {
         S.scroll.x - (S.size.org.x - S.size.cur.x)/2,
