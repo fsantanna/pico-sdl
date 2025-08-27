@@ -90,7 +90,7 @@ Pico_Dim pico_dim (Pico_Pct pct) {
 }
 
 Pico_Dim pico_dim_ext (Pico_Dim d, Pico_Pct pct) {
-    assert(0 <= x && 0 <= y && "negative dimentions");
+    assert(0 <= pct.x && 0 <= pct.y && "negative dimentions");
     return (Pico_Dim){ (pct.x*d.x)/100, (pct.y*d.y)/100};
 }
 
@@ -107,7 +107,7 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Anchor ap, Pico_Rect r, Pico_Anchor 
     S.anchor.draw = ar;
     r.x = hanchor(r.x, r.w);
     r.y = vanchor(r.y, r.h);
-    S.anchor.darw = old;
+    S.anchor.draw = old;
     return SDL_PointInRect(&pt, &r);
 }
 
