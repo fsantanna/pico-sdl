@@ -95,11 +95,19 @@ Pico_Dim pico_dim_ext (Pico_Dim d, int x, int y) {
 }
 
 int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
-    r.x = hanchor(r.x, r.w);
-    r.y = vanchor(r.y, r.h);
+    return pico_pos_vs_rect_ext(pt, S.anchor.draw, r, S.anchor.draw);
+}
+
+int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Anchor ap, Pico_Rect r, Pico_Anchor ar) {
+    Pico_Anchor old = S.anchor.draw;
+    S.anchor.draw = ap;
     pt.x = hanchor(pt.x, 1);
     pt.y = vanchor(pt.y, 1);
-    return !(pt.x<r.x || pt.x>=r.x+r.w || pt.y<r.y || pt.y>=r.y+r.h);
+    S.anchor.draw = ar;
+    r.x = hanchor(r.x, r.w);
+    r.y = vanchor(r.y, r.h);
+    S.anchor.darw = old;
+    return SDL_PointInRect(&pt, &r);
 }
 
 Pico_Pos pico_pos (int x, int y) {

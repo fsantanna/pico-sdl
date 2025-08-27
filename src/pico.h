@@ -394,10 +394,19 @@ Pico_Dim pico_dim (int x, int y);
 Pico_Dim pico_dim_ext (Pico_Dim d, int x, int y);
 
 /// @brief Checks if a point is inside a rectangle.
+/// Assumes that both primitives use the same anchor.
 /// @param pt point
 /// @param r rectangle
 /// @return 1 if pt is inside r, or 0 otherwise
 int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r);
+
+/// @brief Checks if a point is inside a rectangle.
+/// @param pt point
+/// @param ap anchor for pt
+/// @param r rectangle
+/// @param ar anchor for r
+/// @return 1 if pt is inside r, or 0 otherwise
+int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Anchor ap, Pico_Rect r, Pico_Anchor ar);
 
 /// @brief Returns a coordinate relative to the screen rectangle.
 /// @param x percentage that may go out of [0,100]
