@@ -99,6 +99,7 @@ int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
 }
 
 int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Anchor ap, Pico_Rect r, Pico_Anchor ar) {
+    assert(S.angle == 0 && "rotation angle != 0");
     Pico_Anchor old = S.anchor.draw;
     S.anchor.draw = ap;
     pt.x = hanchor(pt.x, 1);
@@ -133,6 +134,7 @@ int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2) {
 }
 
 int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Anchor a1, Pico_Rect r2, Pico_Anchor a2) {
+    assert(S.angle == 0 && "rotation angle != 0");
     Pico_Anchor old = S.anchor.draw;
     S.anchor.draw = a1;
     r1.x = hanchor(r1.x, r1.w);
