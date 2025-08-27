@@ -121,7 +121,7 @@ Pico_Pos pico_pos_ext (Pico_Rect r, int x, int y) {
 }
 
 int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2) {
-    return SDL_HasIntersection(&r1, &r2);
+    return pico_rect_vs_rect_ext(r1, S.anchor.draw, r2, S.anchor.draw);
 }
 
 int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Anchor a1, Pico_Rect r2, Pico_Anchor a2) {
