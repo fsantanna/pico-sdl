@@ -5,7 +5,7 @@ int main (void) {
     pico_init(1);
     pico_set_title("Blend");
 
-    Pico_Pos pos = pico_pos(50, 50);
+    Pico_Pos pos = pico_pos((Pico_Pct){50, 50});
     Pico_Rect rct = {pos.x, pos.y, 60, 12};
 
     {

@@ -29,7 +29,7 @@ int main (void) {
         printf(">>> (%d,%d)\n", e.button.x, e.button.y);
     }
 
-    pico_set_zoom((Pico_Dim){200, 200});
+    pico_set_zoom((Pico_Pct){200, 200});
     pico_output_clear();
     draw();
     {
@@ -38,7 +38,7 @@ int main (void) {
         printf(">>> (%d,%d)\n", e.button.x, e.button.y);
     }
 
-    pico_set_zoom((Pico_Dim){50, 50});
+    pico_set_zoom((Pico_Pct){50, 50});
     pico_output_clear();
     draw();
     {

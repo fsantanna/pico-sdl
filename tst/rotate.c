@@ -5,10 +5,10 @@ int main (void) {
     pico_set_title("Blend");
     pico_set_grid(0);
     pico_set_size((Pico_Dim){500,500}, (Pico_Dim){100, 100});
-    pico_set_anchor((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
+    pico_set_anchor_draw((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
     pico_set_font(NULL, 16);
 
-    Pico_Pos pt = pico_pos(50, 50);
+    Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
     Pico_Rect rect = {pt.x, pt.y, 50, 50};
 
     Pico_Color buffer[] = {
@@ -36,6 +36,47 @@ int main (void) {
     }
     pico_input_delay(500);
 
+    puts("RECT - anchor rotate 110%110%");
+    pico_set_rotate(0);
+    pico_output_clear();
+    pico_set_anchor_rotate((Pico_Anchor){110,110});
+    pico_output_draw_rect(rect);
+    pico_input_delay(500);
+    for (int i = 0; i < 72; i++) {
+        pico_set_rotate(pico_get_rotate() + 5);
+        pico_output_clear();
+        pico_output_draw_rect(rect);
+        pico_input_delay(50);
+    }
+    pico_input_delay(500);
+
+    puts("RECT - anchor rotate -10%-10%");
+    pico_set_rotate(0);
+    pico_output_clear();
+    pico_set_anchor_rotate((Pico_Anchor){-10,-10});
+    pico_output_draw_rect(rect);
+    pico_input_delay(500);
+    for (int i = 0; i < 72; i++) {
+        pico_set_rotate(pico_get_rotate() + 5);
+        pico_output_clear();
+        pico_output_draw_rect(rect);
+        pico_input_delay(50);
+    }
+    pico_set_anchor_rotate((Pico_Anchor){50,50});
+    pico_input_delay(500);
+
+    puts("RECT");
+    pico_set_rotate(0);
+    pico_output_clear();
+    pico_output_draw_rect(rect);
+    pico_input_delay(500);
+    for (int i = 0; i < 72; i++) {
+        pico_set_rotate(pico_get_rotate() + 5);
+        pico_output_clear();
+        pico_output_draw_rect(rect);
+        pico_input_delay(50);
+    }
+    pico_input_delay(500);
     puts("OVAL");
     pico_set_rotate(0);
     pico_output_clear();
