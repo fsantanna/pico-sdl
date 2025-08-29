@@ -243,7 +243,7 @@ Pico_Pos pico_get_cursor (void);
 /// @brief Checks the state of expert mode.
 int pico_get_expert (void);
 
-/// @brief Gets the flipping state of drawings.
+/// @brief Gets the flipping state of objects.
 Pico_Flip pico_get_flip (void);
 
 /// @brief Gets the font used to draw texts.
@@ -255,7 +255,7 @@ int pico_get_grid (void);
 /// @brief Gets the rotation angle of objects (in degrees).
 int pico_get_rotate (void);
 
-/// @brief Gets the scaling factor of drawings (in percentage)
+/// @brief Gets the scaling factor of objects (percentage)
 Pico_Pct pico_get_scale (void);
 
 /// @brief Gets the point of view on the logical window.
@@ -284,7 +284,7 @@ Uint32 pico_get_ticks (void);
 /// @brief Gets the aplication title.
 const char* pico_get_title (void);
 
-/// @brief TODO
+/// @brief Gets the scaling factor of the screen view (percentage).
 Pico_Pct pico_get_zoom (void);
 
 // SET
@@ -337,7 +337,7 @@ void pico_set_grid (int on);
 void pico_set_rotate (int angle);
 
 /// @brief Sets the scaling factor of objects
-/// @param scale percentage value for x and y axis
+/// @param scale new scaling for x and y axis (percentage)
 void pico_set_scale (Pico_Pct scale);
 
 /// @brief Changes the point of view on the logical window.
@@ -361,8 +361,8 @@ void pico_set_style (PICO_STYLE style);
 /// @param title new title
 void pico_set_title (const char* title);
 
-/// @brief TODO
-/// @param TODO
+/// @brief Sets the scaling factor of the screen view.
+/// @param zoom new scaling for x and y axis (percentage)
 void pico_set_zoom (Pico_Pct zoom);
 
 /// @}
