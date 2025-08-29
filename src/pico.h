@@ -223,7 +223,7 @@ void pico_output_writeln (const char* text);
 /// @brief Gets the reference to draw objects (center, topleft, etc).
 Pico_Anchor pico_get_anchor_draw (void);
 
-/// @brief Gets the reference to draw objects (center, topleft, etc).
+/// @brief Gets the reference to rotate objects (center, topleft, etc).
 Pico_Anchor pico_get_anchor_rotate (void);
 
 /// @brief Gets the color set to clear the screen.
@@ -294,14 +294,12 @@ Pico_Pct pico_get_zoom (void);
 
 /// @brief Changes the reference to draw objects (center, topleft, etc).
 /// @include anchor.c
-/// @param h x-axis anchor
-/// @param v y-axis anchor
+/// @param anchor anchor for the x and y axis
 void pico_set_anchor_draw (Pico_Anchor anchor);
 
 /// @brief Changes the reference to rotate objects (center, topleft, etc).
 /// @include anchor.c
-/// @param h x-axis anchor
-/// @param v y-axis anchor
+/// @param anchor anchor for the x and y axis
 void pico_set_anchor_rotate (Pico_Anchor anchor);
 
 /// @brief Changes the color used to clear the screen.
@@ -327,7 +325,7 @@ void pico_set_cursor (Pico_Pos pos);
 /// @param on 1 to enable it, or 0 to disable it
 void pico_set_expert (int on);
 
-/// @brief Sets the flipping state of drawings.
+/// @brief Sets the flipping state of objects.
 void pico_set_flip (Pico_Flip flip);
 
 /// @brief Changes the font used to draw texts.
@@ -342,7 +340,7 @@ void pico_set_grid (int on);
 /// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate (int angle);
 
-/// @brief Sets the scaling factor of drawings
+/// @brief Sets the scaling factor of objects
 /// @param scale percentage value for x and y axis
 void pico_set_scale (Pico_Pct scale);
 
