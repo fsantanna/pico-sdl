@@ -246,8 +246,7 @@ Pico_Pos pico_get_cursor (void);
 /// @brief Checks the state of expert mode.
 int pico_get_expert (void);
 
-/// @brief Gets the flipping value used to draw objects.
-/// @sa Pico_Flip
+/// @brief Gets the flipping state of drawings.
 Pico_Flip pico_get_flip (void);
 
 /// @brief Gets the font used to draw texts.
@@ -328,7 +327,7 @@ void pico_set_cursor (Pico_Pos pos);
 /// @param on 1 to enable it, or 0 to disable it
 void pico_set_expert (int on);
 
-// TODO: document me
+/// @brief Sets the flipping state of drawings.
 void pico_set_flip (Pico_Flip flip);
 
 /// @brief Changes the font used to draw texts.
