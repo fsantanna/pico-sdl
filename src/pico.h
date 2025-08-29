@@ -185,12 +185,14 @@ void pico_output_present (void);
 /// @brief Takes a screenshot.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
 /// @return The filepath of the screenshot.
+/// @sa pico_output_screenshot_ext
 const char* pico_output_screenshot (const char* path);
 
 /// @brief Takes a screenshot from a specific portion of the screen.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
 /// @param r region to screenshot, in logical pixels
 /// @return The filepath of the screenshot.
+/// @sa pico_output_screenshot
 const char* pico_output_screenshot_ext (const char* path, Pico_Rect r);
 
 /// @brief Plays a sound.
@@ -201,15 +203,11 @@ void pico_output_sound (const char* path);
 /// @brief Draws text with an internal cursor as reference, like in text editors.
 /// The cursor position updates to (x + len_text * FNT_SIZE, y).
 /// @param text text to draw
-/// @sa pico_set_cursor
-/// @sa pico_output_writeln
 void pico_output_write (const char* text);
 
 /// @brief Draws a line of text with an internal cursor as reference, like in text editors.
 /// The cursor position updates to (x, y + FNT_SIZE).
 /// @param text text to draw
-/// @sa pico_set_cursor
-/// @sa pico_output_write
 void pico_output_writeln (const char* text);
 
 /// @}
@@ -221,18 +219,17 @@ void pico_output_writeln (const char* text);
 // GET
 
 /// @brief Gets the reference to draw objects (center, topleft, etc).
+/// @sa pico_get_anchor_rotate
 Pico_Anchor pico_get_anchor_draw (void);
 
 /// @brief Gets the reference to rotate objects (center, topleft, etc).
+/// @sa pico_get_anchor_draw
 Pico_Anchor pico_get_anchor_rotate (void);
 
 /// @brief Gets the color set to clear the screen.
-/// @sa pico_output_clear
-/// @sa pico_set_color_clear
 Pico_Color pico_get_color_clear (void);
 
 /// @brief Gets the color set to draw.
-/// @sa pico_set_color_draw
 Pico_Color pico_get_color_draw (void);
 
 /// @brief Gets the cropping applied to images before drawing them.
@@ -304,7 +301,6 @@ void pico_set_anchor_rotate (Pico_Anchor anchor);
 
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
-/// @sa pico_output_clear
 void pico_set_color_clear (Pico_Color color);
 
 /// @brief Changes the color used to draw objects.
@@ -351,7 +347,6 @@ void pico_set_scroll (Pico_Pos pos);
 /// @brief Changes the physical and logical window sizes.
 /// @param phy new physical size
 /// @param log new logical size
-/// @sa pico_get_size
 void pico_set_size (Pico_Dim phy, Pico_Dim log);
 
 /// @brief Toggles the aplication window visibility.
