@@ -259,10 +259,10 @@ int pico_get_grid (void);
 /// @brief Gets the rotation angle of objects (in degrees).
 int pico_get_rotate (void);
 
-/// @brief TODO
+/// @brief Gets the scaling factor of drawings (in percentage)
 Pico_Pct pico_get_scale (void);
 
-/// @brief TODO
+/// @brief Gets the point of view on the logical window.
 Pico_Pos pico_get_scroll (void);
 
 /// @brief Gets the physical and logical window size.
@@ -343,6 +343,8 @@ void pico_set_grid (int on);
 /// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate (int angle);
 
+/// @brief Sets the scaling factor of drawings
+/// @param scale percentage value for x and y axis
 void pico_set_scale (Pico_Pct scale);
 
 /// @brief Changes the point of view on the logical window.
