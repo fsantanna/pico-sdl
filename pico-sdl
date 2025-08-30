@@ -11,4 +11,6 @@ gcc -Wall -o "$DIR/$EXE" "$1"                               \
     -I "$PICO/src"                                          \
     -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
 
-"$DIR/$EXE"
+if [ $? -eq 0 ]; then
+    "$DIR/$EXE"
+fi
