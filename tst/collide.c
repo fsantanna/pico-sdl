@@ -87,6 +87,10 @@ int main() {
         }
     }
 
+    puts("assert error");
+    pico_set_rotate(10);
+    pico_pos_vs_rect(pt, r);
+
     pico_init(0);
     return 0;
 }
