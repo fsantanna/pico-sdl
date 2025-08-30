@@ -1,34 +1,39 @@
 #include "pico.h"
+#include "tst.c"
 
 int main (void) {
     pico_init(1);
     pico_set_title("Dim");
 
     Pico_Pos p = pico_pos((Pico_Pct){50, 50});
+    char fmt[64];
 
     pico_output_clear();
-    for (int i = 0; i <= 10; i++)
-    {
-        printf("%d%% screen size\n", 10*i);
-        Pico_Dim d = pico_dim((Pico_Pct){10*i, 10*i});
+    for (int i = 0; i <= 100; i+=25) {
+        Pico_Dim d = pico_dim((Pico_Pct){i, i});
         pico_output_draw_rect((Pico_Rect){p.x,p.y,d.x,d.y});
-        pico_input_event(NULL, PICO_KEYDOWN);
+
+        sprintf(fmt, "%d_screen_size", i);
+        puts(fmt);
+        _pico_check(fmt);
     }
 
-    pico_output_clear();
-    Pico_Rect r = {p.x,p.y,50,30};
-    pico_set_color_draw((Pico_Color){100,100,100,255});
-    pico_output_draw_rect(r);
-    pico_set_color_draw((Pico_Color){255,255,255,255});
-    for (int i = 0; i <= 11; i++)
-    {
-        printf("%d%% of rect\n", 10*i);
-        Pico_Dim d = pico_dim_ext((Pico_Dim){r.w,r.h}, (Pico_Pct){10*i, 10*i});
+    for (int i = 0; i <= 120; i+=20) {
+        pico_output_clear();
+        Pico_Rect r = {p.x,p.y,50,20};
+        pico_set_color_draw((Pico_Color){255,255,255,255});
+        pico_output_draw_rect(r);
+
+        Pico_Dim d = pico_dim_ext((Pico_Dim){r.w,r.h}, (Pico_Pct){i, i});
+        pico_set_color_draw((Pico_Color){255,0,0,150});
         pico_output_draw_rect((Pico_Rect){p.x,p.y,d.x,d.y});
-        pico_input_event(NULL, PICO_KEYDOWN);
+
+        sprintf(fmt, "%d_rect_size", i);
+        puts(fmt);
+        _pico_check(fmt);
     }
 
-    puts("assert error:");
+    puts("ASSERT ERROR EXPECTED:");
     pico_dim((Pico_Pct){-1, -1});
 
     pico_init(0);
