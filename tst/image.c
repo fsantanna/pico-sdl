@@ -1,4 +1,5 @@
 #include "pico.h"
+#include "tst.c"
 
 int main (void) {
     pico_init(1);
@@ -9,51 +10,44 @@ int main (void) {
     pico_output_clear();
     pico_output_draw_image(cnt,"open.png");
     puts("show big centered");
-    pico_input_event(NULL, PICO_KEYDOWN);
+    _pico_check("img_big_center");
 
     pico_output_clear();
-    pico_set_size_image((Pico_Dim){10,10});
-    pico_output_draw_image(cnt,"open.png");
+    pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){10,10});
     puts("show small centered");
-    pico_input_event(NULL, PICO_KEYDOWN);
+    _pico_check("img_small_center");
 
     pico_output_clear();
-    pico_set_size_image((Pico_Pos){10,15});
-    pico_output_draw_image(cnt,"open.png");
+    pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){10,15});
     puts("show small/medium distorted");
-    pico_input_event(NULL, PICO_KEYDOWN);
+    _pico_check("img_smallmedium_distorted");
 
     pico_output_clear();
-    pico_set_size_image((Pico_Pos){15,0});
-    pico_output_draw_image(cnt,"open.png");
+    pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){15,0});
     puts("show medium normal");
-    pico_input_event(NULL, PICO_KEYDOWN);
+    _pico_check("img_medium_normal");
 
     pico_output_clear();
-    pico_set_size_image((Pico_Pos){0,10});
-    pico_output_draw_image(cnt,"open.png");
+    pico_output_draw_image_ext(cnt,"open.png",(Pico_Pos){0,10});
     puts("show small normal");
-    pico_input_event(NULL, PICO_KEYDOWN);
+    _pico_check("img_small_normal");
 
     pico_output_clear();
-    pico_set_size_image((Pico_Dim){0,0});
-    pico_output_draw_image(cnt,"open.png");
+    pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){0,0});
     puts("show big centered");
-    pico_input_event(NULL, PICO_KEYDOWN);
+    _pico_check("img_big_center2");
 
     pico_output_clear();
-    pico_set_size_image((Pico_Dim){30,30});
     pico_set_crop((Pico_Rect){9,9,30,30});
-    pico_output_draw_image(cnt,"open.png");
+    pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){30,30});
     puts("show big croped");
-    pico_input_event(NULL, PICO_KEYDOWN);
+    _pico_check("img_big_cropped");
 
     pico_output_clear();
-    pico_set_size_image((Pico_Dim){0,15});
     pico_set_crop((Pico_Rect){0,0,0,0});
-    pico_output_draw_image(cnt,"open.png");
+    pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){0,15});
     puts("show medium normal");
-    pico_input_event(NULL, PICO_KEYDOWN);
+    _pico_check("img_medium_normal2");
 
     pico_init(0);
     return 0;
