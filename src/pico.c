@@ -99,16 +99,7 @@ int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
 }
 
 int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Anchor ap, Pico_Rect r, Pico_Anchor ar) {
-    assert(S.angle == 0 && "rotation angle != 0");
-    Pico_Anchor old = S.anchor.draw;
-    S.anchor.draw = ap;
-    pt.x = hanchor(pt.x, 1);
-    pt.y = vanchor(pt.y, 1);
-    S.anchor.draw = ar;
-    r.x = hanchor(r.x, r.w);
-    r.y = vanchor(r.y, r.h);
-    S.anchor.draw = old;
-    return SDL_PointInRect(&pt, &r);
+    return pico_rect_vs_rect_ext((Pico_Rect){pt.x, pt.y, 1, 1}, ap, r, ar);
 }
 
 Pico_Pos pico_pos (Pico_Pct pct) {
