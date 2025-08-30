@@ -11,11 +11,6 @@ extern "C" {
 #include "keys.h"
 #include "events.h"
 
-#define PICO_TITLE "pico-SDL"
-#define PICO_DIM_PHY ((Pico_Dim) {640,360})
-#define PICO_DIM_LOG ((Pico_Dim) { 64, 36})
-#define PICO_HASH  128
-
 /// @example init.c
 /// @example delay.c
 /// @example event.c
@@ -23,8 +18,13 @@ extern "C" {
 /// @example event_loop.c
 
 /// @defgroup Types
-/// @brief TODO.
+/// @brief Types, Enums, and Defines.
 /// @{
+///
+#define PICO_TITLE "pico-SDL"
+#define PICO_DIM_PHY ((Pico_Dim) {640,360})
+#define PICO_DIM_LOG ((Pico_Dim) { 64, 36})
+#define PICO_HASH  128
 
 typedef SDL_Point Pico_Pos;
 typedef SDL_Point Pico_Dim;
@@ -70,7 +70,7 @@ void pico_init (int on);
 /// @brief Event handling.
 /// @{
 
-/// @brief Stops the program until a given number of milliseconds have passed.
+/// @brief Stops the program until the given number of milliseconds have passed.
 /// @include delay.c
 /// @param ms milliseconds to wait
 void pico_input_delay (int ms);
@@ -95,7 +95,7 @@ int  pico_input_event_ask (Pico_Event* evt, int type);
 /// @include event_timeout.c
 /// @param evt where to save the event data, or NULL to ignore
 /// @param type type of event to wait for (Pico_EventType)
-/// @param timeout time limit to wait for events in milliseconds
+/// @param timeout time limit to wait for (milliseconds)
 /// @return 1 if the given type of event has occurred, or 0 otherwise
 /// @sa pico_input_event
 /// @sa pico_input_event_ask
@@ -104,49 +104,47 @@ int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 /// @}
 
 /// @defgroup Output
-/// @brief Draw images and primitives, play sounds, etc.
+/// @brief Draw primitives, play sounds, etc.
 /// @{
 
 /// @brief Clears screen with color set by @ref pico_set_color_clear.
 void pico_output_clear (void);
 
-/// @brief Draws an image that is managed by the user.
-/// @param pos drawing postion
-/// @param buffer the image
-/// @param size size of the image
+/// @brief Draws an RGBA image that is managed by the user.
+/// @param pos drawing coordinate
+/// @param buffer the RGBA image
+/// @param size image size
 /// @sa pico_output_draw_image
 /// @sa pico_output_draw_image_ext
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size);
 
 /// @brief Draws an image.
-/// This function uses caching, so the file is actually loaded only once.
-/// @param pos drawing position
+/// @param pos drawing coordinate
 /// @param path path to the image file
 /// @sa pico_output_draw_buffer
 /// @sa pico_output_draw_image_ext
 void pico_output_draw_image (Pico_Pos pos, const char* path);
 
 /// @brief Draws an image with the specified size.
-/// This function uses caching, so the file is actually loaded only once.
-/// @param pos drawing position
+/// @param pos drawing coordinate
 /// @param path path to the image file
 /// @param size image size
 /// @sa pico_output_draw_buffer
 /// @sa pico_output_draw_image
 void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim size);
 
-/// @brief Draws a line segment.
+/// @brief Draws a line.
 /// @param p1 first point
 /// @param p2 second point
 void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2);
 
 /// @brief Draws a single pixel.
-/// @param pos drawing position
+/// @param pos drawing coordinate
 void pico_output_draw_pixel (Pico_Pos pos);
 
 /// @brief Draws a batch of pixels.
-/// @param apos array of positions
-/// @param count amount of pixels to draw
+/// @param apos array of coordinates
+/// @param count amount of coordinates
 void pico_output_draw_pixels (const Pico_Pos* apos, int count);
 
 /// @brief Draws a rectangle.
@@ -161,25 +159,27 @@ void pico_output_draw_tri (Pico_Rect rect);
 /// @param rect bounds of the ellipse
 void pico_output_draw_oval (Pico_Rect rect);
 
-/// @brief Draws a generic polygon.
-/// @param apos array of vertices
-/// @param count amount of vertices
+/// @brief Draws a polygon.
+/// @param apos array of coordinates
+/// @param count amount of coordinates
 void pico_output_draw_poly (const Pico_Pos* apos, int count);
 
 /// @brief Draws text.
-/// @param pos drawing position
+/// @param pos drawing coordinate
 /// @param text text to draw
 /// @sa pico_output_draw_text_ext
 void pico_output_draw_text (Pico_Pos pos, const char* text);
 
 /// @brief Draws text with the specified size.
-/// @param pos drawing position
+/// @param pos drawing coordinate
 /// @param text text to draw
-/// @param size image size
+/// @param size text size
 /// @sa pico_output_draw_text
 void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size);
 
 /// @brief Shows what has been drawn onto the screen.
+/// Only does anything on expert mode.
+/// @sa pico_set_expert
 void pico_output_present (void);
 
 /// @brief Takes a screenshot.
@@ -190,13 +190,12 @@ const char* pico_output_screenshot (const char* path);
 
 /// @brief Takes a screenshot from a specific portion of the screen.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
-/// @param r region to screenshot, in logical pixels
+/// @param r region to screenshot, in logical coordinates
 /// @return The filepath of the screenshot.
 /// @sa pico_output_screenshot
 const char* pico_output_screenshot_ext (const char* path, Pico_Rect r);
 
 /// @brief Plays a sound.
-/// This function uses caching, so the file is actually loaded only once.
 /// @param path path to the audio file
 void pico_output_sound (const char* path);
 
@@ -218,11 +217,11 @@ void pico_output_writeln (const char* text);
 
 // GET
 
-/// @brief Gets the reference to draw objects (center, topleft, etc).
+/// @brief Gets the origin used to draw objects (center, topleft, etc).
 /// @sa pico_get_anchor_rotate
 Pico_Anchor pico_get_anchor_draw (void);
 
-/// @brief Gets the reference to rotate objects (center, topleft, etc).
+/// @brief Gets the origin used to rotate objects (center, topleft, etc).
 /// @sa pico_get_anchor_draw
 Pico_Anchor pico_get_anchor_rotate (void);
 
@@ -232,7 +231,7 @@ Pico_Color pico_get_color_clear (void);
 /// @brief Gets the color set to draw.
 Pico_Color pico_get_color_draw (void);
 
-/// @brief Gets the cropping applied to images before drawing them.
+/// @brief Gets the cropping applied to objects when drawing them.
 Pico_Rect pico_get_crop (void);
 
 /// @brief Gets the position of the text cursor.
@@ -240,7 +239,7 @@ Pico_Rect pico_get_crop (void);
 /// @sa pico_output_writeln
 Pico_Pos pico_get_cursor (void);
 
-/// @brief Checks the state of expert mode.
+/// @brief Gets the state of expert mode.
 int pico_get_expert (void);
 
 /// @brief Gets the flipping state of objects.
@@ -249,13 +248,13 @@ Pico_Flip pico_get_flip (void);
 /// @brief Gets the font used to draw texts.
 const char* pico_get_font (void);
 
-/// @brief Checks the state of the logical pixel grid.
+/// @brief Gets the state of the logical pixel grid.
 int pico_get_grid (void);
 
 /// @brief Gets the rotation angle of objects (in degrees).
 int pico_get_rotate (void);
 
-/// @brief Gets the scaling factor of objects (percentage)
+/// @brief Gets the scaling factor of objects (percentage).
 Pico_Pct pico_get_scale (void);
 
 /// @brief Gets the point of view on the logical window.
@@ -264,15 +263,15 @@ Pico_Pos pico_get_scroll (void);
 /// @brief Gets the physical and logical window size.
 Pico_Size pico_get_size (void);
 
-/// @brief Gets the size of a given image.
-/// @param file path to image file
+/// @brief Gets the size of the given image.
+/// @param file image filepath
 Pico_Dim pico_get_size_image (const char* file);
 
-/// @brief Gets the size of a given text.
+/// @brief Gets the size of the given text.
 /// @param text text to measure
 Pico_Dim pico_get_size_text (const char* text);
 
-/// @brief Checks if the aplication window is visible.
+/// @brief Gets the visibility state of the window.
 int pico_get_show (void);
 
 /// @brief Gets the drawing style.
@@ -340,11 +339,11 @@ void pico_set_rotate (int angle);
 /// @param scale new scaling for x and y axis (percentage)
 void pico_set_scale (Pico_Pct scale);
 
-/// @brief Changes the point of view on the logical window.
+/// @brief Sets the point of view on the logical window.
 /// @param pos new point of view
 void pico_set_scroll (Pico_Pos pos);
 
-/// @brief Changes the physical and logical window sizes.
+/// @brief Sets the physical and logical window sizes.
 /// @param phy new physical size
 /// @param log new logical size
 void pico_set_size (Pico_Dim phy, Pico_Dim log);
@@ -353,11 +352,11 @@ void pico_set_size (Pico_Dim phy, Pico_Dim log);
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
 
-/// @brief Changes the drawing style
+/// @brief Sets the drawing style.
 /// @param style new style
 void pico_set_style (PICO_STYLE style);
 
-/// @brief Changes the aplication title
+/// @brief Sets the aplication title.
 /// @param title new title
 void pico_set_title (const char* title);
 
@@ -371,7 +370,7 @@ void pico_set_zoom (Pico_Pct zoom);
 /// @brief Utilities for users
 /// @{
 
-/// @brief Asserts condition and shows SDL error on failure
+/// @brief Asserts condition and shows SDL error on failure.
 /// @param x condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
