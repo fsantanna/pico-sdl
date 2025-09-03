@@ -1,3 +1,4 @@
+#include "dir.h"
 #include <libgen.h>
 
 #ifdef _WIN32
