@@ -14,13 +14,13 @@ typedef struct pico_hash {
 } pico_hash;
 
 pico_hash* pico_hash_create (size_t num_buckets) {
-    pico_hash *table = malloc(sizeof(pico_hash));
+    pico_hash *table = (pico_hash*)malloc(sizeof(pico_hash));
     if (table == NULL) {
         return NULL;
     }
 
     table->num_buckets = num_buckets;
-    table->buckets = calloc(table->num_buckets, sizeof(pico_hash_pair *));
+    table->buckets = (pico_hash_pair**)calloc(table->num_buckets, sizeof(pico_hash_pair *));
     if (table->buckets == NULL) {
         free(table);
         return NULL;
@@ -68,7 +68,7 @@ int pico_hash_add (pico_hash *table, const char *key, void *value) {
     }
 
     // Key does not exist in the hash table, add a new key-value pair
-    pair = malloc(sizeof(pico_hash_pair));
+    pair = (pico_hash_pair*)malloc(sizeof(pico_hash_pair));
     if (pair == NULL) {
         return 0;
     }

@@ -70,7 +70,7 @@ static struct {
     { {0,0}, {0,0} },
     PICO_FILL,
     {0, 0},
-    0.0f,
+    0,
     {100, 100},
     {100, 100}
 };
@@ -447,7 +447,7 @@ void pico_output_draw_image (Pico_Pos pos, const char* path) {
 }
 
 void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim size) {
-    SDL_Texture* tex = pico_hash_get(_pico_hash, path);
+    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
     if (tex == NULL) {
         tex = IMG_LoadTexture(REN, path);
         pico_hash_add(_pico_hash, path, tex);
@@ -725,7 +725,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
     Mix_Chunk* mix = NULL;
 
     if (cache) {
-        mix = pico_hash_get(_pico_hash, path);
+        mix = (Mix_Chunk*)pico_hash_get(_pico_hash, path);
         if (mix == NULL) {
             mix = Mix_LoadWAV(path);
             pico_hash_add(_pico_hash, path, mix);
