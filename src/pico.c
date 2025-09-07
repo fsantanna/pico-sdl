@@ -158,7 +158,7 @@ void pico_init (int on) {
         SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
 
         TTF_Init();
-        Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 4096);
+        Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
         pico_set_size(PICO_DIM_PHY, PICO_DIM_LOG);
         pico_set_font(NULL, 0);
