@@ -451,8 +451,6 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim size) 
     if (tex == NULL) {
         tex = IMG_LoadTexture(REN, path);
         pico_hash_add(_pico_hash, path, tex);
-    } else {
-        tex = IMG_LoadTexture(REN, path);
     }
     pico_assert(tex != NULL);
 
