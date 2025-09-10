@@ -892,8 +892,14 @@ Pico_Size pico_get_size (void) {
 }
 
 Pico_Dim pico_get_size_image (const char* file) {
-    SDL_Texture* tex = IMG_LoadTexture(REN, file);
+    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
+    if (tex == NULL) {
+        tex = IMG_LoadTexture(REN, path);
+        pico_assert(tex);
+        pico_hash_add(_pico_hash, path, tex);
+    }
     pico_assert(tex != NULL);
+
     Pico_Dim size;
     SDL_QueryTexture(tex, NULL, NULL, &size.x, &size.y);
     return size;
