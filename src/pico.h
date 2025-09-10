@@ -177,6 +177,10 @@ void pico_output_draw_text (Pico_Pos pos, const char* text);
 /// @sa pico_output_draw_text
 void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size);
 
+void pico_output_draw_fmt (Pico_Pos pos, const char* fmt, ...);
+
+void pico_output_draw_fmt_ext (Pico_Pos pos, const char* fmt, Pico_Dim size, ...);
+
 /// @brief Shows what has been drawn onto the screen.
 /// Only does anything on expert mode.
 /// @sa pico_set_expert

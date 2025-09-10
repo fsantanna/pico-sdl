@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <time.h>
+#include <stdarg.h>
 
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
@@ -675,6 +676,26 @@ void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size) {
 
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(sfc);
+}
+
+static void pico_output_draw_fmt_va (Pico_Pos pos, const char* fmt, Pico_Dim size, va_list args) {
+    static char text[1024];
+    vsprintf(text, fmt, args);
+    pico_output_draw_text_ext(pos, text, size);
+}
+
+void pico_output_draw_fmt (Pico_Pos pos, const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    pico_output_draw_fmt_va(pos, fmt, PICO_SIZE_KEEP, args);
+    va_end(args);
+}
+
+void pico_output_draw_fmt_ext (Pico_Pos pos, const char* fmt, Pico_Dim size, ...) {
+    va_list args;
+    va_start(args, fmt);
+    pico_output_draw_fmt_va(pos, fmt, size, args);
+    va_end(args);
 }
 
 static void show_grid (void) {
