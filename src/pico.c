@@ -904,7 +904,7 @@ Pico_Dim pico_get_size_image (const char* file) {
 }
 
 Pico_Dim pico_get_size_text (const char* text) {
-    if (!text || text[0] == '\0') {
+    if (text[0] == '\0') {
         return (Pico_Dim){0, 0};
     }
 
