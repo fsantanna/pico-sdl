@@ -388,7 +388,6 @@ void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim 
     _pico_output_draw_tex(pos, aux, size);
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(aux);
-    _pico_output_present(0);
 }
 
 static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim size) {
@@ -483,7 +482,6 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
     S.anchor.draw = anc;
     SDL_DestroyTexture(aux);
-    _pico_output_present(0);
 }
 
 void pico_output_draw_pixel (Pico_Pos pos) {
@@ -528,7 +526,6 @@ void pico_output_draw_rect (Pico_Rect rect) {
     SDL_SetRenderTarget(REN, TEX);
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
     SDL_DestroyTexture(aux);
-    _pico_output_present(0);
 }
 
 // TODO: Test me for flip and rotate
@@ -566,7 +563,6 @@ void pico_output_draw_tri (Pico_Rect rect) {
     SDL_SetRenderTarget(REN, TEX);
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
     SDL_DestroyTexture(aux);
-    _pico_output_present(0);
 }
 
 // TODO: Test me for flip and rotate
@@ -600,7 +596,6 @@ void pico_output_draw_oval (Pico_Rect rect) {
     SDL_SetRenderTarget(REN, TEX);
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
     SDL_DestroyTexture(aux);
-    _pico_output_present(0);
 }
 
 void pico_output_draw_poly (const Pico_Pos* apos, int count) {
@@ -654,7 +649,6 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
     _pico_output_draw_tex(pos, aux, PICO_SIZE_KEEP);
     S.anchor.draw = anc;
     SDL_DestroyTexture(aux);
-    _pico_output_present(0);
 }
 
 void pico_output_draw_text (Pico_Pos pos, const char* text) {
@@ -671,8 +665,6 @@ void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size) {
     pico_assert(tex != NULL);
 
     _pico_output_draw_tex(pos, tex, size);
-    _pico_output_present(0);
-
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(sfc);
 }
