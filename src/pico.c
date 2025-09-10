@@ -891,10 +891,10 @@ Pico_Size pico_get_size (void) {
 }
 
 Pico_Dim pico_get_size_image (const char* file) {
-    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
+    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, file);
     if (tex == NULL) {
-        tex = IMG_LoadTexture(REN, path);
-        pico_hash_add(_pico_hash, path, tex);
+        tex = IMG_LoadTexture(REN, file);
+        pico_hash_add(_pico_hash, file, tex);
     }
     pico_assert(tex != NULL);
 
