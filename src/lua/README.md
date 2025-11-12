@@ -2,24 +2,24 @@
 
 - `pico.init (on: boolean)`
 - `pico.pos (pct: {x,y}) -> {x,y}`
-- `pico.get`
+- **pico.get**
     - `pico.get.size () -> { phy={x,y}, log={x,y} }`
-- `pico.set`
+- **pico.set**
     - `pico.set.cursor (pos: {x,y})`
     - `pico.set.grid (on: boolean)`
     - `pico.set.title (title: string)`
-    - `pico.set.color`
+    - **pico.set.color**
         - `pico.set.color.clear (clr: {r,g,b,a})`
         - `pico.set.color.draw (clr: {r,g,b,a})`
-    - `pico.set.anchor`
+    - **pico.set.anchor**
         - `pico.set.anchor.draw (anc: {x,y})`
         - Anchors:
             - `x`: `left`, `center`, `right`
             - `y`: `top`, `middle`, `bottom`
-- `pico.input`
+- **pico.input**
     - `pico.input.delay (ms: integer)`
     - `pico.input.event ([evt:{}], [ms: integer])`
-- `pico.output`
+- **pico.output**
     - `pico.output.clear ()`
     - `pico.output.draw`
         - `pico.output.draw.image (pos: {x,y}, path: string)`
