@@ -107,6 +107,16 @@ static int l_set_color_draw (lua_State* L) {
     return 0;
 }
 
+static int l_set_cursor (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // pos = { x,y }
+    Pico_Pos pos = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y")
+    };
+    pico_set_cursor(pos);
+    return 0;
+}
+
 static int l_set_title (lua_State* L) {
     const char* title = luaL_checkstring(L, 1);   // title
     pico_set_title(title);
@@ -190,9 +200,32 @@ static int l_output_draw_rect (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_text (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // pos={x,y}
+    luaL_checktype(L, 2, LUA_TSTRING);      // pos={x,y} | text
+    Pico_Pos pos = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y")
+    };
+    pico_output_draw_text(pos, lua_tostring(L,2));
+    return 0;
+}
+
 static int l_output_sound (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);   // path
     pico_output_sound(path);
+    return 0;
+}
+
+static int l_output_write (lua_State* L) {
+    const char* text = luaL_checkstring(L, 1);   // text
+    pico_output_write(text);
+    return 0;
+}
+
+static int l_output_writeln (lua_State* L) {
+    const char* text = luaL_checkstring(L, 1);   // text
+    pico_output_writeln(text);
     return 0;
 }
 
@@ -207,7 +240,8 @@ static const luaL_Reg ll_all[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_set[] = {
-    { "title", l_set_title },
+    { "cursor", l_set_cursor },
+    { "title",  l_set_title  },
     { NULL,    NULL }
 };
 
@@ -233,8 +267,10 @@ static const luaL_Reg ll_input[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_output[] = {
-    { "clear", l_output_clear },
-    { "sound", l_output_sound },
+    { "clear",   l_output_clear   },
+    { "sound",   l_output_sound   },
+    { "write",   l_output_write   },
+    { "writeln", l_output_writeln },
     { NULL,    NULL }
 };
 
@@ -243,6 +279,7 @@ static const luaL_Reg ll_output_draw[] = {
     { "oval",  l_output_draw_oval  },
     { "pixel", l_output_draw_pixel },
     { "rect",  l_output_draw_rect  },
+    { "text",  l_output_draw_text  },
     { NULL,    NULL }
 };
 
