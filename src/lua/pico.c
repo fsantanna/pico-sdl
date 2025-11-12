@@ -140,6 +140,13 @@ static int l_set_cursor (lua_State* L) {
     return 0;
 }
 
+static int l_set_grid (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TBOOLEAN);
+    int on = lua_toboolean(L, 1);
+    pico_set_grid(on);
+    return 0;
+}
+
 static int l_set_title (lua_State* L) {
     const char* title = luaL_checkstring(L, 1);   // title
     pico_set_title(title);
@@ -307,6 +314,7 @@ static const luaL_Reg ll_get[] = {
 
 static const luaL_Reg ll_set[] = {
     { "cursor", l_set_cursor },
+    { "grid",   l_set_grid   },
     { "title",  l_set_title  },
     { NULL, NULL }
 };
