@@ -95,6 +95,18 @@ static int l_set_color_clear (lua_State* L) {
     return 0;
 }
 
+static int l_set_color_draw (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // clr = { r,g,b,a }
+    Pico_Color clr = {
+        L_checkfieldint(L, 1, "r"),
+        L_checkfieldint(L, 1, "g"),
+        L_checkfieldint(L, 1, "b"),
+        L_checkfieldint(L, 1, "a")
+    };
+    pico_set_color_draw(clr);
+    return 0;
+}
+
 static int l_set_title (lua_State* L) {
     const char* title = luaL_checkstring(L, 1);   // title
     pico_set_title(title);
@@ -144,6 +156,40 @@ static int l_output_draw_image (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_oval (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // rect={x,y,w,h}
+    Pico_Rect rect = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y"),
+        L_checkfieldint(L, 1, "w"),
+        L_checkfieldint(L, 1, "h")
+    };
+    pico_output_draw_oval(rect);
+    return 0;
+}
+
+static int l_output_draw_pixel (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // pos={x,y}
+    Pico_Pos pos = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y")
+    };
+    pico_output_draw_pixel(pos);
+    return 0;
+}
+
+static int l_output_draw_rect (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // rect={x,y,w,h}
+    Pico_Rect rect = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y"),
+        L_checkfieldint(L, 1, "w"),
+        L_checkfieldint(L, 1, "h")
+    };
+    pico_output_draw_rect(rect);
+    return 0;
+}
+
 static int l_output_sound (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);   // path
     pico_output_sound(path);
@@ -167,6 +213,7 @@ static const luaL_Reg ll_set[] = {
 
 static const luaL_Reg ll_set_color[] = {
     { "clear", l_set_color_clear },
+    { "draw",  l_set_color_draw  },
     { NULL,    NULL }
 };
 
@@ -193,6 +240,9 @@ static const luaL_Reg ll_output[] = {
 
 static const luaL_Reg ll_output_draw[] = {
     { "image", l_output_draw_image },
+    { "oval",  l_output_draw_oval  },
+    { "pixel", l_output_draw_pixel },
+    { "rect",  l_output_draw_rect  },
     { NULL,    NULL }
 };
 
