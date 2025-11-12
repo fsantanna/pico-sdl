@@ -140,6 +140,13 @@ static int l_set_cursor (lua_State* L) {
     return 0;
 }
 
+static int l_set_expert (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TBOOLEAN);
+    int on = lua_toboolean(L, 1);
+    pico_set_expert(on);
+    return 0;
+}
+
 static int l_set_grid (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);
     int on = lua_toboolean(L, 1);
@@ -277,6 +284,11 @@ static int l_output_draw_text (lua_State* L) {
     return 0;
 }
 
+static int l_output_present (lua_State* L) {
+    pico_output_present();
+    return 0;
+}
+
 static int l_output_sound (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);   // path
     pico_output_sound(path);
@@ -314,6 +326,7 @@ static const luaL_Reg ll_get[] = {
 
 static const luaL_Reg ll_set[] = {
     { "cursor", l_set_cursor },
+    { "expert", l_set_expert },
     { "grid",   l_set_grid   },
     { "title",  l_set_title  },
     { NULL, NULL }
@@ -342,6 +355,7 @@ static const luaL_Reg ll_input[] = {
 
 static const luaL_Reg ll_output[] = {
     { "clear",   l_output_clear   },
+    { "present", l_output_present },
     { "sound",   l_output_sound   },
     { "write",   l_output_write   },
     { "writeln", l_output_writeln },

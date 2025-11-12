@@ -15,8 +15,6 @@ print "shows dark screen"
 
 --[[
 
-]]
-
 print "waits any key press"
 pico.input.event('key.up')
 
@@ -93,5 +91,56 @@ end
     pico.input.delay(2000)
 print "waits more 2 seconds"
 local e3 = pico.input.event(2000);
+
+-- GRID=0
+pico.set.grid(false)
+print "disables grid"
+pico.input.delay(2000)
+
+-- EXPERT
+
+pico.output.clear()                     -- TODO: should restart cursor?
+pico.set.expert(true)
+pico.set.cursor(up)
+pico.output.writeln("expert")
+print("shows expert")
+pico.output.present()
+pico.input.delay(2000)
+pico.set.expert(false)
+pico.output.clear()
+
+]]
+
+-- DRAW_RECT
+print("shows lower-left X, center rect, center/up-right line")
+print("increases zoom")
+for i=1, 20 do
+    log.x = log.x - 1
+    log.y = log.y - 1
+    pico.set.size(nil, log)
+    local ct = pico.pos { x=50, y=50 }
+    pico.output.clear()
+    pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }
+    pico.output.draw.rect { x=ct.x, y=ct.y, w=10, h=10 }
+    pico.set.color.draw { r=0xFF,g=0x00,b=0x00,a=0xFF }
+    pico.output.draw.text(pico.pos{x=25,y=75}, "X")
+    pico.output.draw.line(ct, pico.pos{x=100,y=0})
+    pico.input.delay(250)
+end
+print("decreases zoom")
+for i=1, 20 do
+    log.x = log.x + 1
+    log.y = log.y + 1
+    pico.set.size(nil, log)
+    local ct = pico.pos { x=50, y=50 }
+    pico.output.clear()
+    pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }
+    pico.output.draw.rect { x=ct.x, y=ct.y, w=10, h=10 }
+    pico.set.color.draw { r=0xFF,g=0x00,b=0x00,a=0xFF }
+    pico.output.draw.text(pico.pos{x=25,y=75}, "X")
+    pico.output.draw.line(ct, pico.pos{x=100,y=0})
+    pico.input.delay(250)
+end
+pico.set.color.draw((Pico_Color){0xFF,0xFF,0xFF,0xFF})
 
 pico.init(false)

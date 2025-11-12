@@ -6,6 +6,7 @@
     - `pico.get.size () -> { phy={x,y}, log={x,y} }`
 - **pico.set**
     - `pico.set.cursor (pos: {x,y})`
+    - `pico.set.expert (on: boolean)`
     - `pico.set.grid (on: boolean)`
     - `pico.set.title (title: string)`
     - **pico.set.color**
@@ -27,6 +28,7 @@
         - `pico.output.draw.pixel (pos: {x,y})`
         - `pico.output.draw.rect (rect: {x,y,w,h})`
         - `pico.output.draw.text (pos: {x,y}, text: string)`
+    - `pico.output.present ()`
     - `pico.output.sound (path: string)`
     - `pico.output.write (text: string)`
     - `pico.output.writeln (text: string)`
