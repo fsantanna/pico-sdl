@@ -13,7 +13,7 @@ static int L_checkfieldint (lua_State* L, int i, const char* k) {
     int ok;
     int v = lua_tointegerx(L, -1, &ok);
     if (!ok) {
-        return luaL_error(L, "expected field '%s'", k);
+        return luaL_error(L, "expected integer field '%s'", k);
     }
     lua_pop(L, 1);                      // T
     return v;
@@ -44,6 +44,29 @@ static int l_pos (lua_State* L) {
         lua_setfield(L, -2, "y");           // pct | pos
     }
     return 1;                               // pct | [pos]
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_get_size (lua_State* L) {
+    Pico_Size siz = pico_get_size();
+    lua_newtable(L);                // siz
+
+    lua_newtable(L);                // siz | phy
+    lua_pushinteger(L, siz.phy.x);  // siz | phy | x
+    lua_setfield(L, 2, "x");        // siz | phy
+    lua_pushinteger(L, siz.phy.y);  // siz | phy | y
+    lua_setfield(L, 2, "y");        // siz | phy
+    lua_setfield(L, 1, "phy");      // siz
+
+    lua_newtable(L);                // siz | log
+    lua_pushinteger(L, siz.log.x);  // siz | log | x
+    lua_setfield(L, 2, "x");        // siz | log
+    lua_pushinteger(L, siz.log.y);  // siz | log | y
+    lua_setfield(L, 2, "y");        // siz | log
+    lua_setfield(L, 1, "log");      // siz
+
+    return 1;                       // [siz]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,7 +168,21 @@ static int l_input_event (lua_State* L) {
     }
     Pico_Event e;
     pico_input_event(&e, evt);
-    return 0;
+
+    lua_newtable(L);    // . | t
+
+    switch (e.type) {
+        case PICO_MOUSEBUTTONDOWN:
+            lua_pushinteger(L, e.button.x); // . | t | x
+            lua_setfield(L, -2, "x");       // . | t
+            lua_pushinteger(L, e.button.y); // . | t | y
+            lua_setfield(L, -2, "y");       // . | t
+            break;
+        default:
+            assert(0 && "TODO: e.type");
+    }
+
+    return 1;           // . | [t]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -234,7 +271,14 @@ static int l_output_writeln (lua_State* L) {
 static const luaL_Reg ll_all[] = {
     { "init", l_init },
     { "pos",  l_pos  },
-    { NULL,   NULL }
+    { NULL, NULL }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+static const luaL_Reg ll_get[] = {
+    { "size", l_get_size },
+    { NULL, NULL }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -242,18 +286,18 @@ static const luaL_Reg ll_all[] = {
 static const luaL_Reg ll_set[] = {
     { "cursor", l_set_cursor },
     { "title",  l_set_title  },
-    { NULL,    NULL }
+    { NULL, NULL }
 };
 
 static const luaL_Reg ll_set_color[] = {
     { "clear", l_set_color_clear },
     { "draw",  l_set_color_draw  },
-    { NULL,    NULL }
+    { NULL, NULL }
 };
 
 static const luaL_Reg ll_set_anchor[] = {
     { "draw", l_set_anchor_draw },
-    { NULL,   NULL }
+    { NULL, NULL }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -261,7 +305,7 @@ static const luaL_Reg ll_set_anchor[] = {
 static const luaL_Reg ll_input[] = {
     { "delay", l_input_delay },
     { "event", l_input_event },
-    { NULL,    NULL }
+    { NULL, NULL }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -271,7 +315,7 @@ static const luaL_Reg ll_output[] = {
     { "sound",   l_output_sound   },
     { "write",   l_output_write   },
     { "writeln", l_output_writeln },
-    { NULL,    NULL }
+    { NULL, NULL }
 };
 
 static const luaL_Reg ll_output_draw[] = {
@@ -280,7 +324,7 @@ static const luaL_Reg ll_output_draw[] = {
     { "pixel", l_output_draw_pixel },
     { "rect",  l_output_draw_rect  },
     { "text",  l_output_draw_text  },
-    { NULL,    NULL }
+    { NULL, NULL }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -291,6 +335,9 @@ int luaopen_pico (lua_State* L) {
     lua_settable(L, LUA_REGISTRYINDEX);     // -
 
     luaL_newlib(L, ll_all);                 // pico
+
+    luaL_newlib(L, ll_get);                 // pico | get
+    lua_setfield(L, -2, "get");             // pico
 
     luaL_newlib(L, ll_set);                 // pico | set
     luaL_newlib(L, ll_set_color);           // pico | set | color
@@ -313,6 +360,8 @@ int luaopen_pico (lua_State* L) {
         lua_newtable(L);                        // . | G | evts
         lua_pushinteger(L, PICO_KEYUP);         // . | G | evts | UP
         lua_setfield(L, -2, "key.up");          // . | G | evts
+        lua_pushinteger(L, PICO_MOUSEBUTTONDOWN); // . | G | evts | DN
+        lua_setfield(L, -2, "mouse.button.dn"); // . | G | evts
         lua_setfield(L, -2, "evts");            // . | G
         lua_pop(L, 1);                          // .
     }                                           // pico

@@ -4,6 +4,11 @@ local pico = require 'pico'
 
 pico.init(true)
 
+local phy = pico.get.size().phy
+local log = pico.get.size().log
+assert(phy.x==640 and phy.y==360);
+assert(log.x==64  and log.y==36 );
+
 local pt = pico.pos { x=50, y=50 }
 assert(pt.x==32 and pt.y==18)
 print "shows dark screen"
@@ -25,7 +30,7 @@ pico.input.delay(2000)
 
 -- CLEAR
 pico.set.color.clear { r=0xFF, g=0xFF, b=0xFF, a=0xFF }
-pico.output.clear();
+pico.output.clear()
 
 print "shows white screen"
 pico.input.delay(2000)
@@ -40,8 +45,8 @@ pico.input.delay(2000)
 -- DRAW_PIXEL/RECT/OVAL
 pico.set.color.clear { r=0x00, g=0x00, b=0x00, a=0xFF }
 pico.set.color.draw { r=0xFF, g=0xFF, b=0xFF, a=0xFF }
-pico.output.clear();
-pico.output.draw.pixel(pt);
+pico.output.clear()
+pico.output.draw.pixel(pt)
 local rct = pico.pos { x=75, y=25 }
 pico.output.draw.rect { x=rct.x, y=rct.y, w=10, h=5 }
 local ova = pico.pos { x=25, y=75 }
@@ -51,13 +56,11 @@ print "shows oval -> pixel -> rect"
 pico.input.delay(2000)
 
 -- DRAW_TEXT
-pico.output.draw.text(pt, "Hello!");
+pico.output.draw.text(pt, "Hello!")
 
 print "shows centered \"Hello!\" (on top of shapes)"
 pico.input.delay(2000)
 pico.output.clear()
-
-]]
 
 -- WRITE
 local up = pico.pos {x=10, y=10}
@@ -74,5 +77,16 @@ pico.output.writeln "pico"
 
 print "shows 1 2 3 \\n \\n pico"
 pico.input.delay(2000)
+
+]]
+
+-- MOUSE
+do
+    print "waits mouse click"
+    local e2 = pico.input.event 'mouse.button.dn'
+    print "shows pixel over mouse"
+    pico.output.draw.pixel { x=e2.x, y=e2.y }
+    pico.input.delay(2000)
+end
 
 pico.init(false)

@@ -2,6 +2,12 @@
 
 int main (void) {
     pico_init(1);
+
+    Pico_Dim phy = pico_get_size().phy;
+    Pico_Dim log = pico_get_size().log;
+    assert(phy.x==640 && phy.y==360);
+    assert(log.x==64  && log.y==36 );
+
     Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
     puts("shows dark screen");
 
@@ -74,11 +80,8 @@ int main (void) {
         Pico_Event e2;
         puts("waits mouse click");
         pico_input_event(&e2, PICO_MOUSEBUTTONDOWN);
-        
-        Pico_Dim phy = pico_get_size().phy;
-        Pico_Dim log = pico_get_size().log;
         puts("shows pixel over mouse");
-        pico_output_draw_pixel((Pico_Pos){(log.x*e2.button.x)/phy.x,(log.y*e2.button.y)/phy.y});
+        pico_output_draw_pixel((Pico_Pos){e2.button.x,e2.button.y});
         pico_input_delay(2000);
     }
 
@@ -103,9 +106,6 @@ int main (void) {
     pico_input_delay(2000);
     pico_set_expert(0);
     pico_output_clear();
-
-    // GET SIZE
-    Pico_Dim log = pico_get_size().log;
 
     // DRAW_RECT
     puts("shows lower-left X, center rect, center/up-right line");
