@@ -15,6 +15,8 @@ print "shows dark screen"
 
 --[[
 
+]]
+
 print "waits any key press"
 pico.input.event('key.up')
 
@@ -78,8 +80,6 @@ pico.output.writeln "pico"
 print "shows 1 2 3 \\n \\n pico"
 pico.input.delay(2000)
 
-]]
-
 -- MOUSE
 do
     print "waits mouse click"
@@ -88,5 +88,10 @@ do
     pico.output.draw.pixel { x=e2.x, y=e2.y }
     pico.input.delay(2000)
 end
+
+-- EVENT
+    pico.input.delay(2000)
+print "waits more 2 seconds"
+local e3 = pico.input.event(2000);
 
 pico.init(false)

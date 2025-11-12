@@ -155,19 +155,41 @@ static int l_input_delay (lua_State* L) {
 }
 
 static int l_input_event (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TSTRING);      // evt
-    lua_pushlightuserdata(L, (void*)&KEY);  // evt | K
-    lua_gettable(L, LUA_REGISTRYINDEX);     // evt | G
-    lua_getfield(L, -1, "evts");            // evt | G | evts
-    lua_pushvalue(L, 1);                    // evt | G | evts | id
-    lua_gettable(L, -2);                    // evt | G | evts | num
-    int ok;
-    int evt = lua_tointegerx(L, -1, &ok);
-    if (!ok) {
-        return luaL_error(L, "invalid event \"%s\"", lua_tostring(L,1));
+    // pico.input.event()
+    // pico.input.event(1000)
+    // pico.input.event('key.dn')
+    // pico.input.event('key.dn', 1000)
+
+    int ms = -1;
+    if (lua_isinteger(L,-1)) {
+        ms = lua_tointeger(L, 1);
     }
+
+    int evt = PICO_ANY;
+    if (lua_type(L,1) == LUA_TSTRING) {
+        lua_pushlightuserdata(L, (void*)&KEY);  // "e" | K
+        lua_gettable(L, LUA_REGISTRYINDEX);     // "e" | G
+        lua_getfield(L, -1, "evts");            // "e" | G | evts
+        lua_pushvalue(L, 1);                    // "e" | G | evts | "e"
+        lua_gettable(L, -2);                    // "e" | G | evts | e
+        int ok;
+        evt = lua_tointegerx(L, -1, &ok);
+        if (!ok) {
+            return luaL_error(L, "invalid event \"%s\"", lua_tostring(L,1));
+        }
+    }
+
     Pico_Event e;
-    pico_input_event(&e, evt);
+    int ise = 1;
+    if (ms == -1) {
+        pico_input_event(&e, evt);
+    } else {
+        ise = pico_input_event_timeout(&e, PICO_ANY, ms);
+    }
+
+    if (!ise) {
+        return 0;
+    }
 
     lua_newtable(L);    // . | t
 
