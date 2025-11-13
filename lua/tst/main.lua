@@ -9,7 +9,7 @@ local log = pico.get.size().log
 assert(phy.x==640 and phy.y==360);
 assert(log.x==64  and log.y==36 );
 
-local pt = pico.pos { x=50, y=50 }
+local pt = pico.pos(50,50)
 assert(pt.x==32 and pt.y==18)
 print "shows dark screen"
 

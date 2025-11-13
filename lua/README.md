@@ -16,8 +16,8 @@
     - **pico.set.anchor**
         - `pico.set.anchor.draw (anc: {x,y})`
         - Anchors:
-            - `x`: `left`, `center`, `right`
-            - `y`: `top`, `middle`, `bottom`
+            - `x`: `integer`, `left`, `center`, `right`
+            - `y`: `integer`, `top`, `middle`, `bottom`
 - **pico.input**
     - `pico.input.delay (ms: integer)`
     - `pico.input.event ([evt:{}], [ms: integer])`

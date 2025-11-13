@@ -29,20 +29,22 @@ static int l_init (lua_State* L) {
 }
 
 static int l_pos (lua_State* L) {
-    int ok;
-    luaL_checktype(L, 1, LUA_TTABLE);       // pct = { x,y }
-    Pico_Pct pct = {
-        L_checkfieldint(L, 1, "x"),
-        L_checkfieldint(L, 1, "y")
-    };
-    {
-        Pico_Pos pos = pico_pos(pct);
-        lua_newtable(L);                    // pct | pos
-        lua_pushinteger(L, pos.x);          // pct | pos | x
-        lua_setfield(L, -2, "x");           // pct | pos
-        lua_pushinteger(L, pos.y);          // pct | pos | y
-        lua_setfield(L, -2, "y");           // pct | pos
+    Pico_Pct pct;
+    if (lua_type(L,1) == LUA_TTABLE) {  // pct = { x,y }
+        pct.x = L_checkfieldint(L, 1, "x");
+        pct.y = L_checkfieldint(L, 1, "y");
+    } else {
+        pct.x = luaL_checkinteger(L, 1);
+        pct.y = luaL_checkinteger(L, 2);
     }
+
+    Pico_Pos pos = pico_pos(pct);
+    lua_newtable(L);                    // pct | pos
+    lua_pushinteger(L, pos.x);          // pct | pos | x
+    lua_setfield(L, -2, "x");           // pct | pos
+    lua_pushinteger(L, pos.y);          // pct | pos | y
+    lua_setfield(L, -2, "y");           // pct | pos
+
     return 1;                               // pct | [pos]
 }
 
@@ -83,7 +85,9 @@ static int l_set_anchor_draw (lua_State* L) {
     lua_getfield(L, -1, "ancs");            // T | x | y | G | ancs
 
     int ok;
-    {
+    if (lua_isinteger(L,2)) {
+        anc.x = lua_tointeger(L, 2);
+    } else {
         lua_pushvalue(L, 2);                    // . | ancs | x
         lua_gettable(L, -2);                    // . | ancs | x
         anc.x = lua_tointegerx(L, -1, &ok);
@@ -92,7 +96,10 @@ static int l_set_anchor_draw (lua_State* L) {
         }
         lua_pop(L, 1);                          // . | ancs
     }
-    {
+
+    if (lua_isinteger(L,3)) {
+        anc.y = lua_tointeger(L, 3);
+    } else {
         lua_pushvalue(L, 3);                    // . | ancs | y
         lua_gettable(L, -2);                    // . | ancs | y
         anc.y = lua_tointegerx(L, -1, &ok);
@@ -250,7 +257,7 @@ static int l_input_event (lua_State* L) {
             lua_setfield(L, -2, "y");       // . | t
             break;
         default:
-            assert(0 && "TODO: e.type");
+            //assert(0 && "TODO: e.type");
     }
 
     return 1;           // . | [t]
