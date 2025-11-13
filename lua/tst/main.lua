@@ -1,4 +1,4 @@
-package.cpath = package.cpath .. ";../src/lua/?.so"
+package.cpath = package.cpath .. ";../?.so"
 
 local pico = require 'pico'
 
