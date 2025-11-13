@@ -311,7 +311,7 @@ static int l_output_draw_buffer (lua_State* L) {
         }
         lua_pop(L, 1);                      // pos | T
     }
-    pico_output_draw_buffer(pos, (Pico_Color*)buf, (Pico_Dim){l,c});
+    pico_output_draw_buffer(pos, (Pico_Color*)buf, (Pico_Dim){c,l});
     return 0;
 }
 
