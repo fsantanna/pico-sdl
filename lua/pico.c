@@ -45,7 +45,7 @@ static int l_pos (lua_State* L) {
     lua_pushinteger(L, pos.y);          // pct | pos | y
     lua_setfield(L, -2, "y");           // pct | pos
 
-    return 1;                               // pct | [pos]
+    return 1;                           // pct | [pos]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,26 +113,34 @@ static int l_set_anchor_draw (lua_State* L) {
     return 0;
 }
 
+static Pico_Color _color (lua_State* L) {
+    Pico_Color clr;
+    if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b,a }
+        clr = (Pico_Color) {
+            L_checkfieldint(L, 1, "r"),
+            L_checkfieldint(L, 1, "g"),
+            L_checkfieldint(L, 1, "b"),
+            L_checkfieldint(L, 1, "a")
+        };
+    } else {                            // r | g | b | a
+        clr = (Pico_Color) {
+            luaL_checkinteger(L, 1),
+            luaL_checkinteger(L, 2),
+            luaL_checkinteger(L, 3),
+            luaL_checkinteger(L, 4)
+        };
+    }
+    return clr;
+}
+
 static int l_set_color_clear (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // clr = { r,g,b,a }
-    Pico_Color clr = {
-        L_checkfieldint(L, 1, "r"),
-        L_checkfieldint(L, 1, "g"),
-        L_checkfieldint(L, 1, "b"),
-        L_checkfieldint(L, 1, "a")
-    };
+    Pico_Color clr = _color(L);
     pico_set_color_clear(clr);
     return 0;
 }
 
 static int l_set_color_draw (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // clr = { r,g,b,a }
-    Pico_Color clr = {
-        L_checkfieldint(L, 1, "r"),
-        L_checkfieldint(L, 1, "g"),
-        L_checkfieldint(L, 1, "b"),
-        L_checkfieldint(L, 1, "a")
-    };
+    Pico_Color clr = _color(L);
     pico_set_color_draw(clr);
     return 0;
 }

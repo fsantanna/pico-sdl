@@ -31,7 +31,7 @@ pico.output.sound "start.wav"
 pico.input.delay(2000)
 
 -- CLEAR
-pico.set.color.clear { r=0xFF, g=0xFF, b=0xFF, a=0xFF }
+pico.set.color.clear(0xFF, 0xFF, 0xFF, 0xFF)
 pico.output.clear()
 
 print "shows white screen"

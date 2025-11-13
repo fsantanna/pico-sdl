@@ -12,8 +12,10 @@
     - `pico.set.size (phy: {x,y}, log: {x,y})`
     - `pico.set.title (title: string)`
     - **pico.set.color**
-        - `pico.set.color.clear (clr: {r,g,b,a})`
-        - `pico.set.color.draw (clr: {r,g,b,a})`
+        - `pico.set.color.clear (clr: {r,g,b[,a]})`
+            - `pico.set.color.clear (r, g, b [,a])`
+        - `pico.set.color.draw (clr: {r,g,b[,a]})`
+            - `pico.set.color.draw (r, g, b [,a])`
     - **pico.set.anchor**
         - `pico.set.anchor.draw (anc: {x,y})`
         - Anchors:
