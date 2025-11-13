@@ -318,6 +318,24 @@ static int l_output_draw_pixel (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_poly (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // pts={{x,y,w,h}}
+    lua_len(L, 1);                          // pts | n
+    int n = lua_tointeger(L, -1);
+    Pico_Pos poly[n];
+    for (int i=1; i<=n; i++) {
+        lua_geti(L, 1, i);                  // pts | n | {x,y}
+        luaL_checktype(L, -1, LUA_TTABLE);
+        poly[i-1] = (Pico_Pos) {
+            L_checkfieldint(L, -1, "x"),
+            L_checkfieldint(L, -1, "y")
+        };
+        lua_pop(L, 1);                      // pts | n
+    }
+    pico_output_draw_poly(poly, n);
+    return 0;
+}
+
 static int l_output_draw_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // rect={x,y,w,h}
     Pico_Rect rect = {
@@ -438,6 +456,7 @@ static const luaL_Reg ll_output_draw[] = {
     { "line",  l_output_draw_line  },
     { "oval",  l_output_draw_oval  },
     { "pixel", l_output_draw_pixel },
+    { "poly",  l_output_draw_poly  },
     { "rect",  l_output_draw_rect  },
     { "text",  l_output_draw_text  },
     { "tri",   l_output_draw_tri   },

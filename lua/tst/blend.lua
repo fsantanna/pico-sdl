@@ -84,37 +84,37 @@ do
     end
 end
 
---[[
-    {
-        print("line dimming");
-        Pico_Pos p1 = {pos.x-20, pos.y-6};
-        Pico_Pos p2 = {pos.x+20, pos.y+6};
-        for (int a = 255; a > 0; a-=5) {
-            pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,0,0,a});
-            pico_output_draw_line(p1, p2);
-            pico_input_delay(50);
-            if (a == 120) {
-                _pico_check("line_dimmed");
-            }
+do
+    print "line dimming"
+    local p1 = { x=pos.x-20, y=pos.y-6 }
+    local p2 = { x=pos.x+20, y=pos.y+6 }
+    for a=255, 0, -5 do
+        pico.output.clear()
+        pico.set.color.draw { r=255, g=0, b=0, a=a }
+        pico.output.draw.line(p1, p2);
+        pico.input.delay(50)
+        --[[
+        if (a == 120) {
+            _pico_check("line_dimmed")
         }
-    }
+        ]]
+    end
+end
 
-    {
-        print("poly dimming");
-        Pico_Pos poly[] = {{5, 5}, {59, 10}, {20, 31}};
-        for (int a = 255; a > 0; a-=5) {
-            pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,0,0,a});
-            pico_output_draw_poly(poly, 3);
-            pico_input_delay(50);
-            if (a == 120) {
-                _pico_check("poly_dimmed");
-            }
+do
+    print "poly dimming"
+    local poly = {{x=5, y=5}, {x=59, y=10}, {x=20, y=31}};
+    for a=255, 0, -5 do
+        pico.output.clear()
+        pico.set.color.draw { r=255, g=0, b=0, a=a }
+        pico.output.draw.poly(poly)
+        pico.input.delay(50)
+        --[[
+        if (a == 120) {
+            _pico_check("poly_dimmed")
         }
-    }
-}
-
-]]
+        ]]
+    end
+end
 
 pico.init(false)

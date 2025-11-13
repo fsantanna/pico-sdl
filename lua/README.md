@@ -29,6 +29,7 @@
         - `pico.output.draw.line (p1: {x,y}, p2: {x,y})`
         - `pico.output.draw.oval (rect: {x,y,w,h})`
         - `pico.output.draw.pixel (pos: {x,y})`
+        - `pico.output.draw.poly (pts: {{x,y}})`
         - `pico.output.draw.rect (rect: {x,y,w,h})`
         - `pico.output.draw.text (pos: {x,y}, text: string)`
         - `pico.output.draw.tri (rect: {x,y,w,h})`
