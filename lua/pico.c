@@ -341,6 +341,18 @@ static int l_output_draw_text (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_tri (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // rect={x,y,w,h}
+    Pico_Rect rect = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y"),
+        L_checkfieldint(L, 1, "w"),
+        L_checkfieldint(L, 1, "h")
+    };
+    pico_output_draw_tri(rect);
+    return 0;
+}
+
 static int l_output_present (lua_State* L) {
     pico_output_present();
     return 0;
@@ -428,6 +440,7 @@ static const luaL_Reg ll_output_draw[] = {
     { "pixel", l_output_draw_pixel },
     { "rect",  l_output_draw_rect  },
     { "text",  l_output_draw_text  },
+    { "tri",   l_output_draw_tri   },
     { NULL, NULL }
 };
 

@@ -2,6 +2,7 @@
 
 - `pico.init (on: boolean)`
 - `pico.pos (pct: {x,y}) -> {x,y}`
+    - `pico.pos (x: integer, y: integer) -> {x,y}`
 - **pico.get**
     - `pico.get.size () -> { phy={x,y}, log={x,y} }`
 - **pico.set**
@@ -30,6 +31,7 @@
         - `pico.output.draw.pixel (pos: {x,y})`
         - `pico.output.draw.rect (rect: {x,y,w,h})`
         - `pico.output.draw.text (pos: {x,y}, text: string)`
+        - `pico.output.draw.tri (rect: {x,y,w,h})`
     - `pico.output.present ()`
     - `pico.output.sound (path: string)`
     - `pico.output.write (text: string)`
