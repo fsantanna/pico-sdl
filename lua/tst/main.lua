@@ -31,7 +31,7 @@ pico.output.sound "start.wav"
 pico.input.delay(2000)
 
 -- CLEAR
-pico.set.color.clear(0xFF, 0xFF, 0xFF, 0xFF)
+pico.set.color.clear(0xFF, 0xFF, 0xFF)
 pico.output.clear()
 
 print "shows white screen"
@@ -45,8 +45,8 @@ print "shows centered image"
 pico.input.delay(2000)
 
 -- DRAW_PIXEL/RECT/OVAL
-pico.set.color.clear { r=0x00, g=0x00, b=0x00, a=0xFF }
-pico.set.color.draw { r=0xFF, g=0xFF, b=0xFF, a=0xFF }
+pico.set.color.clear { r=0x00, g=0x00, b=0x00 }
+pico.set.color.draw { r=0xFF, g=0xFF, b=0xFF }
 pico.output.clear()
 pico.output.draw.pixel(pt)
 local rct = pico.pos { x=75, y=25 }

@@ -115,20 +115,30 @@ static int l_set_anchor_draw (lua_State* L) {
 
 static Pico_Color _color (lua_State* L) {
     Pico_Color clr;
-    if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b,a }
+    if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b[,a] }
         clr = (Pico_Color) {
             L_checkfieldint(L, 1, "r"),
             L_checkfieldint(L, 1, "g"),
-            L_checkfieldint(L, 1, "b"),
-            L_checkfieldint(L, 1, "a")
+            L_checkfieldint(L, 1, "b")
         };
-    } else {                            // r | g | b | a
+        lua_getfield(L, 1, "a");        // clr | a
+        int ok;
+        clr.a = lua_tointegerx(L, -1, &ok);
+        if (!ok) {
+            clr.a = 0xFF;
+        }
+        lua_pop(L, 1);                  // clr
+    } else {                            // r | g | b [| a]
         clr = (Pico_Color) {
             luaL_checkinteger(L, 1),
             luaL_checkinteger(L, 2),
-            luaL_checkinteger(L, 3),
-            luaL_checkinteger(L, 4)
+            luaL_checkinteger(L, 3)
         };
+        if (lua_gettop(L) >= 4) {
+            clr.a = luaL_checkinteger(L, 4);
+        } else {
+            clr.a = 0xFF;
+        }
     }
     return clr;
 }
