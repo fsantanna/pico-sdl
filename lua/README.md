@@ -40,3 +40,5 @@
     - `pico.output.sound (path: string)`
     - `pico.output.write (text: string)`
     - `pico.output.writeln (text: string)`
+- **pico.vs**
+    - `pico.vs.pos_rect (pos: {x,y}, r: {x,y,w,h} [,anc, anc]) -> boolean`

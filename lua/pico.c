@@ -50,6 +50,24 @@ static int l_pos (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static int l_vs_pos_rect (lua_State* L) {
+    Pico_Pos pos = {                    // pos | rect
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y")
+    };
+    Pico_Rect rect = {                  // pos | rect
+        L_checkfieldint(L, 2, "x"),
+        L_checkfieldint(L, 2, "y"),
+        L_checkfieldint(L, 2, "w"),
+        L_checkfieldint(L, 2, "h")
+    };
+    int x = pico_pos_vs_rect(pos, rect);
+    lua_pushboolean(L, x);              // pos | rect | x
+    return 1;                           // pos | rect | [x]
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 static int l_get_size (lua_State* L) {
     Pico_Size siz = pico_get_size();
     lua_newtable(L);                // siz
@@ -469,6 +487,13 @@ static const luaL_Reg ll_all[] = {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static const luaL_Reg ll_vs[] = {
+    { "pos_rect", l_vs_pos_rect },
+    { NULL, NULL }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
 static const luaL_Reg ll_get[] = {
     { "size", l_get_size },
     { NULL, NULL }
@@ -537,6 +562,9 @@ int luaopen_pico (lua_State* L) {
     lua_settable(L, LUA_REGISTRYINDEX);     // -
 
     luaL_newlib(L, ll_all);                 // pico
+
+    luaL_newlib(L, ll_vs);                  // pico | vs
+    lua_setfield(L, -2, "vs");              // pico
 
     luaL_newlib(L, ll_get);                 // pico | get
     lua_setfield(L, -2, "get");             // pico
