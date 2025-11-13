@@ -25,6 +25,7 @@
 - **pico.output**
     - `pico.output.clear ()`
     - `pico.output.draw`
+        - `pico.output.draw.buffer (pos: {x,y}, buffer: {{{r,g,b,a}}})`
         - `pico.output.draw.image (pos: {x,y}, path: string)`
         - `pico.output.draw.line (p1: {x,y}, p2: {x,y})`
         - `pico.output.draw.oval (rect: {x,y,w,h})`

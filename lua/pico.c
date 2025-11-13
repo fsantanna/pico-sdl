@@ -270,6 +270,51 @@ static int l_output_clear (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_buffer (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // pos={x,y} | T
+    luaL_checktype(L, 2, LUA_TTABLE);       // pos | T
+
+    Pico_Pos pos = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y")
+    };
+
+    lua_len(L, 2);                          // pos | T | l
+    int l = lua_tointeger(L, -1);
+    lua_geti(L, 2, 1);                      // pos | T | l | T[1]
+    if (lua_type(L,-1) != LUA_TTABLE) {
+        return luaL_error(L, "expected column tables");
+    }
+    lua_len(L, -1);                         // pos | T | l | T[1] | c
+    int c = lua_tointeger(L, -1);
+    lua_pop(L, 3);                          // pos | T
+
+    Pico_Color buf[l][c];
+    for (int i=1; i<=l; i++) {
+        lua_geti(L, 2, i);                  // pos | T | T[i]
+        if (lua_type(L,-1) != LUA_TTABLE) {
+            return luaL_error(L, "expected table at column %d", i);
+        }
+        for (int j=1; j<=c; j++) {
+            lua_geti(L, -1, j);             // pos | T | T[i] | T[j]
+            if (lua_type(L,-1) != LUA_TTABLE) {
+                return luaL_error(L, "expected color at position [%d,%d]", i, j);
+            }
+            SDL_Color clr = {
+                L_checkfieldint(L, -1, "r"),
+                L_checkfieldint(L, -1, "g"),
+                L_checkfieldint(L, -1, "b"),
+                L_checkfieldint(L, -1, "a")
+            };
+            buf[i-1][j-1] = clr;
+            lua_pop(L, 1);                  // pos | T | T[i]
+        }
+        lua_pop(L, 1);                      // pos | T
+    }
+    pico_output_draw_buffer(pos, (Pico_Color*)buf, (Pico_Dim){l,c});
+    return 0;
+}
+
 static int l_output_draw_image (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // pos={x,y}
     luaL_checktype(L, 2, LUA_TSTRING);      // pos={x,y} | path
@@ -325,7 +370,9 @@ static int l_output_draw_poly (lua_State* L) {
     Pico_Pos poly[n];
     for (int i=1; i<=n; i++) {
         lua_geti(L, 1, i);                  // pts | n | {x,y}
-        luaL_checktype(L, -1, LUA_TTABLE);
+        if (lua_type(L,-1) != LUA_TTABLE) {
+            return luaL_error(L, "expected point in index %d", i);
+        }
         poly[i-1] = (Pico_Pos) {
             L_checkfieldint(L, -1, "x"),
             L_checkfieldint(L, -1, "y")
@@ -452,14 +499,15 @@ static const luaL_Reg ll_output[] = {
 };
 
 static const luaL_Reg ll_output_draw[] = {
-    { "image", l_output_draw_image },
-    { "line",  l_output_draw_line  },
-    { "oval",  l_output_draw_oval  },
-    { "pixel", l_output_draw_pixel },
-    { "poly",  l_output_draw_poly  },
-    { "rect",  l_output_draw_rect  },
-    { "text",  l_output_draw_text  },
-    { "tri",   l_output_draw_tri   },
+    { "buffer", l_output_draw_buffer },
+    { "image",  l_output_draw_image  },
+    { "line",   l_output_draw_line   },
+    { "oval",   l_output_draw_oval   },
+    { "pixel",  l_output_draw_pixel  },
+    { "poly",   l_output_draw_poly   },
+    { "rect",   l_output_draw_rect   },
+    { "text",   l_output_draw_text   },
+    { "tri",    l_output_draw_tri    },
     { NULL, NULL }
 };
 
