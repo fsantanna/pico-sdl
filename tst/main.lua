@@ -15,6 +15,8 @@ print "shows dark screen"
 
 --[[
 
+]]
+
 print "waits any key press"
 pico.input.event('key.up')
 
@@ -109,8 +111,6 @@ pico.input.delay(2000)
 pico.set.expert(false)
 pico.output.clear()
 
-]]
-
 -- DRAW_RECT
 print("shows lower-left X, center rect, center/up-right line")
 print("increases zoom")
@@ -141,6 +141,16 @@ for i=1, 20 do
     pico.output.draw.line(ct, pico.pos{x=100,y=0})
     pico.input.delay(250)
 end
-pico.set.color.draw((Pico_Color){0xFF,0xFF,0xFF,0xFF})
+pico.set.color.draw { r=0xFF, g=0xFF, b=0xFF, a=0xFF }
+
+-- PAN
+
+print("scrolls right/down")
+for i=0, 19 do
+    pico.set.scroll { x=10-i, y=10-i }
+    pico.output.clear()
+    pico.output.draw.text(pt, "Uma frase bem grande...")
+    pico.input.delay(250)
+end
 
 pico.init(false)

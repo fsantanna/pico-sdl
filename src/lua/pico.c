@@ -154,13 +154,22 @@ static int l_set_grid (lua_State* L) {
     return 0;
 }
 
+static int l_set_scroll (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // pos = { x,y }
+    Pico_Pos pos = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y"),
+    };
+    pico_set_scroll(pos);
+    return 0;
+}
+
 static int l_set_size (lua_State* L) {
     // phy | log
     Pico_Dim phy, log;
     if (lua_isnil(L,1)) {
         phy = PICO_SIZE_KEEP;               // nil | log
     } else {
-puts("xxx");
         luaL_checktype(L, 1, LUA_TTABLE);   // phy | log
         phy = (Pico_Dim) {
             L_checkfieldint(L, 1, "x"),
@@ -369,6 +378,7 @@ static const luaL_Reg ll_set[] = {
     { "cursor", l_set_cursor },
     { "expert", l_set_expert },
     { "grid",   l_set_grid   },
+    { "scroll", l_set_scroll },
     { "size",   l_set_size   },
     { "title",  l_set_title  },
     { NULL, NULL }
