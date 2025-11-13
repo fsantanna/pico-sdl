@@ -8,6 +8,7 @@
     - `pico.set.cursor (pos: {x,y})`
     - `pico.set.expert (on: boolean)`
     - `pico.set.grid (on: boolean)`
+    - `pico.set.size (phy: {x,y}, log: {x,y})`
     - `pico.set.title (title: string)`
     - **pico.set.color**
         - `pico.set.color.clear (clr: {r,g,b,a})`
@@ -24,6 +25,7 @@
     - `pico.output.clear ()`
     - `pico.output.draw`
         - `pico.output.draw.image (pos: {x,y}, path: string)`
+        - `pico.output.draw.line (p1: {x,y}, p2: {x,y})`
         - `pico.output.draw.oval (rect: {x,y,w,h})`
         - `pico.output.draw.pixel (pos: {x,y})`
         - `pico.output.draw.rect (rect: {x,y,w,h})`

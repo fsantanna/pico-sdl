@@ -154,6 +154,32 @@ static int l_set_grid (lua_State* L) {
     return 0;
 }
 
+static int l_set_size (lua_State* L) {
+    // phy | log
+    Pico_Dim phy, log;
+    if (lua_isnil(L,1)) {
+        phy = PICO_SIZE_KEEP;               // nil | log
+    } else {
+puts("xxx");
+        luaL_checktype(L, 1, LUA_TTABLE);   // phy | log
+        phy = (Pico_Dim) {
+            L_checkfieldint(L, 1, "x"),
+            L_checkfieldint(L, 1, "y"),
+        };
+    }
+    if (lua_isnil(L,2)) {
+        log = PICO_SIZE_KEEP;               // phy | nil
+    } else {
+        luaL_checktype(L, 2, LUA_TTABLE);   // phy | log
+        log = (Pico_Dim) {
+            L_checkfieldint(L, 2, "x"),
+            L_checkfieldint(L, 2, "y"),
+        };
+    }
+    pico_set_size(phy, log);
+    return 0;
+}
+
 static int l_set_title (lua_State* L) {
     const char* title = luaL_checkstring(L, 1);   // title
     pico_set_title(title);
@@ -236,6 +262,21 @@ static int l_output_draw_image (lua_State* L) {
         L_checkfieldint(L, 1, "y")
     };
     pico_output_draw_image(pos, lua_tostring(L,2));
+    return 0;
+}
+
+static int l_output_draw_line (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // p1={x,y}
+    luaL_checktype(L, 2, LUA_TTABLE);       // p1={x,y} | p2={x,y}
+    Pico_Pos p1 = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y")
+    };
+    Pico_Pos p2 = {
+        L_checkfieldint(L, 2, "x"),
+        L_checkfieldint(L, 2, "y")
+    };
+    pico_output_draw_line(p1, p2);
     return 0;
 }
 
@@ -328,6 +369,7 @@ static const luaL_Reg ll_set[] = {
     { "cursor", l_set_cursor },
     { "expert", l_set_expert },
     { "grid",   l_set_grid   },
+    { "size",   l_set_size   },
     { "title",  l_set_title  },
     { NULL, NULL }
 };
@@ -364,6 +406,7 @@ static const luaL_Reg ll_output[] = {
 
 static const luaL_Reg ll_output_draw[] = {
     { "image", l_output_draw_image },
+    { "line",  l_output_draw_line  },
     { "oval",  l_output_draw_oval  },
     { "pixel", l_output_draw_pixel },
     { "rect",  l_output_draw_rect  },
