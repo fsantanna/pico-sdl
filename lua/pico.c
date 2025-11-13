@@ -455,6 +455,8 @@ int luaopen_pico (lua_State* L) {
         lua_pushlightuserdata(L, (void*)&KEY);  // . | K
         lua_gettable(L, LUA_REGISTRYINDEX);     // . | G
         lua_newtable(L);                        // . | G | evts
+        lua_pushinteger(L, PICO_KEYDOWN);       // . | G | evts | DN
+        lua_setfield(L, -2, "key.dn");          // . | G | evts
         lua_pushinteger(L, PICO_KEYUP);         // . | G | evts | UP
         lua_setfield(L, -2, "key.up");          // . | G | evts
         lua_pushinteger(L, PICO_MOUSEBUTTONDOWN); // . | G | evts | DN
@@ -467,10 +469,18 @@ int luaopen_pico (lua_State* L) {
         lua_pushlightuserdata(L, (void*)&KEY);  // . | K
         lua_gettable(L, LUA_REGISTRYINDEX);     // . | G
         lua_newtable(L);                        // . | G | ancs
+        lua_pushinteger(L, PICO_LEFT);          // . | G | ancs | L
+        lua_setfield(L, -2, "left");            // . | G | ancs
         lua_pushinteger(L, PICO_CENTER);        // . | G | ancs | C
         lua_setfield(L, -2, "center");          // . | G | ancs
+        lua_pushinteger(L, PICO_RIGHT);         // . | G | ancs | R
+        lua_setfield(L, -2, "right");           // . | G | ancs
+        lua_pushinteger(L, PICO_TOP);           // . | G | ancs | T
+        lua_setfield(L, -2, "top");             // . | G | ancs
         lua_pushinteger(L, PICO_MIDDLE);        // . | G | ancs | M
         lua_setfield(L, -2, "middle");          // . | G | ancs
+        lua_pushinteger(L, PICO_BOTTOM);        // . | G | ancs | B
+        lua_setfield(L, -2, "bottom");          // . | G | ancs
         lua_setfield(L, -2, "ancs");            // . | G
         lua_pop(L, 1);                          // .
     }                                           // pico
