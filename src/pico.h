@@ -179,7 +179,7 @@ void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size);
 
 void pico_output_draw_fmt (Pico_Pos pos, const char* fmt, ...);
 
-void pico_output_draw_fmt_ext (Pico_Pos pos, const char* fmt, Pico_Dim size, ...);
+void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim size, const char* fmt, ...);
 
 /// @brief Shows what has been drawn onto the screen.
 /// Only does anything on expert mode.
