@@ -97,8 +97,8 @@ for y=r.y, r.y+2*r.h do
     end
 end
 
-print("assert error");
-pico_set_rotate(10);
-pico_pos_vs_rect(pt, r);
+print("assert error - not supported yet")
+pico.set.rotate(10)
+pico.vs.pos_rect(pt, r)
 
 pico.init(false)

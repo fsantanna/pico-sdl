@@ -1,6 +1,8 @@
 # API
 
 - `pico.init (on: boolean)`
+- `pico.dim (pct: {x,y} [,dim:{x,y}]) -> {x,y}`
+    - `pico.dim (x: integer, y: integer [,dim:{x,y}]) -> {x,y}`
 - `pico.pos (pct: {x,y}) -> {x,y}`
     - `pico.pos (x: integer, y: integer) -> {x,y}`
 - **pico.get**

@@ -22,9 +22,9 @@ static int L_checkfieldint (lua_State* L, int i, const char* k) {
 static Pico_Anchor _anchor (lua_State* L, int n) {
     Pico_Anchor anc;
 
-    lua_pushlightuserdata(L, (void*)&KEY);  // ... | K
-    lua_gettable(L, LUA_REGISTRYINDEX);     // ... | G
-    lua_getfield(L, -1, "ancs");            // ... | G | ancs
+    lua_pushlightuserdata(L, (void*)&KEY);  // . | K
+    lua_gettable(L, LUA_REGISTRYINDEX);     // . | G
+    lua_getfield(L, -1, "ancs");            // . | G | ancs
 
     if (lua_type(L,n) == LUA_TTABLE) {      // T | G | ancs
         lua_getfield(L, n, "x");            // T | G | ancs | x
@@ -37,30 +37,30 @@ static Pico_Anchor _anchor (lua_State* L, int n) {
     if (lua_isinteger(L,-2)) {
         anc.x = lua_tointeger(L, -2);
     } else {
-        lua_pushvalue(L, -2);               // ... | G | ancs | x | y | x
-        lua_gettable(L, -4);                // ... | G | ancs | x | y | *x*
+        lua_pushvalue(L, -2);               // . | G | ancs | x | y | x
+        lua_gettable(L, -4);                // . | G | ancs | x | y | *x*
         int ok;
         anc.x = lua_tointegerx(L, -1, &ok);
         if (!ok) {
             luaL_error(L, "invalid anchor \"%s\"", lua_tostring(L,-3));
         }
-        lua_pop(L, 1);                      // ... | G | ancs | x | y
+        lua_pop(L, 1);                      // . | G | ancs | x | y
     }
 
     if (lua_isinteger(L,-1)) {
         anc.y = lua_tointeger(L, -1);
     } else {
-        lua_pushvalue(L, -1);               // ... | G | ancs | x | y | y
-        lua_gettable(L, -4);                // ... | G | ancs | x | y | *y*
+        lua_pushvalue(L, -1);               // . | G | ancs | x | y | y
+        lua_gettable(L, -4);                // . | G | ancs | x | y | *y*
         int ok;
         anc.y = lua_tointegerx(L, -1, &ok);
         if (!ok) {
             luaL_error(L, "invalid anchor \"%s\"", lua_tostring(L,-2));
         }
-        lua_pop(L, 1);                      // ... | G | ancs | x | y
+        lua_pop(L, 1);                      // . | G | ancs | x | y
     }
 
-    lua_pop(L, 4);                          // ...
+    lua_pop(L, 4);                          // .
     return anc;
 }
 
@@ -103,24 +103,60 @@ static int l_init (lua_State* L) {
     return 0;
 }
 
+static int l_dim (lua_State* L) {
+    int ext;    // extra outer dim arg
+    Pico_Pct pct;
+    if (lua_type(L,1) == LUA_TTABLE) {      // pct = { x,y }
+        pct.x = L_checkfieldint(L, 1, "x");
+        pct.y = L_checkfieldint(L, 1, "y");
+        ext = (lua_gettop(L) > 1);
+    } else {                                // x | y
+        pct.x = luaL_checkinteger(L, 1);
+        pct.y = luaL_checkinteger(L, 2);
+        ext = (lua_gettop(L) > 2);
+    }
+
+    Pico_Dim dim;
+    if (ext) {                              // . | {x,y}
+        if (lua_type(L,1) != LUA_TTABLE) {
+            return luaL_error(L, "expected outer dimension table");
+        }
+        Pico_Dim out = {
+            L_checkfieldint(L, -1, "x"),
+            L_checkfieldint(L, -1, "y")
+        };
+        dim = pico_dim_ext(out, pct);
+    } else {
+        dim = pico_dim(pct);
+    }
+
+    lua_newtable(L);                        // . | dim
+    lua_pushinteger(L, dim.x);              // . | dim | x
+    lua_setfield(L, -2, "x");               // . | dim
+    lua_pushinteger(L, dim.y);              // . | dim | y
+    lua_setfield(L, -2, "y");               // . | dim
+
+    return 1;                               // . | [dim]
+}
+
 static int l_pos (lua_State* L) {
     Pico_Pct pct;
     if (lua_type(L,1) == LUA_TTABLE) {  // pct = { x,y }
         pct.x = L_checkfieldint(L, 1, "x");
         pct.y = L_checkfieldint(L, 1, "y");
-    } else {
+    } else {                            // x | y
         pct.x = luaL_checkinteger(L, 1);
         pct.y = luaL_checkinteger(L, 2);
     }
 
     Pico_Pos pos = pico_pos(pct);
-    lua_newtable(L);                    // pct | pos
-    lua_pushinteger(L, pos.x);          // pct | pos | x
-    lua_setfield(L, -2, "x");           // pct | pos
-    lua_pushinteger(L, pos.y);          // pct | pos | y
-    lua_setfield(L, -2, "y");           // pct | pos
+    lua_newtable(L);                    // . | pos
+    lua_pushinteger(L, pos.x);          // . | pos | x
+    lua_setfield(L, -2, "x");           // . | pos
+    lua_pushinteger(L, pos.y);          // . | pos | y
+    lua_setfield(L, -2, "y");           // . | pos
 
-    return 1;                           // pct | [pos]
+    return 1;                           // . | [pos]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -527,6 +563,7 @@ static int l_output_writeln (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_all[] = {
+    { "dim",  l_dim  },
     { "init", l_init },
     { "pos",  l_pos  },
     { NULL, NULL }
