@@ -8,6 +8,7 @@
 - **pico.get**
     - `pico.get.size () -> { phy={x,y}, log={x,y} }`
 - **pico.set**
+    - `pico.set.crop ([r: {x,y,w,h}])`
     - `pico.set.cursor (pos: {x,y})`
     - `pico.set.expert (on: boolean)`
     - `pico.set.grid (on: boolean)`
@@ -31,7 +32,7 @@
     - `pico.output.clear ()`
     - **pico.output.draw**
         - `pico.output.draw.buffer (pos: {x,y}, buffer: {{{r,g,b,a}}})`
-        - `pico.output.draw.image (pos: {x,y}, path: string)`
+        - `pico.output.draw.image (pos: {x,y}, path: string [,{x,y}])`
         - `pico.output.draw.line (p1: {x,y}, p2: {x,y})`
         - `pico.output.draw.oval (rect: {x,y,w,h})`
         - `pico.output.draw.pixel (pos: {x,y})`

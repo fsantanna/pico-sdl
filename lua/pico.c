@@ -70,7 +70,7 @@ static Pico_Color _color (lua_State* L) {
         clr = (Pico_Color) {
             L_checkfieldint(L, 1, "r"),
             L_checkfieldint(L, 1, "g"),
-            L_checkfieldint(L, 1, "b")
+            L_checkfieldint(L, 1, "b"),
         };
         lua_getfield(L, 1, "a");        // clr | a
         int ok;
@@ -83,7 +83,7 @@ static Pico_Color _color (lua_State* L) {
         clr = (Pico_Color) {
             luaL_checkinteger(L, 1),
             luaL_checkinteger(L, 2),
-            luaL_checkinteger(L, 3)
+            luaL_checkinteger(L, 3),
         };
         if (lua_gettop(L) >= 4) {
             clr.a = luaL_checkinteger(L, 4);
@@ -123,7 +123,7 @@ static int l_dim (lua_State* L) {
         }
         Pico_Dim out = {
             L_checkfieldint(L, -1, "x"),
-            L_checkfieldint(L, -1, "y")
+            L_checkfieldint(L, -1, "y"),
         };
         dim = pico_dim_ext(out, pct);
     } else {
@@ -164,13 +164,13 @@ static int l_pos (lua_State* L) {
 static int l_vs_pos_rect (lua_State* L) {
     Pico_Pos pos = {                    // pos | rect
         L_checkfieldint(L, 1, "x"),
-        L_checkfieldint(L, 1, "y")
+        L_checkfieldint(L, 1, "y"),
     };
     Pico_Rect rect = {                  // pos | rect
         L_checkfieldint(L, 2, "x"),
         L_checkfieldint(L, 2, "y"),
         L_checkfieldint(L, 2, "w"),
-        L_checkfieldint(L, 2, "h")
+        L_checkfieldint(L, 2, "h"),
     };
 
     int x;
@@ -191,13 +191,13 @@ static int l_vs_rect_rect (lua_State* L) {
         L_checkfieldint(L, 1, "x"),
         L_checkfieldint(L, 1, "y"),
         L_checkfieldint(L, 1, "w"),
-        L_checkfieldint(L, 1, "h")
+        L_checkfieldint(L, 1, "h"),
     };
     Pico_Rect r2 = {                    // r1 | r2
         L_checkfieldint(L, 2, "x"),
         L_checkfieldint(L, 2, "y"),
         L_checkfieldint(L, 2, "w"),
-        L_checkfieldint(L, 2, "h")
+        L_checkfieldint(L, 2, "h"),
     };
 
     int x;
@@ -256,11 +256,28 @@ static int l_set_color_draw (lua_State* L) {
     return 0;
 }
 
+static int l_set_crop (lua_State* L) {
+    Pico_Rect r;
+    if (lua_gettop(L) == 0) {               // -
+        r = (Pico_Rect) {0,0,0,0};
+    } else {
+        luaL_checktype(L, 1, LUA_TTABLE);   // r = {x,y,w,h}
+        r = (Pico_Rect) {
+            L_checkfieldint(L, 1, "x"),
+            L_checkfieldint(L, 1, "y"),
+            L_checkfieldint(L, 1, "w"),
+            L_checkfieldint(L, 1, "h"),
+        };
+    }
+    pico_set_crop(r);
+    return 0;
+}
+
 static int l_set_cursor (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // pos = { x,y }
     Pico_Pos pos = {
         L_checkfieldint(L, 1, "x"),
-        L_checkfieldint(L, 1, "y")
+        L_checkfieldint(L, 1, "y"),
     };
     pico_set_cursor(pos);
     return 0;
@@ -448,7 +465,18 @@ static int l_output_draw_image (lua_State* L) {
         L_checkfieldint(L, 1, "x"),
         L_checkfieldint(L, 1, "y")
     };
-    pico_output_draw_image(pos, lua_tostring(L,2));
+    if (lua_gettop(L) < 3) {
+        pico_output_draw_image(pos, lua_tostring(L,2));
+    } else {
+        if (lua_type(L,1) != LUA_TTABLE) {
+            return luaL_error(L, "expected dimension table");
+        }
+        Pico_Dim dim = {
+            L_checkfieldint(L, -1, "x"),
+            L_checkfieldint(L, -1, "y")
+        };
+        pico_output_draw_image_ext(pos, lua_tostring(L,2), dim);
+    }
     return 0;
 }
 
@@ -594,6 +622,7 @@ static const luaL_Reg ll_get[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_set[] = {
+    { "crop",   l_set_crop   },
     { "cursor", l_set_cursor },
     { "expert", l_set_expert },
     { "grid",   l_set_grid   },
