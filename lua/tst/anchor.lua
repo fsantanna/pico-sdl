@@ -10,7 +10,7 @@ pico.set.size({x=200,y=200}, {x=10,y=10})
 -- PIXELS
 do
     print "centered pixel - 1dir/1baixo"
-    pico.set.anchor.draw { x='center', y='middle' }
+    pico.set.anchor.draw('center', 'middle')
     local pt = pico.pos { x=50, y=50 }
     pico.output.clear()
     pico.output.draw.pixel(pt)
@@ -39,7 +39,7 @@ end
 -- RECTS
 do
     print "centered rect - exact"
-    pico.set.anchor.draw { x='center', y='middle' }
+    pico.set.anchor.draw('center', 'middle')
     local pt = pico.pos { x=50, y=50 }
     local rct = { x=pt.x, y=pt.y, w=4, h=4 }
     pico.output.clear()
@@ -59,7 +59,7 @@ do
 end
 do
     print "bottomright centered - 1lin/1col"
-    pico.set.anchor.draw { x='right', y='bottom' }
+    pico.set.anchor.draw('right', 'bottom')
     local pt = pico.pos { x=50, y=50 }
     local rct = { x=pt.x, y=pt.y, w=4, h=4 }
     pico.output.clear()

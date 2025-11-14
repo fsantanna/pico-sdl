@@ -20,45 +20,47 @@ static int L_checkfieldint (lua_State* L, int i, const char* k) {
 }
 
 static Pico_Anchor _anchor (lua_State* L, int n) {
-    if (lua_type(L,-1) != LUA_TTABLE) {     // T
-        luaL_error(L, "expected anchor table");
-    }
-
     Pico_Anchor anc;
 
-    lua_pushlightuserdata(L, (void*)&KEY);  // T | K
-    lua_gettable(L, LUA_REGISTRYINDEX);     // T | G
-    lua_getfield(L, -1, "ancs");            // T | G | ancs
+    lua_pushlightuserdata(L, (void*)&KEY);  // ... | K
+    lua_gettable(L, LUA_REGISTRYINDEX);     // ... | G
+    lua_getfield(L, -1, "ancs");            // ... | G | ancs
 
-    lua_getfield(L, n, "x");                // T | G | ancs | "x"
-    if (lua_isinteger(L,-1)) {
-        anc.x = lua_tointeger(L, -1);
+    if (lua_type(L,n) == LUA_TTABLE) {      // T | G | ancs
+        lua_getfield(L, n, "x");            // T | G | ancs | x
+        lua_getfield(L, n, "y");            // T | G | ancs | x | y
+    } else {                                // x | y | G | ancs
+        lua_pushvalue(L, n);                // x | y | G | ancs | x
+        lua_pushvalue(L, n+1);              // x | y | G | ancs | x | y
+    }
+
+    if (lua_isinteger(L,-2)) {
+        anc.x = lua_tointeger(L, -2);
     } else {
-        lua_pushvalue(L, -1);               // T | G | ancs | "x" | "x"
-        lua_gettable(L, -3);                // T | G | ancs | "x" | x
+        lua_pushvalue(L, -2);               // ... | G | ancs | x | y | x
+        lua_gettable(L, -4);                // ... | G | ancs | x | y | *x*
         int ok;
         anc.x = lua_tointegerx(L, -1, &ok);
         if (!ok) {
-            luaL_error(L, "invalid anchor \"%s\"", lua_tostring(L,-2));
+            luaL_error(L, "invalid anchor \"%s\"", lua_tostring(L,-3));
         }
-        lua_pop(L, 2);                      // T | G | ancs
+        lua_pop(L, 1);                      // ... | G | ancs | x | y
     }
 
-    lua_getfield(L, n, "y");                // T | G | ancs | "y"
     if (lua_isinteger(L,-1)) {
         anc.y = lua_tointeger(L, -1);
     } else {
-        lua_pushvalue(L, -1);               // T | G | ancs | "y" | "y"
-        lua_gettable(L, -3);                // T | G | ancs | "y" | y
+        lua_pushvalue(L, -1);               // ... | G | ancs | x | y | y
+        lua_gettable(L, -4);                // ... | G | ancs | x | y | *y*
         int ok;
         anc.y = lua_tointegerx(L, -1, &ok);
         if (!ok) {
             luaL_error(L, "invalid anchor \"%s\"", lua_tostring(L,-2));
         }
-        lua_pop(L, 2);                      // T | G | ancs
+        lua_pop(L, 1);                      // ... | G | ancs | x | y
     }
 
-    lua_pop(L, 2);                          // T
+    lua_pop(L, 4);                          // ...
     return anc;
 }
 
