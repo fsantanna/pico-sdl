@@ -345,6 +345,16 @@ static int l_set_title (lua_State* L) {
     return 0;
 }
 
+static int l_set_zoom (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // pct = { x,y }
+    Pico_Pct pct = {
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y"),
+    };
+    pico_set_zoom(pct);
+    return 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_input_delay (lua_State* L) {
@@ -630,6 +640,7 @@ static const luaL_Reg ll_set[] = {
     { "show",   l_set_show   },
     { "size",   l_set_size   },
     { "title",  l_set_title  },
+    { "zoom",   l_set_zoom   },
     { NULL, NULL }
 };
 

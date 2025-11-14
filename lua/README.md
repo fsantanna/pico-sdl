@@ -14,6 +14,7 @@
     - `pico.set.grid (on: boolean)`
     - `pico.set.size (phy: {x,y}, log: {x,y})`
     - `pico.set.title (title: string)`
+    - `pico.set.zoom (pct: {x,y})`
     - **pico.set.color**
         - `pico.set.color.clear (clr: {r,g,b[,a]})`
             - `pico.set.color.clear (r, g, b [,a])`
