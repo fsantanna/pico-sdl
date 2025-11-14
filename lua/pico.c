@@ -19,78 +19,6 @@ static int L_checkfieldint (lua_State* L, int i, const char* k) {
     return v;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-static int l_init (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TBOOLEAN);
-    int on = lua_toboolean(L, 1);
-    pico_init(on);
-    return 0;
-}
-
-static int l_pos (lua_State* L) {
-    Pico_Pct pct;
-    if (lua_type(L,1) == LUA_TTABLE) {  // pct = { x,y }
-        pct.x = L_checkfieldint(L, 1, "x");
-        pct.y = L_checkfieldint(L, 1, "y");
-    } else {
-        pct.x = luaL_checkinteger(L, 1);
-        pct.y = luaL_checkinteger(L, 2);
-    }
-
-    Pico_Pos pos = pico_pos(pct);
-    lua_newtable(L);                    // pct | pos
-    lua_pushinteger(L, pos.x);          // pct | pos | x
-    lua_setfield(L, -2, "x");           // pct | pos
-    lua_pushinteger(L, pos.y);          // pct | pos | y
-    lua_setfield(L, -2, "y");           // pct | pos
-
-    return 1;                           // pct | [pos]
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-static int l_vs_pos_rect (lua_State* L) {
-    Pico_Pos pos = {                    // pos | rect
-        L_checkfieldint(L, 1, "x"),
-        L_checkfieldint(L, 1, "y")
-    };
-    Pico_Rect rect = {                  // pos | rect
-        L_checkfieldint(L, 2, "x"),
-        L_checkfieldint(L, 2, "y"),
-        L_checkfieldint(L, 2, "w"),
-        L_checkfieldint(L, 2, "h")
-    };
-    int x = pico_pos_vs_rect(pos, rect);
-    lua_pushboolean(L, x);              // pos | rect | x
-    return 1;                           // pos | rect | [x]
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-static int l_get_size (lua_State* L) {
-    Pico_Size siz = pico_get_size();
-    lua_newtable(L);                // siz
-
-    lua_newtable(L);                // siz | phy
-    lua_pushinteger(L, siz.phy.x);  // siz | phy | x
-    lua_setfield(L, 2, "x");        // siz | phy
-    lua_pushinteger(L, siz.phy.y);  // siz | phy | y
-    lua_setfield(L, 2, "y");        // siz | phy
-    lua_setfield(L, 1, "phy");      // siz
-
-    lua_newtable(L);                // siz | log
-    lua_pushinteger(L, siz.log.x);  // siz | log | x
-    lua_setfield(L, 2, "x");        // siz | log
-    lua_pushinteger(L, siz.log.y);  // siz | log | y
-    lua_setfield(L, 2, "y");        // siz | log
-    lua_setfield(L, 1, "log");      // siz
-
-    return 1;                       // [siz]
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 static Pico_Anchor _anchor (lua_State* L, int n) {
     if (lua_type(L,-1) != LUA_TTABLE) {     // T
         luaL_error(L, "expected anchor table");
@@ -134,12 +62,6 @@ static Pico_Anchor _anchor (lua_State* L, int n) {
     return anc;
 }
 
-static int l_set_anchor_draw (lua_State* L) {
-    Pico_Anchor anc = _anchor(L, 1);
-    pico_set_anchor_draw(anc);
-    return 0;
-}
-
 static Pico_Color _color (lua_State* L) {
     Pico_Color clr;
     if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b[,a] }
@@ -168,6 +90,93 @@ static Pico_Color _color (lua_State* L) {
         }
     }
     return clr;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_init (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TBOOLEAN);
+    int on = lua_toboolean(L, 1);
+    pico_init(on);
+    return 0;
+}
+
+static int l_pos (lua_State* L) {
+    Pico_Pct pct;
+    if (lua_type(L,1) == LUA_TTABLE) {  // pct = { x,y }
+        pct.x = L_checkfieldint(L, 1, "x");
+        pct.y = L_checkfieldint(L, 1, "y");
+    } else {
+        pct.x = luaL_checkinteger(L, 1);
+        pct.y = luaL_checkinteger(L, 2);
+    }
+
+    Pico_Pos pos = pico_pos(pct);
+    lua_newtable(L);                    // pct | pos
+    lua_pushinteger(L, pos.x);          // pct | pos | x
+    lua_setfield(L, -2, "x");           // pct | pos
+    lua_pushinteger(L, pos.y);          // pct | pos | y
+    lua_setfield(L, -2, "y");           // pct | pos
+
+    return 1;                           // pct | [pos]
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_vs_pos_rect (lua_State* L) {
+    Pico_Pos pos = {                    // pos | rect
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y")
+    };
+    Pico_Rect rect = {                  // pos | rect
+        L_checkfieldint(L, 2, "x"),
+        L_checkfieldint(L, 2, "y"),
+        L_checkfieldint(L, 2, "w"),
+        L_checkfieldint(L, 2, "h")
+    };
+
+    int x;
+    if (lua_gettop(L) <= 2) {
+        x = pico_pos_vs_rect(pos, rect);
+    } else {
+        Pico_Anchor anc1 = _anchor(L, 3);
+        Pico_Anchor anc2 = _anchor(L, 4);
+        x = pico_pos_vs_rect_ext(pos, anc1, rect, anc2);
+    }
+
+    lua_pushboolean(L, x);              // pos | rect | x
+    return 1;                           // pos | rect | [x]
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_get_size (lua_State* L) {
+    Pico_Size siz = pico_get_size();
+    lua_newtable(L);                // siz
+
+    lua_newtable(L);                // siz | phy
+    lua_pushinteger(L, siz.phy.x);  // siz | phy | x
+    lua_setfield(L, 2, "x");        // siz | phy
+    lua_pushinteger(L, siz.phy.y);  // siz | phy | y
+    lua_setfield(L, 2, "y");        // siz | phy
+    lua_setfield(L, 1, "phy");      // siz
+
+    lua_newtable(L);                // siz | log
+    lua_pushinteger(L, siz.log.x);  // siz | log | x
+    lua_setfield(L, 2, "x");        // siz | log
+    lua_pushinteger(L, siz.log.y);  // siz | log | y
+    lua_setfield(L, 2, "y");        // siz | log
+    lua_setfield(L, 1, "log");      // siz
+
+    return 1;                       // [siz]
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_set_anchor_draw (lua_State* L) {
+    Pico_Anchor anc = _anchor(L, 1);
+    pico_set_anchor_draw(anc);
+    return 0;
 }
 
 static int l_set_color_clear (lua_State* L) {
