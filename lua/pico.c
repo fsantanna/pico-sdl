@@ -290,6 +290,13 @@ static int l_set_scroll (lua_State* L) {
     return 0;
 }
 
+static int l_set_show (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TBOOLEAN);
+    int on = lua_toboolean(L, 1);
+    pico_set_show(on);
+    return 0;
+}
+
 static int l_set_size (lua_State* L) {
     // phy | log
     Pico_Dim phy, log;
@@ -591,6 +598,7 @@ static const luaL_Reg ll_set[] = {
     { "expert", l_set_expert },
     { "grid",   l_set_grid   },
     { "scroll", l_set_scroll },
+    { "show",   l_set_show   },
     { "size",   l_set_size   },
     { "title",  l_set_title  },
     { NULL, NULL }

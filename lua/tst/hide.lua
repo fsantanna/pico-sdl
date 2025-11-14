@@ -1,0 +1,23 @@
+package.cpath = package.cpath .. ";../?.so"
+
+local pico = require 'pico'
+
+pico.init(true)
+
+pico.set.title("Show - Hide")
+
+pico.input.event 'key.dn'
+
+pico.set.show(false)
+print("hidden")
+pico.input.delay(1000)
+
+pico.set.show(true)
+print("shown")
+pico.input.event 'key.dn'
+
+pico.set.show(false)
+print("hidden")
+pico.input.delay(1000)
+
+pico.init(false)
