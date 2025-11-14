@@ -148,6 +148,33 @@ static int l_vs_pos_rect (lua_State* L) {
     return 1;                           // pos | rect | [x]
 }
 
+static int l_vs_rect_rect (lua_State* L) {
+    Pico_Rect r1 = {                    // r1 | r2
+        L_checkfieldint(L, 1, "x"),
+        L_checkfieldint(L, 1, "y"),
+        L_checkfieldint(L, 1, "w"),
+        L_checkfieldint(L, 1, "h")
+    };
+    Pico_Rect r2 = {                    // r1 | r2
+        L_checkfieldint(L, 2, "x"),
+        L_checkfieldint(L, 2, "y"),
+        L_checkfieldint(L, 2, "w"),
+        L_checkfieldint(L, 2, "h")
+    };
+
+    int x;
+    if (lua_gettop(L) <= 2) {
+        x = pico_rect_vs_rect(r1, r2);
+    } else {
+        Pico_Anchor anc1 = _anchor(L, 3);
+        Pico_Anchor anc2 = _anchor(L, 4);
+        x = pico_rect_vs_rect_ext(r1, anc1, r2, anc2);
+    }
+
+    lua_pushboolean(L, x);              // pos | rect | x
+    return 1;                           // pos | rect | [x]
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_get_size (lua_State* L) {
@@ -506,7 +533,8 @@ static const luaL_Reg ll_all[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_vs[] = {
-    { "pos_rect", l_vs_pos_rect },
+    { "pos_rect",  l_vs_pos_rect  },
+    { "rect_rect", l_vs_rect_rect },
     { NULL, NULL }
 };
 
