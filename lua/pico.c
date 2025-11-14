@@ -118,7 +118,7 @@ static int l_dim (lua_State* L) {
 
     Pico_Dim dim;
     if (ext) {                              // . | {x,y}
-        if (lua_type(L,1) != LUA_TTABLE) {
+        if (lua_type(L,-1) != LUA_TTABLE) {
             return luaL_error(L, "expected outer dimension table");
         }
         Pico_Dim out = {
@@ -140,23 +140,41 @@ static int l_dim (lua_State* L) {
 }
 
 static int l_pos (lua_State* L) {
+    int ext;    // extra outer dim arg
     Pico_Pct pct;
-    if (lua_type(L,1) == LUA_TTABLE) {  // pct = { x,y }
+    if (lua_type(L,1) == LUA_TTABLE) {      // pct = { x,y }
         pct.x = L_checkfieldint(L, 1, "x");
         pct.y = L_checkfieldint(L, 1, "y");
-    } else {                            // x | y
+        ext = (lua_gettop(L) > 1);
+    } else {                                // x | y
         pct.x = luaL_checkinteger(L, 1);
         pct.y = luaL_checkinteger(L, 2);
+        ext = (lua_gettop(L) > 2);
     }
 
-    Pico_Pos pos = pico_pos(pct);
-    lua_newtable(L);                    // . | pos
-    lua_pushinteger(L, pos.x);          // . | pos | x
-    lua_setfield(L, -2, "x");           // . | pos
-    lua_pushinteger(L, pos.y);          // . | pos | y
-    lua_setfield(L, -2, "y");           // . | pos
+    Pico_Pos pos;
+    if (ext) {                              // . | {x,y,w,h}
+        if (lua_type(L,-1) != LUA_TTABLE) {
+            return luaL_error(L, "expected outer rectangle table");
+        }
+        Pico_Rect out = {
+            L_checkfieldint(L, -1, "x"),
+            L_checkfieldint(L, -1, "y"),
+            L_checkfieldint(L, -1, "w"),
+            L_checkfieldint(L, -1, "h"),
+        };
+        pos = pico_pos_ext(out, pct);
+    } else {
+        pos = pico_pos(pct);
+    }
 
-    return 1;                           // . | [pos]
+    lua_newtable(L);                        // . | pos
+    lua_pushinteger(L, pos.x);              // . | pos | x
+    lua_setfield(L, -2, "x");               // . | pos
+    lua_pushinteger(L, pos.y);              // . | pos | y
+    lua_setfield(L, -2, "y");               // . | pos
+
+    return 1;                               // . | [pos]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
