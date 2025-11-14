@@ -41,4 +41,5 @@
     - `pico.output.write (text: string)`
     - `pico.output.writeln (text: string)`
 - **pico.vs**
-    - `pico.vs.pos_rect (pos: {x,y}, r: {x,y,w,h} [,anc, anc]) -> boolean`
+    - `pico.vs.pos_rect (pos: {x,y}, rect: {x,y,w,h} [,anc, anc]) -> boolean`
+    - `pico.vs.rect_rect (r1: {x,y,w,h}, r2: {x,y,w,h} [,anc, anc]) -> boolean`
