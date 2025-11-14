@@ -18,6 +18,7 @@
             - `pico.set.color.draw (r, g, b [,a])`
     - **pico.set.anchor**
         - `pico.set.anchor.draw (anc: {x,y})`
+            - `pico.set.anchor.draw (x, y)`
         - Anchors:
             - `x`: `integer`, `left`, `center`, `right`
             - `y`: `integer`, `top`, `middle`, `bottom`

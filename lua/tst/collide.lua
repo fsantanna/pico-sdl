@@ -10,9 +10,8 @@ pico.set.size({x=200,y=200}, {x=20,y=20})
 local pt = pico.pos(50, 50)
 local r = { x=pt.x, y=pt.y, w=4, h=4 }
 
---[[
 print "pos_vs_rect - same anchor"
-pico.set.anchor.draw{x='right',y='bottom'}
+pico.set.anchor.draw('right','bottom')
 for y=r.y-r.w, r.y+1 do
     for x=r.x-r.w, r.x+1 do
         pico.output.clear()
@@ -73,7 +72,6 @@ for y=r.y-r.h, r.y+r.h do
         pico.input.event('key.dn')
     end
 end
-]]
 
 print("rect_vs_rect_ext - bottom-right, top-left")
 for y=r.y, r.y+2*r.h do
