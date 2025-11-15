@@ -326,6 +326,16 @@ static int l_set_expert (lua_State* L) {
     return 0;
 }
 
+static int l_set_font (lua_State* L) {
+    int h = luaL_checkinteger(L, 2);    // path | h
+    char* f = NULL;
+    if (!lua_isnil(L, 1)) {
+        f = (char*) luaL_checklstring(L, 1, NULL);
+    }
+    pico_set_font(f, h);
+    return 0;
+}
+
 static int l_set_grid (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);
     int on = lua_toboolean(L, 1);
@@ -694,6 +704,7 @@ static const luaL_Reg ll_set[] = {
     { "crop",   l_set_crop   },
     { "cursor", l_set_cursor },
     { "expert", l_set_expert },
+    { "font",   l_set_font   },
     { "grid",   l_set_grid   },
     { "rotate", l_set_rotate },
     { "scroll", l_set_scroll },
