@@ -49,6 +49,7 @@
         - `pico.output.draw.text (pos: {x,y}, text: string)`
         - `pico.output.draw.tri (rect: {x,y,w,h})`
     - `pico.output.present ()`
+    - `pico.output.screenshot ([path: string], [rect: {x,y,w,h}])`
     - `pico.output.sound (path: string)`
     - `pico.output.write (text: string)`
     - `pico.output.writeln (text: string)`

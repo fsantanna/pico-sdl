@@ -413,11 +413,14 @@ static int l_set_title (lua_State* L) {
 }
 
 static int l_set_zoom (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // pct = { x,y }
-    Pico_Pct pct = {
-        L_checkfieldint(L, 1, "x"),
-        L_checkfieldint(L, 1, "y"),
-    };
+    Pico_Pct pct;
+    if (lua_type(L,1) == LUA_TTABLE) {      // pct = { x,y }
+        pct.x = L_checkfieldint(L, 1, "x");
+        pct.y = L_checkfieldint(L, 1, "y");
+    } else {                                // x | y
+        pct.x = luaL_checkinteger(L, 1);
+        pct.y = luaL_checkinteger(L, 2);
+    }
     pico_set_zoom(pct);
     return 0;
 }
@@ -631,13 +634,23 @@ static int l_output_draw_poly (lua_State* L) {
 }
 
 static int l_output_draw_rect (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // rect={x,y,w,h}
-    Pico_Rect rect = {
-        L_checkfieldint(L, 1, "x"),
-        L_checkfieldint(L, 1, "y"),
-        L_checkfieldint(L, 1, "w"),
-        L_checkfieldint(L, 1, "h")
-    };
+    Pico_Rect rect;
+    if (lua_type(L,1) == LUA_TTABLE) {      // rect={x,y,w,h}
+        rect = (Pico_Rect) {
+            L_checkfieldint(L, 1, "x"),
+            L_checkfieldint(L, 1, "y"),
+            L_checkfieldint(L, 1, "w"),
+            L_checkfieldint(L, 1, "h")
+        };
+    } else {                                // x | y | w | h
+        rect = (Pico_Rect) {
+            luaL_checkinteger(L, 1),
+            luaL_checkinteger(L, 2),
+            luaL_checkinteger(L, 3),
+            luaL_checkinteger(L, 4)
+        };
+    }
+
     pico_output_draw_rect(rect);
     return 0;
 }
@@ -668,6 +681,35 @@ static int l_output_draw_tri (lua_State* L) {
 static int l_output_present (lua_State* L) {
     pico_output_present();
     return 0;
+}
+
+static int l_output_screenshot (lua_State* L) {
+    char* path = NULL;
+    if (lua_type(L,1) == LUA_TSTRING) {     // path
+        path = (char*) lua_tostring(L, 1);
+    }
+
+    char* ret;
+    int n = lua_gettop(L);
+    if (n>0 && lua_type(L,-1)!=LUA_TSTRING) {    // . | rect
+        luaL_checktype(L, n, LUA_TTABLE);
+        Pico_Rect rect = {
+            L_checkfieldint(L, 1, "x"),
+            L_checkfieldint(L, 1, "y"),
+            L_checkfieldint(L, 1, "w"),
+            L_checkfieldint(L, 1, "h")
+        };
+        ret = (char*) pico_output_screenshot_ext(path, rect);
+    } else {
+        ret = (char*) pico_output_screenshot(path);
+    }
+
+    if (ret == NULL) {
+        return 0;
+    } else {
+        lua_pushstring(L, ret);
+        return 1;
+    }
 }
 
 static int l_output_sound (lua_State* L) {
@@ -754,11 +796,12 @@ static const luaL_Reg ll_input[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_output[] = {
-    { "clear",   l_output_clear   },
-    { "present", l_output_present },
-    { "sound",   l_output_sound   },
-    { "write",   l_output_write   },
-    { "writeln", l_output_writeln },
+    { "clear",      l_output_clear      },
+    { "present",    l_output_present    },
+    { "screenshot", l_output_screenshot },
+    { "sound",      l_output_sound      },
+    { "write",      l_output_write      },
+    { "writeln",    l_output_writeln    },
     { NULL, NULL }
 };
 
