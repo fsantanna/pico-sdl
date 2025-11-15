@@ -366,6 +366,19 @@ static int l_set_show (lua_State* L) {
     return 0;
 }
 
+static int l_set_scale (lua_State* L) {
+    Pico_Pct pct;
+    if (lua_type(L,1) == LUA_TTABLE) {      // pct = { x,y }
+        pct.x = L_checkfieldint(L, 1, "x");
+        pct.y = L_checkfieldint(L, 1, "y");
+    } else {                                // x | y
+        pct.x = luaL_checkinteger(L, 1);
+        pct.y = luaL_checkinteger(L, 2);
+    }
+    pico_set_scale(pct);
+    return 0;
+}
+
 static int l_set_size (lua_State* L) {
     // phy | log
     Pico_Dim phy, log;
@@ -709,6 +722,7 @@ static const luaL_Reg ll_set[] = {
     { "rotate", l_set_rotate },
     { "scroll", l_set_scroll },
     { "show",   l_set_show   },
+    { "scale",  l_set_scale  },
     { "size",   l_set_size   },
     { "title",  l_set_title  },
     { "zoom",   l_set_zoom   },
