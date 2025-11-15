@@ -64,21 +64,27 @@ static Pico_Anchor _anchor (lua_State* L, int n) {
     return anc;
 }
 
+static Pico_Color _color_t (lua_State* L, int i) {
+    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { r,g,b[,a] }
+    Pico_Color clr = {
+        L_checkfieldint(L, i, "r"),
+        L_checkfieldint(L, i, "g"),
+        L_checkfieldint(L, i, "b"),
+    };
+    lua_getfield(L, i, "a");                // clr | a
+    int ok;
+    clr.a = lua_tointegerx(L, -1, &ok);
+    if (!ok) {
+        clr.a = 0xFF;
+    }
+    lua_pop(L, 1);                          // clr
+    return clr;
+}
+
 static Pico_Color _color (lua_State* L) {
     Pico_Color clr;
     if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b[,a] }
-        clr = (Pico_Color) {
-            L_checkfieldint(L, 1, "r"),
-            L_checkfieldint(L, 1, "g"),
-            L_checkfieldint(L, 1, "b"),
-        };
-        lua_getfield(L, 1, "a");        // clr | a
-        int ok;
-        clr.a = lua_tointegerx(L, -1, &ok);
-        if (!ok) {
-            clr.a = 0xFF;
-        }
-        lua_pop(L, 1);                  // clr
+        clr = _color_t(L, 1);
     } else {                            // r | g | b [| a]
         clr = (Pico_Color) {
             luaL_checkinteger(L, 1),
@@ -233,6 +239,12 @@ static int l_vs_rect_rect (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static int l_get_rotate (lua_State* L) {
+    int ang = pico_get_rotate();
+    lua_pushinteger(L, ang);        // ang
+    return 1;                       // [ang]
+}
+
 static int l_get_size (lua_State* L) {
     Pico_Size siz = pico_get_size();
     lua_newtable(L);                // siz
@@ -259,6 +271,12 @@ static int l_get_size (lua_State* L) {
 static int l_set_anchor_draw (lua_State* L) {
     Pico_Anchor anc = _anchor(L, 1);
     pico_set_anchor_draw(anc);
+    return 0;
+}
+
+static int l_set_anchor_rotate (lua_State* L) {
+    Pico_Anchor anc = _anchor(L, 1);
+    pico_set_anchor_rotate(anc);
     return 0;
 }
 
@@ -312,6 +330,12 @@ static int l_set_grid (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);
     int on = lua_toboolean(L, 1);
     pico_set_grid(on);
+    return 0;
+}
+
+static int l_set_rotate (lua_State* L) {
+    int ang = luaL_checkinteger(L, 1);      // ang
+    pico_set_rotate(ang);
     return 0;
 }
 
@@ -471,12 +495,7 @@ static int l_output_draw_buffer (lua_State* L) {
             if (lua_type(L,-1) != LUA_TTABLE) {
                 return luaL_error(L, "expected color at position [%d,%d]", i, j);
             }
-            SDL_Color clr = {
-                L_checkfieldint(L, -1, "r"),
-                L_checkfieldint(L, -1, "g"),
-                L_checkfieldint(L, -1, "b"),
-                L_checkfieldint(L, -1, "a")
-            };
+            SDL_Color clr = _color_t(L, lua_gettop(L));
             buf[i-1][j-1] = clr;
             lua_pop(L, 1);                  // pos | T | T[i]
         }
@@ -664,7 +683,8 @@ static const luaL_Reg ll_vs[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
-    { "size", l_get_size },
+    { "rotate", l_get_rotate },
+    { "size",   l_get_size   },
     { NULL, NULL }
 };
 
@@ -675,6 +695,7 @@ static const luaL_Reg ll_set[] = {
     { "cursor", l_set_cursor },
     { "expert", l_set_expert },
     { "grid",   l_set_grid   },
+    { "rotate", l_set_rotate },
     { "scroll", l_set_scroll },
     { "show",   l_set_show   },
     { "size",   l_set_size   },
@@ -690,7 +711,8 @@ static const luaL_Reg ll_set_color[] = {
 };
 
 static const luaL_Reg ll_set_anchor[] = {
-    { "draw", l_set_anchor_draw },
+    { "draw",   l_set_anchor_draw   },
+    { "rotate", l_set_anchor_rotate },
     { NULL, NULL }
 };
 

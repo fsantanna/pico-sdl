@@ -6,12 +6,14 @@
 - `pico.pos (pct: {x,y} [,out:{x,y,w,h}]) -> {x,y}`
     - `pico.pos (x: integer, y: integer [,out:{x,y,w,h}]) -> {x,y}`
 - **pico.get**
+    - `pico.get.rotate () -> integer`
     - `pico.get.size () -> { phy={x,y}, log={x,y} }`
 - **pico.set**
     - `pico.set.crop ([r: {x,y,w,h}])`
     - `pico.set.cursor (pos: {x,y})`
     - `pico.set.expert (on: boolean)`
     - `pico.set.grid (on: boolean)`
+    - `pico.set.rotate (ang: integer)`
     - `pico.set.size (phy: {x,y}, log: {x,y})`
     - `pico.set.title (title: string)`
     - `pico.set.zoom (pct: {x,y})`
@@ -23,6 +25,8 @@
     - **pico.set.anchor**
         - `pico.set.anchor.draw (anc: {x,y})`
             - `pico.set.anchor.draw (x, y)`
+        - `pico.set.anchor.rotate (anc: {x,y})`
+            - `pico.set.anchor.rotate (x, y)`
         - Anchors:
             - `x`: `integer`, `left`, `center`, `right`
             - `y`: `integer`, `top`, `middle`, `bottom`
