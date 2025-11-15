@@ -10,6 +10,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
+#include "tiny_ttf.h"
 #include "dir.h"
 #include "hash.h"
 #include "pico.h"
@@ -974,21 +975,20 @@ void pico_set_flip (Pico_Flip flip) {
 }
 
 void pico_set_font (const char* file, int h) {
-    if (file == NULL) {
-        static char _file[255];
-        strcpy(_file, __FILE__);
-        _file[strlen(_file) - strlen("pico.c") - 1] = '\0';
-        strcat(_file, "/../tiny.ttf");
-        file = _file;
-    }
     if (h == 0) {
         h = MAX(8, S.size.org.y/10);
     }
     S.font.h = h;
+
     if (S.font.ttf != NULL) {
         TTF_CloseFont(S.font.ttf);
     }
-    S.font.ttf = TTF_OpenFont(file, S.font.h);
+    if (file == NULL) {
+        SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
+        S.font.ttf = TTF_OpenFontRW(rw, 1, S.font.h);
+    } else {
+        S.font.ttf = TTF_OpenFont(file, S.font.h);
+    }
     pico_assert(S.font.ttf != NULL);
 }
 
