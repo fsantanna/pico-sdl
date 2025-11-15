@@ -681,7 +681,7 @@ void pico_output_draw_fmt (Pico_Pos pos, const char* fmt, ...) {
     va_end(args);
 }
 
-void pico_output_draw_fmt_ext (Pico_Pos pos, const char* fmt, Pico_Dim size, ...) {
+void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim size, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     pico_output_draw_fmt_va(pos, fmt, size, args);
