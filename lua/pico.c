@@ -382,8 +382,9 @@ static int l_set_scale (lua_State* L) {
 static int l_set_size (lua_State* L) {
     // phy | log
     Pico_Dim phy, log;
-    if (lua_isnil(L,1)) {
-        phy = PICO_SIZE_KEEP;               // nil | log
+    if (lua_type(L,1) == LUA_TBOOLEAN) {
+        int v = lua_toboolean(L, 1);
+        phy = (v ? PICO_SIZE_FULLSCREEN : PICO_SIZE_KEEP); // b | log
     } else {
         luaL_checktype(L, 1, LUA_TTABLE);   // phy | log
         phy = (Pico_Dim) {
@@ -391,8 +392,9 @@ static int l_set_size (lua_State* L) {
             L_checkfieldint(L, 1, "y"),
         };
     }
-    if (lua_isnil(L,2)) {
-        log = PICO_SIZE_KEEP;               // phy | nil
+    if (lua_type(L,2) == LUA_TBOOLEAN) {
+        int v = lua_toboolean(L, 2);
+        log = (v ? PICO_SIZE_FULLSCREEN : PICO_SIZE_KEEP); // phy | b
     } else {
         luaL_checktype(L, 2, LUA_TTABLE);   // phy | log
         log = (Pico_Dim) {

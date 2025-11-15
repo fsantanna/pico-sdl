@@ -16,7 +16,7 @@
     - `pico.set.grid (on: boolean)`
     - `pico.set.rotate (ang: integer)`
     - `pico.set.scale (pct: {x,y})`
-    - `pico.set.size (phy: {x,y}, log: {x,y})`
+    - `pico.set.size (phy: {x,y}|boolean, log: {x,y}|boolean)`
     - `pico.set.title (title: string)`
     - `pico.set.zoom (pct: {x,y})`
     - **pico.set.color**
