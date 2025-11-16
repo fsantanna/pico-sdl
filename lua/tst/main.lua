@@ -11,10 +11,6 @@ local pt = pico.pos(50,50)
 assert(pt.x==32 and pt.y==18)
 print "shows dark screen"
 
---[[
-
-]]
-
 print "waits any key press"
 pico.input.event('key.up')
 

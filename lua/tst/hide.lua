@@ -1,5 +1,3 @@
-package.cpath = package.cpath .. ";../?.so"
-
 local pico = require 'pico'
 
 pico.init(true)
