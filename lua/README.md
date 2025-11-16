@@ -31,14 +31,21 @@ pico-lua tst/main.lua
     - `pico.pos (pct: Pct [,out: Rect]) -> Pos`
     - `pico.pos (x: integer, y: integer [,out: Rect]) -> Pos`
 - **pico.get**
-    - `pico.get.rotate () -> integer`
-    - `pico.get.size () -> { phy=Dim, log=Dim }`
+    - [pico.get.rotate](#TODO): Rotation angle in degrees.
+        - `pico.get.rotate () -> integer`
+    - [pico.get.size](#TODO): Physical and logical window dimensions.
+        - `pico.get.size () -> { phy=Dim, log=Dim }`
 - **pico.set**
-    - `pico.set.crop ([r: Rect])`
-    - `pico.set.cursor (pos: Pos)`
-    - `pico.set.expert (on: boolean)`
-    - `pico.set.font (path: [string], h: integer)`
-    - `pico.set.grid (on: boolean)`
+    - [pico.set.crop](#TODO): Crop area for drawing operations.
+        - `pico.set.crop ([r: Rect])`
+    - [pico.set.cursor](#TODO): Cursos position for writing operations.
+        - `pico.set.cursor (pos: Pos)`
+    - [pico.set.expert](#TODO): Expert operation mode.
+        - `pico.set.expert (on: boolean)`
+    - [pico.set.font](#TODO): Font for texts.
+        - `pico.set.font (path: [string], h: integer)`
+    - [pico.set.grid](#TODO): Toggles window grid.
+        - `pico.set.grid (on: boolean)`
     - `pico.set.rotate (ang: integer)`
     - `pico.set.scale (pct: Pct)`
     - `pico.set.size (phy: Dim|boolean, log: Dim|boolean)`
