@@ -1,14 +1,14 @@
 # Types
 
-- `Anchor: { x: integer|string, y: integer|string }`
-    - `x`: `'left'`, `'center'`, `'right'`
-    - `y`: `'top'`, `'middle'`, `'bottom'`
-- `Color: { r: integer, g: integer, b: integer [, a: integer=0xFF] }`
-- `Dim: { x: integer, y: integer }`
-- `Event: { TODO }`
-- `Pct: { x: integer, y: integer }`
-- `Pos: { x: integer, y: integer }`
-- `Rect: { x: integer, y: integer, w: integer, h: integer }`
+- Anchor: `{ x: integer|string, y: integer|string }`
+    - `x: string` (`'left'`, `'center'`, `'right'`)
+    - `y: string` (`'top'`, `'middle'`, `'bottom'`)
+- Color: `{ r: integer, g: integer, b: integer [, a: integer=0xFF] }`
+- Dim: `{ x: integer, y: integer }`
+- Event: `{ TODO }`
+- Pct: `{ x: integer, y: integer }`
+- Pos: `{ x: integer, y: integer }`
+- Rect: `{ x: integer, y: integer, w: integer, h: integer }`
 
 # API
 
