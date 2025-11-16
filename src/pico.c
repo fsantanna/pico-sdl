@@ -11,7 +11,6 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "tiny_ttf.h"
-#include "dir.h"
 #include "hash.h"
 #include "pico.h"
 
@@ -142,9 +141,6 @@ int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Anchor a1, Pico_Rect r2, Pico_Anch
 // INIT
 
 void pico_init (int on) {
-    char* dir = pico_dir_exe_get();
-    assert(dir!=NULL && "cannot determine execution path");
-    assert(chdir(dir)==0 && "cannot determine execution path");
     if (on) {
         _pico_hash = pico_hash_create(PICO_HASH);
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));

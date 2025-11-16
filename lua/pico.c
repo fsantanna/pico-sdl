@@ -1,4 +1,4 @@
-// gcc -shared -o pico.so -fPIC /x/pico-sdl/src/pico.c ../src/hash.c ../src/dir.c pico.c -llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
+// gcc -shared -o pico.so -fPIC /x/pico-sdl/src/pico.c ../src/hash.c pico.c -llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 
 #include <lua5.4/lua.h>
 #include <lua5.4/lauxlib.h>

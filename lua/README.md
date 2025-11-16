@@ -1,4 +1,14 @@
-# Types
+# Quick Start
+
+```
+sudo apt install libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+sudo luarocks install pico-sdl
+pico-lua tst/main.lua
+```
+
+# Documentation
+
+## Types
 
 - Anchor: `{ x: integer|string, y: integer|string }`
     - `x: string` (`'left'`, `'center'`, `'right'`)
@@ -10,7 +20,7 @@
 - Pos: `{ x: integer, y: integer }`
 - Rect: `{ x: integer, y: integer, w: integer, h: integer }`
 
-# API
+## API
 
 - [pico.init](#TODO): Initializes and terminates `pico`.
     - `pico.init (on: boolean)`
@@ -68,3 +78,29 @@
 - **pico.vs**
     - `pico.vs.pos_rect (pos: Pos, rect: Rect [,anc, anc]) -> boolean`
     - `pico.vs.rect_rect (r1: Rect, r2: Rect [,anc, anc]) -> boolean`
+
+# Install & Run
+
+## Dependencies
+
+```
+sudo apt install libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+```
+
+## Luarocks
+
+```
+sudo luarocks install pico-sdl
+pico-lua tst/main.lua
+```
+
+## Manual
+
+Assumes `lua5.4`:
+
+```
+gcc -shared -o pico.so -fPIC /x/pico-sdl/src/pico.c ../src/hash.c pico.c -llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
+sudo cp pico-lua /usr/local/bin/
+sudo cp pico.so /usr/local/share/lua/5.4/
+pico-lua tst/main.lua
+```

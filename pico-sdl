@@ -1,16 +1,21 @@
 #!/bin/sh
 
-PICO=$(dirname $(realpath "$0"))    # path of pico-sdl root
+# /x/y/pico-sdl /a/b/c/d.c
 
-DIR=$(dirname -- "$1")              # path of source file
-EXE=$(basename -- "$1")
-EXE="${EXE%.*}"
+PICO=$(dirname $(realpath "$0"))    # /x/y/
+
+DIR=$(dirname -- "$1")              # /a/b/c/
+EXE=$(basename -- "$1")             # d.c
+EXE="${EXE%.*}"                     # d
+
+echo $PICO, $DIR, $EXE
 
 gcc -Wall -o "$DIR/$EXE" "$1"                               \
-    "$PICO/src/pico.c" "$PICO/src/dir.c" "$PICO/src/hash.c" \
+    "$PICO/src/pico.c" "$PICO/src/hash.c" \
     -I "$PICO/src"                                          \
     -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
 
 if [ $? -eq 0 ]; then
+    cd $DIR/
     "$DIR/$EXE"
 fi
