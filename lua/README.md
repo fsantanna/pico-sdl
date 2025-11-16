@@ -30,12 +30,12 @@ pico-lua tst/main.lua
 - [pico.pos](#TODO): Position relative to the screen size (or given rectangle).
     - `pico.pos (pct: Pct [,out: Rect]) -> Pos`
     - `pico.pos (x: integer, y: integer [,out: Rect]) -> Pos`
-- **pico.get**: State read operations.
+- **pico.get**
     - [pico.get.rotate](#TODO): Rotation angle in degrees.
         - `pico.get.rotate () -> integer`
     - [pico.get.size](#TODO): Physical and logical window dimensions.
         - `pico.get.size () -> { phy=Dim, log=Dim }`
-- **pico.set**: State write operations.
+- **pico.set**
     - [pico.set.crop](#TODO): Crop area.
         - `pico.set.crop ([r: Rect])`
     - [pico.set.cursor](#TODO): Text cursor position.
@@ -56,29 +56,29 @@ pico-lua tst/main.lua
         - `pico.set.title (title: string)`
     - [pico.set.zoom](#TODO): Window zoom.
         - `pico.set.zoom (pct: Pct)`
-    - **pico.set.color**: Color operations.
+    - **pico.set.color**
         - [pico.set.color.clear](#TODO): Window clear color.
             - `pico.set.color.clear (clr: Color)`
             - `pico.set.color.clear (r, g, b [,a])`
         - [pico.set.color.draw](#TODO): Draw color.
             - `pico.set.color.draw (clr: Color)`
             - `pico.set.color.draw (r, g, b [,a])`
-    - **pico.set.anchor**: Anchor operations.
+    - **pico.set.anchor**
         - [pico.set.anchor.draw](#TODO): Draw anchor.
             - `pico.set.anchor.draw (anc: Anchor)`
             - `pico.set.anchor.draw (x, y)`
         - [pico.set.anchor.rotate](#TODO): Rotate anchor.
             - `pico.set.anchor.rotate (anc: Anchor)`
             - `pico.set.anchor.rotate (x, y)`
-- **pico.input**: Input operations.
+- **pico.input**
     - [pico.input.delay](#TODO): Freezes execution for milliseconds.
         - `pico.input.delay (ms: integer)`
     - [pico.input.event](#TODO): Waits event for a number of milliseconds.
         - `pico.input.event ([evt: Event], [ms: integer])`
-- **pico.output**: Output operations
+- **pico.output**
     - [pico.output.clear](#TODO): Clears window.
         - `pico.output.clear ()`
-    - **pico.output.draw**: Draw operations.
+    - **pico.output.draw**
         - [pico.output.draw.buffer](#TODO): Draws array of colors.
             - `pico.output.draw.buffer (pos: Pos, buffer: {{Color}})`
         - [pico.output.draw.image](#TODO): Draws image.
@@ -109,7 +109,7 @@ pico-lua tst/main.lua
         - `pico.output.write (text: string)`
     - [pico.output.writeln](#TODO): Writes text and breaks line.
         - `pico.output.writeln (text: string)`
-- **pico.vs**: Collision operations.
+- **pico.vs**
     - [pico.vs.pos_rect](#TODO): Collision between position and rectangle.
         - `pico.vs.pos_rect (pos: Pos, rect: Rect [,anc, anc]) -> boolean`
     - [pico.vs.rect_rect](#TODO): Collision between two rectangles.
