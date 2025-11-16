@@ -1,58 +1,70 @@
+# Types
+
+- `Anchor: { x: integer|string, y: integer|string }`
+    - `x`: `'left'`, `'center'`, `'right'`
+    - `y`: `'top'`, `'middle'`, `'bottom'`
+- `Color: { r: integer, g: integer, b: integer [, a: integer=0xFF] }`
+- `Dim: { x: integer, y: integer }`
+- `Event: { TODO }`
+- `Pct: { x: integer, y: integer }`
+- `Pos: { x: integer, y: integer }`
+- `Rect: { x: integer, y: integer, w: integer, h: integer }`
+
 # API
 
-- `pico.init (on: boolean)`
-- `pico.dim (pct: {x,y} [,out:{x,y}]) -> {x,y}`
-    - `pico.dim (x: integer, y: integer [,out:{x,y}]) -> {x,y}`
-- `pico.pos (pct: {x,y} [,out:{x,y,w,h}]) -> {x,y}`
-    - `pico.pos (x: integer, y: integer [,out:{x,y,w,h}]) -> {x,y}`
+- [pico.init](#TODO): Initializes and terminates `pico`.
+    - `pico.init (on: boolean)`
+- [pico.dim](#TODO): Dimension relative to the screen size (or given rectangle).
+    - `pico.dim (pct: Pct [,out: Dim]) -> Dim`
+    - `pico.dim (x: integer, y: integer [,out: Dim]) -> Dim`
+- [pico.pos](#TODO): Position relative to the screen size (or given rectangle).
+    - `pico.pos (pct: Pct [,out: Rect]) -> Pos`
+    - `pico.pos (x: integer, y: integer [,out: Rect]) -> Pos`
 - **pico.get**
     - `pico.get.rotate () -> integer`
-    - `pico.get.size () -> { phy={x,y}, log={x,y} }`
+    - `pico.get.size () -> { phy=Dim, log=Dim }`
 - **pico.set**
-    - `pico.set.crop ([r: {x,y,w,h}])`
-    - `pico.set.cursor (pos: {x,y})`
+    - `pico.set.crop ([r: Rect])`
+    - `pico.set.cursor (pos: Pos)`
     - `pico.set.expert (on: boolean)`
     - `pico.set.font (path: [string], h: integer)`
     - `pico.set.grid (on: boolean)`
     - `pico.set.rotate (ang: integer)`
-    - `pico.set.scale (pct: {x,y})`
-    - `pico.set.size (phy: {x,y}|boolean, log: {x,y}|boolean)`
+    - `pico.set.scale (pct: Pct)`
+    - `pico.set.size (phy: Dim|boolean, log: Dim|boolean)`
     - `pico.set.title (title: string)`
-    - `pico.set.zoom (pct: {x,y})`
+    - `pico.set.zoom (pct: Pct)`
     - **pico.set.color**
-        - `pico.set.color.clear (clr: {r,g,b[,a]})`
+        - `pico.set.color.clear (clr: Color)`
             - `pico.set.color.clear (r, g, b [,a])`
-        - `pico.set.color.draw (clr: {r,g,b[,a]})`
+        - `pico.set.color.draw (clr: Color)`
             - `pico.set.color.draw (r, g, b [,a])`
     - **pico.set.anchor**
-        - `pico.set.anchor.draw (anc: {x,y})`
+        - `pico.set.anchor.draw (anc: Anchor)`
             - `pico.set.anchor.draw (x, y)`
-        - `pico.set.anchor.rotate (anc: {x,y})`
+        - `pico.set.anchor.rotate (anc: Anchor)`
             - `pico.set.anchor.rotate (x, y)`
-        - Anchors:
-            - `x`: `integer`, `left`, `center`, `right`
-            - `y`: `integer`, `top`, `middle`, `bottom`
 - **pico.input**
     - `pico.input.delay (ms: integer)`
-    - `pico.input.event ([evt:{}], [ms: integer])`
+    - `pico.input.event ([evt: Event], [ms: integer])`
 - **pico.output**
     - `pico.output.clear ()`
     - **pico.output.draw**
-        - `pico.output.draw.buffer (pos: {x,y}, buffer: {{{r,g,b,a}}})`
-        - `pico.output.draw.image (pos: {x,y}, path: string [,{x,y}])`
-        - `pico.output.draw.line (p1: {x,y}, p2: {x,y})`
-        - `pico.output.draw.oval (rect: {x,y,w,h})`
-        - `pico.output.draw.pixel (pos: {x,y})`
-        - `pico.output.draw.pixels (poss: {{x,y}})`
-        - `pico.output.draw.poly (pts: {{x,y}})`
-        - `pico.output.draw.rect (rect: {x,y,w,h})`
-        - `pico.output.draw.text (pos: {x,y}, text: string)`
-        - `pico.output.draw.tri (rect: {x,y,w,h})`
+        - `pico.output.draw.buffer (pos: Pos, buffer: {{Color}})`
+        - `pico.output.draw.image (pos: Pos, path: string [,Dim])`
+        - `pico.output.draw.line (p1: Pos, p2: Pos)`
+        - `pico.output.draw.oval (rect: Rect)`
+        - `pico.output.draw.pixel (pos: Pos)`
+        - `pico.output.draw.pixels (poss: {Pos})`
+        - `pico.output.draw.poly (pts: {Pos})`
+        - `pico.output.draw.rect (rect: Rect)`
+        - `pico.output.draw.text (pos: Pos, text: string)`
+        - `pico.output.draw.tri (rect: Rect)`
     - `pico.output.present ()`
-    - `pico.output.screenshot ([path: string], [rect: {x,y,w,h}])`
+    - `pico.output.screenshot ([path: string], [rect: Rect])`
     - `pico.output.sound (path: string)`
     - `pico.output.write (text: string)`
     - `pico.output.writeln (text: string)`
 - **pico.vs**
-    - `pico.vs.pos_rect (pos: {x,y}, rect: {x,y,w,h} [,anc, anc]) -> boolean`
-    - `pico.vs.rect_rect (r1: {x,y,w,h}, r2: {x,y,w,h} [,anc, anc]) -> boolean`
+    - `pico.vs.pos_rect (pos: Pos, rect: Rect [,anc, anc]) -> boolean`
+    - `pico.vs.rect_rect (r1: Rect, r2: Rect [,anc, anc]) -> boolean`
