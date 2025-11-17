@@ -14,7 +14,7 @@ Please, switch to stable [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.
 [
     [Hello World!](#hello-world)    |
     [Install & Run](#install--run)  |
-    [Documentation](#documentation) |
+    [Documentation](#documentation)
 ]
 
 <img src="pico-logo.png" width="250" align="right">
