@@ -37,4 +37,14 @@ pico.output.draw.rect(rct1)
 
 pico.input.event('key.dn')
 
+do
+    print("500x500 - phy=log - centered 250x250 rect")
+    pico.set.size(500,500)
+    pico.output.clear()
+    local pt  = pico.pos(50, 50)
+    local rct = {x=pt.x, y=pt.y, w=250, h=250}
+    pico.output.draw.rect(rct)
+    pico.input.event('key.dn')
+end
+
 pico.init(false)

@@ -266,6 +266,12 @@ static int l_get_size (lua_State* L) {
     return 1;                       // [siz]
 }
 
+static int l_get_ticks (lua_State* L) {
+    Uint32 ms = pico_get_ticks();
+    lua_pushinteger(L, ms);         // ms
+    return 1;                       // [ms]
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_set_anchor_draw (lua_State* L) {
@@ -380,27 +386,38 @@ static int l_set_scale (lua_State* L) {
 }
 
 static int l_set_size (lua_State* L) {
-    // phy | log
     Pico_Dim phy, log;
-    if (lua_type(L,1) == LUA_TBOOLEAN) {
-        int v = lua_toboolean(L, 1);
-        phy = (v ? PICO_SIZE_FULLSCREEN : PICO_SIZE_KEEP); // b | log
-    } else {
-        luaL_checktype(L, 1, LUA_TTABLE);   // phy | log
+
+    // w | h
+    if (lua_type(L,1) == LUA_TNUMBER) {
         phy = (Pico_Dim) {
-            L_checkfieldint(L, 1, "x"),
-            L_checkfieldint(L, 1, "y"),
+            luaL_checkinteger(L, 1),
+            luaL_checkinteger(L, 2),
         };
-    }
-    if (lua_type(L,2) == LUA_TBOOLEAN) {
-        int v = lua_toboolean(L, 2);
-        log = (v ? PICO_SIZE_FULLSCREEN : PICO_SIZE_KEEP); // phy | b
+        log = phy;
+
+    // phy | log
     } else {
-        luaL_checktype(L, 2, LUA_TTABLE);   // phy | log
-        log = (Pico_Dim) {
-            L_checkfieldint(L, 2, "x"),
-            L_checkfieldint(L, 2, "y"),
-        };
+        if (lua_type(L,1) == LUA_TBOOLEAN) {
+            int v = lua_toboolean(L, 1);
+            phy = (v ? PICO_SIZE_FULLSCREEN : PICO_SIZE_KEEP); // b | log
+        } else {
+            luaL_checktype(L, 1, LUA_TTABLE);   // phy | log
+            phy = (Pico_Dim) {
+                L_checkfieldint(L, 1, "x"),
+                L_checkfieldint(L, 1, "y"),
+            };
+        }
+        if (lua_type(L,2) == LUA_TBOOLEAN) {
+            int v = lua_toboolean(L, 2);
+            log = (v ? PICO_SIZE_FULLSCREEN : PICO_SIZE_KEEP); // phy | b
+        } else {
+            luaL_checktype(L, 2, LUA_TTABLE);   // phy | log
+            log = (Pico_Dim) {
+                L_checkfieldint(L, 2, "x"),
+                L_checkfieldint(L, 2, "y"),
+            };
+        }
     }
     pico_set_size(phy, log);
     return 0;
@@ -759,6 +776,7 @@ static const luaL_Reg ll_vs[] = {
 static const luaL_Reg ll_get[] = {
     { "rotate", l_get_rotate },
     { "size",   l_get_size   },
+    { "ticks",  l_get_ticks  },
     { NULL, NULL }
 };
 

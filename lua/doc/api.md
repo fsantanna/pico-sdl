@@ -27,6 +27,8 @@
         - `pico.get.rotate () -> integer`
     - [pico.get.size](#TODO): Physical and logical window dimensions.
         - `pico.get.size () -> { phy=Dim, log=Dim }`
+    - [pico.get.ticks](#TODO): Number of milliseconds initialization.
+        - `pico.get.ticks () -> integer`
 - **pico.set**
     - [pico.set.crop](#TODO): Crop area.
         - `pico.set.crop ([r: Rect])`
