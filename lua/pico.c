@@ -583,11 +583,18 @@ static int l_output_draw_oval (lua_State* L) {
 }
 
 static int l_output_draw_pixel (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // pos={x,y}
-    Pico_Pos pos = {
-        L_checkfieldint(L, 1, "x"),
-        L_checkfieldint(L, 1, "y")
-    };
+    Pico_Pos pos;
+    if (lua_type(L,1) == LUA_TTABLE) {      // pos={x,y}
+        pos = (Pico_Pos) {
+            L_checkfieldint(L, 1, "x"),
+            L_checkfieldint(L, 1, "y")
+        };
+    } else {                                // x | y
+        pos = (Pico_Pos) {
+            luaL_checkinteger(L, 1),
+            luaL_checkinteger(L, 2)
+        };
+    }
     pico_output_draw_pixel(pos);
     return 0;
 }
