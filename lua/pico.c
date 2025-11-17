@@ -87,12 +87,12 @@ static Pico_Color _color (lua_State* L) {
         clr = _color_t(L, 1);
     } else {                            // r | g | b [| a]
         clr = (Pico_Color) {
-            luaL_checkinteger(L, 1),
-            luaL_checkinteger(L, 2),
-            luaL_checkinteger(L, 3),
+            luaL_checknumber(L, 1),
+            luaL_checknumber(L, 2),
+            luaL_checknumber(L, 3),
         };
         if (lua_gettop(L) >= 4) {
-            clr.a = luaL_checkinteger(L, 4);
+            clr.a = luaL_checknumber(L, 4);
         } else {
             clr.a = 0xFF;
         }
@@ -117,8 +117,8 @@ static int l_dim (lua_State* L) {
         pct.y = L_checkfieldint(L, 1, "y");
         ext = (lua_gettop(L) > 1);
     } else {                                // x | y
-        pct.x = luaL_checkinteger(L, 1);
-        pct.y = luaL_checkinteger(L, 2);
+        pct.x = luaL_checknumber(L, 1);
+        pct.y = luaL_checknumber(L, 2);
         ext = (lua_gettop(L) > 2);
     }
 
@@ -153,8 +153,8 @@ static int l_pos (lua_State* L) {
         pct.y = L_checkfieldint(L, 1, "y");
         ext = (lua_gettop(L) > 1);
     } else {                                // x | y
-        pct.x = luaL_checkinteger(L, 1);
-        pct.y = luaL_checkinteger(L, 2);
+        pct.x = luaL_checknumber(L, 1);
+        pct.y = luaL_checknumber(L, 2);
         ext = (lua_gettop(L) > 2);
     }
 
@@ -333,7 +333,7 @@ static int l_set_expert (lua_State* L) {
 }
 
 static int l_set_font (lua_State* L) {
-    int h = luaL_checkinteger(L, 2);    // path | h
+    int h = luaL_checknumber(L, 2);    // path | h
     char* f = NULL;
     if (!lua_isnil(L, 1)) {
         f = (char*) luaL_checklstring(L, 1, NULL);
@@ -350,7 +350,7 @@ static int l_set_grid (lua_State* L) {
 }
 
 static int l_set_rotate (lua_State* L) {
-    int ang = luaL_checkinteger(L, 1);      // ang
+    int ang = luaL_checknumber(L, 1);      // ang
     pico_set_rotate(ang);
     return 0;
 }
@@ -378,8 +378,8 @@ static int l_set_scale (lua_State* L) {
         pct.x = L_checkfieldint(L, 1, "x");
         pct.y = L_checkfieldint(L, 1, "y");
     } else {                                // x | y
-        pct.x = luaL_checkinteger(L, 1);
-        pct.y = luaL_checkinteger(L, 2);
+        pct.x = luaL_checknumber(L, 1);
+        pct.y = luaL_checknumber(L, 2);
     }
     pico_set_scale(pct);
     return 0;
@@ -391,8 +391,8 @@ static int l_set_size (lua_State* L) {
     // w | h
     if (lua_type(L,1) == LUA_TNUMBER) {
         phy = (Pico_Dim) {
-            luaL_checkinteger(L, 1),
-            luaL_checkinteger(L, 2),
+            luaL_checknumber(L, 1),
+            luaL_checknumber(L, 2),
         };
         log = phy;
 
@@ -435,8 +435,8 @@ static int l_set_zoom (lua_State* L) {
         pct.x = L_checkfieldint(L, 1, "x");
         pct.y = L_checkfieldint(L, 1, "y");
     } else {                                // x | y
-        pct.x = luaL_checkinteger(L, 1);
-        pct.y = luaL_checkinteger(L, 2);
+        pct.x = luaL_checknumber(L, 1);
+        pct.y = luaL_checknumber(L, 2);
     }
     pico_set_zoom(pct);
     return 0;
@@ -445,7 +445,7 @@ static int l_set_zoom (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_input_delay (lua_State* L) {
-    int ms = luaL_checkinteger(L, 1);       // ms
+    int ms = luaL_checknumber(L, 1);       // ms
     pico_input_delay(ms);
     return 0;
 }
@@ -608,8 +608,8 @@ static int l_output_draw_pixel (lua_State* L) {
         };
     } else {                                // x | y
         pos = (Pico_Pos) {
-            luaL_checkinteger(L, 1),
-            luaL_checkinteger(L, 2)
+            luaL_checknumber(L, 1),
+            luaL_checknumber(L, 2)
         };
     }
     pico_output_draw_pixel(pos);
@@ -668,10 +668,10 @@ static int l_output_draw_rect (lua_State* L) {
         };
     } else {                                // x | y | w | h
         rect = (Pico_Rect) {
-            luaL_checkinteger(L, 1),
-            luaL_checkinteger(L, 2),
-            luaL_checkinteger(L, 3),
-            luaL_checkinteger(L, 4)
+            luaL_checknumber(L, 1),
+            luaL_checknumber(L, 2),
+            luaL_checknumber(L, 3),
+            luaL_checknumber(L, 4)
         };
     }
 
