@@ -1,9 +1,9 @@
 package = "pico-sdl"
-version = "1.0-1"
+version = "0.1-1"
 
 source = {
    url = "git://github.com/fsantanna/pico-sdl",
-   tag = "v1.0"
+   tag = "v0.1"
 }
 
 description = {
@@ -20,7 +20,7 @@ description = {
 }
 
 dependencies = {
-   "lua >= 5.1"
+   "lua >= 5.2"
 }
 
 external_dependencies = {
@@ -51,8 +51,9 @@ build = {
    modules = {
       pico = {
          sources = {
-            "lua/pico.c",
-            "src/pico.c"
+            "pico.c",
+            "../src/pico.c",
+            "../src/hash.c",
          },
          libraries = {
             "SDL2",
