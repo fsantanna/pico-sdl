@@ -1,6 +1,6 @@
 # pico-sdl-lua
 
-A Lua binding for [pico-sdl](#../).
+A Lua binding for [pico-sdl][../].
 
 <!--
 [
@@ -12,12 +12,9 @@ Please, switch to stable [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.
 -->
 
 [
-    [About](#about)                 |
     [Hello World!](#hello-world)    |
     [Install & Run](#install--run)  |
-    [Environments](#environments)   |
     [Documentation](#documentation) |
-    [Resources](#resources)
 ]
 
 <img src="pico-logo.png" width="250" align="right">
