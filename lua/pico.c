@@ -732,6 +732,7 @@ static int l_output_draw_rect (lua_State* L) {
 
 static int l_output_draw_text (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // pos={x,y}
+    lua_tostring(L, 2);
     luaL_checktype(L, 2, LUA_TSTRING);      // pos={x,y} | text
     Pico_Pos pos = {
         L_checkfieldnum(L, 1, "x"),
