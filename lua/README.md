@@ -2,15 +2,13 @@
 
 A Lua binding for [pico-sdl](#../).
 
+<!--
 [
-    [`v0.3`](https://github.com/lua-atmos/atmos/tree/v0.3)      |
-    [`v0.2.1`](https://github.com/lua-atmos/atmos/tree/v0.2.1)  |
-    [`v0.1`](https://github.com/lua-atmos/atmos/tree/v0.1)
+    [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1)
 ]
 
-<!--
 This is the unstable `main` branch.
-Please, switch to stable [`v0.3`](https://github.com/lua-atmos/atmos/tree/v0.3).
+Please, switch to stable [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1).
 -->
 
 [
