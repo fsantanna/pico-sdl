@@ -907,7 +907,7 @@ static const luaL_Reg ll_output_draw[] = {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-int luaopen_pico (lua_State* L) {
+int luaopen_pico_native (lua_State* L) {
     lua_pushlightuserdata(L, (void*)&KEY);  // K
     lua_newtable(L);                        // K | G
     lua_settable(L, LUA_REGISTRYINDEX);     // -
