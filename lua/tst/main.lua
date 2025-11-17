@@ -2,8 +2,9 @@ local pico = require 'pico'
 
 pico.init(true)
 
-local phy = pico.get.size().phy
-local log = pico.get.size().log
+local phy_log = pico.get.size.window()
+local phy = phy_log.phy
+local log = phy_log.log
 assert(phy.x==640 and phy.y==360);
 assert(log.x==64  and log.y==36 );
 
@@ -111,7 +112,7 @@ print("increases zoom")
 for i=1, 20 do
     log.x = log.x - 1
     log.y = log.y - 1
-    pico.set.size(nil, log)
+    pico.set.size.window(nil, log)
     local ct = pico.pos { x=50, y=50 }
     pico.output.clear()
     pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }
@@ -125,7 +126,7 @@ print("decreases zoom")
 for i=1, 20 do
     log.x = log.x + 1
     log.y = log.y + 1
-    pico.set.size(nil, log)
+    pico.set.size.window(nil, log)
     local ct = pico.pos { x=50, y=50 }
     pico.output.clear()
     pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }

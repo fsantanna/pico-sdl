@@ -3,7 +3,7 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Pixels"
-pico.set.size({x=100,y=100}, {x=5,y=5})
+pico.set.size.window({x=100,y=100}, {x=5,y=5})
 
 local pixels = {
     {x=1, y=1}, {x=2, y=1}, {x=3, y=1},

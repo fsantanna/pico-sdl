@@ -4,7 +4,7 @@ pico.init(true)
 
 pico.set.title "Scale"
 pico.set.grid(false)
-pico.set.size({x=500,y=500}, {x=100,y=100})
+pico.set.size.window({x=500,y=500}, {x=100,y=100})
 
 local pt   = pico.pos(50, 50)
 local rect = {x=pt.x, y=pt.y, w=30, h=30}

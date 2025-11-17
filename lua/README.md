@@ -30,7 +30,7 @@ The following example draws an `X` on screen gradually with instant feedback:
 ```
 local pico = require 'pico'
 pico.init(true)
-pico.set.size({x=160,y=160}, {x=16,y=16})
+pico.set.size.window({x=160,y=160}, {x=16,y=16})
 pico.output.clear()
 pico.input.event('key.up')
 for i=1, 16 do

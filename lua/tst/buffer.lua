@@ -3,7 +3,7 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Buffer"
-pico.set.size({x=100,y=100}, {x=10,y=10})
+pico.set.size.window({x=100,y=100}, {x=10,y=10})
 
 -- .x.
 -- xxx

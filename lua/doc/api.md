@@ -25,8 +25,11 @@
 - **pico.get**
     - [pico.get.rotate](#TODO): Rotation angle in degrees.
         - `pico.get.rotate () -> integer`
-    - [pico.get.size](#TODO): Physical and logical window dimensions.
-        - `pico.get.size () -> { phy=Dim, log=Dim }`
+    - **pico.get.size**
+        - [pico.get.size.image](#TODO): Image dimensions.
+            - `pico.get.size.image (path: string) -> Dim`
+        - [pico.get.size.window](#TODO): Physical and logical window dimensions.
+            - `pico.get.size.window () -> { phy=Dim, log=Dim }`
     - [pico.get.ticks](#TODO): Number of milliseconds initialization.
         - `pico.get.ticks () -> integer`
 - **pico.set**
@@ -44,8 +47,9 @@
         - `pico.set.rotate (ang: integer)`
     - [pico.set.scale](#TODO): Scale relative to original dimensions.
         - `pico.set.scale (pct: Pct)`
-    - [pico.set.size](#TODO): Physical and logical window dimensions.
-        - `pico.set.size (phy: Dim|boolean, log: Dim|boolean)`
+    - **pico.set.size**
+        - [pico.set.size.window](#TODO): Physical and logical window dimensions.
+            - `pico.set.size.window (phy: Dim|boolean, log: Dim|boolean)`
     - [pico.set.title](#TODO): Window title.
         - `pico.set.title (title: string)`
     - [pico.set.zoom](#TODO): Window zoom.

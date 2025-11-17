@@ -3,7 +3,7 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Collide"
-pico.set.size({x=200,y=200}, {x=20,y=20})
+pico.set.size.window({x=200,y=200}, {x=20,y=20})
 
 local pt = pico.pos(50, 50)
 local r = { x=pt.x, y=pt.y, w=4, h=4 }

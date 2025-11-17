@@ -4,7 +4,7 @@ pico.init(true)
 
 pico.set.title "Rotate"
 pico.set.grid(true)
-pico.set.size({x=500,y=500}, {x=100,y=100})
+pico.set.size.window({x=500,y=500}, {x=100,y=100})
 pico.set.anchor.draw('center', 'middle')
 pico.set.font(nil, 16)
 

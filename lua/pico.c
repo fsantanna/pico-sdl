@@ -245,7 +245,20 @@ static int l_get_rotate (lua_State* L) {
     return 1;                       // [ang]
 }
 
-static int l_get_size (lua_State* L) {
+static int l_get_size_image (lua_State* L) {
+    const char* path = luaL_checkstring(L, 1);
+    Pico_Dim dim = pico_get_size_image(path);
+
+    lua_newtable(L);                // dim
+    lua_pushinteger(L, dim.x);      // dim | x
+    lua_setfield(L, 2, "x");        // dim
+    lua_pushinteger(L, dim.y);      // dim | y
+    lua_setfield(L, 2, "y");        // dim
+
+    return 1;                       // [dim]
+}
+
+static int l_get_size_window (lua_State* L) {
     Pico_Size siz = pico_get_size();
     lua_newtable(L);                // siz
 
@@ -385,7 +398,7 @@ static int l_set_scale (lua_State* L) {
     return 0;
 }
 
-static int l_set_size (lua_State* L) {
+static int l_set_size_window (lua_State* L) {
     Pico_Dim phy, log;
 
     // w | h
@@ -781,8 +794,13 @@ static const luaL_Reg ll_vs[] = {
 
 static const luaL_Reg ll_get[] = {
     { "rotate", l_get_rotate },
-    { "size",   l_get_size   },
     { "ticks",  l_get_ticks  },
+    { NULL, NULL }
+};
+
+static const luaL_Reg ll_get_size[] = {
+    { "image",  l_get_size_image  },
+    { "window", l_get_size_window },
     { NULL, NULL }
 };
 
@@ -798,9 +816,14 @@ static const luaL_Reg ll_set[] = {
     { "scroll", l_set_scroll },
     { "show",   l_set_show   },
     { "scale",  l_set_scale  },
-    { "size",   l_set_size   },
     { "title",  l_set_title  },
     { "zoom",   l_set_zoom   },
+    { NULL, NULL }
+};
+
+static const luaL_Reg ll_set_anchor[] = {
+    { "draw",   l_set_anchor_draw   },
+    { "rotate", l_set_anchor_rotate },
     { NULL, NULL }
 };
 
@@ -810,9 +833,8 @@ static const luaL_Reg ll_set_color[] = {
     { NULL, NULL }
 };
 
-static const luaL_Reg ll_set_anchor[] = {
-    { "draw",   l_set_anchor_draw   },
-    { "rotate", l_set_anchor_rotate },
+static const luaL_Reg ll_set_size[] = {
+    { "window", l_set_size_window },
     { NULL, NULL }
 };
 
@@ -863,13 +885,17 @@ int luaopen_pico (lua_State* L) {
     lua_setfield(L, -2, "vs");              // pico
 
     luaL_newlib(L, ll_get);                 // pico | get
+    luaL_newlib(L, ll_get_size);            // pico | get | size
+    lua_setfield(L, -2, "size");            // pico | get
     lua_setfield(L, -2, "get");             // pico
 
     luaL_newlib(L, ll_set);                 // pico | set
-    luaL_newlib(L, ll_set_color);           // pico | set | color
-    lua_setfield(L, -2, "color");           // pico | set
     luaL_newlib(L, ll_set_anchor);          // pico | set | anchor
     lua_setfield(L, -2, "anchor");          // pico | set
+    luaL_newlib(L, ll_set_color);           // pico | set | color
+    lua_setfield(L, -2, "color");           // pico | set
+    luaL_newlib(L, ll_set_size);            // pico | set | size
+    lua_setfield(L, -2, "size");            // pico | set
     lua_setfield(L, -2, "set");             // pico
 
     luaL_newlib(L, ll_input);               // pico | input

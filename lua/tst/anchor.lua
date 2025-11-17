@@ -3,7 +3,7 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Anchoring..."
-pico.set.size({x=200,y=200}, {x=10,y=10})
+pico.set.size.window({x=200,y=200}, {x=10,y=10})
 
 -- PIXELS
 do
