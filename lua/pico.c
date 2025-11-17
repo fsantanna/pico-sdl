@@ -515,6 +515,14 @@ static int l_input_event (lua_State* L) {
             lua_pushinteger(L, e.button.y);         // . | t | y
             lua_setfield(L, -2, "y");               // . | t
             break;
+        case PICO_KEYDOWN: {
+            lua_pushstring(L, "key.dn");            // . | t | tag
+            lua_setfield(L, -2, "tag");             // . | t
+            const char* key = SDL_GetKeyName(e.key.keysym.sym);
+            lua_pushstring(L, key);                 // . | t | key
+            lua_setfield(L, -2, "key");             // . | t
+            break;
+        }
         default:
             //assert(0 && "TODO: e.type");
     }
