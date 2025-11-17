@@ -48,6 +48,11 @@ external_dependencies = {
 
 build = {
    type = "builtin",
+   install = {
+      bin = {
+         ["pico-lua"] = "pico-lua"
+      },
+   },
    modules = {
       pico = {
          sources = {
