@@ -507,6 +507,14 @@ static int l_input_event (lua_State* L) {
             lua_pushstring(L, "quit");              // . | t | tag
             lua_setfield(L, -2, "tag");             // . | t
             break;
+        case PICO_MOUSEMOTION:
+            lua_pushstring(L, "mouse.motion");      // . | t | tag
+            lua_setfield(L, -2, "tag");             // . | t
+            lua_pushinteger(L, e.button.x);         // . | t | x
+            lua_setfield(L, -2, "x");               // . | t
+            lua_pushinteger(L, e.button.y);         // . | t | y
+            lua_setfield(L, -2, "y");               // . | t
+            break;
         case PICO_MOUSEBUTTONDOWN:
             lua_pushstring(L, "mouse.button.dn");   // . | t | tag
             lua_setfield(L, -2, "tag");             // . | t
@@ -515,8 +523,24 @@ static int l_input_event (lua_State* L) {
             lua_pushinteger(L, e.button.y);         // . | t | y
             lua_setfield(L, -2, "y");               // . | t
             break;
+        case PICO_MOUSEBUTTONUP:
+            lua_pushstring(L, "mouse.button.up");   // . | t | tag
+            lua_setfield(L, -2, "tag");             // . | t
+            lua_pushinteger(L, e.button.x);         // . | t | x
+            lua_setfield(L, -2, "x");               // . | t
+            lua_pushinteger(L, e.button.y);         // . | t | y
+            lua_setfield(L, -2, "y");               // . | t
+            break;
         case PICO_KEYDOWN: {
             lua_pushstring(L, "key.dn");            // . | t | tag
+            lua_setfield(L, -2, "tag");             // . | t
+            const char* key = SDL_GetKeyName(e.key.keysym.sym);
+            lua_pushstring(L, key);                 // . | t | key
+            lua_setfield(L, -2, "key");             // . | t
+            break;
+        }
+        case PICO_KEYUP: {
+            lua_pushstring(L, "key.up");            // . | t | tag
             lua_setfield(L, -2, "tag");             // . | t
             const char* key = SDL_GetKeyName(e.key.keysym.sym);
             lua_pushstring(L, key);                 // . | t | key
