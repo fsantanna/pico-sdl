@@ -1,6 +1,6 @@
 # pico-sdl-lua
 
-A Lua binding for [pico-sdl][../].
+A Lua binding for [pico-sdl](../).
 
 <!--
 [
