@@ -1,5 +1,9 @@
 local M = require "pico_native"
 
-M.ok = true
+M.color = {
+    black = { r=0x00, g=0x00, b=0x00 },
+    red   = { r=0xFF, g=0x00, b=0x00 },
+    white = { r=0xFF, g=0xFF, b=0xFF },
+}
 
 return M

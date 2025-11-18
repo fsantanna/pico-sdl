@@ -40,8 +40,8 @@ print "shows centered image"
 pico.input.delay(2000)
 
 -- DRAW_PIXEL/RECT/OVAL
-pico.set.color.clear { r=0x00, g=0x00, b=0x00 }
-pico.set.color.draw { r=0xFF, g=0xFF, b=0xFF }
+pico.set.color.clear(pico.color.black)
+pico.set.color.draw(pico.color.white)
 pico.output.clear()
 pico.output.draw.pixel(pt)
 local rct = pico.pos { x=75, y=25 }

@@ -6,6 +6,7 @@
     - `x: string` (`'left'`, `'center'`, `'right'`)
     - `y: string` (`'top'`, `'middle'`, `'bottom'`)
 - [Color](#TODO): `{ r: integer, g: integer, b: integer [, a: integer=0xFF] }`
+    - `pico.color.*`: `black`, `red`, `white`
 - [Dim](#TODO): `{ x: integer, y: integer }`
 - [Event](#TODO): `{ TODO }`
 - [Pct](#TODO): `{ x: integer, y: integer }`
