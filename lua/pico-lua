@@ -7,4 +7,4 @@ DIR=$(dirname -- "$1")  # /a/b/c
 EXE=$(basename -- "$1") # x.lua
 
 cd $DIR/
-$LUA ./$EXE
+$LUA -lpico $EXE
