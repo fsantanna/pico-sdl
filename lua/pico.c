@@ -131,7 +131,7 @@ static int l_dim (lua_State* L) {
             L_checkfieldnum(L, -1, "x"),
             L_checkfieldnum(L, -1, "y"),
         };
-        dim = pico_dim_ext(out, pct);
+        dim = pico_dim_ext(pct, out);
     } else {
         dim = pico_dim(pct);
     }
@@ -155,21 +155,25 @@ static int l_pos (lua_State* L) {
     } else {                                // x | y
         pct.x = luaL_checknumber(L, 1);
         pct.y = luaL_checknumber(L, 2);
-        ext = (lua_gettop(L) > 2);
     }
 
     Pico_Pos pos;
     if (ext) {                              // . | {x,y,w,h}
-        if (lua_type(L,-1) != LUA_TTABLE) {
-            return luaL_error(L, "expected outer rectangle table");
-        }
+        luaL_checktype(L, 2, LUA_TTABLE);
         Pico_Rect out = {
-            L_checkfieldnum(L, -1, "x"),
-            L_checkfieldnum(L, -1, "y"),
-            L_checkfieldnum(L, -1, "w"),
-            L_checkfieldnum(L, -1, "h"),
+            L_checkfieldnum(L, 2, "x"),
+            L_checkfieldnum(L, 2, "y"),
+            L_checkfieldnum(L, 2, "w"),
+            L_checkfieldnum(L, 2, "h"),
         };
-        pos = pico_pos_ext(out, pct);
+        Pico_Anchor anc;
+        if (lua_gettop(L) >= 3) {
+            luaL_checktype(L, 3, LUA_TTABLE);
+            anc = _anchor(L, 3);
+        } else {
+            anc = pico_get_anchor_draw();
+        }
+        pos = pico_pos_ext(pct, out, anc);
     } else {
         pos = pico_pos(pct);
     }
@@ -203,7 +207,7 @@ static int l_vs_pos_rect (lua_State* L) {
     } else {
         Pico_Anchor anc1 = _anchor(L, 3);
         Pico_Anchor anc2 = _anchor(L, 4);
-        x = pico_pos_vs_rect_ext(pos, anc1, rect, anc2);
+        x = pico_pos_vs_rect_ext(pos, rect, anc1, anc2);
     }
 
     lua_pushboolean(L, x);              // pos | rect | x
@@ -230,7 +234,7 @@ static int l_vs_rect_rect (lua_State* L) {
     } else {
         Pico_Anchor anc1 = _anchor(L, 3);
         Pico_Anchor anc2 = _anchor(L, 4);
-        x = pico_rect_vs_rect_ext(r1, anc1, r2, anc2);
+        x = pico_rect_vs_rect_ext(r1, r2, anc1, anc2);
     }
 
     lua_pushboolean(L, x);              // pos | rect | x
