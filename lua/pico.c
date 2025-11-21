@@ -378,6 +378,24 @@ static int l_set_scroll (lua_State* L) {
     return 0;
 }
 
+static int l_set_style (lua_State* L) {
+    const char* s = luaL_checkstring(L, 1);     // s
+    lua_pushlightuserdata(L, (void*)&KEY);      // s | K
+    lua_gettable(L, LUA_REGISTRYINDEX);         // s | G
+    lua_getfield(L, -1, "styles");              // s | G | styles
+    lua_pushvalue(L, 1);                        // s | G | styles | s
+    lua_gettable(L, -2);                        // s | G | styles | *s*
+
+    int ok;
+    int ss = lua_tointegerx(L, -1, &ok);
+    if (!ok) {
+        luaL_error(L, "invalid style \"%s\"", lua_tostring(L,1));
+    }
+
+    pico_set_style(ss);
+    return 0;
+}
+
 static int l_set_show (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);
     int on = lua_toboolean(L, 1);
@@ -849,6 +867,7 @@ static const luaL_Reg ll_set[] = {
     { "scroll", l_set_scroll },
     { "show",   l_set_show   },
     { "scale",  l_set_scale  },
+    { "style",  l_set_style  },
     { "title",  l_set_title  },
     { "zoom",   l_set_zoom   },
     { NULL, NULL }
@@ -939,6 +958,7 @@ int luaopen_pico_native (lua_State* L) {
     lua_setfield(L, -2, "draw");            // pico | output
     lua_setfield(L, -2, "output");          // pico
 
+    // events
     {                                           // pico
         lua_pushlightuserdata(L, (void*)&KEY);  // . | K
         lua_gettable(L, LUA_REGISTRYINDEX);     // . | G
@@ -955,6 +975,7 @@ int luaopen_pico_native (lua_State* L) {
         lua_pop(L, 1);                          // .
     }                                           // pico
 
+    // anchors
     {                                           // pico
         lua_pushlightuserdata(L, (void*)&KEY);  // . | K
         lua_gettable(L, LUA_REGISTRYINDEX);     // . | G
@@ -974,6 +995,19 @@ int luaopen_pico_native (lua_State* L) {
         lua_setfield(L, -2, "ancs");            // . | G
         lua_pop(L, 1);                          // .
     }                                           // pico
+
+    // styles
+    {                                           // pico
+        lua_pushlightuserdata(L, (void*)&KEY);  // . | K
+        lua_gettable(L, LUA_REGISTRYINDEX);     // . | G
+        lua_newtable(L);                        // . | G | styles
+        lua_pushinteger(L, PICO_FILL);          // . | G | styles | fill
+        lua_setfield(L, -2, "fill");            // . | G | styles
+        lua_pushinteger(L, PICO_STROKE);        // . | G | styles | stroke
+        lua_setfield(L, -2, "stroke");          // . | G | styles
+        lua_setfield(L, -2, "styles");          // . | G
+        lua_pop(L, 1);                          // .
+    }
 
     return 1;                               // [pico]
 }
