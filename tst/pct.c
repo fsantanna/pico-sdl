@@ -23,7 +23,7 @@ int main (void) {
         pico_output_draw_rect(rct1);
 
         puts("red centered under white");
-        Pico_Pos  pt2  = pico_pos_ext((Pico_Pct){50, 50}, rct1);
+        Pico_Pos  pt2  = pico_pos_ext((Pico_Pct){50, 50}, rct1, pico_get_anchor_draw());
         Pico_Rect rct2 = {pt2.x, pt2.y, 16, 9};
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
         pico_output_draw_rect(rct2);
@@ -42,7 +42,7 @@ int main (void) {
         pico_output_draw_rect(rct1);
 
         puts("red anchored by top-left under 0% of white");
-        Pico_Pos pt2 = pico_pos_ext((Pico_Pct){0, 0}, rct1);
+        Pico_Pos pt2 = pico_pos_ext((Pico_Pct){0, 0}, rct1, pico_get_anchor_draw());
         Pico_Rect rct2 = (Pico_Rect) {pt2.x, pt2.y, 16, 9};
         pico_set_anchor_draw((Pico_Anchor){PICO_LEFT, PICO_TOP});
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
@@ -88,7 +88,7 @@ int main (void) {
         pico_output_draw_rect(rct1);
 
         puts("red anchored by top-left under -10% of white");
-        Pico_Pos  pt2 = pico_pos_ext((Pico_Pct){-10, -10}, rct1);
+        Pico_Pos  pt2 = pico_pos_ext((Pico_Pct){-10, -10}, rct1, pico_get_anchor_draw());
         Pico_Rect rct2 = (Pico_Rect) {pt2.x, pt2.y, 16, 9};
         pico_set_anchor_draw((Pico_Anchor){PICO_LEFT, PICO_TOP});
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
@@ -108,7 +108,7 @@ int main (void) {
         pico_output_draw_rect(rct1);
 
         puts("red anchored by top-left under 110% of white (symmetric to previous)");
-        Pico_Pos  pt2 = pico_pos_ext((Pico_Pct){110, 110}, rct1);
+        Pico_Pos  pt2 = pico_pos_ext((Pico_Pct){110, 110}, rct1, pico_get_anchor_draw());
         Pico_Rect rct2 = (Pico_Rect) {pt2.x, pt2.y, 16, 9};
         pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});

@@ -104,21 +104,22 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor 
 }
 
 Pico_Pos pico_pos (Pico_Pct pct) {
-    Pico_Anchor old = S.anchor.draw;
-    S.anchor.draw = (Pico_Anchor) {PICO_LEFT, PICO_TOP};
-    Pico_Pos pt = pico_pos_ext (
+    return pico_pos_ext (
         pct,
-        (Pico_Rect){ 0, 0, S.size.org.x, S.size.org.y}
+        (Pico_Rect){ 0, 0, S.size.org.x, S.size.org.y},
+        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
-    S.anchor.draw = old;
-    return pt;
 }
 
-Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r) {
-    return (Pico_Pos) {
+Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc) {
+    Pico_Anchor old = S.anchor.draw;
+    S.anchor.draw = anc;
+    Pico_Pos pt = {
         hanchor(r.x,r.w) + (pct.x*r.w)/100,
         vanchor(r.y,r.h) + (pct.y*r.h)/100
     };
+    S.anchor.draw = old;
+    return pt;
 }
 
 int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2) {
