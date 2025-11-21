@@ -24,7 +24,7 @@ int main (void) {
         pico_set_color_draw((Pico_Color){255,255,255,255});
         pico_output_draw_rect(r);
 
-        Pico_Dim d = pico_dim_ext((Pico_Dim){r.w,r.h}, (Pico_Pct){i, i});
+        Pico_Dim d = pico_dim_ext((Pico_Pct){i, i}, (Pico_Dim){r.w,r.h});
         pico_set_color_draw((Pico_Color){255,0,0,150});
         pico_output_draw_rect((Pico_Rect){p.x,p.y,d.x,d.y});
 

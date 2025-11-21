@@ -87,34 +87,34 @@ static int vanchor (int y, int h) {
 // UTILS
 
 Pico_Dim pico_dim (Pico_Pct pct) {
-    return pico_dim_ext(S.size.org, pct);
+    return pico_dim_ext(pct, S.size.org);
 }
 
-Pico_Dim pico_dim_ext (Pico_Dim d, Pico_Pct pct) {
+Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
     assert(0 <= pct.x && 0 <= pct.y && "negative dimentions");
     return (Pico_Dim){ (pct.x*d.x)/100, (pct.y*d.y)/100};
 }
 
 int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
-    return pico_pos_vs_rect_ext(pt, S.anchor.draw, r, S.anchor.draw);
+    return pico_pos_vs_rect_ext(pt, r, S.anchor.draw, S.anchor.draw);
 }
 
-int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Anchor ap, Pico_Rect r, Pico_Anchor ar) {
-    return pico_rect_vs_rect_ext((Pico_Rect){pt.x, pt.y, 1, 1}, ap, r, ar);
+int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor ar) {
+    return pico_rect_vs_rect_ext((Pico_Rect){pt.x, pt.y, 1, 1}, r, ap, ar);
 }
 
 Pico_Pos pico_pos (Pico_Pct pct) {
     Pico_Anchor old = S.anchor.draw;
     S.anchor.draw = (Pico_Anchor) {PICO_LEFT, PICO_TOP};
     Pico_Pos pt = pico_pos_ext (
-        (Pico_Rect){ 0, 0, S.size.org.x, S.size.org.y},
-        pct 
+        pct,
+        (Pico_Rect){ 0, 0, S.size.org.x, S.size.org.y}
     );
     S.anchor.draw = old;
     return pt;
 }
 
-Pico_Pos pico_pos_ext (Pico_Rect r, Pico_Pct pct) {
+Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r) {
     return (Pico_Pos) {
         hanchor(r.x,r.w) + (pct.x*r.w)/100,
         vanchor(r.y,r.h) + (pct.y*r.h)/100
@@ -122,10 +122,10 @@ Pico_Pos pico_pos_ext (Pico_Rect r, Pico_Pct pct) {
 }
 
 int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2) {
-    return pico_rect_vs_rect_ext(r1, S.anchor.draw, r2, S.anchor.draw);
+    return pico_rect_vs_rect_ext(r1, r2, S.anchor.draw, S.anchor.draw);
 }
 
-int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Anchor a1, Pico_Rect r2, Pico_Anchor a2) {
+int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Rect r2, Pico_Anchor a1, Pico_Anchor a2) {
     assert(S.angle == 0 && "rotation angle != 0");
     Pico_Anchor old = S.anchor.draw;
     S.anchor.draw = a1;

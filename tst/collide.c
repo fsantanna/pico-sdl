@@ -35,8 +35,10 @@ int main() {
             pico_output_draw_rect(r);
 
             Pico_Pos pt = {x, y};
-            int in = pico_pos_vs_rect_ext(pt, (Pico_Anchor){PICO_RIGHT,PICO_BOTTOM},
-                    r, (Pico_Anchor){PICO_LEFT,PICO_TOP});
+            int in = pico_pos_vs_rect_ext(pt, r,
+                        (Pico_Anchor) {PICO_RIGHT,PICO_BOTTOM},
+                        (Pico_Anchor) {PICO_LEFT,PICO_TOP}
+            );
             pico_set_color_draw((Pico_Color){255,0,0,255});
             pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
             pico_output_draw_pixel(pt);
@@ -75,8 +77,10 @@ int main() {
             pico_output_draw_rect(r);
 
             Pico_Rect r2 = {x,y,4,4};
-            int in = pico_rect_vs_rect_ext(r2, (Pico_Anchor){PICO_RIGHT,PICO_BOTTOM},
-                                            r, (Pico_Anchor){PICO_LEFT,PICO_TOP});
+            int in = pico_rect_vs_rect_ext(r2, r,
+                (Pico_Anchor){PICO_RIGHT,PICO_BOTTOM},
+                (Pico_Anchor){PICO_LEFT,PICO_TOP}
+            );
             pico_set_color_draw((Pico_Color){255,0,0,255});
             pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
             pico_output_draw_rect(r2);
