@@ -17,5 +17,5 @@ gcc -Wall -o "$DIR/$EXE" "$1"                               \
 
 if [ $? -eq 0 ]; then
     cd $DIR/
-    "$DIR/$EXE"
+    "./$EXE"
 fi
