@@ -868,6 +868,17 @@ int pico_get_grid (void) {
     return S.grid;
 }
 
+int pico_get_key (PICO_KEY key) {
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
+    return keys[key];
+}
+
+Pico_Pos pico_get_mouse (void) {
+    Pico_Pos pos;
+    SDL_GetMouseState(&pos.x, &pos.y);
+    return pos;
+}
+
 Pico_Rect pico_get_crop (void) {
     return S.crop;
 }

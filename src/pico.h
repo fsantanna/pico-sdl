@@ -255,6 +255,14 @@ const char* pico_get_font (void);
 /// @brief Gets the state of the logical pixel grid.
 int pico_get_grid (void);
 
+/// @brief Gets the state of a key.
+/// @param key key constant
+/// @return 1 if key is pressed, or 0 otherwise
+int pico_get_key (PICO_KEY key);
+
+/// @brief Gets the mouse pointer position.
+Pico_Pos pico_get_mouse (void);
+
 /// @brief Gets the rotation angle of objects (in degrees).
 int pico_get_rotate (void);
 
