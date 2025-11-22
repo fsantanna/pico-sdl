@@ -20,9 +20,9 @@
 - [pico.dim](#TODO): Dimension relative to the screen size (or given rectangle).
     - `pico.dim (pct: Pct [,out: Dim]) -> Dim`
     - `pico.dim (x: integer, y: integer [,out: Dim]) -> Dim`
-- [pico.pos](#TODO): Position relative to the screen size (or given rectangle).
-    - `pico.pos (pct: Pct [,out: Rect]) -> Pos`
-    - `pico.pos (x: integer, y: integer [,out: Rect]) -> Pos`
+- [pico.pos](#TODO): Position relative to the screen size (or given rectangle with anchor).
+    - `pico.pos (pct: Pct [,out: Rect [, anc: Anchor]]) -> Pos`
+    - `pico.pos (x: integer, y: integer) -> Pos`
 - **pico.get**
     - [pico.get.rotate](#TODO): Rotation angle in degrees.
         - `pico.get.rotate () -> integer`
@@ -51,6 +51,8 @@
     - **pico.set.size**
         - [pico.set.size.window](#TODO): Physical and logical window dimensions.
             - `pico.set.size.window (phy: Dim|boolean, log: Dim|boolean)`
+    - [pico.set.style](#TODO): Drawing style.
+        - `pico.set.style (['fill'|'stroke'])`
     - [pico.set.title](#TODO): Window title.
         - `pico.set.title (title: string)`
     - [pico.set.zoom](#TODO): Window zoom.
@@ -110,6 +112,6 @@
         - `pico.output.writeln (text: string)`
 - **pico.vs**
     - [pico.vs.pos_rect](#TODO): Collision between position and rectangle.
-        - `pico.vs.pos_rect (pos: Pos, rect: Rect [,anc, anc]) -> boolean`
+        - `pico.vs.pos_rect (pos: Pos, rect: Rect [,ap, ar]) -> boolean`
     - [pico.vs.rect_rect](#TODO): Collision between two rectangles.
-        - `pico.vs.rect_rect (r1: Rect, r2: Rect [,anc, anc]) -> boolean`
+        - `pico.vs.rect_rect (r1: Rect, r2: Rect [,a1, a2]) -> boolean`
