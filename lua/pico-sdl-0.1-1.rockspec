@@ -55,6 +55,7 @@ build = {
    },
    modules = {
       ["pico.init"] = "init.lua",
+      ["pico.layout"] = "layout.lua",
       pico_native = {
          sources = {
             "pico.c",
