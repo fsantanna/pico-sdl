@@ -112,7 +112,7 @@ print("increases zoom")
 for i=1, 20 do
     log.x = log.x - 1
     log.y = log.y - 1
-    pico.set.size.window(nil, log)
+    pico.set.size.window(false, log)
     local ct = pico.pos { x=50, y=50 }
     pico.output.clear()
     pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }
@@ -126,7 +126,7 @@ print("decreases zoom")
 for i=1, 20 do
     log.x = log.x + 1
     log.y = log.y + 1
-    pico.set.size.window(nil, log)
+    pico.set.size.window(false, log)
     local ct = pico.pos { x=50, y=50 }
     pico.output.clear()
     pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }

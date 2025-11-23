@@ -146,7 +146,7 @@ static int l_dim (lua_State* L) {
 }
 
 static int l_pos (lua_State* L) {
-    int ext;    // extra outer dim arg
+    int ext = 0;    // extra outer dim arg
     Pico_Pct pct;
     if (lua_type(L,1) == LUA_TTABLE) {      // pct = { x,y }
         pct.x = L_checkfieldnum(L, 1, "x");

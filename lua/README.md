@@ -2,11 +2,11 @@
 
 A Lua binding for [pico-sdl](../).
 
-<!--
 [
     [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1)
 ]
 
+<!--
 This is the unstable `main` branch.
 Please, switch to stable [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1).
 -->
@@ -62,9 +62,11 @@ pico-lua tst/x.lua
 Assumes `lua5.4`:
 
 ```
-gcc -shared -o pico.so -fPIC ../src/pico.c ../src/hash.c pico.c -llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
+gcc -shared -o pico_native.so -fPIC ../src/pico.c ../src/hash.c pico.c -llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 sudo cp pico-lua /usr/local/bin/
-sudo cp pico.so /usr/local/share/lua/5.4/
+sudo cp pico_native.so /usr/local/lib/lua/5.4/
+sudo mkdir /usr/local/share/lua/5.4/pico/
+sudo cp init.lua layout.lua /usr/local/share/lua/5.4/pico/
 pico-lua tst/main.lua
 ```
 
