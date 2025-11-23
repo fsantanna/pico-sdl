@@ -1,5 +1,5 @@
 package = "pico-sdl"
-version = "0.1-1"
+version = "0.1-2"
 
 source = {
    url = "git://github.com/fsantanna/pico-sdl",
@@ -50,17 +50,17 @@ build = {
    type = "builtin",
    install = {
       bin = {
-         ["pico-lua"] = "pico-lua"
+         ["pico-lua"] = "lua/pico-lua"
       },
    },
    modules = {
-      ["pico.init"] = "init.lua",
-      ["pico.layout"] = "layout.lua",
+      ["pico.init"] = "lua/init.lua",
+      ["pico.layout"] = "lua/layout.lua",
       pico_native = {
          sources = {
-            "pico.c",
-            "../src/pico.c",
-            "../src/hash.c",
+            "lua/pico.c",
+            "src/pico.c",
+            "src/hash.c",
          },
          libraries = {
             "SDL2",
