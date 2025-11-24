@@ -260,8 +260,11 @@ int pico_get_grid (void);
 /// @return 1 if key is pressed, or 0 otherwise
 int pico_get_key (PICO_KEY key);
 
-/// @brief Gets the mouse pointer position.
-Pico_Pos pico_get_mouse (void);
+/// @brief Gets the mouse state.
+/// @param pos pointer to retrieve pointer position (may be NULL)
+/// @param button which button state to retrieve
+/// @return state of specified button
+int pico_get_mouse (Pico_Pos* pos, int button);
 
 /// @brief Gets the rotation angle of objects (in degrees).
 int pico_get_rotate (void);

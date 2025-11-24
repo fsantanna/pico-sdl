@@ -873,10 +873,14 @@ int pico_get_key (PICO_KEY key) {
     return keys[key];
 }
 
-Pico_Pos pico_get_mouse (void) {
-    Pico_Pos pos;
-    SDL_GetMouseState(&pos.x, &pos.y);
-    return pos;
+int pico_get_mouse (Pico_Pos* pos, int button) {
+    Pico_Pos local;
+    if (!pos) {
+        pos = &local;
+    }
+
+    Uint32 masks = SDL_GetMouseState(&pos->x, &pos->y);
+    return masks & SDL_BUTTON(button);
 }
 
 Pico_Rect pico_get_crop (void) {
