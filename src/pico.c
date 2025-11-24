@@ -880,6 +880,10 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
     }
 
     Uint32 masks = SDL_GetMouseState(&pos->x, &pos->y);
+    if (button == 0) {
+        masks = 0;
+    }
+
     return masks & SDL_BUTTON(button);
 }
 
