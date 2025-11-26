@@ -100,6 +100,15 @@ static Pico_Color _color (lua_State* L) {
     return clr;
 }
 
+static void _mouse_button (lua_State* L, int but) {
+    lua_pushlightuserdata(L, (void*)&KEY);      // . | K
+    lua_gettable(L, LUA_REGISTRYINDEX);         // . | G
+    lua_getfield(L, -1, "buttons");             // . | G | buttons
+    lua_geti(L, -1, but);                       // . | G | buttons | but
+    lua_replace(L, -3);                         // . | but | buttons
+    lua_pop(L, 1);                              // . | but
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_init (lua_State* L) {
@@ -995,6 +1004,28 @@ int luaopen_pico_native (lua_State* L) {
         lua_setfield(L, -2, "evts");            // . | G
         lua_pop(L, 1);                          // .
     }                                           // pico
+
+    // mouse buttons
+    {                                           // pico
+        lua_pushlightuserdata(L, (void*)&KEY);  // . | K
+        lua_gettable(L, LUA_REGISTRYINDEX);     // . | G
+        lua_newtable(L);                        // . | G | buttons
+
+        lua_pushinteger(L, PICO_MOUSE_BUTTON_LEFT);
+        lua_pushstring(L, "left");              // . | G | buttons | L | "l"
+        lua_settable(L, -3);                    // . | G | buttons
+
+        lua_pushinteger(L, PICO_MOUSE_BUTTON_MIDDLE);
+        lua_pushstring(L, "middle");            // . | G | buttons | M | "m"
+        lua_settable(L, -3);                    // . | G | buttons
+
+        lua_pushinteger(L, PICO_MOUSE_BUTTON_RIGHT);
+        lua_pushstring(L, "right");             // . | G | buttons | R | "r"
+        lua_settable(L, -3);                    // . | G | buttons
+
+        lua_setfield(L, -2, "buttons");         // . | G
+        lua_pop(L, 1);                          // .
+    }
 
     // anchors
     {                                           // pico

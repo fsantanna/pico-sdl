@@ -29,6 +29,7 @@ int main (void) {
         Pico_Pos m;
         pico_get_mouse(&m, PICO_MOUSE_BUTTON_NONE);
         printf(">>> (%d,%d) / (%d,%d)\n", e.button.x, e.button.y, m.x, m.y);
+        printf(">>> button = %d\n", e.button.button);
         assert(e.button.x==m.x && e.button.y==m.y);
     }
 

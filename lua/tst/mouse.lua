@@ -27,7 +27,7 @@ draw()
 do
     local e = pico.input.event('mouse.button.dn')
     local m = pico.get.mouse()
-    print(">>> ", e.x, e.y, '|', m.x, m.y)
+    print(">>> ", e.x, e.y, e.but, '|', m.x, m.y)
     assert(m.x==e.x and m.y==e.y)
 end
 
