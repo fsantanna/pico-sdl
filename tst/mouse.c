@@ -26,7 +26,10 @@ int main (void) {
     {
         Pico_Event e;
         pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
-        printf(">>> (%d,%d)\n", e.button.x, e.button.y);
+        Pico_Pos m;
+        pico_get_mouse(&m, PICO_MOUSE_BUTTON_NONE);
+        printf(">>> (%d,%d) / (%d,%d)\n", e.button.x, e.button.y, m.x, m.y);
+        assert(e.button.x==m.x && e.button.y==m.y);
     }
 
     pico_set_zoom((Pico_Pct){200, 200});

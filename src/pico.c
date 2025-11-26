@@ -296,8 +296,8 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:
-            e->button.x = (e->button.x + S.scroll.x);
-            e->button.y = (e->button.y + S.scroll.y);
+            e->button.x += S.scroll.x;
+            e->button.y += S.scroll.y;
             break;
         default:
             break;
@@ -875,7 +875,7 @@ int pico_get_key (PICO_KEY key) {
 
 int pico_get_mouse (Pico_Pos* pos, int button) {
     Pico_Pos local;
-    if (!pos) {
+    if (pos == NULL) {
         pos = &local;
     }
 
@@ -883,6 +883,13 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
     if (button == 0) {
         masks = 0;
     }
+
+    // TODO: bug in SDL?
+    // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
+    pos->x = pos->x * S.size.org.x / PHY.x;
+    pos->y = pos->y * S.size.org.y / PHY.y;
+    pos->x += S.scroll.x;
+    pos->y += S.scroll.y;
 
     return masks & SDL_BUTTON(button);
 }

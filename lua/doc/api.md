@@ -24,6 +24,9 @@
     - `pico.pos (pct: Pct [,out: Rect [, anc: Anchor]]) -> Pos`
     - `pico.pos (x: integer, y: integer) -> Pos`
 - **pico.get**
+    - [pico.get.mouse](#TODO): Mouse position and clicks.
+        - `pico.get.mouse () -> Pos`
+        - `pico.get.mouse (but: string) -> boolean`
     - [pico.get.rotate](#TODO): Rotation angle in degrees.
         - `pico.get.rotate () -> integer`
     - **pico.get.size**

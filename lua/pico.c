@@ -243,6 +243,22 @@ static int l_vs_rect_rect (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static int l_get_mouse (lua_State* L) {
+    if (lua_gettop(L) > 0) {
+        return luaL_error(L, "TODO: pico.mouse.get(button)");
+    }
+    Pico_Pos pos;
+    pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+
+    lua_newtable(L);                        // . | pos
+    lua_pushinteger(L, pos.x);              // . | pos | x
+    lua_setfield(L, -2, "x");               // . | pos
+    lua_pushinteger(L, pos.y);              // . | pos | y
+    lua_setfield(L, -2, "y");               // . | pos
+
+    return 1;                               // . | [pos]
+}
+
 static int l_get_rotate (lua_State* L) {
     int ang = pico_get_rotate();
     lua_pushinteger(L, ang);        // ang
@@ -848,6 +864,7 @@ static const luaL_Reg ll_vs[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
+    { "mouse",  l_get_mouse  },
     { "rotate", l_get_rotate },
     { "ticks",  l_get_ticks  },
     { NULL, NULL }

@@ -26,7 +26,9 @@ pico.output.clear()
 draw()
 do
     local e = pico.input.event('mouse.button.dn')
-    print(">>> ", e.x, e.y)
+    local m = pico.get.mouse()
+    print(">>> ", e.x, e.y, '|', m.x, m.y)
+    assert(m.x==e.x and m.y==e.y)
 end
 
 pico.set.zoom{x=200,y=200}

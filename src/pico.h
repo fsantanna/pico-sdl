@@ -50,6 +50,13 @@ typedef struct Pico_Size {
     Pico_Dim log;
 } Pico_Size;
 
+typedef enum PICO_MOUSE_BUTTON {
+    PICO_MOUSE_BUTTON_NONE   = 0,
+    PICO_MOUSE_BUTTON_LEFT   = SDL_BUTTON_LEFT,
+    PICO_MOUSE_BUTTON_MIDDLE = SDL_BUTTON_MIDDLE,
+    PICO_MOUSE_BUTTON_RIGHT  = SDL_BUTTON_RIGHT
+} PICO_MOUSE_BUTTON;
+
 #define PICO_SIZE_KEEP       ((Pico_Dim) {0,0})
 #define PICO_SIZE_FULLSCREEN ((Pico_Dim) {0,1})
 
