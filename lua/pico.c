@@ -557,37 +557,29 @@ static int l_input_event (lua_State* L) {
         case PICO_MOUSEMOTION:
             lua_pushstring(L, "mouse.motion");      // . | t | tag
             lua_setfield(L, -2, "tag");             // . | t
-            lua_pushinteger(L, e.button.x);         // . | t | x
+            lua_pushinteger(L, e.motion.x);         // . | t | x
             lua_setfield(L, -2, "x");               // . | t
-            lua_pushinteger(L, e.button.y);         // . | t | y
+            lua_pushinteger(L, e.motion.y);         // . | t | y
             lua_setfield(L, -2, "y");               // . | t
             break;
         case PICO_MOUSEBUTTONDOWN:
-            lua_pushstring(L, "mouse.button.dn");   // . | t | tag
-            lua_setfield(L, -2, "tag");             // . | t
-            lua_pushinteger(L, e.button.x);         // . | t | x
-            lua_setfield(L, -2, "x");               // . | t
-            lua_pushinteger(L, e.button.y);         // . | t | y
-            lua_setfield(L, -2, "y");               // . | t
-            break;
         case PICO_MOUSEBUTTONUP:
-            lua_pushstring(L, "mouse.button.up");   // . | t | tag
+            lua_pushstring(L,                       // . | t | tag
+                (e.type == PICO_MOUSEBUTTONDOWN ?
+                    "mouse.button.dn" : "mouse.button.up"));
             lua_setfield(L, -2, "tag");             // . | t
             lua_pushinteger(L, e.button.x);         // . | t | x
             lua_setfield(L, -2, "x");               // . | t
             lua_pushinteger(L, e.button.y);         // . | t | y
             lua_setfield(L, -2, "y");               // . | t
+            _mouse_button(L, e.button.button);      // . | t | but
+            lua_setfield(L, -2, "but");             // . | t
             break;
-        case PICO_KEYDOWN: {
-            lua_pushstring(L, "key.dn");            // . | t | tag
-            lua_setfield(L, -2, "tag");             // . | t
-            const char* key = SDL_GetKeyName(e.key.keysym.sym);
-            lua_pushstring(L, key);                 // . | t | key
-            lua_setfield(L, -2, "key");             // . | t
-            break;
-        }
+        case PICO_KEYDOWN:
         case PICO_KEYUP: {
-            lua_pushstring(L, "key.up");            // . | t | tag
+            lua_pushstring(L,                       // . | t | tag
+                (e.type == PICO_KEYDOWN ?
+                    "key.dn" : "key.up"));
             lua_setfield(L, -2, "tag");             // . | t
             const char* key = SDL_GetKeyName(e.key.keysym.sym);
             lua_pushstring(L, key);                 // . | t | key
