@@ -12,10 +12,10 @@ int main (void) {
 
     pico_set_style(PICO_STROKE);
 
-    pico_output_draw_pixel(ct);
-    pico_output_draw_rect((Pico_Rect){ct.x,ct.y,64,36});
-
     while (1) {
+        pico_output_clear();
+        pico_output_draw_pixel(ct);
+        pico_output_draw_rect((Pico_Rect){ct.x,ct.y,64,36});
         pico_input_event(NULL, PICO_KEYUP);
     }
 

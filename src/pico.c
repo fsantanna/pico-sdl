@@ -1069,14 +1069,7 @@ void _pico_set_size (Pico_Dim phy, Pico_Dim log) {
     if (log.x==PICO_SIZE_KEEP.x && log.y==PICO_SIZE_KEEP.y) {
         // keep
     } else {
-        SDL_Texture* old = TEX;
-        SDL_Rect r = {
-            (log.x - S.size.cur.x)/2,
-            (log.y - S.size.cur.y)/2,
-            S.size.cur.x,
-            S.size.cur.y
-        };
-
+        SDL_DestroyTexture(TEX);
         S.size.cur = log;
         TEX = SDL_CreateTexture (
             REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
@@ -1086,8 +1079,6 @@ void _pico_set_size (Pico_Dim phy, Pico_Dim log) {
         SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
         SDL_SetRenderTarget(REN, TEX);
         pico_output_clear();
-        SDL_RenderCopy(REN, old, NULL, &r);
-        SDL_DestroyTexture(old);
     }
 
     _pico_output_present(0);
