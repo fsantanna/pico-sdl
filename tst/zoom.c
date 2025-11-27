@@ -3,10 +3,12 @@
 int main (void) {
     pico_init(1);
 
-    Pico_Dim phy = pico_get_size().phy;
-    Pico_Dim log = pico_get_size().log;
-    assert(phy.x==640 && phy.y==360);
-    assert(log.x==64  && log.y==36 );
+    Pico_Dim window = pico_get_dim_window();
+    Pico_Dim world  = pico_get_dim_world();
+    Pico_Dim zoom   = pico_get_dim_zoom();
+    assert(window.x==640 && window.y==360);
+    assert(world.x==64 && world.y==36);
+    assert(zoom.x==64 && zoom.y==36);
 
     Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
 

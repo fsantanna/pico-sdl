@@ -22,8 +22,9 @@ extern "C" {
 /// @{
 ///
 #define PICO_TITLE "pico-SDL"
-#define PICO_DIM_PHY ((Pico_Dim) {640,360})
-#define PICO_DIM_LOG ((Pico_Dim) { 64, 36})
+#define PICO_DIM_WINDOW ((Pico_Dim) {640,360})
+#define PICO_DIM_WORLD  ((Pico_Dim) { 64, 36})
+#define PICO_DIM_ZOOM   ((Pico_Dim) { 64, 36})
 #define PICO_HASH  128
 
 typedef SDL_Point Pico_Pos;
@@ -45,11 +46,6 @@ typedef enum PICO_STYLE {
     PICO_FILL, PICO_STROKE
 } PICO_STYLE;
 
-typedef struct Pico_Size {
-    Pico_Dim phy;
-    Pico_Dim log;
-} Pico_Size;
-
 typedef enum PICO_MOUSE_BUTTON {
     PICO_MOUSE_BUTTON_NONE   = 0,
     PICO_MOUSE_BUTTON_LEFT   = SDL_BUTTON_LEFT,
@@ -57,8 +53,7 @@ typedef enum PICO_MOUSE_BUTTON {
     PICO_MOUSE_BUTTON_RIGHT  = SDL_BUTTON_RIGHT
 } PICO_MOUSE_BUTTON;
 
-#define PICO_SIZE_KEEP       ((Pico_Dim) {0,0})
-#define PICO_SIZE_FULLSCREEN ((Pico_Dim) {0,1})
+#define PICO_DIM_KEEP ((Pico_Dim) {0,0})
 
 /// @}
 
@@ -282,9 +277,6 @@ Pico_Pct pico_get_scale (void);
 /// @brief Gets the point of view on the logical window.
 Pico_Pos pico_get_scroll (void);
 
-/// @brief Gets the physical and logical window size.
-Pico_Size pico_get_size (void);
-
 /// @brief Gets the dimensions of the given image.
 /// @param file image filepath
 Pico_Dim pico_get_dim_image (const char* file);
@@ -292,6 +284,15 @@ Pico_Dim pico_get_dim_image (const char* file);
 /// @brief Gets the dimensions of the given text.
 /// @param text text to measure
 Pico_Dim pico_get_dim_text (const char* text);
+
+/// @brief Gets the window dimensions.
+Pico_Dim pico_get_dim_window (void);
+
+/// @brief Gets the world dimensions.
+Pico_Dim pico_get_dim_world (void);
+
+/// @brief Gets the zoom dimensions.
+Pico_Dim pico_get_dim_zoom (void);
 
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
@@ -304,9 +305,6 @@ Uint32 pico_get_ticks (void);
 
 /// @brief Gets the aplication title.
 const char* pico_get_title (void);
-
-/// @brief Gets the scaling factor of the screen view (percentage).
-Pico_Pct pico_get_zoom (void);
 
 // SET
 
@@ -338,6 +336,18 @@ void pico_set_crop (Pico_Rect crop);
 /// @sa pico_output_writeln
 void pico_set_cursor (Pico_Pos pos);
 
+/// @brief Sets the window dimensions.
+/// @param dim new dimensions
+void pico_set_dim_window (Pico_Dim dim);
+
+/// @brief Sets the world dimensions.
+/// @param dim new dimensions
+void pico_set_dim_world (Pico_Dim dim);
+
+/// @brief Sets the zoom dimensions.
+/// @param dim new dimensions
+void pico_set_dim_zoom (Pico_Dim dim);
+
 /// @brief Toggles the expert mode.
 /// @param on 1 to enable it, or 0 to disable it
 void pico_set_expert (int on);
@@ -365,11 +375,6 @@ void pico_set_scale (Pico_Pct scale);
 /// @param pos new point of view
 void pico_set_scroll (Pico_Pos pos);
 
-/// @brief Sets the physical and logical window sizes.
-/// @param phy new physical size
-/// @param log new logical size
-void pico_set_size (Pico_Dim phy, Pico_Dim log);
-
 /// @brief Toggles the aplication window visibility.
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
@@ -381,10 +386,6 @@ void pico_set_style (PICO_STYLE style);
 /// @brief Sets the aplication title.
 /// @param title new title
 void pico_set_title (const char* title);
-
-/// @brief Sets the scaling factor of the screen view.
-/// @param zoom new scaling for x and y axis (percentage)
-void pico_set_zoom (Pico_Pct zoom);
 
 /// @}
 
