@@ -916,7 +916,7 @@ Pico_Size pico_get_size (void) {
     return (Pico_Size) { PHY, S.size.org };
 }
 
-Pico_Dim pico_get_size_image (const char* file) {
+Pico_Dim pico_get_dim_image (const char* file) {
     SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, file);
     if (tex == NULL) {
         tex = IMG_LoadTexture(REN, file);
@@ -924,9 +924,9 @@ Pico_Dim pico_get_size_image (const char* file) {
     }
     pico_assert(tex != NULL);
 
-    Pico_Dim size;
-    SDL_QueryTexture(tex, NULL, NULL, &size.x, &size.y);
-    return size;
+    Pico_Dim dim;
+    SDL_QueryTexture(tex, NULL, NULL, &dim.x, &dim.y);
+    return dim;
 }
 
 Pico_Dim pico_get_dim_text (const char* text) {
