@@ -693,13 +693,18 @@ static void _show_grid (void) {
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
-    if (PHY.x%S.size.cur.x == 0) {
+
+    if (PHY.x==S.size.cur.x || PHY.y==S.size.cur.y) {
+        pico_set_grid(0);
+    }
+
+    if ((PHY.x%S.size.cur.x == 0) && (S.size.cur.x <= PHY.x)) {
         for (int i=0; i<=PHY.x; i+=(PHY.x/S.size.cur.x)) {
             SDL_RenderDrawLine(REN, i, 0, i, PHY.y);
         }
     }
 
-    if (PHY.y%S.size.cur.y == 0) {
+    if ((PHY.y%S.size.cur.y == 0) && (S.size.cur.y <= PHY.y)) {
         for (int j=0; j<=PHY.y; j+=(PHY.y/S.size.cur.y)) {
             SDL_RenderDrawLine(REN, 0, j, PHY.x, j);
         }
@@ -1064,18 +1069,25 @@ void _pico_set_size (Pico_Dim phy, Pico_Dim log) {
     if (log.x==PICO_SIZE_KEEP.x && log.y==PICO_SIZE_KEEP.y) {
         // keep
     } else {
+        SDL_Texture* old = TEX;
+        SDL_Rect r = {
+            (log.x - S.size.cur.x)/2,
+            (log.y - S.size.cur.y)/2,
+            S.size.cur.x,
+            S.size.cur.y
+        };
+
         S.size.cur = log;
-        SDL_DestroyTexture(TEX);
         TEX = SDL_CreateTexture (
             REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
             S.size.cur.x, S.size.cur.y
         );
-        SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
         pico_assert(TEX != NULL);
-    }
-
-    if (PHY.x==S.size.cur.x || PHY.y==S.size.cur.y) {
-        pico_set_grid(0);
+        SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
+        SDL_SetRenderTarget(REN, TEX);
+        pico_output_clear();
+        SDL_RenderCopy(REN, old, NULL, &r);
+        SDL_DestroyTexture(old);
     }
 
     _pico_output_present(0);
@@ -1104,6 +1116,7 @@ void pico_set_title (const char* title) {
 }
 
 void pico_set_zoom (Pico_Pct zoom) {
+    // TODO: scroll depends on anchor
     S.zoom = zoom;
     pico_set_scroll ((Pico_Pos) {
         S.scroll.x - (S.size.org.x - S.size.cur.x)/2,
