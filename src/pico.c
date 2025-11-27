@@ -1033,21 +1033,20 @@ void pico_set_dim_zoom (Pico_Dim dim) {
     SDL_SetRenderTarget(REN, TEX);
 }
 
-#if 0
-void _pico_set_size (Pico_Dim phy, Pico_Dim log) {
-        pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
-        pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
-
-    _pico_output_present(0);
-}
-#endif
-
 void pico_set_expert (int on) {
     S.expert = on;
 }
 
 void pico_set_flip (Pico_Flip flip) {
     S.flip = flip;
+}
+
+void pico_set_fullscreen (int on) {
+    if (on) {
+        pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
+    } else {
+        pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
+    }
 }
 
 void pico_set_font (const char* file, int h) {
