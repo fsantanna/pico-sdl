@@ -1031,13 +1031,6 @@ void pico_set_dim_zoom (Pico_Dim dim) {
     pico_assert(TEX != NULL);
     SDL_RenderSetLogicalSize(REN, S.dim.zoom.x, S.dim.world.y);
     SDL_SetRenderTarget(REN, TEX);
-
-/*
-    pico_set_scroll ((Pico_Pos) {
-        S.scroll.x + (dx * S.anchor.pos.x / 100),
-        S.scroll.y + (dy * S.anchor.pos.y / 100),
-    });
-*/
 }
 
 #if 0
@@ -1046,23 +1039,6 @@ void _pico_set_size (Pico_Dim phy, Pico_Dim log) {
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
 
     _pico_output_present(0);
-}
-
-void pico_set_zoom (Pico_Pct zoom) {
-    // TODO: scroll depends on anchor
-    S.zoom = zoom;
-    pico_set_scroll ((Pico_Pos) {
-        S.scroll.x - (S.size.org.x - S.size.cur.x)/2,
-        S.scroll.y - (S.size.org.y - S.size.cur.y)/2
-    });
-    _pico_set_size (
-        PICO_SIZE_KEEP,
-        (Pico_Dim){ S.size.org.x*100/zoom.x, S.size.org.y*100/zoom.y }
-    );
-    pico_set_scroll ((Pico_Pos) {
-        S.scroll.x + (S.size.org.x - S.size.cur.x)/2,
-        S.scroll.y + (S.size.org.y - S.size.cur.y)/2
-    });
 }
 #endif
 

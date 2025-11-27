@@ -12,6 +12,7 @@ int main (void) {
 
     Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
 
+#if 0
     pico_set_style(PICO_STROKE);
 
     while (1) {
@@ -20,15 +21,15 @@ int main (void) {
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,64,36});
         pico_input_event(NULL, PICO_KEYUP);
     }
+#endif
 
-#if 0
     // DRAW_RECT
     puts("shows lower-left X, center rect, center/up-right line");
     puts("increases zoom");
     for (int i=1; i<=20; i++) {
-        log.x -= 1;
-        log.y -= 1;
-        pico_set_size(PICO_SIZE_KEEP, log);
+        world.x -= 1;
+        world.y -= 1;
+        pico_set_dim_world(world);
         Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
         pico_output_clear();
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
@@ -40,9 +41,9 @@ int main (void) {
     }
     puts("decreases zoom");
     for (int i=1; i<=20; i++) {
-        log.x += 1;
-        log.y += 1;
-        pico_set_size(PICO_SIZE_KEEP, log);
+        world.x += 1;
+        world.y += 1;
+        pico_set_dim_world(world);
         Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
         pico_output_clear();
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
@@ -60,10 +61,9 @@ int main (void) {
     for (int i=0; i<20; i++) {
         pico_set_scroll((Pico_Pos){10-i,10-i});
         pico_output_clear();
-        pico_output_draw_text(pt, "Uma frase bem grande...");
+        pico_output_draw_text(ct, "Uma frase bem grande...");
         pico_input_delay(250);
     }
-#endif
 
     pico_init(0);
     return 0;
