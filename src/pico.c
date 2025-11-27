@@ -206,15 +206,15 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_MINUS: {
                     pico_set_dim_zoom ((Pico_Dim) {
-                        S.dim.zoom.x * 1.1,
-                        S.dim.zoom.y * 1.1,
+                        S.dim.zoom.x * 1.1 + 0.5,
+                        S.dim.zoom.y * 1.1 + 0.5,
                     });
                     break;
                 }
                 case SDLK_EQUALS: {
                     pico_set_dim_zoom ((Pico_Dim) {
-                        S.dim.zoom.x * 0.9,
-                        S.dim.zoom.y * 0.9,
+                        S.dim.zoom.x / 1.1 + 0.5,
+                        S.dim.zoom.y / 1.1 + 0.5,
                     });
                     break;
                 }
@@ -1013,7 +1013,16 @@ void pico_set_dim_world (Pico_Dim dim) {
 }
 
 void pico_set_dim_zoom (Pico_Dim dim) {
+    int dx = dim.x - S.dim.zoom.x;
+    int dy = dim.y - S.dim.zoom.y;
+
     S.dim.zoom = dim;
+
+    pico_set_scroll ((Pico_Pos) {
+        S.scroll.x - (dx * S.anchor.pos.x / 100),
+        S.scroll.y - (dy * S.anchor.pos.y / 100),
+    });
+
     SDL_DestroyTexture(TEX);
     TEX = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
@@ -1022,6 +1031,13 @@ void pico_set_dim_zoom (Pico_Dim dim) {
     pico_assert(TEX != NULL);
     SDL_RenderSetLogicalSize(REN, S.dim.zoom.x, S.dim.world.y);
     SDL_SetRenderTarget(REN, TEX);
+
+/*
+    pico_set_scroll ((Pico_Pos) {
+        S.scroll.x + (dx * S.anchor.pos.x / 100),
+        S.scroll.y + (dy * S.anchor.pos.y / 100),
+    });
+*/
 }
 
 #if 0
