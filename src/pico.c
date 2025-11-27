@@ -688,20 +688,22 @@ void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim dim, const char* fmt, ...)
     va_end(args);
 }
 
-static void show_grid (void) {
+static void _show_grid (void) {
     if (!S.grid) return;
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
-    Pico_Dim phy = PHY;
-    SDL_RenderSetLogicalSize(REN, phy.x, phy.y);
-    for (int i=0; i<=phy.x; i+=(phy.x/S.size.cur.x)) {
-        SDL_RenderDrawLine(REN, i, 0, i, phy.y);
+    if (PHY.x%S.size.cur.x == 0) {
+        for (int i=0; i<=PHY.x; i+=(PHY.x/S.size.cur.x)) {
+            SDL_RenderDrawLine(REN, i, 0, i, PHY.y);
+        }
     }
-    for (int j=0; j<=phy.y; j+=(phy.y/S.size.cur.y)) {
-        SDL_RenderDrawLine(REN, 0, j, phy.x, j);
+
+    if (PHY.y%S.size.cur.y == 0) {
+        for (int j=0; j<=PHY.y; j+=(PHY.y/S.size.cur.y)) {
+            SDL_RenderDrawLine(REN, 0, j, PHY.x, j);
+        }
     }
-    SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
 
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,
@@ -713,11 +715,14 @@ static void show_grid (void) {
 
 static void _pico_output_present (int force) {
     if (S.expert && !force) return;
+
     SDL_SetRenderTarget(REN, NULL);
+    SDL_RenderSetLogicalSize(REN, PHY.x, PHY.y);
+
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
     SDL_RenderCopy(REN, TEX, NULL, NULL);
-    show_grid();
+    _show_grid();
     SDL_RenderPresent(REN);
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,
@@ -725,6 +730,8 @@ static void _pico_output_present (int force) {
         S.color.draw.b,
         S.color.draw.a
     );
+
+    SDL_RenderSetLogicalSize(REN, S.size.cur.x, S.size.cur.y);
     SDL_SetRenderTarget(REN, TEX);
 }
 
