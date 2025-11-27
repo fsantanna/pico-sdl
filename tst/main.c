@@ -33,7 +33,7 @@ int main (void) {
     pico_input_delay(2000);
 
     // DRAW_IMAGE
-    pico_set_anchor_draw((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
+    pico_set_anchor_pos((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
     pico_output_draw_image(pt,"open.png");
 
     puts("shows centered image");

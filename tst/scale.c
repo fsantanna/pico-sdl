@@ -27,7 +27,7 @@ int main(void) {
     puts("RECT - scale dn");
     _pico_check("rect_scale_dn");
 
-    pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
+    pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
 
     pico_output_clear();
     pico_set_scale((Pico_Pct){100,100});

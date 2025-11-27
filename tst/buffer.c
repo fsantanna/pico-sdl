@@ -34,7 +34,7 @@ int main (void) {
         pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
         pico_output_clear();
         Pico_Pos p2 = pico_pos((Pico_Pct){100,100});
-        pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
+        pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
         pico_output_draw_buffer(p2, buffer, (Pico_Dim){9,1});
         _pico_check("buf9w1h_rightbottom_white");
     }

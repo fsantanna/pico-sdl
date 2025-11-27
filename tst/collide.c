@@ -8,7 +8,7 @@ int main() {
     Pico_Rect r = {pt.x,pt.y,4,4};
 
     puts("pos_vs_rect - same anchor");
-    pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
+    pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
     for (int y = r.y-r.w; y < r.y+2; y++) {
         for (int x = r.x-r.w; x < r.x+2; x++) {
             pico_output_clear();
@@ -31,7 +31,7 @@ int main() {
         for (int x = r.x; x < r.x+r.w+2; x++) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255,255});
-            pico_set_anchor_draw((Pico_Anchor){PICO_LEFT,PICO_TOP});
+            pico_set_anchor_pos((Pico_Anchor){PICO_LEFT,PICO_TOP});
             pico_output_draw_rect(r);
 
             Pico_Pos pt = {x, y};
@@ -40,7 +40,7 @@ int main() {
                         (Pico_Anchor) {PICO_LEFT,PICO_TOP}
             );
             pico_set_color_draw((Pico_Color){255,0,0,255});
-            pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
+            pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
             pico_output_draw_pixel(pt);
 
             puts(in ? "in  " : "out ");
@@ -50,7 +50,7 @@ int main() {
     }
 
     puts("rect_vs_rect - same anchor");
-    pico_set_anchor_draw((Pico_Anchor){PICO_LEFT,PICO_TOP});
+    pico_set_anchor_pos((Pico_Anchor){PICO_LEFT,PICO_TOP});
     for (int y = r.y-r.h; y < r.y+r.h+1; y++) {
         for (int x = r.x-r.w; x < r.x+r.w+1; x++) {
             pico_output_clear();
@@ -73,7 +73,7 @@ int main() {
         for (int x = r.x; x < r.x+2*r.w+1; x++) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255,255});
-            pico_set_anchor_draw((Pico_Anchor){PICO_LEFT,PICO_TOP});
+            pico_set_anchor_pos((Pico_Anchor){PICO_LEFT,PICO_TOP});
             pico_output_draw_rect(r);
 
             Pico_Rect r2 = {x,y,4,4};
@@ -82,7 +82,7 @@ int main() {
                 (Pico_Anchor){PICO_LEFT,PICO_TOP}
             );
             pico_set_color_draw((Pico_Color){255,0,0,255});
-            pico_set_anchor_draw((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
+            pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
             pico_output_draw_rect(r2);
 
             puts(in ? "overlap" : "naw");
