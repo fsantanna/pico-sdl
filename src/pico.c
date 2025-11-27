@@ -693,11 +693,6 @@ static void _show_grid (void) {
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
-
-    if (PHY.x==S.size.cur.x || PHY.y==S.size.cur.y) {
-        pico_set_grid(0);
-    }
-
     if ((PHY.x%S.size.cur.x == 0) && (S.size.cur.x <= PHY.x)) {
         for (int i=0; i<=PHY.x; i+=(PHY.x/S.size.cur.x)) {
             SDL_RenderDrawLine(REN, i, 0, i, PHY.y);
