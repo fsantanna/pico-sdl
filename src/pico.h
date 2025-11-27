@@ -120,10 +120,10 @@ void pico_output_clear (void);
 /// @brief Draws an RGBA image that is managed by the user.
 /// @param pos drawing coordinate
 /// @param buffer the RGBA image
-/// @param size image size
+/// @param dim image dimensions
 /// @sa pico_output_draw_image
 /// @sa pico_output_draw_image_ext
-void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size);
+void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim);
 
 /// @brief Draws an image.
 /// @param pos drawing coordinate
@@ -132,13 +132,13 @@ void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim 
 /// @sa pico_output_draw_image_ext
 void pico_output_draw_image (Pico_Pos pos, const char* path);
 
-/// @brief Draws an image with the specified size.
+/// @brief Draws an image with the specified dimensions.
 /// @param pos drawing coordinate
 /// @param path path to the image file
-/// @param size image size
+/// @param dim image dimensions
 /// @sa pico_output_draw_buffer
 /// @sa pico_output_draw_image
-void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim size);
+void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim);
 
 /// @brief Draws a line.
 /// @param p1 first point
@@ -177,16 +177,16 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count);
 /// @sa pico_output_draw_text_ext
 void pico_output_draw_text (Pico_Pos pos, const char* text);
 
-/// @brief Draws text with the specified size.
+/// @brief Draws text with the specified dim.
 /// @param pos drawing coordinate
 /// @param text text to draw
-/// @param size text size
+/// @param dim text dimensions
 /// @sa pico_output_draw_text
-void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size);
+void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim dim);
 
 void pico_output_draw_fmt (Pico_Pos pos, const char* fmt, ...);
 
-void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim size, const char* fmt, ...);
+void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim dim, const char* fmt, ...);
 
 /// @brief Shows what has been drawn onto the screen.
 /// Only does anything on expert mode.
@@ -285,13 +285,13 @@ Pico_Pos pico_get_scroll (void);
 /// @brief Gets the physical and logical window size.
 Pico_Size pico_get_size (void);
 
-/// @brief Gets the size of the given image.
+/// @brief Gets the dimensions of the given image.
 /// @param file image filepath
-Pico_Dim pico_get_size_image (const char* file);
+Pico_Dim pico_get_dim_image (const char* file);
 
-/// @brief Gets the size of the given text.
+/// @brief Gets the dimensions of the given text.
 /// @param text text to measure
-Pico_Dim pico_get_size_text (const char* text);
+Pico_Dim pico_get_dim_text (const char* text);
 
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
@@ -396,12 +396,12 @@ void pico_set_zoom (Pico_Pct zoom);
 /// @param x condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
-/// @brief Returns a size relative to the screen size.
+/// @brief Returns the dimensions relative to the screen.
 /// @param pct percentage (may be out of [0,100])
 /// @sa pico_dim_ext
 Pico_Dim pico_dim (Pico_Pct pct);
 
-/// @brief Returns a size relative to the given rectangle's size.
+/// @brief Returns the dimensions relative to the given rectangle.
 /// @param pct percentage (may be out of [0,100])
 /// @param dim the reference rectangle
 /// @sa pico_dim

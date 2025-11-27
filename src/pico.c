@@ -376,19 +376,21 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim size);
+static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim);
 
-void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim size) {
-    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom((void*)buffer, size.x, size.y, 32,
-                                                          4*size.x, SDL_PIXELFORMAT_RGBA32);
+void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim) {
+    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
+        (void*)buffer, dim.x, dim.y,
+        32, 4*dim.x, SDL_PIXELFORMAT_RGBA32
+    );
     SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
 
-    _pico_output_draw_tex(pos, aux, size);
+    _pico_output_draw_tex(pos, aux, dim);
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(aux);
 }
 
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim size) {
+static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim) {
     Pico_Rect rct;
     SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
 
@@ -400,21 +402,21 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim size
         crp.h = rct.h;
     }
 
-    if (size.x==0 && size.y==0) {
+    if (dim.x==0 && dim.y==0) {
         // normal image size
         rct.w = crp.w;  // (or copy from crop)
         rct.h = crp.h;  // (or copy from crop)
-    } else if (size.x == 0) {
+    } else if (dim.x == 0) {
         // adjust w based on h
-        rct.w = rct.w * (size.y / (float)rct.h);
-        rct.h = size.y;
-    } else if (size.y == 0) {
+        rct.w = rct.w * (dim.y / (float)rct.h);
+        rct.h = dim.y;
+    } else if (dim.y == 0) {
         // adjust h based on w
-        rct.h = rct.h * (size.x / (float)rct.w);
-        rct.w = size.x;
+        rct.h = rct.h * (dim.x / (float)rct.w);
+        rct.w = dim.x;
     } else {
-        rct.w = size.x;
-        rct.h = size.y;
+        rct.w = dim.x;
+        rct.h = dim.y;
     }
 
     // SCALE
@@ -444,7 +446,7 @@ void pico_output_draw_image (Pico_Pos pos, const char* path) {
     pico_output_draw_image_ext(pos, path, PICO_SIZE_KEEP);
 }
 
-void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim size) {
+void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim) {
     SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
     if (tex == NULL) {
         tex = IMG_LoadTexture(REN, path);
@@ -452,7 +454,7 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim size) 
     }
     pico_assert(tex != NULL);
 
-    _pico_output_draw_tex(pos, tex, size);
+    _pico_output_draw_tex(pos, tex, dim);
 }
 
 // TODO: Test me for flip and rotate
@@ -652,7 +654,7 @@ void pico_output_draw_text (Pico_Pos pos, const char* text) {
     pico_output_draw_text_ext(pos, text, PICO_SIZE_KEEP);
 }
 
-void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size) {
+void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim dim) {
     if (text[0] == '\0') return;
 
     pico_assert(S.font.ttf != NULL);
@@ -661,15 +663,15 @@ void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim size) {
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
 
-    _pico_output_draw_tex(pos, tex, size);
+    _pico_output_draw_tex(pos, tex, dim);
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(sfc);
 }
 
-static void pico_output_draw_fmt_va (Pico_Pos pos, const char* fmt, Pico_Dim size, va_list args) {
+static void pico_output_draw_fmt_va (Pico_Pos pos, const char* fmt, Pico_Dim dim, va_list args) {
     static char text[1024];
     vsprintf(text, fmt, args);
-    pico_output_draw_text_ext(pos, text, size);
+    pico_output_draw_text_ext(pos, text, dim);
 }
 
 void pico_output_draw_fmt (Pico_Pos pos, const char* fmt, ...) {
@@ -679,10 +681,10 @@ void pico_output_draw_fmt (Pico_Pos pos, const char* fmt, ...) {
     va_end(args);
 }
 
-void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim size, const char* fmt, ...) {
+void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim dim, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    pico_output_draw_fmt_va(pos, fmt, size, args);
+    pico_output_draw_fmt_va(pos, fmt, dim, args);
     va_end(args);
 }
 
@@ -927,7 +929,7 @@ Pico_Dim pico_get_size_image (const char* file) {
     return size;
 }
 
-Pico_Dim pico_get_size_text (const char* text) {
+Pico_Dim pico_get_dim_text (const char* text) {
     if (text[0] == '\0') {
         return (Pico_Dim){0, 0};
     }
@@ -935,9 +937,9 @@ Pico_Dim pico_get_size_text (const char* text) {
     SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
                                               (Pico_Color){0,0,0,255});
     pico_assert(sfc != NULL);
-    Pico_Dim size = {sfc->w, sfc->h};
+    Pico_Dim dim = {sfc->w, sfc->h};
     SDL_FreeSurface(sfc);
-    return size;
+    return dim;
 }
 
 int pico_get_show (void) {
