@@ -26,14 +26,14 @@ void _pico_check_assert (const char *msg) {
 }
 
 void _pico_check (const char *msg) {
+    if (getenv("PICO_CHECK_DEBUG")) {
+        puts("debug: press any key");
+        pico_input_event(NULL, PICO_KEYDOWN);
+    }
+
     if (getenv("PICO_CHECK_GENERATE")) {
         _pico_check_generate(msg);
     } else {
         _pico_check_assert(msg);
-    }
-
-    if (getenv("PICO_CHECK_DEBUG")) {
-        puts("debug: press any key");
-        pico_input_event(NULL, PICO_KEYDOWN);
     }
 }
