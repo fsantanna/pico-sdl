@@ -24,7 +24,6 @@ extern "C" {
 #define PICO_TITLE "pico-SDL"
 #define PICO_DIM_WINDOW ((Pico_Dim) {640,360})
 #define PICO_DIM_WORLD  ((Pico_Dim) { 64, 36})
-#define PICO_DIM_ZOOM   ((Pico_Dim) { 64, 36})
 #define PICO_HASH  128
 
 typedef SDL_Point Pico_Pos;

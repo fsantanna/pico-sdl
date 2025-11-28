@@ -2,7 +2,8 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_size((Pico_Dim){500,500}, (Pico_Dim){50,50});
+    pico_set_dim_window((Pico_Dim){500,500});
+    pico_set_dim_world((Pico_Dim){50,50});
 
     void draw () {
         pico_set_color_draw((Pico_Color) { 0xFF,0x00,0x00,0xFF });
@@ -39,7 +40,9 @@ int main (void) {
     {
         Pico_Event e;
         pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
-        printf(">>> (%d,%d)\n", e.button.x, e.button.y);
+        Pico_Pos m;
+        pico_get_mouse(&m, PICO_MOUSE_BUTTON_NONE);
+        printf(">>> (%d,%d) / (%d,%d)\n", e.button.x, e.button.y, m.x, m.y);
     }
 
     pico_set_zoom((Pico_Pct){50, 50});
@@ -48,7 +51,9 @@ int main (void) {
     {
         Pico_Event e;
         pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
-        printf(">>> (%d,%d)\n", e.button.x, e.button.y);
+        Pico_Pos m;
+        pico_get_mouse(&m, PICO_MOUSE_BUTTON_NONE);
+        printf(">>> (%d,%d) / (%d,%d)\n", e.button.x, e.button.y, m.x, m.y);
     }
 
     pico_init(0);

@@ -3,6 +3,8 @@
 int main (void) {
     pico_init(1);
     pico_set_title("Moving Around");
+    pico_set_dim_window((Pico_Dim){640,360});
+    pico_set_dim_world((Pico_Dim){64,18});
 
     Pico_Pos pos = pico_pos((Pico_Pct){50, 50});
     while (1) {

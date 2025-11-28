@@ -3,7 +3,8 @@
 int main (void) {
     pico_init(1);
     pico_set_title("pixels");
-    pico_set_size((Pico_Dim){100,100}, (Pico_Dim){5,5});
+    pico_set_dim_window((Pico_Dim){100,100});
+    pico_set_dim_world((Pico_Dim){5,5});
 
     Pico_Pos pixels[9] = {
         {1, 1}, {2, 1}, {3, 1},

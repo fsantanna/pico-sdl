@@ -1023,6 +1023,7 @@ void pico_set_dim_window (Pico_Dim dim) {
 
 void pico_set_dim_world (Pico_Dim dim) {
     S.dim.world = dim;
+    pico_set_zoom(S.zoom);
 }
 
 void pico_set_expert (int on) {

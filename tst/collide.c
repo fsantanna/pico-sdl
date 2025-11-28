@@ -2,7 +2,8 @@
 
 int main() {
     pico_init(1);
-    pico_set_size((Pico_Dim){200,200},(Pico_Dim){20,20});
+    pico_set_dim_window((Pico_Dim){200,200});
+    pico_set_dim_world((Pico_Dim){20,20});
 
     Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
     Pico_Rect r = {pt.x,pt.y,4,4};

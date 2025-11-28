@@ -5,7 +5,8 @@ int main(void) {
     pico_init(1);
     pico_set_title("Scale");
     pico_set_grid(0);
-    pico_set_size((Pico_Dim){500,500}, (Pico_Dim){100, 100});
+    pico_set_dim_window((Pico_Dim){500,500});
+    pico_set_dim_world((Pico_Dim){100,100});
 
     Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
     Pico_Rect rect = {pt.x, pt.y, 30, 30};
