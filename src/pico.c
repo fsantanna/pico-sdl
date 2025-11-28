@@ -19,6 +19,7 @@
 
 static SDL_Window*  WIN;
 static SDL_Texture* TEX;
+static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 
 #define REN (SDL_GetRenderer(WIN))
 
@@ -49,6 +50,7 @@ static struct {
         TTF_Font* ttf;
         int h;
     } font;
+    int fullscreen;
     int grid;
     Pico_Rect crop;
     Pico_Pos scroll;
@@ -64,6 +66,7 @@ static struct {
     { PICO_DIM_WINDOW, PICO_DIM_WORLD },
     0,
     {NULL, 0},
+    0,
     1,
     {0,0,0,0},
     {0, 0},
@@ -204,7 +207,11 @@ static int event_from_sdl (Pico_Event* e, int xp) {
 
         case SDL_WINDOWEVENT: {
             if (e->window.event == SDL_WINDOWEVENT_RESIZED) {
-                pico_set_dim_window((Pico_Dim){e->window.data1,e->window.data2});
+                if (FS) {
+                    FS = 0;
+                } else {
+                    pico_set_dim_window((Pico_Dim){e->window.data1,e->window.data2});
+                }
             }
             break;
         }
@@ -882,6 +889,10 @@ const char* pico_get_font (void) {
     return TTF_FontFaceFamilyName(S.font.ttf);
 }
 
+int pico_get_fullscreen (void) {
+    return S.fullscreen;
+}
+
 int pico_get_grid (void) {
     return S.grid;
 }
@@ -1017,6 +1028,7 @@ void pico_set_cursor (Pico_Pos pos) {
 }
 
 void pico_set_dim_window (Pico_Dim dim) {
+    assert(!S.fullscreen);
     S.dim.window = dim;
     SDL_SetWindowSize(WIN, dim.x, dim.y);
 }
@@ -1034,26 +1046,27 @@ void pico_set_flip (Pico_Flip flip) {
     S.flip = flip;
 }
 
-static int _on = 0;
-static Pico_Dim _old;
-
 void pico_set_fullscreen (int on) {
-    if ((on && _on) || (!on && !_on)) {
+    static Pico_Dim _old;
+    if ((on && S.fullscreen) || (!on && !S.fullscreen)) {
         return;
     }
-    _on = on;
+    FS = 1;
 
     Pico_Dim new;
     if (on) {
         _old = S.dim.window;
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
+        pico_input_delay(1);    // TODO: required for some reason
         SDL_GetWindowSize(WIN, &new.x, &new.y);
     } else {
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
         new = _old;
     }
 
+    S.fullscreen = 0;           // cannot set_dim_win with fullscreen on
     pico_set_dim_window(new);
+    S.fullscreen = on;
 }
 
 void pico_set_font (const char* file, int h) {

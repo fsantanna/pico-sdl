@@ -245,6 +245,7 @@ Pico_Rect pico_get_crop (void);
 Pico_Pos pico_get_cursor (void);
 
 /// @brief Gets the state of expert mode.
+/// @return 1 if enabled, or 0 otherwise
 int pico_get_expert (void);
 
 /// @brief Gets the flipping state of objects.
@@ -253,7 +254,12 @@ Pico_Flip pico_get_flip (void);
 /// @brief Gets the font used to draw texts.
 const char* pico_get_font (void);
 
-/// @brief Gets the state of the logical pixel grid.
+/// @brief Gets the state of fullscreen mode.
+/// @return 1 if enabled, or 0 otherwise
+int pico_get_fullscreen (void);
+
+/// @brief Gets the state of grid mode.
+/// @return 1 if enabled, or 0 otherwise
 int pico_get_grid (void);
 
 /// @brief Gets the state of a key.
@@ -385,6 +391,10 @@ void pico_set_style (PICO_STYLE style);
 /// @brief Sets the aplication title.
 /// @param title new title
 void pico_set_title (const char* title);
+
+/// @brief Sets the viewport for further drawing operations.
+/// @param rect viewport rectangle relative to position anchor
+void pico_set_viewport (Pico_Rect rect);
 
 /// @param pct new factor
 void pico_set_zoom (Pico_Pct pct);
