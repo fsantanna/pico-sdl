@@ -1017,8 +1017,17 @@ void pico_set_cursor (Pico_Pos pos) {
 }
 
 void pico_set_dim_window (Pico_Dim dim) {
+    Pico_Dim old = S.dim.window;
     S.dim.window = dim;
     SDL_SetWindowSize(WIN, dim.x, dim.y);
+
+    Pico_Pct z = {
+        S.zoom.x * dim.x / old.x,
+        S.zoom.y * dim.y / old.y,
+    };
+    printf(">>> win: %d/%d -> %d/%d\n", old.x,old.y, dim.x,dim.y);
+    printf(">>> zom: %d/%d -> %d/%d\n", S.zoom.x,S.zoom.y, z.x,z.y);
+    pico_set_zoom(z);
 }
 
 void pico_set_dim_world (Pico_Dim dim) {
@@ -1034,12 +1043,26 @@ void pico_set_flip (Pico_Flip flip) {
     S.flip = flip;
 }
 
+static int _on = 0;
+static Pico_Dim _old;
+
 void pico_set_fullscreen (int on) {
+    if ((on && _on) || (!on && !_on)) {
+        return;
+    }
+    _on = on;
+
+    Pico_Dim new;
     if (on) {
+        _old = S.dim.window;
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
+        SDL_GetWindowSize(WIN, &new.x, &new.y);
     } else {
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
+        new = _old;
     }
+
+    pico_set_dim_window(new);
 }
 
 void pico_set_font (const char* file, int h) {

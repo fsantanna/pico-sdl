@@ -7,6 +7,7 @@ int main (void) {
     Pico_Rect rct1 = {pt1.x, pt1.y, 32, 18};
 
     puts("no fullscreen - less pixels");
+    pico_set_fullscreen(0);
     pico_output_clear();
     pico_output_draw_rect(rct1);
 
@@ -14,6 +15,13 @@ int main (void) {
 
     puts("ok fullscreen - less pixels");
     pico_set_fullscreen(1);
+    pico_output_clear();
+    pico_output_draw_rect(rct1);
+
+    pico_input_event(NULL, PICO_KEYDOWN);
+
+    puts("no fullscreen - less pixels");
+    pico_set_fullscreen(0);
     pico_output_clear();
     pico_output_draw_rect(rct1);
 
@@ -30,6 +38,7 @@ int main (void) {
     pico_input_event(NULL, PICO_KEYDOWN);
 
     puts("no fullscreen - less pixels");
+    pico_set_fullscreen(0);
     pico_set_dim_window((Pico_Dim){640,360});
     pico_output_clear();
     pico_output_draw_rect(rct1);
