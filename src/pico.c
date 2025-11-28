@@ -1017,17 +1017,8 @@ void pico_set_cursor (Pico_Pos pos) {
 }
 
 void pico_set_dim_window (Pico_Dim dim) {
-    Pico_Dim old = S.dim.window;
     S.dim.window = dim;
     SDL_SetWindowSize(WIN, dim.x, dim.y);
-
-    Pico_Pct z = {
-        S.zoom.x * dim.x / old.x,
-        S.zoom.y * dim.y / old.y,
-    };
-    printf(">>> win: %d/%d -> %d/%d\n", old.x,old.y, dim.x,dim.y);
-    printf(">>> zom: %d/%d -> %d/%d\n", S.zoom.x,S.zoom.y, z.x,z.y);
-    pico_set_zoom(z);
 }
 
 void pico_set_dim_world (Pico_Dim dim) {
