@@ -291,9 +291,6 @@ Pico_Dim pico_get_dim_window (void);
 /// @brief Gets the world dimensions.
 Pico_Dim pico_get_dim_world (void);
 
-/// @brief Gets the zoom dimensions.
-Pico_Dim pico_get_dim_zoom (void);
-
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
 
@@ -305,6 +302,9 @@ Uint32 pico_get_ticks (void);
 
 /// @brief Gets the aplication title.
 const char* pico_get_title (void);
+
+/// @brief Gets the zoom factor.
+Pico_Pct pico_get_zoom (void);
 
 // SET
 
@@ -343,10 +343,6 @@ void pico_set_dim_window (Pico_Dim dim);
 /// @brief Sets the world dimensions.
 /// @param dim new dimensions
 void pico_set_dim_world (Pico_Dim dim);
-
-/// @brief Sets the zoom dimensions.
-/// @param dim new dimensions
-void pico_set_dim_zoom (Pico_Dim dim);
 
 /// @brief Toggles the expert mode.
 /// @param on 1 to enable it, or 0 to disable it
@@ -390,6 +386,9 @@ void pico_set_style (PICO_STYLE style);
 /// @brief Sets the aplication title.
 /// @param title new title
 void pico_set_title (const char* title);
+
+/// @param pct new factor
+void pico_set_zoom (Pico_Pct pct);
 
 /// @}
 

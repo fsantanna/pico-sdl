@@ -4,7 +4,8 @@
 int main (void) {
     pico_init(1);
     pico_set_title("Anchoring...");
-    pico_set_size((Pico_Dim){200,200}, (Pico_Dim){10,10});
+    pico_set_dim_window((Pico_Dim){200,200});
+    pico_set_dim_world((Pico_Dim){10,10});
 
     // PIXELS
     {
