@@ -152,7 +152,8 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            S.dim.window.x, S.dim.window.y, SDL_WINDOW_SHOWN
+            S.dim.window.x, S.dim.window.y,
+            (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
         );
         pico_assert(WIN != NULL);
 
@@ -197,6 +198,13 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         case SDL_QUIT: {
             if (!S.expert) {
                 exit(0);
+            }
+            break;
+        }
+
+        case SDL_WINDOWEVENT: {
+            if (e->window.event == SDL_WINDOWEVENT_RESIZED) {
+                pico_set_dim_window((Pico_Dim){e->window.data1,e->window.data2});
             }
             break;
         }
@@ -264,16 +272,6 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
             }
         }
-
-#if 0
-        case SDL_WINDOWEVENT: {
-            if (e->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                pico_set_size((SDL_Point){e->window.data1,e->window.data2});
-                return 0;
-                break;
-            }
-        }
-#endif
         default:
             // others are not handled automatically
             break;
@@ -283,9 +281,11 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         // OK
     } else if (xp == SDL_ANY) {
         // MAYBE
-        if (e->type==SDL_KEYDOWN || e->type==SDL_KEYUP || e->type==SDL_MOUSEBUTTONDOWN ||
-            e->type==SDL_MOUSEBUTTONUP || e->type==SDL_MOUSEMOTION ||
-            e->type==SDL_QUIT) {
+        int ok1 = (e->type==SDL_KEYDOWN || e->type==SDL_KEYUP);
+        int ok2 = ok1 || e->type==SDL_MOUSEBUTTONDOWN || e->type==SDL_MOUSEBUTTONUP || e->type==SDL_MOUSEMOTION;
+        int ok3 = ok2 || e->type==SDL_QUIT;
+        int ok4 = ok3 || (e->type==SDL_WINDOWEVENT && e->window.event==SDL_WINDOWEVENT_RESIZED);
+        if (ok4) {
             // OK
         } else {
             // NO
