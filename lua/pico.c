@@ -180,7 +180,7 @@ static int l_pos (lua_State* L) {
             luaL_checktype(L, 3, LUA_TTABLE);
             anc = _anchor(L, 3);
         } else {
-            anc = pico_get_anchor_draw();
+            anc = pico_get_anchor_pos();
         }
         pos = pico_pos_ext(pct, out, anc);
     } else {
@@ -252,6 +252,43 @@ static int l_vs_rect_rect (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static int l_get_dim_image (lua_State* L) {
+    const char* path = luaL_checkstring(L, 1);
+    Pico_Dim dim = pico_get_dim_image(path);
+
+    lua_newtable(L);                // dim
+    lua_pushinteger(L, dim.x);      // dim | x
+    lua_setfield(L, 2, "x");        // dim
+    lua_pushinteger(L, dim.y);      // dim | y
+    lua_setfield(L, 2, "y");        // dim
+
+    return 1;                       // [dim]
+}
+
+static int l_get_dim_window (lua_State* L) {
+    Pico_Dim dim = pico_get_dim_window();
+
+    lua_newtable(L);            // dim
+    lua_pushinteger(L, dim.x);  // dim | x
+    lua_setfield(L, 2, "x");    // dim
+    lua_pushinteger(L, dim.y);  // dim | y
+    lua_setfield(L, 2, "y");    // dim
+
+    return 1;                   // [dim]
+}
+
+static int l_get_dim_world (lua_State* L) {
+    Pico_Dim dim = pico_get_dim_world();
+
+    lua_newtable(L);            // dim
+    lua_pushinteger(L, dim.x);  // dim | x
+    lua_setfield(L, 2, "x");    // dim
+    lua_pushinteger(L, dim.y);  // dim | y
+    lua_setfield(L, 2, "y");    // dim
+
+    return 1;                   // [dim]
+}
+
 static int l_get_mouse (lua_State* L) {
     if (lua_gettop(L) > 0) {
         return luaL_error(L, "TODO: pico.mouse.get(button)");
@@ -274,40 +311,6 @@ static int l_get_rotate (lua_State* L) {
     return 1;                       // [ang]
 }
 
-static int l_get_size_image (lua_State* L) {
-    const char* path = luaL_checkstring(L, 1);
-    Pico_Dim dim = pico_get_size_image(path);
-
-    lua_newtable(L);                // dim
-    lua_pushinteger(L, dim.x);      // dim | x
-    lua_setfield(L, 2, "x");        // dim
-    lua_pushinteger(L, dim.y);      // dim | y
-    lua_setfield(L, 2, "y");        // dim
-
-    return 1;                       // [dim]
-}
-
-static int l_get_size_window (lua_State* L) {
-    Pico_Size siz = pico_get_size();
-    lua_newtable(L);                // siz
-
-    lua_newtable(L);                // siz | phy
-    lua_pushinteger(L, siz.phy.x);  // siz | phy | x
-    lua_setfield(L, 2, "x");        // siz | phy
-    lua_pushinteger(L, siz.phy.y);  // siz | phy | y
-    lua_setfield(L, 2, "y");        // siz | phy
-    lua_setfield(L, 1, "phy");      // siz
-
-    lua_newtable(L);                // siz | log
-    lua_pushinteger(L, siz.log.x);  // siz | log | x
-    lua_setfield(L, 2, "x");        // siz | log
-    lua_pushinteger(L, siz.log.y);  // siz | log | y
-    lua_setfield(L, 2, "y");        // siz | log
-    lua_setfield(L, 1, "log");      // siz
-
-    return 1;                       // [siz]
-}
-
 static int l_get_ticks (lua_State* L) {
     Uint32 ms = pico_get_ticks();
     lua_pushinteger(L, ms);         // ms
@@ -316,9 +319,9 @@ static int l_get_ticks (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_set_anchor_draw (lua_State* L) {
+static int l_set_anchor_pos (lua_State* L) {
     Pico_Anchor anc = _anchor(L, 1);
-    pico_set_anchor_draw(anc);
+    pico_set_anchor_pos(anc);
     return 0;
 }
 
@@ -364,6 +367,52 @@ static int l_set_cursor (lua_State* L) {
         L_checkfieldnum(L, 1, "y"),
     };
     pico_set_cursor(pos);
+    return 0;
+}
+
+static int l_set_dim_window (lua_State* L) {
+    Pico_Dim dim;
+
+    // w | h
+    if (lua_type(L,1) == LUA_TNUMBER) {
+        dim = (Pico_Dim) {
+            luaL_checknumber(L, 1),
+            luaL_checknumber(L, 2),
+        };
+
+    // dim
+    } else {
+        luaL_checktype(L, 1, LUA_TTABLE);   // dim
+        dim = (Pico_Dim) {
+            L_checkfieldnum(L, 1, "x"),
+            L_checkfieldnum(L, 1, "y"),
+        };
+    }
+
+    pico_set_dim_window(dim);
+    return 0;
+}
+
+static int l_set_dim_world (lua_State* L) {
+    Pico_Dim dim;
+
+    // w | h
+    if (lua_type(L,1) == LUA_TNUMBER) {
+        dim = (Pico_Dim) {
+            luaL_checknumber(L, 1),
+            luaL_checknumber(L, 2),
+        };
+
+    // dim
+    } else {
+        luaL_checktype(L, 1, LUA_TTABLE);   // dim
+        dim = (Pico_Dim) {
+            L_checkfieldnum(L, 1, "x"),
+            L_checkfieldnum(L, 1, "y"),
+        };
+    }
+
+    pico_set_dim_world(dim);
     return 0;
 }
 
@@ -442,44 +491,6 @@ static int l_set_scale (lua_State* L) {
         pct.y = luaL_checknumber(L, 2);
     }
     pico_set_scale(pct);
-    return 0;
-}
-
-static int l_set_size_window (lua_State* L) {
-    Pico_Dim phy, log;
-
-    // w | h
-    if (lua_type(L,1) == LUA_TNUMBER) {
-        phy = (Pico_Dim) {
-            luaL_checknumber(L, 1),
-            luaL_checknumber(L, 2),
-        };
-        log = phy;
-
-    // phy | log
-    } else {
-        if (lua_type(L,1) == LUA_TBOOLEAN) {
-            int v = lua_toboolean(L, 1);
-            phy = (v ? PICO_SIZE_FULLSCREEN : PICO_SIZE_KEEP); // b | log
-        } else {
-            luaL_checktype(L, 1, LUA_TTABLE);   // phy | log
-            phy = (Pico_Dim) {
-                L_checkfieldnum(L, 1, "x"),
-                L_checkfieldnum(L, 1, "y"),
-            };
-        }
-        if (lua_type(L,2) == LUA_TBOOLEAN) {
-            int v = lua_toboolean(L, 2);
-            log = (v ? PICO_SIZE_FULLSCREEN : PICO_SIZE_KEEP); // phy | b
-        } else {
-            luaL_checktype(L, 2, LUA_TTABLE);   // phy | log
-            log = (Pico_Dim) {
-                L_checkfieldnum(L, 2, "x"),
-                L_checkfieldnum(L, 2, "y"),
-            };
-        }
-    }
-    pico_set_size(phy, log);
     return 0;
 }
 
@@ -871,9 +882,10 @@ static const luaL_Reg ll_get[] = {
     { NULL, NULL }
 };
 
-static const luaL_Reg ll_get_size[] = {
-    { "image",  l_get_size_image  },
-    { "window", l_get_size_window },
+static const luaL_Reg ll_get_dim[] = {
+    { "image",  l_get_dim_image  },
+    { "window", l_get_dim_window },
+    { "world",  l_get_dim_world  },
     { NULL, NULL }
 };
 
@@ -896,7 +908,7 @@ static const luaL_Reg ll_set[] = {
 };
 
 static const luaL_Reg ll_set_anchor[] = {
-    { "draw",   l_set_anchor_draw   },
+    { "pos",    l_set_anchor_pos    },
     { "rotate", l_set_anchor_rotate },
     { NULL, NULL }
 };
@@ -907,8 +919,9 @@ static const luaL_Reg ll_set_color[] = {
     { NULL, NULL }
 };
 
-static const luaL_Reg ll_set_size[] = {
-    { "window", l_set_size_window },
+static const luaL_Reg ll_set_dim[] = {
+    { "window", l_set_dim_window },
+    { "world",  l_set_dim_world  },
     { NULL, NULL }
 };
 
@@ -959,8 +972,8 @@ int luaopen_pico_native (lua_State* L) {
     lua_setfield(L, -2, "vs");              // pico
 
     luaL_newlib(L, ll_get);                 // pico | get
-    luaL_newlib(L, ll_get_size);            // pico | get | size
-    lua_setfield(L, -2, "size");            // pico | get
+    luaL_newlib(L, ll_get_dim);             // pico | get | dim
+    lua_setfield(L, -2, "dim");             // pico | get
     lua_setfield(L, -2, "get");             // pico
 
     luaL_newlib(L, ll_set);                 // pico | set
@@ -968,8 +981,8 @@ int luaopen_pico_native (lua_State* L) {
     lua_setfield(L, -2, "anchor");          // pico | set
     luaL_newlib(L, ll_set_color);           // pico | set | color
     lua_setfield(L, -2, "color");           // pico | set
-    luaL_newlib(L, ll_set_size);            // pico | set | size
-    lua_setfield(L, -2, "size");            // pico | set
+    luaL_newlib(L, ll_set_dim);             // pico | set | dim
+    lua_setfield(L, -2, "dim");             // pico | set
     lua_setfield(L, -2, "set");             // pico
 
     luaL_newlib(L, ll_input);               // pico | input
