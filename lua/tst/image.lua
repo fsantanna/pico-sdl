@@ -13,7 +13,7 @@ print("show big centered")
 pico.input.event('key.dn')
 --_pico_check("img_big_center")
 
-local dim = pico.get.size.image("open.png")
+local dim = pico.get.dim.image("open.png")
 assert(dim.x==48 and dim.y==48)
 
 pico.output.clear()

@@ -3,7 +3,8 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Buffer"
-pico.set.size.window({x=100,y=100}, {x=10,y=10})
+pico.set.dim.window(100,100)
+pico.set.dim.world(10,10)
 
 -- .x.
 -- xxx
@@ -52,7 +53,7 @@ do
     local p2 = pico.pos(100, 100)
     pico.set.color.clear { r=0xFF, g=0xFF, b=0xFF, a=0xFF }
     pico.output.clear()
-    pico.set.anchor.draw { x='right', y='bottom' }
+    pico.set.anchor.pos { x='right', y='bottom' }
     pico.output.draw.buffer(p2, b2)
     pico.input.event('key.dn');
     --_pico_check("buf9w1h_rightbottom_white");

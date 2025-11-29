@@ -3,7 +3,8 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Mouse"
-pico.set.size.window({x=500,y=500}, {x=50,y=50})
+pico.set.dim.window(500,500)
+pico.set.dim.world(50,50)
 
 function draw ()
     pico.set.color.draw(0xFF,0x00,0x00)

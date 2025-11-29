@@ -50,7 +50,7 @@ end
 
 function M.draw (rs, clr)
     pico.set.style 'stroke'
-    pico.set.anchor.draw('left', 'top')
+    pico.set.anchor.pos('left', 'top')
     for _,r in ipairs(rs) do
         pico.set.color.draw(clr)
         pico.output.draw.rect(r)

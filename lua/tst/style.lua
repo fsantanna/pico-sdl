@@ -3,8 +3,9 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Style"
-pico.set.size.window({x=200,y=200}, {x=50,y=50})
-pico.set.anchor.draw('center', 'middle')
+pico.set.dim.window(200,200)
+pico.set.dim.world(50,50)
+pico.set.anchor.pos('center', 'middle')
 
 -- stroke
 do

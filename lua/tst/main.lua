@@ -2,9 +2,8 @@ local pico = require 'pico'
 
 pico.init(true)
 
-local phy_log = pico.get.size.window()
-local phy = phy_log.phy
-local log = phy_log.log
+local phy = pico.get.dim.window()
+local log = pico.get.dim.world()
 assert(phy.x==640 and phy.y==360);
 assert(log.x==64  and log.y==36 );
 
@@ -33,7 +32,7 @@ print "shows white screen"
 pico.input.delay(2000)
 
 -- DRAW_IMAGE
-pico.set.anchor.draw { x='center', y='middle' }
+pico.set.anchor.pos { x='center', y='middle' }
 pico.output.draw.image(pt, "open.png")
 
 print "shows centered image"
@@ -112,7 +111,7 @@ print("increases zoom")
 for i=1, 20 do
     log.x = log.x - 1
     log.y = log.y - 1
-    pico.set.size.window(false, log)
+    pico.set.dim.world(log)
     local ct = pico.pos { x=50, y=50 }
     pico.output.clear()
     pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }
@@ -126,7 +125,7 @@ print("decreases zoom")
 for i=1, 20 do
     log.x = log.x + 1
     log.y = log.y + 1
-    pico.set.size.window(false, log)
+    pico.set.dim.world(log)
     local ct = pico.pos { x=50, y=50 }
     pico.output.clear()
     pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }

@@ -4,7 +4,8 @@ pico.init(true)
 
 pico.set.title "Scale"
 pico.set.grid(false)
-pico.set.size.window({x=500,y=500}, {x=100,y=100})
+pico.set.dim.window(500,500)
+pico.set.dim.world(100,100)
 
 local pt   = pico.pos(50, 50)
 local rect = {x=pt.x, y=pt.y, w=30, h=30}
@@ -35,7 +36,7 @@ do
     --.pico.check("rect.scale.dn")
 end
 
-pico.set.anchor.draw('right', 'bottom')
+pico.set.anchor.pos('right', 'bottom')
 
 do
     pico.output.clear()

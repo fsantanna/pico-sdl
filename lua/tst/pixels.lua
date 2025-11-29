@@ -3,7 +3,8 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Pixels"
-pico.set.size.window({x=100,y=100}, {x=5,y=5})
+pico.set.dim.window(100,100)
+pico.set.dim.world(5,5)
 
 local pixels = {
     {x=1, y=1}, {x=2, y=1}, {x=3, y=1},
@@ -17,7 +18,6 @@ pico.input.event('key.dn')
 while #pixels>0 do
     pico.output.clear()
     pico.output.draw.pixels(pixels)
-    print("pixels", i)
     pico.input.event('key.dn')
     pixels[#pixels] = nil
 end

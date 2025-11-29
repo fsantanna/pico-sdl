@@ -113,7 +113,8 @@ do
     local rs = layout.build(lay, {x=0,y=0,w=100,h=100})
 
     pico.init(true)
-    pico.set.size.window({x=500,y=500}, {x=100,y=100})
+    pico.set.dim.window(500,500)
+    pico.set.dim.world(100,100)
     layout.draw(rs, pico.color.white)
     for i=1, 7 do
         local pt = pico.pos({x=50,y=50}, rs[i], {x='left',y='top'})

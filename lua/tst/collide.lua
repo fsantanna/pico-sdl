@@ -3,13 +3,14 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Collide"
-pico.set.size.window({x=200,y=200}, {x=20,y=20})
+pico.set.dim.window(200,200)
+pico.set.dim.world(20,20)
 
 local pt = pico.pos(50, 50)
 local r = { x=pt.x, y=pt.y, w=4, h=4 }
 
 print "pos_vs_rect - same anchor"
-pico.set.anchor.draw('right','bottom')
+pico.set.anchor.pos('right','bottom')
 for y=r.y-r.w, r.y+1 do
     for x=r.x-r.w, r.x+1 do
         pico.output.clear()
@@ -32,7 +33,7 @@ for y=r.y, r.y+r.h+1 do
     for x=r.x, r.x+r.w+1 do
         pico.output.clear();
         pico.set.color.draw(255,255,255);
-        pico.set.anchor.draw { x='left', y='top' }
+        pico.set.anchor.pos { x='left', y='top' }
         pico.output.draw.rect(r);
 
         local pt = {x=x, y=y};
@@ -43,7 +44,7 @@ for y=r.y, r.y+r.h+1 do
         )
 
         pico.set.color.draw(255,0,0);
-        pico.set.anchor.draw {x='right', y='bottom'}
+        pico.set.anchor.pos {x='right', y='bottom'}
         pico.output.draw.pixel(pt);
 
         print(X and "in  " or "out ");
@@ -53,7 +54,7 @@ for y=r.y, r.y+r.h+1 do
 end
 
 print "rect_vs_rect - same anchor"
-pico.set.anchor.draw({x='left', y='top'})
+pico.set.anchor.pos({x='left', y='top'})
 for y=r.y-r.h, r.y+r.h do
     for x=r.x-r.w, r.x+r.w do
         pico.output.clear()
@@ -76,7 +77,7 @@ for y=r.y, r.y+2*r.h do
     for x=r.x, r.x+2*r.w do
         pico.output.clear()
         pico.set.color.draw(255,255,255)
-        pico.set.anchor.draw({x='left',y='top'})
+        pico.set.anchor.pos({x='left',y='top'})
         pico.output.draw.rect(r)
 
         local r2 = {x=x,y=y,w=4,h=4}
@@ -86,7 +87,7 @@ for y=r.y, r.y+2*r.h do
             {x='left', y='top'}
         )
         pico.set.color.draw(255,0,0)
-        pico.set.anchor.draw({x='right',y='bottom'})
+        pico.set.anchor.pos({x='right',y='bottom'})
         pico.output.draw.rect(r2)
 
         print(X and "overlap" or "naw")

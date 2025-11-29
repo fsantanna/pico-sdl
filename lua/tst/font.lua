@@ -8,4 +8,4 @@ local pt = pico.pos(50, 50)
 pico.output.draw.text(pt, "Hello!")
 pico.input.delay(1000)
 
-pico_init(false)
+pico.init(false)
