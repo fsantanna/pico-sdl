@@ -24,16 +24,23 @@
     - `pico.pos (pct: Pct [,out: Rect [, anc: Anchor]]) -> Pos`
     - `pico.pos (x: integer, y: integer) -> Pos`
 - **pico.get**
+    - **pico.get.anchor**
+        - [pico.get.anchor.draw](#TODO): Draw anchor.
+            - `pico.get.anchor.draw () -> Anchor`
+        - [pico.get.anchor.rotate](#TODO): Rotate anchor.
+            - `pico.get.anchor.rotate () -> Anchor`
+    - **pico.get.dim**
+        - [pico.get.dim.image](#TODO): Image dimensions.
+            - `pico.get.dim.image (path: string) -> Dim`
+        - [pico.get.dim.window](#TODO): Window dimensions.
+            - `pico.get.dim.window () -> Dim`
+        - [pico.get.dim.world](#TODO): World (logical) dimensions.
+            - `pico.get.dim.world () -> Dim`
     - [pico.get.mouse](#TODO): Mouse position and clicks.
         - `pico.get.mouse () -> Pos`
         - `pico.get.mouse (but: string) -> boolean`
     - [pico.get.rotate](#TODO): Rotation angle in degrees.
         - `pico.get.rotate () -> integer`
-    - **pico.get.size**
-        - [pico.get.size.image](#TODO): Image dimensions.
-            - `pico.get.size.image (path: string) -> Dim`
-        - [pico.get.size.window](#TODO): Physical and logical window dimensions.
-            - `pico.get.size.window () -> { phy=Dim, log=Dim }`
     - [pico.get.ticks](#TODO): Number of milliseconds initialization.
         - `pico.get.ticks () -> integer`
 - **pico.set**
@@ -41,6 +48,14 @@
         - `pico.set.crop ([r: Rect])`
     - [pico.set.cursor](#TODO): Text cursor position.
         - `pico.set.cursor (pos: Pos)`
+        - `pico.set.cursor (x: integer, y: integer)`
+    - **pico.set.dim**
+        - [pico.set.dim.window](#TODO): Window (logical) dimensions.
+            - `pico.set.dim.window (dim: Dim)`
+            - `pico.set.dim.window (x: integer, y: integer)`
+        - [pico.set.dim.world](#TODO): World dimensions.
+            - `pico.set.dim.world (dim: Dim)`
+            - `pico.set.dim.world (x: integer, y: integer)`
     - [pico.set.expert](#TODO): Expert operation mode.
         - `pico.set.expert (on: boolean)`
     - [pico.set.font](#TODO): Font for texts.
@@ -51,15 +66,14 @@
         - `pico.set.rotate (ang: integer)`
     - [pico.set.scale](#TODO): Scale relative to original dimensions.
         - `pico.set.scale (pct: Pct)`
-    - **pico.set.size**
-        - [pico.set.size.window](#TODO): Physical and logical window dimensions.
-            - `pico.set.size.window (phy: Dim|boolean, log: Dim|boolean)`
+        - `pico.set.scale (x: integer, y: integer)`
     - [pico.set.style](#TODO): Drawing style.
         - `pico.set.style (['fill'|'stroke'])`
     - [pico.set.title](#TODO): Window title.
         - `pico.set.title (title: string)`
     - [pico.set.zoom](#TODO): Window zoom.
         - `pico.set.zoom (pct: Pct)`
+        - `pico.set.zoom (x: integer, y: integer)`
     - **pico.set.color**
         - [pico.set.color.clear](#TODO): Window clear color.
             - `pico.set.color.clear (clr: Color)`
