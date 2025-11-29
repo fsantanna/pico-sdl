@@ -36,6 +36,10 @@
             - `pico.get.dim.window () -> Dim`
         - [pico.get.dim.world](#TODO): World (logical) dimensions.
             - `pico.get.dim.world () -> Dim`
+    - [pico.get.expert](#TODO): Expert operation mode.
+            - `pico.get.expert () -> boolean`
+    - [pico.get.fullscreen](#TODO): Fullscreen mode.
+            - `pico.get.fullscreen () -> boolean`
     - [pico.get.mouse](#TODO): Mouse position and clicks.
         - `pico.get.mouse () -> Pos`
         - `pico.get.mouse (but: string) -> boolean`
@@ -60,6 +64,8 @@
         - `pico.set.expert (on: boolean)`
     - [pico.set.font](#TODO): Font for texts.
         - `pico.set.font (path: [string], h: integer)`
+    - [pico.set.fullscreen](#TODO): Fullscreen mode.
+        - `pico.set.fullscreen (on: boolean)`
     - [pico.set.grid](#TODO): Toggles window grid.
         - `pico.set.grid (on: boolean)`
     - [pico.set.rotate](#TODO): Rotation angle in degrees.

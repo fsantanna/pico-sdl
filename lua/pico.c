@@ -1,7 +1,5 @@
 // gcc -shared -o pico.so -fPIC /x/pico-sdl/src/pico.c ../src/hash.c pico.c -llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 
-//TODO: docs get.anchor, tst/size (fullscreen)
-
 #include <lua5.4/lua.h>
 #include <lua5.4/lauxlib.h>
 
@@ -293,6 +291,16 @@ static int l_get_dim_world (lua_State* L) {
     return 1;                   // . | [dim]
 }
 
+static int l_get_expert (lua_State* L) {
+    lua_pushboolean(L, pico_get_expert());
+    return 1;
+}
+
+static int l_get_fullscreen (lua_State* L) {
+    lua_pushboolean(L, pico_get_fullscreen());
+    return 1;
+}
+
 static int l_get_mouse (lua_State* L) {
     if (lua_gettop(L) > 0) {
         return luaL_error(L, "TODO: pico.mouse.get(button)");
@@ -412,6 +420,13 @@ static int l_set_font (lua_State* L) {
         f = (char*) luaL_checklstring(L, 1, NULL);
     }
     pico_set_font(f, h);
+    return 0;
+}
+
+static int l_set_fullscreen (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TBOOLEAN);
+    int on = lua_toboolean(L, 1);
+    pico_set_fullscreen(on);
     return 0;
 }
 
@@ -840,9 +855,10 @@ static const luaL_Reg ll_vs[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
-    { "mouse",  l_get_mouse  },
-    { "rotate", l_get_rotate },
-    { "ticks",  l_get_ticks  },
+    { "mouse",      l_get_mouse      },
+    { "fullscreen", l_get_fullscreen },
+    { "rotate",     l_get_rotate     },
+    { "ticks",      l_get_ticks      },
     { NULL, NULL }
 };
 
@@ -862,18 +878,19 @@ static const luaL_Reg ll_get_dim[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_set[] = {
-    { "crop",   l_set_crop   },
-    { "cursor", l_set_cursor },
-    { "expert", l_set_expert },
-    { "font",   l_set_font   },
-    { "grid",   l_set_grid   },
-    { "rotate", l_set_rotate },
-    { "scroll", l_set_scroll },
-    { "show",   l_set_show   },
-    { "scale",  l_set_scale  },
-    { "style",  l_set_style  },
-    { "title",  l_set_title  },
-    { "zoom",   l_set_zoom   },
+    { "crop",       l_set_crop       },
+    { "cursor",     l_set_cursor     },
+    { "expert",     l_set_expert     },
+    { "font",       l_set_font       },
+    { "fullscreen", l_set_fullscreen },
+    { "grid",       l_set_grid       },
+    { "rotate",     l_set_rotate     },
+    { "scroll",     l_set_scroll     },
+    { "show",       l_set_show       },
+    { "scale",      l_set_scale      },
+    { "style",      l_set_style      },
+    { "title",      l_set_title      },
+    { "zoom",       l_set_zoom       },
     { NULL, NULL }
 };
 
