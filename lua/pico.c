@@ -1,5 +1,7 @@
 // gcc -shared -o pico.so -fPIC /x/pico-sdl/src/pico.c ../src/hash.c pico.c -llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 
+//TODO: docs get.anchor, tst/size (fullscreen)
+
 #include <lua5.4/lua.h>
 #include <lua5.4/lauxlib.h>
 
@@ -315,6 +317,28 @@ static int l_get_ticks (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static Pico_Pos _set_xy (lua_State* L) {
+    Pico_Pos xy;
+
+    // w | h
+    if (lua_type(L,1) == LUA_TNUMBER) {
+        xy = (Pico_Pos) {
+            luaL_checknumber(L, 1),
+            luaL_checknumber(L, 2),
+        };
+
+    // xy
+    } else {
+        luaL_checktype(L, 1, LUA_TTABLE);   // xy
+        xy = (Pico_Pos) {
+            L_checkfieldnum(L, 1, "x"),
+            L_checkfieldnum(L, 1, "y"),
+        };
+    }
+
+    return xy;
+}
+
 static int l_set_anchor_pos (lua_State* L) {
     Pico_Anchor anc = _anchor(L, 1);
     pico_set_anchor_pos(anc);
@@ -357,57 +381,19 @@ static int l_set_crop (lua_State* L) {
 }
 
 static int l_set_cursor (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // pos = { x,y }
-    Pico_Pos pos = {
-        L_checkfieldnum(L, 1, "x"),
-        L_checkfieldnum(L, 1, "y"),
-    };
+    Pico_Pos pos = _set_xy(L);
     pico_set_cursor(pos);
     return 0;
 }
 
 static int l_set_dim_window (lua_State* L) {
-    Pico_Dim dim;
-
-    // w | h
-    if (lua_type(L,1) == LUA_TNUMBER) {
-        dim = (Pico_Dim) {
-            luaL_checknumber(L, 1),
-            luaL_checknumber(L, 2),
-        };
-
-    // dim
-    } else {
-        luaL_checktype(L, 1, LUA_TTABLE);   // dim
-        dim = (Pico_Dim) {
-            L_checkfieldnum(L, 1, "x"),
-            L_checkfieldnum(L, 1, "y"),
-        };
-    }
-
+    Pico_Dim dim = _set_xy(L);
     pico_set_dim_window(dim);
     return 0;
 }
 
 static int l_set_dim_world (lua_State* L) {
-    Pico_Dim dim;
-
-    // w | h
-    if (lua_type(L,1) == LUA_TNUMBER) {
-        dim = (Pico_Dim) {
-            luaL_checknumber(L, 1),
-            luaL_checknumber(L, 2),
-        };
-
-    // dim
-    } else {
-        luaL_checktype(L, 1, LUA_TTABLE);   // dim
-        dim = (Pico_Dim) {
-            L_checkfieldnum(L, 1, "x"),
-            L_checkfieldnum(L, 1, "y"),
-        };
-    }
-
+    Pico_Dim dim = _set_xy(L);
     pico_set_dim_world(dim);
     return 0;
 }
@@ -443,11 +429,7 @@ static int l_set_rotate (lua_State* L) {
 }
 
 static int l_set_scroll (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // pos = { x,y }
-    Pico_Pos pos = {
-        L_checkfieldnum(L, 1, "x"),
-        L_checkfieldnum(L, 1, "y"),
-    };
+    Pico_Pos pos = _set_xy(L);
     pico_set_scroll(pos);
     return 0;
 }
@@ -478,14 +460,7 @@ static int l_set_show (lua_State* L) {
 }
 
 static int l_set_scale (lua_State* L) {
-    Pico_Pct pct;
-    if (lua_type(L,1) == LUA_TTABLE) {      // pct = { x,y }
-        pct.x = L_checkfieldnum(L, 1, "x");
-        pct.y = L_checkfieldnum(L, 1, "y");
-    } else {                                // x | y
-        pct.x = luaL_checknumber(L, 1);
-        pct.y = luaL_checknumber(L, 2);
-    }
+    Pico_Pct pct = _set_xy(L);
     pico_set_scale(pct);
     return 0;
 }
@@ -497,14 +472,7 @@ static int l_set_title (lua_State* L) {
 }
 
 static int l_set_zoom (lua_State* L) {
-    Pico_Pct pct;
-    if (lua_type(L,1) == LUA_TTABLE) {      // pct = { x,y }
-        pct.x = L_checkfieldnum(L, 1, "x");
-        pct.y = L_checkfieldnum(L, 1, "y");
-    } else {                                // x | y
-        pct.x = luaL_checknumber(L, 1);
-        pct.y = luaL_checknumber(L, 2);
-    }
+    Pico_Pct pct = _set_xy(L);
     pico_set_zoom(pct);
     return 0;
 }
