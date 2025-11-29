@@ -420,6 +420,18 @@ Pico_Dim pico_dim (Pico_Pct pct);
 /// @sa pico_dim
 Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d);
 
+/// @brief Returns a coordinate relative to the screen rectangle.
+/// @param pct percentage (may be out of [0,100])
+/// @sa pico_pos_ext
+Pico_Pos pico_pos (Pico_Pct pct);
+
+/// @brief Returns a coordinate relative to the given rectangle's position.
+/// @param pct percentage (may be out of [0,100])
+/// @param r the reference rectangle
+/// @param anc anchor for r
+/// @sa pico_pos
+Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc);
+
 /// @brief Checks if a point is inside a rectangle.
 /// Assumes that both primitives use the same anchor.
 /// @param pt point
@@ -435,17 +447,19 @@ int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r);
 /// @return 1 if pt is inside r, or 0 otherwise
 int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor ar);
 
-/// @brief Returns a coordinate relative to the screen rectangle.
-/// @param pct percentage (may be out of [0,100])
-/// @sa pico_pos_ext
-Pico_Pos pico_pos (Pico_Pct pct);
+/// @brief Returns a rectangle relative to the screen rectangle.
+/// @param pos percentage (may be out of [0,100])
+/// @param dim percentage (may be out of [0,100])
+/// @sa pico_rect_ext
+Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim);
 
-/// @brief Returns a coordinate relative to the given rectangle's position.
-/// @param pct percentage (may be out of [0,100])
+/// @brief Returns a rectangle relative to the given rectangle.
+/// @param pos percentage (may be out of [0,100])
+/// @param dim percentage (may be out of [0,100])
 /// @param r the reference rectangle
 /// @param anc anchor for r
-/// @sa pico_pos
-Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc);
+/// @sa pico_rect
+Pico_Rect pico_rect_ext (Pico_Pct pos, Pico_Pct dim, Pico_Rect r, Pico_Anchor anc);
 
 /// @brief Checks if two rectangles overlap.
 /// Assumes that both rectangles use the same anchor.

@@ -103,14 +103,6 @@ Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
     return (Pico_Dim){ (pct.x*d.x)/100, (pct.y*d.y)/100};
 }
 
-int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
-    return pico_pos_vs_rect_ext(pt, r, S.anchor.pos, S.anchor.pos);
-}
-
-int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor ar) {
-    return pico_rect_vs_rect_ext((Pico_Rect){pt.x, pt.y, 1, 1}, r, ap, ar);
-}
-
 Pico_Pos pico_pos (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
@@ -128,6 +120,34 @@ Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc) {
     };
     S.anchor.pos = old;
     return pt;
+}
+
+int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
+    return pico_pos_vs_rect_ext(pt, r, S.anchor.pos, S.anchor.pos);
+}
+
+int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor ar) {
+    return pico_rect_vs_rect_ext((Pico_Rect){pt.x, pt.y, 1, 1}, r, ap, ar);
+}
+
+Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim) {
+    return pico_rect_ext (
+        pos, dim,
+        (Pico_Rect){ 0, 0, S.dim.world.x, S.dim.world.y},
+        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
+    );
+}
+
+Pico_Rect pico_rect_ext (Pico_Pct pos, Pico_Pct dim, Pico_Rect r, Pico_Anchor anc) {
+    Pico_Anchor old = S.anchor.pos;
+    S.anchor.pos = anc;
+    Pico_Pos xy = {
+        _hanchor(r.x,r.w) + (pos.x*r.w)/100,
+        _vanchor(r.y,r.h) + (pos.y*r.h)/100
+    };
+    S.anchor.pos = old;
+    Pico_Dim wh = pico_dim_ext(dim, (Pico_Dim){r.w,r.h});
+    return (Pico_Rect) { xy.x,xy.y, wh.x,wh.y };
 }
 
 int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2) {
