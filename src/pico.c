@@ -707,13 +707,13 @@ static void _show_grid (void) {
 
     Pico_Dim Z = _zoom();
 
-    if ((S.dim.window.x % Z.x == 0) && (Z.x <= S.dim.window.x)) {
+    if ((S.dim.window.x % Z.x == 0) && (Z.x < S.dim.window.x)) {
         for (int i=0; i<=S.dim.window.x; i+=(S.dim.window.x/Z.x)) {
             SDL_RenderDrawLine(REN, i, 0, i, S.dim.window.y);
         }
     }
 
-    if ((S.dim.window.y % Z.y == 0) && (Z.y <= S.dim.window.y)) {
+    if ((S.dim.window.y % Z.y == 0) && (Z.y < S.dim.window.y)) {
         for (int j=0; j<=S.dim.window.y; j+=(S.dim.window.y/Z.y)) {
             SDL_RenderDrawLine(REN, 0, j, S.dim.window.x, j);
         }
@@ -1057,7 +1057,7 @@ void pico_set_fullscreen (int on) {
     if (on) {
         _old = S.dim.window;
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
-        pico_input_delay(1);    // TODO: required for some reason
+        pico_input_delay(50);    // TODO: required for some reason
         SDL_GetWindowSize(WIN, &new.x, &new.y);
     } else {
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
