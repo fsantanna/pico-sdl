@@ -192,11 +192,11 @@ void pico_init (int on) {
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             S.dim.window.x, S.dim.window.y,
-            (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
+            (SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE)
         );
         pico_assert(WIN != NULL);
 
-        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);
+        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
         //SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
 
         pico_assert(REN != NULL);
