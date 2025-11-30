@@ -23,8 +23,8 @@ static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 
 #define REN (SDL_GetRenderer(WIN))
 
-#define X(v,w) (_hanchor(v,w) - S.scroll.x)
-#define Y(v,h) (_vanchor(v,h) - S.scroll.y)
+#define X(v,w) ((_invp() ? S.viewport.x : 0) + _hanchor(v,w) - S.scroll.x)
+#define Y(v,h) ((_invp() ? S.viewport.y : 0) + _vanchor(v,h) - S.scroll.y)
 
 static pico_hash* _pico_hash;
 
@@ -58,12 +58,13 @@ static struct {
     Pico_Pos scroll;
     PICO_STYLE style;
     Pico_Pct scale;
+    Pico_Rect viewport;
     Pico_Pct zoom;
 } S = {
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     0,
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
-    {0,0,0,0},
+    {0, 0, 0, 0},
     {0, {0,0}},
     { PICO_DIM_WINDOW, PICO_DIM_WORLD },
     0,
@@ -74,8 +75,14 @@ static struct {
     {0, 0},
     PICO_FILL,
     {100, 100},
+    {0, 0, 0, 0},
     {100, 100},
 };
+
+static int _invp () {
+    return (S.viewport.w != PICO_VIEWPORT_RESET.w) &&
+           (S.viewport.h != PICO_VIEWPORT_RESET.h);
+}
 
 static Pico_Dim _zoom () {
     return (Pico_Dim) {
@@ -95,7 +102,10 @@ static int _vanchor (int y, int h) {
 // UTILS
 
 Pico_Dim pico_dim (Pico_Pct pct) {
-    return pico_dim_ext(pct, S.dim.world);
+    Pico_Dim dim = (
+        _invp() ? (Pico_Dim){S.viewport.w,S.viewport.h} : S.dim.world
+    );
+    return pico_dim_ext(pct, dim);
 }
 
 Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
@@ -104,9 +114,12 @@ Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
 }
 
 Pico_Pos pico_pos (Pico_Pct pct) {
+    Pico_Dim dim = (
+        _invp() ? (Pico_Dim){S.viewport.w,S.viewport.h} : S.dim.world
+    );
     return pico_pos_ext (
         pct,
-        (Pico_Rect){ 0, 0, S.dim.world.x, S.dim.world.y},
+        (Pico_Rect){ 0, 0, dim.x, dim.y },
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -131,9 +144,12 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor 
 }
 
 Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim) {
+    Pico_Dim out = (
+        _invp() ? (Pico_Dim){S.viewport.w,S.viewport.h} : S.dim.world
+    );
     return pico_rect_ext (
         pos, dim,
-        (Pico_Rect){ 0, 0, S.dim.world.x, S.dim.world.y},
+        (Pico_Rect){ 0, 0, out.x, out.y},
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -180,8 +196,9 @@ void pico_init (int on) {
         );
         pico_assert(WIN != NULL);
 
-        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED);
+        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);
         //SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
+
         pico_assert(REN != NULL);
         SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
 
@@ -532,6 +549,11 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
 
 // TODO: Test me for flip and rotate
 void pico_output_draw_rect (Pico_Rect rect) {
+        SDL_Rect r;
+        SDL_RenderGetViewport(REN, &r);
+        printf(">0> %d %d %d %d\n", S.viewport.x, S.viewport.y, S.viewport.w, S.viewport.h);
+        printf(">1> %d %d %d %d\n", r.x, r.y, r.w, r.h);
+        printf(">2> %d %d %d %d\n", rect.x, rect.y, rect.w, rect.h);
     Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = SDL_CreateTexture (REN,
         SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
@@ -1140,6 +1162,24 @@ void pico_set_style (PICO_STYLE style) {
 
 void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
+}
+
+void pico_set_viewport (Pico_Rect r) {
+    if (r.x==0 && r.y==0 && r.w==0 && r.h==0) {
+        pico_assert(0 == SDL_RenderSetViewport(REN, NULL));
+    } else {
+        // SCALE
+        r.w = (S.scale.x*r.w)/100; // * GRAPHICS_SET_SCALE_W;
+        r.h = (S.scale.y*r.h)/100; // * GRAPHICS_SET_SCALE_H;
+
+        // ANCHOR / PAN
+        r.x = X(r.x, r.w);
+        r.y = Y(r.y, r.h);
+
+printf(">>> %d %d %d %d\n", r.x, r.y, r.w, r.h);
+        pico_assert(0 == SDL_RenderSetViewport(REN, &r));
+    }
+    S.viewport = r;
 }
 
 void pico_set_zoom (Pico_Pct pct) {

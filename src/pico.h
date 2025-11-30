@@ -53,6 +53,7 @@ typedef enum PICO_MOUSE_BUTTON {
 } PICO_MOUSE_BUTTON;
 
 #define PICO_DIM_KEEP ((Pico_Dim) {0,0})
+#define PICO_VIEWPORT_RESET ((Pico_Rect) {0,0,0,0})
 
 /// @}
 
