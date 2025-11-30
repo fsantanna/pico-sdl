@@ -549,11 +549,6 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
 
 // TODO: Test me for flip and rotate
 void pico_output_draw_rect (Pico_Rect rect) {
-        SDL_Rect r;
-        SDL_RenderGetViewport(REN, &r);
-        printf(">0> %d %d %d %d\n", S.viewport.x, S.viewport.y, S.viewport.w, S.viewport.h);
-        printf(">1> %d %d %d %d\n", r.x, r.y, r.w, r.h);
-        printf(">2> %d %d %d %d\n", rect.x, rect.y, rect.w, rect.h);
     Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = SDL_CreateTexture (REN,
         SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
@@ -1176,7 +1171,6 @@ void pico_set_viewport (Pico_Rect r) {
         r.x = X(r.x, r.w);
         r.y = Y(r.y, r.h);
 
-printf(">>> %d %d %d %d\n", r.x, r.y, r.w, r.h);
         pico_assert(0 == SDL_RenderSetViewport(REN, &r));
     }
     S.viewport = r;
