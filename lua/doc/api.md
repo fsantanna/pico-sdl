@@ -23,6 +23,9 @@
 - [pico.pos](#TODO): Position relative to the screen size (or given rectangle with anchor).
     - `pico.pos (pct: Pct [,out: Rect [, anc: Anchor]]) -> Pos`
     - `pico.pos (x: integer, y: integer) -> Pos`
+- [pico.rect](#TODO): Rectangle relative to the screen size (or given rectangle with anchor).
+    - `pico.rect (pos: Pct, dim: Dim [,out: Rect [, anc: Anchor]]) -> Rect`
+    - `pico.rect (x: integer, y: integer, w: integer, h: integer) -> Rect`
 - **pico.get**
     - **pico.get.anchor**
         - [pico.get.anchor.draw](#TODO): Draw anchor.
@@ -48,6 +51,20 @@
     - [pico.get.ticks](#TODO): Number of milliseconds initialization.
         - `pico.get.ticks () -> integer`
 - **pico.set**
+    - **pico.set.anchor**
+        - [pico.set.anchor.draw](#TODO): Draw anchor.
+            - `pico.set.anchor.draw (anc: Anchor)`
+            - `pico.set.anchor.draw (x, y)`
+        - [pico.set.anchor.rotate](#TODO): Rotate anchor.
+            - `pico.set.anchor.rotate (anc: Anchor)`
+            - `pico.set.anchor.rotate (x, y)`
+    - **pico.set.color**
+        - [pico.set.color.clear](#TODO): Window clear color.
+            - `pico.set.color.clear (clr: Color)`
+            - `pico.set.color.clear (r, g, b [,a])`
+        - [pico.set.color.draw](#TODO): Draw color.
+            - `pico.set.color.draw (clr: Color)`
+            - `pico.set.color.draw (r, g, b [,a])`
     - [pico.set.crop](#TODO): Crop area.
         - `pico.set.crop ([r: Rect])`
     - [pico.set.cursor](#TODO): Text cursor position.
@@ -77,23 +94,11 @@
         - `pico.set.style (['fill'|'stroke'])`
     - [pico.set.title](#TODO): Window title.
         - `pico.set.title (title: string)`
+    - [pico.set.viewport](#TODO): Viewport area.
+        - `pico.set.viewport ([r: Rect])`
     - [pico.set.zoom](#TODO): Window zoom.
         - `pico.set.zoom (pct: Pct)`
         - `pico.set.zoom (x: integer, y: integer)`
-    - **pico.set.color**
-        - [pico.set.color.clear](#TODO): Window clear color.
-            - `pico.set.color.clear (clr: Color)`
-            - `pico.set.color.clear (r, g, b [,a])`
-        - [pico.set.color.draw](#TODO): Draw color.
-            - `pico.set.color.draw (clr: Color)`
-            - `pico.set.color.draw (r, g, b [,a])`
-    - **pico.set.anchor**
-        - [pico.set.anchor.draw](#TODO): Draw anchor.
-            - `pico.set.anchor.draw (anc: Anchor)`
-            - `pico.set.anchor.draw (x, y)`
-        - [pico.set.anchor.rotate](#TODO): Rotate anchor.
-            - `pico.set.anchor.rotate (anc: Anchor)`
-            - `pico.set.anchor.rotate (x, y)`
 - **pico.input**
     - [pico.input.delay](#TODO): Freezes execution for milliseconds.
         - `pico.input.delay (ms: integer)`

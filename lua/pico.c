@@ -196,6 +196,58 @@ static int l_pos (lua_State* L) {
     return 1;                               // . | [pos]
 }
 
+static int l_rect (lua_State* L) {
+    int ext = 0;    // extra outer dim arg
+    Pico_Pct pos;
+    Pico_Pct dim;
+    if (lua_type(L,1) == LUA_TTABLE) {      // pos | dim
+        luaL_checktype(L, 2, LUA_TTABLE);
+        pos.x = L_checkfieldnum(L, 1, "x");
+        pos.y = L_checkfieldnum(L, 1, "y");
+        dim.x = L_checkfieldnum(L, 2, "x");
+        dim.y = L_checkfieldnum(L, 2, "y");
+        ext = (lua_gettop(L) > 2);
+    } else {                                // x | y | w | h
+        pos.x = luaL_checknumber(L, 1);
+        pos.y = luaL_checknumber(L, 2);
+        dim.x = luaL_checknumber(L, 3);
+        dim.y = luaL_checknumber(L, 4);
+    }
+
+    Pico_Rect r;
+    if (ext) {                              // . | {x,y,w,h}
+        luaL_checktype(L, 3, LUA_TTABLE);
+        Pico_Rect out = {
+            L_checkfieldnum(L, 3, "x"),
+            L_checkfieldnum(L, 3, "y"),
+            L_checkfieldnum(L, 3, "w"),
+            L_checkfieldnum(L, 3, "h"),
+        };
+        Pico_Anchor anc;
+        if (lua_gettop(L) >= 5) {
+            luaL_checktype(L, 5, LUA_TTABLE);
+            anc = _anchor(L, 5);
+        } else {
+            anc = pico_get_anchor_pos();
+        }
+        r = pico_rect_ext(pos, dim, out, anc);
+    } else {
+        r = pico_rect(pos, dim);
+    }
+
+    lua_newtable(L);                // . | r
+    lua_pushinteger(L, r.x);        // . | r | x
+    lua_setfield(L, -2, "x");       // . | r
+    lua_pushinteger(L, r.y);        // . | r | y
+    lua_setfield(L, -2, "y");       // . | r
+    lua_pushinteger(L, r.w);        // . | r | w
+    lua_setfield(L, -2, "w");       // . | r
+    lua_pushinteger(L, r.h);        // . | r | h
+    lua_setfield(L, -2, "h");       // . | r
+
+    return 1;                       // . | [r]
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_vs_pos_rect (lua_State* L) {
@@ -483,6 +535,22 @@ static int l_set_scale (lua_State* L) {
 static int l_set_title (lua_State* L) {
     const char* title = luaL_checkstring(L, 1);   // title
     pico_set_title(title);
+    return 0;
+}
+
+static int l_set_viewport (lua_State* L) {
+    if (lua_gettop(L) == 0) {
+        pico_set_viewport(PICO_VIEWPORT_RESET);
+    } else {
+        luaL_checktype(L, 1, LUA_TTABLE);   // rect
+        Pico_Rect r = (Pico_Rect) {
+            L_checkfieldnum(L, 1, "x"),
+            L_checkfieldnum(L, 1, "y"),
+            L_checkfieldnum(L, 1, "w"),
+            L_checkfieldnum(L, 1, "h"),
+        };
+        pico_set_viewport(r);
+    }
     return 0;
 }
 
@@ -841,6 +909,7 @@ static const luaL_Reg ll_all[] = {
     { "dim",  l_dim  },
     { "init", l_init },
     { "pos",  l_pos  },
+    { "rect", l_rect },
     { NULL, NULL }
 };
 
@@ -890,6 +959,7 @@ static const luaL_Reg ll_set[] = {
     { "scale",      l_set_scale      },
     { "style",      l_set_style      },
     { "title",      l_set_title      },
+    { "viewport",   l_set_viewport   },
     { "zoom",       l_set_zoom       },
     { NULL, NULL }
 };
