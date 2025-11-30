@@ -33,10 +33,12 @@ static struct {
         Pico_Anchor pos;
         Pico_Anchor rotate;
     } anchor;
+    int angle;
     struct {
         Pico_Color clear;
         Pico_Color draw;
     } color;
+    Pico_Rect crop;
     struct {
         int x;
         Pico_Pos cur;
@@ -46,33 +48,31 @@ static struct {
         Pico_Dim world;
     } dim;
     int expert;
+    Pico_Flip flip;
     struct {
         TTF_Font* ttf;
         int h;
     } font;
     int fullscreen;
     int grid;
-    Pico_Rect crop;
     Pico_Pos scroll;
     PICO_STYLE style;
-    Pico_Flip flip;
-    int angle;
     Pico_Pct scale;
     Pico_Pct zoom;
 } S = {
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
+    0,
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
+    {0,0,0,0},
     {0, {0,0}},
     { PICO_DIM_WINDOW, PICO_DIM_WORLD },
     0,
+    {0, 0},
     {NULL, 0},
     0,
     1,
-    {0,0,0,0},
     {0, 0},
     PICO_FILL,
-    {0, 0},
-    0,
     {100, 100},
     {100, 100},
 };
