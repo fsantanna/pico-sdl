@@ -430,6 +430,18 @@ puts("novp");
     _pico_output_present(0);
 }
 
+static void _draw_clear (void) {
+    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
+    SDL_RenderClear(REN);
+    SDL_RenderFillRect(REN, NULL);
+    SDL_SetRenderDrawColor (REN,
+        S.color.draw.r,
+        S.color.draw.g,
+        S.color.draw.b,
+        S.color.draw.a
+    );
+}
+
 static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim);
 
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim) {
@@ -524,8 +536,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
 
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
-    SDL_RenderFillRect(REN, NULL);
+    _draw_clear();
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
     Pico_Anchor anc = S.anchor.pos;
@@ -560,8 +571,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
 
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
-    SDL_RenderFillRect(REN, NULL);
+    _draw_clear();
     rect.x = 0;
     rect.y = 0;
     switch (S.style) {
@@ -587,8 +597,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
 
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
-    SDL_RenderFillRect(REN, NULL);
+    _draw_clear();
     switch (S.style) {
         case PICO_FILL:
             filledTrigonRGBA (REN,
@@ -622,8 +631,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
 
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
-    SDL_RenderFillRect(REN, NULL);
+    _draw_clear();
     switch (S.style) {
         case PICO_FILL:
             filledEllipseRGBA (REN,
@@ -670,8 +678,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
 
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
-    SDL_RenderFillRect(REN, NULL);
+    _draw_clear();
     switch (S.style) {
         case PICO_FILL:
             filledPolygonRGBA(REN,
