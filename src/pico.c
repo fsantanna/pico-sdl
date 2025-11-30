@@ -415,10 +415,9 @@ void pico_output_clear (void) {
     if (_invp()) {
         SDL_Rect r;
         SDL_RenderGetViewport(REN, &r);
-printf("invp %d %d %d %d\n", r.x, r.y, r.w, r.h);
+        r.x = r.y = 0;
         SDL_RenderFillRect(REN, &r);
     } else {
-puts("novp");
         SDL_RenderClear(REN);
     }
     SDL_SetRenderDrawColor (REN,
@@ -769,6 +768,8 @@ static void _show_grid (void) {
 static void _pico_output_present (int force) {
     if (S.expert && !force) return;
 
+    SDL_Rect vp;
+    SDL_RenderGetViewport(REN, &vp);
     SDL_SetRenderTarget(REN, NULL);
     SDL_RenderSetLogicalSize(REN, S.dim.window.x, S.dim.window.y);
 
@@ -787,6 +788,7 @@ static void _pico_output_present (int force) {
     Pico_Dim Z = _zoom();
     SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
     SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderSetViewport(REN, &vp);
 }
 
 void pico_output_present (void) {
