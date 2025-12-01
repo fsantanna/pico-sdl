@@ -1175,4 +1175,9 @@ void pico_set_zoom (Pico_Pct pct) {
     pico_assert(TEX != NULL);
     SDL_RenderSetLogicalSize(REN, new.x, new.y);
     SDL_SetRenderTarget(REN, TEX);
+
+    // TODO: need to init w/ explicit SetClip to save w/h
+    //       do not pass NULL, GetClip would also return w=0,h=0
+    SDL_Rect clip = { 0, 0, new.x, new.y };
+    SDL_RenderSetClipRect(REN, &clip);
 }
