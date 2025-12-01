@@ -429,7 +429,13 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-static void _draw_clear (void) {
+static SDL_Texture* _draw_aux (int w, int h) {
+    SDL_Texture* aux = SDL_CreateTexture (
+        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+        w, h
+    );
+    SDL_SetRenderTarget(REN, aux);
+    SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
     SDL_RenderClear(REN);
     SDL_RenderFillRect(REN, NULL);
@@ -439,6 +445,7 @@ static void _draw_clear (void) {
         S.color.draw.b,
         S.color.draw.a
     );
+    return aux;
 }
 
 static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim);
@@ -528,14 +535,10 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
         _hanchor(SDL_min(p1.x,p2.x),1),
         _vanchor(SDL_min(p1.y,p2.y),1)
     };
-    SDL_Texture* aux = SDL_CreateTexture (REN,
-        SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        SDL_abs(p1.x-p2.x) + 1, SDL_abs(p1.y-p2.y) + 1
+    SDL_Texture* aux = _draw_aux (
+        SDL_abs(p1.x-p2.x) + 1,
+        SDL_abs(p1.y-p2.y) + 1
     );
-
-    SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, aux);
-    _draw_clear();
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
     Pico_Anchor anc = S.anchor.pos;
@@ -563,14 +566,7 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_rect (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
-    SDL_Texture* aux = SDL_CreateTexture (REN,
-        SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        rect.w, rect.h
-    );
-
-    SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, aux);
-    _draw_clear();
+    SDL_Texture* aux = _draw_aux(rect.w, rect.h);
     rect.x = 0;
     rect.y = 0;
     switch (S.style) {
@@ -589,14 +585,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_tri (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
-    SDL_Texture* aux = SDL_CreateTexture (REN,
-        SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        rect.w, rect.h
-    );
-
-    SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, aux);
-    _draw_clear();
+    SDL_Texture* aux = _draw_aux(rect.w, rect.h);
     switch (S.style) {
         case PICO_FILL:
             filledTrigonRGBA (REN,
@@ -623,14 +612,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_oval (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
-    SDL_Texture* aux = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        rect.w, rect.h
-    );
-
-    SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, aux);
-    _draw_clear();
+    SDL_Texture* aux = _draw_aux(rect.w, rect.h);
     switch (S.style) {
         case PICO_FILL:
             filledEllipseRGBA (REN,
@@ -670,14 +652,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
         _hanchor(minx,1),
         _vanchor(miny,1)
     };
-    SDL_Texture* aux = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        maxx - minx + 1, maxy - miny + 1
-    );
-
-    SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, aux);
-    _draw_clear();
+    SDL_Texture* aux = _draw_aux(maxx-minx+1, maxy-miny+1);
     switch (S.style) {
         case PICO_FILL:
             filledPolygonRGBA(REN,
