@@ -456,7 +456,6 @@ void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim 
         32, 4*dim.x, SDL_PIXELFORMAT_RGBA32
     );
     SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
-
     _pico_output_draw_tex(pos, aux, dim);
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(aux);
@@ -525,7 +524,6 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim) {
         pico_hash_add(_pico_hash, path, tex);
     }
     pico_assert(tex != NULL);
-
     _pico_output_draw_tex(pos, tex, dim);
 }
 
@@ -687,7 +685,6 @@ void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim dim) {
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
-
     _pico_output_draw_tex(pos, tex, dim);
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(sfc);
