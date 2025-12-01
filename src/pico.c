@@ -1025,6 +1025,16 @@ void pico_set_anchor_rotate (Pico_Anchor anchor) {
     S.anchor.rotate = anchor;
 }
 
+void pico_set_clip (Pico_Rect clip) {
+    if (clip.w==0 || clip.h==0) {
+        SDL_RenderSetClipRect(REN, NULL);
+    } else {
+        clip.x = X(clip.x, clip.w);
+        clip.y = Y(clip.y, clip.h);
+        SDL_RenderSetClipRect(REN, &clip);
+    }
+}
+
 void pico_set_color_clear (Pico_Color color) {
     S.color.clear = color;
 }

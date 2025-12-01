@@ -327,6 +327,10 @@ void pico_set_anchor_pos (Pico_Anchor anchor);
 /// @param anchor anchor for the x and y axis
 void pico_set_anchor_rotate (Pico_Anchor anchor);
 
+/// @brief Changes the clipping area of drawing operations.
+/// @param clip clipping region, which may have 0 area to disable cropping
+void pico_set_clip (Pico_Rect clip);
+
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
 void pico_set_color_clear (Pico_Color color);
