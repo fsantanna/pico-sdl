@@ -522,12 +522,15 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
         _hanchor(SDL_min(p1.x,p2.x),1),
         _vanchor(SDL_min(p1.y,p2.y),1)
     };
+    SDL_Rect clip;
+    SDL_RenderGetClipRect(REN, &clip);
     SDL_Texture* aux = _draw_aux (
         SDL_abs(p1.x-p2.x) + 1,
         SDL_abs(p1.y-p2.y) + 1
     );
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -575,6 +578,8 @@ void pico_output_draw_rect (Pico_Rect rect) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_tri (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
+    SDL_Rect clip;
+    SDL_RenderGetClipRect(REN, &clip);
     SDL_Texture* aux = _draw_aux(rect.w, rect.h);
     switch (S.style) {
         case PICO_FILL:
@@ -595,6 +600,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -602,6 +608,8 @@ void pico_output_draw_tri (Pico_Rect rect) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_oval (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
+    SDL_Rect clip;
+    SDL_RenderGetClipRect(REN, &clip);
     SDL_Texture* aux = _draw_aux(rect.w, rect.h);
     switch (S.style) {
         case PICO_FILL:
@@ -618,6 +626,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -642,6 +651,8 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
         _hanchor(minx,1),
         _vanchor(miny,1)
     };
+    SDL_Rect clip;
+    SDL_RenderGetClipRect(REN, &clip);
     SDL_Texture* aux = _draw_aux(maxx-minx+1, maxy-miny+1);
     switch (S.style) {
         case PICO_FILL:
@@ -658,6 +669,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
             break;
     }
     SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
