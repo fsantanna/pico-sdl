@@ -53,7 +53,7 @@ typedef enum PICO_MOUSE_BUTTON {
 } PICO_MOUSE_BUTTON;
 
 #define PICO_DIM_KEEP ((Pico_Dim) {0,0})
-#define PICO_VIEWPORT_RESET ((Pico_Rect) {0,0,0,0})
+#define PICO_CLIP_RESET ((Pico_Rect) {0,0,0,0})
 
 /// @}
 
@@ -237,6 +237,9 @@ Pico_Color pico_get_color_clear (void);
 /// @brief Gets the color set to draw.
 Pico_Color pico_get_color_draw (void);
 
+/// @brief Gets the current clipping region.
+Pico_Rect pico_get_clip (void);
+
 /// @brief Gets the cropping applied to objects when drawing them.
 Pico_Rect pico_get_crop (void);
 
@@ -309,9 +312,6 @@ Uint32 pico_get_ticks (void);
 /// @brief Gets the aplication title.
 const char* pico_get_title (void);
 
-/// @brief Gets the current viewport.
-Pico_Rect pico_get_viewport (void);
-
 /// @brief Gets the zoom factor.
 Pico_Pct pico_get_zoom (void);
 
@@ -328,7 +328,7 @@ void pico_set_anchor_pos (Pico_Anchor anchor);
 void pico_set_anchor_rotate (Pico_Anchor anchor);
 
 /// @brief Changes the clipping area of drawing operations.
-/// @param clip clipping region, which may have 0 area to disable cropping
+/// @param clip clipping region (passing PICO_CLIP_RESET disables it).
 void pico_set_clip (Pico_Rect clip);
 
 /// @brief Changes the color used to clear the screen.
@@ -399,10 +399,6 @@ void pico_set_style (PICO_STYLE style);
 /// @brief Sets the aplication title.
 /// @param title new title
 void pico_set_title (const char* title);
-
-/// @brief Sets the viewport for further drawing operations.
-/// @param rect viewport rectangle relative to position anchor
-void pico_set_viewport (Pico_Rect rect);
 
 /// @param pct new factor
 void pico_set_zoom (Pico_Pct pct);

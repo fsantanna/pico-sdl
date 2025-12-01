@@ -34,6 +34,7 @@ static struct {
         Pico_Anchor rotate;
     } anchor;
     int angle;
+    Pico_Rect clip;
     struct {
         Pico_Color clear;
         Pico_Color draw;
@@ -58,11 +59,11 @@ static struct {
     Pico_Pos scroll;
     PICO_STYLE style;
     Pico_Pct scale;
-    Pico_Rect viewport;
     Pico_Pct zoom;
 } S = {
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     0,
+    {0, 0, 0, 0},
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
     {0, 0, 0, 0},
     {0, {0,0}},
@@ -75,20 +76,12 @@ static struct {
     {0, 0},
     PICO_FILL,
     {100, 100},
-    {0, 0, 0, 0},
     {100, 100},
 };
 
-static int _invp () {
-    return (S.viewport.w != PICO_VIEWPORT_RESET.w) &&
-           (S.viewport.h != PICO_VIEWPORT_RESET.h);
-}
-
-static void _render_tex (void) {
-    SDL_SetRenderTarget(REN, TEX);
-    if (_invp()) {
-        SDL_RenderSetViewport(REN, &S.viewport);
-    }
+static int _noclip () {
+    return (S.clip.w == PICO_CLIP_RESET.w) ||
+           (S.clip.h == PICO_CLIP_RESET.h);
 }
 
 static Pico_Dim _zoom () {
@@ -109,10 +102,7 @@ static int _vanchor (int y, int h) {
 // UTILS
 
 Pico_Dim pico_dim (Pico_Pct pct) {
-    Pico_Dim dim = (
-        _invp() ? (Pico_Dim){S.viewport.w,S.viewport.h} : S.dim.world
-    );
-    return pico_dim_ext(pct, dim);
+    return pico_dim_ext(pct, S.dim.world);
 }
 
 Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
@@ -121,12 +111,9 @@ Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
 }
 
 Pico_Pos pico_pos (Pico_Pct pct) {
-    Pico_Dim dim = (
-        _invp() ? (Pico_Dim){S.viewport.w,S.viewport.h} : S.dim.world
-    );
     return pico_pos_ext (
         pct,
-        (Pico_Rect){ 0, 0, dim.x, dim.y },
+        (Pico_Rect){ 0, 0, S.dim.world.x, S.dim.world.y },
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -151,12 +138,9 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor 
 }
 
 Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim) {
-    Pico_Dim out = (
-        _invp() ? (Pico_Dim){S.viewport.w,S.viewport.h} : S.dim.world
-    );
     return pico_rect_ext (
         pos, dim,
-        (Pico_Rect){ 0, 0, out.x, out.y},
+        (Pico_Rect){ 0, 0, S.dim.world.x, S.dim.world.y},
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -199,7 +183,7 @@ void pico_init (int on) {
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             S.dim.window.x, S.dim.window.y,
-            (SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE)
+            (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
         );
         pico_assert(WIN != NULL);
 
@@ -418,14 +402,12 @@ void pico_output_clear (void) {
         S.color.clear.b,
         S.color.clear.a
     );
-    // TODO: SDL2 clear ignores the current viewport
-    if (_invp()) {
+    if (_noclip()) {
+        SDL_RenderClear(REN);
+    } else {
         SDL_Rect r;
         SDL_RenderGetViewport(REN, &r);
-        r.x = r.y = 0;
         SDL_RenderFillRect(REN, &r);
-    } else {
-        SDL_RenderClear(REN);
     }
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,
@@ -545,7 +527,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
         SDL_abs(p1.y-p2.y) + 1
     );
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
-    _render_tex();
+    SDL_SetRenderTarget(REN, TEX);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -571,6 +553,8 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_rect (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
+    SDL_Rect clip;
+    SDL_RenderGetClipRect(REN, &clip);
     SDL_Texture* aux = _draw_aux(rect.w, rect.h);
     rect.x = 0;
     rect.y = 0;
@@ -582,7 +566,8 @@ void pico_output_draw_rect (Pico_Rect rect) {
             SDL_RenderDrawRect(REN, &rect);
             break;
     }
-    _render_tex();
+    SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -609,7 +594,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
             );
             break;
     }
-    _render_tex();
+    SDL_SetRenderTarget(REN, TEX);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -632,7 +617,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
             );
             break;
     }
-    _render_tex();
+    SDL_SetRenderTarget(REN, TEX);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -672,7 +657,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
             );
             break;
     }
-    _render_tex();
+    SDL_SetRenderTarget(REN, TEX);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -747,6 +732,8 @@ static void _show_grid (void) {
 static void _pico_output_present (int force) {
     if (S.expert && !force) return;
 
+    SDL_Rect clip;
+    SDL_RenderGetClipRect(REN, &clip);
     SDL_SetRenderTarget(REN, NULL);
     SDL_RenderSetLogicalSize(REN, S.dim.window.x, S.dim.window.y);
 
@@ -764,7 +751,8 @@ static void _pico_output_present (int force) {
 
     Pico_Dim Z = _zoom();
     SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
-    _render_tex();
+    SDL_SetRenderTarget(REN, TEX);
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_output_present (void) {
@@ -880,6 +868,10 @@ Pico_Anchor pico_get_anchor_pos (void) {
 
 Pico_Anchor pico_get_anchor_rotate (void) {
     return S.anchor.rotate;
+}
+
+Pico_Rect pico_get_clip (void) {
+    return S.clip;
 }
 
 Pico_Color pico_get_color_clear (void) {
@@ -1007,10 +999,6 @@ const char* pico_get_title (void) {
     return SDL_GetWindowTitle(WIN);
 }
 
-Pico_Rect pico_get_viewport (void) {
-    return S.viewport;
-}
-
 Pico_Pct pico_get_zoom (void) {
     return S.zoom;
 }
@@ -1026,7 +1014,8 @@ void pico_set_anchor_rotate (Pico_Anchor anchor) {
 }
 
 void pico_set_clip (Pico_Rect clip) {
-    if (clip.w==0 || clip.h==0) {
+    S.clip = clip;
+    if (_noclip()) {
         SDL_RenderSetClipRect(REN, NULL);
     } else {
         clip.x = X(clip.x, clip.w);
@@ -1153,24 +1142,6 @@ void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
 }
 
-void pico_set_viewport (Pico_Rect r) {
-    S.viewport = PICO_VIEWPORT_RESET;
-    if (r.x==0 && r.y==0 && r.w==0 && r.h==0) {
-        pico_assert(0 == SDL_RenderSetViewport(REN, NULL));
-    } else {
-        // SCALE
-        r.w = (S.scale.x*r.w)/100; // * GRAPHICS_SET_SCALE_W;
-        r.h = (S.scale.y*r.h)/100; // * GRAPHICS_SET_SCALE_H;
-
-        // ANCHOR / PAN
-        r.x = X(r.x, r.w);
-        r.y = Y(r.y, r.h);
-
-        pico_assert(0 == SDL_RenderSetViewport(REN, &r));
-    }
-    S.viewport = r;
-}
-
 void pico_set_zoom (Pico_Pct pct) {
     Pico_Dim old = _zoom();
     S.zoom = pct;
@@ -1191,6 +1162,5 @@ void pico_set_zoom (Pico_Pct pct) {
     );
     pico_assert(TEX != NULL);
     SDL_RenderSetLogicalSize(REN, new.x, new.y);
-    //SDL_SetRenderTarget(REN, TEX);
-    _render_tex();
+    SDL_SetRenderTarget(REN, TEX);
 }
