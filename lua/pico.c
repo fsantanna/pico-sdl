@@ -375,6 +375,24 @@ static int l_get_ticks (lua_State* L) {
     return 1;                       // [ms]
 }
 
+static int l_get_viewport (lua_State* L) {
+    Pico_Rect r = pico_get_viewport();
+    if (r.w==0 && r.h==0) {
+        return 0;
+    } else {
+        lua_newtable(L);            // r
+        lua_pushinteger(L, r.x);    // r | x
+        lua_setfield(L, -2, "x");   // r
+        lua_pushinteger(L, r.y);    // r | y
+        lua_setfield(L, -2, "y");   // r
+        lua_pushinteger(L, r.w);    // r | w
+        lua_setfield(L, -2, "w");   // r
+        lua_pushinteger(L, r.h);    // r | h
+        lua_setfield(L, -2, "h");   // r
+        return 1;                   // [r]
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Pos _set_xy (lua_State* L) {
@@ -928,6 +946,7 @@ static const luaL_Reg ll_get[] = {
     { "fullscreen", l_get_fullscreen },
     { "rotate",     l_get_rotate     },
     { "ticks",      l_get_ticks      },
+    { "viewport",   l_get_viewport   },
     { NULL, NULL }
 };
 

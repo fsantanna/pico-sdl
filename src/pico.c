@@ -1031,6 +1031,10 @@ const char* pico_get_title (void) {
     return SDL_GetWindowTitle(WIN);
 }
 
+Pico_Rect pico_get_viewport (void) {
+    return S.viewport;
+}
+
 Pico_Pct pico_get_zoom (void) {
     return S.zoom;
 }

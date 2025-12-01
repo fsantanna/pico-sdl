@@ -50,6 +50,8 @@
         - `pico.get.rotate () -> integer`
     - [pico.get.ticks](#TODO): Number of milliseconds initialization.
         - `pico.get.ticks () -> integer`
+    - [pico.get.viewport](#TODO): Current viewport.
+        - `pico.get.viewport () -> [Rect]`
 - **pico.set**
     - **pico.set.anchor**
         - [pico.set.anchor.draw](#TODO): Draw anchor.

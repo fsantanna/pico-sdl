@@ -309,6 +309,9 @@ Uint32 pico_get_ticks (void);
 /// @brief Gets the aplication title.
 const char* pico_get_title (void);
 
+/// @brief Gets the current viewport.
+Pico_Rect pico_get_viewport (void);
+
 /// @brief Gets the zoom factor.
 Pico_Pct pico_get_zoom (void);
 
