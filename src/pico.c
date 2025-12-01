@@ -23,8 +23,8 @@ static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 
 #define REN (SDL_GetRenderer(WIN))
 
-#define X(v,w) ((_invp() ? S.viewport.x : 0) + _hanchor(v,w) - S.scroll.x)
-#define Y(v,h) ((_invp() ? S.viewport.y : 0) + _vanchor(v,h) - S.scroll.y)
+#define X(v,w) (_hanchor(v,w) - S.scroll.x)
+#define Y(v,h) (_vanchor(v,h) - S.scroll.y)
 
 static pico_hash* _pico_hash;
 
@@ -1164,6 +1164,7 @@ void pico_set_title (const char* title) {
 }
 
 void pico_set_viewport (Pico_Rect r) {
+    S.viewport = PICO_VIEWPORT_RESET;
     if (r.x==0 && r.y==0 && r.w==0 && r.h==0) {
         pico_assert(0 == SDL_RenderSetViewport(REN, NULL));
     } else {
