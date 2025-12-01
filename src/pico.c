@@ -84,6 +84,13 @@ static int _invp () {
            (S.viewport.h != PICO_VIEWPORT_RESET.h);
 }
 
+static void _render_tex (void) {
+    SDL_SetRenderTarget(REN, TEX);
+    if (_invp()) {
+        SDL_RenderSetViewport(REN, &S.viewport);
+    }
+}
+
 static Pico_Dim _zoom () {
     return (Pico_Dim) {
         S.dim.world.x * S.zoom.x / 100,
@@ -538,7 +545,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
         SDL_abs(p1.y-p2.y) + 1
     );
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
-    SDL_SetRenderTarget(REN, TEX);
+    _render_tex();
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -575,7 +582,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
             SDL_RenderDrawRect(REN, &rect);
             break;
     }
-    SDL_SetRenderTarget(REN, TEX);
+    _render_tex();
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -602,7 +609,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
             );
             break;
     }
-    SDL_SetRenderTarget(REN, TEX);
+    _render_tex();
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -625,7 +632,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
             );
             break;
     }
-    SDL_SetRenderTarget(REN, TEX);
+    _render_tex();
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -665,7 +672,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
             );
             break;
     }
-    SDL_SetRenderTarget(REN, TEX);
+    _render_tex();
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -740,8 +747,6 @@ static void _show_grid (void) {
 static void _pico_output_present (int force) {
     if (S.expert && !force) return;
 
-    SDL_Rect vp;
-    SDL_RenderGetViewport(REN, &vp);
     SDL_SetRenderTarget(REN, NULL);
     SDL_RenderSetLogicalSize(REN, S.dim.window.x, S.dim.window.y);
 
@@ -759,8 +764,7 @@ static void _pico_output_present (int force) {
 
     Pico_Dim Z = _zoom();
     SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
-    SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderSetViewport(REN, &vp);
+    _render_tex();
 }
 
 void pico_output_present (void) {
@@ -1177,5 +1181,6 @@ void pico_set_zoom (Pico_Pct pct) {
     );
     pico_assert(TEX != NULL);
     SDL_RenderSetLogicalSize(REN, new.x, new.y);
-    SDL_SetRenderTarget(REN, TEX);
+    //SDL_SetRenderTarget(REN, TEX);
+    _render_tex();
 }
