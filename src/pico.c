@@ -406,7 +406,7 @@ void pico_output_clear (void) {
         SDL_RenderClear(REN);
     } else {
         SDL_Rect r;
-        SDL_RenderGetViewport(REN, &r);
+        SDL_RenderGetClipRect(REN, &r);
         SDL_RenderFillRect(REN, &r);
     }
     SDL_SetRenderDrawColor (REN,
@@ -1028,12 +1028,14 @@ void pico_set_anchor_rotate (Pico_Anchor anchor) {
 void pico_set_clip (Pico_Rect clip) {
     S.clip = clip;
     if (_noclip()) {
-        SDL_RenderSetClipRect(REN, NULL);
+        Pico_Dim dim = _zoom();
+        clip.w = dim.x;
+        clip.h = dim.y;
     } else {
         clip.x = X(clip.x, clip.w);
         clip.y = Y(clip.y, clip.h);
-        SDL_RenderSetClipRect(REN, &clip);
     }
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_color_clear (Pico_Color color) {
