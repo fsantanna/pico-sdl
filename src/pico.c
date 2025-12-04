@@ -1069,6 +1069,10 @@ void pico_set_dim_window (Pico_Dim dim) {
     assert(!S.fullscreen);
     S.dim.window = dim;
     SDL_SetWindowSize(WIN, dim.x, dim.y);
+
+    Pico_Dim new = _zoom();
+    SDL_Rect clip = { 0, 0, new.x, new.y };
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_dim_world (Pico_Dim dim) {
