@@ -199,6 +199,9 @@ void pico_init (int on) {
         pico_set_zoom(S.zoom);
         pico_set_font(NULL, 0);
         pico_output_clear();
+
+        SDL_PumpEvents();
+        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
     } else {
         if (S.font.ttf != NULL) {
             TTF_CloseFont(S.font.ttf);
