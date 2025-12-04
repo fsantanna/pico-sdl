@@ -202,6 +202,7 @@ void pico_init (int on) {
 
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        SDL_SetWindowResizable(WIN, 1);
     } else {
         if (S.font.ttf != NULL) {
             TTF_CloseFont(S.font.ttf);
