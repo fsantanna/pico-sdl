@@ -22,8 +22,8 @@ extern "C" {
 /// @{
 ///
 #define PICO_TITLE "pico-SDL"
-#define PICO_DIM_WINDOW ((Pico_Dim) {640,360})
-#define PICO_DIM_WORLD  ((Pico_Dim) { 64, 36})
+#define PICO_DIM_PHYSICAL ((Pico_Dim) {640,360})
+#define PICO_DIM_LOGICAL  ((Pico_Dim) { 64, 36})
 #define PICO_HASH  128
 
 typedef SDL_Point Pico_Pos;
@@ -295,10 +295,10 @@ Pico_Dim pico_get_dim_image (const char* file);
 Pico_Dim pico_get_dim_text (const char* text);
 
 /// @brief Gets the window dimensions.
-Pico_Dim pico_get_dim_window (void);
+Pico_Dim pico_get_dim_physical (void);
 
-/// @brief Gets the world dimensions.
-Pico_Dim pico_get_dim_world (void);
+/// @brief Gets the logical dimensions.
+Pico_Dim pico_get_dim_logical (void);
 
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
@@ -351,11 +351,11 @@ void pico_set_cursor (Pico_Pos pos);
 
 /// @brief Sets the window dimensions.
 /// @param dim new dimensions
-void pico_set_dim_window (Pico_Dim dim);
+void pico_set_dim_physical (Pico_Dim dim);
 
-/// @brief Sets the world dimensions.
+/// @brief Sets the logical dimensions.
 /// @param dim new dimensions
-void pico_set_dim_world (Pico_Dim dim);
+void pico_set_dim_logical (Pico_Dim dim);
 
 /// @brief Toggles the expert mode.
 /// @param on 1 to enable it, or 0 to disable it

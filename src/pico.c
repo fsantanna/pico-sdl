@@ -45,8 +45,8 @@ static struct {
         Pico_Pos cur;
     } cursor;
     struct {
-        Pico_Dim window;
-        Pico_Dim world;
+        Pico_Dim logical;
+        Pico_Dim physical;
     } dim;
     int expert;
     Pico_Flip flip;
@@ -67,7 +67,7 @@ static struct {
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
     {0, 0, 0, 0},
     {0, {0,0}},
-    { PICO_DIM_WINDOW, PICO_DIM_WORLD },
+    { PICO_DIM_LOGICAL, PICO_DIM_PHYSICAL },
     0,
     {0, 0},
     {NULL, 0},
@@ -86,8 +86,8 @@ static int _noclip () {
 
 static Pico_Dim _zoom () {
     return (Pico_Dim) {
-        S.dim.world.x * S.zoom.x / 100,
-        S.dim.world.y * S.zoom.y / 100,
+        S.dim.logical.x * S.zoom.x / 100,
+        S.dim.logical.y * S.zoom.y / 100,
     };
 }
 
@@ -102,7 +102,7 @@ static int _vanchor (int y, int h) {
 // UTILS
 
 Pico_Dim pico_dim (Pico_Pct pct) {
-    return pico_dim_ext(pct, S.dim.world);
+    return pico_dim_ext(pct, S.dim.logical);
 }
 
 Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
@@ -113,7 +113,7 @@ Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
 Pico_Pos pico_pos (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
-        (Pico_Rect){ 0, 0, S.dim.world.x, S.dim.world.y },
+        (Pico_Rect){ 0, 0, S.dim.logical.x, S.dim.logical.y },
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -140,7 +140,7 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor 
 Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim) {
     return pico_rect_ext (
         pos, dim,
-        (Pico_Rect){ 0, 0, S.dim.world.x, S.dim.world.y},
+        (Pico_Rect){ 0, 0, S.dim.logical.x, S.dim.logical.y},
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -182,7 +182,7 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            S.dim.window.x, S.dim.window.y,
+            S.dim.physical.x, S.dim.physical.y,
             (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
         );
         pico_assert(WIN != NULL);
@@ -242,7 +242,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 if (FS) {
                     FS = 0;
                 } else {
-                    pico_set_dim_window((Pico_Dim){e->window.data1,e->window.data2});
+                    pico_set_dim_physical((Pico_Dim){e->window.data1,e->window.data2});
                 }
             }
             break;
@@ -725,15 +725,15 @@ static void _show_grid (void) {
 
     Pico_Dim Z = _zoom();
 
-    if ((S.dim.window.x % Z.x == 0) && (Z.x < S.dim.window.x)) {
-        for (int i=0; i<=S.dim.window.x; i+=(S.dim.window.x/Z.x)) {
-            SDL_RenderDrawLine(REN, i, 0, i, S.dim.window.y);
+    if ((S.dim.physical.x % Z.x == 0) && (Z.x < S.dim.physical.x)) {
+        for (int i=0; i<=S.dim.physical.x; i+=(S.dim.physical.x/Z.x)) {
+            SDL_RenderDrawLine(REN, i, 0, i, S.dim.physical.y);
         }
     }
 
-    if ((S.dim.window.y % Z.y == 0) && (Z.y < S.dim.window.y)) {
-        for (int j=0; j<=S.dim.window.y; j+=(S.dim.window.y/Z.y)) {
-            SDL_RenderDrawLine(REN, 0, j, S.dim.window.x, j);
+    if ((S.dim.physical.y % Z.y == 0) && (Z.y < S.dim.physical.y)) {
+        for (int j=0; j<=S.dim.physical.y; j+=(S.dim.physical.y/Z.y)) {
+            SDL_RenderDrawLine(REN, 0, j, S.dim.physical.x, j);
         }
     }
 
@@ -751,7 +751,7 @@ static void _pico_output_present (int force) {
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
     SDL_SetRenderTarget(REN, NULL);
-    SDL_RenderSetLogicalSize(REN, S.dim.window.x, S.dim.window.y);
+    SDL_RenderSetLogicalSize(REN, S.dim.physical.x, S.dim.physical.y);
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
@@ -941,8 +941,8 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
     // TODO: bug in SDL?
     // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
     Pico_Dim Z = _zoom();
-    pos->x = pos->x * Z.x / S.dim.window.x;
-    pos->y = pos->y * Z.y / S.dim.window.y;
+    pos->x = pos->x * Z.x / S.dim.physical.x;
+    pos->y = pos->y * Z.y / S.dim.physical.y;
     pos->x += S.scroll.x;
     pos->y += S.scroll.y;
 
@@ -991,12 +991,12 @@ Pico_Dim pico_get_dim_text (const char* text) {
     return dim;
 }
 
-Pico_Dim pico_get_dim_window (void) {
-    return S.dim.window;
+Pico_Dim pico_get_dim_physical (void) {
+    return S.dim.physical;
 }
 
-Pico_Dim pico_get_dim_world (void) {
-    return S.dim.world;
+Pico_Dim pico_get_dim_logical (void) {
+    return S.dim.logical;
 }
 
 int pico_get_show (void) {
@@ -1065,9 +1065,9 @@ void pico_set_cursor (Pico_Pos pos) {
     S.cursor.x   = pos.x;
 }
 
-void pico_set_dim_window (Pico_Dim dim) {
+void pico_set_dim_physical (Pico_Dim dim) {
     assert(!S.fullscreen);
-    S.dim.window = dim;
+    S.dim.physical = dim;
     SDL_SetWindowSize(WIN, dim.x, dim.y);
 
     Pico_Dim new = _zoom();
@@ -1075,8 +1075,8 @@ void pico_set_dim_window (Pico_Dim dim) {
     SDL_RenderSetClipRect(REN, &clip);
 }
 
-void pico_set_dim_world (Pico_Dim dim) {
-    S.dim.world = dim;
+void pico_set_dim_logical (Pico_Dim dim) {
+    S.dim.logical = dim;
     pico_set_zoom(S.zoom);
 }
 
@@ -1097,7 +1097,7 @@ void pico_set_fullscreen (int on) {
 
     Pico_Dim new;
     if (on) {
-        _old = S.dim.window;
+        _old = S.dim.physical;
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
         pico_input_delay(50);    // TODO: required for some reason
         SDL_GetWindowSize(WIN, &new.x, &new.y);
@@ -1107,13 +1107,13 @@ void pico_set_fullscreen (int on) {
     }
 
     S.fullscreen = 0;           // cannot set_dim_win with fullscreen on
-    pico_set_dim_window(new);
+    pico_set_dim_physical(new);
     S.fullscreen = on;
 }
 
 void pico_set_font (const char* file, int h) {
     if (h == 0) {
-        h = MAX(8, S.dim.world.y/10);
+        h = MAX(8, S.dim.logical.y/10);
     }
     S.font.h = h;
 
