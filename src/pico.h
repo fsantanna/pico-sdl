@@ -335,6 +335,8 @@ void pico_set_clip (Pico_Rect clip);
 /// @param color new color
 void pico_set_color_clear (Pico_Color color);
 
+void pico_set_context (char* name);
+
 /// @brief Changes the color used to draw objects.
 /// @param color new color
 void pico_set_color_draw (Pico_Color color);

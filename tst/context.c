@@ -14,9 +14,7 @@ int main (void) {
         );
         pico_output_draw_rect(r1);
 
-        pico.context(name, reg, res)
-        pico.set.context(name)
-
+        pico_set_context("outer");
 
         pico_input_event(NULL, PICO_KEYDOWN);
         pico_set_clip(r1);

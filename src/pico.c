@@ -1071,6 +1071,14 @@ void pico_set_context (char* name) {
     Pico_Ctx* ctx = (Pico_Ctx*)pico_hash_get(_pico_hash, name);
     if (ctx == NULL) {
         ctx = malloc(sizeof(Pico_Ctx));
+        *ctx = (Pico_Ctx) {
+            { {0,0}, {0,0} },
+            1,
+            name,
+            {0, 0},
+            NULL,
+            {100, 100},
+        };
         pico_hash_add(_pico_hash, name, ctx);
     }
     pico_assert(ctx != NULL);
