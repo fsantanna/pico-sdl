@@ -23,7 +23,7 @@ extern "C" {
 ///
 #define PICO_TITLE "pico-SDL"
 #define PICO_DIM_PHYSICAL ((Pico_Dim) {640,360})
-#define PICO_DIM_LOGICAL  ((Pico_Dim) { 64, 36})
+#define PICO_DIM_VIRTUAL  ((Pico_Dim) { 64, 36})
 #define PICO_HASH  128
 
 typedef SDL_Point Pico_Pos;
@@ -196,7 +196,7 @@ const char* pico_output_screenshot (const char* path);
 
 /// @brief Takes a screenshot from a specific portion of the screen.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
-/// @param r region to screenshot, in logical coordinates
+/// @param r region to screenshot, in virtual coordinates
 /// @return The filepath of the screenshot.
 /// @sa pico_output_screenshot
 const char* pico_output_screenshot_ext (const char* path, Pico_Rect r);
@@ -283,7 +283,7 @@ int pico_get_rotate (void);
 /// @brief Gets the scaling factor of objects (percentage).
 Pico_Pct pico_get_scale (void);
 
-/// @brief Gets the point of view on the logical window.
+/// @brief Gets the point of view on the virtual window.
 Pico_Pos pico_get_scroll (void);
 
 /// @brief Gets the dimensions of the given image.
@@ -297,8 +297,8 @@ Pico_Dim pico_get_dim_text (const char* text);
 /// @brief Gets the window dimensions.
 Pico_Dim pico_get_dim_physical (void);
 
-/// @brief Gets the logical dimensions.
-Pico_Dim pico_get_dim_logical (void);
+/// @brief Gets the virtual dimensions.
+Pico_Dim pico_get_dim_virtual (void);
 
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
@@ -353,9 +353,9 @@ void pico_set_cursor (Pico_Pos pos);
 /// @param dim new dimensions
 void pico_set_dim_physical (Pico_Dim dim);
 
-/// @brief Sets the logical dimensions.
+/// @brief Sets the virtual dimensions.
 /// @param dim new dimensions
-void pico_set_dim_logical (Pico_Dim dim);
+void pico_set_dim_virtual (Pico_Dim dim);
 
 /// @brief Toggles the expert mode.
 /// @param on 1 to enable it, or 0 to disable it
@@ -373,7 +373,7 @@ void pico_set_font (const char* file, int h);
 /// @param on 1 to enable it, or 0 to disable it
 void pico_set_fullscreen (int on);
 
-/// @brief Toggles a grid on top of logical pixels.
+/// @brief Toggles a grid on top of virtual pixels.
 /// @param on 1 to show it, or 0 to hide it
 void pico_set_grid (int on);
 
@@ -384,7 +384,7 @@ void pico_set_rotate (int angle);
 /// @param scale new scaling for x and y axis (percentage)
 void pico_set_scale (Pico_Pct scale);
 
-/// @brief Sets the point of view on the logical window.
+/// @brief Sets the point of view on the virtual window.
 /// @param pos new point of view
 void pico_set_scroll (Pico_Pos pos);
 

@@ -45,8 +45,8 @@ static struct {
         Pico_Pos cur;
     } cursor;
     struct {
-        Pico_Dim logical;
         Pico_Dim physical;
+        Pico_Dim virtual;
     } dim;
     int expert;
     Pico_Flip flip;
@@ -67,7 +67,7 @@ static struct {
     { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
     {0, 0, 0, 0},
     {0, {0,0}},
-    { PICO_DIM_LOGICAL, PICO_DIM_PHYSICAL },
+    { PICO_DIM_PHYSICAL, PICO_DIM_VIRTUAL },
     0,
     {0, 0},
     {NULL, 0},
@@ -86,8 +86,8 @@ static int _noclip () {
 
 static Pico_Dim _zoom () {
     return (Pico_Dim) {
-        S.dim.logical.x * S.zoom.x / 100,
-        S.dim.logical.y * S.zoom.y / 100,
+        S.dim.virtual.x * S.zoom.x / 100,
+        S.dim.virtual.y * S.zoom.y / 100,
     };
 }
 
@@ -102,7 +102,7 @@ static int _vanchor (int y, int h) {
 // UTILS
 
 Pico_Dim pico_dim (Pico_Pct pct) {
-    return pico_dim_ext(pct, S.dim.logical);
+    return pico_dim_ext(pct, S.dim.virtual);
 }
 
 Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
@@ -113,7 +113,7 @@ Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
 Pico_Pos pico_pos (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
-        (Pico_Rect){ 0, 0, S.dim.logical.x, S.dim.logical.y },
+        (Pico_Rect){ 0, 0, S.dim.virtual.x, S.dim.virtual.y },
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -140,7 +140,7 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor 
 Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim) {
     return pico_rect_ext (
         pos, dim,
-        (Pico_Rect){ 0, 0, S.dim.logical.x, S.dim.logical.y},
+        (Pico_Rect){ 0, 0, S.dim.virtual.x, S.dim.virtual.y},
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -335,7 +335,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         return 0;   // not the one I was expecting
     }
 
-    // adjusts SDL -> logical positions
+    // adjusts SDL -> virtual positions
     switch (e->type) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
@@ -995,8 +995,8 @@ Pico_Dim pico_get_dim_physical (void) {
     return S.dim.physical;
 }
 
-Pico_Dim pico_get_dim_logical (void) {
-    return S.dim.logical;
+Pico_Dim pico_get_dim_virtual (void) {
+    return S.dim.virtual;
 }
 
 int pico_get_show (void) {
@@ -1075,8 +1075,8 @@ void pico_set_dim_physical (Pico_Dim dim) {
     SDL_RenderSetClipRect(REN, &clip);
 }
 
-void pico_set_dim_logical (Pico_Dim dim) {
-    S.dim.logical = dim;
+void pico_set_dim_virtual (Pico_Dim dim) {
+    S.dim.virtual = dim;
     pico_set_zoom(S.zoom);
 }
 
@@ -1113,7 +1113,7 @@ void pico_set_fullscreen (int on) {
 
 void pico_set_font (const char* file, int h) {
     if (h == 0) {
-        h = MAX(8, S.dim.logical.y/10);
+        h = MAX(8, S.dim.virtual.y/10);
     }
     S.font.h = h;
 

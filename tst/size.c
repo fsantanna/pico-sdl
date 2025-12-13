@@ -5,7 +5,7 @@ int main (void) {
     pico_set_title("Size - Fullscreen");
 
     Pico_Dim phy = PICO_DIM_PHYSICAL;
-    Pico_Dim log = PICO_DIM_LOGICAL;
+    Pico_Dim log = PICO_DIM_VIRTUAL;
 
     Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
     Pico_Rect r = {pt.x, pt.y, 32, 18};
@@ -61,7 +61,7 @@ int main (void) {
     puts("WORLD");
     {
         puts("normal");
-        pico_set_dim_logical((Pico_Dim){log.x,log.y});
+        pico_set_dim_virtual((Pico_Dim){log.x,log.y});
         Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
         Pico_Rect r = {pt.x, pt.y, 32, 18};
         pico_output_clear();
@@ -70,7 +70,7 @@ int main (void) {
     }
     {
         puts("double");
-        pico_set_dim_logical((Pico_Dim){log.x*2,log.y*2});
+        pico_set_dim_virtual((Pico_Dim){log.x*2,log.y*2});
         Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
         Pico_Rect r = {pt.x, pt.y, 32, 18};
         pico_output_clear();
@@ -79,7 +79,7 @@ int main (void) {
     }
     {
         puts("half");
-        pico_set_dim_logical((Pico_Dim){log.x/2,log.y/2});
+        pico_set_dim_virtual((Pico_Dim){log.x/2,log.y/2});
         Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
         Pico_Rect r = {pt.x, pt.y, 32, 18};
         pico_output_clear();
@@ -88,7 +88,7 @@ int main (void) {
     }
     {
         puts("normal");
-        pico_set_dim_logical((Pico_Dim){log.x,log.y});
+        pico_set_dim_virtual((Pico_Dim){log.x,log.y});
         Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
         Pico_Rect r = {pt.x, pt.y, 32, 18};
         pico_output_clear();
