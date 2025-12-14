@@ -22,9 +22,6 @@ static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 
 #define REN (SDL_GetRenderer(WIN))
 
-#define X(v,w) (_hanchor(v,w) - S.ctx->scroll.x)
-#define Y(v,h) (_vanchor(v,h) - S.ctx->scroll.y)
-
 static pico_hash* _pico_hash;
 
 typedef struct Pico_Ctx {
@@ -104,12 +101,28 @@ static Pico_Dim _zoom () {
     };
 }
 
-static int _hanchor (int x, int w) {
-    return x - (S.anchor.pos.x*w)/100;
+static int _anchor_x_ext (int x, int w, int a) {
+    return x - (a*w)/100;
 }
 
-static int _vanchor (int y, int h) {
-    return y - (S.anchor.pos.y*h)/100;
+static int _anchor_y_ext (int y, int h, int a) {
+    return y - (a*h)/100;
+}
+
+static int _anchor_x (int x, int w) {
+    return _anchor_x_ext(x, w, S.anchor.pos.x);
+}
+
+static int _anchor_y (int y, int h) {
+    return _anchor_y_ext(y, h, S.anchor.pos.y);
+}
+
+static int X (int x, int w) {
+    return _anchor_x(x,w) - S.ctx->scroll.x;
+}
+
+static int Y (int y, int h) {
+    return _anchor_y(y,h) - S.ctx->scroll.y;
 }
 
 // UTILS
@@ -135,8 +148,8 @@ Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc) {
     Pico_Anchor old = S.anchor.pos;
     S.anchor.pos = anc;
     Pico_Pos pt = {
-        _hanchor(r.x,r.w) + (pct.x*r.w)/100,
-        _vanchor(r.y,r.h) + (pct.y*r.h)/100
+        _anchor_x(r.x,r.w) + (pct.x*r.w)/100,
+        _anchor_y(r.y,r.h) + (pct.y*r.h)/100
     };
     S.anchor.pos = old;
     return pt;
@@ -162,8 +175,8 @@ Pico_Rect pico_rect_ext (Pico_Pct pos, Pico_Pct dim, Pico_Rect r, Pico_Anchor an
     Pico_Anchor old = S.anchor.pos;
     S.anchor.pos = anc;
     Pico_Pos xy = {
-        _hanchor(r.x,r.w) + (pos.x*r.w)/100,
-        _vanchor(r.y,r.h) + (pos.y*r.h)/100
+        _anchor_x(r.x,r.w) + (pos.x*r.w)/100,
+        _anchor_y(r.y,r.h) + (pos.y*r.h)/100
     };
     S.anchor.pos = old;
     Pico_Dim wh = pico_dim_ext(dim, (Pico_Dim){r.w,r.h});
@@ -178,11 +191,11 @@ int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Rect r2, Pico_Anchor a1, Pico_Anch
     assert(S.angle == 0 && "rotation angle != 0");
     Pico_Anchor old = S.anchor.pos;
     S.anchor.pos = a1;
-    r1.x = _hanchor(r1.x, r1.w);
-    r1.y = _vanchor(r1.y, r1.h);
+    r1.x = _anchor_x(r1.x, r1.w);
+    r1.y = _anchor_y(r1.y, r1.h);
     S.anchor.pos = a2;
-    r2.x = _hanchor(r2.x, r2.w);
-    r2.y = _vanchor(r2.y, r2.h);
+    r2.x = _anchor_x(r2.x, r2.w);
+    r2.y = _anchor_y(r2.y, r2.h);
     S.anchor.pos = old;
     return SDL_HasIntersection(&r1, &r2);
 }
@@ -536,8 +549,8 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     Pico_Pos pos = {
-        _hanchor(SDL_min(p1.x,p2.x),1),
-        _vanchor(SDL_min(p1.y,p2.y),1)
+        _anchor_x(SDL_min(p1.x,p2.x),1),
+        _anchor_y(SDL_min(p1.y,p2.y),1)
     };
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
@@ -665,8 +678,8 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
     }
 
     Pico_Pos pos = {
-        _hanchor(minx,1),
-        _vanchor(miny,1)
+        _anchor_x(minx,1),
+        _anchor_y(miny,1)
     };
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
@@ -784,7 +797,7 @@ static void _pico_output_present (int force) {
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
     SDL_RenderCopy(REN, _ctx.tex, NULL, NULL);
-    //_show_grid();
+    _show_grid();
     SDL_RenderPresent(REN);
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,
@@ -1189,8 +1202,8 @@ void pico_set_pos (Pico_Pos pos) {
     if (S.ctx->name == NULL) {
         assert(0 && "TODO: window position");
     } else {
-        _hanchor(S.ctx->pos.x, _ctx.dim.physical.x);
-        _vanchor(S.ctx->pos.y, _ctx.dim.physical.y);
+        _anchor_x(S.ctx->pos.x, _ctx.dim.physical.x);
+        _anchor_y(S.ctx->pos.y, _ctx.dim.physical.y);
     }
 }
 
