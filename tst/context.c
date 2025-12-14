@@ -6,6 +6,19 @@ int main (void) {
     pico_set_title("Context");
 
     {
+#if 1
+        pico_set_context("manual");
+        pico_set_dim_physical((Pico_Dim){100,100});
+        pico_set_dim_virtual((Pico_Dim){10,10});
+        pico_set_pos((Pico_Pos){0,0});
+        pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
+        pico_output_clear();
+#endif
+        pico_input_event(NULL, PICO_KEYDOWN);
+    }
+exit(0);
+
+    {
         puts("rect at 30%");
         pico_output_clear();
         Pico_Rect r1 = pico_rect (
@@ -25,7 +38,7 @@ int main (void) {
             Pico_Dim phy = pico_get_dim_physical();
             Pico_Dim log = pico_get_dim_virtual();
 
-            Pico_Pos xpos = pico_pos((Pico_Pct){30, 30});
+            Pico_Pos xpos = pico_pos_ext((Pico_Pct){30, 30}, (Pico_Rect){0,0,phy.x,phy.y}, pico_get_anchor_pos());
             Pico_Dim xphy = pico_dim_ext((Pico_Pct){50, 50}, phy);
             Pico_Dim xlog = pico_dim_ext((Pico_Pct){50, 50}, log);
 

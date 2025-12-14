@@ -412,7 +412,7 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 // OUTPUT
 
-static void _pico_output_present (int force);
+static void _pico_output_present (int force, Pico_Ctx* ctx);
 
 void pico_output_clear (void) {
     SDL_SetRenderDrawColor (REN,
@@ -434,7 +434,7 @@ void pico_output_clear (void) {
         S.color.draw.b,
         S.color.draw.a
     );
-    _pico_output_present(0);
+    _pico_output_present(0, S.ctx);
 }
 
 static SDL_Texture* _draw_aux (int w, int h) {
@@ -518,7 +518,7 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim)
         &rot,
         S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
     );
-    _pico_output_present(0);
+    _pico_output_present(0, S.ctx);
 }
 
 void pico_output_draw_image (Pico_Pos pos, const char* path) {
@@ -549,7 +549,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     );
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    SDL_RenderSetClipRect(REN, &clip);
+    //SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -559,7 +559,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
 
 void pico_output_draw_pixel (Pico_Pos pos) {
     SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
-    _pico_output_present(0);
+    _pico_output_present(0, S.ctx);
 }
 
 void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
@@ -569,7 +569,7 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
         vec[i].y = Y(apos[i].y,1);
     }
     SDL_RenderDrawPoints(REN, vec, count);
-    _pico_output_present(0);
+    _pico_output_present(0, S.ctx);
 }
 
 // TODO: Test me for flip and rotate
@@ -589,7 +589,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    SDL_RenderSetClipRect(REN, &clip);
+    //SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -619,7 +619,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    SDL_RenderSetClipRect(REN, &clip);
+    //SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -645,7 +645,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    SDL_RenderSetClipRect(REN, &clip);
+    //SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -688,7 +688,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
             break;
     }
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    SDL_RenderSetClipRect(REN, &clip);
+    //SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -760,12 +760,13 @@ static void _show_grid (void) {
     );
 }
 
-static void _pico_output_present (int force) {
+static void _pico_output_present (int force, Pico_Ctx* ctx) {
     if (S.expert && !force) return;
 
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
 
+#if 0
     if (S.ctx->name != NULL) {
         SDL_SetRenderTarget(REN, _ctx.tex);
         SDL_RenderSetLogicalSize(REN, _ctx.dim.physical.x, _ctx.dim.physical.y);
@@ -773,19 +774,37 @@ static void _pico_output_present (int force) {
             S.ctx->pos.x, S.ctx->pos.y,
             S.ctx->dim.physical.x, S.ctx->dim.physical.y,
         };
+printf (
+    ">>> %d,%d / %d,%d\n",
+    S.ctx->pos.x, S.ctx->pos.y,
+    S.ctx->dim.physical.x, S.ctx->dim.physical.y
+);
         SDL_RenderCopy(REN, S.ctx->tex, NULL, &dst);
     }
+#endif
 
 // pico_set_pos (se NULL, muda pos da janela) (e a anchor?)
 // o rendercopy precisa do dst tb no caso NULL para nao fazer stretch
 // tinha mais um ponto
 
-    SDL_SetRenderTarget(REN, NULL);
+    SDL_Texture* up = (ctx == &_ctx) ? NULL : &_ctx.tex;
+
+    SDL_SetRenderTarget(REN, up);
     SDL_RenderSetLogicalSize(REN, _ctx.dim.physical.x, _ctx.dim.physical.y);
+
+pico_pos_phy  rel
+pico_pos_log
+
+pico_dim_phy    rel
+pico_dim_log
+
+set_dim_phy
+
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
     SDL_RenderCopy(REN, _ctx.tex, NULL, NULL);
+puts("GRID");
     _show_grid();
     SDL_RenderPresent(REN);
     SDL_SetRenderDrawColor (REN,
@@ -795,10 +814,17 @@ static void _pico_output_present (int force) {
         S.color.draw.a
     );
 
+    Pico_Ctx* cur = S.ctx;
+    S.ctx = &_ctx;
     Pico_Dim Z = _zoom();
+    S.ctx = cur;
     SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
-    SDL_SetRenderTarget(REN, S.ctx->tex);
-    SDL_RenderSetClipRect(REN, &clip);
+    SDL_SetRenderTarget(REN, _ctx.tex);
+    //SDL_RenderSetClipRect(REN, &clip);
+
+    if (ctx->name != NULL) {
+        _pico_output_present(force, &_ctx);
+    }
 }
 
 void pico_output_present (void) {
@@ -1069,7 +1095,7 @@ void pico_set_clip (Pico_Rect clip) {
         clip.x = X(clip.x, clip.w);
         clip.y = Y(clip.y, clip.h);
     }
-    SDL_RenderSetClipRect(REN, &clip);
+    //SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_color_clear (Pico_Color color) {
@@ -1124,7 +1150,7 @@ void pico_set_dim_physical (Pico_Dim dim) {
     SDL_SetWindowSize(WIN, dim.x, dim.y);
     Pico_Dim new = _zoom();
     SDL_Rect clip = { 0, 0, new.x, new.y };
-    SDL_RenderSetClipRect(REN, &clip);
+    //SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_dim_virtual (Pico_Dim dim) {
@@ -1187,12 +1213,18 @@ void pico_set_grid (int on) {
 }
 
 void pico_set_pos (Pico_Pos pos) {
-    S.ctx->pos = pos;
     if (S.ctx->name == NULL) {
         assert(0 && "TODO: window position");
     } else {
-        _anchor_x(S.ctx->pos.x, _ctx.dim.physical.x);
-        _anchor_y(S.ctx->pos.y, _ctx.dim.physical.y);
+        S.ctx->pos = pos;
+#if 0
+        S.ctx->pos = (Pico_Pos) {
+            _anchor_x(pos.x, _ctx.dim.physical.x),
+            _anchor_y(pos.y, _ctx.dim.physical.y),
+        };
+printf(">>> x: %d => %d\n", pos.x, S.ctx->pos.x);
+printf(">>> y: %d => %d\n", pos.y, S.ctx->pos.y);
+#endif
     }
 }
 
@@ -1251,5 +1283,5 @@ void pico_set_zoom (Pico_Pct pct) {
     // TODO: need to init w/ explicit SetClip to save w/h
     //       do not pass NULL, GetClip would also return w=0,h=0
     SDL_Rect clip = { 0, 0, new.x, new.y };
-    SDL_RenderSetClipRect(REN, &clip);
+    //SDL_RenderSetClipRect(REN, &clip);
 }
