@@ -34,6 +34,7 @@ typedef struct Pico_Ctx {
     }            dim;
     int          grid;
     char*        name;
+    Pico_Pos     pos;
     Pico_Pos     scroll;
     SDL_Texture* tex;
     Pico_Pct     zoom;
@@ -43,6 +44,7 @@ Pico_Ctx _ctx = {
     { PICO_DIM_PHYSICAL, PICO_DIM_VIRTUAL },
     1,
     NULL,
+    {0, 0},
     {0, 0},
     NULL,
     {100, 100},
@@ -761,13 +763,28 @@ static void _pico_output_present (int force) {
 
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
+
+    if (S.ctx->name != NULL) {
+        SDL_SetRenderTarget(REN, _ctx.tex);
+        SDL_RenderSetLogicalSize(REN, _ctx.dim.physical.x, _ctx.dim.physical.y);
+        SDL_Rect dst = {
+            S.ctx->pos.x, S.ctx->pos.y,
+            S.ctx->dim.physical.x, S.ctx->dim.physical.y,
+        };
+        SDL_RenderCopy(REN, S.ctx->tex, NULL, &dst);
+    }
+
+// pico_set_pos (se NULL, muda pos da janela) (e a anchor?)
+// o rendercopy precisa do dst tb no caso NULL para nao fazer stretch
+// tinha mais um ponto
+
     SDL_SetRenderTarget(REN, NULL);
-    SDL_RenderSetLogicalSize(REN, S.ctx->dim.physical.x, S.ctx->dim.physical.y);
+    SDL_RenderSetLogicalSize(REN, _ctx.dim.physical.x, _ctx.dim.physical.y);
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
-    SDL_RenderCopy(REN, S.ctx->tex, NULL, NULL);
-    _show_grid();
+    SDL_RenderCopy(REN, _ctx.tex, NULL, NULL);
+    //_show_grid();
     SDL_RenderPresent(REN);
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,
@@ -1076,12 +1093,14 @@ void pico_set_context (char* name) {
             1,
             name,
             {0, 0},
+            {0, 0},
             NULL,
             {100, 100},
         };
         pico_hash_add(_pico_hash, name, ctx);
     }
     pico_assert(ctx != NULL);
+    S.ctx = ctx;
 }
 
 void pico_set_crop (Pico_Rect crop) {
@@ -1094,10 +1113,13 @@ void pico_set_cursor (Pico_Pos pos) {
 }
 
 void pico_set_dim_physical (Pico_Dim dim) {
-    assert(!S.fullscreen);
     S.ctx->dim.physical = dim;
-    SDL_SetWindowSize(WIN, dim.x, dim.y);
+    if (S.ctx->name != NULL) {
+        return;
+    }
 
+    assert(!S.fullscreen);
+    SDL_SetWindowSize(WIN, dim.x, dim.y);
     Pico_Dim new = _zoom();
     SDL_Rect clip = { 0, 0, new.x, new.y };
     SDL_RenderSetClipRect(REN, &clip);
@@ -1160,6 +1182,16 @@ void pico_set_font (const char* file, int h) {
 void pico_set_grid (int on) {
     S.ctx->grid = on;
     _pico_output_present(0);
+}
+
+void pico_set_pos (Pico_Pos pos) {
+    S.ctx->pos = pos;
+    if (S.ctx->name == NULL) {
+        assert(0 && "TODO: window position");
+    } else {
+        _hanchor(S.ctx->pos.x, _ctx.dim.physical.x);
+        _vanchor(S.ctx->pos.y, _ctx.dim.physical.y);
+    }
 }
 
 void pico_set_rotate (int angle) {

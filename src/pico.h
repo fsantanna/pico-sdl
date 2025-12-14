@@ -379,6 +379,8 @@ void pico_set_fullscreen (int on);
 /// @param on 1 to show it, or 0 to hide it
 void pico_set_grid (int on);
 
+void pico_set_pos (Pico_Pos pos);
+
 /// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate (int angle);
 
