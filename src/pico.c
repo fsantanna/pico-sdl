@@ -26,8 +26,8 @@ static pico_hash* _pico_hash;
 
 typedef struct Pico_Ctx {
     struct {
-        Pico_Dim physical;
-        Pico_Dim virtual;
+        Pico_Dim phy;
+        Pico_Dim log;
     }            dim;
     int          grid;
     char*        name;
@@ -38,7 +38,7 @@ typedef struct Pico_Ctx {
 } Pico_Ctx;
 
 Pico_Ctx _ctx = {
-    { PICO_DIM_PHYSICAL, PICO_DIM_VIRTUAL },
+    { PICO_DIM_PHY, PICO_DIM_LOG },
     1,
     NULL,
     {0, 0},
@@ -96,8 +96,8 @@ static int _noclip () {
 
 static Pico_Dim _zoom () {
     return (Pico_Dim) {
-        S.ctx->dim.virtual.x * S.ctx->zoom.x / 100,
-        S.ctx->dim.virtual.y * S.ctx->zoom.y / 100,
+        S.ctx->dim.log.x * S.ctx->zoom.x / 100,
+        S.ctx->dim.log.y * S.ctx->zoom.y / 100,
     };
 }
 
@@ -127,8 +127,12 @@ static int Y (int y, int h) {
 
 // UTILS
 
-Pico_Dim pico_dim (Pico_Pct pct) {
-    return pico_dim_ext(pct, S.ctx->dim.virtual);
+Pico_Dim pico_dim_log (Pico_Pct pct) {
+    return pico_dim_ext(pct, S.ctx->dim.log);
+}
+
+Pico_Dim pico_dim_phy (Pico_Pct pct) {
+    return pico_dim_ext(pct, S.ctx->dim.phy);
 }
 
 Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
@@ -136,10 +140,18 @@ Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
     return (Pico_Dim){ (pct.x*d.x)/100, (pct.y*d.y)/100};
 }
 
-Pico_Pos pico_pos (Pico_Pct pct) {
+Pico_Pos pico_pos_log (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
-        (Pico_Rect){ 0, 0, S.ctx->dim.virtual.x, S.ctx->dim.virtual.y },
+        (Pico_Rect){ 0, 0, S.ctx->dim.log.x, S.ctx->dim.log.y },
+        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
+    );
+}
+
+Pico_Pos pico_pos_phy (Pico_Pct pct) {
+    return pico_pos_ext (
+        pct,
+        (Pico_Rect){ 0, 0, S.ctx->dim.phy.x, S.ctx->dim.phy.y },
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -162,7 +174,7 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor 
 Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim) {
     return pico_rect_ext (
         pos, dim,
-        (Pico_Rect){ 0, 0, S.ctx->dim.virtual.x, S.ctx->dim.virtual.y},
+        (Pico_Rect){ 0, 0, S.ctx->dim.log.x, S.ctx->dim.log.y},
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -197,7 +209,7 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            S.ctx->dim.physical.x, S.ctx->dim.physical.y,
+            S.ctx->dim.phy.x, S.ctx->dim.phy.y,
             (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
         );
         pico_assert(WIN != NULL);
@@ -257,7 +269,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 if (FS) {
                     FS = 0;
                 } else {
-                    pico_set_dim_physical((Pico_Dim){e->window.data1,e->window.data2});
+                    pico_set_dim_phy((Pico_Dim){e->window.data1,e->window.data2});
                 }
             }
             break;
@@ -350,7 +362,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         return 0;   // not the one I was expecting
     }
 
-    // adjusts SDL -> virtual positions
+    // adjusts SDL -> logical positions
     switch (e->type) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
@@ -740,15 +752,15 @@ static void _show_grid (void) {
 
     Pico_Dim Z = _zoom();
 
-    if ((S.ctx->dim.physical.x % Z.x == 0) && (Z.x < S.ctx->dim.physical.x)) {
-        for (int i=0; i<=S.ctx->dim.physical.x; i+=(S.ctx->dim.physical.x/Z.x)) {
-            SDL_RenderDrawLine(REN, i, 0, i, S.ctx->dim.physical.y);
+    if ((S.ctx->dim.phy.x % Z.x == 0) && (Z.x < S.ctx->dim.phy.x)) {
+        for (int i=0; i<=S.ctx->dim.phy.x; i+=(S.ctx->dim.phy.x/Z.x)) {
+            SDL_RenderDrawLine(REN, i, 0, i, S.ctx->dim.phy.y);
         }
     }
 
-    if ((S.ctx->dim.physical.y % Z.y == 0) && (Z.y < S.ctx->dim.physical.y)) {
-        for (int j=0; j<=S.ctx->dim.physical.y; j+=(S.ctx->dim.physical.y/Z.y)) {
-            SDL_RenderDrawLine(REN, 0, j, S.ctx->dim.physical.x, j);
+    if ((S.ctx->dim.phy.y % Z.y == 0) && (Z.y < S.ctx->dim.phy.y)) {
+        for (int j=0; j<=S.ctx->dim.phy.y; j+=(S.ctx->dim.phy.y/Z.y)) {
+            SDL_RenderDrawLine(REN, 0, j, S.ctx->dim.phy.x, j);
         }
     }
 
@@ -769,15 +781,15 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
 #if 0
     if (S.ctx->name != NULL) {
         SDL_SetRenderTarget(REN, _ctx.tex);
-        SDL_RenderSetLogicalSize(REN, _ctx.dim.physical.x, _ctx.dim.physical.y);
+        SDL_RenderSetLogicalSize(REN, _ctx.dim.phy.x, _ctx.dim.phy.y);
         SDL_Rect dst = {
             S.ctx->pos.x, S.ctx->pos.y,
-            S.ctx->dim.physical.x, S.ctx->dim.physical.y,
+            S.ctx->dim.phy.x, S.ctx->dim.phy.y,
         };
 printf (
     ">>> %d,%d / %d,%d\n",
     S.ctx->pos.x, S.ctx->pos.y,
-    S.ctx->dim.physical.x, S.ctx->dim.physical.y
+    S.ctx->dim.phy.x, S.ctx->dim.phy.y
 );
         SDL_RenderCopy(REN, S.ctx->tex, NULL, &dst);
     }
@@ -790,7 +802,7 @@ printf (
     SDL_Texture* up = (ctx == &_ctx) ? NULL : _ctx.tex;
 
     SDL_SetRenderTarget(REN, up);
-    SDL_RenderSetLogicalSize(REN, _ctx.dim.physical.x, _ctx.dim.physical.y);
+    SDL_RenderSetLogicalSize(REN, _ctx.dim.phy.x, _ctx.dim.phy.y);
 
 /*
 pico_pos_phy  rel
@@ -998,8 +1010,8 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
     // TODO: bug in SDL?
     // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
     Pico_Dim Z = _zoom();
-    pos->x = pos->x * Z.x / S.ctx->dim.physical.x;
-    pos->y = pos->y * Z.y / S.ctx->dim.physical.y;
+    pos->x = pos->x * Z.x / S.ctx->dim.phy.x;
+    pos->y = pos->y * Z.y / S.ctx->dim.phy.y;
     pos->x += S.ctx->scroll.x;
     pos->y += S.ctx->scroll.y;
 
@@ -1048,12 +1060,12 @@ Pico_Dim pico_get_dim_text (const char* text) {
     return dim;
 }
 
-Pico_Dim pico_get_dim_physical (void) {
-    return S.ctx->dim.physical;
+Pico_Dim pico_get_dim_phy (void) {
+    return S.ctx->dim.phy;
 }
 
-Pico_Dim pico_get_dim_virtual (void) {
-    return S.ctx->dim.virtual;
+Pico_Dim pico_get_dim_log (void) {
+    return S.ctx->dim.log;
 }
 
 int pico_get_show (void) {
@@ -1141,8 +1153,8 @@ void pico_set_cursor (Pico_Pos pos) {
     S.cursor.x   = pos.x;
 }
 
-void pico_set_dim_physical (Pico_Dim dim) {
-    S.ctx->dim.physical = dim;
+void pico_set_dim_phy (Pico_Dim dim) {
+    S.ctx->dim.phy = dim;
     if (S.ctx->name != NULL) {
         return;
     }
@@ -1154,8 +1166,8 @@ void pico_set_dim_physical (Pico_Dim dim) {
     //SDL_RenderSetClipRect(REN, &clip);
 }
 
-void pico_set_dim_virtual (Pico_Dim dim) {
-    S.ctx->dim.virtual = dim;
+void pico_set_dim_log (Pico_Dim dim) {
+    S.ctx->dim.log = dim;
     pico_set_zoom(S.ctx->zoom);
 }
 
@@ -1176,7 +1188,7 @@ void pico_set_fullscreen (int on) {
 
     Pico_Dim new;
     if (on) {
-        _old = S.ctx->dim.physical;
+        _old = S.ctx->dim.phy;
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
         pico_input_delay(50);    // TODO: required for some reason
         SDL_GetWindowSize(WIN, &new.x, &new.y);
@@ -1186,13 +1198,13 @@ void pico_set_fullscreen (int on) {
     }
 
     S.fullscreen = 0;           // cannot set_dim_win with fullscreen on
-    pico_set_dim_physical(new);
+    pico_set_dim_phy(new);
     S.fullscreen = on;
 }
 
 void pico_set_font (const char* file, int h) {
     if (h == 0) {
-        h = MAX(8, S.ctx->dim.virtual.y/10);
+        h = MAX(8, S.ctx->dim.log.y/10);
     }
     S.font.h = h;
 
@@ -1220,8 +1232,8 @@ void pico_set_pos (Pico_Pos pos) {
         S.ctx->pos = pos;
 #if 0
         S.ctx->pos = (Pico_Pos) {
-            _anchor_x(pos.x, _ctx.dim.physical.x),
-            _anchor_y(pos.y, _ctx.dim.physical.y),
+            _anchor_x(pos.x, _ctx.dim.phy.x),
+            _anchor_y(pos.y, _ctx.dim.phy.y),
         };
 printf(">>> x: %d => %d\n", pos.x, S.ctx->pos.x);
 printf(">>> y: %d => %d\n", pos.y, S.ctx->pos.y);

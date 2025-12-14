@@ -24,7 +24,7 @@ int main (void) {
     pico_init(1);
     pico_set_size (
         (Pico_Dim) {160,160},   // physical screen size
-        (Pico_Dim) {16,16}      //  virtual screen size (10x10 pixel virtual size)
+        (Pico_Dim) {16,16}      // logical screen size (10x10 pixel logical size)
     );
     for (int i=0; i<16; i++) {
         pico_output_draw_pixel((Pico_Pos) {i, i});
@@ -42,7 +42,7 @@ int main (void) {
 - Standardized APIs, as described above
 - Immediate display through single-buffer rendering
 - Sensible default settings, such as initial colors and a built-in font
-- Runtime visual aids, such as a grid for virtual pixels and zoom & scroll support
+- Runtime visual aids, such as a grid for logical pixels and zoom & scroll support
 - Prioritizing simplicity over flexibility
 
 In particular, as the example above illustrates, immediate display allows that

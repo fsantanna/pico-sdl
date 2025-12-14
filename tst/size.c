@@ -4,38 +4,38 @@ int main (void) {
     pico_init(1);
     pico_set_title("Size - Fullscreen");
 
-    Pico_Dim phy = PICO_DIM_PHYSICAL;
-    Pico_Dim log = PICO_DIM_VIRTUAL;
+    Pico_Dim phy = PICO_DIM_PHY;
+    Pico_Dim log = PICO_DIM_LOG;
 
-    Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+    Pico_Pos pt = pico_pos_log((Pico_Pct){50, 50});
     Pico_Rect r = {pt.x, pt.y, 32, 18};
 
     // phy: normal -> double -> half -> normal
     puts("WINDOW");
     {
         puts("normal");
-        pico_set_dim_physical((Pico_Dim){phy.x,phy.y});
+        pico_set_dim_phy((Pico_Dim){phy.x,phy.y});
         pico_output_clear();
         pico_output_draw_rect(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("double");
-        pico_set_dim_physical((Pico_Dim){phy.x*2,phy.y*2});
+        pico_set_dim_phy((Pico_Dim){phy.x*2,phy.y*2});
         pico_output_clear();
         pico_output_draw_rect(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("half");
-        pico_set_dim_physical((Pico_Dim){phy.x/2,phy.y/2});
+        pico_set_dim_phy((Pico_Dim){phy.x/2,phy.y/2});
         pico_output_clear();
         pico_output_draw_rect(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("normal");
-        pico_set_dim_physical((Pico_Dim){phy.x,phy.y});
+        pico_set_dim_phy((Pico_Dim){phy.x,phy.y});
         pico_output_clear();
         pico_output_draw_rect(r);
         pico_input_event(NULL, PICO_KEYDOWN);
@@ -61,8 +61,8 @@ int main (void) {
     puts("WORLD");
     {
         puts("normal");
-        pico_set_dim_virtual((Pico_Dim){log.x,log.y});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+        pico_set_dim_log((Pico_Dim){log.x,log.y});
+        Pico_Pos pt = pico_pos_log((Pico_Pct){50, 50});
         Pico_Rect r = {pt.x, pt.y, 32, 18};
         pico_output_clear();
         pico_output_draw_rect(r);
@@ -70,8 +70,8 @@ int main (void) {
     }
     {
         puts("double");
-        pico_set_dim_virtual((Pico_Dim){log.x*2,log.y*2});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+        pico_set_dim_log((Pico_Dim){log.x*2,log.y*2});
+        Pico_Pos pt = pico_pos_log((Pico_Pct){50, 50});
         Pico_Rect r = {pt.x, pt.y, 32, 18};
         pico_output_clear();
         pico_output_draw_rect(r);
@@ -79,8 +79,8 @@ int main (void) {
     }
     {
         puts("half");
-        pico_set_dim_virtual((Pico_Dim){log.x/2,log.y/2});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+        pico_set_dim_log((Pico_Dim){log.x/2,log.y/2});
+        Pico_Pos pt = pico_pos_log((Pico_Pct){50, 50});
         Pico_Rect r = {pt.x, pt.y, 32, 18};
         pico_output_clear();
         pico_output_draw_rect(r);
@@ -88,8 +88,8 @@ int main (void) {
     }
     {
         puts("normal");
-        pico_set_dim_virtual((Pico_Dim){log.x,log.y});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+        pico_set_dim_log((Pico_Dim){log.x,log.y});
+        Pico_Pos pt = pico_pos_log((Pico_Pct){50, 50});
         Pico_Rect r = {pt.x, pt.y, 32, 18};
         pico_output_clear();
         pico_output_draw_rect(r);
