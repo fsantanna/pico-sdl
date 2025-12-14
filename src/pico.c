@@ -145,14 +145,10 @@ Pico_Pos pico_pos (Pico_Pct pct) {
 }
 
 Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc) {
-    Pico_Anchor old = S.anchor.pos;
-    S.anchor.pos = anc;
-    Pico_Pos pt = {
-        _anchor_x(r.x,r.w) + (pct.x*r.w)/100,
-        _anchor_y(r.y,r.h) + (pct.y*r.h)/100
+    return (Pico_Pos) {
+        _anchor_x_ext(r.x,r.w,anc.x) + (pct.x*r.w)/100,
+        _anchor_y_ext(r.y,r.h,anc.y) + (pct.y*r.h)/100
     };
-    S.anchor.pos = old;
-    return pt;
 }
 
 int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
@@ -172,13 +168,10 @@ Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim) {
 }
 
 Pico_Rect pico_rect_ext (Pico_Pct pos, Pico_Pct dim, Pico_Rect r, Pico_Anchor anc) {
-    Pico_Anchor old = S.anchor.pos;
-    S.anchor.pos = anc;
     Pico_Pos xy = {
-        _anchor_x(r.x,r.w) + (pos.x*r.w)/100,
-        _anchor_y(r.y,r.h) + (pos.y*r.h)/100
+        _anchor_x_ext(r.x,r.w,anc.x) + (pos.x*r.w)/100,
+        _anchor_y_ext(r.y,r.h,anc.y) + (pos.y*r.h)/100
     };
-    S.anchor.pos = old;
     Pico_Dim wh = pico_dim_ext(dim, (Pico_Dim){r.w,r.h});
     return (Pico_Rect) { xy.x,xy.y, wh.x,wh.y };
 }
@@ -189,14 +182,10 @@ int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2) {
 
 int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Rect r2, Pico_Anchor a1, Pico_Anchor a2) {
     assert(S.angle == 0 && "rotation angle != 0");
-    Pico_Anchor old = S.anchor.pos;
-    S.anchor.pos = a1;
-    r1.x = _anchor_x(r1.x, r1.w);
-    r1.y = _anchor_y(r1.y, r1.h);
-    S.anchor.pos = a2;
-    r2.x = _anchor_x(r2.x, r2.w);
-    r2.y = _anchor_y(r2.y, r2.h);
-    S.anchor.pos = old;
+    r1.x = _anchor_x_ext(r1.x, r1.w, a1.x);
+    r1.y = _anchor_y_ext(r1.y, r1.h, a1.y);
+    r2.x = _anchor_x_ext(r2.x, r2.w, a2.x);
+    r2.y = _anchor_y_ext(r2.y, r2.h, a2.y);
     return SDL_HasIntersection(&r1, &r2);
 }
 
