@@ -787,11 +787,12 @@ printf (
 // o rendercopy precisa do dst tb no caso NULL para nao fazer stretch
 // tinha mais um ponto
 
-    SDL_Texture* up = (ctx == &_ctx) ? NULL : &_ctx.tex;
+    SDL_Texture* up = (ctx == &_ctx) ? NULL : _ctx.tex;
 
     SDL_SetRenderTarget(REN, up);
     SDL_RenderSetLogicalSize(REN, _ctx.dim.physical.x, _ctx.dim.physical.y);
 
+/*
 pico_pos_phy  rel
 pico_pos_log
 
@@ -799,7 +800,7 @@ pico_dim_phy    rel
 pico_dim_log
 
 set_dim_phy
-
+*/
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
@@ -828,7 +829,7 @@ puts("GRID");
 }
 
 void pico_output_present (void) {
-    _pico_output_present(1);
+    _pico_output_present(1, &_ctx);
 }
 
 static void _pico_output_sound_cache (const char* path, int cache) {
@@ -909,7 +910,7 @@ static void _pico_output_write_aux (const char* text, int isln) {
     TTF_SizeText(S.font.ttf, text, &w,&h);
     Pico_Rect rct = { X(S.cursor.cur.x,0),Y(S.cursor.cur.y,0), w,h };
     SDL_RenderCopy(REN, tex, NULL, &rct);
-    _pico_output_present(0);
+    _pico_output_present(0, S.ctx);
 
     S.cursor.cur.x += w;
     if (isln) {
@@ -1209,7 +1210,7 @@ void pico_set_font (const char* file, int h) {
 
 void pico_set_grid (int on) {
     S.ctx->grid = on;
-    _pico_output_present(0);
+    _pico_output_present(0, &_ctx);
 }
 
 void pico_set_pos (Pico_Pos pos) {
@@ -1244,7 +1245,7 @@ void pico_set_scroll (Pico_Pos pos) {
 void pico_set_show (int on) {
     if (on) {
         SDL_ShowWindow(WIN);
-        _pico_output_present(0);
+        _pico_output_present(0, &_ctx);
     } else {
         SDL_HideWindow(WIN);
     }
