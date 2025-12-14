@@ -8,9 +8,9 @@ int main (void) {
     {
 #if 1
         pico_set_context("manual");
-        pico_set_dim_physical((Pico_Dim){100,100});
-        pico_set_dim_virtual((Pico_Dim){10,10});
-        pico_set_pos((Pico_Pos){0,0});
+        pico_set_dim_phy((Pico_Dim){100,100});
+        pico_set_dim_log((Pico_Dim){10,10});
+        pico_set_pos_phy((Pico_Pos){0,0});
         pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
         pico_output_clear();
 #endif
@@ -35,17 +35,17 @@ exit(0);
 
 #if 1
         {
-            Pico_Dim phy = pico_get_dim_physical();
-            Pico_Dim log = pico_get_dim_virtual();
+            Pico_Dim phy = pico_get_dim_phy();
+            Pico_Dim log = pico_get_dim_log();
 
             Pico_Pos xpos = pico_pos_ext((Pico_Pct){30, 30}, (Pico_Rect){0,0,phy.x,phy.y}, pico_get_anchor_pos());
             Pico_Dim xphy = pico_dim_ext((Pico_Pct){50, 50}, phy);
             Pico_Dim xlog = pico_dim_ext((Pico_Pct){50, 50}, log);
 
             pico_set_context("outer");
-            pico_set_dim_physical(xphy);
-            pico_set_dim_virtual(xlog);
-            pico_set_pos(xpos);
+            pico_set_dim_phy(xphy);
+            pico_set_dim_log(xlog);
+            pico_set_pos_phy(xpos);
 
             pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
             pico_output_clear();

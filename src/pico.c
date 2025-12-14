@@ -778,45 +778,18 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
 
-#if 0
-    if (S.ctx->name != NULL) {
-        SDL_SetRenderTarget(REN, _ctx.tex);
-        SDL_RenderSetLogicalSize(REN, _ctx.dim.phy.x, _ctx.dim.phy.y);
-        SDL_Rect dst = {
-            S.ctx->pos.x, S.ctx->pos.y,
-            S.ctx->dim.phy.x, S.ctx->dim.phy.y,
-        };
-printf (
-    ">>> %d,%d / %d,%d\n",
-    S.ctx->pos.x, S.ctx->pos.y,
-    S.ctx->dim.phy.x, S.ctx->dim.phy.y
-);
-        SDL_RenderCopy(REN, S.ctx->tex, NULL, &dst);
-    }
-#endif
-
+// TODO
 // pico_set_pos (se NULL, muda pos da janela) (e a anchor?)
 // o rendercopy precisa do dst tb no caso NULL para nao fazer stretch
-// tinha mais um ponto
 
     SDL_Texture* up = (ctx == &_ctx) ? NULL : _ctx.tex;
 
     SDL_SetRenderTarget(REN, up);
-    SDL_RenderSetLogicalSize(REN, _ctx.dim.phy.x, _ctx.dim.phy.y);
-
-/*
-pico_pos_phy  rel
-pico_pos_log
-
-pico_dim_phy    rel
-pico_dim_log
-
-set_dim_phy
-*/
+    SDL_RenderSetLogicalSize(REN, S.ctx->dim.phy.x, S.ctx->dim.phy.y);
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
-    SDL_RenderCopy(REN, _ctx.tex, NULL, NULL);
+    SDL_RenderCopy(REN, S.ctx->tex, NULL, NULL);
 puts("GRID");
     _show_grid();
     SDL_RenderPresent(REN);
@@ -827,12 +800,9 @@ puts("GRID");
         S.color.draw.a
     );
 
-    Pico_Ctx* cur = S.ctx;
-    S.ctx = &_ctx;
     Pico_Dim Z = _zoom();
-    S.ctx = cur;
     SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
-    SDL_SetRenderTarget(REN, _ctx.tex);
+    SDL_SetRenderTarget(REN, S.ctx->tex);
     //SDL_RenderSetClipRect(REN, &clip);
 
     if (ctx->name != NULL) {
@@ -1225,7 +1195,7 @@ void pico_set_grid (int on) {
     _pico_output_present(0, &_ctx);
 }
 
-void pico_set_pos (Pico_Pos pos) {
+void pico_set_pos_phy (Pico_Pos pos) {
     if (S.ctx->name == NULL) {
         assert(0 && "TODO: window position");
     } else {
