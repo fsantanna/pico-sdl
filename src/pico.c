@@ -94,10 +94,10 @@ static int _noclip () {
            (S.clip.h == PICO_CLIP_RESET.h);
 }
 
-static Pico_Dim _zoom () {
+static Pico_Dim _zoom (Pico_Ctx* ctx) {
     return (Pico_Dim) {
-        S.ctx->dim.log.x * S.ctx->zoom.x / 100,
-        S.ctx->dim.log.y * S.ctx->zoom.y / 100,
+        ctx->dim.log.x * ctx->zoom.x / 100,
+        ctx->dim.log.y * ctx->zoom.y / 100,
     };
 }
 
@@ -756,9 +756,9 @@ void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim dim, const char* fmt, ...)
 static void _show_grid (Pico_Ctx* ctx) {
     if (!ctx->grid) return;
 
-    SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
+    SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
 
-    Pico_Dim Z = _zoom();
+    Pico_Dim Z = _zoom(ctx);
 
     if ((ctx->dim.phy.x % Z.x == 0) && (Z.x < ctx->dim.phy.x)) {
         for (int i=0; i<=ctx->dim.phy.x; i+=(ctx->dim.phy.x/Z.x)) {
@@ -791,12 +791,15 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_SetRenderTarget(REN, up);
     SDL_RenderSetLogicalSize(REN, _ctx.dim.phy.x, _ctx.dim.phy.y);
 
-    SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
-    SDL_RenderClear(REN);
+    if (ctx->name == NULL) {
+        SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
+        SDL_RenderClear(REN);
+    }
     SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
     SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
-puts("GRID");
-    _show_grid(&_ctx);
+    if (ctx->name == NULL) {
+        _show_grid(&_ctx);
+    }
     SDL_RenderPresent(REN);
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,
@@ -805,7 +808,7 @@ puts("GRID");
         S.color.draw.a
     );
 
-    Pico_Dim Z = _zoom();
+    Pico_Dim Z = _zoom(S.ctx);
     SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
     SDL_SetRenderTarget(REN, ctx->tex);
     //SDL_RenderSetClipRect(REN, &clip);
@@ -841,7 +844,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 }
 
 const char* pico_output_screenshot (const char* path) {
-    Pico_Dim Z = _zoom();
+    Pico_Dim Z = _zoom(S.ctx);
     return pico_output_screenshot_ext(
         path,
         (Pico_Rect){0,0,Z.x,Z.y}
@@ -984,7 +987,7 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
 
     // TODO: bug in SDL?
     // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
-    Pico_Dim Z = _zoom();
+    Pico_Dim Z = _zoom(S.ctx);
     pos->x = pos->x * Z.x / S.ctx->dim.phy.x;
     pos->y = pos->y * Z.y / S.ctx->dim.phy.y;
     pos->x += S.ctx->scroll.x;
@@ -1076,7 +1079,7 @@ void pico_set_anchor_rotate (Pico_Anchor anchor) {
 void pico_set_clip (Pico_Rect clip) {
     S.clip = clip;
     if (_noclip()) {
-        Pico_Dim dim = _zoom();
+        Pico_Dim dim = _zoom(S.ctx);
         clip.w = dim.x;
         clip.h = dim.y;
     } else {
@@ -1136,7 +1139,7 @@ void pico_set_dim_phy (Pico_Dim dim) {
 
     assert(!S.fullscreen);
     SDL_SetWindowSize(WIN, dim.x, dim.y);
-    Pico_Dim new = _zoom();
+    Pico_Dim new = _zoom(S.ctx);
     SDL_Rect clip = { 0, 0, new.x, new.y };
     //SDL_RenderSetClipRect(REN, &clip);
 }
@@ -1241,9 +1244,9 @@ void pico_set_title (const char* title) {
 }
 
 void pico_set_zoom (Pico_Pct pct) {
-    Pico_Dim old = _zoom();
+    Pico_Dim old = _zoom(S.ctx);
     S.ctx->zoom = pct;
-    Pico_Dim new = _zoom();
+    Pico_Dim new = _zoom(S.ctx);
     
     int dx = new.x - old.x;
     int dy = new.y - old.y;

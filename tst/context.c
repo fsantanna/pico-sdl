@@ -12,11 +12,16 @@ int main (void) {
             (Pico_Pct) {30, 30},
             (Pico_Pct) {50, 50}
         );
-        pico_set_context("manual");
+        pico_set_context("rect");
         pico_set_dim_phy((Pico_Dim){r.w,r.h});
         pico_set_dim_log((Pico_Dim){r.w/10,r.h/10});
         pico_set_pos_phy((Pico_Pos){r.x,r.y});
+
         pico_set_color_clear((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
+        pico_output_clear();
+        pico_input_event(NULL, PICO_KEYDOWN);
+
+        pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
         pico_output_clear();
         pico_input_event(NULL, PICO_KEYDOWN);
     }
