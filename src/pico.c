@@ -569,7 +569,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     );
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -609,7 +609,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -639,7 +639,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -665,7 +665,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -708,7 +708,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
             break;
     }
     SDL_SetRenderTarget(REN, S.ctx->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -812,7 +812,7 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     Pico_Dim Z = _zoom(ctx);
     SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
     SDL_SetRenderTarget(REN, ctx->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_output_present (void) {
@@ -1083,7 +1083,7 @@ void pico_set_clip (Pico_Rect clip) {
         clip.x = X(clip.x, clip.w);
         clip.y = Y(clip.y, clip.h);
     }
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_color_clear (Pico_Color color) {
@@ -1138,7 +1138,7 @@ void pico_set_dim_phy (Pico_Dim dim) {
     SDL_SetWindowSize(WIN, dim.x, dim.y);
     Pico_Dim new = _zoom(S.ctx);
     SDL_Rect clip = { 0, 0, new.x, new.y };
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_dim_log (Pico_Dim dim) {
@@ -1265,5 +1265,5 @@ void pico_set_zoom (Pico_Pct pct) {
     // TODO: need to init w/ explicit SetClip to save w/h
     //       do not pass NULL, GetClip would also return w=0,h=0
     SDL_Rect clip = { 0, 0, new.x, new.y };
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
 }
