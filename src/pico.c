@@ -25,6 +25,7 @@ static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 static pico_hash* _pico_hash;
 
 typedef struct Pico_Ctx {
+    int          alpha;
     struct {
         Pico_Dim phy;
         Pico_Dim log;
@@ -38,6 +39,7 @@ typedef struct Pico_Ctx {
 } Pico_Ctx;
 
 Pico_Ctx _ctx = {
+    0xFF,
     { PICO_DIM_PHY, PICO_DIM_LOG },
     1,
     NULL,
@@ -795,6 +797,8 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     }
 
     SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
+printf(">>> %d\n", ctx->alpha);
+    SDL_SetTextureAlphaMod(ctx->tex, ctx->alpha);
     SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
 
     if (ctx->name == NULL) {
@@ -1065,6 +1069,11 @@ Pico_Pct pico_get_zoom (void) {
 
 // SET
 
+void pico_set_alpha (int alpha) {
+    S.ctx->alpha = alpha;
+    _pico_output_present(0, S.ctx);
+}
+
 void pico_set_anchor_pos (Pico_Anchor anchor) {
     S.anchor.pos = anchor;
 }
@@ -1105,6 +1114,7 @@ void pico_set_context (char* name) {
     if (ctx == NULL) {
         ctx = malloc(sizeof(Pico_Ctx));
         *ctx = (Pico_Ctx) {
+            0xFF,
             { {0,0}, {0,0} },
             1,
             name,
