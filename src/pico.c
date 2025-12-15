@@ -144,7 +144,7 @@ Pico_Pos pico_pos_log (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
         (Pico_Rect){ 0, 0, S.ctx->dim.log.x, S.ctx->dim.log.y },
-        pico_get_anchor_pos()
+        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
 
@@ -152,7 +152,7 @@ Pico_Pos pico_pos_phy (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
         (Pico_Rect){ 0, 0, S.ctx->dim.phy.x, S.ctx->dim.phy.y },
-        pico_get_anchor_pos()
+        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
 
