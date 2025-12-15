@@ -794,28 +794,27 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     if (ctx->name == NULL) {
         SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
         SDL_RenderClear(REN);
+        Pico_Color c = S.color.draw;
+        SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
     }
+
     SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
     SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
+
     if (ctx->name == NULL) {
         _show_grid(&_ctx);
     }
-    SDL_RenderPresent(REN);
-    SDL_SetRenderDrawColor (REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
 
-    Pico_Dim Z = _zoom(S.ctx);
-    SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
-    SDL_SetRenderTarget(REN, ctx->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderPresent(REN);
 
     if (ctx->name != NULL) {
         _pico_output_present(force, &_ctx);
     }
+
+    Pico_Dim Z = _zoom(ctx);
+    SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
+    SDL_SetRenderTarget(REN, ctx->tex);
+    //SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_output_present (void) {
