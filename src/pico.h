@@ -469,11 +469,19 @@ int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r);
 /// @return 1 if pt is inside r, or 0 otherwise
 int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor ar);
 
-/// @brief Returns a rectangle relative to the screen rectangle.
+/// @brief Returns a rectangle relative to the logical screen rectangle.
 /// @param pos percentage (may be out of [0,100])
 /// @param dim percentage (may be out of [0,100])
+/// @sa pico_rect_phy
 /// @sa pico_rect_ext
-Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim);
+Pico_Rect pico_rect_log (Pico_Pct pos, Pico_Pct dim);
+
+/// @brief Returns a rectangle relative to the physical screen rectangle.
+/// @param pos percentage (may be out of [0,100])
+/// @param dim percentage (may be out of [0,100])
+/// @sa pico_rect_log
+/// @sa pico_rect_ext
+Pico_Rect pico_rect_phy (Pico_Pct pos, Pico_Pct dim);
 
 /// @brief Returns a rectangle relative to the given rectangle.
 /// @param pos percentage (may be out of [0,100])

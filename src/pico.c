@@ -144,7 +144,7 @@ Pico_Pos pico_pos_log (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
         (Pico_Rect){ 0, 0, S.ctx->dim.log.x, S.ctx->dim.log.y },
-        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
+        pico_get_anchor_pos()
     );
 }
 
@@ -152,7 +152,7 @@ Pico_Pos pico_pos_phy (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
         (Pico_Rect){ 0, 0, S.ctx->dim.phy.x, S.ctx->dim.phy.y },
-        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
+        pico_get_anchor_pos()
     );
 }
 
@@ -171,11 +171,19 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor 
     return pico_rect_vs_rect_ext((Pico_Rect){pt.x, pt.y, 1, 1}, r, ap, ar);
 }
 
-Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim) {
+Pico_Rect pico_rect_log (Pico_Pct pos, Pico_Pct dim) {
     return pico_rect_ext (
         pos, dim,
         (Pico_Rect){ 0, 0, S.ctx->dim.log.x, S.ctx->dim.log.y},
-        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
+        pico_get_anchor_pos()
+    );
+}
+
+Pico_Rect pico_rect_phy (Pico_Pct pos, Pico_Pct dim) {
+    return pico_rect_ext (
+        pos, dim,
+        (Pico_Rect){ 0, 0, S.ctx->dim.phy.x, S.ctx->dim.phy.y},
+        pico_get_anchor_pos()
     );
 }
 
@@ -745,22 +753,22 @@ void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim dim, const char* fmt, ...)
     va_end(args);
 }
 
-static void _show_grid (void) {
-    if (!S.ctx->grid) return;
+static void _show_grid (Pico_Ctx* ctx) {
+    if (!ctx->grid) return;
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
     Pico_Dim Z = _zoom();
 
-    if ((S.ctx->dim.phy.x % Z.x == 0) && (Z.x < S.ctx->dim.phy.x)) {
-        for (int i=0; i<=S.ctx->dim.phy.x; i+=(S.ctx->dim.phy.x/Z.x)) {
-            SDL_RenderDrawLine(REN, i, 0, i, S.ctx->dim.phy.y);
+    if ((ctx->dim.phy.x % Z.x == 0) && (Z.x < ctx->dim.phy.x)) {
+        for (int i=0; i<=ctx->dim.phy.x; i+=(ctx->dim.phy.x/Z.x)) {
+            SDL_RenderDrawLine(REN, i, 0, i, ctx->dim.phy.y);
         }
     }
 
-    if ((S.ctx->dim.phy.y % Z.y == 0) && (Z.y < S.ctx->dim.phy.y)) {
-        for (int j=0; j<=S.ctx->dim.phy.y; j+=(S.ctx->dim.phy.y/Z.y)) {
-            SDL_RenderDrawLine(REN, 0, j, S.ctx->dim.phy.x, j);
+    if ((ctx->dim.phy.y % Z.y == 0) && (Z.y < ctx->dim.phy.y)) {
+        for (int j=0; j<=ctx->dim.phy.y; j+=(ctx->dim.phy.y/Z.y)) {
+            SDL_RenderDrawLine(REN, 0, j, ctx->dim.phy.x, j);
         }
     }
 
@@ -785,13 +793,14 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_Texture* up = (ctx == &_ctx) ? NULL : _ctx.tex;
 
     SDL_SetRenderTarget(REN, up);
-    SDL_RenderSetLogicalSize(REN, S.ctx->dim.phy.x, S.ctx->dim.phy.y);
+    SDL_RenderSetLogicalSize(REN, _ctx.dim.phy.x, _ctx.dim.phy.y);
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
-    SDL_RenderCopy(REN, S.ctx->tex, NULL, NULL);
+    SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
+    SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
 puts("GRID");
-    _show_grid();
+    //_show_grid(&_ctx);
     SDL_RenderPresent(REN);
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,
@@ -802,7 +811,7 @@ puts("GRID");
 
     Pico_Dim Z = _zoom();
     SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
-    SDL_SetRenderTarget(REN, S.ctx->tex);
+    SDL_SetRenderTarget(REN, ctx->tex);
     //SDL_RenderSetClipRect(REN, &clip);
 
     if (ctx->name != NULL) {
@@ -1198,17 +1207,8 @@ void pico_set_grid (int on) {
 void pico_set_pos_phy (Pico_Pos pos) {
     if (S.ctx->name == NULL) {
         assert(0 && "TODO: window position");
-    } else {
-        S.ctx->pos = pos;
-#if 0
-        S.ctx->pos = (Pico_Pos) {
-            _anchor_x(pos.x, _ctx.dim.phy.x),
-            _anchor_y(pos.y, _ctx.dim.phy.y),
-        };
-printf(">>> x: %d => %d\n", pos.x, S.ctx->pos.x);
-printf(">>> y: %d => %d\n", pos.y, S.ctx->pos.y);
-#endif
     }
+    S.ctx->pos = pos;
 }
 
 void pico_set_rotate (int angle) {

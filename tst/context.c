@@ -6,11 +6,28 @@ int main (void) {
     pico_set_title("Context");
 
     {
+        puts("rect at 30%");
+        pico_output_clear();
+        Pico_Rect r1 = pico_rect_phy (
+            (Pico_Pct) {50, 50},
+            (Pico_Pct) {50, 50}
+        );
+        pico_set_context("manual");
+        pico_set_dim_phy((Pico_Dim){r1.w,r1.h});
+        pico_set_dim_log((Pico_Dim){r1.w/10,r1.h/10});
+        pico_set_pos_phy((Pico_Pos){r1.x,r1.y});
+        pico_set_color_clear((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
+        pico_output_clear();
+        pico_input_event(NULL, PICO_KEYDOWN);
+    }
+exit(0);
+
+    {
 #if 1
         pico_set_context("manual");
         pico_set_dim_phy((Pico_Dim){100,100});
         pico_set_dim_log((Pico_Dim){10,10});
-        pico_set_pos_phy((Pico_Pos){0,0});
+        pico_set_pos_phy((Pico_Pos){10,10});
         pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
         pico_output_clear();
 #endif
@@ -21,7 +38,7 @@ exit(0);
     {
         puts("rect at 30%");
         pico_output_clear();
-        Pico_Rect r1 = pico_rect (
+        Pico_Rect r1 = pico_rect_log (
             (Pico_Pct) {30, 30},
             (Pico_Pct) {50, 50}
         );
