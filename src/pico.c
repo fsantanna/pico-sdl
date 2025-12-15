@@ -786,10 +786,6 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
 
-// TODO
-// pico_set_pos (se NULL, muda pos da janela) (e a anchor?)
-// o rendercopy precisa do dst tb no caso NULL para nao fazer stretch
-
     SDL_Texture* up = (ctx == &_ctx) ? NULL : _ctx.tex;
 
     SDL_SetRenderTarget(REN, up);
@@ -800,7 +796,7 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
     SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
 puts("GRID");
-    //_show_grid(&_ctx);
+    _show_grid(&_ctx);
     SDL_RenderPresent(REN);
     SDL_SetRenderDrawColor (REN,
         S.color.draw.r,
