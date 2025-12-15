@@ -762,22 +762,18 @@ static void _show_grid (Pico_Ctx* ctx) {
 
     if ((ctx->dim.phy.x % Z.x == 0) && (Z.x < ctx->dim.phy.x)) {
         for (int i=0; i<=ctx->dim.phy.x; i+=(ctx->dim.phy.x/Z.x)) {
-            SDL_RenderDrawLine(REN, i, 0, i, ctx->dim.phy.y);
+            SDL_RenderDrawLine(REN, ctx->pos.x+i, ctx->pos.y, ctx->pos.x+i, ctx->dim.phy.y);
         }
     }
 
     if ((ctx->dim.phy.y % Z.y == 0) && (Z.y < ctx->dim.phy.y)) {
         for (int j=0; j<=ctx->dim.phy.y; j+=(ctx->dim.phy.y/Z.y)) {
-            SDL_RenderDrawLine(REN, 0, j, ctx->dim.phy.x, j);
+            SDL_RenderDrawLine(REN, ctx->pos.x, ctx->pos.y+j, ctx->dim.phy.x, ctx->pos.y+j);
         }
     }
 
-    SDL_SetRenderDrawColor (REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
+    Pico_Color c = S.color.draw;
+    SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
 }
 
 static void _pico_output_present (int force, Pico_Ctx* ctx) {
@@ -802,10 +798,12 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
 
     if (ctx->name == NULL) {
-        _show_grid(&_ctx);
+        _show_grid(ctx);
     }
 
-    SDL_RenderPresent(REN);
+    if (ctx->name == NULL) {
+        SDL_RenderPresent(REN);
+    }
 
     if (ctx->name != NULL) {
         _pico_output_present(force, &_ctx);
