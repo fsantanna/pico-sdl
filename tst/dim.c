@@ -5,12 +5,12 @@ int main (void) {
     pico_init(1);
     pico_set_title("Dim");
 
-    Pico_Pos p = pico_pos((Pico_Pct){50, 50});
+    Pico_Pos p = pico_pos_log((Pico_Pct){50, 50});
     char fmt[64];
 
     pico_output_clear();
     for (int i = 0; i <= 100; i+=25) {
-        Pico_Dim d = pico_dim((Pico_Pct){i, i});
+        Pico_Dim d = pico_dim_log((Pico_Pct){i, i});
         pico_output_draw_rect((Pico_Rect){p.x,p.y,d.x,d.y});
 
         sprintf(fmt, "%d_screen_size", i);
@@ -34,7 +34,7 @@ int main (void) {
     }
 
     puts("ASSERT ERROR EXPECTED:");
-    pico_dim((Pico_Pct){-1, -1});
+    pico_dim_log((Pico_Pct){-1, -1});
 
     pico_init(0);
     return 0;

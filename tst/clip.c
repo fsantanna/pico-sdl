@@ -8,7 +8,7 @@ int main (void) {
     {
         puts("rect at 30%");
         pico_output_clear();
-        Pico_Rect r1 = pico_rect (
+        Pico_Rect r1 = pico_rect_log (
             (Pico_Pct) {30, 30},
             (Pico_Pct) {50, 50}
         );

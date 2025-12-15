@@ -3,12 +3,12 @@
 int main (void) {
     pico_init(1);
 
-    Pico_Dim phy = pico_get_dim_window();
-    Pico_Dim log = pico_get_dim_world();
+    Pico_Dim phy = pico_get_dim_phy();
+    Pico_Dim log = pico_get_dim_log();
     assert(phy.x==640 && phy.y==360);
     assert(log.x==64  && log.y==36 );
 
-    Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+    Pico_Pos pt = pico_pos_log((Pico_Pct){50, 50});
     puts("shows dark screen");
 
     Pico_Event e1;
@@ -44,9 +44,9 @@ int main (void) {
     pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
     pico_output_clear();
     pico_output_draw_pixel(pt);
-    Pico_Pos rct = pico_pos((Pico_Pct){75, 25});
+    Pico_Pos rct = pico_pos_log((Pico_Pct){75, 25});
     pico_output_draw_rect((Pico_Rect){ rct.x,rct.y, 10,5});
-    Pico_Pos ova = pico_pos((Pico_Pct){25, 75});
+    Pico_Pos ova = pico_pos_log((Pico_Pct){25, 75});
     pico_output_draw_oval((Pico_Rect){ova.x,ova.y, 5,10});
 
     puts("shows oval -> pixel -> rect");
@@ -60,7 +60,7 @@ int main (void) {
     pico_output_clear();
 
     // WRITE
-    Pico_Pos up = pico_pos((Pico_Pct){10, 10});
+    Pico_Pos up = pico_pos_log((Pico_Pct){10, 10});
     pico_set_cursor(up);
     pico_output_write("1 ");
     pico_input_delay(200);
@@ -113,28 +113,28 @@ int main (void) {
     for (int i=1; i<=20; i++) {
         log.x -= 1;
         log.y -= 1;
-        pico_set_dim_world(log);
-        Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
+        pico_set_dim_log(log);
+        Pico_Pos ct = pico_pos_log((Pico_Pct){50, 50});
         pico_output_clear();
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
-        pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
-        pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
+        pico_output_draw_text(pico_pos_log((Pico_Pct){25,75}), "X");
+        pico_output_draw_line(ct, pico_pos_log((Pico_Pct){100,0}));
         pico_input_delay(250);
     }
     puts("decreases zoom");
     for (int i=1; i<=20; i++) {
         log.x += 1;
         log.y += 1;
-        pico_set_dim_world(log);
-        Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
+        pico_set_dim_log(log);
+        Pico_Pos ct = pico_pos_log((Pico_Pct){50, 50});
         pico_output_clear();
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
-        pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
-        pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
+        pico_output_draw_text(pico_pos_log((Pico_Pct){25,75}), "X");
+        pico_output_draw_line(ct, pico_pos_log((Pico_Pct){100,0}));
         pico_input_delay(250);
     }
     pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});

@@ -2,8 +2,8 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_dim_window((Pico_Dim){500,500});
-    pico_set_dim_world((Pico_Dim){50,50});
+    pico_set_dim_phy((Pico_Dim){500,500});
+    pico_set_dim_log((Pico_Dim){50,50});
 
     void draw () {
         pico_set_color_draw((Pico_Color) { 0xFF,0x00,0x00,0xFF });

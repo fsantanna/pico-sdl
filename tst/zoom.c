@@ -3,12 +3,12 @@
 int main (void) {
     pico_init(1);
 
-    Pico_Dim window = pico_get_dim_window();
-    Pico_Dim world  = pico_get_dim_world();
-    assert(window.x==640 && window.y==360);
-    assert(world.x==64 && world.y==36);
+    Pico_Dim phy = pico_get_dim_phy();
+    Pico_Dim log = pico_get_dim_log();
+    assert(phy.x==640 && phy.y==360);
+    assert(log.x==64 && log.y==36);
 
-    Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
+    Pico_Pos ct = pico_pos_log((Pico_Pct){50, 50});
 
 #if 0
     pico_set_style(PICO_STROKE);
@@ -25,30 +25,30 @@ int main (void) {
     puts("shows lower-left X, center rect, center/up-right line");
     puts("increases zoom");
     for (int i=1; i<=20; i++) {
-        world.x -= 1;
-        world.y -= 1;
-        pico_set_dim_world(world);
-        Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
+        log.x -= 1;
+        log.y -= 1;
+        pico_set_dim_log(log);
+        Pico_Pos ct = pico_pos_log((Pico_Pct){50, 50});
         pico_output_clear();
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
-        pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
-        pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
+        pico_output_draw_text(pico_pos_log((Pico_Pct){25,75}), "X");
+        pico_output_draw_line(ct, pico_pos_log((Pico_Pct){100,0}));
         pico_input_delay(250);
     }
     puts("decreases zoom");
     for (int i=1; i<=20; i++) {
-        world.x += 1;
-        world.y += 1;
-        pico_set_dim_world(world);
-        Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
+        log.x += 1;
+        log.y += 1;
+        pico_set_dim_log(log);
+        Pico_Pos ct = pico_pos_log((Pico_Pct){50, 50});
         pico_output_clear();
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
-        pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
-        pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
+        pico_output_draw_text(pico_pos_log((Pico_Pct){25,75}), "X");
+        pico_output_draw_line(ct, pico_pos_log((Pico_Pct){100,0}));
         pico_input_delay(250);
     }
     pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});

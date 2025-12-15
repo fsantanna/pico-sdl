@@ -7,7 +7,7 @@ int main (void) {
 
     {
         puts("centered rect");
-        Pico_Pos  pt  = pico_pos((Pico_Pct){50, 50});
+        Pico_Pos  pt  = pico_pos_log((Pico_Pct){50, 50});
         Pico_Rect rct = {pt.x, pt.y, 32, 18};
         pico_output_clear();
         pico_output_draw_rect(rct);
@@ -18,7 +18,7 @@ int main (void) {
         puts("rect at 30%");
         pico_output_clear();
 
-        Pico_Pos  pt1  = pico_pos((Pico_Pct){30, 30});
+        Pico_Pos  pt1  = pico_pos_log((Pico_Pct){30, 30});
         Pico_Rect rct1 = {pt1.x, pt1.y, 32, 18};
         pico_output_draw_rect(rct1);
 
@@ -35,7 +35,7 @@ int main (void) {
         puts("rect at 50% anchored by bottom-right");
         pico_output_clear();
 
-        Pico_Pos  pt1 = pico_pos((Pico_Pct){50, 50});
+        Pico_Pos  pt1 = pico_pos_log((Pico_Pct){50, 50});
         Pico_Rect rct1 = {pt1.x, pt1.y, 32, 18};
         pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
@@ -55,7 +55,7 @@ int main (void) {
         puts("rect at -10/-10 top-left (4x7 rect on top)");
         pico_output_clear();
 
-        Pico_Pos  pt = pico_pos((Pico_Pct){-10, -10});
+        Pico_Pos  pt = pico_pos_log((Pico_Pct){-10, -10});
         Pico_Rect rct = {pt.x, pt.y, 10, 10};
         pico_set_anchor_pos((Pico_Anchor){PICO_LEFT, PICO_TOP});
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
@@ -68,7 +68,7 @@ int main (void) {
         puts("rect at 110/110 bottom-right (symmetric to previous)");
         pico_output_clear();
 
-        Pico_Pos  pt = pico_pos((Pico_Pct){110, 110});
+        Pico_Pos  pt = pico_pos_log((Pico_Pct){110, 110});
         Pico_Rect rct = {pt.x, pt.y, 10, 10};
         pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
@@ -81,7 +81,7 @@ int main (void) {
         puts("rect at 50% anchored by bottom-right");
         pico_output_clear();
 
-        Pico_Pos  pt1 = pico_pos((Pico_Pct){50, 50});
+        Pico_Pos  pt1 = pico_pos_log((Pico_Pct){50, 50});
         Pico_Rect rct1 = {pt1.x, pt1.y, 32, 18};
         pico_set_anchor_pos((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
@@ -101,7 +101,7 @@ int main (void) {
         puts("rect at 50%");
         pico_output_clear();
 
-        Pico_Pos  pt1 = pico_pos((Pico_Pct){50, 50});
+        Pico_Pos  pt1 = pico_pos_log((Pico_Pct){50, 50});
         Pico_Rect rct1 = {pt1.x, pt1.y, 32, 18};
         pico_set_anchor_pos((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
         pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
