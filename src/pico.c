@@ -1208,7 +1208,10 @@ void pico_set_pos_phy (Pico_Pos pos) {
     if (S.ctx->name == NULL) {
         assert(0 && "TODO: window position");
     }
-    S.ctx->pos = pos;
+    S.ctx->pos = (Pico_Pos) {
+        _anchor_x(pos.x, S.ctx->dim.phy.x),
+        _anchor_y(pos.y, S.ctx->dim.phy.y),
+    };
 }
 
 void pico_set_rotate (int angle) {
