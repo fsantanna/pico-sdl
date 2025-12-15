@@ -175,15 +175,15 @@ Pico_Rect pico_rect_log (Pico_Pct pos, Pico_Pct dim) {
     return pico_rect_ext (
         pos, dim,
         (Pico_Rect){ 0, 0, S.ctx->dim.log.x, S.ctx->dim.log.y},
-        pico_get_anchor_pos()
+        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
 
 Pico_Rect pico_rect_phy (Pico_Pct pos, Pico_Pct dim) {
     return pico_rect_ext (
         pos, dim,
-        (Pico_Rect){ 0, 0, S.ctx->dim.phy.x, S.ctx->dim.phy.y},
-        pico_get_anchor_pos()
+        (Pico_Rect){ 0, 0, S.ctx->dim.phy.x, S.ctx->dim.phy.y },
+        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
 
