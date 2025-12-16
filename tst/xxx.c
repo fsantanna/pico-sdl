@@ -1078,18 +1078,29 @@ int main (void) {
     puts("rect pos=30, dim=50");
     pico_output_clear();
     Pico_Rect r1 = { 192,108,320,180 };
-    pico_set_context("rect");
-    pico_set_dim_phy((Pico_Dim){r1.w,r1.h});
-    pico_set_dim_log((Pico_Dim){r1.w,r1.h});
-    pico_set_pos_phy((Pico_Pos){r1.x,r1.y});
 
-    pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
+    pico_set_context("rect");
+
+    S.ctx->dim.phy = (Pico_Dim){r1.w,r1.h};
+    S.ctx->dim.log = (Pico_Dim){r1.w,r1.h};
+    pico_set_zoom(S.ctx->zoom);
+
+    S.ctx->pos = (Pico_Pos) {
+        _anchor_x(r1.x, S.ctx->dim.phy.x),
+        _anchor_y(r1.y, S.ctx->dim.phy.y),
+    };
+
+    S.color.clear = (Pico_Color){0xFF, 0xFF, 0xFF, 0xFF};
     pico_output_clear();
     SDL_Delay(500);
 
     puts("red centered under white");
     Pico_Rect r2 = { 160,90,160,90 };
-    pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
+
+    SDL_Color c = {0xFF,0x00,0x00,0xFF};
+    S.color.draw = c;
+    SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
+
     pico_output_draw_rect(r2);
     SDL_Delay(500);
 
