@@ -27,26 +27,24 @@ Pico_Ctx _ctx = {
 
 Pico_Ctx* CTX = &_ctx;
 
-static void out (Pico_Ctx* ctx) {
-    SDL_Texture* up = (ctx == &_ctx) ? NULL : _ctx.tex;
+static void out0 () {
+    SDL_Texture* up = NULL;
     SDL_SetRenderTarget(REN, up);
-    SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.x, ctx->dim.y };
-    SDL_SetTextureAlphaMod(ctx->tex, ctx->alpha);
-printf(">>> [%d] %d\n", ctx==&_ctx, ctx->alpha);
-    SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
-    //SDL_SetTextureAlphaMod(ctx->tex, 0xFF);
-    if (ctx == &_ctx) {
-        SDL_RenderPresent(REN);
-    }
-    if (ctx != &_ctx) {
-        out(&_ctx);
-    }
-    Pico_Dim Z = ctx->dim;
-    SDL_SetRenderTarget(REN, ctx->tex);
+    SDL_RenderCopy(REN, _ctx.tex, NULL, NULL);
+    SDL_RenderPresent(REN);
+    SDL_SetRenderTarget(REN, _ctx.tex);
 }
 
-void pico_set_zoom () {
-    SDL_DestroyTexture(CTX->tex);
+static void out1 () {
+    SDL_Texture* up = _ctx.tex;
+    SDL_SetRenderTarget(REN, up);
+    SDL_Rect dst = { CTX->pos.x, CTX->pos.y, CTX->dim.x, CTX->dim.y };
+    SDL_SetTextureAlphaMod(CTX->tex, CTX->alpha);
+printf(">>> [%d] %d\n", 1, CTX->alpha);
+    SDL_RenderCopy(REN, CTX->tex, NULL, &dst);
+    //SDL_SetTextureAlphaMod(CTX->tex, 0xFF);
+    out0();
+    SDL_SetRenderTarget(REN, CTX->tex);
 }
 
 int main (void) {
@@ -68,7 +66,7 @@ int main (void) {
     puts("rect pos=30, dim=50");
     SDL_SetRenderDrawColor(REN, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(REN);
-    out(CTX);
+    out0();
     Pico_Rect r1 = { 192,108,320,180 };
 
     Pico_Ctx ctx = {
@@ -90,7 +88,7 @@ int main (void) {
     CTX->pos = (Pico_Pos) { 32, 18 };
     SDL_SetRenderDrawColor(REN, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(REN);
-    out(CTX);
+    out1();
     SDL_Delay(500);
 
     puts("red centered under white");
@@ -99,7 +97,7 @@ int main (void) {
     SDL_SetRenderDrawColor(REN, 0xFF, 0x00, 0x00, 0xFF);
 
     SDL_RenderFillRect(REN, &r2);
-    out(CTX);
+    out1();
 
     SDL_Delay(500);
 
@@ -107,16 +105,16 @@ int main (void) {
 
     SDL_SetRenderDrawColor(REN, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(REN);
-    out(CTX);
+    out1();
 
     CTX = &ctx;
 
     CTX->alpha = 0x88;
-    out(CTX);
+    out1();
     SDL_Delay(500);
-    out(CTX);
+    out1();
     SDL_Delay(500);
-    out(CTX);
+    out1();
     SDL_Delay(500);
 
     return 0;
