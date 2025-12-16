@@ -16,163 +16,15 @@ typedef SDL_Point Pico_Flip;
 typedef SDL_Point Pico_Pct;
 
 #define PICO_LEFT   0
-#define PICO_CENTER 50
-#define PICO_RIGHT  100
+#define PICO_CENTER 0
+#define PICO_RIGHT  0
 #define PICO_TOP    0
-#define PICO_MIDDLE 50
-#define PICO_BOTTOM 100
+#define PICO_MIDDLE 0
+#define PICO_BOTTOM 0
 
 #define PICO_DIM_KEEP ((Pico_Dim) {0,0})
 #define PICO_CLIP_RESET ((Pico_Rect) {0,0,0,0})
 
-void pico_init (int on);
-void pico_output_clear (void);
-void pico_output_draw_rect (Pico_Rect rect);
-void pico_output_present (void);
-
-Pico_Anchor pico_get_anchor_pos (void);
-Pico_Flip pico_get_flip (void);
-
-/// @brief Gets the font used to draw texts.
-const char* pico_get_font (void);
-
-/// @brief Gets the state of fullscreen mode.
-/// @return 1 if enabled, or 0 otherwise
-int pico_get_fullscreen (void);
-
-/// @brief Gets the state of grid mode.
-/// @return 1 if enabled, or 0 otherwise
-int pico_get_grid (void);
-
-/// @brief Gets the state of a key.
-/// @param key key constant
-/// @return 1 if key is pressed, or 0 otherwise
-
-/// @brief Gets the mouse state.
-/// @param pos pointer to retrieve pointer position (may be NULL)
-/// @param button which button state to retrieve
-/// @return state of specified button
-int pico_get_mouse (Pico_Pos* pos, int button);
-
-/// @brief Gets the rotation angle of objects (in degrees).
-int pico_get_rotate (void);
-
-/// @brief Gets the scaling factor of objects (percentage).
-Pico_Pct pico_get_scale (void);
-
-/// @brief Gets the point of view on the logical window.
-Pico_Pos pico_get_scroll (void);
-
-/// @brief Gets the dimensions of the given image.
-/// @param file image filepath
-Pico_Dim pico_get_dim_image (const char* file);
-
-/// @brief Gets the dimensions of the given text.
-/// @param text text to measure
-Pico_Dim pico_get_dim_text (const char* text);
-
-/// @brief Gets the window dimensions.
-Pico_Dim pico_get_dim_phy (void);
-
-/// @brief Gets the logical dimensions.
-Pico_Dim pico_get_dim_log (void);
-
-/// @brief Gets the visibility state of the window.
-int pico_get_show (void);
-
-/// @brief Gets the amount of ticks that passed since pico was initialized.
-Uint32 pico_get_ticks (void);
-
-/// @brief Gets the aplication title.
-const char* pico_get_title (void);
-
-/// @brief Gets the zoom factor.
-Pico_Pct pico_get_zoom (void);
-
-// SET
-
-void pico_set_alpha (int alpha);
-
-/// @brief Changes the reference to position objects (center, topleft, etc).
-/// @include anchor.c
-/// @param anchor anchor for the x and y axis
-void pico_set_anchor_pos (Pico_Anchor anchor);
-
-/// @brief Changes the reference to rotate objects (center, topleft, etc).
-/// @include anchor.c
-/// @param anchor anchor for the x and y axis
-void pico_set_anchor_rotate (Pico_Anchor anchor);
-
-/// @brief Changes the clipping area of drawing operations.
-/// @param clip clipping region (passing PICO_CLIP_RESET disables it).
-void pico_set_clip (Pico_Rect clip);
-
-/// @brief Changes the color used to clear the screen.
-/// @param color new color
-void pico_set_color_clear (Pico_Color color);
-
-void pico_set_context (char* name);
-
-/// @brief Changes the color used to draw objects.
-/// @param color new color
-void pico_set_color_draw (Pico_Color color);
-
-/// @brief Changes the cropping that is applied to images before drawing them.
-/// @param crop cropping region, which may have 0 area to disable cropping
-void pico_set_crop (Pico_Rect crop);
-
-/// @brief Sets the position of the text cursor.
-/// @param pos new cursor position
-/// @sa pico_output_write
-/// @sa pico_output_writeln
-void pico_set_cursor (Pico_Pos pos);
-
-/// @brief Sets the window dimensions.
-/// @param dim new dimensions
-void pico_set_dim_phy (Pico_Dim dim);
-
-/// @brief Sets the logical dimensions.
-/// @param dim new dimensions
-void pico_set_dim_log (Pico_Dim dim);
-
-/// @brief Toggles the expert mode.
-/// @param on 1 to enable it, or 0 to disable it
-void pico_set_expert (int on);
-
-/// @brief Sets the flipping state of objects.
-void pico_set_flip (Pico_Flip flip);
-
-/// @brief Toggles fullscreen mode.
-/// @param on 1 to enable it, or 0 to disable it
-void pico_set_fullscreen (int on);
-
-/// @brief Toggles a grid on top of logical pixels.
-/// @param on 1 to show it, or 0 to hide it
-void pico_set_grid (int on);
-
-void pico_set_pos_phy (Pico_Pos pos);
-
-/// @brief Sets the rotation angle of objects (in degrees).
-void pico_set_rotate (int angle);
-
-/// @brief Sets the scaling factor of objects
-/// @param scale new scaling for x and y axis (percentage)
-void pico_set_scale (Pico_Pct scale);
-
-/// @brief Sets the point of view on the logical window.
-/// @param pos new point of view
-void pico_set_scroll (Pico_Pos pos);
-
-/// @brief Toggles the aplication window visibility.
-/// @param on 1 to show, or 0 to hide
-void pico_set_show (int on);
-
-/// @brief Sets the aplication title.
-/// @param title new title
-void pico_set_title (const char* title);
-
-/// @param pct new factor
-void pico_set_zoom (Pico_Pct pct);
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
 #include <SDL2/SDL_render.h>
@@ -508,86 +360,6 @@ static SDL_Texture* _draw_aux (int w, int h) {
         S.color.draw.a
     );
     return aux;
-}
-
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim);
-
-void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim) {
-    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
-        (void*)buffer, dim.x, dim.y,
-        32, 4*dim.x, SDL_PIXELFORMAT_RGBA32
-    );
-    SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
-    _pico_output_draw_tex(pos, aux, dim);
-    SDL_FreeSurface(sfc);
-    SDL_DestroyTexture(aux);
-}
-
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim) {
-    Pico_Rect rct;
-    SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
-
-    Pico_Rect crp = S.crop;
-    if (S.crop.w == 0) {
-        crp.w = rct.w;
-    }
-    if (S.crop.h == 0) {
-        crp.h = rct.h;
-    }
-
-    if (dim.x==PICO_DIM_KEEP.x && dim.y==PICO_DIM_KEEP.y) {
-        // normal image size
-        rct.w = crp.w;  // (or copy from crop)
-        rct.h = crp.h;  // (or copy from crop)
-    } else if (dim.x == 0) {
-        // adjust w based on h
-        rct.w = rct.w * (dim.y / (float)rct.h);
-        rct.h = dim.y;
-    } else if (dim.y == 0) {
-        // adjust h based on w
-        rct.h = rct.h * (dim.x / (float)rct.w);
-        rct.w = dim.x;
-    } else {
-        rct.w = dim.x;
-        rct.h = dim.y;
-    }
-
-    // SCALE
-    rct.w = (S.scale.x*rct.w)/100; // * GRAPHICS_SET_SCALE_W;
-    rct.h = (S.scale.y*rct.h)/100; // * GRAPHICS_SET_SCALE_H;
-
-    // ANCHOR / PAN
-    rct.x = X(pos.x, rct.w);
-    rct.y = Y(pos.y, rct.h);
-
-    // ROTATE
-    Pico_Pos rot = {
-        (S.anchor.rotate.x*rct.w)/100,
-        (S.anchor.rotate.y*rct.h)/100
-    };
-
-    SDL_RenderCopyEx(REN, tex,
-        &crp, &rct,
-        S.angle + (S.flip.x && S.flip.y ? 180 : 0),
-        &rot,
-        S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
-    );
-    _pico_output_present(0, S.ctx);
-}
-
-// TODO: Test me for flip and rotate
-void pico_output_draw_rect (Pico_Rect rect) {
-    Pico_Pos pos = {rect.x, rect.y};
-    SDL_Rect clip;
-    SDL_RenderGetClipRect(REN, &clip);
-    SDL_Texture* aux = _draw_aux(rect.w, rect.h);
-    rect.x = 0;
-    rect.y = 0;
-    SDL_RenderFillRect(REN, &rect);
-    SDL_SetRenderTarget(REN, S.ctx->tex);
-    SDL_RenderSetClipRect(REN, &clip);
-    _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
-    SDL_DestroyTexture(aux);
 }
 
 static void _show_grid (Pico_Ctx* ctx) {
@@ -952,6 +724,39 @@ void pico_set_dim_phy (Pico_Dim dim) {
     SDL_RenderSetClipRect(REN, &clip);
 }
 
+void pico_set_scroll (Pico_Pos pos) {
+    S.ctx->scroll = pos;
+}
+
+void pico_set_zoom (Pico_Pct pct) {
+    Pico_Dim old = _zoom(S.ctx);
+    S.ctx->zoom = pct;
+    Pico_Dim new = _zoom(S.ctx);
+    
+    int dx = new.x - old.x;
+    int dy = new.y - old.y;
+
+    pico_set_scroll ((Pico_Pos) {
+        S.ctx->scroll.x - (dx * S.anchor.pos.x / 100),
+        S.ctx->scroll.y - (dy * S.anchor.pos.y / 100),
+    });
+
+    SDL_DestroyTexture(S.ctx->tex);
+    S.ctx->tex = SDL_CreateTexture (
+        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+        new.x, new.y
+    );
+    pico_assert(S.ctx->tex != NULL);
+    SDL_SetTextureBlendMode(S.ctx->tex, SDL_BLENDMODE_BLEND);
+    SDL_RenderSetLogicalSize(REN, new.x, new.y);
+    SDL_SetRenderTarget(REN, S.ctx->tex);
+
+    // TODO: need to init w/ explicit SetClip to save w/h
+    //       do not pass NULL, GetClip would also return w=0,h=0
+    SDL_Rect clip = { 0, 0, new.x, new.y };
+    SDL_RenderSetClipRect(REN, &clip);
+}
+
 void pico_set_dim_log (Pico_Dim dim) {
     S.ctx->dim.log = dim;
     pico_set_zoom(S.ctx->zoom);
@@ -1012,10 +817,6 @@ void pico_set_scale (Pico_Pct scale) {
     S.scale = scale;
 }
 
-void pico_set_scroll (Pico_Pos pos) {
-    S.ctx->scroll = pos;
-}
-
 void pico_set_show (int on) {
     if (on) {
         SDL_ShowWindow(WIN);
@@ -1027,35 +828,6 @@ void pico_set_show (int on) {
 
 void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
-}
-
-void pico_set_zoom (Pico_Pct pct) {
-    Pico_Dim old = _zoom(S.ctx);
-    S.ctx->zoom = pct;
-    Pico_Dim new = _zoom(S.ctx);
-    
-    int dx = new.x - old.x;
-    int dy = new.y - old.y;
-
-    pico_set_scroll ((Pico_Pos) {
-        S.ctx->scroll.x - (dx * S.anchor.pos.x / 100),
-        S.ctx->scroll.y - (dy * S.anchor.pos.y / 100),
-    });
-
-    SDL_DestroyTexture(S.ctx->tex);
-    S.ctx->tex = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        new.x, new.y
-    );
-    pico_assert(S.ctx->tex != NULL);
-    SDL_SetTextureBlendMode(S.ctx->tex, SDL_BLENDMODE_BLEND);
-    SDL_RenderSetLogicalSize(REN, new.x, new.y);
-    SDL_SetRenderTarget(REN, S.ctx->tex);
-
-    // TODO: need to init w/ explicit SetClip to save w/h
-    //       do not pass NULL, GetClip would also return w=0,h=0
-    SDL_Rect clip = { 0, 0, new.x, new.y };
-    SDL_RenderSetClipRect(REN, &clip);
 }
 
 int main (void) {
@@ -1085,23 +857,21 @@ int main (void) {
     S.ctx->dim.log = (Pico_Dim){r1.w,r1.h};
     pico_set_zoom(S.ctx->zoom);
 
-    S.ctx->pos = (Pico_Pos) {
-        _anchor_x(r1.x, S.ctx->dim.phy.x),
-        _anchor_y(r1.y, S.ctx->dim.phy.y),
-    };
-
+    S.ctx->pos = (Pico_Pos) { 32, 18 };
     S.color.clear = (Pico_Color){0xFF, 0xFF, 0xFF, 0xFF};
     pico_output_clear();
     SDL_Delay(500);
 
     puts("red centered under white");
-    Pico_Rect r2 = { 160,90,160,90 };
+    Pico_Rect r2 = { 80,45,160,90 };
 
     SDL_Color c = {0xFF,0x00,0x00,0xFF};
     S.color.draw = c;
     SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
 
-    pico_output_draw_rect(r2);
+    SDL_RenderFillRect(REN, &r2);
+    _pico_output_present(0, S.ctx);
+
     SDL_Delay(500);
 
     pico_set_context(NULL);
