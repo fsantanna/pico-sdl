@@ -2,50 +2,15 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 
-#define PICO_TITLE "pico-SDL"
-#define PICO_DIM_PHY ((Pico_Dim) {640,360})
-#define PICO_DIM_LOG ((Pico_Dim) {640,360})
-#define PICO_HASH  128
-
 typedef SDL_Point Pico_Pos;
 typedef SDL_Point Pico_Dim;
 typedef SDL_Rect  Pico_Rect;
 typedef SDL_Color Pico_Color;
-typedef SDL_Point Pico_Anchor;
-typedef SDL_Point Pico_Flip;
 typedef SDL_Point Pico_Pct;
-
-#define PICO_LEFT   0
-#define PICO_CENTER 0
-#define PICO_RIGHT  0
-#define PICO_TOP    0
-#define PICO_MIDDLE 0
-#define PICO_BOTTOM 0
-
-#define PICO_DIM_KEEP ((Pico_Dim) {0,0})
-#define PICO_CLIP_RESET ((Pico_Rect) {0,0,0,0})
 
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_video.h>
-#include <unistd.h>
-#include <limits.h>
-#include <time.h>
-#include <stdarg.h>
-
-#include <SDL2/SDL2_gfxPrimitives.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
-
-#include <assert.h>
-#include <string.h>
-
-#include <stdlib.h>
-#include <stddef.h>
-
-static SDL_Window*  WIN;
+static SDL_Window* WIN;
 
 #define REN (SDL_GetRenderer(WIN))
 
@@ -57,15 +22,13 @@ typedef struct Pico_Ctx {
     }            dim;
     Pico_Pos     pos;
     SDL_Texture* tex;
-    Pico_Pct     zoom;
 } Pico_Ctx;
 
 Pico_Ctx _ctx = {
     0xFF,
-    { PICO_DIM_PHY, PICO_DIM_LOG },
+    { {640,360}, {640,360} },
     {0, 0},
     NULL,
-    {100, 100},
 };
 
 Pico_Ctx* CTX = &_ctx;
@@ -103,9 +66,8 @@ void pico_output_present (void) {
     _pico_output_present(1, &_ctx);
 }
 
-void pico_set_zoom (Pico_Pct pct) {
+void pico_set_zoom () {
     Pico_Dim old = CTX->dim.log;
-    CTX->zoom = pct;
     Pico_Dim new = CTX->dim.log;
     
     int dx = new.x - old.x;
@@ -131,7 +93,7 @@ int main (void) {
     {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
-            PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+            "XXX", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             CTX->dim.phy.x, CTX->dim.phy.y,
             (SDL_WINDOW_SHOWN)
         );
@@ -139,7 +101,7 @@ int main (void) {
         SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED);
         pico_assert(REN != NULL);
         SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
-        pico_set_zoom(CTX->zoom);
+        pico_set_zoom();
     }
 
     puts("rect pos=30, dim=50");
@@ -153,13 +115,12 @@ int main (void) {
         { {0,0}, {0,0} },
         {0, 0},
         NULL,
-        {100, 100},
     };
     CTX = &ctx;
 
     CTX->dim.phy = (Pico_Dim){r1.w,r1.h};
     CTX->dim.log = (Pico_Dim){r1.w,r1.h};
-    pico_set_zoom(CTX->zoom);
+    pico_set_zoom();
 
     CTX->pos = (Pico_Pos) { 32, 18 };
     SDL_SetRenderDrawColor(REN, 0xFF, 0xFF, 0xFF, 0xFF);
