@@ -376,10 +376,13 @@ static int event_from_sdl (Pico_Event* e, int xp) {
     switch (e->type) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
-        case SDL_MOUSEMOTION:
-            e->button.x += S.ctx->scroll.x;
-            e->button.y += S.ctx->scroll.y;
+        case SDL_MOUSEMOTION: {
+            Pico_Pos pos;
+            pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+            e->button.x = pos.x;
+            e->button.y = pos.y;
             break;
+        }
         default:
             break;
     }
@@ -790,7 +793,6 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
     SDL_SetTextureAlphaMod(ctx->tex, ctx->alpha);
     SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
-    //SDL_SetTextureAlphaMod(ctx->tex, 0xFF);
 
     if (ctx->name == NULL) {
         _show_grid(ctx);
