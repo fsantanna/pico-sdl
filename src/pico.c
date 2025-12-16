@@ -1095,18 +1095,13 @@ void pico_set_clip (Pico_Rect clip) {
     SDL_RenderSetClipRect(REN, &clip);
 }
 
-void pico_set_color_clear (Pico_Color color) {
-    S.color.clear = color;
+void pico_set_color_clear (Pico_Color clr) {
+    S.color.clear = clr;
 }
 
-void pico_set_color_draw  (Pico_Color color) {
-    S.color.draw = color;
-    SDL_SetRenderDrawColor (REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
+void pico_set_color_draw  (Pico_Color clr) {
+    S.color.draw = clr;
+    SDL_SetRenderDrawColor(REN, clr.r, clr.g, clr.b, clr.a);
 }
 
 void pico_set_context (char* name) {
