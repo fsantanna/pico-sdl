@@ -464,8 +464,8 @@ static SDL_Texture* _draw_aux (int w, int h) {
         REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         w, h
     );
-    SDL_SetRenderTarget(REN, aux);
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(REN, aux);
     SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
     SDL_RenderClear(REN);
     SDL_RenderFillRect(REN, NULL);
@@ -797,7 +797,6 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     }
 
     SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
-printf(">>> %d\n", ctx->alpha);
     SDL_SetTextureAlphaMod(ctx->tex, ctx->alpha);
     SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
 
@@ -1269,6 +1268,7 @@ void pico_set_zoom (Pico_Pct pct) {
         new.x, new.y
     );
     pico_assert(S.ctx->tex != NULL);
+    SDL_SetTextureBlendMode(S.ctx->tex, SDL_BLENDMODE_BLEND);
     SDL_RenderSetLogicalSize(REN, new.x, new.y);
     SDL_SetRenderTarget(REN, S.ctx->tex);
 
