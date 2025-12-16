@@ -799,6 +799,7 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
     SDL_SetTextureAlphaMod(ctx->tex, ctx->alpha);
     SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
+    //SDL_SetTextureAlphaMod(ctx->tex, 0xFF);
 
     if (ctx->name == NULL) {
         _show_grid(ctx);
@@ -1109,23 +1110,27 @@ void pico_set_color_draw  (Pico_Color color) {
 }
 
 void pico_set_context (char* name) {
-    Pico_Ctx* ctx = (Pico_Ctx*)pico_hash_get(_pico_hash, name);
-    if (ctx == NULL) {
-        ctx = malloc(sizeof(Pico_Ctx));
-        *ctx = (Pico_Ctx) {
-            0xFF,
-            { {0,0}, {0,0} },
-            1,
-            name,
-            {0, 0},
-            {0, 0},
-            NULL,
-            {100, 100},
-        };
-        pico_hash_add(_pico_hash, name, ctx);
+    if (name == NULL) {
+        S.ctx = &_ctx;
+    } else {
+        Pico_Ctx* ctx = (Pico_Ctx*)pico_hash_get(_pico_hash, name);
+        if (ctx == NULL) {
+            ctx = malloc(sizeof(Pico_Ctx));
+            *ctx = (Pico_Ctx) {
+                0xFF,
+                { {0,0}, {0,0} },
+                1,
+                name,
+                {0, 0},
+                {0, 0},
+                NULL,
+                {100, 100},
+            };
+            pico_hash_add(_pico_hash, name, ctx);
+        }
+        pico_assert(ctx != NULL);
+        S.ctx = ctx;
     }
-    pico_assert(ctx != NULL);
-    S.ctx = ctx;
 }
 
 void pico_set_crop (Pico_Rect crop) {

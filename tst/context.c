@@ -38,6 +38,15 @@ int main (void) {
     }
 
     {
+        pico_set_context(NULL);
+        pico_output_clear();
+        pico_set_context("rect");
+        pico_set_alpha(0x88);
+        pico_input_event(NULL, PICO_KEYDOWN);
+        //pico_set_alpha(0xFF);
+    }
+
+    {
         puts("blue centered under white");
         Pico_Pos pt = pico_pos_log((Pico_Pct){50, 50});
         pico_set_color_draw((Pico_Color){0x00,0x00,0xFF,0xFF});
