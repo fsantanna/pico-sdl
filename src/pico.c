@@ -806,7 +806,6 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
         _pico_output_present(force, &_ctx);
     }
 
-    Pico_Dim Z = _zoom(ctx);
     SDL_SetRenderTarget(REN, ctx->tex);
     SDL_RenderSetClipRect(REN, &clip);
 }
