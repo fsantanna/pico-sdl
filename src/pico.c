@@ -437,12 +437,8 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 static void _pico_output_present (int force, Pico_Ctx* ctx);
 
 void pico_output_clear (void) {
-    SDL_SetRenderDrawColor (REN,
-        S.color.clear.r,
-        S.color.clear.g,
-        S.color.clear.b,
-        S.color.clear.a
-    );
+    Pico_Color clear = S.color.clear;
+    SDL_SetRenderDrawColor(REN, clear.r, clear.g, clear.b, clear.a);
     if (_noclip()) {
         SDL_RenderClear(REN);
     } else {
@@ -450,12 +446,8 @@ void pico_output_clear (void) {
         SDL_RenderGetClipRect(REN, &r);
         SDL_RenderFillRect(REN, &r);
     }
-    SDL_SetRenderDrawColor (REN,
-        S.color.draw.r,
-        S.color.draw.g,
-        S.color.draw.b,
-        S.color.draw.a
-    );
+    Pico_Color draw = S.color.draw;
+    SDL_SetRenderDrawColor(REN, draw.r, draw.g, draw.b, draw.a);
     _pico_output_present(0, S.ctx);
 }
 
