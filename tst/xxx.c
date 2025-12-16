@@ -75,59 +75,12 @@ Pico_Ctx _ctx = {
 };
 
 static struct {
-    struct {
-        Pico_Anchor pos;
-        Pico_Anchor rotate;
-    } anchor;
-    int angle;
-    Pico_Rect clip;
-    struct {
-        Pico_Color clear;
-        Pico_Color draw;
-    } color;
-    Pico_Rect crop;
     Pico_Ctx* ctx;
-    struct {
-        int x;
-        Pico_Pos cur;
-    } cursor;
-    int expert;
-    Pico_Flip flip;
-    struct {
-        void* ttf;
-        int h;
-    } font;
-    int fullscreen;
-    int style;
-    Pico_Pct scale;
 } S = {
-    { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
-    0,
-    {0, 0, 0, 0},
-    { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
-    {0, 0, 0, 0},
     &_ctx,
-    {0, {0,0}},
-    0,
-    {0, 0},
-    {NULL, 0},
-    0,
-    0,
-    {100, 100},
 };
 
-static Pico_Dim _zoom (Pico_Ctx* ctx) {
-    return (Pico_Dim) {
-        ctx->dim.log.x * ctx->zoom.x / 100,
-        ctx->dim.log.y * ctx->zoom.y / 100,
-    };
-}
-
-static void _pico_output_present (int force, Pico_Ctx* ctx);
-
 static void _pico_output_present (int force, Pico_Ctx* ctx) {
-    if (S.expert && !force) return;
-
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
 
@@ -135,13 +88,6 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
 
     SDL_SetRenderTarget(REN, up);
     SDL_RenderSetLogicalSize(REN, _ctx.dim.phy.x, _ctx.dim.phy.y);
-
-    if (ctx->name == NULL) {
-        SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
-        SDL_RenderClear(REN);
-        Pico_Color c = S.color.draw;
-        SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
-    }
 
     SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
     SDL_SetTextureAlphaMod(ctx->tex, ctx->alpha);
@@ -157,7 +103,7 @@ printf(">>> [%d] %d\n", ctx==&_ctx, ctx->alpha);
         _pico_output_present(force, &_ctx);
     }
 
-    Pico_Dim Z = _zoom(ctx);
+    Pico_Dim Z = ctx->dim.log;
     SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
     SDL_SetRenderTarget(REN, ctx->tex);
     SDL_RenderSetClipRect(REN, &clip);
@@ -167,15 +113,10 @@ void pico_output_present (void) {
     _pico_output_present(1, &_ctx);
 }
 
-void pico_set_alpha (int alpha) {
-    S.ctx->alpha = alpha;
-    _pico_output_present(0, S.ctx);
-}
-
 void pico_set_zoom (Pico_Pct pct) {
-    Pico_Dim old = _zoom(S.ctx);
+    Pico_Dim old = S.ctx->dim.log;
     S.ctx->zoom = pct;
-    Pico_Dim new = _zoom(S.ctx);
+    Pico_Dim new = S.ctx->dim.log;
     
     int dx = new.x - old.x;
     int dy = new.y - old.y;
@@ -242,9 +183,7 @@ int main (void) {
     puts("red centered under white");
     Pico_Rect r2 = { 80,45,160,90 };
 
-    SDL_Color c = {0xFF,0x00,0x00,0xFF};
-    S.color.draw = c;
-    SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
+    SDL_SetRenderDrawColor(REN, 0xFF, 0x00, 0x00, 0xFF);
 
     SDL_RenderFillRect(REN, &r2);
     _pico_output_present(0, S.ctx);
@@ -259,11 +198,12 @@ int main (void) {
 
     S.ctx = &ctx;
 
-    pico_set_alpha(0x88);
+    S.ctx->alpha = 0x88;
+    _pico_output_present(0, S.ctx);
     SDL_Delay(500);
-    pico_set_alpha(0x88);
+    _pico_output_present(0, S.ctx);
     SDL_Delay(500);
-    pico_set_alpha(0x88);
+    _pico_output_present(0, S.ctx);
     SDL_Delay(500);
 
     return 0;
