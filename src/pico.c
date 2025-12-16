@@ -233,7 +233,7 @@ void pico_init (int on) {
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
-        pico_set_zoom(S.ctx->zoom);
+        pico_set_dim_log(S.ctx->dim.log);
         pico_set_font(NULL, 0);
         pico_output_clear();
 
@@ -779,7 +779,6 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_Texture* up = (ctx == &_ctx) ? NULL : _ctx.tex;
 
     SDL_SetRenderTarget(REN, up);
-    SDL_RenderSetLogicalSize(REN, _ctx.dim.phy.x, _ctx.dim.phy.y);
 
     if (ctx->name == NULL) {
         SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
@@ -806,7 +805,6 @@ static void _pico_output_present (int force, Pico_Ctx* ctx) {
     }
 
     Pico_Dim Z = _zoom(ctx);
-    SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
     SDL_SetRenderTarget(REN, ctx->tex);
     SDL_RenderSetClipRect(REN, &clip);
 }
@@ -1144,7 +1142,21 @@ void pico_set_dim_phy (Pico_Dim dim) {
 
 void pico_set_dim_log (Pico_Dim dim) {
     S.ctx->dim.log = dim;
-    pico_set_zoom(S.ctx->zoom);
+    if (S.ctx->tex != NULL) {
+        SDL_DestroyTexture(S.ctx->tex);
+    }
+    S.ctx->tex = SDL_CreateTexture (
+        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+        dim.x, dim.y
+    );
+    pico_assert(S.ctx->tex != NULL);
+    SDL_SetTextureBlendMode(S.ctx->tex, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(REN, S.ctx->tex);
+
+    // TODO: need to init w/ explicit SetClip to save w/h
+    //       do not pass NULL, GetClip would also return w=0,h=0
+    SDL_Rect clip = { 0, 0, dim.x, dim.y };
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_expert (int on) {
@@ -1253,19 +1265,4 @@ void pico_set_zoom (Pico_Pct pct) {
         S.ctx->scroll.x - (dx * S.anchor.pos.x / 100),
         S.ctx->scroll.y - (dy * S.anchor.pos.y / 100),
     });
-
-    SDL_DestroyTexture(S.ctx->tex);
-    S.ctx->tex = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        new.x, new.y
-    );
-    pico_assert(S.ctx->tex != NULL);
-    SDL_SetTextureBlendMode(S.ctx->tex, SDL_BLENDMODE_BLEND);
-    SDL_RenderSetLogicalSize(REN, new.x, new.y);
-    SDL_SetRenderTarget(REN, S.ctx->tex);
-
-    // TODO: need to init w/ explicit SetClip to save w/h
-    //       do not pass NULL, GetClip would also return w=0,h=0
-    SDL_Rect clip = { 0, 0, new.x, new.y };
-    SDL_RenderSetClipRect(REN, &clip);
 }
