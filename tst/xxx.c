@@ -7,7 +7,8 @@ typedef SDL_Rect  Pico_Rect;
 typedef SDL_Color Pico_Color;
 typedef SDL_Point Pico_Pct;
 
-static SDL_Window* WIN;
+static SDL_Window*  WIN;
+static SDL_Texture* TEX;
 
 #define REN (SDL_GetRenderer(WIN))
 
@@ -18,33 +19,29 @@ typedef struct Pico_Ctx {
     SDL_Texture* tex;
 } Pico_Ctx;
 
-Pico_Ctx _ctx = {
+Pico_Ctx CTX = {
     0xFF,
-    {640,360},
+    {0,0},
     {0, 0},
     NULL,
 };
 
-Pico_Ctx* CTX = &_ctx;
-
 static void out0 () {
-    SDL_Texture* up = NULL;
-    SDL_SetRenderTarget(REN, up);
-    SDL_RenderCopy(REN, _ctx.tex, NULL, NULL);
+    SDL_SetRenderTarget(REN, NULL);
+    SDL_RenderCopy(REN, TEX, NULL, NULL);
     SDL_RenderPresent(REN);
-    SDL_SetRenderTarget(REN, _ctx.tex);
+    SDL_SetRenderTarget(REN, TEX);
 }
 
 static void out1 () {
-    SDL_Texture* up = _ctx.tex;
-    SDL_SetRenderTarget(REN, up);
-    SDL_Rect dst = { CTX->pos.x, CTX->pos.y, CTX->dim.x, CTX->dim.y };
-    SDL_SetTextureAlphaMod(CTX->tex, CTX->alpha);
-printf(">>> [%d] %d\n", 1, CTX->alpha);
-    SDL_RenderCopy(REN, CTX->tex, NULL, &dst);
-    //SDL_SetTextureAlphaMod(CTX->tex, 0xFF);
+    SDL_SetRenderTarget(REN, TEX);
+    SDL_Rect dst = { CTX.pos.x, CTX.pos.y, CTX.dim.x, CTX.dim.y };
+    SDL_SetTextureAlphaMod(CTX.tex, CTX.alpha);
+printf(">>> [%d] %d\n", 1, CTX.alpha);
+    SDL_RenderCopy(REN, CTX.tex, NULL, &dst);
+    //SDL_SetTextureAlphaMod(CTX.tex, 0xFF);
     out0();
-    SDL_SetRenderTarget(REN, CTX->tex);
+    SDL_SetRenderTarget(REN, CTX.tex);
 }
 
 int main (void) {
@@ -56,12 +53,12 @@ int main (void) {
     );
     SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
-    CTX->tex = SDL_CreateTexture (
+    TEX = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        CTX->dim.x, CTX->dim.y
+        640, 360
     );
-    SDL_SetTextureBlendMode(CTX->tex, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, CTX->tex);
+    SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(REN, TEX);
 
     puts("rect pos=30, dim=50");
     SDL_SetRenderDrawColor(REN, 0x00, 0x00, 0x00, 0xFF);
@@ -69,23 +66,15 @@ int main (void) {
     out0();
     Pico_Rect r1 = { 192,108,320,180 };
 
-    Pico_Ctx ctx = {
-        0xFF,
-        {0,0},
-        {0, 0},
-        NULL,
-    };
-    CTX = &ctx;
-
-    CTX->dim = (Pico_Dim){r1.w,r1.h};
-    CTX->tex = SDL_CreateTexture (
+    CTX.dim = (Pico_Dim){r1.w,r1.h};
+    CTX.tex = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        CTX->dim.x, CTX->dim.y
+        CTX.dim.x, CTX.dim.y
     );
-    SDL_SetTextureBlendMode(CTX->tex, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, CTX->tex);
+    SDL_SetTextureBlendMode(CTX.tex, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(REN, CTX.tex);
 
-    CTX->pos = (Pico_Pos) { 32, 18 };
+    CTX.pos = (Pico_Pos) { 32, 18 };
     SDL_SetRenderDrawColor(REN, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(REN);
     out1();
@@ -101,15 +90,11 @@ int main (void) {
 
     SDL_Delay(500);
 
-    CTX = &_ctx;
-
     SDL_SetRenderDrawColor(REN, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(REN);
-    out1();
+    out0();
 
-    CTX = &ctx;
-
-    CTX->alpha = 0x88;
+    CTX.alpha = 0x88;
     out1();
     SDL_Delay(500);
     out1();
