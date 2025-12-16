@@ -55,10 +55,7 @@ typedef struct Pico_Ctx {
         Pico_Dim phy;
         Pico_Dim log;
     }            dim;
-    int          grid;
-    char*        name;
     Pico_Pos     pos;
-    Pico_Pos     scroll;
     SDL_Texture* tex;
     Pico_Pct     zoom;
 } Pico_Ctx;
@@ -66,19 +63,12 @@ typedef struct Pico_Ctx {
 Pico_Ctx _ctx = {
     0xFF,
     { PICO_DIM_PHY, PICO_DIM_LOG },
-    1,
-    NULL,
-    {0, 0},
     {0, 0},
     NULL,
     {100, 100},
 };
 
-static struct {
-    Pico_Ctx* ctx;
-} S = {
-    &_ctx,
-};
+Pico_Ctx* CTX = &_ctx;
 
 static void _pico_output_present (int force, Pico_Ctx* ctx) {
     SDL_Rect clip;
@@ -95,11 +85,11 @@ printf(">>> [%d] %d\n", ctx==&_ctx, ctx->alpha);
     SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
     //SDL_SetTextureAlphaMod(ctx->tex, 0xFF);
 
-    if (ctx->name == NULL) {
+    if (ctx == &_ctx) {
         SDL_RenderPresent(REN);
     }
 
-    if (ctx->name != NULL) {
+    if (ctx != &_ctx) {
         _pico_output_present(force, &_ctx);
     }
 
@@ -114,22 +104,22 @@ void pico_output_present (void) {
 }
 
 void pico_set_zoom (Pico_Pct pct) {
-    Pico_Dim old = S.ctx->dim.log;
-    S.ctx->zoom = pct;
-    Pico_Dim new = S.ctx->dim.log;
+    Pico_Dim old = CTX->dim.log;
+    CTX->zoom = pct;
+    Pico_Dim new = CTX->dim.log;
     
     int dx = new.x - old.x;
     int dy = new.y - old.y;
 
-    SDL_DestroyTexture(S.ctx->tex);
-    S.ctx->tex = SDL_CreateTexture (
+    SDL_DestroyTexture(CTX->tex);
+    CTX->tex = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         new.x, new.y
     );
-    pico_assert(S.ctx->tex != NULL);
-    SDL_SetTextureBlendMode(S.ctx->tex, SDL_BLENDMODE_BLEND);
+    pico_assert(CTX->tex != NULL);
+    SDL_SetTextureBlendMode(CTX->tex, SDL_BLENDMODE_BLEND);
     SDL_RenderSetLogicalSize(REN, new.x, new.y);
-    SDL_SetRenderTarget(REN, S.ctx->tex);
+    SDL_SetRenderTarget(REN, CTX->tex);
 
     // TODO: need to init w/ explicit SetClip to save w/h
     //       do not pass NULL, GetClip would also return w=0,h=0
@@ -142,42 +132,39 @@ int main (void) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            S.ctx->dim.phy.x, S.ctx->dim.phy.y,
+            CTX->dim.phy.x, CTX->dim.phy.y,
             (SDL_WINDOW_SHOWN)
         );
         pico_assert(WIN != NULL);
         SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED);
         pico_assert(REN != NULL);
         SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
-        pico_set_zoom(S.ctx->zoom);
+        pico_set_zoom(CTX->zoom);
     }
 
     puts("rect pos=30, dim=50");
     SDL_SetRenderDrawColor(REN, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(REN);
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, CTX);
     Pico_Rect r1 = { 192,108,320,180 };
 
     Pico_Ctx ctx = {
         0xFF,
         { {0,0}, {0,0} },
-        1,
-        "rect",
-        {0, 0},
         {0, 0},
         NULL,
         {100, 100},
     };
-    S.ctx = &ctx;
+    CTX = &ctx;
 
-    S.ctx->dim.phy = (Pico_Dim){r1.w,r1.h};
-    S.ctx->dim.log = (Pico_Dim){r1.w,r1.h};
-    pico_set_zoom(S.ctx->zoom);
+    CTX->dim.phy = (Pico_Dim){r1.w,r1.h};
+    CTX->dim.log = (Pico_Dim){r1.w,r1.h};
+    pico_set_zoom(CTX->zoom);
 
-    S.ctx->pos = (Pico_Pos) { 32, 18 };
+    CTX->pos = (Pico_Pos) { 32, 18 };
     SDL_SetRenderDrawColor(REN, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(REN);
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, CTX);
     SDL_Delay(500);
 
     puts("red centered under white");
@@ -186,24 +173,24 @@ int main (void) {
     SDL_SetRenderDrawColor(REN, 0xFF, 0x00, 0x00, 0xFF);
 
     SDL_RenderFillRect(REN, &r2);
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, CTX);
 
     SDL_Delay(500);
 
-    S.ctx = &_ctx;
+    CTX = &_ctx;
 
     SDL_SetRenderDrawColor(REN, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(REN);
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, CTX);
 
-    S.ctx = &ctx;
+    CTX = &ctx;
 
-    S.ctx->alpha = 0x88;
-    _pico_output_present(0, S.ctx);
+    CTX->alpha = 0x88;
+    _pico_output_present(0, CTX);
     SDL_Delay(500);
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, CTX);
     SDL_Delay(500);
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, CTX);
     SDL_Delay(500);
 
     return 0;
