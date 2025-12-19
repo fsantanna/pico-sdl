@@ -8,9 +8,7 @@ int main (void) {
 
     Pico_Pos pos = pico_pos_log((Pico_Pct){50, 50});
     while (1) {
-        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
         pico_output_draw_pixel(pos);
-
         pico_input_delay(200);
 
         //pico_set_color_draw((Pico_Color){0x00,0x00,0x00,0xFF});

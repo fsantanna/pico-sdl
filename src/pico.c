@@ -235,7 +235,6 @@ void pico_init (int on) {
 
         pico_set_dim_log(S.panel->dim.log);
         pico_set_font(NULL, 0);
-        pico_output_clear();
 
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
@@ -1153,6 +1152,7 @@ void pico_set_dim_log (Pico_Dim dim) {
     pico_assert(S.panel->tex != NULL);
     SDL_SetTextureBlendMode(S.panel->tex, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, S.panel->tex);
+    pico_output_clear();
 
     // TODO: need to init w/ explicit SetClip to save w/h
     //       do not pass NULL, GetClip would also return w=0,h=0
