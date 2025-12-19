@@ -24,7 +24,7 @@ static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 
 static pico_hash* _pico_hash;
 
-typedef struct Pico_Ctx {
+typedef struct Pico_Panel {
     int          alpha;
     struct {
         Pico_Dim phy;
@@ -36,9 +36,9 @@ typedef struct Pico_Ctx {
     Pico_Pos     scroll;
     SDL_Texture* tex;
     Pico_Pct     zoom;
-} Pico_Ctx;
+} Pico_Panel;
 
-Pico_Ctx _ctx = {
+Pico_Panel _ctx = {
     0xFF,
     { PICO_DIM_PHY, PICO_DIM_LOG },
     1,
@@ -61,7 +61,7 @@ static struct {
         Pico_Color draw;
     } color;
     Pico_Rect crop;
-    Pico_Ctx* ctx;
+    Pico_Panel* panel;
     struct {
         int x;
         Pico_Pos cur;
@@ -96,10 +96,10 @@ static int _noclip () {
            (S.clip.h == PICO_CLIP_RESET.h);
 }
 
-static Pico_Dim _zoom (Pico_Ctx* ctx) {
+static Pico_Dim _zoom (Pico_Panel* panel) {
     return (Pico_Dim) {
-        ctx->dim.log.x * ctx->zoom.x / 100,
-        ctx->dim.log.y * ctx->zoom.y / 100,
+        panel->dim.log.x * panel->zoom.x / 100,
+        panel->dim.log.y * panel->zoom.y / 100,
     };
 }
 
@@ -120,21 +120,21 @@ static int _anchor_y (int y, int h) {
 }
 
 static int X (int x, int w) {
-    return _anchor_x(x,w) - S.ctx->scroll.x;
+    return _anchor_x(x,w) - S.panel->scroll.x;
 }
 
 static int Y (int y, int h) {
-    return _anchor_y(y,h) - S.ctx->scroll.y;
+    return _anchor_y(y,h) - S.panel->scroll.y;
 }
 
 // UTILS
 
 Pico_Dim pico_dim_log (Pico_Pct pct) {
-    return pico_dim_ext(pct, S.ctx->dim.log);
+    return pico_dim_ext(pct, S.panel->dim.log);
 }
 
 Pico_Dim pico_dim_phy (Pico_Pct pct) {
-    return pico_dim_ext(pct, S.ctx->dim.phy);
+    return pico_dim_ext(pct, S.panel->dim.phy);
 }
 
 Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
@@ -145,7 +145,7 @@ Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
 Pico_Pos pico_pos_log (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
-        (Pico_Rect){ 0, 0, S.ctx->dim.log.x, S.ctx->dim.log.y },
+        (Pico_Rect){ 0, 0, S.panel->dim.log.x, S.panel->dim.log.y },
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -153,7 +153,7 @@ Pico_Pos pico_pos_log (Pico_Pct pct) {
 Pico_Pos pico_pos_phy (Pico_Pct pct) {
     return pico_pos_ext (
         pct,
-        (Pico_Rect){ 0, 0, S.ctx->dim.phy.x, S.ctx->dim.phy.y },
+        (Pico_Rect){ 0, 0, S.panel->dim.phy.x, S.panel->dim.phy.y },
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -176,7 +176,7 @@ int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor 
 Pico_Rect pico_rect_log (Pico_Pct pos, Pico_Pct dim) {
     return pico_rect_ext (
         pos, dim,
-        (Pico_Rect){ 0, 0, S.ctx->dim.log.x, S.ctx->dim.log.y},
+        (Pico_Rect){ 0, 0, S.panel->dim.log.x, S.panel->dim.log.y},
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -184,7 +184,7 @@ Pico_Rect pico_rect_log (Pico_Pct pos, Pico_Pct dim) {
 Pico_Rect pico_rect_phy (Pico_Pct pos, Pico_Pct dim) {
     return pico_rect_ext (
         pos, dim,
-        (Pico_Rect){ 0, 0, S.ctx->dim.phy.x, S.ctx->dim.phy.y },
+        (Pico_Rect){ 0, 0, S.panel->dim.phy.x, S.panel->dim.phy.y },
         (Pico_Anchor) {PICO_LEFT, PICO_TOP}
     );
 }
@@ -219,7 +219,7 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            S.ctx->dim.phy.x, S.ctx->dim.phy.y,
+            S.panel->dim.phy.x, S.panel->dim.phy.y,
             (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
         );
         pico_assert(WIN != NULL);
@@ -233,7 +233,7 @@ void pico_init (int on) {
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
-        pico_set_dim_log(S.ctx->dim.log);
+        pico_set_dim_log(S.panel->dim.log);
         pico_set_font(NULL, 0);
         pico_output_clear();
 
@@ -298,48 +298,48 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_MINUS: {
                     pico_set_zoom ((Pico_Dim) {
-                        S.ctx->zoom.x + 10,
-                        S.ctx->zoom.y + 10,
+                        S.panel->zoom.x + 10,
+                        S.panel->zoom.y + 10,
                     });
                     break;
                 }
                 case SDLK_EQUALS: {
                     pico_set_zoom ((Pico_Dim) {
-                        S.ctx->zoom.x - 10,
-                        S.ctx->zoom.y - 10,
+                        S.panel->zoom.x - 10,
+                        S.panel->zoom.y - 10,
                     });
                     break;
                 }
                 case SDLK_LEFT: {
                     pico_set_scroll ((Pico_Pos) {
-                        S.ctx->scroll.x - MAX(1, (100+S.ctx->zoom.x)/20),
-                        S.ctx->scroll.y
+                        S.panel->scroll.x - MAX(1, (100+S.panel->zoom.x)/20),
+                        S.panel->scroll.y
                     });
                     break;
                 }
                 case SDLK_RIGHT: {
                     pico_set_scroll ((Pico_Pos) {
-                        S.ctx->scroll.x + MAX(1, (100+S.ctx->zoom.x)/20),
-                        S.ctx->scroll.y
+                        S.panel->scroll.x + MAX(1, (100+S.panel->zoom.x)/20),
+                        S.panel->scroll.y
                     });
                     break;
                 }
                 case SDLK_UP: {
                     pico_set_scroll ((Pico_Pos) {
-                        S.ctx->scroll.x,
-                        S.ctx->scroll.y - MAX(1, (100+S.ctx->zoom.y)/20)
+                        S.panel->scroll.x,
+                        S.panel->scroll.y - MAX(1, (100+S.panel->zoom.y)/20)
                     });
                     break;
                 }
                 case SDLK_DOWN: {
                     pico_set_scroll ((Pico_Pos) {
-                        S.ctx->scroll.x,
-                        S.ctx->scroll.y + MAX(1, (100+S.ctx->zoom.y)/20)
+                        S.panel->scroll.x,
+                        S.panel->scroll.y + MAX(1, (100+S.panel->zoom.y)/20)
                     });
                     break;
                 }
                 case SDLK_g: {
-                    pico_set_grid(!S.ctx->grid);
+                    pico_set_grid(!S.panel->grid);
                     break;
                 }
                 case SDLK_s: {
@@ -437,7 +437,7 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 // OUTPUT
 
-static void _pico_output_present (int force, Pico_Ctx* ctx);
+static void _pico_output_present (int force, Pico_Panel* panel);
 
 void pico_output_clear (void) {
     Pico_Color clear = S.color.clear;
@@ -451,7 +451,7 @@ void pico_output_clear (void) {
     }
     Pico_Color draw = S.color.draw;
     SDL_SetRenderDrawColor(REN, draw.r, draw.g, draw.b, draw.a);
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, S.panel);
 }
 
 static SDL_Texture* _draw_aux (int w, int h) {
@@ -535,7 +535,7 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim)
         &rot,
         S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
     );
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, S.panel);
 }
 
 void pico_output_draw_image (Pico_Pos pos, const char* path) {
@@ -565,7 +565,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
         SDL_abs(p1.y-p2.y) + 1
     );
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
-    SDL_SetRenderTarget(REN, S.ctx->tex);
+    SDL_SetRenderTarget(REN, S.panel->tex);
     SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
@@ -576,7 +576,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
 
 void pico_output_draw_pixel (Pico_Pos pos) {
     SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, S.panel);
 }
 
 void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
@@ -586,7 +586,7 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
         vec[i].y = Y(apos[i].y,1);
     }
     SDL_RenderDrawPoints(REN, vec, count);
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, S.panel);
 }
 
 // TODO: Test me for flip and rotate
@@ -605,7 +605,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
             SDL_RenderDrawRect(REN, &rect);
             break;
     }
-    SDL_SetRenderTarget(REN, S.ctx->tex);
+    SDL_SetRenderTarget(REN, S.panel->tex);
     SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
@@ -635,7 +635,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
             );
             break;
     }
-    SDL_SetRenderTarget(REN, S.ctx->tex);
+    SDL_SetRenderTarget(REN, S.panel->tex);
     SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
@@ -661,7 +661,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
             );
             break;
     }
-    SDL_SetRenderTarget(REN, S.ctx->tex);
+    SDL_SetRenderTarget(REN, S.panel->tex);
     SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
@@ -704,7 +704,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
             );
             break;
     }
-    SDL_SetRenderTarget(REN, S.ctx->tex);
+    SDL_SetRenderTarget(REN, S.panel->tex);
     SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
@@ -750,22 +750,22 @@ void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim dim, const char* fmt, ...)
     va_end(args);
 }
 
-static void _show_grid (Pico_Ctx* ctx) {
-    if (!ctx->grid) return;
+static void _show_grid (Pico_Panel* panel) {
+    if (!panel->grid) return;
 
     SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
 
-    Pico_Dim Z = _zoom(ctx);
+    Pico_Dim Z = _zoom(panel);
 
-    if ((ctx->dim.phy.x % Z.x == 0) && (Z.x < ctx->dim.phy.x)) {
-        for (int i=0; i<=ctx->dim.phy.x; i+=(ctx->dim.phy.x/Z.x)) {
-            SDL_RenderDrawLine(REN, ctx->pos.x+i, ctx->pos.y, ctx->pos.x+i, ctx->dim.phy.y);
+    if ((panel->dim.phy.x % Z.x == 0) && (Z.x < panel->dim.phy.x)) {
+        for (int i=0; i<=panel->dim.phy.x; i+=(panel->dim.phy.x/Z.x)) {
+            SDL_RenderDrawLine(REN, panel->pos.x+i, panel->pos.y, panel->pos.x+i, panel->dim.phy.y);
         }
     }
 
-    if ((ctx->dim.phy.y % Z.y == 0) && (Z.y < ctx->dim.phy.y)) {
-        for (int j=0; j<=ctx->dim.phy.y; j+=(ctx->dim.phy.y/Z.y)) {
-            SDL_RenderDrawLine(REN, ctx->pos.x, ctx->pos.y+j, ctx->dim.phy.x, ctx->pos.y+j);
+    if ((panel->dim.phy.y % Z.y == 0) && (Z.y < panel->dim.phy.y)) {
+        for (int j=0; j<=panel->dim.phy.y; j+=(panel->dim.phy.y/Z.y)) {
+            SDL_RenderDrawLine(REN, panel->pos.x, panel->pos.y+j, panel->dim.phy.x, panel->pos.y+j);
         }
     }
 
@@ -773,40 +773,40 @@ static void _show_grid (Pico_Ctx* ctx) {
     SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
 }
 
-static void _pico_output_present (int force, Pico_Ctx* ctx) {
+static void _pico_output_present (int force, Pico_Panel* panel) {
     if (S.expert && !force) return;
 
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
 
-    SDL_Texture* up = (ctx == &_ctx) ? NULL : _ctx.tex;
+    SDL_Texture* up = (panel == &_ctx) ? NULL : _ctx.tex;
 
     SDL_SetRenderTarget(REN, up);
 
-    if (ctx->name == NULL) {
+    if (panel->name == NULL) {
         SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
         SDL_RenderClear(REN);
         Pico_Color c = S.color.draw;
         SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
     }
 
-    SDL_Rect dst = { ctx->pos.x, ctx->pos.y, ctx->dim.phy.x, ctx->dim.phy.y };
-    SDL_SetTextureAlphaMod(ctx->tex, ctx->alpha);
-    SDL_RenderCopy(REN, ctx->tex, NULL, &dst);
+    SDL_Rect dst = { panel->pos.x, panel->pos.y, panel->dim.phy.x, panel->dim.phy.y };
+    SDL_SetTextureAlphaMod(panel->tex, panel->alpha);
+    SDL_RenderCopy(REN, panel->tex, NULL, &dst);
 
-    if (ctx->name == NULL) {
-        _show_grid(ctx);
+    if (panel->name == NULL) {
+        _show_grid(panel);
     }
 
-    if (ctx->name == NULL) {
+    if (panel->name == NULL) {
         SDL_RenderPresent(REN);
     }
 
-    if (ctx->name != NULL) {
+    if (panel->name != NULL) {
         _pico_output_present(force, &_ctx);
     }
 
-    SDL_SetRenderTarget(REN, ctx->tex);
+    SDL_SetRenderTarget(REN, panel->tex);
     SDL_RenderSetClipRect(REN, &clip);
 }
 
@@ -836,7 +836,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 }
 
 const char* pico_output_screenshot (const char* path) {
-    Pico_Dim Z = _zoom(S.ctx);
+    Pico_Dim Z = _zoom(S.panel);
     return pico_output_screenshot_ext(
         path,
         (Pico_Rect){0,0,Z.x,Z.y}
@@ -892,7 +892,7 @@ static void _pico_output_write_aux (const char* text, int isln) {
     TTF_SizeText(S.font.ttf, text, &w,&h);
     Pico_Rect rct = { X(S.cursor.cur.x,0),Y(S.cursor.cur.y,0), w,h };
     SDL_RenderCopy(REN, tex, NULL, &rct);
-    _pico_output_present(0, S.ctx);
+    _pico_output_present(0, S.panel);
 
     S.cursor.cur.x += w;
     if (isln) {
@@ -958,7 +958,7 @@ int pico_get_fullscreen (void) {
 }
 
 int pico_get_grid (void) {
-    return S.ctx->grid;
+    return S.panel->grid;
 }
 
 int pico_get_key (PICO_KEY key) {
@@ -979,11 +979,11 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
 
     // TODO: bug in SDL?
     // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
-    Pico_Dim Z = _zoom(S.ctx);
-    pos->x = pos->x * Z.x / S.ctx->dim.phy.x;
-    pos->y = pos->y * Z.y / S.ctx->dim.phy.y;
-    pos->x += S.ctx->scroll.x;
-    pos->y += S.ctx->scroll.y;
+    Pico_Dim Z = _zoom(S.panel);
+    pos->x = pos->x * Z.x / S.panel->dim.phy.x;
+    pos->y = pos->y * Z.y / S.panel->dim.phy.y;
+    pos->x += S.panel->scroll.x;
+    pos->y += S.panel->scroll.y;
 
     return masks & SDL_BUTTON(button);
 }
@@ -1001,7 +1001,7 @@ Pico_Pct pico_get_scale (void) {
 }
 
 Pico_Pos pico_get_scroll (void) {
-    return S.ctx->scroll;
+    return S.panel->scroll;
 }
 
 Pico_Dim pico_get_dim_image (const char* file) {
@@ -1031,11 +1031,11 @@ Pico_Dim pico_get_dim_text (const char* text) {
 }
 
 Pico_Dim pico_get_dim_phy (void) {
-    return S.ctx->dim.phy;
+    return S.panel->dim.phy;
 }
 
 Pico_Dim pico_get_dim_log (void) {
-    return S.ctx->dim.log;
+    return S.panel->dim.log;
 }
 
 int pico_get_show (void) {
@@ -1055,14 +1055,14 @@ const char* pico_get_title (void) {
 }
 
 Pico_Pct pico_get_zoom (void) {
-    return S.ctx->zoom;
+    return S.panel->zoom;
 }
 
 // SET
 
 void pico_set_alpha (int alpha) {
-    S.ctx->alpha = alpha;
-    _pico_output_present(0, S.ctx);
+    S.panel->alpha = alpha;
+    _pico_output_present(0, S.panel);
 }
 
 void pico_set_anchor_pos (Pico_Anchor anchor) {
@@ -1076,7 +1076,7 @@ void pico_set_anchor_rotate (Pico_Anchor anchor) {
 void pico_set_clip (Pico_Rect clip) {
     S.clip = clip;
     if (_noclip()) {
-        Pico_Dim dim = _zoom(S.ctx);
+        Pico_Dim dim = _zoom(S.panel);
         clip.w = dim.x;
         clip.h = dim.y;
     } else {
@@ -1095,14 +1095,14 @@ void pico_set_color_draw  (Pico_Color clr) {
     SDL_SetRenderDrawColor(REN, clr.r, clr.g, clr.b, clr.a);
 }
 
-void pico_set_context (char* name) {
+void pico_set_panel (char* name) {
     if (name == NULL) {
-        S.ctx = &_ctx;
+        S.panel = &_ctx;
     } else {
-        Pico_Ctx* ctx = (Pico_Ctx*)pico_hash_get(_pico_hash, name);
-        if (ctx == NULL) {
-            ctx = malloc(sizeof(Pico_Ctx));
-            *ctx = (Pico_Ctx) {
+        Pico_Panel* panel = (Pico_Panel*)pico_hash_get(_pico_hash, name);
+        if (panel == NULL) {
+            panel = malloc(sizeof(Pico_Panel));
+            *panel = (Pico_Panel) {
                 0xFF,
                 { {0,0}, {0,0} },
                 1,
@@ -1112,10 +1112,10 @@ void pico_set_context (char* name) {
                 NULL,
                 {100, 100},
             };
-            pico_hash_add(_pico_hash, name, ctx);
+            pico_hash_add(_pico_hash, name, panel);
         }
-        pico_assert(ctx != NULL);
-        S.ctx = ctx;
+        pico_assert(panel != NULL);
+        S.panel = panel;
     }
 }
 
@@ -1129,30 +1129,30 @@ void pico_set_cursor (Pico_Pos pos) {
 }
 
 void pico_set_dim_phy (Pico_Dim dim) {
-    S.ctx->dim.phy = dim;
-    if (S.ctx->name != NULL) {
+    S.panel->dim.phy = dim;
+    if (S.panel->name != NULL) {
         return;
     }
 
     assert(!S.fullscreen);
     SDL_SetWindowSize(WIN, dim.x, dim.y);
-    Pico_Dim new = _zoom(S.ctx);
+    Pico_Dim new = _zoom(S.panel);
     SDL_Rect clip = { 0, 0, new.x, new.y };
     SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_dim_log (Pico_Dim dim) {
-    S.ctx->dim.log = dim;
-    if (S.ctx->tex != NULL) {
-        SDL_DestroyTexture(S.ctx->tex);
+    S.panel->dim.log = dim;
+    if (S.panel->tex != NULL) {
+        SDL_DestroyTexture(S.panel->tex);
     }
-    S.ctx->tex = SDL_CreateTexture (
+    S.panel->tex = SDL_CreateTexture (
         REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         dim.x, dim.y
     );
-    pico_assert(S.ctx->tex != NULL);
-    SDL_SetTextureBlendMode(S.ctx->tex, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, S.ctx->tex);
+    pico_assert(S.panel->tex != NULL);
+    SDL_SetTextureBlendMode(S.panel->tex, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(REN, S.panel->tex);
 
     // TODO: need to init w/ explicit SetClip to save w/h
     //       do not pass NULL, GetClip would also return w=0,h=0
@@ -1177,7 +1177,7 @@ void pico_set_fullscreen (int on) {
 
     Pico_Dim new;
     if (on) {
-        _old = S.ctx->dim.phy;
+        _old = S.panel->dim.phy;
         pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
         pico_input_delay(50);    // TODO: required for some reason
         SDL_GetWindowSize(WIN, &new.x, &new.y);
@@ -1193,7 +1193,7 @@ void pico_set_fullscreen (int on) {
 
 void pico_set_font (const char* file, int h) {
     if (h == 0) {
-        h = MAX(8, S.ctx->dim.log.y/10);
+        h = MAX(8, S.panel->dim.log.y/10);
     }
     S.font.h = h;
 
@@ -1210,17 +1210,17 @@ void pico_set_font (const char* file, int h) {
 }
 
 void pico_set_grid (int on) {
-    S.ctx->grid = on;
+    S.panel->grid = on;
     _pico_output_present(0, &_ctx);
 }
 
 void pico_set_pos_phy (Pico_Pos pos) {
-    if (S.ctx->name == NULL) {
+    if (S.panel->name == NULL) {
         assert(0 && "TODO: window position");
     }
-    S.ctx->pos = (Pico_Pos) {
-        _anchor_x(pos.x, S.ctx->dim.phy.x),
-        _anchor_y(pos.y, S.ctx->dim.phy.y),
+    S.panel->pos = (Pico_Pos) {
+        _anchor_x(pos.x, S.panel->dim.phy.x),
+        _anchor_y(pos.y, S.panel->dim.phy.y),
     };
 }
 
@@ -1234,7 +1234,7 @@ void pico_set_scale (Pico_Pct scale) {
 }
 
 void pico_set_scroll (Pico_Pos pos) {
-    S.ctx->scroll = pos;
+    S.panel->scroll = pos;
 }
 
 void pico_set_show (int on) {
@@ -1255,15 +1255,15 @@ void pico_set_title (const char* title) {
 }
 
 void pico_set_zoom (Pico_Pct pct) {
-    Pico_Dim old = _zoom(S.ctx);
-    S.ctx->zoom = pct;
-    Pico_Dim new = _zoom(S.ctx);
+    Pico_Dim old = _zoom(S.panel);
+    S.panel->zoom = pct;
+    Pico_Dim new = _zoom(S.panel);
     
     int dx = new.x - old.x;
     int dy = new.y - old.y;
 
     pico_set_scroll ((Pico_Pos) {
-        S.ctx->scroll.x - (dx * S.anchor.pos.x / 100),
-        S.ctx->scroll.y - (dy * S.anchor.pos.y / 100),
+        S.panel->scroll.x - (dx * S.anchor.pos.x / 100),
+        S.panel->scroll.y - (dy * S.anchor.pos.y / 100),
     });
 }

@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_title("Context");
+    pico_set_title("Panel");
 
     {
         puts("rect pos=30, dim=50");
@@ -12,7 +12,7 @@ int main (void) {
             (Pico_Pct) {30, 30},
             (Pico_Pct) {50, 50}
         );
-        pico_set_context("rect");
+        pico_set_panel("rect");
         pico_set_dim_phy((Pico_Dim){r.w,r.h});
         pico_set_dim_log((Pico_Dim){r.w/10,r.h/10});
         pico_set_pos_phy((Pico_Pos){r.x,r.y});
@@ -38,9 +38,9 @@ int main (void) {
     }
 
     {
-        pico_set_context(NULL);
+        pico_set_panel(NULL);
         pico_output_clear();
-        pico_set_context("rect");
+        pico_set_panel("rect");
         pico_set_alpha(0x88);
         pico_input_event(NULL, PICO_KEYDOWN);
         //pico_set_alpha(0xFF);
