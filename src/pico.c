@@ -120,11 +120,11 @@ static int _anchor_y (int y, int h) {
 }
 
 static int X (int x, int w) {
-    return _anchor_x(x,w) - S.panel->scroll.x;
+    return _anchor_x(x,w);
 }
 
 static int Y (int y, int h) {
-    return _anchor_y(y,h) - S.panel->scroll.y;
+    return _anchor_y(y,h);
 }
 
 // UTILS
@@ -297,15 +297,15 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_MINUS: {
                     pico_set_zoom ((Pico_Dim) {
-                        S.panel->zoom.x + 10,
-                        S.panel->zoom.y + 10,
+                        S.panel->zoom.x - 10,
+                        S.panel->zoom.y - 10,
                     });
                     break;
                 }
                 case SDLK_EQUALS: {
                     pico_set_zoom ((Pico_Dim) {
-                        S.panel->zoom.x - 10,
-                        S.panel->zoom.y - 10,
+                        S.panel->zoom.x + 10,
+                        S.panel->zoom.y + 10,
                     });
                     break;
                 }
@@ -554,8 +554,8 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim) {
 // TODO: Test me for flip and rotate
 void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     Pico_Pos pos = {
-        _anchor_x(SDL_min(p1.x,p2.x),1),
-        _anchor_y(SDL_min(p1.y,p2.y),1)
+        X(SDL_min(p1.x,p2.x), 1),
+        Y(SDL_min(p1.y,p2.y), 1),
     };
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
@@ -574,15 +574,15 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
 }
 
 void pico_output_draw_pixel (Pico_Pos pos) {
-    SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
+    SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1));
     _pico_output_present(0, S.panel);
 }
 
 void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
     Pico_Pos vec[count];
     for (int i=0; i<count; i++) {
-        vec[i].x = X(apos[i].x,1);
-        vec[i].y = Y(apos[i].y,1);
+        vec[i].x = X(apos[i].x, 1);
+        vec[i].y = Y(apos[i].y, 1);
     }
     SDL_RenderDrawPoints(REN, vec, count);
     _pico_output_present(0, S.panel);
@@ -682,10 +682,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
         ay[i] -= miny;
     }
 
-    Pico_Pos pos = {
-        _anchor_x(minx,1),
-        _anchor_y(miny,1)
-    };
+    Pico_Pos pos = { X(minx,1), Y(miny,1) };
     SDL_Rect clip;
     SDL_RenderGetClipRect(REN, &clip);
     SDL_Texture* aux = _draw_aux(maxx-minx+1, maxy-miny+1);
@@ -781,6 +778,7 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
     SDL_Texture* up = (panel == &_ctx) ? NULL : _ctx.tex;
 
     SDL_SetRenderTarget(REN, up);
+    SDL_SetTextureAlphaMod(panel->tex, panel->alpha);
 
     if (panel->name == NULL) {
         SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
@@ -789,9 +787,16 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
         SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
     }
 
-    SDL_Rect dst = { panel->pos.x, panel->pos.y, panel->dim.phy.x, panel->dim.phy.y };
-    SDL_SetTextureAlphaMod(panel->tex, panel->alpha);
-    SDL_RenderCopy(REN, panel->tex, NULL, &dst);
+    SDL_Rect src = {
+        0, 0,
+        //return _anchor_x(x,w) - S.panel->scroll.x;
+        panel->dim.log.x, panel->dim.log.y,
+    };
+    SDL_Rect dst = {
+        panel->pos.x, panel->pos.y,
+        panel->dim.phy.x, panel->dim.phy.y,
+    };
+    SDL_RenderCopy(REN, panel->tex, &src, &dst);
 
     if (panel->name == NULL) {
         _show_grid(panel);
@@ -1219,8 +1224,8 @@ void pico_set_pos_phy (Pico_Pos pos) {
         assert(0 && "TODO: window position");
     }
     S.panel->pos = (Pico_Pos) {
-        _anchor_x(pos.x, S.panel->dim.phy.x),
-        _anchor_y(pos.y, S.panel->dim.phy.y),
+        X(pos.x, S.panel->dim.phy.x),
+        Y(pos.y, S.panel->dim.phy.y),
     };
 }
 
