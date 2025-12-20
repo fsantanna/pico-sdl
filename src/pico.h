@@ -283,9 +283,6 @@ int pico_get_rotate (void);
 /// @brief Gets the scaling factor of objects (percentage).
 Pico_Pct pico_get_scale (void);
 
-/// @brief Gets the point of view on the logical window.
-Pico_Pos pico_get_scroll (void);
-
 /// @brief Gets the dimensions of the given image.
 /// @param file image filepath
 Pico_Dim pico_get_dim_image (const char* file);
@@ -311,9 +308,6 @@ Uint32 pico_get_ticks (void);
 
 /// @brief Gets the aplication title.
 const char* pico_get_title (void);
-
-/// @brief Gets the zoom factor.
-Pico_Pct pico_get_zoom (void);
 
 // SET
 
@@ -390,10 +384,6 @@ void pico_set_rotate (int angle);
 /// @param scale new scaling for x and y axis (percentage)
 void pico_set_scale (Pico_Pct scale);
 
-/// @brief Sets the point of view on the logical window.
-/// @param pos new point of view
-void pico_set_scroll (Pico_Pos pos);
-
 /// @brief Toggles the aplication window visibility.
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
@@ -405,9 +395,6 @@ void pico_set_style (PICO_STYLE style);
 /// @brief Sets the aplication title.
 /// @param title new title
 void pico_set_title (const char* title);
-
-/// @param pct new factor
-void pico_set_zoom (Pico_Pct pct);
 
 /// @}
 

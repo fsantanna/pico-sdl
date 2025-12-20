@@ -26,6 +26,7 @@ static pico_hash* _pico_hash;
 
 typedef struct Pico_Panel {
     int          alpha;
+    Pico_Rect    crop;
     struct {
         Pico_Dim phy;
         Pico_Dim log;
@@ -33,20 +34,17 @@ typedef struct Pico_Panel {
     int          grid;
     char*        name;
     Pico_Pos     pos;
-    Pico_Pos     scroll;
     SDL_Texture* tex;
-    Pico_Pct     zoom;
 } Pico_Panel;
 
 Pico_Panel _ctx = {
     0xFF,
+    {0, 0, 0, 0},
     { PICO_DIM_PHY, PICO_DIM_LOG },
     1,
     NULL,
     {0, 0},
-    {0, 0},
     NULL,
-    {100, 100},
 };
 
 static struct {
@@ -94,13 +92,6 @@ static struct {
 static int _noclip () {
     return (S.clip.w == PICO_CLIP_RESET.w) ||
            (S.clip.h == PICO_CLIP_RESET.h);
-}
-
-static Pico_Dim _zoom (Pico_Panel* panel) {
-    return (Pico_Dim) {
-        panel->dim.log.x * panel->zoom.x / 100,
-        panel->dim.log.y * panel->zoom.y / 100,
-    };
 }
 
 static int _anchor_x_ext (int x, int w, int a) {
@@ -290,6 +281,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 break;
             }
             switch (e->key.keysym.sym) {
+#if 0
                 case SDLK_0: {
                     pico_set_zoom((Pico_Dim){0, 0});
                     pico_set_scroll((Pico_Pos){0, 0});
@@ -337,6 +329,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     });
                     break;
                 }
+#endif
                 case SDLK_g: {
                     pico_set_grid(!S.panel->grid);
                     break;
@@ -751,16 +744,14 @@ static void _show_grid (Pico_Panel* panel) {
 
     SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
 
-    Pico_Dim Z = _zoom(panel);
-
-    if ((panel->dim.phy.x % Z.x == 0) && (Z.x < panel->dim.phy.x)) {
-        for (int i=0; i<=panel->dim.phy.x; i+=(panel->dim.phy.x/Z.x)) {
+    if ((panel->dim.phy.x % panel->crop.w == 0) && (panel->crop.w < panel->dim.phy.x)) {
+        for (int i=0; i<=panel->dim.phy.x; i+=(panel->dim.phy.x/panel->crop.w)) {
             SDL_RenderDrawLine(REN, panel->pos.x+i, panel->pos.y, panel->pos.x+i, panel->dim.phy.y);
         }
     }
 
-    if ((panel->dim.phy.y % Z.y == 0) && (Z.y < panel->dim.phy.y)) {
-        for (int j=0; j<=panel->dim.phy.y; j+=(panel->dim.phy.y/Z.y)) {
+    if ((panel->dim.phy.y % panel->crop.h == 0) && (panel->crop.h < panel->dim.phy.y)) {
+        for (int j=0; j<=panel->dim.phy.y; j+=(panel->dim.phy.y/panel->crop.h)) {
             SDL_RenderDrawLine(REN, panel->pos.x, panel->pos.y+j, panel->dim.phy.x, panel->pos.y+j);
         }
     }
@@ -788,9 +779,8 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
     }
 
     SDL_Rect src = {
-        0, 0,
-        //return _anchor_x(x,w) - S.panel->scroll.x;
-        panel->dim.log.x, panel->dim.log.y,
+        (panel->dim.log.x-panel->crop.w)/2, (panel->dim.log.y-panel->crop.h)/2,
+        panel->crop.w, panel->crop.h,
     };
     SDL_Rect dst = {
         panel->pos.x, panel->pos.y,
@@ -840,10 +830,9 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 }
 
 const char* pico_output_screenshot (const char* path) {
-    Pico_Dim Z = _zoom(S.panel);
     return pico_output_screenshot_ext(
         path,
-        (Pico_Rect){0,0,Z.x,Z.y}
+        (Pico_Rect){0,0,S.panel->crop.w,S.panel->crop.h}
     );
 }
 
@@ -983,11 +972,10 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
 
     // TODO: bug in SDL?
     // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
-    Pico_Dim Z = _zoom(S.panel);
-    pos->x = pos->x * Z.x / S.panel->dim.phy.x;
-    pos->y = pos->y * Z.y / S.panel->dim.phy.y;
-    pos->x += S.panel->scroll.x;
-    pos->y += S.panel->scroll.y;
+    pos->x = pos->x * S.panel->crop.w / S.panel->dim.phy.x;
+    pos->y = pos->y * S.panel->crop.h / S.panel->dim.phy.y;
+    //pos->x += S.panel->scroll.x;
+    //pos->y += S.panel->scroll.y;
 
     return masks & SDL_BUTTON(button);
 }
@@ -1002,10 +990,6 @@ int pico_get_rotate (void) {
 
 Pico_Pct pico_get_scale (void) {
     return S.scale;
-}
-
-Pico_Pos pico_get_scroll (void) {
-    return S.panel->scroll;
 }
 
 Pico_Dim pico_get_dim_image (const char* file) {
@@ -1058,10 +1042,6 @@ const char* pico_get_title (void) {
     return SDL_GetWindowTitle(WIN);
 }
 
-Pico_Pct pico_get_zoom (void) {
-    return S.panel->zoom;
-}
-
 // SET
 
 void pico_set_alpha (int alpha) {
@@ -1080,9 +1060,8 @@ void pico_set_anchor_rotate (Pico_Anchor anchor) {
 void pico_set_clip (Pico_Rect clip) {
     S.clip = clip;
     if (_noclip()) {
-        Pico_Dim dim = _zoom(S.panel);
-        clip.w = dim.x;
-        clip.h = dim.y;
+        clip.w = S.panel->crop.w;
+        clip.h = S.panel->crop.h;
     } else {
         clip.x = X(clip.x, clip.w);
         clip.y = Y(clip.y, clip.h);
@@ -1108,13 +1087,12 @@ void pico_set_panel (char* name) {
             panel = malloc(sizeof(Pico_Panel));
             *panel = (Pico_Panel) {
                 0xFF,
+                {0, 0, 0, 0},
                 { {0,0}, {0,0} },
                 1,
                 name,
                 {0, 0},
-                {0, 0},
                 NULL,
-                {100, 100},
             };
             pico_hash_add(_pico_hash, name, panel);
         }
@@ -1137,16 +1115,14 @@ void pico_set_dim_phy (Pico_Dim dim) {
     if (S.panel->name != NULL) {
         return;
     }
-
     assert(!S.fullscreen);
     SDL_SetWindowSize(WIN, dim.x, dim.y);
-    Pico_Dim new = _zoom(S.panel);
-    SDL_Rect clip = { 0, 0, new.x, new.y };
-    SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &S.panel->crop);
 }
 
 void pico_set_dim_log (Pico_Dim dim) {
     S.panel->dim.log = dim;
+    S.panel->crop = (Pico_Rect) { 0,0, dim.x,dim.y };
     if (S.panel->tex != NULL) {
         SDL_DestroyTexture(S.panel->tex);
     }
@@ -1238,10 +1214,6 @@ void pico_set_scale (Pico_Pct scale) {
     S.scale = scale;
 }
 
-void pico_set_scroll (Pico_Pos pos) {
-    S.panel->scroll = pos;
-}
-
 void pico_set_show (int on) {
     if (on) {
         SDL_ShowWindow(WIN);
@@ -1257,18 +1229,4 @@ void pico_set_style (PICO_STYLE style) {
 
 void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
-}
-
-void pico_set_zoom (Pico_Pct pct) {
-    Pico_Dim old = _zoom(S.panel);
-    S.panel->zoom = pct;
-    Pico_Dim new = _zoom(S.panel);
-    
-    int dx = new.x - old.x;
-    int dy = new.y - old.y;
-
-    pico_set_scroll ((Pico_Pos) {
-        S.panel->scroll.x - (dx * S.anchor.pos.x / 100),
-        S.panel->scroll.y - (dy * S.anchor.pos.y / 100),
-    });
 }
