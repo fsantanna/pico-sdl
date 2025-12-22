@@ -15,6 +15,7 @@
 #include "pico.h"
 
 #define SDL_ANY PICO_ANY
+#define MIN(x,y) ((x) < (y) ? (x) : (y))
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 static SDL_Window*  WIN;
@@ -778,22 +779,72 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
         SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
     }
 
+    {
+        // calculate the intersection for the source rectangle
+        int sx = MAX(0, panel->crop.x);
+        int sy = MAX(0, panel->crop.y);
+        int ex = MIN(panel->dim.log.x, panel->crop.x + panel->crop.w);
+        int ey = MIN(panel->dim.log.y, panel->crop.y + panel->crop.h);
+
+        SDL_Rect src = { sx, sy, ex-sx, ey-sy };
+
+        if (src.w<=0 || src.h<=0) {
+            return;
+        }
+
+        // calculate scale and destination coordinates
+        float xx = (float)panel->dim.phy.x / panel->crop.w;
+        float yy = (float)panel->dim.phy.y / panel->crop.h;
+
+        // offset is the diff bw clipped start and the intended crop start
+        SDL_Rect dst = {
+            (sx - panel->crop.x) * xx,
+            (sy - panel->crop.y) * yy,
+            src.w * xx,
+            src.h * yy,
+        };
+
+        SDL_RenderCopy(REN, panel->tex, &src, &dst);
+    }
+
+#if 0
     //int x = X((panel->dim.log.x - panel->crop.w)/2, panel->crop.w);
     //int y = Y((panel->dim.log.y - panel->crop.h)/2, panel->crop.h);
+
     int x = (panel->dim.log.x - panel->crop.w) / 2;
     int y = (panel->dim.log.y - panel->crop.h) / 2;
     SDL_Rect src = { x, y, panel->crop.w, panel->crop.h };
+
+    SDL_Rect dst = {
+        panel->pos.x, panel->pos.y,
+        panel->dim.phy.x, panel->dim.phy.y,
+    };
+
+    if (
+        (x<0 || y<0) ||
+        (panel->crop.w > panel->dim.log.x) ||
+        (panel->crop.h > panel->dim.log.x)
+    ) {
+        SDL_Texture* tex = SDL_CreateTexture (
+            REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+            panel->crop.w, panel->crop.h
+        );
+        SDL_Rect r = { -x, -y, panel->dim.log.x, panel->dim.log.y };
+        printf(">>> r: %d,%d / %d,%d\n", r.x, r.y, r.w, r.h);
+        SDL_RenderCopy(REN, panel->tex, NULL, &r);
+        SDL_RenderCopy(REN, tex, NULL, &dst);
+        SDL_DestroyTexture(tex);
+    } else {
+        SDL_RenderCopy(REN, panel->tex, &src, &dst);
+    }
+
     printf(">>> pos = %d,%d\n", panel->pos.x, panel->pos.y);
     printf(">>> src=%d,%d / %d,%d\n", src.x, src.y, src.w, src.h);
     printf(">>> dim=%d,%d / crop=%d,%d\n",
         panel->dim.log.x, panel->dim.log.y,
         panel->crop.w, panel->crop.h
     );
-    SDL_Rect dst = {
-        panel->pos.x, panel->pos.y,
-        panel->dim.phy.x, panel->dim.phy.y,
-    };
-    SDL_RenderCopy(REN, panel->tex, &src, &dst);
+#endif
 
     if (panel->name == NULL) {
         _show_grid(panel);
