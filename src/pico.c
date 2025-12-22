@@ -780,23 +780,16 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
     }
 
     {
-        // calculate the intersection for the source rectangle
+        // intersection for the source rectangle
         int sx = MAX(0, panel->crop.x);
         int sy = MAX(0, panel->crop.y);
         int ex = MIN(panel->dim.log.x, panel->crop.x + panel->crop.w);
         int ey = MIN(panel->dim.log.y, panel->crop.y + panel->crop.h);
-
         SDL_Rect src = { sx, sy, ex-sx, ey-sy };
 
-        if (src.w<=0 || src.h<=0) {
-            return;
-        }
-
-        // calculate scale and destination coordinates
-        float xx = (float)panel->dim.phy.x / panel->crop.w;
-        float yy = (float)panel->dim.phy.y / panel->crop.h;
-
         // offset is the diff bw clipped start and the intended crop start
+        #define xx panel->dim.phy.x / panel->crop.w   // scale
+        #define yy panel->dim.phy.y / panel->crop.h   // do not use parens
         SDL_Rect dst = {
             (sx - panel->crop.x) * xx,
             (sy - panel->crop.y) * yy,
