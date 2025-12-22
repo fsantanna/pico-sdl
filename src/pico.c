@@ -780,22 +780,30 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
     }
 
     {
+        // CROP = { -50, -50, 100, 100 }
+        // LOG  = { 50, 50 }
+
         // intersection for the source rectangle
-        int sx = MAX(0, panel->crop.x);
-        int sy = MAX(0, panel->crop.y);
-        int ex = MIN(panel->dim.log.x, panel->crop.x + panel->crop.w);
-        int ey = MIN(panel->dim.log.y, panel->crop.y + panel->crop.h);
-        SDL_Rect src = { sx, sy, ex-sx, ey-sy };
+        int sx = MAX(0, panel->crop.x);                     // 0
+        int sy = MAX(0, panel->crop.y);                     // 0
+        int sw = MIN(panel->dim.log.x-sx, panel->crop.w);   // 50
+        int sh = MIN(panel->dim.log.y-sy, panel->crop.h);   // 50
+        SDL_Rect src = { sx, sy, sw, sh };
 
         // offset is the diff bw clipped start and the intended crop start
-        #define xx panel->dim.phy.x / panel->crop.w   // scale
+        #define xx panel->dim.phy.x / panel->crop.w   // scale x/y
         #define yy panel->dim.phy.y / panel->crop.h   // do not use parens
         SDL_Rect dst = {
-            (sx - panel->crop.x) * xx,
-            (sy - panel->crop.y) * yy,
+            panel->pos.x - (sx - panel->crop.x) / xx,
+            panel->pos.y - (sy - panel->crop.y) / yy,
             src.w * xx,
             src.h * yy,
         };
+
+        printf(">>> sca: %f,%f\n", (float)xx, (float)yy);
+        printf(">>> dif: %d,%d\n", (sx-panel->crop.x), (sy-panel->crop.y));
+        printf(">>> src: %d,%d,%d,%d\n", src.x, src.y, src.w, src.h);
+        printf(">>> dst: %d,%d,%d,%d\n", dst.x, dst.y, dst.w, dst.h);
 
         SDL_RenderCopy(REN, panel->tex, &src, &dst);
     }
