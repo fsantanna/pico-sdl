@@ -807,45 +807,6 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
         SDL_RenderCopy(REN, panel->tex, &src, &dst);
     }
 
-#if 0
-    //int x = X((panel->dim.log.x - panel->crop.w)/2, panel->crop.w);
-    //int y = Y((panel->dim.log.y - panel->crop.h)/2, panel->crop.h);
-
-    int x = (panel->dim.log.x - panel->crop.w) / 2;
-    int y = (panel->dim.log.y - panel->crop.h) / 2;
-    SDL_Rect src = { x, y, panel->crop.w, panel->crop.h };
-
-    SDL_Rect dst = {
-        panel->pos.x, panel->pos.y,
-        panel->dim.phy.x, panel->dim.phy.y,
-    };
-
-    if (
-        (x<0 || y<0) ||
-        (panel->crop.w > panel->dim.log.x) ||
-        (panel->crop.h > panel->dim.log.x)
-    ) {
-        SDL_Texture* tex = SDL_CreateTexture (
-            REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-            panel->crop.w, panel->crop.h
-        );
-        SDL_Rect r = { -x, -y, panel->dim.log.x, panel->dim.log.y };
-        printf(">>> r: %d,%d / %d,%d\n", r.x, r.y, r.w, r.h);
-        SDL_RenderCopy(REN, panel->tex, NULL, &r);
-        SDL_RenderCopy(REN, tex, NULL, &dst);
-        SDL_DestroyTexture(tex);
-    } else {
-        SDL_RenderCopy(REN, panel->tex, &src, &dst);
-    }
-
-    printf(">>> pos = %d,%d\n", panel->pos.x, panel->pos.y);
-    printf(">>> src=%d,%d / %d,%d\n", src.x, src.y, src.w, src.h);
-    printf(">>> dim=%d,%d / crop=%d,%d\n",
-        panel->dim.log.x, panel->dim.log.y,
-        panel->crop.w, panel->crop.h
-    );
-#endif
-
     if (panel->name == NULL) {
         _show_grid(panel);
     }
