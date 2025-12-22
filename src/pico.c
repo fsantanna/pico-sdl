@@ -778,10 +778,17 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
         SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
     }
 
-    SDL_Rect src = {
-        (panel->dim.log.x-panel->crop.w)/2, (panel->dim.log.y-panel->crop.h)/2,
-        panel->crop.w, panel->crop.h,
-    };
+    //int x = X((panel->dim.log.x - panel->crop.w)/2, panel->crop.w);
+    //int y = Y((panel->dim.log.y - panel->crop.h)/2, panel->crop.h);
+    int x = (panel->dim.log.x - panel->crop.w) / 2;
+    int y = (panel->dim.log.y - panel->crop.h) / 2;
+    SDL_Rect src = { x, y, panel->crop.w, panel->crop.h };
+    printf(">>> pos = %d,%d\n", panel->pos.x, panel->pos.y);
+    printf(">>> src=%d,%d / %d,%d\n", src.x, src.y, src.w, src.h);
+    printf(">>> dim=%d,%d / crop=%d,%d\n",
+        panel->dim.log.x, panel->dim.log.y,
+        panel->crop.w, panel->crop.h
+    );
     SDL_Rect dst = {
         panel->pos.x, panel->pos.y,
         panel->dim.phy.x, panel->dim.phy.y,
@@ -1102,7 +1109,8 @@ void pico_set_panel (char* name) {
 }
 
 void pico_set_crop (Pico_Rect crop) {
-    S.crop = crop;
+    //S.crop = crop;
+    S.panel->crop = crop;
 }
 
 void pico_set_cursor (Pico_Pos pos) {
