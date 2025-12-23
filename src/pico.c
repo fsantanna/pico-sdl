@@ -780,9 +780,6 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
     }
 
     {
-        // CROP = { -50, -50, 100, 100 }
-        // LOG  = { 50, 50 }
-
         // intersection for the source rectangle
         int sx = MAX(0, panel->crop.x);                     // 0
         int sy = MAX(0, panel->crop.y);                     // 0
@@ -796,17 +793,9 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
         SDL_Rect dst = {
             panel->pos.x + (sx - panel->crop.x) * xx,
             panel->pos.y + (sy - panel->crop.y) * yy,
-            //panel->pos.x - (sx - panel->crop.x) / (xx),
-            //panel->pos.y - (sy - panel->crop.y) / (yy),
             src.w * xx,
             src.h * yy,
         };
-
-        printf(">>> pos: %d,%d\n", panel->pos.x, panel->pos.y);
-        printf(">>> sca: %f,%f\n", (float)xx, (float)yy);
-        printf(">>> dif: %d,%d\n", (sx-panel->crop.x), (sy-panel->crop.y));
-        printf(">>> src: %d,%d,%d,%d\n", src.x, src.y, src.w, src.h);
-        printf(">>> dst: %d,%d,%d,%d\n", dst.x, dst.y, dst.w, dst.h);
 
         SDL_RenderCopy(REN, panel->tex, &src, &dst);
     }
