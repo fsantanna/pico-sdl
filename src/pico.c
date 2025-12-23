@@ -794,12 +794,15 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
         #define xx panel->dim.phy.x / panel->crop.w   // scale x/y
         #define yy panel->dim.phy.y / panel->crop.h   // do not use parens
         SDL_Rect dst = {
-            panel->pos.x - (sx - panel->crop.x) / xx,
-            panel->pos.y - (sy - panel->crop.y) / yy,
+            panel->pos.x + (sx - panel->crop.x) * xx,
+            panel->pos.y + (sy - panel->crop.y) * yy,
+            //panel->pos.x - (sx - panel->crop.x) / (xx),
+            //panel->pos.y - (sy - panel->crop.y) / (yy),
             src.w * xx,
             src.h * yy,
         };
 
+        printf(">>> pos: %d,%d\n", panel->pos.x, panel->pos.y);
         printf(">>> sca: %f,%f\n", (float)xx, (float)yy);
         printf(">>> dif: %d,%d\n", (sx-panel->crop.x), (sy-panel->crop.y));
         printf(">>> src: %d,%d,%d,%d\n", src.x, src.y, src.w, src.h);

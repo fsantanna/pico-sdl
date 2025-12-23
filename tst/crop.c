@@ -28,7 +28,7 @@ int main (void) {
     pico_input_event(NULL, PICO_MOUSEBUTTONDOWN);
 
     pico_output_clear();
-    pico_set_crop((Pico_Rect){-50, -50, 100, 100});
+    pico_set_crop((Pico_Rect){-25, -25, 100, 100});
     pico_output_draw_rect((Pico_Rect) { 0,0,50,50 });
     pico_output_draw_pixel((Pico_Pos) { 25,25 });
     pico_input_event(NULL, PICO_MOUSEBUTTONDOWN);
