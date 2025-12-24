@@ -559,7 +559,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     );
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, S.panel->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -599,7 +599,7 @@ void pico_output_draw_rect (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, S.panel->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -629,7 +629,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, S.panel->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -655,7 +655,7 @@ void pico_output_draw_oval (Pico_Rect rect) {
             break;
     }
     SDL_SetRenderTarget(REN, S.panel->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
@@ -695,7 +695,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
             break;
     }
     SDL_SetRenderTarget(REN, S.panel->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
     Pico_Anchor anc = S.anchor.pos;
     S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
@@ -770,6 +770,13 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
     SDL_SetRenderTarget(REN, NULL);
     SDL_SetTextureAlphaMod(panel->tex, panel->alpha);
 
+    if (panel->name == NULL) {
+        SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
+        SDL_RenderClear(REN);
+        Pico_Color c = S.color.draw;
+        SDL_SetRenderDrawColor(REN, c.r, c.g, c.b, c.a);
+    }
+
     {
         // intersection for the source rectangle
         int sx = MAX(0, panel->crop.x);
@@ -790,7 +797,7 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
 
         printf (
             "[%d] pos=(%d,%d) | src=(%d,%d,%d,%d) | dst=(%d,%d,%d,%d) | crp=(%d,%d,%d,%d)\n",
-            panel == &_pan,
+            (panel->name == NULL),
             panel->pos.x, panel->pos.y,
             src.x, src.y, src.w, src.h,
             dst.x, dst.y, dst.w, dst.h,
@@ -802,7 +809,7 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
     _show_grid(panel);
     SDL_RenderPresent(REN);
     SDL_SetRenderTarget(REN, panel->tex);
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_output_present (void) {
@@ -1067,7 +1074,7 @@ void pico_set_clip (Pico_Rect clip) {
         clip.x = X(clip.x, clip.w);
         clip.y = Y(clip.y, clip.h);
     }
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_color_clear (Pico_Color clr) {
@@ -1120,7 +1127,7 @@ void pico_set_dim_phy (Pico_Dim dim) {
     }
     assert(!S.fullscreen);
     SDL_SetWindowSize(WIN, dim.x, dim.y);
-    //SDL_RenderSetClipRect(REN, &S.panel->crop);
+    SDL_RenderSetClipRect(REN, &S.panel->crop);
 }
 
 void pico_set_dim_log (Pico_Dim dim) {
@@ -1141,7 +1148,7 @@ void pico_set_dim_log (Pico_Dim dim) {
     // TODO: need to init w/ explicit SetClip to save w/h
     //       do not pass NULL, GetClip would also return w=0,h=0
     SDL_Rect clip = { 0, 0, dim.x, dim.y };
-    //SDL_RenderSetClipRect(REN, &clip);
+    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_expert (int on) {
