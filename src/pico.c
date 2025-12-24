@@ -745,11 +745,9 @@ static void _show_grid (Pico_Panel* panel) {
 
     SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
 
-printf("grid: (%d,%d)\n", panel->pos.x, panel->pos.y);
     if ((panel->dim.phy.x % panel->crop.w == 0) && (panel->crop.w < panel->dim.phy.x)) {
         for (int i=0; i<=panel->dim.phy.x; i+=(panel->dim.phy.x/panel->crop.w)) {
             SDL_RenderDrawLine(REN, panel->pos.x+i, panel->pos.y, panel->pos.x+i, panel->pos.y+panel->dim.phy.y);
-printf("\ti: %d\n", i);
         }
     }
 
@@ -1102,6 +1100,7 @@ void pico_set_panel (char* name) {
         pico_assert(panel != NULL);
         S.panel = panel;
     }
+    SDL_SetRenderTarget(REN, S.panel->tex);
 }
 
 void pico_set_crop (Pico_Rect crop) {
@@ -1196,7 +1195,7 @@ void pico_set_font (const char* file, int h) {
 
 void pico_set_grid (int on) {
     S.panel->grid = on;
-    _pico_output_present(0, &_pan);
+    _pico_output_present(0, S.panel);
 }
 
 void pico_set_pos_phy (Pico_Pos pos) {
@@ -1221,7 +1220,7 @@ void pico_set_scale (Pico_Pct scale) {
 void pico_set_show (int on) {
     if (on) {
         SDL_ShowWindow(WIN);
-        _pico_output_present(0, &_pan);
+        _pico_output_present(0, &_pan);     // TODO: all panels
     } else {
         SDL_HideWindow(WIN);
     }
