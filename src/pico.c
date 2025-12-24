@@ -26,15 +26,15 @@ static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 static pico_hash* _pico_hash;
 
 typedef struct Pico_Panel {
-    int          alpha;
-    Pico_Rect    crop;
+    int alpha;
+    Pico_Rect crop;
     struct {
         Pico_Dim phy;
         Pico_Dim log;
-    }            dim;
-    int          grid;
-    char*        name;
-    Pico_Pos     pos;
+    } dim;
+    int grid;
+    char* name;
+    Pico_Pos pos;
     SDL_Texture* tex;
 } Pico_Panel;
 
@@ -49,6 +49,7 @@ Pico_Panel _pan = {
 };
 
 static struct {
+    int alpha;
     struct {
         Pico_Anchor pos;
         Pico_Anchor rotate;
@@ -75,6 +76,7 @@ static struct {
     PICO_STYLE style;
     Pico_Pct scale;
 } S = {
+    0xFF,
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     0,
     {0, 0, 0, 0},
@@ -744,6 +746,7 @@ static void _show_grid (Pico_Panel* panel) {
     if (!panel->grid) return;
 
     SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
+printf(">>> %d,%d\n", panel->pos.x, panel->pos.y);
 
     if ((panel->dim.phy.x % panel->crop.w == 0) && (panel->crop.w < panel->dim.phy.x)) {
         for (int i=0; i<=panel->dim.phy.x; i+=(panel->dim.phy.x/panel->crop.w)) {
@@ -813,7 +816,7 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
 }
 
 void pico_output_present (void) {
-    _pico_output_present(1, &_pan);
+    _pico_output_present(1, S.panel);
 }
 
 static void _pico_output_sound_cache (const char* path, int cache) {
@@ -1053,8 +1056,7 @@ const char* pico_get_title (void) {
 // SET
 
 void pico_set_alpha (int alpha) {
-    S.panel->alpha = alpha;
-    _pico_output_present(0, S.panel);
+    S.alpha = alpha;
 }
 
 void pico_set_anchor_pos (Pico_Anchor anchor) {
@@ -1107,6 +1109,7 @@ void pico_set_panel (char* name) {
         pico_assert(panel != NULL);
         S.panel = panel;
     }
+    S.panel->alpha = S.alpha;
     SDL_SetRenderTarget(REN, S.panel->tex);
 }
 
@@ -1202,7 +1205,7 @@ void pico_set_font (const char* file, int h) {
 
 void pico_set_grid (int on) {
     S.panel->grid = on;
-    _pico_output_present(0, S.panel);
+    //_pico_output_present(0, S.panel);
 }
 
 void pico_set_pos_phy (Pico_Pos pos) {
@@ -1227,7 +1230,7 @@ void pico_set_scale (Pico_Pct scale) {
 void pico_set_show (int on) {
     if (on) {
         SDL_ShowWindow(WIN);
-        _pico_output_present(0, &_pan);     // TODO: all panels
+        //_pico_output_present(0, &_pan);     // TODO: all panels
     } else {
         SDL_HideWindow(WIN);
     }
