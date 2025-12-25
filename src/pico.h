@@ -53,7 +53,6 @@ typedef enum PICO_MOUSE_BUTTON {
 } PICO_MOUSE_BUTTON;
 
 #define PICO_DIM_KEEP ((Pico_Dim) {0,0})
-#define PICO_CLIP_RESET ((Pico_Rect) {0,0,0,0})
 
 /// @}
 
@@ -328,7 +327,7 @@ void pico_set_anchor_pos (Pico_Anchor anchor);
 void pico_set_anchor_rotate (Pico_Anchor anchor);
 
 /// @brief Changes the clipping area of drawing operations.
-/// @param clip clipping region (passing PICO_CLIP_RESET disables it).
+/// @param clip clipping region
 void pico_set_clip (Pico_Rect clip);
 
 /// @brief Changes the color used to clear the screen.

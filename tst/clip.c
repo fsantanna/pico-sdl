@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_title("Viewport");
+    pico_set_title("Clip");
 
     {
         puts("rect at 30%");
@@ -13,8 +13,8 @@ int main (void) {
             (Pico_Pct) {50, 50}
         );
         pico_output_draw_rect(r1);
-
         pico_input_event(NULL, PICO_KEYDOWN);
+
         pico_set_clip(r1);
         pico_set_color_clear((Pico_Color){0xCC, 0xCC, 0xCC, 0xFF});
         pico_output_clear();
