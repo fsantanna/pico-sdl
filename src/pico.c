@@ -29,6 +29,7 @@ static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 static pico_hash* _pico_hash;
 
 static struct {
+    int alpha;
     struct {
         Pico_Anchor pos;
         Pico_Anchor rotate;
@@ -61,6 +62,7 @@ static struct {
     Pico_Pct scale;
     Pico_Pct zoom;
 } S = {
+    0xFF,
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     0,
     {0, 0, 0, 0},
@@ -416,8 +418,8 @@ static SDL_Texture* _draw_aux (int w, int h) {
         REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         w, h
     );
-    SDL_SetRenderTarget(REN, aux);
     SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(REN, aux);
     SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
     SDL_RenderClear(REN);
     SDL_RenderFillRect(REN, NULL);
@@ -506,6 +508,7 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim) {
         pico_hash_add(_pico_hash, path, tex);
     }
     pico_assert(tex != NULL);
+    SDL_SetTextureAlphaMod(tex, S.alpha);
     _pico_output_draw_tex(pos, tex, dim);
 }
 
@@ -998,6 +1001,10 @@ Pico_Pct pico_get_zoom (void) {
 
 // SET
 
+void pico_set_alpha (int a) {
+    S.alpha = a;
+}
+
 void pico_set_anchor_pos (Pico_Anchor anchor) {
     S.anchor.pos = anchor;
 }
@@ -1157,6 +1164,7 @@ void pico_set_zoom (Pico_Pct pct) {
         new.x, new.y
     );
     pico_assert(TEX != NULL);
+    //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
     SDL_RenderSetLogicalSize(REN, new.x, new.y);
     SDL_SetRenderTarget(REN, TEX);
 

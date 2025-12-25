@@ -316,6 +316,8 @@ Pico_Pct pico_get_zoom (void);
 
 // SET
 
+void pico_set_alpha (int a);
+
 /// @brief Changes the reference to position objects (center, topleft, etc).
 /// @include anchor.c
 /// @param anchor anchor for the x and y axis

@@ -9,6 +9,19 @@ int main (void) {
     Pico_Rect rct = {pos.x, pos.y, 60, 12};
 
     {
+        puts("image dimming");
+        for (int a = 255; a > 0; a-=5) {
+            pico_output_clear();
+            pico_set_alpha(a);
+            pico_output_draw_image(pos, "open.png");
+            pico_input_delay(50);
+            if (a == 120) {
+                //_pico_check("image_dimmed");
+            }
+        }
+    }
+
+    {
         puts("pixel dimming");
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
