@@ -27,7 +27,14 @@ static pico_hash* _pico_hash;
 
 typedef struct Pico_Panel {
     int alpha;
-    Pico_Rect crop;
+    struct {
+        Pico_Pos pos;
+        Pico_Dim dim;
+    } clip;
+    struct {
+        Pico_Pos pos;
+        Pico_Dim dim;
+    } crop;
     struct {
         Pico_Dim phy;
         Pico_Dim log;
@@ -40,7 +47,8 @@ typedef struct Pico_Panel {
 
 Pico_Panel _pan = {
     0xFF,
-    {0, 0, 0, 0},
+    {},
+    {},
     { PICO_DIM_PHY, PICO_DIM_LOG },
     1,
     NULL,
@@ -51,52 +59,43 @@ Pico_Panel _pan = {
 static struct {
     int alpha;
     struct {
-        Pico_Anchor pos;
-        Pico_Anchor rotate;
-    } anchor;
-    int angle;
-    Pico_Rect clip;
-    struct {
         Pico_Color clear;
         Pico_Color draw;
     } color;
-    Pico_Rect crop;
     Pico_Panel* panel;
     struct {
         int x;
         Pico_Pos cur;
     } cursor;
     int expert;
-    Pico_Flip flip;
+    Pico_XY flip;
     struct {
         TTF_Font* ttf;
         int h;
     } font;
     int fullscreen;
+    struct {
+        Pico_Pct anchor;
+        float angle;
+    } rotation;
     PICO_STYLE style;
-    Pico_Pct scale;
 } S = {
     0xFF,
-    { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
-    0,
-    {0, 0, 0, 0},
-    { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
-    {0, 0, 0, 0},
+    { {0x00,0x00,0x00}, {0xFF,0xFF,0xFF} },
     &_pan,
     {0, {0,0}},
     0,
     {0, 0},
     {NULL, 0},
     0,
-    PICO_FILL,
-    {100, 100},
+    {
+        {PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE},
+        0,
+    },
+    PICO_STYLE_FILL,
 };
 
-static int _noclip () {
-    return (S.clip.w == PICO_CLIP_RESET.w) ||
-           (S.clip.h == PICO_CLIP_RESET.h);
-}
-
+#if TODO
 static int _anchor_x_ext (int x, int w, int a) {
     return x - (a*w)/100;
 }
@@ -120,89 +119,34 @@ static int X (int x, int w) {
 static int Y (int y, int h) {
     return _anchor_y(y,h);
 }
+#endif
+
+static float POS (const Pico_Pos* dim, const* Pico_Dim, float* x, float* y) {
+}
+
+static float DIM (const Pico_Dim* dim, float* w, float* h) {
+    if (dim->up == NULL) {
+        *w = dim->w * S.dim.
+    } else {
+    }
+}
 
 // UTILS
 
-Pico_Dim pico_dim_log (Pico_Pct pct) {
-    return pico_dim_ext(pct, S.panel->dim.log);
+int pico_pos_vs_rect (const Pico_Pos* p1, Pico_Pos* p2, Pico_Dim* d2) {
+    return 0;
 }
 
-Pico_Dim pico_dim_phy (Pico_Pct pct) {
-    return pico_dim_ext(pct, S.panel->dim.phy);
-}
-
-Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d) {
-    assert(0 <= pct.x && 0 <= pct.y && "negative dimentions");
-    return (Pico_Dim){ (pct.x*d.x)/100, (pct.y*d.y)/100};
-}
-
-Pico_Pos pico_pos_log (Pico_Pct pct) {
-    return pico_pos_ext (
-        pct,
-        (Pico_Rect){ 0, 0, S.panel->dim.log.x, S.panel->dim.log.y },
-        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
-    );
-}
-
-Pico_Pos pico_pos_phy (Pico_Pct pct) {
-    return pico_pos_ext (
-        pct,
-        (Pico_Rect){ 0, 0, S.panel->dim.phy.x, S.panel->dim.phy.y },
-        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
-    );
-}
-
-Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc) {
-    return (Pico_Pos) {
-        _anchor_x_ext(r.x,r.w,anc.x) + (pct.x*r.w)/100,
-        _anchor_y_ext(r.y,r.h,anc.y) + (pct.y*r.h)/100
-    };
-}
-
-int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
-    return pico_pos_vs_rect_ext(pt, r, S.anchor.pos, S.anchor.pos);
-}
-
-int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor ar) {
-    return pico_rect_vs_rect_ext((Pico_Rect){pt.x, pt.y, 1, 1}, r, ap, ar);
-}
-
-Pico_Rect pico_rect_log (Pico_Pct pos, Pico_Pct dim) {
-    return pico_rect_ext (
-        pos, dim,
-        (Pico_Rect){ 0, 0, S.panel->dim.log.x, S.panel->dim.log.y},
-        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
-    );
-}
-
-Pico_Rect pico_rect_phy (Pico_Pct pos, Pico_Pct dim) {
-    return pico_rect_ext (
-        pos, dim,
-        (Pico_Rect){ 0, 0, S.panel->dim.phy.x, S.panel->dim.phy.y },
-        (Pico_Anchor) {PICO_LEFT, PICO_TOP}
-    );
-}
-
-Pico_Rect pico_rect_ext (Pico_Pct pos, Pico_Pct dim, Pico_Rect r, Pico_Anchor anc) {
-    Pico_Pos xy = {
-        _anchor_x_ext(r.x,r.w,anc.x) + (pos.x*r.w)/100,
-        _anchor_y_ext(r.y,r.h,anc.y) + (pos.y*r.h)/100
-    };
-    Pico_Dim wh = pico_dim_ext(dim, (Pico_Dim){r.w,r.h});
-    return (Pico_Rect) { xy.x,xy.y, wh.x,wh.y };
-}
-
-int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2) {
-    return pico_rect_vs_rect_ext(r1, r2, S.anchor.pos, S.anchor.pos);
-}
-
-int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Rect r2, Pico_Anchor a1, Pico_Anchor a2) {
-    assert(S.angle == 0 && "rotation angle != 0");
+int pico_rect_vs_rect (const Pico_Pos* p1, const Pico_Dim* d1, const Pico_Pos* p2, const Pico_Dim* d2) {
+    return 0;
+#if TODO
+    assert(S.rotation.angle == 0 && "rotation angle != 0");
     r1.x = _anchor_x_ext(r1.x, r1.w, a1.x);
     r1.y = _anchor_y_ext(r1.y, r1.h, a1.y);
     r2.x = _anchor_x_ext(r2.x, r2.w, a2.x);
     r2.y = _anchor_y_ext(r2.y, r2.h, a2.y);
     return SDL_HasIntersection(&r1, &r2);
+#endif
 }
 
 // INIT
@@ -213,7 +157,7 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            S.panel->dim.phy.x, S.panel->dim.phy.y,
+            S.panel->dim.phy.w, S.panel->dim.phy.h,
             (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
         );
         pico_assert(WIN != NULL);
@@ -338,7 +282,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     break;
                 }
                 case SDLK_s: {
-                    pico_output_screenshot(NULL);
+                    pico_output_screenshot(NULL, NULL, NULL);
                     break;
                 }
             }
@@ -436,16 +380,14 @@ static void _pico_output_present (int force, Pico_Panel* panel);
 
 void pico_output_clear (void) {
     Pico_Color clear = S.color.clear;
-    SDL_SetRenderDrawColor(REN, clear.r, clear.g, clear.b, clear.a);
-    if (_noclip()) {
-        SDL_RenderClear(REN);
-    } else {
+    SDL_SetRenderDrawColor(REN, clear.r, clear.g, clear.b, S.alpha);
+    {
         SDL_Rect r;
         SDL_RenderGetClipRect(REN, &r);
         SDL_RenderFillRect(REN, &r);
     }
     Pico_Color draw = S.color.draw;
-    SDL_SetRenderDrawColor(REN, draw.r, draw.g, draw.b, draw.a);
+    SDL_SetRenderDrawColor(REN, draw.r, draw.g, draw.b, S.alpha);
     _pico_output_present(0, S.panel);
 }
 
@@ -463,63 +405,22 @@ static SDL_Texture* _draw_aux (int w, int h) {
         S.color.draw.r,
         S.color.draw.g,
         S.color.draw.b,
-        S.color.draw.a
+        S.alpha
     );
     return aux;
 }
 
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim);
+static void _pico_output_draw_tex (Pico_Pos* pos, Pico_Dim* dim, SDL_Texture* tex, Pico_Rect* crop) {
+    int w, h;
+    SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+    assert(0 && "TODO: check ratio");
 
-void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim) {
-    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
-        (void*)buffer, dim.x, dim.y,
-        32, 4*dim.x, SDL_PIXELFORMAT_RGBA32
-    );
-    SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
-    _pico_output_draw_tex(pos, aux, dim);
-    SDL_FreeSurface(sfc);
-    SDL_DestroyTexture(aux);
-}
-
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim) {
     Pico_Rect rct;
-    SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
-
-    Pico_Rect crp = S.crop;
-    if (S.crop.w == 0) {
-        crp.w = rct.w;
-    }
-    if (S.crop.h == 0) {
-        crp.h = rct.h;
-    }
-
-    if (dim.x==PICO_DIM_KEEP.x && dim.y==PICO_DIM_KEEP.y) {
-        // normal image size
-        rct.w = crp.w;  // (or copy from crop)
-        rct.h = crp.h;  // (or copy from crop)
-    } else if (dim.x == 0) {
-        // adjust w based on h
-        rct.w = rct.w * (dim.y / (float)rct.h);
-        rct.h = dim.y;
-    } else if (dim.y == 0) {
-        // adjust h based on w
-        rct.h = rct.h * (dim.x / (float)rct.w);
-        rct.w = dim.x;
-    } else {
-        rct.w = dim.x;
-        rct.h = dim.y;
-    }
-
-    // SCALE
-    rct.w = (S.scale.x*rct.w)/100; // * GRAPHICS_SET_SCALE_W;
-    rct.h = (S.scale.y*rct.h)/100; // * GRAPHICS_SET_SCALE_H;
-
-    // ANCHOR / PAN
-    rct.x = X(pos.x, rct.w);
-    rct.y = Y(pos.y, rct.h);
+    POS(pos, dim, &rct.x, &rct.y);
+    DIM(dim, &rct.w, &rct.h);
 
     // ROTATE
-    Pico_Pos rot = {
+    SDL_Point rot = {
         (S.anchor.rotate.x*rct.w)/100,
         (S.anchor.rotate.y*rct.h)/100
     };
@@ -531,6 +432,17 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim)
         S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
     );
     _pico_output_present(0, S.panel);
+}
+
+void pico_output_draw_buffer (const Pico_Pos* pos, const Pico_Color buffer[], int w, int h) {
+    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
+        (void*)buffer, w, h,
+        32, 4*w, SDL_PIXELFORMAT_RGBA32
+    );
+    SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
+    _pico_output_draw_tex(pos, aux, dim);
+    SDL_FreeSurface(sfc);
+    SDL_DestroyTexture(aux);
 }
 
 void pico_output_draw_image (Pico_Pos pos, const char* path) {
@@ -562,8 +474,8 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, S.panel->tex);
     SDL_RenderSetClipRect(REN, &clip);
-    Pico_Anchor anc = S.anchor.pos;
-    S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
+    Pico_Pct anc = S.anchor.pos;
+    S.anchor.pos = (Pico_Pct){PICO_ANCHOR_LEFT, PICO_ANCHOR_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     S.anchor.pos = anc;
     SDL_DestroyTexture(aux);
@@ -698,8 +610,8 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
     }
     SDL_SetRenderTarget(REN, S.panel->tex);
     SDL_RenderSetClipRect(REN, &clip);
-    Pico_Anchor anc = S.anchor.pos;
-    S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
+    Pico_Pct anc = S.anchor.pos;
+    S.anchor.pos = (Pico_Pct){PICO_ANCHOR_LEFT, PICO_ANCHOR_TOP};
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     S.anchor.pos = anc;
     SDL_DestroyTexture(aux);
@@ -746,17 +658,16 @@ static void _show_grid (Pico_Panel* panel) {
     if (!panel->grid) return;
 
     SDL_SetRenderDrawColor(REN, 0x77, 0x77, 0x77, 0x77);
-printf(">>> %d,%d\n", panel->pos.x, panel->pos.y);
 
-    if ((panel->dim.phy.x % panel->crop.w == 0) && (panel->crop.w < panel->dim.phy.x)) {
-        for (int i=0; i<=panel->dim.phy.x; i+=(panel->dim.phy.x/panel->crop.w)) {
-            SDL_RenderDrawLine(REN, panel->pos.x+i, panel->pos.y, panel->pos.x+i, panel->pos.y+panel->dim.phy.y);
+    if ((panel->dim.phy.w % panel->crop.w == 0) && (panel->crop.w < panel->dim.phy.w)) {
+        for (int i=0; i<=panel->dim.phy.w; i+=(panel->dim.phy.w/panel->crop.w)) {
+            SDL_RenderDrawLine(REN, panel->pos.x+i, panel->pos.y, panel->pos.x+i, panel->pos.y+panel->dim.phy.h);
         }
     }
 
-    if ((panel->dim.phy.y % panel->crop.h == 0) && (panel->crop.h < panel->dim.phy.y)) {
-        for (int j=0; j<=panel->dim.phy.y; j+=(panel->dim.phy.y/panel->crop.h)) {
-            SDL_RenderDrawLine(REN, panel->pos.x, panel->pos.y+j, panel->pos.x+panel->dim.phy.x, panel->pos.y+j);
+    if ((panel->dim.phy.h % panel->crop.h == 0) && (panel->crop.h < panel->dim.phy.h)) {
+        for (int j=0; j<=panel->dim.phy.h; j+=(panel->dim.phy.h/panel->crop.h)) {
+            SDL_RenderDrawLine(REN, panel->pos.x, panel->pos.y+j, panel->pos.x+panel->dim.phy.w, panel->pos.y+j);
         }
     }
 
@@ -784,8 +695,8 @@ static void _pico_output_present (int force, Pico_Panel* panel) {
         // intersection for the source rectangle
         int sx = MAX(0, panel->crop.x);
         int sy = MAX(0, panel->crop.y);
-        int sw = MIN(panel->dim.log.x-sx, panel->crop.w);
-        int sh = MIN(panel->dim.log.y-sy, panel->crop.h);
+        int sw = MIN(panel->dim.log.w-sx, panel->crop.w);
+        int sh = MIN(panel->dim.log.h-sy, panel->crop.h);
         SDL_Rect src = { sx, sy, sw, sh };
 
         // offset is the diff bw clipped start and the intended crop start
@@ -921,11 +832,11 @@ void pico_output_writeln (const char* text) {
 
 // GET
 
-Pico_Anchor pico_get_anchor_pos (void) {
+Pico_Pct pico_get_anchor_pos (void) {
     return S.anchor.pos;
 }
 
-Pico_Anchor pico_get_anchor_rotate (void) {
+Pico_Pct pico_get_anchor_rotate (void) {
     return S.anchor.rotate;
 }
 
@@ -949,7 +860,7 @@ int pico_get_expert (void) {
     return S.expert;
 }
 
-Pico_Flip pico_get_flip (void) {
+Pico_XY pico_get_flip (void) {
     return S.flip;
 }
 
@@ -1059,11 +970,11 @@ void pico_set_alpha (int alpha) {
     S.alpha = alpha;
 }
 
-void pico_set_anchor_pos (Pico_Anchor anchor) {
+void pico_set_anchor_pos (Pico_Pct anchor) {
     S.anchor.pos = anchor;
 }
 
-void pico_set_anchor_rotate (Pico_Anchor anchor) {
+void pico_set_anchor_rotate (Pico_Pct anchor) {
     S.anchor.rotate = anchor;
 }
 
@@ -1158,7 +1069,7 @@ void pico_set_expert (int on) {
     S.expert = on;
 }
 
-void pico_set_flip (Pico_Flip flip) {
+void pico_set_flip (Pico_XY flip) {
     S.flip = flip;
 }
 
