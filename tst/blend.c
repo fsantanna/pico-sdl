@@ -25,7 +25,8 @@ int main (void) {
         puts("pixel dimming");
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,0,0,a});
+            pico_set_alpha(a);
+            pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_pixel(pos);
             pico_input_delay(50);
             if (a == 120) {
@@ -38,7 +39,8 @@ int main (void) {
         puts("text dimming");
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,0,0,a});
+            pico_set_alpha(a);
+            pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_text(pos, "SOME TEXT");
             pico_input_delay(50);
             if (a == 120) {
@@ -51,7 +53,8 @@ int main (void) {
         puts("rect dimming");
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,0,0,a});
+            pico_set_alpha(a);
+            pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_rect(rct);
             pico_input_delay(50);
             if (a == 120) {
@@ -64,7 +67,8 @@ int main (void) {
         puts("oval dimming");
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,0,0,a});
+            pico_set_alpha(a);
+            pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_oval(rct);
             pico_input_delay(50);
             if (a == 120) {
@@ -77,7 +81,8 @@ int main (void) {
         puts("tri dimming");
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,0,0,a});
+            pico_set_alpha(a);
+            pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_tri(rct);
             pico_input_delay(50);
             if (a == 120) {
@@ -92,7 +97,8 @@ int main (void) {
         Pico_Pos p2 = {pos.x+20, pos.y+6};
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,0,0,a});
+            pico_set_alpha(a);
+            pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_line(p1, p2);
             pico_input_delay(50);
             if (a == 120) {
@@ -106,7 +112,8 @@ int main (void) {
         Pico_Pos poly[] = {{5, 5}, {59, 10}, {20, 31}};
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,0,0,a});
+            pico_set_alpha(a);
+            pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_poly(poly, 3);
             pico_input_delay(50);
             if (a == 120) {

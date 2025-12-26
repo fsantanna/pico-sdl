@@ -66,7 +66,7 @@ static struct {
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     0,
     {0, 0, 0, 0},
-    { {0x00,0x00,0x00,0xFF}, {0xFF,0xFF,0xFF,0xFF} },
+    { {0x00,0x00,0x00}, {0xFF,0xFF,0xFF} },
     {0, 0, 0, 0},
     {0, {0,0}},
     { PICO_DIM_WINDOW, PICO_DIM_WORLD },
@@ -400,11 +400,9 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 static void _pico_output_present (int force);
 
 void pico_output_clear (void) {
-    Pico_Color clear = S.color.clear;
-    Pico_Color draw  = S.color.draw;
-    SDL_SetRenderDrawColor(REN, clear.r, clear.g, clear.b, clear.a);
+    SDL_SetRenderDrawColor(REN,
+        S.color.clear.r, S.color.clear.g, S.color.clear.b, 0xFF);
     SDL_RenderFillRect(REN, &S.clip);
-    SDL_SetRenderDrawColor(REN, draw.r, draw.g, draw.b, draw.a);
     _pico_output_present(0);
 }
 
@@ -418,8 +416,6 @@ static SDL_Texture* _draw_aux (int w, int h) {
     SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
     SDL_RenderClear(REN);
     SDL_RenderFillRect(REN, NULL);
-    Pico_Color clr = S.color.draw;
-    SDL_SetRenderDrawColor(REN, clr.r, clr.g, clr.b, clr.a);
     return aux;
 }
 
@@ -513,6 +509,8 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
         SDL_abs(p1.x-p2.x) + 1,
         SDL_abs(p1.y-p2.y) + 1
     );
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
     SDL_SetRenderTarget(REN, TEX);
     SDL_RenderSetClipRect(REN, &S.clip);
@@ -524,6 +522,8 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
 }
 
 void pico_output_draw_pixel (Pico_Pos pos) {
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
     _pico_output_present(0);
 }
@@ -534,6 +534,8 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
         vec[i].x = X(apos[i].x,1);
         vec[i].y = Y(apos[i].y,1);
     }
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     SDL_RenderDrawPoints(REN, vec, count);
     _pico_output_present(0);
 }
@@ -544,6 +546,8 @@ void pico_output_draw_rect (Pico_Rect rect) {
     SDL_Texture* aux = _draw_aux(rect.w, rect.h);
     rect.x = 0;
     rect.y = 0;
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
         case PICO_FILL:
             SDL_RenderFillRect(REN, &rect);
@@ -562,14 +566,13 @@ void pico_output_draw_rect (Pico_Rect rect) {
 void pico_output_draw_tri (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = _draw_aux(rect.w, rect.h);
-    Pico_Color clr = S.color.draw;
     switch (S.style) {
         case PICO_FILL:
             filledTrigonRGBA (REN,
                 0, 0,
                 0, rect.h - 1,
                 rect.w - 1, rect.h - 1,
-                clr.r, clr.g, clr.b, clr.a
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
         case PICO_STROKE:
@@ -577,7 +580,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
                 0, 0,
                 0, rect.h - 1,
                 rect.w - 1, rect.h - 1,
-                clr.r, clr.g, clr.b, clr.a
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
     }
@@ -591,18 +594,17 @@ void pico_output_draw_tri (Pico_Rect rect) {
 void pico_output_draw_oval (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = _draw_aux(rect.w, rect.h);
-    Pico_Color clr = S.color.draw;
     switch (S.style) {
         case PICO_FILL:
             filledEllipseRGBA (REN,
                 rect.w/2, rect.h/2, rect.w/2, rect.h/2,
-                clr.r, clr.g, clr.b, clr.a
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
         case PICO_STROKE:
             ellipseRGBA (REN,
                 rect.w/2, rect.h/2, rect.w/2, rect.h/2,
-                clr.r, clr.g, clr.b, clr.a
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
     }
@@ -633,18 +635,17 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
         _vanchor(miny,1)
     };
     SDL_Texture* aux = _draw_aux(maxx-minx+1, maxy-miny+1);
-    Pico_Color clr = S.color.draw;
     switch (S.style) {
         case PICO_FILL:
             filledPolygonRGBA(REN,
                 ax, ay, count,
-                clr.r, clr.g, clr.b, clr.a
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
         case PICO_STROKE:
             polygonRGBA(REN,
                 ax, ay, count,
-                clr.r, clr.g, clr.b, clr.a
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
     }
@@ -665,7 +666,9 @@ void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim dim) {
     if (text[0] == '\0') return;
 
     pico_assert(S.font.ttf != NULL);
-    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text, S.color.draw);
+    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
+        (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
+    );
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
@@ -712,24 +715,16 @@ static void _show_grid (void) {
             SDL_RenderDrawLine(REN, 0, j, S.dim.window.x, j);
         }
     }
-
-    Pico_Color clr = S.color.draw;
-    SDL_SetRenderDrawColor(REN, clr.r, clr.g, clr.b, clr.a);
 }
 
 static void _pico_output_present (int force) {
     if (S.expert && !force) return;
-
     SDL_SetRenderTarget(REN, NULL);
-
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
     SDL_RenderCopy(REN, TEX, NULL, NULL);
     _show_grid();
     SDL_RenderPresent(REN);
-    Pico_Color clr = S.color.draw;
-    SDL_SetRenderDrawColor(REN, clr.r, clr.g, clr.b, clr.a);
-
     SDL_SetRenderTarget(REN, TEX);
     SDL_RenderSetClipRect(REN, &S.clip);
 }
@@ -803,10 +798,9 @@ static void _pico_output_write_aux (const char* text, int isln) {
     }
 
     pico_assert(S.font.ttf != NULL);
-    Pico_Color clr = S.color.draw;
     SDL_Surface* sfc = TTF_RenderText_Blended (
         S.font.ttf, text,
-        (Pico_Color) { clr.r, clr.g, clr.b, clr.a }
+        (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
     );
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
@@ -947,7 +941,7 @@ Pico_Dim pico_get_dim_text (const char* text) {
     }
 
     SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
-                                              (Pico_Color){0,0,0,255});
+                                              (SDL_Color){0,0,0,255});
     pico_assert(sfc != NULL);
     Pico_Dim dim = {sfc->w, sfc->h};
     SDL_FreeSurface(sfc);
@@ -1012,7 +1006,6 @@ void pico_set_color_clear (Pico_Color color) {
 
 void pico_set_color_draw  (Pico_Color color) {
     S.color.draw = color;
-    SDL_SetRenderDrawColor(REN, color.r, color.g, color.b, color.a);
 }
 
 void pico_set_crop (Pico_Rect crop) {

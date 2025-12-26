@@ -29,7 +29,6 @@ extern "C" {
 typedef SDL_Point Pico_Pos;
 typedef SDL_Point Pico_Dim;
 typedef SDL_Rect  Pico_Rect;
-typedef SDL_Color Pico_Color;
 typedef SDL_Point Pico_Anchor;
 typedef SDL_Point Pico_Flip;
 typedef SDL_Point Pico_Pct;
@@ -40,6 +39,12 @@ typedef SDL_Point Pico_Pct;
 #define PICO_TOP    0
 #define PICO_MIDDLE 50
 #define PICO_BOTTOM 100
+
+typedef struct {
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+} Pico_Color;
 
 typedef enum PICO_STYLE {
     PICO_FILL, PICO_STROKE
