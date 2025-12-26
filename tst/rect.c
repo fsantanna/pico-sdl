@@ -31,7 +31,7 @@ int main (void) {
             (Pico_Pct){50, 50},
             r1, pico_get_anchor_pos()
         );
-        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_rect(r2);
 
 	_pico_check("pct_rect30_inner50");
@@ -46,7 +46,7 @@ int main (void) {
             (Pico_Pct) {50, 50}
         );
         pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
-        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
         pico_output_draw_rect(r1);
 
         puts("red anchored by top-left under 0% of white");
@@ -56,7 +56,7 @@ int main (void) {
             r1, pico_get_anchor_pos()
         );
         pico_set_anchor_pos((Pico_Anchor){PICO_LEFT, PICO_TOP});
-        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_rect(r2);
 
 	_pico_check("pct_rect50_inner0");
@@ -71,7 +71,7 @@ int main (void) {
             (Pico_Pct) {50, 50}
         );
         pico_set_anchor_pos((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
-        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
         pico_output_draw_rect(r1);
 
         puts("red anchored by top-left under -10% of white");
@@ -81,7 +81,7 @@ int main (void) {
             r1, pico_get_anchor_pos()
         );
         pico_set_anchor_pos((Pico_Anchor){PICO_LEFT, PICO_TOP});
-        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_rect(r2);
 
 	_pico_check("pct_rect50_inner-10");
@@ -96,7 +96,7 @@ int main (void) {
             (Pico_Pct) {50, 50}
         );
         pico_set_anchor_pos((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
-        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
         pico_output_draw_rect(r1);
 
         puts("red anchored by top-left under 110% of white (symmetric to previous)");
@@ -106,7 +106,7 @@ int main (void) {
             r1, pico_get_anchor_pos()
         );
         pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
-        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_rect(r2);
 
 	_pico_check("pct_rect50_inner110");

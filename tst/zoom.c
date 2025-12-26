@@ -30,9 +30,9 @@ int main (void) {
         pico_set_dim_world(world);
         Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
         pico_output_clear();
-        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
-        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
         pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
         pico_input_delay(250);
@@ -44,14 +44,14 @@ int main (void) {
         pico_set_dim_world(world);
         Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
         pico_output_clear();
-        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
-        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00,0xFF});
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
         pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
         pico_input_delay(250);
     }
-    pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF,0xFF});
+    pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
 
     // PAN
 
