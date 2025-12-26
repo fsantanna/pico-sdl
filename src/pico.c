@@ -424,7 +424,7 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim)
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
         (void*)buffer, dim.x, dim.y,
-        32, 4*dim.x, SDL_PIXELFORMAT_RGBA32
+        24, 3*dim.x, SDL_PIXELFORMAT_RGB24
     );
     SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
     _pico_output_draw_tex(pos, aux, dim);
