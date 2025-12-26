@@ -400,11 +400,11 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 static void _pico_output_present (int force);
 
 void pico_output_clear (void) {
-    Pico_Color clr = S.color.clear;
-    Pico_Color drw = S.color.draw;
-    SDL_SetRenderDrawColor(REN, clr.r, clr.g, clr.b, clr.a);
+    Pico_Color clear = S.color.clear;
+    Pico_Color draw  = S.color.draw;
+    SDL_SetRenderDrawColor(REN, clear.r, clear.g, clear.b, clear.a);
     SDL_RenderFillRect(REN, &S.clip);
-    SDL_SetRenderDrawColor(REN, drw.r, drw.g, drw.b, drw.a);
+    SDL_SetRenderDrawColor(REN, draw.r, draw.g, draw.b, draw.a);
     _pico_output_present(0);
 }
 
