@@ -336,10 +336,13 @@ static int event_from_sdl (Pico_Event* e, int xp) {
     switch (e->type) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
-        case SDL_MOUSEMOTION:
-            e->button.x += S.scroll.x;
-            e->button.y += S.scroll.y;
+        case SDL_MOUSEMOTION:  {
+            Pico_Pos pos;
+            pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+            e->button.x = pos.x;
+            e->button.y = pos.y;
             break;
+        }
         default:
             break;
     }
@@ -731,7 +734,6 @@ static void _pico_output_present (int force) {
     if (S.expert && !force) return;
 
     SDL_SetRenderTarget(REN, NULL);
-    SDL_RenderSetLogicalSize(REN, S.dim.window.x, S.dim.window.y);
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
@@ -745,8 +747,6 @@ static void _pico_output_present (int force) {
         S.color.draw.a
     );
 
-    Pico_Dim Z = _zoom();
-    SDL_RenderSetLogicalSize(REN, Z.x, Z.y);
     SDL_SetRenderTarget(REN, TEX);
     SDL_RenderSetClipRect(REN, &S.clip);
 }
@@ -1165,7 +1165,6 @@ void pico_set_zoom (Pico_Pct pct) {
     );
     pico_assert(TEX != NULL);
     //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
-    SDL_RenderSetLogicalSize(REN, new.x, new.y);
     SDL_SetRenderTarget(REN, TEX);
 
     // TODO: need to init w/ explicit SetClip to save w/h
