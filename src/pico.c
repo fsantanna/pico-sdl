@@ -541,6 +541,28 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
 }
 
 // TODO: Test me for flip and rotate
+void pico_output_draw_rectX (const Pico_PosX* pos, const Pico_DimX* dim) {
+    assert(pos->up==NULL && dim->up==NULL);
+
+    float w = dim->w * S.dim.world.x;
+    float h = dim->h * S.dim.world.y;
+    float x = pos->x*S.dim.world.x - pos->anchor.x*w;
+    float y = pos->y*S.dim.world.y - pos->anchor.y*h;
+    SDL_FRect r = {x, y, w, h};
+
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+    switch (S.style) {
+        case PICO_FILL:
+            SDL_RenderFillRectF(REN, &r);
+            break;
+        case PICO_STROKE:
+            SDL_RenderDrawRectF(REN, &r);
+            break;
+    }
+
+    _pico_output_present(0);
+}
 void pico_output_draw_rect (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = _draw_aux(rect.w, rect.h);

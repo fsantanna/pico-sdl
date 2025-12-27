@@ -26,6 +26,8 @@ extern "C" {
 #define PICO_DIM_WORLD  ((Pico_Dim) { 64, 36})
 #define PICO_HASH  128
 
+#define PICO_DIM_KEEP ((Pico_Dim) {0,0})
+
 typedef SDL_Point Pico_Pos;
 typedef SDL_Point Pico_Dim;
 typedef SDL_Rect  Pico_Rect;
@@ -57,7 +59,33 @@ typedef enum PICO_MOUSE_BUTTON {
     PICO_MOUSE_BUTTON_RIGHT  = SDL_BUTTON_RIGHT
 } PICO_MOUSE_BUTTON;
 
-#define PICO_DIM_KEEP ((Pico_Dim) {0,0})
+#define PICO_ANCHOR_LEFT   0
+#define PICO_ANCHOR_CENTER 0.5
+#define PICO_ANCHOR_RIGHT  1
+#define PICO_ANCHOR_TOP    0
+#define PICO_ANCHOR_MIDDLE 0.5
+#define PICO_ANCHOR_BOTTOM 1
+
+#define PICO_ANCHOR_CENTER_MIDDLE \
+    ((Pico_PctX) { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE })
+
+typedef struct {
+    float x;
+    float y;
+} Pico_PctX;
+
+typedef struct Pico_PosX {
+    float x;
+    float y;
+    Pico_PctX anchor;
+    struct Pico_PosX* up;
+} Pico_PosX;
+
+typedef struct Pico_DimX {
+    float w;
+    float h;
+    struct Pico_DimX* up;
+} Pico_DimX;
 
 /// @}
 
@@ -155,6 +183,7 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw
+void pico_output_draw_rectX (const Pico_PosX* pos, const Pico_DimX* dim);
 void pico_output_draw_rect (Pico_Rect rect);
 
 /// @brief Draws a triangle with a right angle at bottom-left.

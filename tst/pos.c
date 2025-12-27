@@ -6,29 +6,29 @@ int main (void) {
     pico_set_title("Pct-To-Pos");
 
     {
-        puts("centered rect");
-        Pico_Pos  pt  = pico_pos((Pico_Pct){50, 50});
-        Pico_Rect rct = {pt.x, pt.y, 32, 18};
+        puts("white centered rect");
+        Pico_PosX pos = { 0.5, 0.5, PICO_ANCHOR_CENTER_MIDDLE, NULL };
+        Pico_DimX dim = { 0.5, 0.5, NULL };
         pico_output_clear();
-        pico_output_draw_rect(rct);
-	_pico_check("pct_rect50");
+        pico_output_draw_rectX(&pos, &dim);
+        _pico_check("pct_rect50");
     }
 
     {
-        puts("rect at 30%");
         pico_output_clear();
 
-        Pico_Pos  pt1  = pico_pos((Pico_Pct){30, 30});
-        Pico_Rect rct1 = {pt1.x, pt1.y, 32, 18};
-        pico_output_draw_rect(rct1);
+        puts("white rect at 30%");
+        Pico_PosX p1 = { 0.3, 0.3, PICO_ANCHOR_CENTER_MIDDLE, NULL };
+        Pico_DimX d1 = { 0.5, 0.5, NULL };
+        pico_output_draw_rectX(&p1, &d1);
 
         puts("red centered under white");
-        Pico_Pos  pt2  = pico_pos_ext((Pico_Pct){50, 50}, rct1, pico_get_anchor_pos());
-        Pico_Rect rct2 = {pt2.x, pt2.y, 16, 9};
+        Pico_PosX p2 = { 0.5, 0.5, PICO_ANCHOR_CENTER_MIDDLE, &p1 };
+        Pico_DimX d2 = { 0.5, 0.5, &d1 };
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
-        pico_output_draw_rect(rct2);
+        pico_output_draw_rect(&p2, &d2);
 
-	_pico_check("pct_rect30_inner50");
+        _pico_check("pct_rect30_inner50");
     }
 
     {
