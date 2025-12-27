@@ -66,26 +66,47 @@ typedef enum PICO_MOUSE_BUTTON {
 #define PICO_ANCHOR_MIDDLE 0.5
 #define PICO_ANCHOR_BOTTOM 1
 
-#define PICO_ANCHOR_CENTER_MIDDLE \
+#define PICO_ANCHOR_C \
     ((Pico_PctX) { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE })
+#define PICO_ANCHOR_NW \
+    ((Pico_PctX) { PICO_ANCHOR_TOP, PICO_ANCHOR_LEFT })
+#define PICO_ANCHOR_SE \
+    ((Pico_PctX) { PICO_ANCHOR_BOTTOM, PICO_ANCHOR_RIGHT })
+
+typedef struct {
+    float x;
+    float y;
+} Pico_XY;
 
 typedef struct {
     float x;
     float y;
 } Pico_PctX;
 
-typedef struct Pico_PosX {
-    float x;
-    float y;
-    Pico_PctX anchor;
-    struct Pico_PosX* up;
-} Pico_PosX;
-
+#if 0
 typedef struct Pico_DimX {
     float w;
     float h;
     struct Pico_DimX* up;
 } Pico_DimX;
+
+struct PosX;
+struct RectX;
+
+typedef struct Pico_PosX {
+    float x;
+    float y;
+    Pico_PctX anchor;
+    struct Pico_RectX* up;
+} Pico_PosX;
+#endif
+
+typedef struct Pico_RectX {
+    float x, y;
+    float w, h;
+    Pico_PctX anchor;
+    struct Pico_RectX* up;
+} Pico_RectX;
 
 /// @}
 
@@ -183,7 +204,7 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw
-void pico_output_draw_rectX (const Pico_PosX* pos, const Pico_DimX* dim);
+void pico_output_draw_rectX (const Pico_RectX* rect);
 void pico_output_draw_rect (Pico_Rect rect);
 
 /// @brief Draws a triangle with a right angle at bottom-left.

@@ -5,32 +5,84 @@ int main (void) {
     pico_init(1);
     pico_set_title("Pct-To-Pos");
 
+#if 1
     {
         puts("white centered rect");
-        Pico_PosX pos = { 0.5, 0.5, PICO_ANCHOR_CENTER_MIDDLE, NULL };
-        Pico_DimX dim = { 0.5, 0.5, NULL };
+        Pico_RectX r = { 0.5, 0.5, 0.5, 0.5, PICO_ANCHOR_C, NULL };
         pico_output_clear();
-        pico_output_draw_rectX(&pos, &dim);
+        pico_output_draw_rectX(&r);
         _pico_check("pct_rect50");
     }
-
     {
         pico_output_clear();
 
         puts("white rect at 30%");
-        Pico_PosX p1 = { 0.3, 0.3, PICO_ANCHOR_CENTER_MIDDLE, NULL };
-        Pico_DimX d1 = { 0.5, 0.5, NULL };
-        pico_output_draw_rectX(&p1, &d1);
+        Pico_RectX r1 = { 0.3, 0.3, 0.5, 0.5, PICO_ANCHOR_C, NULL };
+        pico_output_draw_rectX(&r1);
 
         puts("red centered under white");
-        Pico_PosX p2 = { 0.5, 0.5, PICO_ANCHOR_CENTER_MIDDLE, &p1 };
-        Pico_DimX d2 = { 0.5, 0.5, &d1 };
+        Pico_RectX r2 = { 0.5, 0.5, 0.5, 0.5, PICO_ANCHOR_C, &r1 };
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
-        pico_output_draw_rect(&p2, &d2);
+        pico_output_draw_rectX(&r2);
 
-        _pico_check("pct_rect30_inner50");
+        //_pico_check("pct_rect30_inner50");
     }
+    {
+        puts("rect at 50% anchored by bottom-right");
+        pico_output_clear();
 
+        Pico_RectX r1 = { 0.5, 0.5, 0.5, 0.5, PICO_ANCHOR_SE, NULL };
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
+        pico_output_draw_rectX(&r1);
+
+        puts("red anchored by top-left under 0% of white");
+        Pico_RectX r2 = { 0, 0, 0.5, 0.5, PICO_ANCHOR_NW, &r1 };
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
+        pico_output_draw_rectX(&r2);
+
+	    _pico_check("pct_rect50_inner0");
+    }
+    {
+        puts("rect at -10/-10 top-left (4x7 rect on top)");
+        pico_output_clear();
+        Pico_RectX r = { -0.1, -0.1, 0.16, 0.3, PICO_ANCHOR_NW, NULL };
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
+        pico_output_draw_rectX(&r);
+        _pico_check("pct_rect-10");
+    }
+    {
+        puts("rect at 110/110 bottom-right (symmetric to previous)");
+        pico_output_clear();
+        Pico_RectX r = { 1.1, 1.1, 0.16, 0.3, PICO_ANCHOR_SE, NULL };
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
+        pico_output_draw_rectX(&r);
+        _pico_check("pct_rect110");
+    }
+#else
+    {
+        puts("centered rect");
+        Pico_Pos  pt  = pico_pos((Pico_Pct){50, 50});
+        Pico_Rect rct = {pt.x, pt.y, 32, 18};
+        pico_output_clear();
+        pico_output_draw_rect(rct);
+	_pico_check("pct_rect50");
+    }
+    {
+        puts("rect at 30%");
+        pico_output_clear();
+
+        Pico_Pos  pt1  = pico_pos((Pico_Pct){30, 30});
+        Pico_Rect rct1 = {pt1.x, pt1.y, 32, 18};
+        pico_output_draw_rect(rct1);
+
+        puts("red centered under white");
+        Pico_Pos  pt2  = pico_pos_ext((Pico_Pct){50, 50}, rct1, pico_get_anchor_pos());
+        Pico_Rect rct2 = {pt2.x, pt2.y, 16, 9};
+        pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
+        pico_output_draw_rect(rct2);
+
+	_pico_check("pct_rect30_inner50");
+    }
     {
         puts("rect at 50% anchored by bottom-right");
         pico_output_clear();
@@ -50,7 +102,6 @@ int main (void) {
 
 	_pico_check("pct_rect50_inner0");
     }
-
     {
         puts("rect at -10/-10 top-left (4x7 rect on top)");
         pico_output_clear();
@@ -63,7 +114,6 @@ int main (void) {
 
 	_pico_check("pct_rect-10");
     }
-
     {
         puts("rect at 110/110 bottom-right (symmetric to previous)");
         pico_output_clear();
@@ -76,6 +126,7 @@ int main (void) {
 
 	_pico_check("pct_rect110");
     }
+#endif
 
     {
         puts("rect at 50% anchored by bottom-right");

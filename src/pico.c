@@ -475,6 +475,8 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim)
         (S.anchor.rotate.y*rct.h)/100
     };
 
+printf(">I> %d %d %d %d\n", rct.x, rct.y, rct.w, rct.h);
+
     SDL_RenderCopyEx(REN, tex,
         &crp, &rct,
         S.angle + (S.flip.x && S.flip.y ? 180 : 0),
@@ -540,16 +542,51 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
     _pico_output_present(0);
 }
 
+#if 0
+static Pico_XY DIM (Pico_DimX* dim) {
+    if (dim->up == NULL) {
+        return (Pico_XY) { dim->w*S.dim.world.x, dim->h*S.dim.world.y };
+    } else {
+        Pico_XY wh = DIM(dim->up);
+        return (Pico_XY) { dim->w*wh.x, dim->h*wh.y };
+    }
+}
+
+static Pico_XY POS (Pico_PosX* pos, ) {
+    Pico_XY wh;
+    if (pos->up == NULL) {
+        wh = (Pico_XY) { S.pos.world.x, S.pos.world.y };
+    } else {
+        wh = DIM(pos->up);
+    }
+    return (Pico_XY) {
+        pos->x*wh.x - pos->anchor.x*w;
+        pos->y*wh.y - pos->anchor.y*h;
+    }
+}
+#endif
+
+static SDL_FRect RECT (const Pico_RectX* r) {
+    if (r->up == NULL) {
+        float w = r->w * S.dim.world.x;
+        float h = r->h * S.dim.world.y;
+        float x = r->x*S.dim.world.x - r->anchor.x*w;
+        float y = r->y*S.dim.world.y - r->anchor.y*h;
+        return (SDL_FRect) {x, y, w, h};
+    } else {
+        SDL_FRect up = RECT(r->up);
+        float w = r->w * up.w;
+        float h = r->h * up.h;
+        float x = up.x + r->x*up.w - r->anchor.x*w;
+        float y = up.y + r->y*up.h - r->anchor.y*h;
+        return (SDL_FRect) {x, y, w, h};
+    }
+}
+
 // TODO: Test me for flip and rotate
-void pico_output_draw_rectX (const Pico_PosX* pos, const Pico_DimX* dim) {
-    assert(pos->up==NULL && dim->up==NULL);
-
-    float w = dim->w * S.dim.world.x;
-    float h = dim->h * S.dim.world.y;
-    float x = pos->x*S.dim.world.x - pos->anchor.x*w;
-    float y = pos->y*S.dim.world.y - pos->anchor.y*h;
-    SDL_FRect r = {x, y, w, h};
-
+void pico_output_draw_rectX (const Pico_RectX* rect) {
+    SDL_FRect r = RECT(rect);
+printf(">F> %f %f %f %f\n", r.x, r.y, r.w, r.h);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
@@ -560,7 +597,6 @@ void pico_output_draw_rectX (const Pico_PosX* pos, const Pico_DimX* dim) {
             SDL_RenderDrawRectF(REN, &r);
             break;
     }
-
     _pico_output_present(0);
 }
 void pico_output_draw_rect (Pico_Rect rect) {
