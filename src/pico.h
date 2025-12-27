@@ -69,9 +69,11 @@ typedef enum PICO_MOUSE_BUTTON {
 #define PICO_ANCHOR_C \
     ((Pico_PctX) { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE })
 #define PICO_ANCHOR_NW \
-    ((Pico_PctX) { PICO_ANCHOR_TOP, PICO_ANCHOR_LEFT })
+    ((Pico_PctX) { PICO_ANCHOR_LEFT, PICO_ANCHOR_TOP })
+#define PICO_ANCHOR_E \
+    ((Pico_PctX) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_MIDDLE })
 #define PICO_ANCHOR_SE \
-    ((Pico_PctX) { PICO_ANCHOR_BOTTOM, PICO_ANCHOR_RIGHT })
+    ((Pico_PctX) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_BOTTOM })
 
 typedef struct {
     float x;
@@ -107,6 +109,12 @@ typedef struct Pico_RectX {
     Pico_PctX anchor;
     struct Pico_RectX* up;
 } Pico_RectX;
+
+typedef struct Pico_PixelX {
+    float x, y;
+    Pico_PctX anchor;
+    struct Pico_RectX* up;
+} Pico_PixelX;
 
 /// @}
 
@@ -195,6 +203,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2);
 
 /// @brief Draws a single pixel.
 /// @param pos drawing coordinate
+void pico_output_draw_pixelX (Pico_PixelX* pixel);
 void pico_output_draw_pixel (Pico_Pos pos);
 
 /// @brief Draws a batch of pixels.

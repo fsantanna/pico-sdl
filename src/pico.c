@@ -523,6 +523,44 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     SDL_DestroyTexture(aux);
 }
 
+static SDL_FRect RECT (const Pico_RectX* r) {
+    if (r->up == NULL) {
+        float w = r->w * S.dim.world.x;
+        float h = r->h * S.dim.world.y;
+        float x = r->x*S.dim.world.x - r->anchor.x*w;
+        float y = r->y*S.dim.world.y - r->anchor.y*h;
+        return (SDL_FRect) {x, y, w, h};
+    } else {
+        SDL_FRect up = RECT(r->up);
+        float w = r->w * up.w;
+        float h = r->h * up.h;
+        float x = up.x + r->x*up.w - r->anchor.x*w;
+        float y = up.y + r->y*up.h - r->anchor.y*h;
+        return (SDL_FRect) {x, y, w, h};
+    }
+}
+
+static SDL_FPoint PIXEL (const Pico_PixelX* p) {
+    if (p->up == NULL) {
+        float x = p->x*S.dim.world.x - p->anchor.x;
+        float y = p->y*S.dim.world.y - p->anchor.y;
+        return (SDL_FPoint) {x, y};
+    } else {
+        SDL_FRect up = RECT(p->up);
+        float x = up.x + p->x*up.w - p->anchor.x;
+        float y = up.y + p->y*up.h - p->anchor.y;
+        return (SDL_FPoint) {x, y};
+    }
+}
+
+void pico_output_draw_pixelX (Pico_PixelX* pixel) {
+    SDL_FPoint p = PIXEL(pixel);
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+    SDL_RenderDrawPointF(REN, p.x, p.y);
+    _pico_output_present(0);
+}
+
 void pico_output_draw_pixel (Pico_Pos pos) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -566,27 +604,9 @@ static Pico_XY POS (Pico_PosX* pos, ) {
 }
 #endif
 
-static SDL_FRect RECT (const Pico_RectX* r) {
-    if (r->up == NULL) {
-        float w = r->w * S.dim.world.x;
-        float h = r->h * S.dim.world.y;
-        float x = r->x*S.dim.world.x - r->anchor.x*w;
-        float y = r->y*S.dim.world.y - r->anchor.y*h;
-        return (SDL_FRect) {x, y, w, h};
-    } else {
-        SDL_FRect up = RECT(r->up);
-        float w = r->w * up.w;
-        float h = r->h * up.h;
-        float x = up.x + r->x*up.w - r->anchor.x*w;
-        float y = up.y + r->y*up.h - r->anchor.y*h;
-        return (SDL_FRect) {x, y, w, h};
-    }
-}
-
 // TODO: Test me for flip and rotate
 void pico_output_draw_rectX (const Pico_RectX* rect) {
     SDL_FRect r = RECT(rect);
-printf(">F> %f %f %f %f\n", r.x, r.y, r.w, r.h);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {

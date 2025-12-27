@@ -9,101 +9,85 @@ int main (void) {
 
     // PIXELS
     {
+        // TODO: 0.51
         puts("centered pixel - 1dir/1baixo");
-        pico_set_anchor_pos((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+        Pico_PixelX p = { 0.5, 0.51, PICO_ANCHOR_C, NULL };
         pico_output_clear();
-        pico_output_draw_pixel(pt);
+        pico_output_draw_pixelX(&p);
         _pico_check("pixel50x50y_center");
     }
 
     {
         puts("centered pixel - 1dir/1baixo");
-        pico_set_anchor_pos((Pico_Anchor){PICO_LEFT, PICO_TOP});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+        Pico_PixelX p = { 0.5, 0.5, PICO_ANCHOR_NW, NULL };
         pico_output_clear();
-        pico_output_draw_pixel(pt);
+        pico_output_draw_pixelX(&p);
         _pico_check("pixel50x50y_lefttop");
     }
 
     {
         puts("centered pixel - 1esq/1cima");
-        pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+        Pico_PixelX p = { 0.5, 0.5, PICO_ANCHOR_SE, NULL };
         pico_output_clear();
-        pico_output_draw_pixel(pt);
+        pico_output_draw_pixelX(&p);
         _pico_check("pixel50x50y_rightbottom");
     }
 
     // RECTS
     {
         puts("centered rect - exact");
-        pico_set_anchor_pos((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
-        Pico_Rect rct = { pt.x, pt.y, 4, 4 };
+        Pico_RectX r = { 0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL };
         pico_output_clear();
-        pico_output_draw_rect(rct);
+        pico_output_draw_rectX(&r);
         _pico_check("rect50x50y_center");
     }
 
     {
         puts("topleft centered - 1lin/1col");
-        pico_set_anchor_pos((Pico_Anchor){PICO_LEFT, PICO_TOP});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
-        Pico_Rect rct = { pt.x, pt.y, 4, 4 };
+        Pico_RectX r = { 0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_NW, NULL };
         pico_output_clear();
-        pico_output_draw_rect(rct);
+        pico_output_draw_rectX(&r);
         _pico_check("rect50x50y_lefttop");
     }
 
     {
         puts("bottomright centered - 1lin/1col");
-        pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
-        Pico_Rect rct = { pt.x, pt.y, 4, 4 };
+        Pico_RectX r = { 0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_SE, NULL };
         pico_output_clear();
-        pico_output_draw_rect(rct);
+        pico_output_draw_rectX(&r);
         _pico_check("rect50x50y_rightbottom");
     }
 
     {
         puts("rightmiddle centered - 1col");
-        pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_MIDDLE});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
-        Pico_Rect rct = { pt.x, pt.y, 4, 4 };
+        Pico_RectX r = { 0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_E, NULL };
         pico_output_clear();
-        pico_output_draw_rect(rct);
+        pico_output_draw_rectX(&r);
         _pico_check("rect50x50y_rightcenter");
     }
 
     {
         puts("anchor 25%25% 20%20% - 1lin/1col");
-        pico_set_anchor_pos((Pico_Anchor){25, 25});
-        Pico_Pos pt = pico_pos((Pico_Pct){20, 20});
-        Pico_Rect rct = { pt.x, pt.y, 4, 4 };
+        Pico_RectX r = { 0.2, 0.2, 0.4, 0.4, {0.2,0.2}, NULL };
         pico_output_clear();
-        pico_output_draw_rect(rct);
+        pico_output_draw_rectX(&r);
         _pico_check("rect20x20y_25x25y");
     }
     
     // RECTS out of [0,100]
     {
         puts("anchor -25%-25% centered - touching border");
-        pico_set_anchor_pos((Pico_Anchor){-25, -25});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
-        Pico_Rect rct = { pt.x, pt.y, 4, 4 };
+        Pico_RectX r = { 0.5, 0.5, 0.4, 0.4, {-0.25,-0.25}, NULL };
         pico_output_clear();
-        pico_output_draw_rect(rct);
+        pico_output_draw_rectX(&r);
         _pico_check("rect20x20y_-25x-25y");
     }
 
     {
         puts("anchor 125%125% centered - touching border");
-        pico_set_anchor_pos((Pico_Anchor){125, 125});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
-        Pico_Rect rct = { pt.x, pt.y, 4, 4 };
+        Pico_RectX r = { 0.5, 0.5, 0.4, 0.4, {1.25,1.25}, NULL };
         pico_output_clear();
-        pico_output_draw_rect(rct);
+        pico_output_draw_rectX(&r);
         _pico_check("rect50x50y_125x125y");
     }
 
