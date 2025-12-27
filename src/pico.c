@@ -540,7 +540,7 @@ static SDL_FRect RECT (const Pico_RectX* r) {
     }
 }
 
-static SDL_FPoint PIXEL (const Pico_PixelX* p) {
+static SDL_FPoint PIXEL (const Pico_PosX* p) {
     if (p->up == NULL) {
         float x = p->x*S.dim.world.x - p->anchor.x;
         float y = p->y*S.dim.world.y - p->anchor.y;
@@ -553,7 +553,7 @@ static SDL_FPoint PIXEL (const Pico_PixelX* p) {
     }
 }
 
-void pico_output_draw_pixelX (Pico_PixelX* pixel) {
+void pico_output_draw_pixelX (Pico_PosX* pixel) {
     SDL_FPoint p = PIXEL(pixel);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);

@@ -11,7 +11,7 @@ int main (void) {
     {
         // TODO: 0.51
         puts("centered pixel - 1dir/1baixo");
-        Pico_PixelX p = { 0.5, 0.51, PICO_ANCHOR_C, NULL };
+        Pico_PosX p = { 0.5, 0.51, PICO_ANCHOR_C, NULL };
         pico_output_clear();
         pico_output_draw_pixelX(&p);
         _pico_check("pixel50x50y_center");
@@ -19,7 +19,7 @@ int main (void) {
 
     {
         puts("centered pixel - 1dir/1baixo");
-        Pico_PixelX p = { 0.5, 0.5, PICO_ANCHOR_NW, NULL };
+        Pico_PosX p = { 0.5, 0.5, PICO_ANCHOR_NW, NULL };
         pico_output_clear();
         pico_output_draw_pixelX(&p);
         _pico_check("pixel50x50y_lefttop");
@@ -27,7 +27,7 @@ int main (void) {
 
     {
         puts("centered pixel - 1esq/1cima");
-        Pico_PixelX p = { 0.5, 0.5, PICO_ANCHOR_SE, NULL };
+        Pico_PosX p = { 0.5, 0.5, PICO_ANCHOR_SE, NULL };
         pico_output_clear();
         pico_output_draw_pixelX(&p);
         _pico_check("pixel50x50y_rightbottom");

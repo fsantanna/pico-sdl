@@ -110,11 +110,11 @@ typedef struct Pico_RectX {
     struct Pico_RectX* up;
 } Pico_RectX;
 
-typedef struct Pico_PixelX {
+typedef struct Pico_PosX {
     float x, y;
     Pico_PctX anchor;
     struct Pico_RectX* up;
-} Pico_PixelX;
+} Pico_PosX;
 
 /// @}
 
@@ -203,7 +203,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2);
 
 /// @brief Draws a single pixel.
 /// @param pos drawing coordinate
-void pico_output_draw_pixelX (Pico_PixelX* pixel);
+void pico_output_draw_pixelX (Pico_PosX* pixel);
 void pico_output_draw_pixel (Pico_Pos pos);
 
 /// @brief Draws a batch of pixels.
