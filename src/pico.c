@@ -505,8 +505,7 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim)
         (S.anchor.rotate.y*rct.h)/100
     };
 
-printf(">I> %d %d %d %d\n", rct.x, rct.y, rct.w, rct.h);
-
+    //printf("> %d %d %d %d\n", rct.x, rct.y, rct.w, rct.h);
     SDL_RenderCopyEx(REN, tex,
         &crp, &rct,
         S.angle + (S.flip.x && S.flip.y ? 180 : 0),
@@ -587,6 +586,14 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     S.anchor.pos = anc;
     SDL_DestroyTexture(aux);
 }
+void pico_output_draw_lineX (Pico_PosX* p1, Pico_PosX* p2) {
+    SDL_FPoint pp1 = POS(p1);
+    SDL_FPoint pp2 = POS(p2);
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+    SDL_RenderDrawLineF(REN, pp1.x,pp1.y, pp2.x,pp2.y);
+    _pico_output_present(0);
+}
 
 void pico_output_draw_pixelX (Pico_PosX* pixel) {
     SDL_FPoint p = POS(pixel);
@@ -603,45 +610,22 @@ void pico_output_draw_pixel (Pico_Pos pos) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixels (const Pico_Pos* apos, int count) {
-    Pico_Pos vec[count];
-    for (int i=0; i<count; i++) {
+void pico_output_draw_pixels (const Pico_Pos* apos, int n) {
+    Pico_Pos vec[n];
+    for (int i=0; i<n; i++) {
         vec[i].x = X(apos[i].x,1);
         vec[i].y = Y(apos[i].y,1);
     }
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_RenderDrawPoints(REN, vec, count);
+    SDL_RenderDrawPoints(REN, vec, n);
     _pico_output_present(0);
 }
-
-#if 0
-static Pico_XY DIM (Pico_DimX* dim) {
-    if (dim->up == NULL) {
-        return (Pico_XY) { dim->w*S.dim.world.x, dim->h*S.dim.world.y };
-    } else {
-        Pico_XY wh = DIM(dim->up);
-        return (Pico_XY) { dim->w*wh.x, dim->h*wh.y };
-    }
-}
-
-static Pico_XY POS (Pico_PosX* pos, ) {
-    Pico_XY wh;
-    if (pos->up == NULL) {
-        wh = (Pico_XY) { S.pos.world.x, S.pos.world.y };
-    } else {
-        wh = DIM(pos->up);
-    }
-    return (Pico_XY) {
-        pos->x*wh.x - pos->anchor.x*w;
-        pos->y*wh.y - pos->anchor.y*h;
-    }
-}
-#endif
 
 // TODO: Test me for flip and rotate
 void pico_output_draw_rectX (const Pico_RectX* rect) {
     SDL_FRect r = RECT(rect);
+    //printf("> %f %f %f %f\n", r.x, r.y, r.w, r.h);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
@@ -702,8 +686,56 @@ void pico_output_draw_tri (Pico_Rect rect) {
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
+void pico_output_draw_triX (const Pico_PosX* p1, const Pico_PosX* p2, const Pico_PosX* p3) {
+    SDL_FPoint pp1 = POS(p1);
+    SDL_FPoint pp2 = POS(p2);
+    SDL_FPoint pp3 = POS(p3);
+
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+    switch (S.style) {
+        case PICO_FILL:
+            filledTrigonRGBA(REN,
+                pp1.x, pp1.y,
+                pp2.x, pp2.y,
+                pp3.x, pp3.y,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+        case PICO_STROKE:
+            trigonRGBA(REN,
+                pp1.x, pp1.y,
+                pp2.x, pp2.y,
+                pp3.x, pp3.y,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+    }
+    _pico_output_present(0);
+}
 
 // TODO: Test me for flip and rotate
+void pico_output_draw_ovalX (const Pico_RectX* rect) {
+    SDL_FRect r = RECT(rect);
+    //printf("> %f %f %f %f\n", r.x, r.y, r.w, r.h);
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+    switch (S.style) {
+        case PICO_FILL:
+            filledEllipseRGBA (REN,
+                r.x+r.w/2, r.y+r.h/2, r.w/2, r.h/2,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+        case PICO_STROKE:
+            ellipseRGBA (REN,
+                r.x+r.w/2, r.y+r.h/2, r.w/2, r.h/2,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+    }
+    _pico_output_present(0);
+}
 void pico_output_draw_oval (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
     SDL_Texture* aux = _draw_aux(rect.w, rect.h);
@@ -727,10 +759,10 @@ void pico_output_draw_oval (Pico_Rect rect) {
     SDL_DestroyTexture(aux);
 }
 
-void pico_output_draw_poly (const Pico_Pos* apos, int count) {
-    Sint16 ax[count], ay[count];
+void pico_output_draw_poly (const Pico_Pos* apos, int n) {
+    Sint16 ax[n], ay[n];
     int minx = INT_MAX, maxx = INT_MIN, miny = INT_MAX, maxy = INT_MIN;
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < n; i++) {
         ax[i] = apos[i].x;
         ay[i] = apos[i].y;
         minx = SDL_min(ax[i], minx);
@@ -738,7 +770,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
         miny = SDL_min(ay[i], miny);
         maxy = SDL_max(ay[i], maxy);
     }
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < n; i++) {
         ax[i] -= minx;
         ay[i] -= miny;
     }
@@ -751,13 +783,13 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
     switch (S.style) {
         case PICO_FILL:
             filledPolygonRGBA(REN,
-                ax, ay, count,
+                ax, ay, n,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
         case PICO_STROKE:
             polygonRGBA(REN,
-                ax, ay, count,
+                ax, ay, n,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
@@ -769,6 +801,31 @@ void pico_output_draw_poly (const Pico_Pos* apos, int count) {
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     S.anchor.pos = anc;
     SDL_DestroyTexture(aux);
+}
+void pico_output_draw_polyX (const Pico_PosX* apos, int n) {
+    Sint16 xs[n], ys[n];
+    for (int i=0; i<n; i++) {
+        SDL_FPoint p = POS(&apos[i]);
+        xs[i] = p.x;
+        ys[i] = p.y;
+    }
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+    switch (S.style) {
+        case PICO_FILL:
+            filledPolygonRGBA(REN,
+                xs, ys, n,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+        case PICO_STROKE:
+            polygonRGBA(REN,
+                xs, ys, n,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+    }
+    _pico_output_present(0);
 }
 
 void pico_output_draw_text (Pico_Pos pos, const char* text) {
