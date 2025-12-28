@@ -81,6 +81,36 @@ static struct {
     {100, 100},
 };
 
+static SDL_FRect RECT (const Pico_RectX* r) {
+    if (r->up == NULL) {
+        float w = r->w * S.dim.world.x;
+        float h = r->h * S.dim.world.y;
+        float x = r->x*S.dim.world.x - r->anchor.x*w;
+        float y = r->y*S.dim.world.y - r->anchor.y*h;
+        return (SDL_FRect) {x, y, w, h};
+    } else {
+        SDL_FRect up = RECT(r->up);
+        float w = r->w * up.w;
+        float h = r->h * up.h;
+        float x = up.x + r->x*up.w - r->anchor.x*w;
+        float y = up.y + r->y*up.h - r->anchor.y*h;
+        return (SDL_FRect) {x, y, w, h};
+    }
+}
+
+static SDL_FPoint POS (const Pico_PosX* p) {
+    if (p->up == NULL) {
+        float x = p->x*S.dim.world.x - p->anchor.x;
+        float y = p->y*S.dim.world.y - p->anchor.y;
+        return (SDL_FPoint) {x, y};
+    } else {
+        SDL_FRect up = RECT(p->up);
+        float x = up.x + p->x*up.w - p->anchor.x;
+        float y = up.y + p->y*up.h - p->anchor.y;
+        return (SDL_FPoint) {x, y};
+    }
+}
+
 static Pico_Dim _zoom () {
     return (Pico_Dim) {
         S.dim.world.x * S.zoom.x / 100,
@@ -490,6 +520,41 @@ void pico_output_draw_image (Pico_Pos pos, const char* path) {
     pico_output_draw_image_ext(pos, path, PICO_DIM_KEEP);
 }
 
+void pico_output_draw_imageX (const Pico_RectX* rect, const char* path) {
+    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
+    if (tex == NULL) {
+        tex = IMG_LoadTexture(REN, path);
+        pico_hash_add(_pico_hash, path, tex);
+    }
+    pico_assert(tex != NULL);
+
+    SDL_FRect rf;
+    assert(rect->w!=0 || rect->h!=0);
+    if (rect->w==0 || rect->h==0) {
+        int w, h;
+        SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+
+        Pico_RectX ri = *rect;
+        ri.w = ri.h = 1;
+        SDL_FRect v = RECT(&ri);
+
+        if (rect->w == 0) {
+            ri.w = ri.h * w * v.h / h / v.w;
+            ri.h = rect->h;
+        } else {
+            ri.w = rect->w;
+            ri.h = ri.w * h * v.w / w / v.h;
+        }
+        rf = RECT(&ri);
+    } else {
+        rf = RECT(rect);
+    }
+
+    SDL_SetTextureAlphaMod(tex, S.alpha);
+    SDL_RenderCopyF(REN, tex, NULL, &rf);
+    _pico_output_present(0);
+}
+
 void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim) {
     SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
     if (tex == NULL) {
@@ -523,38 +588,8 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     SDL_DestroyTexture(aux);
 }
 
-static SDL_FRect RECT (const Pico_RectX* r) {
-    if (r->up == NULL) {
-        float w = r->w * S.dim.world.x;
-        float h = r->h * S.dim.world.y;
-        float x = r->x*S.dim.world.x - r->anchor.x*w;
-        float y = r->y*S.dim.world.y - r->anchor.y*h;
-        return (SDL_FRect) {x, y, w, h};
-    } else {
-        SDL_FRect up = RECT(r->up);
-        float w = r->w * up.w;
-        float h = r->h * up.h;
-        float x = up.x + r->x*up.w - r->anchor.x*w;
-        float y = up.y + r->y*up.h - r->anchor.y*h;
-        return (SDL_FRect) {x, y, w, h};
-    }
-}
-
-static SDL_FPoint PIXEL (const Pico_PosX* p) {
-    if (p->up == NULL) {
-        float x = p->x*S.dim.world.x - p->anchor.x;
-        float y = p->y*S.dim.world.y - p->anchor.y;
-        return (SDL_FPoint) {x, y};
-    } else {
-        SDL_FRect up = RECT(p->up);
-        float x = up.x + p->x*up.w - p->anchor.x;
-        float y = up.y + p->y*up.h - p->anchor.y;
-        return (SDL_FPoint) {x, y};
-    }
-}
-
 void pico_output_draw_pixelX (Pico_PosX* pixel) {
-    SDL_FPoint p = PIXEL(pixel);
+    SDL_FPoint p = POS(pixel);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     SDL_RenderDrawPointF(REN, p.x, p.y);

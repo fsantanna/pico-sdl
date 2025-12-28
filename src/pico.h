@@ -187,6 +187,7 @@ void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim 
 /// @sa pico_output_draw_buffer
 /// @sa pico_output_draw_image_ext
 void pico_output_draw_image (Pico_Pos pos, const char* path);
+void pico_output_draw_imageX (const Pico_RectX* rect, const char* path);
 
 /// @brief Draws an image with the specified dimensions.
 /// @param pos drawing coordinate
