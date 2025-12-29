@@ -429,6 +429,31 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 static void _pico_output_present (int force);
 
+static SDL_FRect tex_rect (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
+    if (rect->w!=0 && rect->h!=0) {
+        return RECT(rect);
+    } else {
+        int w, h;
+        SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+
+        Pico_Rect_Pct r = *rect;
+        r.w = r.h = 1;
+        SDL_FRect v = RECT(&r);
+
+        if (rect->w==0 && rect->h==0) {
+            r.w = ((float)w) / v.w;
+            r.h = ((float)h) / v.h;
+        } else if (rect->w == 0) {
+            r.w = r.h * w * v.h / h / v.w;
+            r.h = rect->h;
+        } else {
+            r.w = rect->w;
+            r.h = r.w * h * v.w / w / v.h;
+        }
+        return RECT(&r);
+    }
+}
+
 void pico_output_clear (void) {
     SDL_SetRenderDrawColor(REN,
         S.color.clear.r, S.color.clear.g, S.color.clear.b, 0xFF);
@@ -465,8 +490,8 @@ void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim 
 
 void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], int w, int h) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
-        (void*)buffer, dim.x, dim.y,
-        24, 3*dim.x, SDL_PIXELFORMAT_RGB24
+        (void*)buffer, w, h,
+        24, 3*w, SDL_PIXELFORMAT_RGB24
     );
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
@@ -535,29 +560,6 @@ void pico_output_draw_image (Pico_Pos pos, const char* path) {
     pico_output_draw_image_ext(pos, path, PICO_DIM_KEEP);
 }
 
-static SDL_FRect tex_rect (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
-    assert(rect->w!=0 || rect->h!=0);
-    if (rect->w!=0 && rect->h!=0) {
-        return RECT(rect);
-    } else {
-        int w, h;
-        SDL_QueryTexture(tex, NULL, NULL, &w, &h);
-
-        Pico_Rect_Pct ri = *rect;
-        ri.w = ri.h = 1;
-        SDL_FRect v = RECT(&ri);
-
-        if (rect->w == 0) {
-            ri.w = ri.h * w * v.h / h / v.w;
-            ri.h = rect->h;
-        } else {
-            ri.w = rect->w;
-            ri.h = ri.w * h * v.w / w / v.h;
-        }
-        return RECT(&ri);
-    }
-}
-
 void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path) {
     SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
     if (tex == NULL) {
@@ -565,9 +567,9 @@ void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path) {
         pico_hash_add(_pico_hash, path, tex);
     }
     pico_assert(tex != NULL);
-    SDL_FRect rf = tex_rect(tex, rect);
+    SDL_FRect r = tex_rect(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopyF(REN, tex, NULL, &rf);
+    SDL_RenderCopyF(REN, tex, NULL, &r);
     _pico_output_present(0);
 }
 
