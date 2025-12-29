@@ -429,7 +429,26 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 static void _pico_output_present (int force);
 
-static Pico_Rect tex_rect (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
+static Pico_Rect tex_rect_raw (SDL_Texture* tex, Pico_Rect rect) {
+    if (rect.w!=0 && rect.h!=0) {
+        return rect;
+    } else {
+        int w, h;
+        SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+
+        if (rect.w==0 && rect.h==0) {
+            rect.w = w;
+            rect.h = h;
+        } else if (rect.w == 0) {
+            rect.w = rect.h * w / h;
+        } else {
+            rect.h = rect.w * h / w;
+        }
+        return rect;
+    }
+}
+
+static Pico_Rect tex_rect_pct (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
     if (rect->w!=0 && rect->h!=0) {
         return RECT(rect);
     } else {
@@ -482,7 +501,7 @@ void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color bu
     );
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
-    Pico_Rect r = tex_rect(tex, rect);
+    Pico_Rect r = tex_rect_pct(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     //printf(">>> %f %f %f %f\n", r.x, r.y, r.w, r.h);
     SDL_RenderCopy(REN, tex, NULL, &r);
@@ -544,8 +563,17 @@ static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim)
     _pico_output_present(0);
 }
 
-void pico_output_draw_image (Pico_Pos pos, const char* path) {
-    pico_output_draw_image_ext(pos, path, PICO_DIM_KEEP);
+void pico_output_draw_image_raw (Pico_Rect rect, const char* path) {
+    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
+    if (tex == NULL) {
+        tex = IMG_LoadTexture(REN, path);
+        pico_hash_add(_pico_hash, path, tex);
+    }
+    pico_assert(tex != NULL);
+    Pico_Rect r = tex_rect_raw(tex, rect);
+    SDL_SetTextureAlphaMod(tex, S.alpha);
+    SDL_RenderCopy(REN, tex, NULL, &r);
+    _pico_output_present(0);
 }
 
 void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path) {
@@ -555,21 +583,10 @@ void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path) {
         pico_hash_add(_pico_hash, path, tex);
     }
     pico_assert(tex != NULL);
-    Pico_Rect r = tex_rect(tex, rect);
+    Pico_Rect r = tex_rect_pct(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopy(REN, tex, NULL, &r);
     _pico_output_present(0);
-}
-
-void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim) {
-    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
-    if (tex == NULL) {
-        tex = IMG_LoadTexture(REN, path);
-        pico_hash_add(_pico_hash, path, tex);
-    }
-    pico_assert(tex != NULL);
-    SDL_SetTextureAlphaMod(tex, S.alpha);
-    _pico_output_draw_tex(pos, tex, dim);
 }
 
 void pico_output_draw_line_raw (Pico_Pos p1, Pico_Pos p2) {

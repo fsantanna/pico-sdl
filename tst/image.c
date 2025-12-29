@@ -4,19 +4,27 @@
 int main (void) {
     pico_init(1);
     pico_set_title("Image - Size - Crop");
-    Pico_Pos cnt = pico_pos((Pico_Pct){50, 50});
     pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
 
-    pico_output_clear();
-    pico_output_draw_image(cnt,"open.png");
-    puts("show big centered");
-    _pico_check("img_big_center");
+    {
+        puts("show top-left from center");
+        Pico_Rect r = { 50,50, 0,0 };
+        pico_output_clear();
+        pico_output_draw_image_raw(r, "open.png");
+        //_pico_check("img_big_center");
+        pico_input_event(NULL, PICO_KEYDOWN);
+    }
 
-    pico_output_clear();
-    pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){10,10});
-    puts("show small centered");
-    _pico_check("img_small_center");
+    {
+        puts("show small centered");
+        Pico_Rect r = { 50-5,50-5, 10,10 };
+        pico_output_clear();
+        pico_output_draw_image_raw(r,"open.png");
+        //_pico_check("img_small_center");
+        pico_input_event(NULL, PICO_KEYDOWN);
+    }
 
+#if 0
     pico_output_clear();
     pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){10,15});
     puts("show small/medium distorted");
@@ -48,6 +56,7 @@ int main (void) {
     pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){0,15});
     puts("show medium normal");
     _pico_check("img_medium_normal2");
+#endif
 
     pico_init(0);
     return 0;

@@ -178,25 +178,15 @@ void pico_output_clear (void);
 /// @param buffer the RGBA image
 /// @param dim image dimensions
 /// @sa pico_output_draw_image
-/// @sa pico_output_draw_image_ext
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim);
 void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], int w, int h);
 
 /// @brief Draws an image.
-/// @param pos drawing coordinate
+/// @param rect drawing coordinates
 /// @param path path to the image file
 /// @sa pico_output_draw_buffer
-/// @sa pico_output_draw_image_ext
-void pico_output_draw_image (Pico_Pos pos, const char* path);
+void pico_output_draw_image_raw (Pico_Rect rect, const char* path);
 void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path);
-
-/// @brief Draws an image with the specified dimensions.
-/// @param pos drawing coordinate
-/// @param path path to the image file
-/// @param dim image dimensions
-/// @sa pico_output_draw_buffer
-/// @sa pico_output_draw_image
-void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim);
 
 /// @brief Draws a line.
 /// @param p1 first point
