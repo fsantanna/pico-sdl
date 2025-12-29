@@ -22,8 +22,8 @@ extern "C" {
 /// @{
 ///
 #define PICO_TITLE "pico-SDL"
-#define PICO_DIM_WINDOW ((Pico_Dim) {640,360})
-#define PICO_DIM_WORLD  ((Pico_Dim) { 64, 36})
+#define PICO_DIM_WINDOW ((Pico_Dim) {500,500})
+#define PICO_DIM_WORLD  ((Pico_Dim) {100,100})
 #define PICO_HASH  128
 
 #define PICO_DIM_KEEP ((Pico_Dim) {0,0})
@@ -67,13 +67,13 @@ typedef enum PICO_MOUSE_BUTTON {
 #define PICO_ANCHOR_BOTTOM 1
 
 #define PICO_ANCHOR_C \
-    ((Pico_PctX) { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE })
+    ((Pico_Pct_X) { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE })
 #define PICO_ANCHOR_NW \
-    ((Pico_PctX) { PICO_ANCHOR_LEFT, PICO_ANCHOR_TOP })
+    ((Pico_Pct_X) { PICO_ANCHOR_LEFT, PICO_ANCHOR_TOP })
 #define PICO_ANCHOR_E \
-    ((Pico_PctX) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_MIDDLE })
+    ((Pico_Pct_X) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_MIDDLE })
 #define PICO_ANCHOR_SE \
-    ((Pico_PctX) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_BOTTOM })
+    ((Pico_Pct_X) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_BOTTOM })
 
 typedef struct {
     float x;
@@ -83,7 +83,7 @@ typedef struct {
 typedef struct {
     float x;
     float y;
-} Pico_PctX;
+} Pico_Pct_X;
 
 #if 0
 typedef struct Pico_DimX {
@@ -95,26 +95,26 @@ typedef struct Pico_DimX {
 struct PosX;
 struct RectX;
 
-typedef struct Pico_PosX {
+typedef struct Pico_Pos_Pct {
     float x;
     float y;
-    Pico_PctX anchor;
-    struct Pico_RectX* up;
-} Pico_PosX;
+    Pico_Pct anchor;
+    struct Pico_Rect_Pct* up;
+} Pico_Pos_Pct;
 #endif
 
-typedef struct Pico_RectX {
+typedef struct Pico_Rect_Pct {
     float x, y;
     float w, h;
-    Pico_PctX anchor;
-    struct Pico_RectX* up;
-} Pico_RectX;
+    Pico_Pct_X anchor;
+    struct Pico_Rect_Pct* up;
+} Pico_Rect_Pct;
 
-typedef struct Pico_PosX {
+typedef struct Pico_Pos_Pct {
     float x, y;
-    Pico_PctX anchor;
-    struct Pico_RectX* up;
-} Pico_PosX;
+    Pico_Pct_X anchor;
+    struct Pico_Rect_Pct* up;
+} Pico_Pos_Pct;
 
 /// @}
 
@@ -180,6 +180,7 @@ void pico_output_clear (void);
 /// @sa pico_output_draw_image
 /// @sa pico_output_draw_image_ext
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim);
+void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], int w, int h);
 
 /// @brief Draws an image.
 /// @param pos drawing coordinate
@@ -187,7 +188,7 @@ void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim 
 /// @sa pico_output_draw_buffer
 /// @sa pico_output_draw_image_ext
 void pico_output_draw_image (Pico_Pos pos, const char* path);
-void pico_output_draw_imageX (const Pico_RectX* rect, const char* path);
+void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path);
 
 /// @brief Draws an image with the specified dimensions.
 /// @param pos drawing coordinate
@@ -201,11 +202,11 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim);
 /// @param p1 first point
 /// @param p2 second point
 void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2);
-void pico_output_draw_lineX (Pico_PosX* p1, Pico_PosX* p2);
+void pico_output_draw_line_pct (Pico_Pos_Pct* p1, Pico_Pos_Pct* p2);
 
 /// @brief Draws a single pixel.
 /// @param pos drawing coordinate
-void pico_output_draw_pixelX (Pico_PosX* pixel);
+void pico_output_draw_pixel_pct (Pico_Pos_Pct* pixel);
 void pico_output_draw_pixel (Pico_Pos pos);
 
 /// @brief Draws a batch of pixels.
@@ -215,24 +216,24 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int n);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw
-void pico_output_draw_rectX (const Pico_RectX* rect);
+void pico_output_draw_rect_pct (const Pico_Rect_Pct* rect);
 void pico_output_draw_rect (Pico_Rect rect);
 
 /// @brief Draws a triangle with a right angle at bottom-left.
 /// @param rect bounds of the triangle
 void pico_output_draw_tri (Pico_Rect rect);
-void pico_output_draw_triX (const Pico_PosX* p1, const Pico_PosX* p2, const Pico_PosX* p3);
+void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, const Pico_Pos_Pct* p3);
 
 /// @brief Draws an ellipse.
 /// @param rect bounds of the ellipse
-void pico_output_draw_ovalX (const Pico_RectX* rect);
+void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect);
 void pico_output_draw_oval (Pico_Rect rect);
 
 /// @brief Draws a polygon.
 /// @param apos array of coordinates
 /// @param n number of coordinates
 void pico_output_draw_poly (const Pico_Pos* apos, int n);
-void pico_output_draw_polyX (const Pico_PosX* apos, int n);
+void pico_output_draw_poly_pct (const Pico_Pos_Pct* apos, int n);
 
 /// @brief Draws text.
 /// @param pos drawing coordinate

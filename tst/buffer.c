@@ -24,6 +24,13 @@ int main (void) {
     
     {
         puts("centered 3x3 on black - 1dir/1baixo");
+        Pico_Rect_Pct p = { 50,50 };
+        pico_output_clear();
+        pico_output_draw_buffer(p1, buffer, (Pico_Dim){3,3});
+        _pico_check("buf3w3h_center_black");
+    }
+    {
+        puts("centered 3x3 on black - 1dir/1baixo");
         Pico_Pos p1 = pico_pos((Pico_Pct){50,50});
         pico_output_clear();
         pico_output_draw_buffer(p1, buffer, (Pico_Dim){3,3});

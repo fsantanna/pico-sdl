@@ -81,7 +81,7 @@ static struct {
     {100, 100},
 };
 
-static SDL_FRect RECT (const Pico_RectX* r) {
+static SDL_FRect RECT (const Pico_Rect_Pct* r) {
     if (r->up == NULL) {
         float w = r->w * S.dim.world.x;
         float h = r->h * S.dim.world.y;
@@ -98,7 +98,7 @@ static SDL_FRect RECT (const Pico_RectX* r) {
     }
 }
 
-static SDL_FPoint POS (const Pico_PosX* p) {
+static SDL_FPoint POS (const Pico_Pos_Pct* p) {
     if (p->up == NULL) {
         float x = p->x*S.dim.world.x - p->anchor.x;
         float y = p->y*S.dim.world.y - p->anchor.y;
@@ -456,10 +456,26 @@ void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim 
         (void*)buffer, dim.x, dim.y,
         24, 3*dim.x, SDL_PIXELFORMAT_RGB24
     );
-    SDL_Texture *aux = SDL_CreateTextureFromSurface(REN, sfc);
-    _pico_output_draw_tex(pos, aux, dim);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
+    pico_assert(tex != NULL);
+    _pico_output_draw_tex(pos, tex, dim);
     SDL_FreeSurface(sfc);
-    SDL_DestroyTexture(aux);
+    SDL_DestroyTexture(tex);
+}
+
+void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], int w, int h) {
+    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
+        (void*)buffer, dim.x, dim.y,
+        24, 3*dim.x, SDL_PIXELFORMAT_RGB24
+    );
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
+    pico_assert(tex != NULL);
+    SDL_FRect rf = tex_rect(tex, rect);
+    SDL_SetTextureAlphaMod(tex, S.alpha);
+    SDL_RenderCopyF(REN, tex, NULL, &rf);
+    SDL_FreeSurface(sfc);
+    SDL_DestroyTexture(tex);
+    _pico_output_present(0);
 }
 
 static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim) {
@@ -519,21 +535,15 @@ void pico_output_draw_image (Pico_Pos pos, const char* path) {
     pico_output_draw_image_ext(pos, path, PICO_DIM_KEEP);
 }
 
-void pico_output_draw_imageX (const Pico_RectX* rect, const char* path) {
-    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
-    if (tex == NULL) {
-        tex = IMG_LoadTexture(REN, path);
-        pico_hash_add(_pico_hash, path, tex);
-    }
-    pico_assert(tex != NULL);
-
-    SDL_FRect rf;
+static SDL_FRect tex_rect (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
     assert(rect->w!=0 || rect->h!=0);
-    if (rect->w==0 || rect->h==0) {
+    if (rect->w!=0 && rect->h!=0) {
+        return RECT(rect);
+    } else {
         int w, h;
         SDL_QueryTexture(tex, NULL, NULL, &w, &h);
 
-        Pico_RectX ri = *rect;
+        Pico_Rect_Pct ri = *rect;
         ri.w = ri.h = 1;
         SDL_FRect v = RECT(&ri);
 
@@ -544,11 +554,18 @@ void pico_output_draw_imageX (const Pico_RectX* rect, const char* path) {
             ri.w = rect->w;
             ri.h = ri.w * h * v.w / w / v.h;
         }
-        rf = RECT(&ri);
-    } else {
-        rf = RECT(rect);
+        return RECT(&ri);
     }
+}
 
+void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path) {
+    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
+    if (tex == NULL) {
+        tex = IMG_LoadTexture(REN, path);
+        pico_hash_add(_pico_hash, path, tex);
+    }
+    pico_assert(tex != NULL);
+    SDL_FRect rf = tex_rect(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopyF(REN, tex, NULL, &rf);
     _pico_output_present(0);
@@ -586,7 +603,7 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     S.anchor.pos = anc;
     SDL_DestroyTexture(aux);
 }
-void pico_output_draw_lineX (Pico_PosX* p1, Pico_PosX* p2) {
+void pico_output_draw_line_pct (Pico_Pos_Pct* p1, Pico_Pos_Pct* p2) {
     SDL_FPoint pp1 = POS(p1);
     SDL_FPoint pp2 = POS(p2);
     SDL_SetRenderDrawColor(REN,
@@ -595,7 +612,7 @@ void pico_output_draw_lineX (Pico_PosX* p1, Pico_PosX* p2) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixelX (Pico_PosX* pixel) {
+void pico_output_draw_pixel_pct (Pico_Pos_Pct* pixel) {
     SDL_FPoint p = POS(pixel);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -623,7 +640,7 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int n) {
 }
 
 // TODO: Test me for flip and rotate
-void pico_output_draw_rectX (const Pico_RectX* rect) {
+void pico_output_draw_rect_pct (const Pico_Rect_Pct* rect) {
     SDL_FRect r = RECT(rect);
     //printf("> %f %f %f %f\n", r.x, r.y, r.w, r.h);
     SDL_SetRenderDrawColor(REN,
@@ -686,7 +703,7 @@ void pico_output_draw_tri (Pico_Rect rect) {
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
-void pico_output_draw_triX (const Pico_PosX* p1, const Pico_PosX* p2, const Pico_PosX* p3) {
+void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, const Pico_Pos_Pct* p3) {
     SDL_FPoint pp1 = POS(p1);
     SDL_FPoint pp2 = POS(p2);
     SDL_FPoint pp3 = POS(p3);
@@ -715,7 +732,7 @@ void pico_output_draw_triX (const Pico_PosX* p1, const Pico_PosX* p2, const Pico
 }
 
 // TODO: Test me for flip and rotate
-void pico_output_draw_ovalX (const Pico_RectX* rect) {
+void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect) {
     SDL_FRect r = RECT(rect);
     //printf("> %f %f %f %f\n", r.x, r.y, r.w, r.h);
     SDL_SetRenderDrawColor(REN,
@@ -802,7 +819,7 @@ void pico_output_draw_poly (const Pico_Pos* apos, int n) {
     S.anchor.pos = anc;
     SDL_DestroyTexture(aux);
 }
-void pico_output_draw_polyX (const Pico_PosX* apos, int n) {
+void pico_output_draw_poly_pct (const Pico_Pos_Pct* apos, int n) {
     Sint16 xs[n], ys[n];
     for (int i=0; i<n; i++) {
         SDL_FPoint p = POS(&apos[i]);

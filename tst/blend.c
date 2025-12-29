@@ -7,11 +7,11 @@ int main (void) {
 
     {
         puts("image dimming");
-        Pico_RectX r = { 0.5, 0.5, 0.5, 0, PICO_ANCHOR_C, NULL };
+        Pico_Rect_Pct r = { 0.5, 0.5, 0.5, 0, PICO_ANCHOR_C, NULL };
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
-            pico_output_draw_imageX(&r, "open.png");
+            pico_output_draw_image_pct(&r, "open.png");
             pico_input_delay(50);
             if (a == 120) {
                 //_pico_check("image_dimmed");
@@ -20,12 +20,12 @@ int main (void) {
     }
     {
         puts("pixel dimming");
-        Pico_PosX p = { 0.5, 0.5, PICO_ANCHOR_NW, NULL };
+        Pico_Pos_Pct p = { 0.5, 0.5, PICO_ANCHOR_NW, NULL };
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_pixelX(&p);
+            pico_output_draw_pixel_pct(&p);
             pico_input_delay(50);
             if (a == 120) {
                 _pico_check("pixel_dimmed");
@@ -49,12 +49,12 @@ int main (void) {
 #endif
     {
         puts("rect dimming");
-        Pico_RectX r = { 0.5, 0.5, 0.9, 0.33, PICO_ANCHOR_C, NULL };
+        Pico_Rect_Pct r = { 0.5, 0.5, 0.9, 0.33, PICO_ANCHOR_C, NULL };
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_rectX(&r);
+            pico_output_draw_rect_pct(&r);
             pico_input_delay(50);
             if (a == 120) {
                 //_pico_check("rect_dimmed");
@@ -63,12 +63,12 @@ int main (void) {
     }
     {
         puts("oval dimming");
-        Pico_RectX r = { 0.5, 0.5, 0.9, 0.33, PICO_ANCHOR_C, NULL };
+        Pico_Rect_Pct r = { 0.5, 0.5, 0.9, 0.33, PICO_ANCHOR_C, NULL };
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_ovalX(&r);
+            pico_output_draw_oval_pct(&r);
             pico_input_delay(50);
             if (a == 120) {
                 //_pico_check("oval_dimmed");
@@ -77,14 +77,14 @@ int main (void) {
     }
     {
         puts("tri dimming");
-        Pico_PosX p1 = { 0.50, 0.33, PICO_ANCHOR_C, NULL };
-        Pico_PosX p2 = { 0.33, 0.66, PICO_ANCHOR_C, NULL };
-        Pico_PosX p3 = { 0.66, 0.66, PICO_ANCHOR_C, NULL };
+        Pico_Pos_Pct p1 = { 0.50, 0.33, PICO_ANCHOR_C, NULL };
+        Pico_Pos_Pct p2 = { 0.33, 0.66, PICO_ANCHOR_C, NULL };
+        Pico_Pos_Pct p3 = { 0.66, 0.66, PICO_ANCHOR_C, NULL };
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_triX(&p1, &p2, &p3);
+            pico_output_draw_tri_pct(&p1, &p2, &p3);
             pico_input_delay(50);
             if (a == 120) {
                 //_pico_check("tri_dimmed");
@@ -93,13 +93,13 @@ int main (void) {
     }
     {
         puts("line dimming");
-        Pico_PosX p1 = { 0.33, 0.33, PICO_ANCHOR_C, NULL };
-        Pico_PosX p2 = { 0.66, 0.66, PICO_ANCHOR_C, NULL };
+        Pico_Pos_Pct p1 = { 0.33, 0.33, PICO_ANCHOR_C, NULL };
+        Pico_Pos_Pct p2 = { 0.66, 0.66, PICO_ANCHOR_C, NULL };
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_lineX(&p1, &p2);
+            pico_output_draw_line_pct(&p1, &p2);
             pico_input_delay(50);
             if (a == 120) {
                 //_pico_check("line_dimmed");
@@ -108,7 +108,7 @@ int main (void) {
     }
     {
         puts("poly dimming");
-        Pico_PosX poly[] = {
+        Pico_Pos_Pct poly[] = {
             { 0.50, 0.33, PICO_ANCHOR_C, NULL },
             { 0.33, 0.66, PICO_ANCHOR_C, NULL },
             { 0.66, 0.66, PICO_ANCHOR_C, NULL },
@@ -117,7 +117,7 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_polyX(poly, 3);
+            pico_output_draw_poly_pct(poly, 3);
             pico_input_delay(50);
             if (a == 120) {
                 //_pico_check("poly_dimmed");
