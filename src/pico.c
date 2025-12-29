@@ -1064,6 +1064,7 @@ void pico_set_clip_raw (Pico_Rect rect) {
 }
 
 void pico_set_clip_pct (Pico_Rect_Pct* rect) {
+    pico_set_clip_raw(RECT(rect));
 }
 
 void pico_set_color_clear (Pico_Color color) {
