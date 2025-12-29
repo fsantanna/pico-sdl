@@ -156,8 +156,8 @@ Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc) {
     return pt;
 }
 
-int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r) {
-    return pico_pos_vs_rect_ext(pt, r, S.anchor.pos, S.anchor.pos);
+int pico_pos_vs_rect_raw (Pico_Pos pos, Pico_Rect rect) {
+    return SDL_PointInRect(&pos, &rect);
 }
 
 int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor ar) {

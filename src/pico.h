@@ -503,7 +503,7 @@ Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc);
 /// @param pt point
 /// @param r rectangle
 /// @return 1 if pt is inside r, or 0 otherwise
-int pico_pos_vs_rect (Pico_Pos pt, Pico_Rect r);
+int pico_pos_vs_rect_raw (Pico_Pos pos, Pico_Rect rect);
 
 /// @brief Checks if a point is inside a rectangle.
 /// @param pt point
