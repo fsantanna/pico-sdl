@@ -490,6 +490,7 @@ int pico_pos_vs_rect_pct (Pico_Pos_Pct* pos, Pico_Rect_Pct* rect);
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_rect_vs_rect_ext
 int pico_rect_vs_rect_raw (Pico_Rect r1, Pico_Rect r2);
+int pico_rect_vs_rect_pct (Pico_Rect_Pct* r1, Pico_Rect_Pct* r2);
 
 /// @}
 

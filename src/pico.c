@@ -140,6 +140,10 @@ int pico_rect_vs_rect_raw (Pico_Rect r1, Pico_Rect r2) {
     return SDL_HasIntersection(&r1, &r2);
 }
 
+int pico_rect_vs_rect_pct (Pico_Rect_Pct* r1, Pico_Rect_Pct* r2) {
+    return pico_rect_vs_rect_raw(RECT(r1), RECT(r2));
+}
+
 // INIT
 
 void pico_init (int on) {

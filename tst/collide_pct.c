@@ -24,72 +24,39 @@ int main() {
         }
     }
 
-#if 0
-    puts("pos_vs_rect_ext - px bottom-right, rct top-left");
-    for (int y = r.y; y < r.y+r.h+2; y++) {
-        for (int x = r.x; x < r.x+r.w+2; x++) {
-            pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,255,255});
-            pico_set_anchor_pos((Pico_Anchor){PICO_LEFT,PICO_TOP});
-            pico_output_draw_rect(r);
-
-            Pico_Pos pt = {x, y};
-            int in = pico_pos_vs_rect_ext(pt, r,
-                        (Pico_Anchor) {PICO_RIGHT,PICO_BOTTOM},
-                        (Pico_Anchor) {PICO_LEFT,PICO_TOP}
-            );
-            pico_set_color_draw((Pico_Color){255,0,0});
-            pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
-            pico_output_draw_pixel(pt);
-
-            puts(in ? "in  " : "out ");
-
-            pico_input_event(NULL, PICO_KEYDOWN);
-        }
-    }
-
     puts("rect_vs_rect - same anchor");
-    pico_set_anchor_pos((Pico_Anchor){PICO_LEFT,PICO_TOP});
-    for (int y = r.y-r.h; y < r.y+r.h+1; y++) {
-        for (int x = r.x-r.w; x < r.x+r.w+1; x++) {
+    for (float y=-0.25; y<1.26; y+=0.1) {
+        for (float x=-0.25; x<1.26; x+=0.1) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255});
-            pico_output_draw_rect(r);
+            pico_output_draw_rect_pct(&r);
 
-            Pico_Rect r2 = {x,y,4,4};
-            int in = pico_rect_vs_rect(r2, r);
+            Pico_Rect_Pct r2 = { x,y, 0.5,0.5, PICO_ANCHOR_C, &r };
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_rect(r2);
+            pico_output_draw_rect_pct(&r2);
 
+            int in = pico_rect_vs_rect_pct(&r2, &r);
             puts(in ? "overlap" : "naw");
-
             pico_input_event(NULL, PICO_KEYDOWN);
         }
     }
 
-    puts("rect_vs_rect_ext - bottom-right, top-left");
-    for (int y = r.y; y < r.y+2*r.h+1; y++) {
-        for (int x = r.x; x < r.x+2*r.w+1; x++) {
+    puts("rect_vs_rect - diff anchor");
+    for (float y=-0.5; y<1.01; y+=0.1) {
+        for (float x=-0.5; x<1.01; x+=0.1) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255});
-            pico_set_anchor_pos((Pico_Anchor){PICO_LEFT,PICO_TOP});
-            pico_output_draw_rect(r);
+            pico_output_draw_rect_pct(&r);
 
-            Pico_Rect r2 = {x,y,4,4};
-            int in = pico_rect_vs_rect_ext(r2, r,
-                (Pico_Anchor){PICO_RIGHT,PICO_BOTTOM},
-                (Pico_Anchor){PICO_LEFT,PICO_TOP}
-            );
+            Pico_Rect_Pct r2 = { x,y, 0.5,0.5, PICO_ANCHOR_NW, &r };
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
-            pico_output_draw_rect(r2);
+            pico_output_draw_rect_pct(&r2);
 
+            int in = pico_rect_vs_rect_pct(&r2, &r);
             puts(in ? "overlap" : "naw");
-
             pico_input_event(NULL, PICO_KEYDOWN);
         }
     }
-#endif
 
     pico_init(0);
     return 0;
