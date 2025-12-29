@@ -5,28 +5,26 @@ int main() {
     pico_set_dim_window((Pico_Dim){200,200});
     pico_set_dim_world((Pico_Dim){20,20});
 
-    Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
-    Pico_Rect r = {pt.x,pt.y,4,4};
+    Pico_Rect_Pct r = { 0.5,0.5, 0.5,0.5, PICO_ANCHOR_C, NULL };
 
-    puts("pos_vs_rect - same anchor");
-    pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT,PICO_BOTTOM});
-    for (int y = r.y-r.w; y < r.y+2; y++) {
-        for (int x = r.x-r.w; x < r.x+2; x++) {
+    puts("pos_vs_rect");
+    for (float y=0; y<1.2; y+=0.1) {
+        for (float x=0; x<1.2; x+=0.1) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255});
-            pico_output_draw_rect(r);
+            pico_output_draw_rect_pct(&r);
 
-            Pico_Pos pt = {x, y};
-            int in = pico_pos_vs_rect(pt, r);
+            Pico_Pos_Pct p = {x,y, PICO_ANCHOR_C, &r};
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_pixel(pt);
+            pico_output_draw_pixel_pct(&p);
 
+            int in = pico_pos_vs_rect_pct(&p, &r);
             puts(in ? "in" : "out");
-
             pico_input_event(NULL, PICO_KEYDOWN);
         }
     }
 
+#if 0
     puts("pos_vs_rect_ext - px bottom-right, rct top-left");
     for (int y = r.y; y < r.y+r.h+2; y++) {
         for (int x = r.x; x < r.x+r.w+2; x++) {
@@ -91,10 +89,7 @@ int main() {
             pico_input_event(NULL, PICO_KEYDOWN);
         }
     }
-
-    puts("assert error");
-    pico_set_rotate(10);
-    pico_pos_vs_rect(pt, r);
+#endif
 
     pico_init(0);
     return 0;

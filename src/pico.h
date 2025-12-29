@@ -481,6 +481,7 @@ void pico_set_zoom (Pico_Pct pct);
 /// @param r rectangle
 /// @return 1 if pt is inside r, or 0 otherwise
 int pico_pos_vs_rect_raw (Pico_Pos pos, Pico_Rect rect);
+int pico_pos_vs_rect_pct (Pico_Pos_Pct* pos, Pico_Rect_Pct* rect);
 
 /// @brief Checks if two rectangles overlap.
 /// Assumes that both rectangles use the same anchor.

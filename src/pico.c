@@ -132,6 +132,10 @@ int pico_pos_vs_rect_raw (Pico_Pos pos, Pico_Rect rect) {
     return SDL_PointInRect(&pos, &rect);
 }
 
+int pico_pos_vs_rect_pct (Pico_Pos_Pct* pos, Pico_Rect_Pct* rect) {
+    return pico_pos_vs_rect_raw(POS(pos), RECT(rect));
+}
+
 int pico_rect_vs_rect_raw (Pico_Rect r1, Pico_Rect r2) {
     return SDL_HasIntersection(&r1, &r2);
 }
