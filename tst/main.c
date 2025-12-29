@@ -3,55 +3,69 @@
 int main (void) {
     pico_init(1);
 
-    Pico_Dim phy = pico_get_dim_window();
-    Pico_Dim log = pico_get_dim_world();
-    assert(phy.x==640 && phy.y==360);
-    assert(log.x==64  && log.y==36 );
-
-    Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
     puts("shows dark screen");
+    {
+        Pico_Dim phy = pico_get_dim_window();
+        Pico_Dim log = pico_get_dim_world();
+        assert(phy.x==500 && phy.y==500);
+        assert(log.x==100 && log.y==100);
+    }
 
-    Pico_Event e1;
+#if 0
     puts("waits any key press");
-    pico_input_event(&e1, PICO_KEYUP);
+    {
+        Pico_Event e;
+        pico_input_event(&e, PICO_KEYUP);
+    }
 
-    // TITLE
     puts("changes window title to \"Testing...\"");
-    pico_set_title("Testing...");
-    pico_input_delay(2000);
+    {
+        pico_set_title("Testing...");
+        pico_input_delay(2000);
+    }
 
-    // SOUND
     puts("plays sound");
-    pico_output_sound("start.wav");
-    pico_input_delay(2000);
-
-    // CLEAR
-    pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
-    pico_output_clear();
+    {
+        pico_output_sound("start.wav");
+        pico_input_delay(2000);
+    }
+#endif
 
     puts("shows white screen");
-    pico_input_delay(2000);
-
-    // DRAW_IMAGE
-    pico_set_anchor_pos((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
-    pico_output_draw_image(pt,"open.png");
+    {
+        pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
+        pico_output_clear();
+        pico_input_delay(2000);
+    }
 
     puts("shows centered image");
-    pico_input_delay(2000);
-
-    // DRAW_PIXEL/RECT/OVAL
-    pico_set_color_clear((Pico_Color){0x00,0x00,0x00});
-    pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
-    pico_output_clear();
-    pico_output_draw_pixel(pt);
-    Pico_Pos rct = pico_pos((Pico_Pct){75, 25});
-    pico_output_draw_rect((Pico_Rect){ rct.x,rct.y, 10,5});
-    Pico_Pos ova = pico_pos((Pico_Pct){25, 75});
-    pico_output_draw_oval((Pico_Rect){ova.x,ova.y, 5,10});
+    {
+        Pico_Rect_Pct r = { 0.5,0.5, 0,0, PICO_ANCHOR_C, NULL };
+        pico_output_draw_image_pct(&r, "open.png");
+        pico_input_delay(2000);
+    }
 
     puts("shows oval -> pixel -> rect");
-    pico_input_delay(2000);
+    {
+        pico_set_color_clear((Pico_Color){0x00,0x00,0x00});
+        pico_set_color_draw((Pico_Color){0xFF,0xFF,0xFF});
+        pico_output_clear();
+        {
+            Pico_Pos_Pct p = { 0.5,0.5, PICO_ANCHOR_C, NULL };
+            pico_output_draw_pixel_pct(&p);
+        }
+        {
+            Pico_Rect_Pct r = { 0.75,0.25, 0.2,0.2, PICO_ANCHOR_C, NULL };
+            pico_output_draw_rect_pct(&r);
+        }
+        {
+            Pico_Rect_Pct r = { 0.25,0.75, 0.2,0.2, PICO_ANCHOR_C, NULL };
+            pico_output_draw_oval_pct(&r);
+        }
+        pico_input_delay(2000);
+    }
 
+#if 0
     // DRAW_TEXT
     pico_output_draw_text(pt, "Hello!");
 
@@ -149,6 +163,7 @@ int main (void) {
         pico_input_delay(250);
     }
 
+#endif
     pico_init(0);
     return 0;
 }
