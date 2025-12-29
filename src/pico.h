@@ -178,7 +178,6 @@ void pico_output_clear (void);
 /// @param buffer the RGBA image
 /// @param dim image dimensions
 /// @sa pico_output_draw_image
-void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim);
 void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], int w, int h);
 
 /// @brief Draws an image.
@@ -229,7 +228,8 @@ void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n);
 /// @param pos drawing coordinate
 /// @param text text to draw
 /// @sa pico_output_draw_text_ext
-void pico_output_draw_text (Pico_Pos pos, const char* text);
+void pico_output_draw_text_raw (Pico_Rect rect, const char* text);
+void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text);
 
 /// @brief Draws text with the specified dim.
 /// @param pos drawing coordinate
