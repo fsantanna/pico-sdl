@@ -1058,9 +1058,12 @@ void pico_set_anchor_rotate (Pico_Anchor anchor) {
     S.anchor.rotate = anchor;
 }
 
-void pico_set_clip_raw (Pico_Rect clip) {
-    S.clip = clip;
-    SDL_RenderSetClipRect(REN, &clip);
+void pico_set_clip_raw (Pico_Rect rect) {
+    S.clip = rect;
+    SDL_RenderSetClipRect(REN, &rect);
+}
+
+void pico_set_clip_pct (Pico_Rect_Pct* rect) {
 }
 
 void pico_set_color_clear (Pico_Color color) {

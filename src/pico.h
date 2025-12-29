@@ -390,7 +390,8 @@ void pico_set_anchor_rotate (Pico_Anchor anchor);
 
 /// @brief Changes the clipping area of drawing operations.
 /// @param clip clipping region
-void pico_set_clip_raw (Pico_Rect clip);
+void pico_set_clip_raw (Pico_Rect rect);
+void pico_set_clip_pct (Pico_Rect_Pct* rect);
 
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
