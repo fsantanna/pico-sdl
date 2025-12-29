@@ -461,19 +461,6 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-static SDL_Texture* _draw_aux (int w, int h) {
-    SDL_Texture* aux = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        w, h
-    );
-    SDL_SetTextureBlendMode(aux, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, aux);
-    SDL_SetRenderDrawColor(REN, 0, 0, 0, 0);   // transparent
-    SDL_RenderClear(REN);
-    SDL_RenderFillRect(REN, NULL);
-    return aux;
-}
-
 static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim);
 
 void pico_output_draw_buffer (Pico_Pos pos, const Pico_Color buffer[], Pico_Dim dim) {
@@ -585,33 +572,13 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim) {
     _pico_output_draw_tex(pos, tex, dim);
 }
 
-// TODO: Test me for flip and rotate
-void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
-    Pico_Pos pos = {
-        _hanchor(SDL_min(p1.x,p2.x),1),
-        _vanchor(SDL_min(p1.y,p2.y),1)
-    };
-    SDL_Texture* aux = _draw_aux (
-        SDL_abs(p1.x-p2.x) + 1,
-        SDL_abs(p1.y-p2.y) + 1
-    );
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_RenderDrawLine(REN, p1.x-pos.x,p1.y-pos.y, p2.x-pos.x,p2.y-pos.y);
-    SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderSetClipRect(REN, &S.clip);
-    Pico_Anchor anc = S.anchor.pos;
-    S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
-    _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
-    S.anchor.pos = anc;
-    SDL_DestroyTexture(aux);
-}
 void pico_output_draw_line_raw (Pico_Pos p1, Pico_Pos p2) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     SDL_RenderDrawLine(REN, p1.x,p1.y, p2.x,p2.y);
     _pico_output_present(0);
 }
+
 void pico_output_draw_line_pct (Pico_Pos_Pct* p1, Pico_Pos_Pct* p2) {
     pico_output_draw_line_raw(POS(p1), POS(p2));
 }
@@ -627,13 +594,6 @@ void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos) {
     pico_output_draw_pixel_raw(POS(pos));
 }
 
-void pico_output_draw_pixel (Pico_Pos pos) {
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_RenderDrawPoint(REN, X(pos.x,1), Y(pos.y,1) );
-    _pico_output_present(0);
-}
-
 void pico_output_draw_pixels (const Pico_Pos* ps, int n) {
     Pico_Pos vec[n];
     for (int i=0; i<n; i++) {
@@ -646,7 +606,6 @@ void pico_output_draw_pixels (const Pico_Pos* ps, int n) {
     _pico_output_present(0);
 }
 
-// TODO: Test me for flip and rotate
 void pico_output_draw_rect_raw (Pico_Rect rect) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -660,57 +619,11 @@ void pico_output_draw_rect_raw (Pico_Rect rect) {
     }
     _pico_output_present(0);
 }
+
 void pico_output_draw_rect_pct (const Pico_Rect_Pct* rect) {
     pico_output_draw_rect_raw(RECT(rect));
 }
-void pico_output_draw_rect (Pico_Rect rect) {
-    Pico_Pos pos = {rect.x, rect.y};
-    SDL_Texture* aux = _draw_aux(rect.w, rect.h);
-    rect.x = 0;
-    rect.y = 0;
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    switch (S.style) {
-        case PICO_FILL:
-            SDL_RenderFillRect(REN, &rect);
-            break;
-        case PICO_STROKE:
-            SDL_RenderDrawRect(REN, &rect);
-            break;
-    }
-    SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderSetClipRect(REN, &S.clip);
-    _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
-    SDL_DestroyTexture(aux);
-}
 
-// TODO: Test me for flip and rotate
-void pico_output_draw_tri (Pico_Rect rect) {
-    Pico_Pos pos = {rect.x, rect.y};
-    SDL_Texture* aux = _draw_aux(rect.w, rect.h);
-    switch (S.style) {
-        case PICO_FILL:
-            filledTrigonRGBA (REN,
-                0, 0,
-                0, rect.h - 1,
-                rect.w - 1, rect.h - 1,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-        case PICO_STROKE:
-            trigonRGBA (REN,
-                0, 0,
-                0, rect.h - 1,
-                rect.w - 1, rect.h - 1,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-    }
-    SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderSetClipRect(REN, &S.clip);
-    _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
-    SDL_DestroyTexture(aux);
-}
 void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -739,7 +652,6 @@ void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, c
 
 }
 
-// TODO: Test me for flip and rotate
 void pico_output_draw_oval_raw (Pico_Rect rect) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -759,75 +671,11 @@ void pico_output_draw_oval_raw (Pico_Rect rect) {
     }
     _pico_output_present(0);
 }
+
 void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect) {
     pico_output_draw_oval_raw(RECT(rect));
 }
-void pico_output_draw_oval (Pico_Rect rect) {
-    Pico_Pos pos = {rect.x, rect.y};
-    SDL_Texture* aux = _draw_aux(rect.w, rect.h);
-    switch (S.style) {
-        case PICO_FILL:
-            filledEllipseRGBA (REN,
-                rect.w/2, rect.h/2, rect.w/2, rect.h/2,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-        case PICO_STROKE:
-            ellipseRGBA (REN,
-                rect.w/2, rect.h/2, rect.w/2, rect.h/2,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-    }
-    SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderSetClipRect(REN, &S.clip);
-    _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
-    SDL_DestroyTexture(aux);
-}
 
-void pico_output_draw_poly (const Pico_Pos* ps, int n) {
-    Sint16 ax[n], ay[n];
-    int minx = INT_MAX, maxx = INT_MIN, miny = INT_MAX, maxy = INT_MIN;
-    for (int i = 0; i < n; i++) {
-        ax[i] = ps[i].x;
-        ay[i] = ps[i].y;
-        minx = SDL_min(ax[i], minx);
-        maxx = SDL_max(ax[i], maxx);
-        miny = SDL_min(ay[i], miny);
-        maxy = SDL_max(ay[i], maxy);
-    }
-    for (int i = 0; i < n; i++) {
-        ax[i] -= minx;
-        ay[i] -= miny;
-    }
-
-    Pico_Pos pos = {
-        _hanchor(minx,1),
-        _vanchor(miny,1)
-    };
-    SDL_Texture* aux = _draw_aux(maxx-minx+1, maxy-miny+1);
-    switch (S.style) {
-        case PICO_FILL:
-            filledPolygonRGBA(REN,
-                ax, ay, n,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-        case PICO_STROKE:
-            polygonRGBA(REN,
-                ax, ay, n,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-    }
-    SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderSetClipRect(REN, &S.clip);
-    Pico_Anchor anc = S.anchor.pos;
-    S.anchor.pos = (Pico_Anchor){PICO_LEFT, PICO_TOP};
-    _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
-    S.anchor.pos = anc;
-    SDL_DestroyTexture(aux);
-}
 void pico_output_draw_poly_raw (const Pico_Pos* ps, int n) {
     Sint16 xs[n], ys[n];
     for (int i=0; i<n; i++) {
@@ -852,6 +700,7 @@ void pico_output_draw_poly_raw (const Pico_Pos* ps, int n) {
     }
     _pico_output_present(0);
 }
+
 void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n) {
     Pico_Pos vs[n];
     for (int i=0; i<n; i++) {

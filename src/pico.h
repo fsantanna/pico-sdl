@@ -203,13 +203,11 @@ void pico_output_draw_image_ext (Pico_Pos pos, const char* path, Pico_Dim dim);
 /// @param p2 second point
 void pico_output_draw_line_raw (Pico_Pos p1, Pico_Pos p2);
 void pico_output_draw_line_pct (Pico_Pos_Pct* p1, Pico_Pos_Pct* p2);
-void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2);
 
 /// @brief Draws a single pixel.
 /// @param pos drawing coordinate
 void pico_output_draw_pixel_raw (Pico_Pos pos);
 void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos);
-void pico_output_draw_pixel (Pico_Pos pos);
 
 /// @brief Draws a batch of pixels.
 /// @param ps array of coordinates
@@ -220,26 +218,22 @@ void pico_output_draw_pixels (const Pico_Pos* ps, int n);
 /// @param rect rectangle to draw
 void pico_output_draw_rect_raw (Pico_Rect rect);
 void pico_output_draw_rect_pct (const Pico_Rect_Pct* rect);
-void pico_output_draw_rect (Pico_Rect rect);
 
 /// @brief Draws a triangle with a right angle at bottom-left.
 /// @param rect bounds of the triangle
 void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3);
 void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, const Pico_Pos_Pct* p3);
-void pico_output_draw_tri (Pico_Rect rect);
 
 /// @brief Draws an ellipse.
 /// @param rect bounds of the ellipse
 void pico_output_draw_oval_raw (Pico_Rect rect);
 void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect);
-void pico_output_draw_oval (Pico_Rect rect);
 
 /// @brief Draws a polygon.
 /// @param ps array of coordinates
 /// @param n number of coordinates
 void pico_output_draw_poly_raw (const Pico_Pos* ps, int n);
 void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n);
-void pico_output_draw_poly (const Pico_Pos* ps, int n);
 
 /// @brief Draws text.
 /// @param pos drawing coordinate
