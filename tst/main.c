@@ -11,7 +11,6 @@ int main (void) {
         assert(log.x==100 && log.y==100);
     }
 
-#if 0
     puts("waits any key press");
     {
         Pico_Event e;
@@ -29,7 +28,6 @@ int main (void) {
         pico_output_sound("start.wav");
         pico_input_delay(2000);
     }
-#endif
 
     puts("shows white screen");
     {
@@ -65,7 +63,7 @@ int main (void) {
         pico_input_delay(2000);
     }
 
-#if 0
+#if TODO
     // DRAW_TEXT
     pico_output_draw_text(pt, "Hello!");
 
@@ -88,38 +86,41 @@ int main (void) {
 
     puts("shows 1 2 3 \\n \\n pico");
     pico_input_delay(2000);
+#endif
 
-    // MOUSE
+    puts("waits mouse click then");
+    puts("shows pixel over mouse");
     {
-        Pico_Event e2;
-        puts("waits mouse click");
-        pico_input_event(&e2, PICO_MOUSEBUTTONDOWN);
-        puts("shows pixel over mouse");
-        pico_output_draw_pixel((Pico_Pos){e2.button.x,e2.button.y});
+        Pico_Event e;
+        pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
+        pico_output_draw_pixel_raw((Pico_Pos){e.button.x,e.button.y});
         pico_input_delay(2000);
     }
 
-    // EVENT
-    Pico_Event e3;
     puts("waits more 2 seconds");
-    pico_input_event_timeout(&e3, PICO_ANY, 2000);
+    {
+        Pico_Event e;
+        pico_input_event_timeout(&e, PICO_ANY, 2000);
+    }
 
-    // GRID=0
-    pico_set_grid(0);
     puts("disables grid");
-    pico_input_delay(2000);
+    {
+        pico_set_grid(0);
+        pico_input_delay(2000);
+    }
 
-    // EXPERT
-
-    pico_output_clear();                    // TODO: should restart cursor?
-    pico_set_expert(1);
-    pico_set_cursor(up);
-    pico_output_writeln("expert");
+#if TODO
     puts("shows expert");
-    pico_output_present();
-    pico_input_delay(2000);
-    pico_set_expert(0);
-    pico_output_clear();
+    {
+        pico_output_clear();        // TODO: should restart cursor?
+        pico_set_expert(1);
+        pico_set_cursor(up);
+        pico_output_writeln("expert");
+        pico_output_present();
+        pico_input_delay(2000);
+        pico_set_expert(0);
+        pico_output_clear();
+    }
 
     // DRAW_RECT
     puts("shows lower-left X, center rect, center/up-right line");
@@ -162,8 +163,8 @@ int main (void) {
         pico_output_draw_text(pt, "Uma frase bem grande...");
         pico_input_delay(250);
     }
-
 #endif
+
     pico_init(0);
     return 0;
 }
