@@ -475,29 +475,6 @@ void pico_set_zoom (Pico_Pct pct);
 /// @param x condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
-/// @brief Returns the dimensions relative to the screen.
-/// @param pct percentage (may be out of [0,100])
-/// @sa pico_dim_ext
-Pico_Dim pico_dim (Pico_Pct pct);
-
-/// @brief Returns the dimensions relative to the given rectangle.
-/// @param pct percentage (may be out of [0,100])
-/// @param dim the reference rectangle
-/// @sa pico_dim
-Pico_Dim pico_dim_ext (Pico_Pct pct, Pico_Dim d);
-
-/// @brief Returns a coordinate relative to the screen rectangle.
-/// @param pct percentage (may be out of [0,100])
-/// @sa pico_pos_ext
-Pico_Pos pico_pos (Pico_Pct pct);
-
-/// @brief Returns a coordinate relative to the given rectangle's position.
-/// @param pct percentage (may be out of [0,100])
-/// @param r the reference rectangle
-/// @param anc anchor for r
-/// @sa pico_pos
-Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc);
-
 /// @brief Checks if a point is inside a rectangle.
 /// Assumes that both primitives use the same anchor.
 /// @param pt point
@@ -505,44 +482,13 @@ Pico_Pos pico_pos_ext (Pico_Pct pct, Pico_Rect r, Pico_Anchor anc);
 /// @return 1 if pt is inside r, or 0 otherwise
 int pico_pos_vs_rect_raw (Pico_Pos pos, Pico_Rect rect);
 
-/// @brief Checks if a point is inside a rectangle.
-/// @param pt point
-/// @param r rectangle
-/// @param ap anchor for pt
-/// @param ar anchor for r
-/// @return 1 if pt is inside r, or 0 otherwise
-int pico_pos_vs_rect_ext (Pico_Pos pt, Pico_Rect r, Pico_Anchor ap, Pico_Anchor ar);
-
-/// @brief Returns a rectangle relative to the screen rectangle.
-/// @param pos percentage (may be out of [0,100])
-/// @param dim percentage (may be out of [0,100])
-/// @sa pico_rect_ext
-Pico_Rect pico_rect (Pico_Pct pos, Pico_Pct dim);
-
-/// @brief Returns a rectangle relative to the given rectangle.
-/// @param pos percentage (may be out of [0,100])
-/// @param dim percentage (may be out of [0,100])
-/// @param r the reference rectangle
-/// @param anc anchor for r
-/// @sa pico_rect
-Pico_Rect pico_rect_ext (Pico_Pct pos, Pico_Pct dim, Pico_Rect r, Pico_Anchor anc);
-
 /// @brief Checks if two rectangles overlap.
 /// Assumes that both rectangles use the same anchor.
 /// @param r1 rectangle 1
 /// @param r2 rectangle 2
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_rect_vs_rect_ext
-int pico_rect_vs_rect (Pico_Rect r1, Pico_Rect r2);
-
-/// @brief Checks if two rectangles with different anchors overlap.
-/// @param r1 rectangle 1
-/// @param r2 rectangle 2
-/// @param a1 anchor for r1
-/// @param a2 anchor for r2
-/// @return 1 if r1 and r2 overlap, or 0 otherwise
-/// @sa pico_pos_vs_rect
-int pico_rect_vs_rect_ext (Pico_Rect r1, Pico_Rect r2, Pico_Anchor a2, Pico_Anchor a1);
+int pico_rect_vs_rect_raw (Pico_Rect r1, Pico_Rect r2);
 
 /// @}
 
