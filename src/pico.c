@@ -81,33 +81,33 @@ static struct {
     {100, 100},
 };
 
-static SDL_FRect RECT (const Pico_Rect_Pct* r) {
+static Pico_Rect RECT (const Pico_Rect_Pct* r) {
     if (r->up == NULL) {
-        float w = r->w * S.dim.world.x;
-        float h = r->h * S.dim.world.y;
-        float x = r->x*S.dim.world.x - r->anchor.x*w;
-        float y = r->y*S.dim.world.y - r->anchor.y*h;
-        return (SDL_FRect) {x, y, w, h};
+        int w = r->w * S.dim.world.x;
+        int h = r->h * S.dim.world.y;
+        int x = r->x*S.dim.world.x - r->anchor.x*w;
+        int y = r->y*S.dim.world.y - r->anchor.y*h;
+        return (Pico_Rect) {x, y, w, h};
     } else {
-        SDL_FRect up = RECT(r->up);
-        float w = r->w * up.w;
-        float h = r->h * up.h;
-        float x = up.x + r->x*up.w - r->anchor.x*w;
-        float y = up.y + r->y*up.h - r->anchor.y*h;
-        return (SDL_FRect) {x, y, w, h};
+        Pico_Rect up = RECT(r->up);
+        int w = r->w * up.w;
+        int h = r->h * up.h;
+        int x = up.x + r->x*up.w - r->anchor.x*w;
+        int y = up.y + r->y*up.h - r->anchor.y*h;
+        return (Pico_Rect) {x, y, w, h};
     }
 }
 
-static SDL_FPoint POS (const Pico_Pos_Pct* p) {
+static Pico_Pos POS (const Pico_Pos_Pct* p) {
     if (p->up == NULL) {
-        float x = p->x*S.dim.world.x - p->anchor.x;
-        float y = p->y*S.dim.world.y - p->anchor.y;
-        return (SDL_FPoint) {x, y};
+        int x = p->x*S.dim.world.x - p->anchor.x;
+        int y = p->y*S.dim.world.y - p->anchor.y;
+        return (Pico_Pos) {x, y};
     } else {
-        SDL_FRect up = RECT(p->up);
-        float x = up.x + p->x*up.w - p->anchor.x;
-        float y = up.y + p->y*up.h - p->anchor.y;
-        return (SDL_FPoint) {x, y};
+        Pico_Rect up = RECT(p->up);
+        int x = up.x + p->x*up.w - p->anchor.x;
+        int y = up.y + p->y*up.h - p->anchor.y;
+        return (Pico_Pos) {x, y};
     }
 }
 
@@ -429,7 +429,7 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 static void _pico_output_present (int force);
 
-static SDL_FRect tex_rect (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
+static Pico_Rect tex_rect (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
     if (rect->w!=0 && rect->h!=0) {
         return RECT(rect);
     } else {
@@ -438,7 +438,7 @@ static SDL_FRect tex_rect (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
 
         Pico_Rect_Pct r = *rect;
         r.w = r.h = 1;
-        SDL_FRect v = RECT(&r);
+        Pico_Rect v = RECT(&r);
 
         if (rect->w==0 && rect->h==0) {
             r.w = ((float)w) / v.w;
@@ -495,9 +495,10 @@ void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color bu
     );
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
-    SDL_FRect rf = tex_rect(tex, rect);
+    Pico_Rect r = tex_rect(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopyF(REN, tex, NULL, &rf);
+    //printf(">>> %f %f %f %f\n", r.x, r.y, r.w, r.h);
+    SDL_RenderCopy(REN, tex, NULL, &r);
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(tex);
     _pico_output_present(0);
@@ -567,9 +568,9 @@ void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path) {
         pico_hash_add(_pico_hash, path, tex);
     }
     pico_assert(tex != NULL);
-    SDL_FRect r = tex_rect(tex, rect);
+    Pico_Rect r = tex_rect(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopyF(REN, tex, NULL, &r);
+    SDL_RenderCopy(REN, tex, NULL, &r);
     _pico_output_present(0);
 }
 
@@ -605,21 +606,25 @@ void pico_output_draw_line (Pico_Pos p1, Pico_Pos p2) {
     S.anchor.pos = anc;
     SDL_DestroyTexture(aux);
 }
-void pico_output_draw_line_pct (Pico_Pos_Pct* p1, Pico_Pos_Pct* p2) {
-    SDL_FPoint pp1 = POS(p1);
-    SDL_FPoint pp2 = POS(p2);
+void pico_output_draw_line_raw (Pico_Pos p1, Pico_Pos p2) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_RenderDrawLineF(REN, pp1.x,pp1.y, pp2.x,pp2.y);
+    SDL_RenderDrawLine(REN, p1.x,p1.y, p2.x,p2.y);
+    _pico_output_present(0);
+}
+void pico_output_draw_line_pct (Pico_Pos_Pct* p1, Pico_Pos_Pct* p2) {
+    pico_output_draw_line_raw(POS(p1), POS(p2));
+}
+
+void pico_output_draw_pixel_raw (Pico_Pos pos) {
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+    SDL_RenderDrawPoint(REN, pos.x, pos.y);
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixel_pct (Pico_Pos_Pct* pixel) {
-    SDL_FPoint p = POS(pixel);
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_RenderDrawPointF(REN, p.x, p.y);
-    _pico_output_present(0);
+void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos) {
+    pico_output_draw_pixel_raw(POS(pos));
 }
 
 void pico_output_draw_pixel (Pico_Pos pos) {
@@ -629,11 +634,11 @@ void pico_output_draw_pixel (Pico_Pos pos) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixels (const Pico_Pos* apos, int n) {
+void pico_output_draw_pixels (const Pico_Pos* ps, int n) {
     Pico_Pos vec[n];
     for (int i=0; i<n; i++) {
-        vec[i].x = X(apos[i].x,1);
-        vec[i].y = Y(apos[i].y,1);
+        vec[i].x = X(ps[i].x,1);
+        vec[i].y = Y(ps[i].y,1);
     }
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -642,20 +647,21 @@ void pico_output_draw_pixels (const Pico_Pos* apos, int n) {
 }
 
 // TODO: Test me for flip and rotate
-void pico_output_draw_rect_pct (const Pico_Rect_Pct* rect) {
-    SDL_FRect r = RECT(rect);
-    //printf("> %f %f %f %f\n", r.x, r.y, r.w, r.h);
+void pico_output_draw_rect_raw (Pico_Rect rect) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
         case PICO_FILL:
-            SDL_RenderFillRectF(REN, &r);
+            SDL_RenderFillRect(REN, &rect);
             break;
         case PICO_STROKE:
-            SDL_RenderDrawRectF(REN, &r);
+            SDL_RenderDrawRect(REN, &rect);
             break;
     }
     _pico_output_present(0);
+}
+void pico_output_draw_rect_pct (const Pico_Rect_Pct* rect) {
+    pico_output_draw_rect_raw(RECT(rect));
 }
 void pico_output_draw_rect (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
@@ -705,55 +711,56 @@ void pico_output_draw_tri (Pico_Rect rect) {
     _pico_output_draw_tex(pos, aux, PICO_DIM_KEEP);
     SDL_DestroyTexture(aux);
 }
-void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, const Pico_Pos_Pct* p3) {
-    SDL_FPoint pp1 = POS(p1);
-    SDL_FPoint pp2 = POS(p2);
-    SDL_FPoint pp3 = POS(p3);
-
+void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
         case PICO_FILL:
             filledTrigonRGBA(REN,
-                pp1.x, pp1.y,
-                pp2.x, pp2.y,
-                pp3.x, pp3.y,
+                p1.x, p1.y,
+                p2.x, p2.y,
+                p3.x, p3.y,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
         case PICO_STROKE:
             trigonRGBA(REN,
-                pp1.x, pp1.y,
-                pp2.x, pp2.y,
-                pp3.x, pp3.y,
+                p1.x, p1.y,
+                p2.x, p2.y,
+                p3.x, p3.y,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
     }
     _pico_output_present(0);
 }
+void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, const Pico_Pos_Pct* p3) {
+    pico_output_draw_tri_raw(POS(p1), POS(p2), POS(p3));
+
+}
 
 // TODO: Test me for flip and rotate
-void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect) {
-    SDL_FRect r = RECT(rect);
-    //printf("> %f %f %f %f\n", r.x, r.y, r.w, r.h);
+void pico_output_draw_oval_raw (Pico_Rect rect) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
         case PICO_FILL:
             filledEllipseRGBA (REN,
-                r.x+r.w/2, r.y+r.h/2, r.w/2, r.h/2,
+                rect.x+rect.w/2, rect.y+rect.h/2, rect.w/2, rect.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
         case PICO_STROKE:
             ellipseRGBA (REN,
-                r.x+r.w/2, r.y+r.h/2, r.w/2, r.h/2,
+                rect.x+rect.w/2, rect.y+rect.h/2, rect.w/2, rect.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
     }
     _pico_output_present(0);
+}
+void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect) {
+    pico_output_draw_oval_raw(RECT(rect));
 }
 void pico_output_draw_oval (Pico_Rect rect) {
     Pico_Pos pos = {rect.x, rect.y};
@@ -778,12 +785,12 @@ void pico_output_draw_oval (Pico_Rect rect) {
     SDL_DestroyTexture(aux);
 }
 
-void pico_output_draw_poly (const Pico_Pos* apos, int n) {
+void pico_output_draw_poly (const Pico_Pos* ps, int n) {
     Sint16 ax[n], ay[n];
     int minx = INT_MAX, maxx = INT_MIN, miny = INT_MAX, maxy = INT_MIN;
     for (int i = 0; i < n; i++) {
-        ax[i] = apos[i].x;
-        ay[i] = apos[i].y;
+        ax[i] = ps[i].x;
+        ay[i] = ps[i].y;
         minx = SDL_min(ax[i], minx);
         maxx = SDL_max(ax[i], maxx);
         miny = SDL_min(ay[i], miny);
@@ -821,12 +828,11 @@ void pico_output_draw_poly (const Pico_Pos* apos, int n) {
     S.anchor.pos = anc;
     SDL_DestroyTexture(aux);
 }
-void pico_output_draw_poly_pct (const Pico_Pos_Pct* apos, int n) {
+void pico_output_draw_poly_raw (const Pico_Pos* ps, int n) {
     Sint16 xs[n], ys[n];
     for (int i=0; i<n; i++) {
-        SDL_FPoint p = POS(&apos[i]);
-        xs[i] = p.x;
-        ys[i] = p.y;
+        xs[i] = ps[i].x;
+        ys[i] = ps[i].y;
     }
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -845,6 +851,13 @@ void pico_output_draw_poly_pct (const Pico_Pos_Pct* apos, int n) {
             break;
     }
     _pico_output_present(0);
+}
+void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n) {
+    Pico_Pos vs[n];
+    for (int i=0; i<n; i++) {
+        vs[i] = POS(&ps[i]);
+    }
+    pico_output_draw_poly_raw(vs, n);
 }
 
 void pico_output_draw_text (Pico_Pos pos, const char* text) {
