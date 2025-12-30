@@ -372,17 +372,17 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 static void _pico_output_present (int force);
 
-static Pico_Rect src_rect_raw (Pico_Rect src, Pico_Rect dst) {
+static Pico_Rect src_rect_raw (Pico_XY src, Pico_Rect dst) {
     if (dst.w!=0 && dst.h!=0) {
         return dst;
     } else {
         if (dst.w==0 && dst.h==0) {
-            dst.w = src.w;
-            dst.h = src.h;
+            dst.w = src.x;
+            dst.h = src.y;
         } else if (dst.w == 0) {
-            dst.w = dst.h * src.w / src.h;
+            dst.w = dst.h * src.x / src.y;
         } else {
-            dst.h = dst.w * src.h / src.w;
+            dst.h = dst.w * src.y / src.x;
         }
         return dst;
     }
@@ -391,7 +391,7 @@ static Pico_Rect src_rect_raw (Pico_Rect src, Pico_Rect dst) {
 static Pico_Rect tex_rect_raw (SDL_Texture* src, Pico_Rect dst) {
     int w, h;
     SDL_QueryTexture(src, NULL, NULL, &w, &h);
-    return src_rect_raw((Pico_Rect){w,h}, dst);
+    return src_rect_raw((Pico_XY){w,h}, dst);
 }
 
 static Pico_Rect src_rect_pct (Pico_Rect src, const Pico_Rect_Pct* dst) {
@@ -686,7 +686,6 @@ static void _pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
     Pico_Rect r = tex_rect_raw(tex, rect);
-printf(">>>> %d %d %d %d\n", r.x,r.y,r.w,r.h);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopy(REN, tex, NULL, &r);
     SDL_DestroyTexture(tex);
@@ -696,13 +695,13 @@ printf(">>>> %d %d %d %d\n", r.x,r.y,r.w,r.h);
 
 void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
     assert(rect.h != 0);
-    _pico_output_draw_text_raw((Pico_Rect){100,rect.h}, text);
+    _pico_output_draw_text_raw((Pico_Rect){rect.x,rect.y,100,rect.h}, text);
 }
 
 void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text) {
     assert(rect->h != 0);
     Pico_Rect r1 = RECT(rect);
-    Pico_Rect r2 = src_rect_pct((Pico_Rect){r1.w,r1.h}, rect);
+    Pico_Rect r2 = src_rect_pct(r1, rect);
     _pico_output_draw_text_raw(r2, text);
 }
 
