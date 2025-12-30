@@ -63,15 +63,17 @@ int main (void) {
         pico_input_delay(2000);
     }
 
-#if TODO
-    // DRAW_TEXT
-    pico_output_draw_text(pt, "Hello!");
-
     puts("shows centered \"Hello!\" (on top of shapes)");
-    pico_input_delay(2000);
-    pico_output_clear();
+    {
+        int w = pico_get_text_width(20, "Hello!");
+        Pico_Rect r = {50-w/2, 50-5, 0, 20};
+        pico_output_draw_text_raw(r, "Hello!");
+        pico_input_delay(2000);
+    }
 
+#if TODO
     // WRITE
+    pico_output_clear();
     Pico_Pos up = pico_pos((Pico_Pct){10, 10});
     pico_set_cursor(up);
     pico_output_write("1 ");
