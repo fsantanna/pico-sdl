@@ -372,54 +372,48 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 static void _pico_output_present (int force);
 
-static Pico_Rect src_rect_raw (Pico_XY src, Pico_Rect dst) {
-    if (dst.w!=0 && dst.h!=0) {
-        return dst;
+static Pico_Rect tex_rect_raw (SDL_Texture* tex, Pico_Rect rect) {
+    if (rect.w!=0 && rect.h!=0) {
+        return rect;
     } else {
-        if (dst.w==0 && dst.h==0) {
-            dst.w = src.x;
-            dst.h = src.y;
-        } else if (dst.w == 0) {
-            dst.w = dst.h * src.x / src.y;
+        int w, h;
+        SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+
+        if (rect.w==0 && rect.h==0) {
+            rect.w = w;
+            rect.h = h;
+        } else if (rect.w == 0) {
+            rect.w = rect.h * w / h;
         } else {
-            dst.h = dst.w * src.y / src.x;
+            rect.h = rect.w * h / w;
         }
-        return dst;
+        return rect;
     }
 }
 
-static Pico_Rect tex_rect_raw (SDL_Texture* src, Pico_Rect dst) {
-    int w, h;
-    SDL_QueryTexture(src, NULL, NULL, &w, &h);
-    return src_rect_raw((Pico_XY){w,h}, dst);
-}
-
-static Pico_Rect src_rect_pct (Pico_Rect src, const Pico_Rect_Pct* dst) {
-    if (dst->w!=0 && dst->h!=0) {
-        return RECT(dst);
+static Pico_Rect tex_rect_pct (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
+    if (rect->w!=0 && rect->h!=0) {
+        return RECT(rect);
     } else {
-        Pico_Rect_Pct r = *dst;
+        int w, h;
+        SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+
+        Pico_Rect_Pct r = *rect;
         r.w = r.h = 1;
         Pico_Rect v = RECT(&r);
 
-        if (dst->w==0 && dst->h==0) {
-            r.w = ((float)src.w) / v.w;
-            r.h = ((float)src.h) / v.h;
-        } else if (dst->w == 0) {
-            r.w = r.h * src.w * v.h / src.h / v.w;
-            r.h = dst->h;
+        if (rect->w==0 && rect->h==0) {
+            r.w = ((float)w) / v.w;
+            r.h = ((float)h) / v.h;
+        } else if (rect->w == 0) {
+            r.w = r.h * w * v.h / h / v.w;
+            r.h = rect->h;
         } else {
-            r.w = dst->w;
-            r.h = r.w * src.h * v.w / src.w / v.h;
+            r.w = rect->w;
+            r.h = r.w * h * v.w / w / v.h;
         }
         return RECT(&r);
     }
-}
-
-static Pico_Rect tex_rect_pct (SDL_Texture* src, const Pico_Rect_Pct* dst) {
-    int w, h;
-    SDL_QueryTexture(src, NULL, NULL, &w, &h);
-    return src_rect_pct((Pico_Rect){w,h}, dst);
 }
 
 void pico_output_clear (void) {
@@ -428,8 +422,6 @@ void pico_output_clear (void) {
     SDL_RenderFillRect(REN, &S.clip);
     _pico_output_present(0);
 }
-
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim);
 
 void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], int w, int h) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
@@ -444,59 +436,6 @@ void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color bu
     SDL_RenderCopy(REN, tex, NULL, &r);
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(tex);
-    _pico_output_present(0);
-}
-
-static void _pico_output_draw_tex (Pico_Pos pos, SDL_Texture* tex, Pico_Dim dim) {
-    Pico_Rect rct;
-    SDL_QueryTexture(tex, NULL, NULL, &rct.w, &rct.h);
-
-    Pico_Rect crp = S.crop;
-    if (S.crop.w == 0) {
-        crp.w = rct.w;
-    }
-    if (S.crop.h == 0) {
-        crp.h = rct.h;
-    }
-
-    if (dim.x==PICO_DIM_KEEP.x && dim.y==PICO_DIM_KEEP.y) {
-        // normal image size
-        rct.w = crp.w;  // (or copy from crop)
-        rct.h = crp.h;  // (or copy from crop)
-    } else if (dim.x == 0) {
-        // adjust w based on h
-        rct.w = rct.w * (dim.y / (float)rct.h);
-        rct.h = dim.y;
-    } else if (dim.y == 0) {
-        // adjust h based on w
-        rct.h = rct.h * (dim.x / (float)rct.w);
-        rct.w = dim.x;
-    } else {
-        rct.w = dim.x;
-        rct.h = dim.y;
-    }
-
-    // SCALE
-    rct.w = (S.scale.x*rct.w)/100; // * GRAPHICS_SET_SCALE_W;
-    rct.h = (S.scale.y*rct.h)/100; // * GRAPHICS_SET_SCALE_H;
-
-    // ANCHOR / PAN
-    rct.x = X(pos.x, rct.w);
-    rct.y = Y(pos.y, rct.h);
-
-    // ROTATE
-    Pico_Pos rot = {
-        (S.anchor.rotate.x*rct.w)/100,
-        (S.anchor.rotate.y*rct.h)/100
-    };
-
-    //printf("> %d %d %d %d\n", rct.x, rct.y, rct.w, rct.h);
-    SDL_RenderCopyEx(REN, tex,
-        &crp, &rct,
-        S.angle + (S.flip.x && S.flip.y ? 180 : 0),
-        &rot,
-        S.flip.y ? SDL_FLIP_VERTICAL : (S.flip.x ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE)
-    );
     _pico_output_present(0);
 }
 
@@ -676,7 +615,7 @@ static void font_open (const char* file, int h) {
     pico_assert(S.font.ttf != NULL);
 }
 
-static void _pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
+void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
     if (text[0] == '\0') return;
     font_open(NULL, rect.h);
     SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
@@ -691,57 +630,6 @@ static void _pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(sfc);
     _pico_output_present(0);
-}
-
-void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
-    assert(rect.h != 0);
-    _pico_output_draw_text_raw((Pico_Rect){rect.x,rect.y,100,rect.h}, text);
-}
-
-void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text) {
-    assert(rect->h != 0);
-    Pico_Rect r1 = RECT(rect);
-    Pico_Rect r2 = src_rect_pct(r1, rect);
-    _pico_output_draw_text_raw(r2, text);
-}
-
-void pico_output_draw_text (Pico_Pos pos, const char* text) {
-    pico_output_draw_text_ext(pos, text, PICO_DIM_KEEP);
-}
-
-void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim dim) {
-    if (text[0] == '\0') return;
-
-    pico_assert(S.font.ttf != NULL);
-    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
-        (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
-    );
-    pico_assert(sfc != NULL);
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
-    pico_assert(tex != NULL);
-    _pico_output_draw_tex(pos, tex, dim);
-    SDL_DestroyTexture(tex);
-    SDL_FreeSurface(sfc);
-}
-
-static void pico_output_draw_fmt_va (Pico_Pos pos, const char* fmt, Pico_Dim dim, va_list args) {
-    static char text[1024];
-    vsprintf(text, fmt, args);
-    pico_output_draw_text_ext(pos, text, dim);
-}
-
-void pico_output_draw_fmt (Pico_Pos pos, const char* fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    pico_output_draw_fmt_va(pos, fmt, PICO_DIM_KEEP, args);
-    va_end(args);
-}
-
-void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim dim, const char* fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    pico_output_draw_fmt_va(pos, fmt, dim, args);
-    va_end(args);
 }
 
 static void _show_grid (void) {

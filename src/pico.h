@@ -231,17 +231,6 @@ void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n);
 void pico_output_draw_text_raw (Pico_Rect rect, const char* text);
 void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text);
 
-/// @brief Draws text with the specified dim.
-/// @param pos drawing coordinate
-/// @param text text to draw
-/// @param dim text dimensions
-/// @sa pico_output_draw_text
-void pico_output_draw_text_ext (Pico_Pos pos, const char* text, Pico_Dim dim);
-
-void pico_output_draw_fmt (Pico_Pos pos, const char* fmt, ...);
-
-void pico_output_draw_fmt_ext (Pico_Pos pos, Pico_Dim dim, const char* fmt, ...);
-
 /// @brief Shows what has been drawn onto the screen.
 /// Only does anything on expert mode.
 /// @sa pico_set_expert
