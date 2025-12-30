@@ -736,51 +736,6 @@ void pico_output_sound (const char* path) {
     _pico_output_sound_cache(path, 1);
 }
 
-#if 0
-static void _pico_output_write_aux (const char* text, int isln) {
-    if (strlen(text) == 0) {
-        if (isln) {
-            S.cursor.cur.x = S.cursor.x;
-            S.cursor.cur.y += S.font.h;
-        }
-        return;
-    }
-
-    pico_assert(S.font.ttf != NULL);
-    SDL_Surface* sfc = TTF_RenderText_Blended (
-        S.font.ttf, text,
-        (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
-    );
-    pico_assert(sfc != NULL);
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
-    pico_assert(tex != NULL);
-
-    int w, h;
-    TTF_SizeText(S.font.ttf, text, &w,&h);
-    Pico_Rect rct = { X(S.cursor.cur.x,0),Y(S.cursor.cur.y,0), w,h };
-    SDL_RenderCopy(REN, tex, NULL, &rct);
-    _pico_output_present(0);
-
-    S.cursor.cur.x += w;
-    if (isln) {
-        S.cursor.cur.x = S.cursor.x;
-        S.cursor.cur.y += S.font.h;
-    }
-
-    SDL_DestroyTexture(tex);
-    SDL_FreeSurface(sfc);
-}
-
-void pico_output_write (const char* text) {
-    _pico_output_write_aux(text, 0);
-}
-
-void pico_output_writeln (const char* text) {
-    _pico_output_write_aux(text, 1);
-}
-#endif
-
-
 // STATE
 
 // GET

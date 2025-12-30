@@ -71,25 +71,6 @@ int main (void) {
         pico_input_delay(2000);
     }
 
-#if TODO
-    // WRITE
-    pico_output_clear();
-    Pico_Pos up = pico_pos((Pico_Pct){10, 10});
-    pico_set_cursor(up);
-    pico_output_write("1 ");
-    pico_input_delay(200);
-    pico_output_write("2 ");
-    pico_input_delay(200);
-    pico_output_writeln("3");
-    pico_input_delay(200);
-    pico_output_writeln("");
-    pico_input_delay(200);
-    pico_output_writeln("pico");
-
-    puts("shows 1 2 3 \\n \\n pico");
-    pico_input_delay(2000);
-#endif
-
     puts("waits mouse click then");
     puts("shows pixel over mouse");
     {
