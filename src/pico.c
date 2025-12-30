@@ -406,8 +406,8 @@ static Pico_Rect tex_rect_pct (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
             r.w = ((float)w) / v.w;
             r.h = ((float)h) / v.h;
         } else if (rect->w == 0) {
-            r.w = r.h * w * v.h / h / v.w;
             r.h = rect->h;
+            r.w = r.h * w * v.h / h / v.w;
         } else {
             r.w = rect->w;
             r.h = r.w * h * v.w / w / v.h;
@@ -432,7 +432,6 @@ void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color bu
     pico_assert(tex != NULL);
     Pico_Rect r = tex_rect_pct(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    //printf(">>> %f %f %f %f\n", r.x, r.y, r.w, r.h);
     SDL_RenderCopy(REN, tex, NULL, &r);
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(tex);
@@ -625,6 +624,24 @@ void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
     Pico_Rect r = tex_rect_raw(tex, rect);
+    SDL_SetTextureAlphaMod(tex, S.alpha);
+    SDL_RenderCopy(REN, tex, NULL, &r);
+    SDL_DestroyTexture(tex);
+    SDL_FreeSurface(sfc);
+    _pico_output_present(0);
+}
+
+void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text) {
+    if (text[0] == '\0') return;
+    Pico_Rect r1 = RECT(rect);
+    font_open(NULL, r1.h);
+    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
+        (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
+    );
+    pico_assert(sfc != NULL);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
+    pico_assert(tex != NULL);
+    Pico_Rect r = tex_rect_pct(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopy(REN, tex, NULL, &r);
     SDL_DestroyTexture(tex);
