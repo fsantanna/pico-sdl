@@ -26,8 +26,6 @@ extern "C" {
 #define PICO_DIM_WORLD  ((Pico_Dim) {100,100})
 #define PICO_HASH  128
 
-#define PICO_DIM_KEEP ((Pico_Dim) {0,0})
-
 typedef SDL_Point Pico_Dim;
 typedef SDL_Point Pico_Pos;
 typedef SDL_Rect  Pico_Rect;
