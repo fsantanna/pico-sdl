@@ -18,21 +18,21 @@ int main (void) {
             }
         }
     }
-#if 0
     {
         puts("text dimming");
+        int w = pico_get_text_width(10, "SOME TEXT");
+        Pico_Rect r = {50-w/2, 50-5, 0, 10};
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_text(pos, "SOME TEXT");
+            pico_output_draw_text_raw(r, "SOME TEXT");
             pico_input_delay(50);
             if (a == 120) {
                 //_pico_check("text_dimmed");
             }
         }
     }
-#endif
     {
         puts("rect dimming");
         Pico_Rect r = {50-30, 50-6, 60, 12};

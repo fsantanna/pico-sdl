@@ -2,9 +2,9 @@
 
 int main (void) {
     pico_init(1);
-    Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
+    Pico_Rect_Pct r = { 0.5,0.5, 0,0.2, PICO_ANCHOR_C, NULL };
     while (1) {
-        pico_output_draw_text(pt, "Hello!");
+        pico_output_draw_text_pct(&r, "Hello!");
         pico_input_event(NULL, PICO_ANY);
         pico_output_clear();
     }

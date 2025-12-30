@@ -887,17 +887,18 @@ Pico_Dim pico_get_dim_image (const char* file) {
     return dim;
 }
 
-Pico_Dim pico_get_dim_text (const char* text) {
+int pico_get_text_width (int h, const char* text) {
     if (text[0] == '\0') {
-        return (Pico_Dim){0, 0};
+        return 0;
     }
-
+    font_open(NULL, h);
     SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
                                               (SDL_Color){0,0,0,255});
     pico_assert(sfc != NULL);
-    Pico_Dim dim = {sfc->w, sfc->h};
+    assert(sfc->h == h);
+    int w = sfc->w;
     SDL_FreeSurface(sfc);
-    return dim;
+    return w;
 }
 
 Pico_Dim pico_get_dim_window (void) {

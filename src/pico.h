@@ -340,7 +340,7 @@ Pico_Dim pico_get_dim_image (const char* file);
 
 /// @brief Gets the dimensions of the given text.
 /// @param text text to measure
-Pico_Dim pico_get_dim_text (const char* text);
+int pico_get_text_width (int h, const char* text);
 
 /// @brief Gets the window dimensions.
 Pico_Dim pico_get_dim_window (void);

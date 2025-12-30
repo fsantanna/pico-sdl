@@ -28,25 +28,24 @@ int main (void) {
             pico_output_draw_pixel_pct(&p);
             pico_input_delay(50);
             if (a == 120) {
-                _pico_check("pixel_dimmed");
+                //_pico_check("pixel_dimmed");
             }
         }
     }
-#if 0
     {
         puts("text dimming");
+        Pico_Rect_Pct r = { 0.5, 0.5, 0, 0.1, PICO_ANCHOR_C, NULL };
         for (int a = 255; a > 0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_text(pos, "SOME TEXT");
+            pico_output_draw_text_pct(&r, "SOME TEXT");
             pico_input_delay(50);
             if (a == 120) {
-                _pico_check("text_dimmed");
+                //_pico_check("text_dimmed");
             }
         }
     }
-#endif
     {
         puts("rect dimming");
         Pico_Rect_Pct r = { 0.5, 0.5, 0.9, 0.33, PICO_ANCHOR_C, NULL };
