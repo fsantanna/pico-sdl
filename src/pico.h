@@ -253,6 +253,7 @@ const char* pico_output_screenshot_ext (const char* path, Pico_Rect r);
 /// @param path path to the audio file
 void pico_output_sound (const char* path);
 
+#if 0
 /// @brief Draws text with an internal cursor as reference, like in text editors.
 /// The cursor position updates to (x + len_text * FNT_SIZE, y).
 /// @param text text to draw
@@ -262,6 +263,7 @@ void pico_output_write (const char* text);
 /// The cursor position updates to (x, y + FNT_SIZE).
 /// @param text text to draw
 void pico_output_writeln (const char* text);
+#endif
 
 /// @}
 
@@ -417,8 +419,7 @@ void pico_set_flip (Pico_Flip flip);
 
 /// @brief Changes the font used to draw texts.
 /// @param file path to font file
-/// @param h size of the font
-void pico_set_font (const char* file, int h);
+void pico_set_font (const char* file);
 
 /// @brief Toggles fullscreen mode.
 /// @param on 1 to enable it, or 0 to disable it

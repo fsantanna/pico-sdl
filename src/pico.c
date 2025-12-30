@@ -51,10 +51,7 @@ static struct {
     } dim;
     int expert;
     Pico_Flip flip;
-    struct {
-        TTF_Font* ttf;
-        int h;
-    } font;
+    const char* font;
     int fullscreen;
     int grid;
     Pico_Pos scroll;
@@ -72,7 +69,7 @@ static struct {
     { PICO_DIM_WINDOW, PICO_DIM_WORLD },
     0,
     {0, 0},
-    {NULL, 0},
+    NULL,
     0,
     1,
     {0, 0},
@@ -126,6 +123,20 @@ static int _vanchor (int y, int h) {
     return y - (S.anchor.pos.y*h)/100;
 }
 
+// INTERNAL
+
+static TTF_Font* _font_open (const char* file, int h) {
+    TTF_Font* ttf;
+    if (file == NULL) {
+        SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
+        ttf = TTF_OpenFontRW(rw, 1, h);
+    } else {
+        ttf = TTF_OpenFont(file, h);
+    }
+    pico_assert(ttf != NULL);
+    return ttf;
+}
+
 // UTILS
 
 int pico_pos_vs_rect_raw (Pico_Pos pos, Pico_Rect rect) {
@@ -167,16 +178,12 @@ void pico_init (int on) {
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
         pico_set_zoom(S.zoom);
-        pico_set_font(NULL, 0);
         pico_output_clear();
 
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
         SDL_SetWindowResizable(WIN, 1);
     } else {
-        if (S.font.ttf != NULL) {
-            TTF_CloseFont(S.font.ttf);
-        }
         Mix_CloseAudio();
         TTF_Quit();
         SDL_DestroyRenderer(REN);
@@ -601,25 +608,13 @@ void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n) {
     pico_output_draw_poly_raw(vs, n);
 }
 
-static void font_open (const char* file, int h) {
-    if (S.font.ttf != NULL) {
-        TTF_CloseFont(S.font.ttf);
-    }
-    if (file == NULL) {
-        SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
-        S.font.ttf = TTF_OpenFontRW(rw, 1, h);
-    } else {
-        S.font.ttf = TTF_OpenFont(file, h);
-    }
-    pico_assert(S.font.ttf != NULL);
-}
-
 void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
     if (text[0] == '\0') return;
-    font_open(NULL, rect.h);
-    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
+    TTF_Font* ttf = _font_open(NULL, rect.h);
+    SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text,
         (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
     );
+    TTF_CloseFont(ttf);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
@@ -634,10 +629,11 @@ void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
 void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text) {
     if (text[0] == '\0') return;
     Pico_Rect r1 = RECT(rect);
-    font_open(NULL, r1.h);
-    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
+    TTF_Font* ttf = _font_open(NULL, r1.h);
+    SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text,
         (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
     );
+    TTF_CloseFont(ttf);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
@@ -740,6 +736,7 @@ void pico_output_sound (const char* path) {
     _pico_output_sound_cache(path, 1);
 }
 
+#if 0
 static void _pico_output_write_aux (const char* text, int isln) {
     if (strlen(text) == 0) {
         if (isln) {
@@ -781,6 +778,7 @@ void pico_output_write (const char* text) {
 void pico_output_writeln (const char* text) {
     _pico_output_write_aux(text, 1);
 }
+#endif
 
 
 // STATE
@@ -820,7 +818,7 @@ Pico_Flip pico_get_flip (void) {
 }
 
 const char* pico_get_font (void) {
-    return TTF_FontFaceFamilyName(S.font.ttf);
+    return S.font;
 }
 
 int pico_get_fullscreen (void) {
@@ -891,9 +889,9 @@ int pico_get_text_width (int h, const char* text) {
     if (text[0] == '\0') {
         return 0;
     }
-    font_open(NULL, h);
-    SDL_Surface* sfc = TTF_RenderText_Blended(S.font.ttf, text,
-                                              (SDL_Color){0,0,0,255});
+    TTF_Font* ttf = _font_open(NULL, h);
+    SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text, (SDL_Color){0,0,0,255});
+    TTF_CloseFont(ttf);
     pico_assert(sfc != NULL);
     assert(sfc->h == h);
     int w = sfc->w;
@@ -1015,22 +1013,8 @@ void pico_set_fullscreen (int on) {
     S.fullscreen = on;
 }
 
-void pico_set_font (const char* file, int h) {
-    if (h == 0) {
-        h = MAX(8, S.dim.world.y/10);
-    }
-    S.font.h = h;
-
-    if (S.font.ttf != NULL) {
-        TTF_CloseFont(S.font.ttf);
-    }
-    if (file == NULL) {
-        SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
-        S.font.ttf = TTF_OpenFontRW(rw, 1, S.font.h);
-    } else {
-        S.font.ttf = TTF_OpenFont(file, S.font.h);
-    }
-    pico_assert(S.font.ttf != NULL);
+void pico_set_font (const char* file) {
+    S.font = file;
 }
 
 void pico_set_grid (int on) {
