@@ -28,8 +28,8 @@ extern "C" {
 
 #define PICO_DIM_KEEP ((Pico_Dim) {0,0})
 
-typedef SDL_Point Pico_Pos;
 typedef SDL_Point Pico_Dim;
+typedef SDL_Point Pico_Pos;
 typedef SDL_Rect  Pico_Rect;
 typedef SDL_Point Pico_Anchor;
 typedef SDL_Point Pico_Flip;
@@ -78,30 +78,7 @@ typedef enum PICO_MOUSE_BUTTON {
 typedef struct {
     float x;
     float y;
-} Pico_XY;
-
-typedef struct {
-    float x;
-    float y;
 } Pico_Pct_X;
-
-#if 0
-typedef struct Pico_DimX {
-    float w;
-    float h;
-    struct Pico_DimX* up;
-} Pico_DimX;
-
-struct PosX;
-struct RectX;
-
-typedef struct Pico_Pos_Pct {
-    float x;
-    float y;
-    Pico_Pct anchor;
-    struct Pico_Rect_Pct* up;
-} Pico_Pos_Pct;
-#endif
 
 typedef struct Pico_Rect_Pct {
     float x, y;
@@ -178,7 +155,8 @@ void pico_output_clear (void);
 /// @param buffer the RGBA image
 /// @param dim image dimensions
 /// @sa pico_output_draw_image
-void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], int w, int h);
+void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color buffer[], Pico_Dim dim);
+void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], Pico_Dim dim);
 
 /// @brief Draws an image.
 /// @param rect drawing coordinates

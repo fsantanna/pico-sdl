@@ -430,10 +430,25 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], int w, int h) {
+void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color buffer[], Pico_Dim dim) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
-        (void*)buffer, w, h,
-        24, 3*w, SDL_PIXELFORMAT_RGB24
+        (void*)buffer, dim.x, dim.y,
+        24, 3*dim.x, SDL_PIXELFORMAT_RGB24
+    );
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
+    pico_assert(tex != NULL);
+    Pico_Rect r = tex_rect_raw(tex, rect);
+    SDL_SetTextureAlphaMod(tex, S.alpha);
+    SDL_RenderCopy(REN, tex, NULL, &r);
+    SDL_FreeSurface(sfc);
+    SDL_DestroyTexture(tex);
+    _pico_output_present(0);
+}
+
+void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], Pico_Dim dim) {
+    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
+        (void*)buffer, dim.x, dim.y,
+        24, 3*dim.x, SDL_PIXELFORMAT_RGB24
     );
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
