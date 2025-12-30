@@ -104,7 +104,9 @@ int main (void) {
         pico_set_expert(0);
         pico_output_clear();
     }
+#endif
 
+#if TODO
     // DRAW_RECT
     puts("shows lower-left X, center rect, center/up-right line");
     puts("increases zoom");
