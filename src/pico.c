@@ -1066,22 +1066,32 @@ void pico_set_view_pct (
     int        fs,
     Pico_Pct*  phy,
     Pico_Rect* dst,
-    Pico_Dim*  log,
+    Pico_Pct*  log,
     Pico_Rect* src,
     Pico_Rect* clip
 ) {
     Pico_Dim* xxphy = NULL;
     Pico_Dim xphy;
 
+    Pico_Dim* xxlog = NULL;
+    Pico_Dim xlog;
+
     if (phy != NULL) {
         SDL_DisplayMode dsp;
         int ret = SDL_GetCurrentDisplayMode(0, &dsp);
         pico_assert(ret == 0);
         xphy = (Pico_Dim) { dsp.w*phy->x, dsp.h*phy->y };
-printf(">>> %d %d\n", dsp.w, dsp.h);
-printf(">>> %d %d\n", xphy.w, xphy.h);
         xxphy = &xphy;
     }
+    if (log != NULL) {
+        if (xxphy == NULL) {
+            xxphy = &S.view.phy;
+        }
+        xlog = (Pico_Dim) { xxphy->w*log->x, xxphy->h*log->y };
+printf(">>> phy: %d %d\n", xxphy->w, xxphy->h);
+printf(">>> log: %d %d\n", xlog.w, xlog.h);
+        xxlog = &xlog;
+    }
 
-    pico_set_view_raw(fs, xxphy, dst, log, src, clip);
+    pico_set_view_raw(fs, xxphy, dst, xxlog, src, clip);
 }

@@ -4,7 +4,6 @@ int main (void) {
     pico_init(1);
     pico_set_title("Size - Fullscreen");
 
-    Pico_Dim xphy = PICO_DIM_PHY;
     Pico_Dim xlog = PICO_DIM_LOG;
     Pico_Rect xr = {50-25, 50-25, 50, 50};
 
@@ -22,60 +21,60 @@ int main (void) {
     }
     {
         puts("double");
-        Pico_Dim dim = (Pico_Dim){xphy.w*2,xphy.h*2};
-        pico_set_view_raw(-1, &dim, NULL, NULL, NULL, NULL);
+        Pico_Pct pct = { 0.8, 0.8 };
+        pico_set_view_pct(-1, &pct, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("half");
-        Pico_Dim dim = (Pico_Dim){xphy.w/2,xphy.h/2};
-        pico_set_view_raw(-1, &dim, NULL, NULL, NULL, NULL);
+        Pico_Pct pct = { 0.2, 0.2 };
+        pico_set_view_pct(-1, &pct, NULL, NULL, NULL, NULL);
         pico_output_clear();
-        pico_output_draw_rect_raw(xr);
+        pico_output_draw_rect_pct(&r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("normal");
-        pico_set_view_raw(-1, &xphy, NULL, NULL, NULL, NULL);
+        pico_set_view_pct(-1, &phy, NULL, NULL, NULL, NULL);
         pico_output_clear();
-        pico_output_draw_rect_raw(xr);
+        pico_output_draw_rect_pct(&r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
 
     // phy: normal -> full -> normal
     {
         puts("full");
-        pico_set_view_raw(1, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_pct(1, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
-        pico_output_draw_rect_raw(xr);
+        pico_output_draw_rect_pct(&r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("normal");
-        pico_set_view_raw(0, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_pct(0, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
-        pico_output_draw_rect_raw(xr);
+        pico_output_draw_rect_pct(&r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
 
-    // xlog: normal -> double -> half -> normal
+    // log: normal -> double -> half -> normal
     puts("WORLD");
     {
-        puts("normal");
-        pico_set_view_raw(-1, NULL, NULL, &xlog, NULL, NULL);
+        puts("1/4");
+        Pico_Pct log = { 0.25, 0.25 };
+        pico_set_view_pct(-1, NULL, NULL, &log, NULL, NULL);
         pico_output_clear();
-        pico_output_draw_rect_raw(xr);
+        pico_output_draw_rect_pct(&r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("double");
-        Pico_Dim dim = (Pico_Dim){xlog.w*2,xlog.h*2};
-        pico_set_view_raw(-1, NULL, NULL, &dim, NULL, NULL);
+        Pico_Pct pct = { 2, 2 };
+        pico_set_view_pct(-1, NULL, NULL, &pct, NULL, NULL);
         pico_output_clear();
-        Pico_Rect xr = {xlog.w-25, xlog.h-25, 50, 50};
-        pico_output_draw_rect_raw(xr);
+        pico_output_draw_rect_pct(&r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {

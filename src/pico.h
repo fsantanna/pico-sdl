@@ -391,9 +391,9 @@ void pico_set_view_raw (
 
 void pico_set_view_pct (
     int window_fullscreen,
-    Pico_Pct* window,
+    Pico_Pct*  window,
     Pico_Rect* window_target,
-    Pico_Dim* world,
+    Pico_Pct*  world,
     Pico_Rect* world_source,
     Pico_Rect* world_clip
 );
