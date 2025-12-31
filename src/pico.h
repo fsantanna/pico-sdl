@@ -366,10 +366,6 @@ void pico_set_crop (Pico_Rect crop);
 /// @sa pico_output_writeln
 void pico_set_cursor (Pico_Pos pos);
 
-/// @brief Sets the world dimensions.
-/// @param dim new dimensions
-void pico_set_dim_world (Pico_Dim dim);
-
 /// @brief Toggles the expert mode.
 /// @param on 1 to enable it, or 0 to disable it
 void pico_set_expert (int on);
@@ -414,13 +410,17 @@ void pico_set_title (const char* title);
 /// @brief Toggles fullscreen mode.
 /// @param on 1 to enable it, or 0 to disable it
 
+/// @brief Sets the world dimensions.
+/// @param dim new dimensions
+
 void pico_set_view (
-    Pico_Dim* window,
-    Pico_Dim* world,
     int window_fullscreen,
-    Pico_Rect* world_region,
-    Pico_Rect* window_region,
-    Pico_Pos* window_world_pos
+    Pico_Dim* window,
+    Pico_Rect* window_target,
+    Pico_Pos* window_world_pos,
+    Pico_Dim* world,
+    Pico_Rect* world_source,
+    Pico_Rect* world_clip
 );
 
 /// @param pct new factor

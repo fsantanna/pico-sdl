@@ -220,7 +220,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     FS = 0;
                 } else {
                     Pico_Dim phy = { e->window.data1, e->window.data2 };
-                    pico_set_view(&phy, NULL, -1, NULL, NULL, NULL);
+                    pico_set_view(-1, &phy, NULL, NULL, NULL, NULL, NULL);
                 }
             }
             break;
@@ -938,11 +938,6 @@ void pico_set_cursor (Pico_Pos pos) {
     S.cursor.x   = pos.x;
 }
 
-void pico_set_dim_world (Pico_Dim dim) {
-    S.dim.world = dim;
-    pico_set_zoom(S.zoom);
-}
-
 void pico_set_expert (int on) {
     S.expert = on;
 }
@@ -991,14 +986,20 @@ void pico_set_title (const char* title) {
 }
 
 void pico_set_view (
-    Pico_Dim* phy,
-    Pico_Dim* log,
     int fs,
-    Pico_Rect* phy_region,
-    Pico_Rect* log_region,
-    Pico_Pos* phy_log_pos
+    Pico_Dim* phy,
+    Pico_Rect* window_target,
+    Pico_Pos* window_world_pos,
+    Pico_Dim* log,
+    Pico_Rect* world_source,
+    Pico_Rect* clip
 ) {
     Pico_Dim new;
+    { // clip: world clip
+        if (clip != NULL) {
+            S.clip = *clip;
+        }
+    }
     { // fs - fullscreen
         if ((fs == -1) || (fs && S.fullscreen) || (!fs && !S.fullscreen)) {
             goto _out1_;
@@ -1017,6 +1018,7 @@ void pico_set_view (
             new = _old;
         }
         phy = &new;
+        S.fullscreen = fs;
         goto _phy_;
         _out1_:
     }
@@ -1028,10 +1030,27 @@ void pico_set_view (
         _phy_:
         S.dim.window = *phy;
         SDL_SetWindowSize(WIN, phy->x, phy->y);
-        new = _zoom();
-        SDL_Rect clip = { 0, 0, new.x, new.y };
-        SDL_RenderSetClipRect(REN, &clip);
         _out2_:
+    }
+    { // log - world
+        if (log == NULL) {
+            goto _out3_;
+        }
+        S.dim.world = *log;
+        SDL_DestroyTexture(TEX);
+        TEX = SDL_CreateTexture (
+            REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+            log->x, log->y
+        );
+        pico_assert(TEX != NULL);
+        //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderTarget(REN, TEX);
+        if (clip == NULL) {
+            S.clip = (SDL_Rect) { 0, 0, log->x, log->y };
+        }
+printf(">>> %d %d %d %d\n", S.clip.x, S.clip.y, S.clip.w, S.clip.h);
+        SDL_RenderSetClipRect(REN, &S.clip);
+        _out3_:
     }
 }
 
@@ -1056,9 +1075,6 @@ void pico_set_zoom (Pico_Pct pct) {
     pico_assert(TEX != NULL);
     //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, TEX);
-
-    // TODO: need to init w/ explicit SetClip to save w/h
-    //       do not pass NULL, GetClip would also return w=0,h=0
     S.clip = (SDL_Rect) { 0, 0, new.x, new.y };
     SDL_RenderSetClipRect(REN, &S.clip);
 }
