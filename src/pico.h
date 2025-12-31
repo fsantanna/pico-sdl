@@ -289,9 +289,6 @@ int pico_get_mouse (Pico_Pos* pos, int button);
 /// @brief Gets the rotation angle of objects (in degrees).
 int pico_get_rotate (void);
 
-/// @brief Gets the scaling factor of objects (percentage).
-Pico_Pct pico_get_scale (void);
-
 /// @brief Gets the dimensions of the given image.
 /// @param file image filepath
 Pico_Dim pico_get_dim_image (const char* file);
@@ -311,9 +308,6 @@ Uint32 pico_get_ticks (void);
 
 /// @brief Gets the aplication title.
 const char* pico_get_title (void);
-
-/// @brief Gets the zoom factor.
-Pico_Pct pico_get_zoom (void);
 
 // SET
 
@@ -364,10 +358,6 @@ void pico_set_grid (int on);
 /// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate (int angle);
 
-/// @brief Sets the scaling factor of objects
-/// @param scale new scaling for x and y axis (percentage)
-void pico_set_scale (Pico_Pct scale);
-
 /// @brief Toggles the aplication window visibility.
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
@@ -397,9 +387,6 @@ void pico_set_view (
     Pico_Rect* world_source,
     Pico_Rect* world_clip
 );
-
-/// @param pct new factor
-void pico_set_zoom (Pico_Pct pct);
 
 /// @}
 

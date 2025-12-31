@@ -42,14 +42,12 @@ static struct {
     const char* font;
     int grid;
     PICO_STYLE style;
-    Pico_Pct scale;
     struct {
         int fs;
         Pico_Dim phy;
         Pico_Dim log;
         Pico_Rect clip;
     } view;
-    Pico_Pct zoom;
 } S = {
     0xFF,
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
@@ -61,14 +59,12 @@ static struct {
     NULL,
     1,
     PICO_FILL,
-    {100, 100},
     {
         0,
         PICO_DIM_PHY,
         PICO_DIM_LOG,
         {0, 0, 0, 0},
     },
-    {100, 100},
 };
 
 static Pico_Rect RECT (const Pico_Rect_Pct* r) {
@@ -99,13 +95,6 @@ static Pico_Pos POS (const Pico_Pos_Pct* p) {
         int y = up.y + p->y*up.h - p->anchor.y;
         return (Pico_Pos) {x, y};
     }
-}
-
-static Pico_Dim _zoom () {
-    return (Pico_Dim) {
-        S.view.log.x * S.zoom.x / 100,
-        S.view.log.y * S.zoom.y / 100,
-    };
 }
 
 // INTERNAL
@@ -162,7 +151,7 @@ void pico_init (int on) {
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
-        pico_set_zoom(S.zoom);
+        pico_set_view(-1, &S.view.phy, NULL, &S.view.log, NULL, NULL);
         pico_output_clear();
 
         SDL_PumpEvents();
@@ -218,23 +207,25 @@ static int event_from_sdl (Pico_Event* e, int xp) {
             }
             switch (e->key.keysym.sym) {
                 case SDLK_0: {
-                    pico_set_zoom((Pico_Dim){0, 0});
                     assert(0 && "TODO");
+                    //pico_set_zoom((Pico_Dim){0, 0});
                     //pico_set_scroll((Pico_Pos){0, 0});
                     break;
                 }
                 case SDLK_MINUS: {
-                    pico_set_zoom ((Pico_Dim) {
-                        S.zoom.x + 10,
-                        S.zoom.y + 10,
-                    });
+                    assert(0 && "TODO");
+                    //pico_set_zoom ((Pico_Dim) {
+                    //    S.zoom.x + 10,
+                    //    S.zoom.y + 10,
+                    //});
                     break;
                 }
                 case SDLK_EQUALS: {
-                    pico_set_zoom ((Pico_Dim) {
-                        S.zoom.x - 10,
-                        S.zoom.y - 10,
-                    });
+                    assert(0 && "TODO");
+                    //pico_set_zoom ((Pico_Dim) {
+                    //    S.zoom.x - 10,
+                    //    S.zoom.y - 10,
+                    //});
                     break;
                 }
                 case SDLK_LEFT: {
@@ -658,16 +649,14 @@ static void _show_grid (void) {
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
-    Pico_Dim Z = _zoom();
-
-    if ((S.view.phy.x % Z.x == 0) && (Z.x < S.view.phy.x)) {
-        for (int i=0; i<=S.view.phy.x; i+=(S.view.phy.x/Z.x)) {
+    if ((S.view.phy.x % S.view.log.x == 0) && (S.view.log.x < S.view.phy.x)) {
+        for (int i=0; i<=S.view.phy.x; i+=(S.view.phy.x/S.view.log.x)) {
             SDL_RenderDrawLine(REN, i, 0, i, S.view.phy.y);
         }
     }
 
-    if ((S.view.phy.y % Z.y == 0) && (Z.y < S.view.phy.y)) {
-        for (int j=0; j<=S.view.phy.y; j+=(S.view.phy.y/Z.y)) {
+    if ((S.view.phy.y % S.view.log.y == 0) && (S.view.log.y < S.view.phy.y)) {
+        for (int j=0; j<=S.view.phy.y; j+=(S.view.phy.y/S.view.log.y)) {
             SDL_RenderDrawLine(REN, 0, j, S.view.phy.x, j);
         }
     }
@@ -711,10 +700,9 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 }
 
 const char* pico_output_screenshot (const char* path) {
-    Pico_Dim Z = _zoom();
     return pico_output_screenshot_ext(
         path,
-        (Pico_Rect){0,0,Z.x,Z.y}
+        (Pico_Rect){0,0,S.view.log.x,S.view.log.y}
     );
 }
 
@@ -806,9 +794,8 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
 
     // TODO: bug in SDL?
     // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
-    Pico_Dim Z = _zoom();
-    pos->x = pos->x * Z.x / S.view.phy.x;
-    pos->y = pos->y * Z.y / S.view.phy.y;
+    pos->x = pos->x * S.view.log.x / S.view.phy.x;
+    pos->y = pos->y * S.view.log.y / S.view.phy.y;
     //pos->x += S.scroll.x;
     //pos->y += S.scroll.y;
 
@@ -821,10 +808,6 @@ Pico_Rect pico_get_crop (void) {
 
 int pico_get_rotate (void) {
     return S.angle;
-}
-
-Pico_Pct pico_get_scale (void) {
-    return S.scale;
 }
 
 Pico_Dim pico_get_dim_image (const char* file) {
@@ -868,10 +851,6 @@ Uint32 pico_get_ticks (void) {
 
 const char* pico_get_title (void) {
     return SDL_GetWindowTitle(WIN);
-}
-
-Pico_Pct pico_get_zoom (void) {
-    return S.zoom;
 }
 
 // SET
@@ -928,11 +907,6 @@ void pico_set_grid (int on) {
 
 void pico_set_rotate (int angle) {
     S.angle = angle;
-}
-
-void pico_set_scale (Pico_Pct scale) {
-    // TODO: checks???
-    S.scale = scale;
 }
 
 void pico_set_show (int on) {
@@ -1017,29 +991,4 @@ void pico_set_view (
         SDL_RenderSetClipRect(REN, &S.view.clip);
         _out3_:
     }
-}
-
-void pico_set_zoom (Pico_Pct pct) {
-    //Pico_Dim old = _zoom();
-    S.zoom = pct;
-    Pico_Dim new = _zoom();
-    
-    //int dx = new.x - old.x;
-    //int dy = new.y - old.y;
-
-    //pico_set_scroll ((Pico_Pos) {
-    //    S.scroll.x - (dx * S.anchor.pos.x / 100),
-    //    S.scroll.y - (dy * S.anchor.pos.y / 100),
-    //});
-
-    SDL_DestroyTexture(TEX);
-    TEX = SDL_CreateTexture (
-        REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-        new.x, new.y
-    );
-    pico_assert(TEX != NULL);
-    //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(REN, TEX);
-    S.view.clip = (SDL_Rect) { 0, 0, new.x, new.y };
-    SDL_RenderSetClipRect(REN, &S.view.clip);
 }
