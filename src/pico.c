@@ -32,55 +32,51 @@ static struct {
         Pico_Anchor rotate;
     } anchor;
     int angle;
-    Pico_Rect clip;
     struct {
         Pico_Color clear;
         Pico_Color draw;
     } color;
     Pico_Rect crop;
-    struct {
-        int x;
-        Pico_Pos cur;
-    } cursor;
-    struct {
-        Pico_Dim window;
-        Pico_Dim world;
-    } dim;
     int expert;
     Pico_Flip flip;
     const char* font;
-    int fullscreen;
     int grid;
-    Pico_Pos pos;
     PICO_STYLE style;
     Pico_Pct scale;
+    struct {
+        int fs;
+        Pico_Dim phy;
+        Pico_Dim log;
+        Pico_Rect clip;
+    } view;
     Pico_Pct zoom;
 } S = {
     0xFF,
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     0,
-    {0, 0, 0, 0},
     { {0x00,0x00,0x00}, {0xFF,0xFF,0xFF} },
     {0, 0, 0, 0},
-    {0, {0,0}},
-    { PICO_DIM_WINDOW, PICO_DIM_WORLD },
     0,
     {0, 0},
     NULL,
-    0,
     1,
-    {0, 0},
     PICO_FILL,
     {100, 100},
+    {
+        0,
+        PICO_DIM_PHY,
+        PICO_DIM_LOG,
+        {0, 0, 0, 0},
+    },
     {100, 100},
 };
 
 static Pico_Rect RECT (const Pico_Rect_Pct* r) {
     if (r->up == NULL) {
-        int w = r->w * S.dim.world.x;
-        int h = r->h * S.dim.world.y;
-        int x = r->x*S.dim.world.x - r->anchor.x*w;
-        int y = r->y*S.dim.world.y - r->anchor.y*h;
+        int w = r->w * S.view.log.x;
+        int h = r->h * S.view.log.y;
+        int x = r->x*S.view.log.x - r->anchor.x*w;
+        int y = r->y*S.view.log.y - r->anchor.y*h;
         return (Pico_Rect) {x, y, w, h};
     } else {
         Pico_Rect up = RECT(r->up);
@@ -94,8 +90,8 @@ static Pico_Rect RECT (const Pico_Rect_Pct* r) {
 
 static Pico_Pos POS (const Pico_Pos_Pct* p) {
     if (p->up == NULL) {
-        int x = p->x*S.dim.world.x - p->anchor.x;
-        int y = p->y*S.dim.world.y - p->anchor.y;
+        int x = p->x*S.view.log.x - p->anchor.x;
+        int y = p->y*S.view.log.y - p->anchor.y;
         return (Pico_Pos) {x, y};
     } else {
         Pico_Rect up = RECT(p->up);
@@ -107,8 +103,8 @@ static Pico_Pos POS (const Pico_Pos_Pct* p) {
 
 static Pico_Dim _zoom () {
     return (Pico_Dim) {
-        S.dim.world.x * S.zoom.x / 100,
-        S.dim.world.y * S.zoom.y / 100,
+        S.view.log.x * S.zoom.x / 100,
+        S.view.log.y * S.zoom.y / 100,
     };
 }
 
@@ -152,7 +148,7 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            S.dim.window.x, S.dim.window.y,
+            S.view.phy.x, S.view.phy.y,
             (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
         );
         pico_assert(WIN != NULL);
@@ -421,7 +417,7 @@ static Pico_Rect tex_rect_pct (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
 void pico_output_clear (void) {
     SDL_SetRenderDrawColor(REN,
         S.color.clear.r, S.color.clear.g, S.color.clear.b, 0xFF);
-    SDL_RenderFillRect(REN, &S.clip);
+    SDL_RenderFillRect(REN, &S.view.clip);
     _pico_output_present(0);
 }
 
@@ -664,15 +660,15 @@ static void _show_grid (void) {
 
     Pico_Dim Z = _zoom();
 
-    if ((S.dim.window.x % Z.x == 0) && (Z.x < S.dim.window.x)) {
-        for (int i=0; i<=S.dim.window.x; i+=(S.dim.window.x/Z.x)) {
-            SDL_RenderDrawLine(REN, i, 0, i, S.dim.window.y);
+    if ((S.view.phy.x % Z.x == 0) && (Z.x < S.view.phy.x)) {
+        for (int i=0; i<=S.view.phy.x; i+=(S.view.phy.x/Z.x)) {
+            SDL_RenderDrawLine(REN, i, 0, i, S.view.phy.y);
         }
     }
 
-    if ((S.dim.window.y % Z.y == 0) && (Z.y < S.dim.window.y)) {
-        for (int j=0; j<=S.dim.window.y; j+=(S.dim.window.y/Z.y)) {
-            SDL_RenderDrawLine(REN, 0, j, S.dim.window.x, j);
+    if ((S.view.phy.y % Z.y == 0) && (Z.y < S.view.phy.y)) {
+        for (int j=0; j<=S.view.phy.y; j+=(S.view.phy.y/Z.y)) {
+            SDL_RenderDrawLine(REN, 0, j, S.view.phy.x, j);
         }
     }
 }
@@ -686,7 +682,7 @@ static void _pico_output_present (int force) {
     _show_grid();
     SDL_RenderPresent(REN);
     SDL_SetRenderTarget(REN, TEX);
-    SDL_RenderSetClipRect(REN, &S.clip);
+    SDL_RenderSetClipRect(REN, &S.view.clip);
 }
 
 void pico_output_present (void) {
@@ -761,7 +757,7 @@ Pico_Anchor pico_get_anchor_rotate (void) {
 }
 
 Pico_Rect pico_get_clip (void) {
-    return S.clip;
+    return S.view.clip;
 }
 
 Pico_Color pico_get_color_clear (void) {
@@ -770,10 +766,6 @@ Pico_Color pico_get_color_clear (void) {
 
 Pico_Color pico_get_color_draw (void) {
     return S.color.draw;
-}
-
-Pico_Pos pico_get_cursor (void) {
-    return S.cursor.cur;
 }
 
 int pico_get_expert (void) {
@@ -789,7 +781,7 @@ const char* pico_get_font (void) {
 }
 
 int pico_get_fullscreen (void) {
-    return S.fullscreen;
+    return S.view.fs;
 }
 
 int pico_get_grid (void) {
@@ -815,8 +807,8 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
     // TODO: bug in SDL?
     // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
     Pico_Dim Z = _zoom();
-    pos->x = pos->x * Z.x / S.dim.window.x;
-    pos->y = pos->y * Z.y / S.dim.window.y;
+    pos->x = pos->x * Z.x / S.view.phy.x;
+    pos->y = pos->y * Z.y / S.view.phy.y;
     //pos->x += S.scroll.x;
     //pos->y += S.scroll.y;
 
@@ -862,14 +854,6 @@ int pico_get_text_width (int h, const char* text) {
     return w;
 }
 
-Pico_Dim pico_get_dim_window (void) {
-    return S.dim.window;
-}
-
-Pico_Dim pico_get_dim_world (void) {
-    return S.dim.world;
-}
-
 int pico_get_show (void) {
     return SDL_GetWindowFlags(WIN) & SDL_WINDOW_SHOWN;
 }
@@ -905,7 +889,7 @@ void pico_set_anchor_rotate (Pico_Anchor anchor) {
 }
 
 void pico_set_clip_raw (Pico_Rect rect) {
-    S.clip = rect;
+    S.view.clip = rect;
     SDL_RenderSetClipRect(REN, &rect);
 }
 
@@ -923,11 +907,6 @@ void pico_set_color_draw  (Pico_Color color) {
 
 void pico_set_crop (Pico_Rect crop) {
     S.crop = crop;
-}
-
-void pico_set_cursor (Pico_Pos pos) {
-    S.cursor.cur = pos;
-    S.cursor.x   = pos.x;
 }
 
 void pico_set_expert (int on) {
@@ -984,18 +963,18 @@ void pico_set_view (
     Pico_Dim new;
     { // clip: world clip
         if (clip != NULL) {
-            S.clip = *clip;
+            S.view.clip = *clip;
         }
     }
     { // fs - fullscreen
-        if ((fs == -1) || (fs && S.fullscreen) || (!fs && !S.fullscreen)) {
+        if ((fs == -1) || (fs && S.view.fs) || (!fs && !S.view.fs)) {
             goto _out1_;
         }
         assert(phy == NULL);
         static Pico_Dim _old;
         FS = 1;
         if (fs) {
-            _old = S.dim.window;
+            _old = S.view.phy;
             int ret = SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP);
             pico_assert(ret == 0);
             pico_input_delay(50);    // TODO: required for some reason
@@ -1005,7 +984,7 @@ void pico_set_view (
             new = _old;
         }
         phy = &new;
-        S.fullscreen = fs;
+        S.view.fs = fs;
         goto _phy_;
         _out1_:
     }
@@ -1013,9 +992,9 @@ void pico_set_view (
         if (phy == NULL) {
             goto _out2_;
         }
-        assert(fs==-1 && !S.fullscreen);
+        assert(fs==-1 && !S.view.fs);
         _phy_:
-        S.dim.window = *phy;
+        S.view.phy = *phy;
         SDL_SetWindowSize(WIN, phy->x, phy->y);
         _out2_:
     }
@@ -1023,7 +1002,7 @@ void pico_set_view (
         if (log == NULL) {
             goto _out3_;
         }
-        S.dim.world = *log;
+        S.view.log = *log;
         SDL_DestroyTexture(TEX);
         TEX = SDL_CreateTexture (
             REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
@@ -1033,9 +1012,9 @@ void pico_set_view (
         //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(REN, TEX);
         if (clip == NULL) {
-            S.clip = (SDL_Rect) { 0, 0, log->x, log->y };
+            S.view.clip = (SDL_Rect) { 0, 0, log->x, log->y };
         }
-        SDL_RenderSetClipRect(REN, &S.clip);
+        SDL_RenderSetClipRect(REN, &S.view.clip);
         _out3_:
     }
 }
@@ -1061,6 +1040,6 @@ void pico_set_zoom (Pico_Pct pct) {
     pico_assert(TEX != NULL);
     //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(REN, TEX);
-    S.clip = (SDL_Rect) { 0, 0, new.x, new.y };
-    SDL_RenderSetClipRect(REN, &S.clip);
+    S.view.clip = (SDL_Rect) { 0, 0, new.x, new.y };
+    SDL_RenderSetClipRect(REN, &S.view.clip);
 }

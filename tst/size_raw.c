@@ -4,8 +4,8 @@ int main (void) {
     pico_init(1);
     pico_set_title("Size - Fullscreen");
 
-    Pico_Dim phy = PICO_DIM_WINDOW;
-    Pico_Dim log = PICO_DIM_WORLD;
+    Pico_Dim phy = PICO_DIM_PHY;
+    Pico_Dim log = PICO_DIM_LOG;
     Pico_Rect r = {50-25, 50-25, 50, 50};
 
     // phy: normal -> double -> half -> normal

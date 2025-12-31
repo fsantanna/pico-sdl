@@ -22,8 +22,8 @@ extern "C" {
 /// @{
 ///
 #define PICO_TITLE "pico-SDL"
-#define PICO_DIM_WINDOW ((Pico_Dim) {500,500})
-#define PICO_DIM_WORLD  ((Pico_Dim) {100,100})
+#define PICO_DIM_PHY ((Pico_Dim) {500,500})
+#define PICO_DIM_LOG ((Pico_Dim) {100,100})
 #define PICO_HASH  128
 
 typedef SDL_Point Pico_Dim;
@@ -257,11 +257,6 @@ Pico_Rect pico_get_clip (void);
 /// @brief Gets the cropping applied to objects when drawing them.
 Pico_Rect pico_get_crop (void);
 
-/// @brief Gets the position of the text cursor.
-/// @sa pico_output_write
-/// @sa pico_output_writeln
-Pico_Pos pico_get_cursor (void);
-
 /// @brief Gets the state of expert mode.
 /// @return 1 if enabled, or 0 otherwise
 int pico_get_expert (void);
@@ -304,12 +299,6 @@ Pico_Dim pico_get_dim_image (const char* file);
 /// @brief Gets the dimensions of the given text.
 /// @param text text to measure
 int pico_get_text_width (int h, const char* text);
-
-/// @brief Gets the window dimensions.
-Pico_Dim pico_get_dim_window (void);
-
-/// @brief Gets the world dimensions.
-Pico_Dim pico_get_dim_world (void);
 
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
@@ -356,12 +345,6 @@ void pico_set_color_draw (Pico_Color color);
 /// @brief Changes the cropping that is applied to images before drawing them.
 /// @param crop cropping region, which may have 0 area to disable cropping
 void pico_set_crop (Pico_Rect crop);
-
-/// @brief Sets the position of the text cursor.
-/// @param pos new cursor position
-/// @sa pico_output_write
-/// @sa pico_output_writeln
-void pico_set_cursor (Pico_Pos pos);
 
 /// @brief Toggles the expert mode.
 /// @param on 1 to enable it, or 0 to disable it
