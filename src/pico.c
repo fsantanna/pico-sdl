@@ -744,10 +744,6 @@ Pico_Anchor pico_get_anchor_rotate (void) {
     return S.anchor.rotate;
 }
 
-Pico_Rect pico_get_clip (void) {
-    return S.view.clip;
-}
-
 Pico_Color pico_get_color_clear (void) {
     return S.color.clear;
 }
@@ -853,6 +849,26 @@ const char* pico_get_title (void) {
     return SDL_GetWindowTitle(WIN);
 }
 
+void pico_get_view (
+    int* fs,
+    Pico_Dim* phy,
+    Pico_Rect* dst,
+    Pico_Dim* log,
+    Pico_Rect* src,
+    Pico_Rect* clip
+) {
+    assert(dst==NULL && src==NULL && clip==NULL);
+    if (fs != NULL) {
+        *fs = S.view.fs;
+    }
+    if (phy != NULL) {
+        *phy = S.view.phy;
+    }
+    if (log != NULL) {
+        *log = S.view.log;
+    }
+}
+
 // SET
 
 void pico_set_alpha (int a) {
@@ -865,15 +881,6 @@ void pico_set_anchor_pos (Pico_Anchor anchor) {
 
 void pico_set_anchor_rotate (Pico_Anchor anchor) {
     S.anchor.rotate = anchor;
-}
-
-void pico_set_clip_raw (Pico_Rect rect) {
-    S.view.clip = rect;
-    SDL_RenderSetClipRect(REN, &rect);
-}
-
-void pico_set_clip_pct (Pico_Rect_Pct* rect) {
-    pico_set_clip_raw(RECT(rect));
 }
 
 void pico_set_color_clear (Pico_Color color) {
@@ -938,6 +945,9 @@ void pico_set_view (
     { // clip: world clip
         if (clip != NULL) {
             S.view.clip = *clip;
+            //S.view.clip = rect;
+            //SDL_RenderSetClipRect(REN, &rect);
+            //pico_set_clip_raw(RECT(rect));
         }
     }
     { // fs - fullscreen

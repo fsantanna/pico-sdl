@@ -4,8 +4,10 @@
 int main (void) {
     pico_init(1);
     pico_set_title("Buffer");
-    pico_set_dim_window((Pico_Dim){100,100});
-    pico_set_dim_world((Pico_Dim){10,10});
+
+    Pico_Dim phy = {100,100};
+    Pico_Dim log = { 10, 10};
+    pico_set_view(-1, &phy, NULL, &log, NULL, NULL);
 
     // .x.
     // xxx

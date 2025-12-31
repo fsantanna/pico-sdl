@@ -251,9 +251,6 @@ Pico_Color pico_get_color_clear (void);
 /// @brief Gets the color set to draw.
 Pico_Color pico_get_color_draw (void);
 
-/// @brief Gets the current clipping region.
-Pico_Rect pico_get_clip (void);
-
 /// @brief Gets the cropping applied to objects when drawing them.
 Pico_Rect pico_get_crop (void);
 
@@ -309,6 +306,15 @@ Uint32 pico_get_ticks (void);
 /// @brief Gets the aplication title.
 const char* pico_get_title (void);
 
+void pico_get_view (
+    int* window_fullscreen,
+    Pico_Dim* window,
+    Pico_Rect* window_target,
+    Pico_Dim* world,
+    Pico_Rect* world_source,
+    Pico_Rect* world_clip
+);
+
 // SET
 
 void pico_set_alpha (int a);
@@ -322,11 +328,6 @@ void pico_set_anchor_pos (Pico_Anchor anchor);
 /// @include anchor.c
 /// @param anchor anchor for the x and y axis
 void pico_set_anchor_rotate (Pico_Anchor anchor);
-
-/// @brief Changes the clipping area of drawing operations.
-/// @param clip clipping region
-void pico_set_clip_raw (Pico_Rect rect);
-void pico_set_clip_pct (Pico_Rect_Pct* rect);
 
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
@@ -372,13 +373,10 @@ void pico_set_title (const char* title);
 
 /// @brief Sets the window dimensions.
 /// @param dim new dimensions
-
 /// @brief Toggles fullscreen mode.
 /// @param on 1 to enable it, or 0 to disable it
-
 /// @brief Sets the world dimensions.
 /// @param dim new dimensions
-
 void pico_set_view (
     int window_fullscreen,
     Pico_Dim* window,

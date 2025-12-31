@@ -11,7 +11,7 @@ int main (void) {
     pico_output_draw_rect_raw(r1);
     pico_input_event(NULL, PICO_KEYDOWN);
 
-    pico_set_clip_raw(r1);
+    pico_set_view(-1, NULL, NULL, NULL, NULL, &r1);
     pico_set_color_clear((Pico_Color){0xCC, 0xCC, 0xCC});
     pico_output_clear();
     pico_input_event(NULL, PICO_KEYDOWN);

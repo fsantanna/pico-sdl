@@ -5,8 +5,8 @@ int main (void) {
 
     puts("shows dark screen");
     {
-        Pico_Dim phy = pico_get_dim_window();
-        Pico_Dim log = pico_get_dim_world();
+        Pico_Dim phy, log;
+        pico_get_view(NULL, &phy, NULL, &log, NULL, NULL);
         assert(phy.x==500 && phy.y==500);
         assert(log.x==100 && log.y==100);
     }
