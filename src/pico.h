@@ -366,10 +366,6 @@ void pico_set_crop (Pico_Rect crop);
 /// @sa pico_output_writeln
 void pico_set_cursor (Pico_Pos pos);
 
-/// @brief Sets the window dimensions.
-/// @param dim new dimensions
-void pico_set_dim_window (Pico_Dim dim);
-
 /// @brief Sets the world dimensions.
 /// @param dim new dimensions
 void pico_set_dim_world (Pico_Dim dim);
@@ -411,6 +407,12 @@ void pico_set_style (PICO_STYLE style);
 /// @brief Sets the aplication title.
 /// @param title new title
 void pico_set_title (const char* title);
+
+/// @brief Sets the window dimensions.
+/// @param dim new dimensions
+
+/// @brief Toggles fullscreen mode.
+/// @param on 1 to enable it, or 0 to disable it
 
 void pico_set_view (
     Pico_Dim* window,

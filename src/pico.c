@@ -219,7 +219,8 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 if (FS) {
                     FS = 0;
                 } else {
-                    pico_set_dim_window((Pico_Dim){e->window.data1,e->window.data2});
+                    Pico_Dim phy = { e->window.data1, e->window.data2 };
+                    pico_set_view(&phy, NULL, -1, NULL, NULL, NULL);
                 }
             }
             break;
@@ -935,16 +936,6 @@ void pico_set_crop (Pico_Rect crop) {
 void pico_set_cursor (Pico_Pos pos) {
     S.cursor.cur = pos;
     S.cursor.x   = pos.x;
-}
-
-void pico_set_dim_window (Pico_Dim dim) {
-    assert(!S.fullscreen);
-    S.dim.window = dim;
-    SDL_SetWindowSize(WIN, dim.x, dim.y);
-
-    Pico_Dim new = _zoom();
-    SDL_Rect clip = { 0, 0, new.x, new.y };
-    SDL_RenderSetClipRect(REN, &clip);
 }
 
 void pico_set_dim_world (Pico_Dim dim) {
