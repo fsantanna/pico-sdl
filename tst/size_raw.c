@@ -12,7 +12,7 @@ int main (void) {
     puts("WINDOW");
     {
         puts("normal");
-        pico_set_view(-1, &phy, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, &phy, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
@@ -20,7 +20,7 @@ int main (void) {
     {
         puts("double");
         Pico_Dim dim = (Pico_Dim){phy.x*2,phy.y*2};
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
@@ -28,14 +28,14 @@ int main (void) {
     {
         puts("half");
         Pico_Dim dim = (Pico_Dim){phy.x/2,phy.y/2};
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("normal");
-        pico_set_view(-1, &phy, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, &phy, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
@@ -44,14 +44,14 @@ int main (void) {
     // phy: normal -> full -> normal
     {
         puts("full");
-        pico_set_view(1, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(1, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("normal");
-        pico_set_view(0, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(0, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
@@ -61,7 +61,7 @@ int main (void) {
     puts("WORLD");
     {
         puts("normal");
-        pico_set_view(-1, NULL, NULL, &log, NULL, NULL);
+        pico_set_view_raw(-1, NULL, NULL, &log, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
@@ -69,7 +69,7 @@ int main (void) {
     {
         puts("double");
         Pico_Dim dim = (Pico_Dim){log.x*2,log.y*2};
-        pico_set_view(-1, NULL, NULL, &dim, NULL, NULL);
+        pico_set_view_raw(-1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
         Pico_Rect r = {log.x-25, log.y-25, 50, 50};
         pico_output_draw_rect_raw(r);
@@ -78,7 +78,7 @@ int main (void) {
     {
         puts("half");
         Pico_Dim dim = (Pico_Dim){log.x/2,log.y/2};
-        pico_set_view(-1, NULL, NULL, &dim, NULL, NULL);
+        pico_set_view_raw(-1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
         Pico_Rect r = {log.x/4-25, log.x/4-25, 50, 50};
         pico_output_draw_rect_raw(r);
@@ -86,7 +86,7 @@ int main (void) {
     }
     {
         puts("normal");
-        pico_set_view(-1, NULL, NULL, &log, NULL, NULL);
+        pico_set_view_raw(-1, NULL, NULL, &log, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);

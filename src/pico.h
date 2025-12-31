@@ -377,9 +377,18 @@ void pico_set_title (const char* title);
 /// @param on 1 to enable it, or 0 to disable it
 /// @brief Sets the world dimensions.
 /// @param dim new dimensions
-void pico_set_view (
+void pico_set_view_raw (
     int window_fullscreen,
     Pico_Dim* window,
+    Pico_Rect* window_target,
+    Pico_Dim* world,
+    Pico_Rect* world_source,
+    Pico_Rect* world_clip
+);
+
+void pico_set_view_pct (
+    int window_fullscreen,
+    Pico_Pct* window,
     Pico_Rect* window_target,
     Pico_Dim* world,
     Pico_Rect* world_source,

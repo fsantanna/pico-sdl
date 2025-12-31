@@ -158,7 +158,7 @@ void pico_init (int on) {
         {
             Pico_Rect phy = { 0, 0, S.view.phy.x, S.view.phy.y };
             Pico_Rect log = { 0, 0, S.view.log.x, S.view.log.y };
-            pico_set_view(-1, NULL, &phy, &S.view.log, &log, &log);
+            pico_set_view_raw(-1, NULL, &phy, &S.view.log, &log, &log);
         }
 
         pico_output_clear();
@@ -203,7 +203,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     FS = 0;
                 } else {
                     Pico_Dim phy = { e->window.data1, e->window.data2 };
-                    pico_set_view(-1, &phy, NULL, NULL, NULL, NULL);
+                    pico_set_view_raw(-1, &phy, NULL, NULL, NULL, NULL);
                 }
             }
             break;
@@ -978,7 +978,7 @@ void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
 }
 
-void pico_set_view (
+void pico_set_view_raw (
     int        fs,
     Pico_Dim*  phy,
     Pico_Rect* dst,
@@ -1060,4 +1060,28 @@ void pico_set_view (
         SDL_RenderSetClipRect(REN, &S.view.clip);
         _out3_:
     }
+}
+
+void pico_set_view_pct (
+    int        fs,
+    Pico_Pct*  phy,
+    Pico_Rect* dst,
+    Pico_Dim*  log,
+    Pico_Rect* src,
+    Pico_Rect* clip
+) {
+    Pico_Dim* xxphy = NULL;
+    Pico_Dim xphy;
+
+    if (phy != NULL) {
+        SDL_DisplayMode dsp;
+        int ret = SDL_GetCurrentDisplayMode(0, &dsp);
+        pico_assert(ret == 0);
+        xphy = (Pico_Dim) { dsp.w*phy->x, dsp.h*phy->y };
+printf(">>> %d %d\n", dsp.w, dsp.h);
+printf(">>> %d %d\n", xphy.x, xphy.y);
+        xxphy = &xphy;
+    }
+
+    pico_set_view_raw(fs, xxphy, dst, log, src, clip);
 }
