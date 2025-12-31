@@ -297,9 +297,6 @@ int pico_get_rotate (void);
 /// @brief Gets the scaling factor of objects (percentage).
 Pico_Pct pico_get_scale (void);
 
-/// @brief Gets the point of view on the logical window.
-Pico_Pos pico_get_scroll (void);
-
 /// @brief Gets the dimensions of the given image.
 /// @param file image filepath
 Pico_Dim pico_get_dim_image (const char* file);
@@ -388,10 +385,6 @@ void pico_set_rotate (int angle);
 /// @param scale new scaling for x and y axis (percentage)
 void pico_set_scale (Pico_Pct scale);
 
-/// @brief Sets the point of view on the logical window.
-/// @param pos new point of view
-void pico_set_scroll (Pico_Pos pos);
-
 /// @brief Toggles the aplication window visibility.
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
@@ -417,7 +410,6 @@ void pico_set_view (
     int window_fullscreen,
     Pico_Dim* window,
     Pico_Rect* window_target,
-    Pico_Pos* window_world_pos,
     Pico_Dim* world,
     Pico_Rect* world_source,
     Pico_Rect* world_clip
