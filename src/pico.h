@@ -26,12 +26,10 @@ extern "C" {
 #define PICO_DIM_LOG ((Pico_Dim) {100,100})
 #define PICO_HASH  128
 
-typedef struct { int w, h; } Pico_Dim;
 typedef SDL_Point Pico_Pos;
 typedef SDL_Rect  Pico_Rect;
 typedef SDL_Point Pico_Anchor;
 typedef SDL_Point Pico_Flip;
-typedef SDL_Point Pico_Pct;
 
 #define PICO_LEFT   0
 #define PICO_CENTER 50
@@ -39,12 +37,6 @@ typedef SDL_Point Pico_Pct;
 #define PICO_TOP    0
 #define PICO_MIDDLE 50
 #define PICO_BOTTOM 100
-
-typedef struct {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-} Pico_Color;
 
 typedef enum PICO_STYLE {
     PICO_FILL, PICO_STROKE
@@ -65,29 +57,40 @@ typedef enum PICO_MOUSE_BUTTON {
 #define PICO_ANCHOR_BOTTOM 1
 
 #define PICO_ANCHOR_C \
-    ((Pico_Pct_X) { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE })
+    ((Pico_Pct) { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE })
 #define PICO_ANCHOR_NW \
-    ((Pico_Pct_X) { PICO_ANCHOR_LEFT, PICO_ANCHOR_TOP })
+    ((Pico_Pct) { PICO_ANCHOR_LEFT, PICO_ANCHOR_TOP })
 #define PICO_ANCHOR_E \
-    ((Pico_Pct_X) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_MIDDLE })
+    ((Pico_Pct) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_MIDDLE })
 #define PICO_ANCHOR_SE \
-    ((Pico_Pct_X) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_BOTTOM })
+    ((Pico_Pct) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_BOTTOM })
+
+typedef struct {
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+} Pico_Color;
+
+typedef struct {
+    int w;
+    int h;
+} Pico_Dim;
 
 typedef struct {
     float x;
     float y;
-} Pico_Pct_X;
+} Pico_Pct;
 
 typedef struct Pico_Rect_Pct {
     float x, y;
     float w, h;
-    Pico_Pct_X anchor;
+    Pico_Pct anchor;
     struct Pico_Rect_Pct* up;
 } Pico_Rect_Pct;
 
 typedef struct Pico_Pos_Pct {
     float x, y;
-    Pico_Pct_X anchor;
+    Pico_Pct anchor;
     struct Pico_Rect_Pct* up;
 } Pico_Pos_Pct;
 
