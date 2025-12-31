@@ -19,7 +19,7 @@ int main (void) {
     }
     {
         puts("double");
-        Pico_Dim dim = (Pico_Dim){phy.x*2,phy.y*2};
+        Pico_Dim dim = (Pico_Dim){phy.w*2,phy.h*2};
         pico_set_view_raw(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
@@ -27,7 +27,7 @@ int main (void) {
     }
     {
         puts("half");
-        Pico_Dim dim = (Pico_Dim){phy.x/2,phy.y/2};
+        Pico_Dim dim = (Pico_Dim){phy.w/2,phy.h/2};
         pico_set_view_raw(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
@@ -68,19 +68,19 @@ int main (void) {
     }
     {
         puts("double");
-        Pico_Dim dim = (Pico_Dim){log.x*2,log.y*2};
+        Pico_Dim dim = (Pico_Dim){log.w*2,log.h*2};
         pico_set_view_raw(-1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
-        Pico_Rect r = {log.x-25, log.y-25, 50, 50};
+        Pico_Rect r = {log.w-25, log.h-25, 50, 50};
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("half");
-        Pico_Dim dim = (Pico_Dim){log.x/2,log.y/2};
+        Pico_Dim dim = (Pico_Dim){log.w/2,log.h/2};
         pico_set_view_raw(-1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
-        Pico_Rect r = {log.x/4-25, log.x/4-25, 50, 50};
+        Pico_Rect r = {log.w/4-25, log.w/4-25, 50, 50};
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }

@@ -26,7 +26,7 @@ extern "C" {
 #define PICO_DIM_LOG ((Pico_Dim) {100,100})
 #define PICO_HASH  128
 
-typedef SDL_Point Pico_Dim;
+typedef struct { int w, h; } Pico_Dim;
 typedef SDL_Point Pico_Pos;
 typedef SDL_Rect  Pico_Rect;
 typedef SDL_Point Pico_Anchor;

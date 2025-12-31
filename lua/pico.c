@@ -146,9 +146,9 @@ static int l_dim (lua_State* L) {
     }
 
     lua_newtable(L);                        // . | dim
-    lua_pushinteger(L, dim.x);              // . | dim | x
+    lua_pushinteger(L, dim.w);              // . | dim | x
     lua_setfield(L, -2, "x");               // . | dim
-    lua_pushinteger(L, dim.y);              // . | dim | y
+    lua_pushinteger(L, dim.h);              // . | dim | y
     lua_setfield(L, -2, "y");               // . | dim
 
     return 1;                               // . | [dim]
@@ -204,14 +204,14 @@ static int l_rect (lua_State* L) {
         luaL_checktype(L, 2, LUA_TTABLE);
         pos.x = L_checkfieldnum(L, 1, "x");
         pos.y = L_checkfieldnum(L, 1, "y");
-        dim.x = L_checkfieldnum(L, 2, "x");
-        dim.y = L_checkfieldnum(L, 2, "y");
+        dim.w = L_checkfieldnum(L, 2, "x");
+        dim.h = L_checkfieldnum(L, 2, "y");
         ext = (lua_gettop(L) > 2);
     } else {                                // x | y | w | h
         pos.x = luaL_checknumber(L, 1);
         pos.y = luaL_checknumber(L, 2);
-        dim.x = luaL_checknumber(L, 3);
-        dim.y = luaL_checknumber(L, 4);
+        dim.w = luaL_checknumber(L, 3);
+        dim.h = luaL_checknumber(L, 4);
     }
 
     Pico_Rect r;
@@ -327,19 +327,19 @@ static int l_get_anchor_rotate (lua_State* L) {
 static int l_get_dim_image (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);
     Pico_Dim dim = pico_get_dim_image(path);
-    _get_xy(L, dim.x, dim.y);   // . | dim
+    _get_xy(L, dim.w, dim.h);   // . | dim
     return 1;                   // . | [dim]
 }
 
 static int l_get_dim_window (lua_State* L) {
     Pico_Dim dim = pico_get_dim_window();
-    _get_xy(L, dim.x, dim.y);   // . | dim
+    _get_xy(L, dim.w, dim.h);   // . | dim
     return 1;                   // . | [dim]
 }
 
 static int l_get_dim_world (lua_State* L) {
     Pico_Dim dim = pico_get_dim_world();
-    _get_xy(L, dim.x, dim.y);   // . | dim
+    _get_xy(L, dim.w, dim.h);   // . | dim
     return 1;                   // . | [dim]
 }
 

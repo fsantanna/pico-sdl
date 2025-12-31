@@ -73,10 +73,10 @@ static struct {
 
 static Pico_Rect RECT (const Pico_Rect_Pct* r) {
     if (r->up == NULL) {
-        int w = r->w * S.view.log.x;
-        int h = r->h * S.view.log.y;
-        int x = r->x*S.view.log.x - r->anchor.x*w;
-        int y = r->y*S.view.log.y - r->anchor.y*h;
+        int w = r->w * S.view.log.w;
+        int h = r->h * S.view.log.h;
+        int x = r->x*S.view.log.w - r->anchor.x*w;
+        int y = r->y*S.view.log.h - r->anchor.y*h;
         return (Pico_Rect) {x, y, w, h};
     } else {
         Pico_Rect up = RECT(r->up);
@@ -90,8 +90,8 @@ static Pico_Rect RECT (const Pico_Rect_Pct* r) {
 
 static Pico_Pos POS (const Pico_Pos_Pct* p) {
     if (p->up == NULL) {
-        int x = p->x*S.view.log.x - p->anchor.x;
-        int y = p->y*S.view.log.y - p->anchor.y;
+        int x = p->x*S.view.log.w - p->anchor.x;
+        int y = p->y*S.view.log.h - p->anchor.y;
         return (Pico_Pos) {x, y};
     } else {
         Pico_Rect up = RECT(p->up);
@@ -141,7 +141,7 @@ void pico_init (int on) {
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            S.view.phy.x, S.view.phy.y,
+            S.view.phy.w, S.view.phy.h,
             (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
         );
         pico_assert(WIN != NULL);
@@ -156,8 +156,8 @@ void pico_init (int on) {
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
         {
-            Pico_Rect phy = { 0, 0, S.view.phy.x, S.view.phy.y };
-            Pico_Rect log = { 0, 0, S.view.log.x, S.view.log.y };
+            Pico_Rect phy = { 0, 0, S.view.phy.w, S.view.phy.h };
+            Pico_Rect log = { 0, 0, S.view.log.w, S.view.log.h };
             pico_set_view_raw(-1, NULL, &phy, &S.view.log, &log, &log);
         }
 
@@ -423,8 +423,8 @@ void pico_output_clear (void) {
 
 void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color buffer[], Pico_Dim dim) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
-        (void*)buffer, dim.x, dim.y,
-        24, 3*dim.x, SDL_PIXELFORMAT_RGB24
+        (void*)buffer, dim.w, dim.h,
+        24, 3*dim.w, SDL_PIXELFORMAT_RGB24
     );
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
@@ -438,8 +438,8 @@ void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color buffer[
 
 void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], Pico_Dim dim) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
-        (void*)buffer, dim.x, dim.y,
-        24, 3*dim.x, SDL_PIXELFORMAT_RGB24
+        (void*)buffer, dim.w, dim.h,
+        24, 3*dim.w, SDL_PIXELFORMAT_RGB24
     );
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
@@ -658,15 +658,15 @@ static void _show_grid (void) {
 
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
 
-    if ((S.view.phy.x % S.view.log.x == 0) && (S.view.log.x < S.view.phy.x)) {
-        for (int i=0; i<=S.view.phy.x; i+=(S.view.phy.x/S.view.log.x)) {
-            SDL_RenderDrawLine(REN, i, 0, i, S.view.phy.y);
+    if ((S.view.phy.w % S.view.log.w == 0) && (S.view.log.w < S.view.phy.w)) {
+        for (int i=0; i<=S.view.phy.w; i+=(S.view.phy.w/S.view.log.w)) {
+            SDL_RenderDrawLine(REN, i, 0, i, S.view.phy.h);
         }
     }
 
-    if ((S.view.phy.y % S.view.log.y == 0) && (S.view.log.y < S.view.phy.y)) {
-        for (int j=0; j<=S.view.phy.y; j+=(S.view.phy.y/S.view.log.y)) {
-            SDL_RenderDrawLine(REN, 0, j, S.view.phy.x, j);
+    if ((S.view.phy.h % S.view.log.h == 0) && (S.view.log.h < S.view.phy.h)) {
+        for (int j=0; j<=S.view.phy.h; j+=(S.view.phy.h/S.view.log.h)) {
+            SDL_RenderDrawLine(REN, 0, j, S.view.phy.w, j);
         }
     }
 }
@@ -696,13 +696,13 @@ static void _pico_output_present (int force) {
             dst.y = 0;
             dst.h -= dy;
         }
-        if (dst.x+dst.w > S.view.phy.x) {
-            int ex = (dst.x + dst.w) - S.view.phy.x;
+        if (dst.x+dst.w > S.view.phy.w) {
+            int ex = (dst.x + dst.w) - S.view.phy.w;
             src.w -= ex;        // clip right edge (dst beyond physical width)
             dst.w -= ex;
         }
-        if (dst.y+dst.h > S.view.phy.y) {
-            int ex = (dst.y + dst.h) - S.view.phy.y;
+        if (dst.y+dst.h > S.view.phy.h) {
+            int ex = (dst.y + dst.h) - S.view.phy.h;
             src.h -= ex;        // clip bottom edge (dst beyond physical height)
             dst.h -= ex;
         }
@@ -747,7 +747,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 const char* pico_output_screenshot (const char* path) {
     return pico_output_screenshot_ext(
         path,
-        (Pico_Rect){0,0,S.view.log.x,S.view.log.y}
+        (Pico_Rect){0,0,S.view.log.w,S.view.log.h}
     );
 }
 
@@ -835,8 +835,8 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
 
     // TODO: bug in SDL?
     // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
-    pos->x = pos->x * S.view.log.x / S.view.phy.x;
-    pos->y = pos->y * S.view.log.y / S.view.phy.y;
+    pos->x = pos->x * S.view.log.w / S.view.phy.w;
+    pos->y = pos->y * S.view.log.h / S.view.phy.h;
     //pos->x += S.scroll.x;
     //pos->y += S.scroll.y;
 
@@ -860,7 +860,7 @@ Pico_Dim pico_get_dim_image (const char* file) {
     pico_assert(tex != NULL);
 
     Pico_Dim dim;
-    SDL_QueryTexture(tex, NULL, NULL, &dim.x, &dim.y);
+    SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
     return dim;
 }
 
@@ -1015,7 +1015,7 @@ void pico_set_view_raw (
             int ret = SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP);
             pico_assert(ret == 0);
             pico_input_delay(50);    // TODO: required for some reason
-            SDL_GetWindowSize(WIN, &new.x, &new.y);
+            SDL_GetWindowSize(WIN, &new.w, &new.h);
         } else {
             pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
             new = _old;
@@ -1033,9 +1033,9 @@ void pico_set_view_raw (
         _phy_:
         S.view.phy = *phy;
         if (dst == NULL) {
-            S.view.dst = (SDL_Rect) { 0, 0, phy->x, phy->y };
+            S.view.dst = (SDL_Rect) { 0, 0, phy->w, phy->h };
         }
-        SDL_SetWindowSize(WIN, phy->x, phy->y);
+        SDL_SetWindowSize(WIN, phy->w, phy->h);
         _out2_:
     }
     { // log - world
@@ -1044,15 +1044,15 @@ void pico_set_view_raw (
         }
         S.view.log = *log;
         if (src == NULL) {
-            S.view.src = (SDL_Rect) { 0, 0, log->x, log->y };
+            S.view.src = (SDL_Rect) { 0, 0, log->w, log->h };
         }
         if (clip == NULL) {
-            S.view.clip = (SDL_Rect) { 0, 0, log->x, log->y };
+            S.view.clip = (SDL_Rect) { 0, 0, log->w, log->h };
         }
         SDL_DestroyTexture(TEX);
         TEX = SDL_CreateTexture (
             REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-            log->x, log->y
+            log->w, log->h
         );
         pico_assert(TEX != NULL);
         //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
@@ -1079,7 +1079,7 @@ void pico_set_view_pct (
         pico_assert(ret == 0);
         xphy = (Pico_Dim) { dsp.w*phy->x, dsp.h*phy->y };
 printf(">>> %d %d\n", dsp.w, dsp.h);
-printf(">>> %d %d\n", xphy.x, xphy.y);
+printf(">>> %d %d\n", xphy.w, xphy.h);
         xxphy = &xphy;
     }
 

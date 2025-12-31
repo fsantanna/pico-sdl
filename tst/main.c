@@ -7,8 +7,8 @@ int main (void) {
     {
         Pico_Dim phy, log;
         pico_get_view(NULL, &phy, NULL, &log, NULL, NULL);
-        assert(phy.x==500 && phy.y==500);
-        assert(log.x==100 && log.y==100);
+        assert(phy.w==500 && phy.h==500);
+        assert(log.w==100 && log.h==100);
     }
 
     puts("waits any key press");
@@ -111,8 +111,8 @@ int main (void) {
     puts("shows lower-left X, center rect, center/up-right line");
     puts("increases zoom");
     for (int i=1; i<=20; i++) {
-        log.x -= 1;
-        log.y -= 1;
+        log.w -= 1;
+        log.h -= 1;
         pico_set_dim_world(log);
         Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
         pico_output_clear();
@@ -125,8 +125,8 @@ int main (void) {
     }
     puts("decreases zoom");
     for (int i=1; i<=20; i++) {
-        log.x += 1;
-        log.y += 1;
+        log.w += 1;
+        log.h += 1;
         pico_set_dim_world(log);
         Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
         pico_output_clear();
