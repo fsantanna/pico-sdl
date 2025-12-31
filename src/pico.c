@@ -960,29 +960,6 @@ void pico_set_flip (Pico_Flip flip) {
     S.flip = flip;
 }
 
-void pico_set_fullscreen (int on) {
-    static Pico_Dim _old;
-    if ((on && S.fullscreen) || (!on && !S.fullscreen)) {
-        return;
-    }
-    FS = 1;
-
-    Pico_Dim new;
-    if (on) {
-        _old = S.dim.window;
-        pico_assert(0 == SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP));
-        pico_input_delay(50);    // TODO: required for some reason
-        SDL_GetWindowSize(WIN, &new.x, &new.y);
-    } else {
-        pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
-        new = _old;
-    }
-
-    S.fullscreen = 0;           // cannot set_dim_win with fullscreen on
-    pico_set_dim_window(new);
-    S.fullscreen = on;
-}
-
 void pico_set_font (const char* file) {
     S.font = file;
 }
@@ -1020,6 +997,51 @@ void pico_set_style (PICO_STYLE style) {
 
 void pico_set_title (const char* title) {
     SDL_SetWindowTitle(WIN, title);
+}
+
+void pico_set_view (
+    Pico_Dim* phy,
+    Pico_Dim* log,
+    int fs,
+    Pico_Rect* phy_region,
+    Pico_Rect* log_region,
+    Pico_Pos* phy_log_pos
+) {
+    Pico_Dim new;
+    { // fs - fullscreen
+        if ((fs == -1) || (fs && S.fullscreen) || (!fs && !S.fullscreen)) {
+            goto _out1_;
+        }
+        assert(phy == NULL);
+        static Pico_Dim _old;
+        FS = 1;
+        if (fs) {
+            _old = S.dim.window;
+            int ret = SDL_SetWindowFullscreen(WIN, SDL_WINDOW_FULLSCREEN_DESKTOP);
+            pico_assert(ret == 0);
+            pico_input_delay(50);    // TODO: required for some reason
+            SDL_GetWindowSize(WIN, &new.x, &new.y);
+        } else {
+            pico_assert(0 == SDL_SetWindowFullscreen(WIN, 0));
+            new = _old;
+        }
+        phy = &new;
+        goto _phy_;
+        _out1_:
+    }
+    { // phy - window
+        if (phy == NULL) {
+            goto _out2_;
+        }
+        assert(fs==-1 && !S.fullscreen);
+        _phy_:
+        S.dim.window = *phy;
+        SDL_SetWindowSize(WIN, phy->x, phy->y);
+        new = _zoom();
+        SDL_Rect clip = { 0, 0, new.x, new.y };
+        SDL_RenderSetClipRect(REN, &clip);
+        _out2_:
+    }
 }
 
 void pico_set_zoom (Pico_Pct pct) {

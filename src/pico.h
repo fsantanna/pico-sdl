@@ -385,10 +385,6 @@ void pico_set_flip (Pico_Flip flip);
 /// @param file path to font file
 void pico_set_font (const char* file);
 
-/// @brief Toggles fullscreen mode.
-/// @param on 1 to enable it, or 0 to disable it
-void pico_set_fullscreen (int on);
-
 /// @brief Toggles a grid on top of logical pixels.
 /// @param on 1 to show it, or 0 to hide it
 void pico_set_grid (int on);
@@ -415,6 +411,15 @@ void pico_set_style (PICO_STYLE style);
 /// @brief Sets the aplication title.
 /// @param title new title
 void pico_set_title (const char* title);
+
+void pico_set_view (
+    Pico_Dim* window,
+    Pico_Dim* world,
+    int window_fullscreen,
+    Pico_Rect* world_region,
+    Pico_Rect* window_region,
+    Pico_Pos* window_world_pos
+);
 
 /// @param pct new factor
 void pico_set_zoom (Pico_Pct pct);
