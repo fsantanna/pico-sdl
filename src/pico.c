@@ -1048,7 +1048,6 @@ void pico_set_view (
         if (clip == NULL) {
             S.clip = (SDL_Rect) { 0, 0, log->x, log->y };
         }
-printf(">>> %d %d %d %d\n", S.clip.x, S.clip.y, S.clip.w, S.clip.h);
         SDL_RenderSetClipRect(REN, &S.clip);
         _out3_:
     }

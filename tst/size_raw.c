@@ -71,30 +71,26 @@ int main (void) {
         Pico_Dim dim = (Pico_Dim){log.x*2,log.y*2};
         pico_set_view(-1, NULL, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
-        Pico_Rect r = {100-50, 100-50, 100, 100};
+        Pico_Rect r = {log.x, log.x, 50, 50};
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
-#if 0
     {
         puts("half");
-        pico_set_dim_world((Pico_Dim){log.x/2,log.y/2});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
-        Pico_Rect r = {pt.x, pt.y, 32, 18};
+        Pico_Dim dim = (Pico_Dim){log.x/2,log.y/2};
+        pico_set_view(-1, NULL, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
-        pico_output_draw_rect(r);
+        Pico_Rect r = {log.x/4-25, log.x/4-25, 50, 50};
+        pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
         puts("normal");
-        pico_set_dim_world((Pico_Dim){log.x,log.y});
-        Pico_Pos pt = pico_pos((Pico_Pct){50, 50});
-        Pico_Rect r = {pt.x, pt.y, 32, 18};
+        pico_set_view(-1, NULL, NULL, NULL, &log, NULL, NULL);
         pico_output_clear();
-        pico_output_draw_rect(r);
+        pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }
-#endif
 
     pico_init(0);
     return 0;
