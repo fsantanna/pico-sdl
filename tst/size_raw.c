@@ -69,10 +69,9 @@ int main (void) {
     {
         puts("double");
         Pico_Dim dim = (Pico_Dim){log.x*2,log.y*2};
-        //Pico_Pos pos = { 500-log.x, 500-log.y };
         pico_set_view(-1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
-        Pico_Rect r = {log.x, log.x, 50, 50};
+        Pico_Rect r = {log.x-25, log.y-25, 50, 50};
         pico_output_draw_rect_raw(r);
         pico_input_event(NULL, PICO_KEYDOWN);
     }

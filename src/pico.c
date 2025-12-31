@@ -43,9 +43,11 @@ static struct {
     int grid;
     PICO_STYLE style;
     struct {
-        int fs;
-        Pico_Dim phy;
-        Pico_Dim log;
+        int       fs;
+        Pico_Dim  phy;
+        Pico_Rect dst;
+        Pico_Dim  log;
+        Pico_Rect src;
         Pico_Rect clip;
     } view;
 } S = {
@@ -53,7 +55,7 @@ static struct {
     { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     0,
     { {0x00,0x00,0x00}, {0xFF,0xFF,0xFF} },
-    {0, 0, 0, 0},
+    {},
     0,
     {0, 0},
     NULL,
@@ -62,8 +64,10 @@ static struct {
     {
         0,
         PICO_DIM_PHY,
+        {},
         PICO_DIM_LOG,
-        {0, 0, 0, 0},
+        {},
+        {},
     },
 };
 
@@ -151,7 +155,12 @@ void pico_init (int on) {
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
-        pico_set_view(-1, &S.view.phy, NULL, &S.view.log, NULL, NULL);
+        {
+            Pico_Rect phy = { 0, 0, S.view.phy.x, S.view.phy.y };
+            Pico_Rect log = { 0, 0, S.view.log.x, S.view.log.y };
+            pico_set_view(-1, NULL, &phy, &S.view.log, &log, &log);
+        }
+
         pico_output_clear();
 
         SDL_PumpEvents();
@@ -664,10 +673,46 @@ static void _show_grid (void) {
 
 static void _pico_output_present (int force) {
     if (S.expert && !force) return;
+
     SDL_SetRenderTarget(REN, NULL);
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
-    SDL_RenderCopy(REN, TEX, NULL, NULL);
+
+    // Calculate clipped src and dst rectangles for viewport rendering
+    {
+        SDL_Rect src = S.view.src;
+        SDL_Rect dst = S.view.dst;
+        if (dst.x < 0) {
+            int dx = -dst.x;
+            src.x += dx;
+            src.w -= dx;        // clip left edge (negative dst.x)
+            dst.x = 0;
+            dst.w -= dx;
+        }
+        if (dst.y < 0) {
+            int dy = -dst.y;
+            src.y += dy;
+            src.h -= dy;        // clip top edge (negative dst.y)
+            dst.y = 0;
+            dst.h -= dy;
+        }
+        if (dst.x+dst.w > S.view.phy.x) {
+            int ex = (dst.x + dst.w) - S.view.phy.x;
+            src.w -= ex;        // clip right edge (dst beyond physical width)
+            dst.w -= ex;
+        }
+        if (dst.y+dst.h > S.view.phy.y) {
+            int ex = (dst.y + dst.h) - S.view.phy.y;
+            src.h -= ex;        // clip bottom edge (dst beyond physical height)
+            dst.h -= ex;
+        }
+        // Only render if there's something visible
+        if (src.w>0 && src.h>0 && dst.w>0 && dst.h>0) {
+            SDL_RenderCopy(REN, TEX, &src, &dst);
+        }
+        //SDL_RenderCopy(REN, TEX, NULL, NULL);
+    }
+
     _show_grid();
     SDL_RenderPresent(REN);
     SDL_SetRenderTarget(REN, TEX);
@@ -934,15 +979,22 @@ void pico_set_title (const char* title) {
 }
 
 void pico_set_view (
-    int fs,
-    Pico_Dim* phy,
-    Pico_Rect* window_target,
-    Pico_Dim* log,
-    Pico_Rect* world_source,
+    int        fs,
+    Pico_Dim*  phy,
+    Pico_Rect* dst,
+    Pico_Dim*  log,
+    Pico_Rect* src,
     Pico_Rect* clip
 ) {
     Pico_Dim new;
-    { // clip: world clip
+
+    { // dst, src, clip: only assign (no extra processing)
+        if (dst != NULL) {
+            S.view.dst = *dst;
+        }
+        if (src != NULL) {
+            S.view.src = *src;
+        }
         if (clip != NULL) {
             S.view.clip = *clip;
             //S.view.clip = rect;
@@ -950,6 +1002,7 @@ void pico_set_view (
             //pico_set_clip_raw(RECT(rect));
         }
     }
+
     { // fs - fullscreen
         if ((fs == -1) || (fs && S.view.fs) || (!fs && !S.view.fs)) {
             goto _out1_;
@@ -979,6 +1032,9 @@ void pico_set_view (
         assert(fs==-1 && !S.view.fs);
         _phy_:
         S.view.phy = *phy;
+        if (dst == NULL) {
+            S.view.dst = (SDL_Rect) { 0, 0, phy->x, phy->y };
+        }
         SDL_SetWindowSize(WIN, phy->x, phy->y);
         _out2_:
     }
@@ -987,6 +1043,12 @@ void pico_set_view (
             goto _out3_;
         }
         S.view.log = *log;
+        if (src == NULL) {
+            S.view.src = (SDL_Rect) { 0, 0, log->x, log->y };
+        }
+        if (clip == NULL) {
+            S.view.clip = (SDL_Rect) { 0, 0, log->x, log->y };
+        }
         SDL_DestroyTexture(TEX);
         TEX = SDL_CreateTexture (
             REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
@@ -995,9 +1057,6 @@ void pico_set_view (
         pico_assert(TEX != NULL);
         //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(REN, TEX);
-        if (clip == NULL) {
-            S.view.clip = (SDL_Rect) { 0, 0, log->x, log->y };
-        }
         SDL_RenderSetClipRect(REN, &S.view.clip);
         _out3_:
     }
