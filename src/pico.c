@@ -656,18 +656,52 @@ void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text) {
 static void _show_grid (void) {
     if (!S.grid) return;
 
-    SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
-
-    if ((S.view.phy.w % S.view.log.w == 0) && (S.view.log.w < S.view.phy.w)) {
-        for (int i=0; i<=S.view.phy.w; i+=(S.view.phy.w/S.view.log.w)) {
-            SDL_RenderDrawLine(REN, i, 0, i, S.view.phy.h);
+    // grid lines
+    {
+        SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
+        if ((S.view.phy.w%S.view.log.w == 0) && (S.view.log.w< S.view.phy.w)) {
+            for (int i=0; i<=S.view.phy.w; i+=(S.view.phy.w/S.view.log.w)) {
+                SDL_RenderDrawLine(REN, i, 0, i, S.view.phy.h);
+            }
+        }
+        if ((S.view.phy.h%S.view.log.h == 0) && (S.view.log.h < S.view.phy.h)) {
+            for (int j=0; j<=S.view.phy.h; j+=(S.view.phy.h/S.view.log.h)) {
+                SDL_RenderDrawLine(REN, 0, j, S.view.phy.w, j);
+            }
         }
     }
 
-    if ((S.view.phy.h % S.view.log.h == 0) && (S.view.log.h < S.view.phy.h)) {
-        for (int j=0; j<=S.view.phy.h; j+=(S.view.phy.h/S.view.log.h)) {
-            SDL_RenderDrawLine(REN, 0, j, S.view.phy.w, j);
+    // metric labels
+    {
+        TTF_Font* ttf = _font_open(NULL, 10);
+
+        void aux (int v, int cx, int cy) {
+            char lbl[16];
+            snprintf(lbl, sizeof(lbl), "%d", v);
+            SDL_Surface* sfc = TTF_RenderText_Blended(ttf, lbl,
+                                (SDL_Color){0x77, 0x77, 0x77, 0xFF});
+            pico_assert(sfc != NULL);
+            SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
+            pico_assert(tex != NULL);
+            SDL_Rect dst = {cx-sfc->w/2, cy-sfc->h/2, sfc->w, sfc->h};
+            SDL_RenderCopy(REN, tex, NULL, &dst);
+            SDL_DestroyTexture(tex);
+            SDL_FreeSurface(sfc);
         }
+
+        int dx = S.view.phy.w / 10;
+        for (int i=0; i<=S.view.phy.w; i+=dx) {
+            int x = S.view.src.x + (i * S.view.src.w / S.view.phy.w);
+            aux(x, i, 7);  // center horizontally at i, vertically at 7
+        }
+
+        int dy = S.view.phy.h / 10;
+        for (int j=0; j<=S.view.phy.h; j+=dy) {
+            int y = S.view.src.y + (j * S.view.src.h / S.view.phy.h);
+            aux(y, 7, j);  // center horizontally at 7, vertically at j
+        }
+
+        TTF_CloseFont(ttf);
     }
 }
 
