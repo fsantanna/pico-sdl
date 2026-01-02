@@ -20,6 +20,7 @@
 static SDL_Window*  WIN;
 static SDL_Texture* TEX;
 static int FS = 0;          // fullscreen pending (ignore RESIZED event)
+static int TGT = 1;         // 0:phy, 1:log
 
 #define REN (SDL_GetRenderer(WIN))
 
@@ -73,10 +74,12 @@ static struct {
 
 static Pico_Rect RECT (const Pico_Rect_Pct* r) {
     if (r->up == NULL) {
-        int w = r->w * S.view.log.w;
-        int h = r->h * S.view.log.h;
-        int x = r->x*S.view.log.w - r->anchor.x*w;
-        int y = r->y*S.view.log.h - r->anchor.y*h;
+        int W = (TGT == 0) ? S.view.phy.w : S.view.log.w;
+        int H = (TGT == 0) ? S.view.phy.h : S.view.log.h;
+        int w = r->w * W;
+        int h = r->h * H;
+        int x = r->x*W - r->anchor.x*w;
+        int y = r->y*H - r->anchor.y*h;
         return (Pico_Rect) {x, y, w, h};
     } else {
         Pico_Rect up = RECT(r->up);
@@ -90,8 +93,10 @@ static Pico_Rect RECT (const Pico_Rect_Pct* r) {
 
 static Pico_Pos POS (const Pico_Pos_Pct* p) {
     if (p->up == NULL) {
-        int x = p->x*S.view.log.w - p->anchor.x;
-        int y = p->y*S.view.log.h - p->anchor.y;
+        int W = (TGT == 0) ? S.view.phy.w : S.view.log.w;
+        int H = (TGT == 0) ? S.view.phy.h : S.view.log.h;
+        int x = p->x*W - p->anchor.x;
+        int y = p->y*H - p->anchor.y;
         return (Pico_Pos) {x, y};
     } else {
         Pico_Rect up = RECT(p->up);
@@ -656,58 +661,70 @@ void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text) {
 static void _show_grid (void) {
     if (!S.grid) return;
 
+    Pico_Color x_clr = S.color.draw;
+    int x_alpha = S.alpha;
+    pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77});
+
     // grid lines
     {
-        SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
+        pico_set_alpha(0x77);
         if ((S.view.phy.w%S.view.log.w == 0) && (S.view.log.w< S.view.phy.w)) {
             for (int i=0; i<=S.view.phy.w; i+=(S.view.phy.w/S.view.log.w)) {
-                SDL_RenderDrawLine(REN, i, 0, i, S.view.phy.h);
+                pico_output_draw_line_raw((Pico_Pos){i,0}, (Pico_Pos){i,S.view.phy.h});
             }
         }
         if ((S.view.phy.h%S.view.log.h == 0) && (S.view.log.h < S.view.phy.h)) {
             for (int j=0; j<=S.view.phy.h; j+=(S.view.phy.h/S.view.log.h)) {
-                SDL_RenderDrawLine(REN, 0, j, S.view.phy.w, j);
+                pico_output_draw_line_raw((Pico_Pos){0,j}, (Pico_Pos){S.view.phy.w,j});
             }
         }
     }
 
     // metric labels
     {
-        TTF_Font* ttf = _font_open(NULL, 10);
-
+        pico_set_alpha(0xFF);
         void aux (int v, int cx, int cy) {
             char lbl[16];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            SDL_Surface* sfc = TTF_RenderText_Blended(ttf, lbl,
-                                (SDL_Color){0x77, 0x77, 0x77, 0xFF});
-            pico_assert(sfc != NULL);
-            SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
-            pico_assert(tex != NULL);
-            SDL_Rect dst = {cx-sfc->w/2, cy-sfc->h/2, sfc->w, sfc->h};
-            SDL_RenderCopy(REN, tex, NULL, &dst);
-            SDL_DestroyTexture(tex);
-            SDL_FreeSurface(sfc);
+
+            float px = (float)cx / S.view.phy.w;
+            float py = (float)cy / S.view.phy.h;
+
+            pico_output_draw_text_pct(
+                &(Pico_Rect_Pct) {
+                    px, py, 0, 0.02, PICO_ANCHOR_C, NULL
+                },
+                lbl
+            );
         }
 
         int dx = S.view.phy.w / 10;
         for (int i=0; i<=S.view.phy.w; i+=dx) {
             int x = S.view.src.x + (i * S.view.src.w / S.view.phy.w);
-            aux(x, i, 7);  // center horizontally at i, vertically at 7
+            aux(x, i, 7);
         }
 
         int dy = S.view.phy.h / 10;
         for (int j=0; j<=S.view.phy.h; j+=dy) {
             int y = S.view.src.y + (j * S.view.src.h / S.view.phy.h);
-            aux(y, 7, j);  // center horizontally at 7, vertically at j
+            aux(y, 7, j);
         }
-
-        TTF_CloseFont(ttf);
     }
+
+    S.color.draw = x_clr;
+    S.alpha = x_alpha;
 }
 
 static void _pico_output_present (int force) {
-    if (S.expert && !force) return;
+    if (TGT == 0) {
+        return;
+    } else if (force) {
+        // ok
+    } else if (S.expert) {
+        return;
+    }
 
+    TGT = 0;
     SDL_SetRenderTarget(REN, NULL);
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
@@ -749,6 +766,8 @@ static void _pico_output_present (int force) {
 
     _show_grid();
     SDL_RenderPresent(REN);
+
+    TGT = 1;
     SDL_SetRenderTarget(REN, TEX);
     SDL_RenderSetClipRect(REN, &S.view.clip);
 }

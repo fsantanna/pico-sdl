@@ -70,7 +70,7 @@ int main (void) {
         pico_input_event(NULL, PICO_KEYDOWN);
     }
     {
-        puts("double");
+        puts("*2");
         Pico_Pct pct = { 2, 2 };
         pico_set_view_pct(-1, NULL, NULL, &pct, NULL, NULL);
         pico_output_clear();

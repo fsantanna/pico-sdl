@@ -38,11 +38,11 @@ typedef SDL_Point Pico_Flip;
 #define PICO_MIDDLE 50
 #define PICO_BOTTOM 100
 
-typedef enum PICO_STYLE {
+typedef enum {
     PICO_FILL, PICO_STROKE
 } PICO_STYLE;
 
-typedef enum PICO_MOUSE_BUTTON {
+typedef enum {
     PICO_MOUSE_BUTTON_NONE   = 0,
     PICO_MOUSE_BUTTON_LEFT   = SDL_BUTTON_LEFT,
     PICO_MOUSE_BUTTON_MIDDLE = SDL_BUTTON_MIDDLE,
@@ -88,7 +88,7 @@ typedef struct Pico_Rect_Pct {
     struct Pico_Rect_Pct* up;
 } Pico_Rect_Pct;
 
-typedef struct Pico_Pos_Pct {
+typedef struct {
     float x, y;
     Pico_Pct anchor;
     struct Pico_Rect_Pct* up;
