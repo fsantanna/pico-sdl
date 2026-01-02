@@ -28,10 +28,6 @@ static pico_hash* _pico_hash;
 
 static struct {
     int alpha;
-    struct {
-        Pico_Anchor pos;
-        Pico_Anchor rotate;
-    } anchor;
     int angle;
     struct {
         Pico_Color clear;
@@ -53,7 +49,6 @@ static struct {
     } view;
 } S = {
     0xFF,
-    { {PICO_CENTER, PICO_MIDDLE}, {PICO_CENTER, PICO_MIDDLE} },
     0,
     { {0x00,0x00,0x00}, {0xFF,0xFF,0xFF} },
     {},
@@ -840,14 +835,6 @@ void pico_output_sound (const char* path) {
 
 // GET
 
-Pico_Anchor pico_get_anchor_pos (void) {
-    return S.anchor.pos;
-}
-
-Pico_Anchor pico_get_anchor_rotate (void) {
-    return S.anchor.rotate;
-}
-
 Pico_Color pico_get_color_clear (void) {
     return S.color.clear;
 }
@@ -977,14 +964,6 @@ void pico_get_view (
 
 void pico_set_alpha (int a) {
     S.alpha = a;
-}
-
-void pico_set_anchor_pos (Pico_Anchor anchor) {
-    S.anchor.pos = anchor;
-}
-
-void pico_set_anchor_rotate (Pico_Anchor anchor) {
-    S.anchor.rotate = anchor;
 }
 
 void pico_set_color_clear (Pico_Color color) {
