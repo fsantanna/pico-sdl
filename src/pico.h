@@ -151,30 +151,56 @@ int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 /// @brief Clears screen with color set by @ref pico_set_color_clear.
 void pico_output_clear (void);
 
-/// @brief Draws an RGBA image that is managed by the user.
-/// @param pos drawing coordinate
-/// @param buffer the RGBA image
+/// @brief Draws an RGBA image buffer using absolute coordinates.
+/// @param rect drawing rectangle in logical pixels
+/// @param buffer the RGBA image data
 /// @param dim image dimensions
-/// @sa pico_output_draw_image
+/// @sa pico_output_draw_buffer_pct
+/// @sa pico_output_draw_image_raw
 void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color buffer[], Pico_Dim dim);
+
+/// @brief Draws an RGBA image buffer using percentage-based coordinates.
+/// @param rect drawing rectangle as percentages (0.0-1.0)
+/// @param buffer the RGBA image data
+/// @param dim image dimensions
+/// @sa pico_output_draw_buffer_raw
+/// @sa pico_output_draw_image_pct
 void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], Pico_Dim dim);
 
-/// @brief Draws an image.
-/// @param rect drawing coordinates
+/// @brief Draws an image using absolute coordinates.
+/// @param rect drawing rectangle in logical pixels
 /// @param path path to the image file
-/// @sa pico_output_draw_buffer
+/// @sa pico_output_draw_image_pct
+/// @sa pico_output_draw_buffer_raw
 void pico_output_draw_image_raw (Pico_Rect rect, const char* path);
+
+/// @brief Draws an image using percentage-based coordinates.
+/// @param rect drawing rectangle as percentages (0.0-1.0)
+/// @param path path to the image file
+/// @sa pico_output_draw_image_raw
+/// @sa pico_output_draw_buffer_pct
 void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path);
 
-/// @brief Draws a line.
-/// @param p1 first point
-/// @param p2 second point
+/// @brief Draws a line using absolute coordinates.
+/// @param p1 first endpoint in logical pixels
+/// @param p2 second endpoint in logical pixels
+/// @sa pico_output_draw_line_pct
 void pico_output_draw_line_raw (Pico_Pos p1, Pico_Pos p2);
+
+/// @brief Draws a line using percentage-based coordinates.
+/// @param p1 first endpoint as percentages (0.0-1.0)
+/// @param p2 second endpoint as percentages (0.0-1.0)
+/// @sa pico_output_draw_line_raw
 void pico_output_draw_line_pct (Pico_Pos_Pct* p1, Pico_Pos_Pct* p2);
 
-/// @brief Draws a single pixel.
-/// @param pos drawing coordinate
+/// @brief Draws a single pixel using absolute coordinates.
+/// @param pos drawing coordinate in logical pixels
+/// @sa pico_output_draw_pixel_pct
 void pico_output_draw_pixel_raw (Pico_Pos pos);
+
+/// @brief Draws a single pixel using percentage-based coordinates.
+/// @param pos drawing coordinate as percentages (0.0-1.0)
+/// @sa pico_output_draw_pixel_raw
 void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos);
 
 /// @brief Draws a batch of pixels.
@@ -182,32 +208,62 @@ void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos);
 /// @param n number of coordinates
 void pico_output_draw_pixels (const Pico_Pos* ps, int n);
 
-/// @brief Draws a rectangle.
-/// @param rect rectangle to draw
+/// @brief Draws a rectangle using absolute coordinates.
+/// @param rect rectangle to draw in logical pixels
+/// @sa pico_output_draw_rect_pct
 void pico_output_draw_rect_raw (Pico_Rect rect);
+
+/// @brief Draws a rectangle using percentage-based coordinates.
+/// @param rect rectangle to draw as percentages (0.0-1.0)
+/// @sa pico_output_draw_rect_raw
 void pico_output_draw_rect_pct (const Pico_Rect_Pct* rect);
 
-/// @brief Draws a triangle with a right angle at bottom-left.
-/// @param rect bounds of the triangle
+/// @brief Draws a triangle using absolute coordinates.
+/// @param p1 first vertex in logical pixels
+/// @param p2 second vertex in logical pixels
+/// @param p3 third vertex in logical pixels
+/// @sa pico_output_draw_tri_pct
 void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3);
+
+/// @brief Draws a triangle using percentage-based coordinates.
+/// @param p1 first vertex as percentages (0.0-1.0)
+/// @param p2 second vertex as percentages (0.0-1.0)
+/// @param p3 third vertex as percentages (0.0-1.0)
+/// @sa pico_output_draw_tri_raw
 void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, const Pico_Pos_Pct* p3);
 
-/// @brief Draws an ellipse.
-/// @param rect bounds of the ellipse
+/// @brief Draws an ellipse using absolute coordinates.
+/// @param rect bounding rectangle in logical pixels
+/// @sa pico_output_draw_oval_pct
 void pico_output_draw_oval_raw (Pico_Rect rect);
+
+/// @brief Draws an ellipse using percentage-based coordinates.
+/// @param rect bounding rectangle as percentages (0.0-1.0)
+/// @sa pico_output_draw_oval_raw
 void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect);
 
-/// @brief Draws a polygon.
-/// @param ps array of coordinates
-/// @param n number of coordinates
+/// @brief Draws a polygon using absolute coordinates.
+/// @param ps array of vertex coordinates in logical pixels
+/// @param n number of vertices
+/// @sa pico_output_draw_poly_pct
 void pico_output_draw_poly_raw (const Pico_Pos* ps, int n);
+
+/// @brief Draws a polygon using percentage-based coordinates.
+/// @param ps array of vertex coordinates as percentages (0.0-1.0)
+/// @param n number of vertices
+/// @sa pico_output_draw_poly_raw
 void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n);
 
-/// @brief Draws text.
-/// @param pos drawing coordinate
+/// @brief Draws text using absolute coordinates.
+/// @param rect drawing rectangle in logical pixels
 /// @param text text to draw
-/// @sa pico_output_draw_text_ext
+/// @sa pico_output_draw_text_pct
 void pico_output_draw_text_raw (Pico_Rect rect, const char* text);
+
+/// @brief Draws text using percentage-based coordinates.
+/// @param rect drawing rectangle as percentages (0.0-1.0)
+/// @param text text to draw
+/// @sa pico_output_draw_text_raw
 void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text);
 
 /// @brief Shows what has been drawn onto the screen.
@@ -309,6 +365,15 @@ Uint32 pico_get_ticks (void);
 /// @brief Gets the aplication title.
 const char* pico_get_title (void);
 
+/// @brief Gets the current view configuration.
+/// @param window_fullscreen pointer to retrieve fullscreen state (may be NULL)
+/// @param window pointer to retrieve window dimensions (may be NULL)
+/// @param window_target pointer to retrieve window target region (may be NULL)
+/// @param world pointer to retrieve world/logical dimensions (may be NULL)
+/// @param world_source pointer to retrieve world source region (may be NULL)
+/// @param world_clip pointer to retrieve world clipping region (may be NULL)
+/// @sa pico_set_view_raw
+/// @sa pico_set_view_pct
 void pico_get_view (
     int* window_fullscreen,
     Pico_Dim* window,
@@ -320,6 +385,8 @@ void pico_get_view (
 
 // SET
 
+/// @brief Sets the alpha transparency for drawing operations.
+/// @param a alpha value (0-255, where 0 is fully transparent and 255 is fully opaque)
 void pico_set_alpha (int a);
 
 /// @brief Changes the reference to position objects (center, topleft, etc).
@@ -374,12 +441,15 @@ void pico_set_style (PICO_STYLE style);
 /// @param title new title
 void pico_set_title (const char* title);
 
-/// @brief Sets the window dimensions.
-/// @param dim new dimensions
-/// @brief Toggles fullscreen mode.
-/// @param on 1 to enable it, or 0 to disable it
-/// @brief Sets the world dimensions.
-/// @param dim new dimensions
+/// @brief Sets the view configuration using absolute dimensions.
+/// @param window_fullscreen 1 to enable fullscreen, or 0 to disable it
+/// @param window window dimensions in pixels (NULL to keep current)
+/// @param window_target target region within window (NULL for full window)
+/// @param world world/logical dimensions (NULL to keep current)
+/// @param world_source source region within world (NULL for full world)
+/// @param world_clip clipping region within world (NULL for no clipping)
+/// @sa pico_set_view_pct
+/// @sa pico_get_view
 void pico_set_view_raw (
     int window_fullscreen,
     Pico_Dim* window,
@@ -389,6 +459,15 @@ void pico_set_view_raw (
     Pico_Rect* world_clip
 );
 
+/// @brief Sets the view configuration using percentage-based dimensions.
+/// @param window_fullscreen 1 to enable fullscreen, or 0 to disable it
+/// @param window window dimensions as percentages (NULL to keep current)
+/// @param window_target target region within window (NULL for full window)
+/// @param world world/logical dimensions as percentages (NULL to keep current)
+/// @param world_source source region within world (NULL for full world)
+/// @param world_clip clipping region within world (NULL for no clipping)
+/// @sa pico_set_view_raw
+/// @sa pico_get_view
 void pico_set_view_pct (
     int window_fullscreen,
     Pico_Pct*  window,
@@ -408,21 +487,36 @@ void pico_set_view_pct (
 /// @param x condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }
 
-/// @brief Checks if a point is inside a rectangle.
+/// @brief Checks if a point is inside a rectangle using absolute coordinates.
 /// Assumes that both primitives use the same anchor.
-/// @param pt point
-/// @param r rectangle
-/// @return 1 if pt is inside r, or 0 otherwise
+/// @param pos point in logical pixels
+/// @param rect rectangle in logical pixels
+/// @return 1 if pos is inside rect, or 0 otherwise
+/// @sa pico_pos_vs_rect_pct
 int pico_pos_vs_rect_raw (Pico_Pos pos, Pico_Rect rect);
+
+/// @brief Checks if a point is inside a rectangle using percentage-based coordinates.
+/// Assumes that both primitives use the same anchor.
+/// @param pos point as percentages (0.0-1.0)
+/// @param rect rectangle as percentages (0.0-1.0)
+/// @return 1 if pos is inside rect, or 0 otherwise
+/// @sa pico_pos_vs_rect_raw
 int pico_pos_vs_rect_pct (Pico_Pos_Pct* pos, Pico_Rect_Pct* rect);
 
-/// @brief Checks if two rectangles overlap.
+/// @brief Checks if two rectangles overlap using absolute coordinates.
 /// Assumes that both rectangles use the same anchor.
-/// @param r1 rectangle 1
-/// @param r2 rectangle 2
+/// @param r1 first rectangle in logical pixels
+/// @param r2 second rectangle in logical pixels
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
-/// @sa pico_rect_vs_rect_ext
+/// @sa pico_rect_vs_rect_pct
 int pico_rect_vs_rect_raw (Pico_Rect r1, Pico_Rect r2);
+
+/// @brief Checks if two rectangles overlap using percentage-based coordinates.
+/// Assumes that both rectangles use the same anchor.
+/// @param r1 first rectangle as percentages (0.0-1.0)
+/// @param r2 second rectangle as percentages (0.0-1.0)
+/// @return 1 if r1 and r2 overlap, or 0 otherwise
+/// @sa pico_rect_vs_rect_raw
 int pico_rect_vs_rect_pct (Pico_Rect_Pct* r1, Pico_Rect_Pct* r2);
 
 /// @}
