@@ -2,8 +2,7 @@
 
 int main() {
     pico_init(1);
-    Pico_Dim world = {1000, 1000};
-    pico_set_view_raw(-1, NULL, NULL, &world, NULL, NULL);
+    pico_set_view_raw(-1, NULL, NULL, &(Pico_Dim){1000, 1000}, NULL, NULL);
 
     while (1) {
         // Draw X at center of world
