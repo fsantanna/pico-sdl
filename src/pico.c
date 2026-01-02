@@ -221,57 +221,59 @@ static int event_from_sdl (Pico_Event* e, int xp) {
             }
             switch (e->key.keysym.sym) {
                 case SDLK_0: {
-                    assert(0 && "TODO");
-                    //pico_set_zoom((Pico_Dim){0, 0});
-                    //pico_set_scroll((Pico_Pos){0, 0});
+                    // Keep as is - reset handled elsewhere
                     break;
                 }
                 case SDLK_MINUS: {
-                    assert(0 && "TODO");
-                    //pico_set_zoom ((Pico_Dim) {
-                    //    S.zoom.x + 10,
-                    //    S.zoom.y + 10,
-                    //});
+                    // Zoom out - increase view source size
+                    SDL_Rect src = S.view.src;
+                    int dw = S.view.log.w / 10;
+                    int dh = S.view.log.h / 10;
+                    src.w = src.w + dw;
+                    src.h = src.h + dh;
+                    src.x = src.x - dw/2;
+                    src.y = src.y - dh/2;
+                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
                     break;
                 }
                 case SDLK_EQUALS: {
-                    assert(0 && "TODO");
-                    //pico_set_zoom ((Pico_Dim) {
-                    //    S.zoom.x - 10,
-                    //    S.zoom.y - 10,
-                    //});
+                    // Zoom in - decrease view source size
+                    SDL_Rect src = S.view.src;
+                    int dw = S.view.log.w / 10;
+                    int dh = S.view.log.h / 10;
+                    src.w = MAX(10, src.w - dw);
+                    src.h = MAX(10, src.h - dh);
+                    src.x = src.x + dw/2;
+                    src.y = src.y + dh/2;
+                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
                     break;
                 }
                 case SDLK_LEFT: {
-                    assert(0 && "TODO");
-                    //pico_set_scroll ((Pico_Pos) {
-                    //    S.scroll.x - MAX(1, (100+S.zoom.x)/20),
-                    //    S.scroll.y
-                    //});
+                    // Scroll left - move view 1/10 to the left
+                    SDL_Rect src = S.view.src;
+                    src.x = src.x - src.w / 10;
+                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
                     break;
                 }
                 case SDLK_RIGHT: {
-                    assert(0 && "TODO");
-                    //pico_set_scroll ((Pico_Pos) {
-                    //    S.scroll.x + MAX(1, (100+S.zoom.x)/20),
-                    //    S.scroll.y
-                    //});
+                    // Scroll right - move view 1/10 to the right
+                    SDL_Rect src = S.view.src;
+                    src.x = src.x + src.w / 10;
+                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
                     break;
                 }
                 case SDLK_UP: {
-                    assert(0 && "TODO");
-                    //pico_set_scroll ((Pico_Pos) {
-                    //    S.scroll.x,
-                    //    S.scroll.y - MAX(1, (100+S.zoom.y)/20)
-                    //});
+                    // Scroll up - move view 1/10 upward
+                    SDL_Rect src = S.view.src;
+                    src.y = src.y - src.h / 10;
+                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
                     break;
                 }
                 case SDLK_DOWN: {
-                    assert(0 && "TODO");
-                    //pico_set_scroll ((Pico_Pos) {
-                    //    S.scroll.x,
-                    //    S.scroll.y + MAX(1, (100+S.zoom.y)/20)
-                    //});
+                    // Scroll down - move view 1/10 downward
+                    SDL_Rect src = S.view.src;
+                    src.y = src.y + src.h / 10;
+                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
                     break;
                 }
                 case SDLK_g: {
