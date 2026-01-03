@@ -1103,10 +1103,10 @@ void pico_set_view_raw (
 void pico_set_view_pct (
     int        fs,
     Pico_Pct*  phy,
-    Pico_Rect* dst,
+    Pico_Rect* dst_todo,
     Pico_Pct*  log,
-    Pico_Rect* src,
-    Pico_Rect* clip
+    Pico_Rect* src_todo,
+    Pico_Rect_Pct* clip
 ) {
     Pico_Dim* xxphy = NULL;
     Pico_Dim xphy;
@@ -1114,22 +1114,20 @@ void pico_set_view_pct (
     Pico_Dim* xxlog = NULL;
     Pico_Dim xlog;
 
+    Pico_Rect* xxclip = NULL;
+
     if (phy != NULL) {
-        SDL_DisplayMode dsp;
-        int ret = SDL_GetCurrentDisplayMode(0, &dsp);
-        pico_assert(ret == 0);
-        xphy = (Pico_Dim) { dsp.w*phy->x, dsp.h*phy->y };
+        xphy = (Pico_Dim) { phy->x*S.view.phy.w, phy->y*S.view.phy.h };
         xxphy = &xphy;
     }
     if (log != NULL) {
-        if (xxphy == NULL) {
-            xxphy = &S.view.phy;
-        }
-        xlog = (Pico_Dim) { xxphy->w*log->x, xxphy->h*log->y };
-printf(">>> phy: %d %d\n", xxphy->w, xxphy->h);
-printf(">>> log: %d %d\n", xlog.w, xlog.h);
+        xlog = (Pico_Dim) { log->x*S.view.log.w, log->y*S.view.log.h };
         xxlog = &xlog;
     }
+    if (clip != NULL) {
+        Pico_Rect xclip = RECT(clip);
+        xxclip = &xclip;
+    }
 
-    pico_set_view_raw(fs, xxphy, dst, xxlog, src, clip);
+    pico_set_view_raw(fs, xxphy, dst_todo, xxlog, src_todo, xxclip);
 }

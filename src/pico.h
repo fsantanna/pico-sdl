@@ -471,10 +471,10 @@ void pico_set_view_raw (
 void pico_set_view_pct (
     int window_fullscreen,
     Pico_Pct*  window,
-    Pico_Rect* window_target,
+    Pico_Rect* window_target_todo,
     Pico_Pct*  world,
-    Pico_Rect* world_source,
-    Pico_Rect* world_clip
+    Pico_Rect* world_source_todo,
+    Pico_Rect_Pct* world_clip
 );
 
 /// @}
