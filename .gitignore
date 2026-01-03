@@ -1,4 +1,7 @@
 *.exe
+*.o
+*.so
+*.swo
 *.swp
 *.zip
 
