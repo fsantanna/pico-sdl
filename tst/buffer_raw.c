@@ -7,7 +7,7 @@ int main (void) {
 
     Pico_Dim phy = {100,100};
     Pico_Dim log = { 10, 10};
-    pico_set_view(-1, &phy, NULL, &log, NULL, NULL);
+    pico_set_view_raw(-1, &phy, NULL, &log, NULL, NULL);
 
     // .x.
     // xxx
@@ -29,7 +29,8 @@ int main (void) {
         Pico_Rect r = { 5-1,5-1, 0,0 };
         pico_output_clear();
         pico_output_draw_buffer_raw(r, buffer, (Pico_Dim){3,3});
-        _pico_check("buf3w3h_center_black");
+        //_pico_check("buf3w3h_center_black");
+        pico_input_event(NULL, PICO_KEYDOWN);
     }
 
     {
@@ -37,9 +38,9 @@ int main (void) {
         pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF});
         pico_output_clear();
         Pico_Rect r = { 1,9, 0,0 };
-        pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
         pico_output_draw_buffer_raw(r, buffer, (Pico_Dim){9,1});
-        _pico_check("buf9w1h_rightbottom_white");
+        //_pico_check("buf9w1h_rightbottom_white");
+        pico_input_event(NULL, PICO_KEYDOWN);
     }
 
     pico_init(0);

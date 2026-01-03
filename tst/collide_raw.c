@@ -5,7 +5,7 @@ int main() {
 
     Pico_Dim phy = {200,200};
     Pico_Dim log = { 20, 20};
-    pico_set_view(-1, &phy, NULL, &log, NULL, NULL);
+    pico_set_view_raw(-1, &phy, NULL, &log, NULL, NULL);
 
     Pico_Rect r = { 10-2, 10-2, 4, 4 };
 
