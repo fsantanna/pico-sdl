@@ -2,7 +2,14 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_view_raw(-1, &(Pico_Dim){500, 500}, NULL, &(Pico_Dim){50, 50}, NULL, NULL);
+    pico_set_view_raw (
+        -1,
+        &(Pico_Dim){500, 500},
+        NULL,
+        &(Pico_Dim){50, 50},
+        NULL,
+        NULL
+    );
 
     void draw () {
         pico_set_color_draw((Pico_Color) { 0xFF,0x00,0x00 });
@@ -35,8 +42,8 @@ int main (void) {
         assert(e.button.x==m.x && e.button.y==m.y);
     }
 
-    // Zoom 200% - view becomes 10x10 centered at (20, 20)
-    pico_set_view_raw(-1, NULL, NULL, NULL, &(SDL_Rect){20, 20, 10, 10}, NULL);
+    pico_set_view_pct(-1, NULL, &r, NULL, NULL, NULL);
+
     pico_output_clear();
     draw();
     {

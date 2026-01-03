@@ -1101,11 +1101,11 @@ void pico_set_view_raw (
 }
 
 void pico_set_view_pct (
-    int        fs,
-    Pico_Pct*  phy,
-    Pico_Rect* dst_todo,
-    Pico_Pct*  log,
-    Pico_Rect* src_todo,
+    int            fs,
+    Pico_Pct*      phy,
+    void*          dst_todo,
+    Pico_Pct*      log,
+    void*          src,
     Pico_Rect_Pct* clip
 ) {
     Pico_Dim* xxphy = NULL;
