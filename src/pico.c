@@ -864,7 +864,7 @@ int pico_get_key (PICO_KEY key) {
     return keys[key];
 }
 
-int pico_get_mouse (Pico_Pos* pos, int button) {
+int pico_get_mouse_raw (Pico_Pos* pos, int button) {
     Pico_Pos local;
     if (pos == NULL) {
         pos = &local;
@@ -881,6 +881,40 @@ int pico_get_mouse (Pico_Pos* pos, int button) {
     pos->y = pos->y * S.view.log.h / S.view.phy.h;
     //pos->x += S.scroll.x;
     //pos->y += S.scroll.y;
+
+    return masks & SDL_BUTTON(button);
+}
+
+int pico_get_mouse_pct (Pico_Pos_Pct* pos, int button) {
+    Pico_Pos_Pct local = {0, 0, PICO_ANCHOR_NW, NULL};
+    if (pos == NULL) {
+        pos = &local;
+    }
+
+    // Get raw mouse position
+    Pico_Pos raw_pos;
+    Uint32 masks = SDL_GetMouseState(&raw_pos.x, &raw_pos.y);
+    if (button == 0) {
+        masks = 0;
+    }
+
+    // TODO: bug in SDL?
+    // https://discourse.libsdl.org/t/sdl-getmousestate-and-sdl-rendersetlogicalsize/20288/7
+    raw_pos.x = raw_pos.x * S.view.log.w / S.view.phy.w;
+    raw_pos.y = raw_pos.y * S.view.log.h / S.view.phy.h;
+
+    // Convert to percentage coordinates
+    // Determine the reference rectangle (parent or viewport)
+    Pico_Rect up;
+    if (pos->up == NULL) {
+        up = (Pico_Rect){0, 0, S.view.log.w, S.view.log.h};
+    } else {
+        up = pico_cv_rect_pct_raw(pos->up);
+    }
+
+    // Convert raw position to percentage relative to the reference rectangle
+    pos->x = (float)(raw_pos.x - up.x) / up.w;
+    pos->y = (float)(raw_pos.y - up.y) / up.h;
 
     return masks & SDL_BUTTON(button);
 }

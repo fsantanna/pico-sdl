@@ -336,11 +336,19 @@ int pico_get_grid (void);
 /// @return 1 if key is pressed, or 0 otherwise
 int pico_get_key (PICO_KEY key);
 
-/// @brief Gets the mouse state.
+/// @brief Gets the mouse state using raw coordinates.
 /// @param pos pointer to retrieve pointer position (may be NULL)
 /// @param button which button state to retrieve
 /// @return state of specified button
-int pico_get_mouse (Pico_Pos* pos, int button);
+/// @sa pico_get_mouse_pct
+int pico_get_mouse_raw (Pico_Pos* pos, int button);
+
+/// @brief Gets the mouse state using percentage-based coordinates.
+/// @param pos pointer to retrieve pointer position (may be NULL)
+/// @param button which button state to retrieve
+/// @return state of specified button
+/// @sa pico_get_mouse_raw
+int pico_get_mouse_pct (Pico_Pos_Pct* pos, int button);
 
 /// @brief Gets the rotation angle of objects (in degrees).
 int pico_get_rotate (void);

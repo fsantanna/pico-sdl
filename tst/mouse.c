@@ -2,6 +2,7 @@
 
 int main (void) {
     pico_init(1);
+
     pico_set_view_raw (
         -1,
         &(Pico_Dim){500, 500},
@@ -30,40 +31,51 @@ int main (void) {
         pico_output_draw_pixel_raw((Pico_Pos) { 49,49 });
     }
 
-    pico_output_clear();
-    draw();
-    {
+    void mouse () {
         Pico_Event e;
         pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
-        Pico_Pos m;
-        pico_get_mouse(&m, PICO_MOUSE_BUTTON_NONE);
-        printf(">>> (%d,%d) / (%d,%d)\n", e.button.x, e.button.y, m.x, m.y);
-        printf(">>> button = %d\n", e.button.button);
-        assert(e.button.x==m.x && e.button.y==m.y);
+        Pico_Pos m1;
+        Pico_Pos_Pct m2 = {0, 0, PICO_ANCHOR_NW, NULL};
+        Pico_Pos_Pct m3 = {0, 0, PICO_ANCHOR_C,  NULL};
+        pico_get_mouse_raw(&m1, PICO_MOUSE_BUTTON_NONE);
+        pico_get_mouse_pct(&m2, PICO_MOUSE_BUTTON_NONE);
+        pico_get_mouse_pct(&m3, PICO_MOUSE_BUTTON_NONE);
+        printf (
+            ">>> (%d,%d) / (%d,%d) / (%f,%f) / (%f,%f)\n",
+            e.button.x, e.button.y,
+            m1.x, m1.y,
+            m2.x, m2.y,
+            m3.x, m3.y
+        );
+        assert(e.button.x==m1.x && e.button.y==m1.y);
     }
 
-    pico_set_view_pct(-1, NULL, &r, NULL, NULL, NULL);
-
-    pico_output_clear();
-    draw();
     {
-        Pico_Event e;
-        pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
-        Pico_Pos m;
-        pico_get_mouse(&m, PICO_MOUSE_BUTTON_NONE);
-        printf(">>> (%d,%d) / (%d,%d)\n", e.button.x, e.button.y, m.x, m.y);
+        pico_output_clear();
+        draw();
+        mouse();
     }
 
-    // Zoom 50% - view becomes entire world
-    pico_set_view_raw(-1, NULL, NULL, NULL, &(SDL_Rect){0, 0, 50, 50}, NULL);
-    pico_output_clear();
-    draw();
+    // zoom out
     {
-        Pico_Event e;
-        pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
-        Pico_Pos m;
-        pico_get_mouse(&m, PICO_MOUSE_BUTTON_NONE);
-        printf(">>> (%d,%d) / (%d,%d)\n", e.button.x, e.button.y, m.x, m.y);
+        pico_set_view_pct(-1, NULL, NULL, NULL,
+            &(Pico_Rect_Pct){0.5, 0.5, 2, 2, PICO_ANCHOR_C, NULL},
+            NULL
+        );
+        pico_output_clear();
+        draw();
+        mouse();
+    }
+
+    // zoom in
+    {
+        pico_set_view_pct(-1, NULL, NULL, NULL,
+            &(Pico_Rect_Pct){0.5, 0.5, 0.25, 0.25, PICO_ANCHOR_C, NULL},
+            NULL
+        );
+        pico_output_clear();
+        draw();
+        mouse();
     }
 
     pico_init(0);
