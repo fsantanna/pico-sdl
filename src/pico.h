@@ -483,6 +483,33 @@ void pico_set_view_pct (
 /// @brief Utilities for users
 /// @{
 
+/// @brief Converts a percentage-based rectangle to absolute coordinates.
+/// @param r percentage-based rectangle (0.0-1.0)
+/// @return absolute rectangle in logical pixels
+/// @sa pico_cv_rect_pct_raw_ext
+Pico_Rect pico_cv_rect_pct_raw (const Pico_Rect_Pct* r);
+
+/// @brief Converts a percentage-based rectangle to absolute coordinates relative to a reference rectangle.
+/// @param r percentage-based rectangle (0.0-1.0)
+/// @param ref reference rectangle to use as basis
+/// @return absolute rectangle in logical pixels
+/// @sa pico_cv_rect_pct_raw
+Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect_Pct* r, Pico_Rect ref);
+
+/// @brief Converts a percentage-based position to absolute coordinates.
+/// @param p percentage-based position (0.0-1.0)
+/// @return absolute position in logical pixels
+/// @sa pico_cv_pos_pct_raw_ext
+Pico_Pos pico_cv_pos_pct_raw (const Pico_Pos_Pct* p);
+
+/// @brief Converts a percentage-based position to absolute coordinates relative to a reference rectangle.
+/// @param p percentage-based position (0.0-1.0)
+/// @param ref reference rectangle to use as basis
+/// @return absolute position in logical pixels
+/// @sa pico_cv_pos_pct_raw
+Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos_Pct* p, Pico_Rect ref);
+
+
 /// @brief Asserts condition and shows SDL error on failure.
 /// @param x condition to assert
 #define pico_assert(x) if (!(x)) { fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); }

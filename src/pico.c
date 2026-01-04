@@ -67,37 +67,41 @@ static struct {
     },
 };
 
-static Pico_Rect RECT (const Pico_Rect_Pct* r) {
+Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect_Pct* r, Pico_Rect up) {
+    int w = r->w * up.w;
+    int h = r->h * up.h;
+    int x = up.x + r->x * up.w - r->anchor.x * w;
+    int y = up.y + r->y * up.h - r->anchor.y * h;
+    return (Pico_Rect) {x, y, w, h};
+}
+
+Pico_Rect pico_cv_rect_pct_raw (const Pico_Rect_Pct* r) {
     if (r->up == NULL) {
         int W = (TGT == 0) ? S.view.phy.w : S.view.log.w;
         int H = (TGT == 0) ? S.view.phy.h : S.view.log.h;
-        int w = r->w * W;
-        int h = r->h * H;
-        int x = r->x*W - r->anchor.x*w;
-        int y = r->y*H - r->anchor.y*h;
-        return (Pico_Rect) {x, y, w, h};
+        Pico_Rect up = {0, 0, W, H};
+        return pico_cv_rect_pct_raw_ext(r, up);
     } else {
-        Pico_Rect up = RECT(r->up);
-        int w = r->w * up.w;
-        int h = r->h * up.h;
-        int x = up.x + r->x*up.w - r->anchor.x*w;
-        int y = up.y + r->y*up.h - r->anchor.y*h;
-        return (Pico_Rect) {x, y, w, h};
+        Pico_Rect up = pico_cv_rect_pct_raw(r->up);
+        return pico_cv_rect_pct_raw_ext(r, up);
     }
 }
 
-static Pico_Pos POS (const Pico_Pos_Pct* p) {
+Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos_Pct* p, Pico_Rect up) {
+    int x = up.x + p->x * up.w - p->anchor.x;
+    int y = up.y + p->y * up.h - p->anchor.y;
+    return (Pico_Pos) {x, y};
+}
+
+Pico_Pos pico_cv_pos_pct_raw (const Pico_Pos_Pct* p) {
     if (p->up == NULL) {
         int W = (TGT == 0) ? S.view.phy.w : S.view.log.w;
         int H = (TGT == 0) ? S.view.phy.h : S.view.log.h;
-        int x = p->x*W - p->anchor.x;
-        int y = p->y*H - p->anchor.y;
-        return (Pico_Pos) {x, y};
+        Pico_Rect up = {0, 0, W, H};
+        return pico_cv_pos_pct_raw_ext(p, up);
     } else {
-        Pico_Rect up = RECT(p->up);
-        int x = up.x + p->x*up.w - p->anchor.x;
-        int y = up.y + p->y*up.h - p->anchor.y;
-        return (Pico_Pos) {x, y};
+        Pico_Rect up = pico_cv_rect_pct_raw(p->up);
+        return pico_cv_pos_pct_raw_ext(p, up);
     }
 }
 
@@ -122,7 +126,7 @@ int pico_pos_vs_rect_raw (Pico_Pos pos, Pico_Rect rect) {
 }
 
 int pico_pos_vs_rect_pct (Pico_Pos_Pct* pos, Pico_Rect_Pct* rect) {
-    return pico_pos_vs_rect_raw(POS(pos), RECT(rect));
+    return pico_pos_vs_rect_raw(pico_cv_pos_pct_raw(pos), pico_cv_rect_pct_raw(rect));
 }
 
 int pico_rect_vs_rect_raw (Pico_Rect r1, Pico_Rect r2) {
@@ -130,7 +134,7 @@ int pico_rect_vs_rect_raw (Pico_Rect r1, Pico_Rect r2) {
 }
 
 int pico_rect_vs_rect_pct (Pico_Rect_Pct* r1, Pico_Rect_Pct* r2) {
-    return pico_rect_vs_rect_raw(RECT(r1), RECT(r2));
+    return pico_rect_vs_rect_raw(pico_cv_rect_pct_raw(r1), pico_cv_rect_pct_raw(r2));
 }
 
 // INIT
@@ -397,14 +401,14 @@ static Pico_Rect tex_rect_raw (SDL_Texture* tex, Pico_Rect rect) {
 
 static Pico_Rect tex_rect_pct (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
     if (rect->w!=0 && rect->h!=0) {
-        return RECT(rect);
+        return pico_cv_rect_pct_raw(rect);
     } else {
         int w, h;
         SDL_QueryTexture(tex, NULL, NULL, &w, &h);
 
         Pico_Rect_Pct r = *rect;
         r.w = r.h = 1;
-        Pico_Rect v = RECT(&r);
+        Pico_Rect v = pico_cv_rect_pct_raw(&r);
 
         if (rect->w==0 && rect->h==0) {
             r.w = ((float)w) / v.w;
@@ -416,7 +420,7 @@ static Pico_Rect tex_rect_pct (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
             r.w = rect->w;
             r.h = r.w * h * v.w / w / v.h;
         }
-        return RECT(&r);
+        return pico_cv_rect_pct_raw(&r);
     }
 }
 
@@ -491,7 +495,7 @@ void pico_output_draw_line_raw (Pico_Pos p1, Pico_Pos p2) {
 }
 
 void pico_output_draw_line_pct (Pico_Pos_Pct* p1, Pico_Pos_Pct* p2) {
-    pico_output_draw_line_raw(POS(p1), POS(p2));
+    pico_output_draw_line_raw(pico_cv_pos_pct_raw(p1), pico_cv_pos_pct_raw(p2));
 }
 
 void pico_output_draw_pixel_raw (Pico_Pos pos) {
@@ -502,7 +506,7 @@ void pico_output_draw_pixel_raw (Pico_Pos pos) {
 }
 
 void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos) {
-    pico_output_draw_pixel_raw(POS(pos));
+    pico_output_draw_pixel_raw(pico_cv_pos_pct_raw(pos));
 }
 
 #if 0
@@ -534,7 +538,7 @@ void pico_output_draw_rect_raw (Pico_Rect rect) {
 }
 
 void pico_output_draw_rect_pct (const Pico_Rect_Pct* rect) {
-    pico_output_draw_rect_raw(RECT(rect));
+    pico_output_draw_rect_raw(pico_cv_rect_pct_raw(rect));
 }
 
 void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3) {
@@ -561,7 +565,7 @@ void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3) {
     _pico_output_present(0);
 }
 void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, const Pico_Pos_Pct* p3) {
-    pico_output_draw_tri_raw(POS(p1), POS(p2), POS(p3));
+    pico_output_draw_tri_raw(pico_cv_pos_pct_raw(p1), pico_cv_pos_pct_raw(p2), pico_cv_pos_pct_raw(p3));
 
 }
 
@@ -586,7 +590,7 @@ void pico_output_draw_oval_raw (Pico_Rect rect) {
 }
 
 void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect) {
-    pico_output_draw_oval_raw(RECT(rect));
+    pico_output_draw_oval_raw(pico_cv_rect_pct_raw(rect));
 }
 
 void pico_output_draw_poly_raw (const Pico_Pos* ps, int n) {
@@ -617,7 +621,7 @@ void pico_output_draw_poly_raw (const Pico_Pos* ps, int n) {
 void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n) {
     Pico_Pos vs[n];
     for (int i=0; i<n; i++) {
-        vs[i] = POS(&ps[i]);
+        vs[i] = pico_cv_pos_pct_raw(&ps[i]);
     }
     pico_output_draw_poly_raw(vs, n);
 }
@@ -642,7 +646,7 @@ void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
 
 void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text) {
     if (text[0] == '\0') return;
-    Pico_Rect r1 = RECT(rect);
+    Pico_Rect r1 = pico_cv_rect_pct_raw(rect);
     TTF_Font* ttf = _font_open(NULL, r1.h);
     SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text,
         (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
@@ -1037,7 +1041,7 @@ void pico_set_view_raw (
             S.view.clip = *clip;
             //S.view.clip = rect;
             //SDL_RenderSetClipRect(REN, &rect);
-            //pico_set_clip_raw(RECT(rect));
+            //pico_set_clip_raw(pico_cv_rect_pct_raw(rect));
         }
     }
 
