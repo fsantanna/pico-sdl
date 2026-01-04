@@ -8,10 +8,10 @@ typedef struct {
 } Drop;
 
 #define DROP_COUNT 100
-#define DROP_WIDTH 0.005
+#define DROP_WIDTH 0.01
 #define DROP_HEIGHT 0.02
-#define DROP_SPEED 0.005
-#define MAX_DELAY 100
+#define DROP_SPEED 0.01
+#define MAX_DELAY 50
 
 void init_drop(Drop* drop) {
     drop->delay = rand() % MAX_DELAY;
@@ -27,6 +27,7 @@ int main(void) {
     srand(time(NULL));
     pico_init(1);
     pico_set_title("Rain Simulation");
+    pico_set_expert(1);
 
     Drop drops[DROP_COUNT];
     for (int i = 0; i < DROP_COUNT; i++) {
@@ -59,6 +60,8 @@ int main(void) {
                 }
             }
         }
+
+        pico_output_present();
     }
 
     pico_init(0);

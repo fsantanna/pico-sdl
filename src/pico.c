@@ -311,7 +311,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:  {
             Pico_Pos pos;
-            pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+            pico_get_mouse_raw(&pos, PICO_MOUSE_BUTTON_NONE);
             e->button.x = pos.x;
             e->button.y = pos.y;
             break;
