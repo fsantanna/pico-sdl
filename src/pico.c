@@ -224,59 +224,39 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     break;
                 }
                 case SDLK_MINUS: {
-                    // Zoom out - increase view source size
-                    Pico_Rect src = S.view.src;
-                    int dw = S.view.log.w / 10;
-                    int dh = S.view.log.h / 10;
-                    src = (Pico_Rect) {
-                        src.x - dw/2,
-                        src.y - dh/2,
-                        src.w + dw,
-                        src.h + dh,
-                    };
-                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
+                    // Zoom out
+                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                        &(Pico_Rect_Pct){0.5, 0.5, 1.1, 1.1, PICO_ANCHOR_C, NULL}, NULL);
                     break;
                 }
                 case SDLK_EQUALS: {
-                    // Zoom in - decrease view source size
-                    Pico_Rect src = S.view.src;
-                    int dw = S.view.log.w / 10;
-                    int dh = S.view.log.h / 10;
-                    src = (Pico_Rect) {
-                        src.x + dw/2,
-                        src.y + dh/2,
-                        MAX(10, src.w - dw),
-                        MAX(10, src.h - dh),
-                    };
-                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
+                    // Zoom in
+                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                        &(Pico_Rect_Pct){0.5, 0.5, 0.9, 0.9, PICO_ANCHOR_C, NULL}, NULL);
                     break;
                 }
                 case SDLK_LEFT: {
-                    // Scroll left - move view 1/10 to the left
-                    Pico_Rect src = S.view.src;
-                    src.x = src.x - src.w / 10;
-                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
+                    // Scroll left
+                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                        &(Pico_Rect_Pct){-0.1, 0, 1, 1, PICO_ANCHOR_NW, NULL}, NULL);
                     break;
                 }
                 case SDLK_RIGHT: {
-                    // Scroll right - move view 1/10 to the right
-                    Pico_Rect src = S.view.src;
-                    src.x = src.x + src.w / 10;
-                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
+                    // Scroll right
+                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                        &(Pico_Rect_Pct){0.1, 0, 1, 1, PICO_ANCHOR_NW, NULL}, NULL);
                     break;
                 }
                 case SDLK_UP: {
-                    // Scroll up - move view 1/10 upward
-                    Pico_Rect src = S.view.src;
-                    src.y = src.y - src.h / 10;
-                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
+                    // Scroll up
+                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                        &(Pico_Rect_Pct){0, -0.1, 1, 1, PICO_ANCHOR_NW, NULL}, NULL);
                     break;
                 }
                 case SDLK_DOWN: {
-                    // Scroll down - move view 1/10 downward
-                    Pico_Rect src = S.view.src;
-                    src.y = src.y + src.h / 10;
-                    pico_set_view_raw(-1, NULL, NULL, NULL, &src, NULL);
+                    // Scroll down
+                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                        &(Pico_Rect_Pct){0, 0.1, 1, 1, PICO_ANCHOR_NW, NULL}, NULL);
                     break;
                 }
                 case SDLK_g: {
