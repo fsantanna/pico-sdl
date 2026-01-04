@@ -1105,7 +1105,7 @@ void pico_set_view_pct (
     Pico_Pct*      phy,
     void*          dst_todo,
     Pico_Pct*      log,
-    void*          src,
+    Pico_Rect_Pct* src,
     Pico_Rect_Pct* clip
 ) {
     Pico_Dim* xxphy = NULL;
@@ -1113,6 +1113,9 @@ void pico_set_view_pct (
 
     Pico_Dim* xxlog = NULL;
     Pico_Dim xlog;
+
+    Pico_Rect* xxsrc = NULL;
+    Pico_Rect xsrc;
 
     Pico_Rect* xxclip = NULL;
 
@@ -1124,10 +1127,14 @@ void pico_set_view_pct (
         xlog = (Pico_Dim) { log->x*S.view.log.w, log->y*S.view.log.h };
         xxlog = &xlog;
     }
+    if (src != NULL) {
+        xsrc = pico_cv_rect_pct_raw_ext(src, S.view.src); // relative to itself
+        xxsrc = &xsrc;
+    }
     if (clip != NULL) {
-        Pico_Rect xclip = RECT(clip);
+        Pico_Rect xclip = pico_cv_rect_pct_raw(clip);
         xxclip = &xclip;
     }
 
-    pico_set_view_raw(fs, xxphy, dst_todo, xxlog, src_todo, xxclip);
+    pico_set_view_raw(fs, xxphy, dst_todo, xxlog, xxsrc, xxclip);
 }

@@ -473,7 +473,7 @@ void pico_set_view_pct (
     Pico_Pct*      window,
     void*          window_target_todo,
     Pico_Pct*      world,
-    void*          world_source,
+    Pico_Rect_Pct* world_source,
     Pico_Rect_Pct* world_clip
 );
 
