@@ -226,37 +226,49 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 case SDLK_MINUS: {
                     // Zoom out
                     pico_set_view_pct(-1, NULL, NULL, NULL,
-                        &(Pico_Rect_Pct){0.5, 0.5, 1.1, 1.1, PICO_ANCHOR_C, NULL}, NULL);
+                        &(Pico_Rect_Pct){0.5, 0.5, 1.1, 1.1, PICO_ANCHOR_C, NULL},
+                        NULL
+                    );
                     break;
                 }
                 case SDLK_EQUALS: {
                     // Zoom in
                     pico_set_view_pct(-1, NULL, NULL, NULL,
-                        &(Pico_Rect_Pct){0.5, 0.5, 0.9, 0.9, PICO_ANCHOR_C, NULL}, NULL);
+                        &(Pico_Rect_Pct){0.5, 0.5, 0.9, 0.9, PICO_ANCHOR_C, NULL},
+                        NULL
+                    );
                     break;
                 }
                 case SDLK_LEFT: {
                     // Scroll left
                     pico_set_view_pct(-1, NULL, NULL, NULL,
-                        &(Pico_Rect_Pct){-0.1, 0, 1, 1, PICO_ANCHOR_NW, NULL}, NULL);
+                        &(Pico_Rect_Pct){-0.1, 0, 1, 1, PICO_ANCHOR_NW, NULL},
+                        NULL
+                    );
                     break;
                 }
                 case SDLK_RIGHT: {
                     // Scroll right
                     pico_set_view_pct(-1, NULL, NULL, NULL,
-                        &(Pico_Rect_Pct){0.1, 0, 1, 1, PICO_ANCHOR_NW, NULL}, NULL);
+                        &(Pico_Rect_Pct){0.1, 0, 1, 1, PICO_ANCHOR_NW, NULL},
+                        NULL
+                    );
                     break;
                 }
                 case SDLK_UP: {
                     // Scroll up
                     pico_set_view_pct(-1, NULL, NULL, NULL,
-                        &(Pico_Rect_Pct){0, -0.1, 1, 1, PICO_ANCHOR_NW, NULL}, NULL);
+                        &(Pico_Rect_Pct){0, -0.1, 1, 1, PICO_ANCHOR_NW, NULL},
+                        NULL
+                    );
                     break;
                 }
                 case SDLK_DOWN: {
                     // Scroll down
                     pico_set_view_pct(-1, NULL, NULL, NULL,
-                        &(Pico_Rect_Pct){0, 0.1, 1, 1, PICO_ANCHOR_NW, NULL}, NULL);
+                        &(Pico_Rect_Pct){0, 0.1, 1, 1, PICO_ANCHOR_NW, NULL},
+                        NULL
+                    );
                     break;
                 }
                 case SDLK_g: {
