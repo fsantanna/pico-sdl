@@ -70,16 +70,20 @@ static struct {
 Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect_Pct* r, Pico_Rect up) {
     int w = r->w * up.w;
     int h = r->h * up.h;
-    int x = up.x + r->x * up.w - r->anchor.x * w;
-    int y = up.y + r->y * up.h - r->anchor.y * h;
-    return (Pico_Rect) {x, y, w, h};
+    return (Pico_Rect) {
+        up.x + r->x*up.w - r->anchor.x*w,
+        up.y + r->y*up.h - r->anchor.y*h,
+        w, h
+    };
 }
 
 Pico_Rect pico_cv_rect_pct_raw (const Pico_Rect_Pct* r) {
     if (r->up == NULL) {
-        int W = (TGT == 0) ? S.view.phy.w : S.view.log.w;
-        int H = (TGT == 0) ? S.view.phy.h : S.view.log.h;
-        Pico_Rect up = {0, 0, W, H};
+        Pico_Rect up = {
+            0, 0,
+            (TGT == 0) ? S.view.phy.w : S.view.log.w,
+            (TGT == 0) ? S.view.phy.h : S.view.log.h,
+        };
         return pico_cv_rect_pct_raw_ext(r, up);
     } else {
         Pico_Rect up = pico_cv_rect_pct_raw(r->up);
@@ -88,16 +92,19 @@ Pico_Rect pico_cv_rect_pct_raw (const Pico_Rect_Pct* r) {
 }
 
 Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos_Pct* p, Pico_Rect up) {
-    int x = up.x + p->x * up.w - p->anchor.x;
-    int y = up.y + p->y * up.h - p->anchor.y;
-    return (Pico_Pos) {x, y};
+    return (Pico_Pos) {
+        up.x + p->x*up.w - p->anchor.x + 0.5,
+        up.y + p->y*up.h - p->anchor.y + 0.5,
+    };
 }
 
 Pico_Pos pico_cv_pos_pct_raw (const Pico_Pos_Pct* p) {
     if (p->up == NULL) {
-        int W = (TGT == 0) ? S.view.phy.w : S.view.log.w;
-        int H = (TGT == 0) ? S.view.phy.h : S.view.log.h;
-        Pico_Rect up = {0, 0, W, H};
+        Pico_Rect up = {
+            0, 0,
+            (TGT == 0) ? S.view.phy.w : S.view.log.w,
+            (TGT == 0) ? S.view.phy.h : S.view.log.h,
+        };
         return pico_cv_pos_pct_raw_ext(p, up);
     } else {
         Pico_Rect up = pico_cv_rect_pct_raw(p->up);

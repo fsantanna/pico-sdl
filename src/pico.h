@@ -56,14 +56,24 @@ typedef enum {
 #define PICO_ANCHOR_MIDDLE 0.5
 #define PICO_ANCHOR_BOTTOM 1
 
-#define PICO_ANCHOR_C \
+#define PICO_ANCHOR_C  \
     ((Pico_Pct) { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE })
 #define PICO_ANCHOR_NW \
-    ((Pico_Pct) { PICO_ANCHOR_LEFT, PICO_ANCHOR_TOP })
-#define PICO_ANCHOR_E \
-    ((Pico_Pct) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_MIDDLE })
+    ((Pico_Pct) { PICO_ANCHOR_LEFT,   PICO_ANCHOR_TOP    })
+#define PICO_ANCHOR_N  \
+    ((Pico_Pct) { PICO_ANCHOR_CENTER, PICO_ANCHOR_TOP    })
+#define PICO_ANCHOR_NE \
+    ((Pico_Pct) { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_TOP    })
+#define PICO_ANCHOR_E  \
+    ((Pico_Pct) { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_MIDDLE })
 #define PICO_ANCHOR_SE \
-    ((Pico_Pct) { PICO_ANCHOR_RIGHT, PICO_ANCHOR_BOTTOM })
+    ((Pico_Pct) { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_BOTTOM })
+#define PICO_ANCHOR_S  \
+    ((Pico_Pct) { PICO_ANCHOR_CENTER, PICO_ANCHOR_BOTTOM })
+#define PICO_ANCHOR_SW \
+    ((Pico_Pct) { PICO_ANCHOR_LEFT,   PICO_ANCHOR_BOTTOM })
+#define PICO_ANCHOR_W  \
+    ((Pico_Pct) { PICO_ANCHOR_LEFT,   PICO_ANCHOR_MIDDLE })
 
 typedef struct {
     Uint8 r;
