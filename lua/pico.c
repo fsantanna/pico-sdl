@@ -983,28 +983,28 @@ static int l_pos_vs_rect_raw (lua_State* L) {
     }
 
     Pico_Rect rect = _rect_raw(L, lua_type(L, 1) == LUA_TTABLE ? 2 : 3);
-    lua_pushboolean(L, pico_pos_vs_rect_raw(pos, rect));
+    lua_pushboolean(L, pico_vs_pos_rect_raw(pos, rect));
     return 1;
 }
 
 static int l_pos_vs_rect_pct (lua_State* L) {
     Pico_Pos_Pct pos = _pos_pct(L, 1);
     Pico_Rect_Pct rect = _rect_pct(L, 2);
-    lua_pushboolean(L, pico_pos_vs_rect_pct(&pos, &rect));
+    lua_pushboolean(L, pico_vs_pos_rect_pct(&pos, &rect));
     return 1;
 }
 
 static int l_rect_vs_rect_raw (lua_State* L) {
     Pico_Rect r1 = _rect_raw(L, 1);
     Pico_Rect r2 = _rect_raw(L, 2);
-    lua_pushboolean(L, pico_rect_vs_rect_raw(r1, r2));
+    lua_pushboolean(L, pico_vs_rect_rect_raw(r1, r2));
     return 1;
 }
 
 static int l_rect_vs_rect_pct (lua_State* L) {
     Pico_Rect_Pct r1 = _rect_pct(L, 1);
     Pico_Rect_Pct r2 = _rect_pct(L, 2);
-    lua_pushboolean(L, pico_rect_vs_rect_pct(&r1, &r2));
+    lua_pushboolean(L, pico_vs_rect_rect_pct(&r1, &r2));
     return 1;
 }
 

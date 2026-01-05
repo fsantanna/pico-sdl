@@ -128,20 +128,20 @@ static TTF_Font* _font_open (const char* file, int h) {
 
 // UTILS
 
-int pico_pos_vs_rect_raw (Pico_Pos pos, Pico_Rect rect) {
+int pico_vs_pos_rect_raw (Pico_Pos pos, Pico_Rect rect) {
     return SDL_PointInRect(&pos, &rect);
 }
 
-int pico_pos_vs_rect_pct (Pico_Pos_Pct* pos, Pico_Rect_Pct* rect) {
-    return pico_pos_vs_rect_raw(pico_cv_pos_pct_raw(pos), pico_cv_rect_pct_raw(rect));
+int pico_vs_pos_rect_pct (Pico_Pos_Pct* pos, Pico_Rect_Pct* rect) {
+    return pico_vs_pos_rect_raw(pico_cv_pos_pct_raw(pos), pico_cv_rect_pct_raw(rect));
 }
 
-int pico_rect_vs_rect_raw (Pico_Rect r1, Pico_Rect r2) {
+int pico_vs_rect_rect_raw (Pico_Rect r1, Pico_Rect r2) {
     return SDL_HasIntersection(&r1, &r2);
 }
 
-int pico_rect_vs_rect_pct (Pico_Rect_Pct* r1, Pico_Rect_Pct* r2) {
-    return pico_rect_vs_rect_raw(pico_cv_rect_pct_raw(r1), pico_cv_rect_pct_raw(r2));
+int pico_vs_rect_rect_pct (Pico_Rect_Pct* r1, Pico_Rect_Pct* r2) {
+    return pico_vs_rect_rect_raw(pico_cv_rect_pct_raw(r1), pico_cv_rect_pct_raw(r2));
 }
 
 // INIT

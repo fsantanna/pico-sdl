@@ -20,7 +20,7 @@ int main() {
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_pixel_raw(p);
 
-            int in = pico_pos_vs_rect_raw(p, r);
+            int in = pico_vs_pos_rect_raw(p, r);
             puts(in ? "in" : "out");
             pico_input_event(NULL, PICO_KEYDOWN);
         }
@@ -37,7 +37,7 @@ int main() {
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_rect_raw(r2);
 
-            int in = pico_rect_vs_rect_raw(r2, r);
+            int in = pico_vs_rect_rect_raw(r2, r);
             puts(in ? "overlap" : "naw");
             pico_input_event(NULL, PICO_KEYDOWN);
         }

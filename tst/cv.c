@@ -1,5 +1,7 @@
 #include "pico.h"
 
+// TODO: TGT=0 (phy)
+
 int main (void) {
     // EXT - POS - PCT->RAW
     {
