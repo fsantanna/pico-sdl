@@ -6,19 +6,18 @@ tests:
 	@echo "Running tests..."
 	@mkdir -p tst/output
 
-	@echo "anchor_pct..."
-	@gcc -Wall -g -o tst/anchor_pct.exe tst/anchor_pct.c src/pico.c src/hash.c -Isrc -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
-	@cd tst && SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./anchor_pct.exe
-
 	@echo "cv..."
-	@gcc -Wall -g -o tst/cv.exe tst/cv.c src/pico.c src/hash.c -Isrc -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
-	@cd tst && SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./cv.exe
+	@./pico-sdl tst/cv.c
 
+todo:
 	@echo "vs..."
 	@gcc -Wall -g -o tst/vs.exe tst/vs.c src/pico.c src/hash.c -Isrc -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
 	@cd tst && SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./vs.exe
 
-	@rm tst/*.exe
+	@echo "anchor_pct..."
+	@gcc -Wall -g -o tst/anchor_pct.exe tst/anchor_pct.c src/pico.c src/hash.c -Isrc -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
+	@cd tst && SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./anchor_pct.exe
+
 	@echo ""
 	@echo "All tests passed!"
 

@@ -6,9 +6,9 @@ PICO=$(dirname $(realpath "$0"))    # /x/y/
 
 DIR=$(dirname -- "$1")              # /a/b/c/
 EXE=$(basename -- "$1")             # d.c
-EXE="${EXE%.*}"                     # d
+EXE="${EXE%.*}.exe"                 # d.exe
 
-echo $PICO, $DIR, $EXE
+#echo $PICO, $DIR, $EXE
 
 gcc -Wall -g -o "$DIR/$EXE" "$1"          \
     "$PICO/src/pico.c" "$PICO/src/hash.c" \
