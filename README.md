@@ -1,9 +1,11 @@
 # pico-sdl
 
+(Project is under maintenance. Do not use the `main` branch.)
+
 [![Tests][badge]][tests]
 
-[badge]: https://github.com/fsantanna/ttl-hash/actions/workflows/tests.yml/badge.svg
-[tests]: https://github.com/fsantanna/ttl-hash/actions/workflows/tests.yml
+[badge]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml/badge.svg
+[tests]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml
 
 `pico-sdl` is a C graphics library for developing 2D games and applications.
 
