@@ -166,3 +166,8 @@ Install on Ubuntu/Debian:
 ```bash
 sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl2-gfx-dev
 ```
+
+## Code Style
+
+- Comments only before blocks or functions, never inline
+- If lines require comments, create an explicit block for them
