@@ -75,11 +75,20 @@ typedef enum {
 #define PICO_ANCHOR_W  \
     ((Pico_Pct) { PICO_ANCHOR_LEFT,   PICO_ANCHOR_MIDDLE })
 
+/// @brief RGB color without alpha channel.
 typedef struct {
     Uint8 r;
     Uint8 g;
     Uint8 b;
 } Pico_Color;
+
+/// @brief RGBA color with per-pixel alpha channel.
+typedef struct {
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+    Uint8 a;
+} Pico_Color_A;
 
 typedef struct {
     int w;
@@ -167,15 +176,15 @@ void pico_output_clear (void);
 /// @param dim image dimensions
 /// @sa pico_output_draw_buffer_pct
 /// @sa pico_output_draw_image_raw
-void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color buffer[], Pico_Dim dim);
+void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color_A buffer[], Pico_Dim dim);
 
-/// @brief Draws an RGB image buffer using percentage-based coordinates.
+/// @brief Draws an RGBA image buffer using percentage-based coordinates.
 /// @param rect image target position and dimensions
-/// @param buffer the RGB image data
+/// @param buffer the RGBA image data
 /// @param dim image source dimensions
 /// @sa pico_output_draw_buffer_raw
 /// @sa pico_output_draw_image_pct
-void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color buffer[], Pico_Dim dim);
+void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color_A buffer[], Pico_Dim dim);
 
 /// @brief Draws an image using absolute coordinates.
 /// @param rect image target position and dimension

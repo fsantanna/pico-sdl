@@ -101,6 +101,18 @@ containing:
 - Drawing style (`PICO_FILL` or `PICO_STROKE`)
 - View configuration (physical/logical dimensions, fullscreen, clipping)
 
+### Color Types
+
+The library provides two color types:
+
+- **Pico_Color**: RGB color without alpha (3 bytes: r, g, b)
+  - Used for setting drawing and clear colors via `pico_set_color_draw()` and `pico_set_color_clear()`
+
+- **Pico_Color_A**: RGBA color with per-pixel alpha (4 bytes: r, g, b, a)
+  - Used for buffer drawing functions: `pico_output_draw_buffer_raw()` and `pico_output_draw_buffer_pct()`
+  - Each pixel can have its own alpha value (0-255)
+  - Alpha values are applied directly from the buffer data (global alpha from `pico_set_alpha()` is not used)
+
 ### Coordinate Systems
 
 The library supports two coordinate systems, each with two API variants:
