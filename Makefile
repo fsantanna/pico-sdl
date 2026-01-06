@@ -4,7 +4,7 @@
 
 tests:
 	@echo "Running tests..."
-	@mkdir -p tst/output
+	@mkdir -p tst/gen
 
 	./pico-sdl tst/cv.c
 	./pico-sdl tst/vs.c
@@ -15,4 +15,4 @@ tests:
 
 clean:
 	rm -f tst/*.exe
-	rm -f tst/output/*.png
+	rm -f tst/gen/*.png

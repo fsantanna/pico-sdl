@@ -15,7 +15,7 @@ int main (void) {
         Pico_Pos_Pct p = { 0.5, 0.50, PICO_ANCHOR_C, NULL };
         pico_output_clear();
         pico_output_draw_pixel_pct(&p);
-        _pico_check("pixel50x50y_center");
+        _pico_check("anchor_pct-01");
     }
 
     {
@@ -23,7 +23,7 @@ int main (void) {
         Pico_Pos_Pct p = { 0.5, 0.5, PICO_ANCHOR_NW, NULL };
         pico_output_clear();
         pico_output_draw_pixel_pct(&p);
-        _pico_check("pixel50x50y_lefttop");
+        _pico_check("anchor_pct-02");
     }
 
     {
@@ -31,7 +31,7 @@ int main (void) {
         Pico_Pos_Pct p = { 0.5, 0.5, PICO_ANCHOR_SE, NULL };
         pico_output_clear();
         pico_output_draw_pixel_pct(&p);
-        _pico_check("pixel50x50y_rightbottom");
+        _pico_check("anchor_pct-03");
     }
 
     // RECTS
@@ -40,7 +40,7 @@ int main (void) {
         Pico_Rect_Pct r = { 0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL };
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        _pico_check("rect50x50y_center");
+        _pico_check("anchor_pct-04");
     }
 
     {
@@ -48,7 +48,7 @@ int main (void) {
         Pico_Rect_Pct r = { 0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_NW, NULL };
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        _pico_check("rect50x50y_lefttop");
+        _pico_check("anchor_pct-05");
     }
 
     {
@@ -56,7 +56,7 @@ int main (void) {
         Pico_Rect_Pct r = { 0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_SE, NULL };
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        _pico_check("rect50x50y_rightbottom");
+        _pico_check("anchor_pct-06");
     }
 
     {
@@ -64,7 +64,7 @@ int main (void) {
         Pico_Rect_Pct r = { 0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_E, NULL };
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        _pico_check("rect50x50y_rightcenter");
+        _pico_check("anchor_pct-07");
     }
 
     {
@@ -72,16 +72,16 @@ int main (void) {
         Pico_Rect_Pct r = { 0.2, 0.2, 0.4, 0.4, {0.2,0.2}, NULL };
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        _pico_check("rect20x20y_25x25y");
+        _pico_check("anchor_pct-08");
     }
-    
+
     // RECTS out of [0,100]
     {
         puts("anchor -25%-25% centered - touching border");
         Pico_Rect_Pct r = { 0.5, 0.5, 0.4, 0.4, {-0.25,-0.25}, NULL };
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        _pico_check("rect20x20y_-25x-25y");
+        _pico_check("anchor_pct-09");
     }
 
     {
@@ -89,7 +89,7 @@ int main (void) {
         Pico_Rect_Pct r = { 0.5, 0.5, 0.4, 0.4, {1.25,1.25}, NULL };
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        _pico_check("rect50x50y_125x125y");
+        _pico_check("anchor_pct-10");
     }
 
     pico_init(0);

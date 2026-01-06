@@ -185,6 +185,15 @@ Visual tests use `check.h` to compare rendered output against expected images.
 - `-DPICO_CHECK_GEN` - Generate mode: creates/updates expected images
 - `-DPICO_CHECK_INT` - Interactive mode: pauses for visual inspection
 
+**Directory structure:**
+- `tst/asr/` - Expected (reference) images
+- `tst/gen/` - Generated output images
+
+**Naming convention:**
+- Format: `filename-XX.png` (e.g., `anchor_pct-01.png`, `anchor_pct-02.png`)
+- `filename` matches the test file name
+- `XX` is the sequential test number (01, 02, 03, ...)
+
 **Examples:**
 
 ```bash
@@ -208,7 +217,7 @@ int main(void) {
     pico_init(1);
     pico_output_clear();
     pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL});
-    _pico_check("centered_rect");  // Compares with expected/centered_rect.png
+    _pico_check("anchor_pct-01");  // Compares with asr/anchor_pct-01.png
     pico_init(0);
     return 0;
 }

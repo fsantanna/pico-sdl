@@ -16,18 +16,23 @@
  *
  * USAGE:
  *   1. Include this file: #include "check.h"
- *   2. After rendering, call: _pico_check("test_name")
- *   3. Screenshots are saved to tst/output/ and compared with tst/expected/
+ *   2. After rendering, call: _pico_check("file-01")
+ *   3. Screenshots are saved to tst/gen/ and compared with tst/asr/
+ *
+ * NAMING CONVENTION:
+ *   Use format: filename-XX (e.g., "anchor_pct-01", "anchor_pct-02")
+ *   - filename: matches the test file name
+ *   - XX: sequential test number (01, 02, 03, ...)
  *
  * MODES:
  *
  *   Assert Mode (-DPICO_CHECK_ASR):
- *     - Compares output screenshots against expected/*.png
+ *     - Compares generated screenshots against asr/*.png
  *     - Fails if pixels don't match exactly
  *     - Use this for automated testing and CI
  *
  *   Generate Mode (-DPICO_CHECK_GEN):
- *     - Creates/updates expected/*.png files
+ *     - Creates/updates asr/*.png files
  *     - Use this when you've verified output is correct
  *     - WARNING: Overwrites existing expected images
  *
@@ -44,7 +49,7 @@
  *       pico_init(1);
  *       pico_output_clear();
  *       pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL});
- *       _pico_check("centered_rect");  // Compares with expected/centered_rect.png
+ *       _pico_check("anchor_pct-01");  // Compares with asr/anchor_pct-01.png
  *       pico_init(0);
  *       return 0;
  *   }
@@ -70,7 +75,7 @@ void _pico_check(const char *msg);
 #ifdef PICO_CHECK_GEN
 void _pico_check(const char *msg) {
     char fmt[256];
-    sprintf(fmt, "expected/%s.png", msg);
+    sprintf(fmt, "asr/%s.png", msg);
     pico_output_screenshot(fmt);
 }
 #endif
@@ -81,14 +86,14 @@ void _pico_check(const char *msg) {
     pico_input_event(NULL, PICO_KEYDOWN);
 
     char fmt1[256], fmt2[256];
-    sprintf(fmt1, "output/%s.png", msg);
-    sprintf(fmt2, "expected/%s.png", msg);
+    sprintf(fmt1, "gen/%s.png", msg);
+    sprintf(fmt2, "asr/%s.png", msg);
     pico_output_screenshot(fmt1);
 
     SDL_Surface *sfc1 = IMG_Load(fmt1);
-    assert(sfc1 && "could not open output file");
+    assert(sfc1 && "could not open gen file");
     SDL_Surface *sfc2 = IMG_Load(fmt2);
-    assert(sfc2 && "could not open expected file");
+    assert(sfc2 && "could not open asr file");
     assert(memcmp(sfc1->pixels, sfc2->pixels, sfc1->pitch*sfc1->h) == 0);
     SDL_FreeSurface(sfc1);
     SDL_FreeSurface(sfc2);
@@ -98,14 +103,14 @@ void _pico_check(const char *msg) {
 #ifdef PICO_CHECK_ASR
 void _pico_check(const char *msg) {
     char fmt1[256], fmt2[256];
-    sprintf(fmt1, "output/%s.png", msg);
-    sprintf(fmt2, "expected/%s.png", msg);
+    sprintf(fmt1, "gen/%s.png", msg);
+    sprintf(fmt2, "asr/%s.png", msg);
     pico_output_screenshot(fmt1);
 
     SDL_Surface *sfc1 = IMG_Load(fmt1);
-    assert(sfc1 && "could not open output file");
+    assert(sfc1 && "could not open gen file");
     SDL_Surface *sfc2 = IMG_Load(fmt2);
-    assert(sfc2 && "could not open expected file");
+    assert(sfc2 && "could not open asr file");
     assert(memcmp(sfc1->pixels, sfc2->pixels, sfc1->pitch*sfc1->h) == 0);
     SDL_FreeSurface(sfc1);
     SDL_FreeSurface(sfc2);
