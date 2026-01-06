@@ -8,5 +8,5 @@
 .vscode/
 build/
 
-tst/gen/*
-!tst/gen/.gitkeep
+tst/out/*
+!tst/out/.gitkeep

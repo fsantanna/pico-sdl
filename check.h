@@ -17,7 +17,7 @@
  * USAGE:
  *   1. Include this file: #include "check.h"
  *   2. After rendering, call: _pico_check("file-01")
- *   3. Screenshots are saved to tst/gen/ and compared with tst/asr/
+ *   3. Screenshots are saved to tst/out/ and compared with tst/asr/
  *
  * NAMING CONVENTION:
  *   Use format: filename-XX (e.g., "anchor_pct-01", "anchor_pct-02")
@@ -94,14 +94,14 @@ void _pico_check(const char *msg) {
 #if defined(PICO_CHECK_INT) || defined(PICO_CHECK_ASR)
 static void _pico_check_assert(const char *msg) {
     char fmt1[256], fmt2[256];
-    sprintf(fmt1, "gen/%s.png", msg);
+    sprintf(fmt1, "out/%s.png", msg);
     sprintf(fmt2, "asr/%s.png", msg);
     pico_output_screenshot(fmt1);
 
     SDL_Surface *sfc1 = IMG_Load(fmt1);
-    assert(sfc1 && "could not open gen file");
+    assert(sfc1 && "could not open out/ file");
     SDL_Surface *sfc2 = IMG_Load(fmt2);
-    assert(sfc2 && "could not open asr file");
+    assert(sfc2 && "could not open asr/ file");
     if (memcmp(sfc1->pixels, sfc2->pixels, sfc1->pitch*sfc1->h) != 0) {
         printf("CHECK ERROR : files mismatch : %s --- %s\n", fmt1, fmt2);
         exit(1);
