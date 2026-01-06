@@ -51,7 +51,7 @@ int main (void) {
         pico_output_clear();
         Pico_Rect r = { 50-24,50-24, 0,0 };
         pico_output_draw_image_raw(r, "open.png");
-        _pico_check("img_big_center2");
+        _pico_check("image_raw-01");
     }
 #if 0
     {

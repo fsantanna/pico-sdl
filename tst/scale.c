@@ -13,19 +13,19 @@ int main(void) {
     pico_output_clear();
     pico_output_draw_rect(rect);
     puts("RECT");
-    _pico_check("rect_scale_normal");
+    _pico_check("scale-01");
 
     pico_set_scale((Pico_Pct){150,150});
     pico_output_clear();
     pico_output_draw_rect(rect);
     puts("RECT - scale up");
-    _pico_check("rect_scale_up");
+    _pico_check("scale-02");
 
     pico_set_scale((Pico_Pct){50,50});
     pico_output_clear();
     pico_output_draw_rect(rect);
     puts("RECT - scale dn");
-    _pico_check("rect_scale_dn");
+    _pico_check("scale-03");
 
     pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
 
@@ -33,19 +33,19 @@ int main(void) {
     pico_set_scale((Pico_Pct){100,100});
     pico_output_draw_rect(rect);
     puts("RECT (bottom-right)");
-    _pico_check("rect_br_scale_normal");
+    _pico_check("scale-04");
 
     pico_set_scale((Pico_Pct){150,150});
     pico_output_clear();
     pico_output_draw_rect(rect);
     puts("RECT (bottom-right) - scale up");
-    _pico_check("rect_br_scale_up");
+    _pico_check("scale-05");
 
     pico_set_scale((Pico_Pct){50,50});
     pico_output_clear();
     pico_output_draw_rect(rect);
     puts("RECT (bottom-right) - scale dn");
-    _pico_check("rect_br_scale_dn");
+    _pico_check("scale-06");
     
     pico_init(0);
     return 0;
