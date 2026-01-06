@@ -8,7 +8,10 @@ tests:
 	./pico-sdl tst/cv.c
 	./pico-sdl tst/vs.c
 	./pico-sdl tst/anchor_pct.c
+	./pico-sdl tst/blend_raw.c
 	./pico-sdl tst/blend_pct.c
+	./pico-sdl tst/buffer_raw.c
+	./pico-sdl tst/buffer_pct.c
 
 	@echo ""
 	@echo "All tests passed!"
