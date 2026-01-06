@@ -240,8 +240,3 @@ int main(void) {
     return 0;
 }
 ```
-
-## Code Style
-
-- Comments only before blocks or functions, never inline
-- If lines require comments, create an explicit block for them

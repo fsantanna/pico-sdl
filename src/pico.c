@@ -1130,7 +1130,7 @@ void pico_set_view_raw (
             log->w, log->h
         );
         pico_assert(TEX != NULL);
-        //SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_NONE); // prevents 2x blend
         SDL_SetRenderTarget(REN, TEX);
         SDL_RenderSetClipRect(REN, &S.view.clip);
         _out3_:
