@@ -41,6 +41,18 @@
  *     - Useful for visually inspecting rendering
  *     - Still performs assertion after viewing
  *
+ * HEADLESS TESTING WITH XVFB:
+ *
+ *   For CI/CD or headless environments without a display server, use Xvfb
+ *   (X Virtual Frame Buffer) to provide a virtual display:
+ *
+ *     xvfb-run ./pico-sdl tst/anchor_pct.c
+ *     xvfb-run make tests
+ *
+ *   Xvfb performs full graphical rendering in memory, producing real pixel
+ *   data for screenshot comparison. This is essential for visual regression
+ *   testing in automated environments.
+ *
  * EXAMPLE:
  *   #include "pico.h"
  *   #include "check.h"

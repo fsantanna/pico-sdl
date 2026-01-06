@@ -112,6 +112,38 @@ You can also open vscode terminal to use pico-sdl-cmd:
 pico-sdl-cmd {path to your program}
 ```
 
+# Testing
+
+## Running Tests
+
+```bash
+make tests
+```
+
+For headless environments (CI/CD, servers without displays), use Xvfb:
+
+```bash
+xvfb-run make tests
+```
+
+### Visual Regression Testing
+
+Tests use `check.h` for pixel-perfect screenshot comparison:
+
+```bash
+# Run tests (assert mode - default)
+./pico-sdl tst/anchor_pct.c
+
+# Generate expected images
+PICO_CHECK_MODE=GEN ./pico-sdl tst/anchor_pct.c
+
+# Interactive mode (pause for visual inspection)
+PICO_CHECK_MODE=INT ./pico-sdl tst/anchor_pct.c
+
+# Headless testing
+xvfb-run ./pico-sdl tst/anchor_pct.c
+```
+
 # Documentation
 
 You can read the documentation [here](https://pgvalle.github.io/pico-sdl/html/index.html)

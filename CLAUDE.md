@@ -175,6 +175,12 @@ sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf
 make tests
 ```
 
+For headless environments (CI/CD, servers without displays), use Xvfb:
+
+```bash
+xvfb-run make tests
+```
+
 ### Visual Regression Testing
 
 Visual tests use `check.h` to compare rendered output against expected images.
@@ -205,7 +211,19 @@ PICO_CHECK_MODE=GEN ./pico-sdl tst/anchor_pct.c
 
 # Interactive mode for visual inspection
 PICO_CHECK_MODE=INT ./pico-sdl tst/anchor_pct.c
+
+# Headless testing with Xvfb (for CI/CD or servers)
+xvfb-run ./pico-sdl tst/anchor_pct.c
+xvfb-run make tests
 ```
+
+**Headless Testing:**
+
+Xvfb (X Virtual Frame Buffer) provides a virtual display server for headless environments:
+- Performs full graphical rendering in memory
+- Produces real pixel data for screenshot comparison
+- Essential for CI/CD pipelines and automated testing
+- Provides identical output to real display servers
 
 **In test code:**
 
