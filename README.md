@@ -131,17 +131,17 @@ xvfb-run make tests
 Tests use `check.h` for pixel-perfect screenshot comparison:
 
 ```bash
-# Run tests (assert mode - default)
+# Interactive mode (default) - pause for visual inspection
 ./pico-sdl tst/anchor_pct.c
+
+# Assert mode - compare against expected images
+PICO_CHECK_MODE=ASR ./pico-sdl tst/anchor_pct.c
 
 # Generate expected images
 PICO_CHECK_MODE=GEN ./pico-sdl tst/anchor_pct.c
 
-# Interactive mode (pause for visual inspection)
-PICO_CHECK_MODE=INT ./pico-sdl tst/anchor_pct.c
-
-# Headless testing
-xvfb-run ./pico-sdl tst/anchor_pct.c
+# Headless testing (for CI/CD)
+PICO_CHECK_MODE=ASR xvfb-run ./pico-sdl tst/anchor_pct.c
 ```
 
 # Documentation

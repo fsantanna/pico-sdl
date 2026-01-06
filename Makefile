@@ -1,17 +1,19 @@
 # Makefile for pico-sdl tests
 
+EXE = PICO_CHECK_MODE=ASR xvfb-run -a ./pico-sdl
+
 .PHONY: tests clean
 
 tests:
 	@echo "Running tests..."
 
-	./pico-sdl tst/cv.c
-	./pico-sdl tst/vs.c
-	./pico-sdl tst/anchor_pct.c
-	./pico-sdl tst/blend_raw.c
-	./pico-sdl tst/blend_pct.c
-	./pico-sdl tst/buffer_raw.c
-	./pico-sdl tst/buffer_pct.c
+	$(EXE) tst/cv.c
+	$(EXE) tst/vs.c
+	$(EXE) tst/anchor_pct.c
+	$(EXE) tst/blend_raw.c
+	$(EXE) tst/blend_pct.c
+	$(EXE) tst/buffer_raw.c
+	$(EXE) tst/buffer_pct.c
 
 	@echo ""
 	@echo "All tests passed!"

@@ -26,6 +26,12 @@
  *
  * MODES:
  *
+ *   Interactive Mode (-DPICO_CHECK_INT) [DEFAULT]:
+ *     - Pauses before each check and waits for keypress
+ *     - Useful for visually inspecting rendering
+ *     - Still performs assertion after viewing
+ *     - This is the default when running ./pico-sdl
+ *
  *   Assert Mode (-DPICO_CHECK_ASR):
  *     - Compares generated screenshots against asr/.*.png
  *     - Fails if pixels don't match exactly
@@ -36,18 +42,13 @@
  *     - Use this when you've verified output is correct
  *     - WARNING: Overwrites existing expected images
  *
- *   Interactive Mode (-DPICO_CHECK_INT):
- *     - Pauses before each check and waits for keypress
- *     - Useful for visually inspecting rendering
- *     - Still performs assertion after viewing
- *
  * HEADLESS TESTING WITH XVFB:
  *
  *   For CI/CD or headless environments without a display server, use Xvfb
- *   (X Virtual Frame Buffer) to provide a virtual display:
+ *   (X Virtual Frame Buffer) to provide a virtual display with ASR mode:
  *
  *     xvfb-run ./pico-sdl tst/anchor_pct.c
- *     xvfb-run make tests
+ *     make tests  # automatically uses ASR mode
  *
  *   Xvfb performs full graphical rendering in memory, producing real pixel
  *   data for screenshot comparison. This is essential for visual regression

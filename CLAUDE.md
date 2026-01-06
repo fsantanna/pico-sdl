@@ -199,9 +199,9 @@ Visual tests use `check.h` to compare rendered output against expected images.
 
 **Compilation modes** (exactly ONE required via `-D`):
 
-- `-DPICO_CHECK_ASR` - Assert mode (default): compares against expected images
+- `-DPICO_CHECK_INT` - Interactive mode (default): pauses for visual inspection
+- `-DPICO_CHECK_ASR` - Assert mode: compares against expected images
 - `-DPICO_CHECK_GEN` - Generate mode: creates/updates expected images
-- `-DPICO_CHECK_INT` - Interactive mode: pauses for visual inspection
 
 **Directory structure:**
 - `tst/asr/` - Expected (reference) images
@@ -215,18 +215,18 @@ Visual tests use `check.h` to compare rendered output against expected images.
 **Examples:**
 
 ```bash
-# Normal testing (default)
+# Interactive mode (default) - pauses for visual inspection
 ./pico-sdl tst/anchor_pct.c
+
+# Assert mode - compares against expected images
+PICO_CHECK_MODE=ASR ./pico-sdl tst/anchor_pct.c
 
 # Generate expected images
 PICO_CHECK_MODE=GEN ./pico-sdl tst/anchor_pct.c
 
-# Interactive mode for visual inspection
-PICO_CHECK_MODE=INT ./pico-sdl tst/anchor_pct.c
-
 # Headless testing with Xvfb (for CI/CD or servers)
 xvfb-run ./pico-sdl tst/anchor_pct.c
-xvfb-run make tests
+make tests  # uses ASR mode for automated testing
 ```
 
 **Headless Testing:**
