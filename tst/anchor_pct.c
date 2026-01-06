@@ -15,7 +15,7 @@ int main (void) {
         Pico_Pos_Pct p = { 0.5, 0.50, PICO_ANCHOR_C, NULL };
         pico_output_clear();
         pico_output_draw_pixel_pct(&p);
-        //_pico_check("pixel50x50y_center");
+        _pico_check("pixel50x50y_center");
     }
 
     {
