@@ -15,7 +15,7 @@ int main (void) {
 
     {
         puts("pixel dimming");
-        for (int a = 255; a > 0; a-=5) {
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -30,7 +30,7 @@ int main (void) {
         puts("text dimming");
         int w = pico_get_text_width(10, "SOME TEXT");
         Pico_Rect r = {32-w/2, 18-5, 0, 10};
-        for (int a = 255; a > 0; a-=5) {
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -43,8 +43,8 @@ int main (void) {
     }
     {
         puts("rect dimming");
-        Pico_Rect r = {50-30, 50-6, 60, 12};
-        for (int a = 255; a > 0; a-=5) {
+        Pico_Rect r = {32-30, 18-6, 60, 12};
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -57,8 +57,8 @@ int main (void) {
     }
     {
         puts("oval dimming");
-        Pico_Rect r = {50-30, 50-6, 60, 12};
-        for (int a = 255; a > 0; a-=5) {
+        Pico_Rect r = {32-30, 18-6, 60, 12};
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -70,11 +70,12 @@ int main (void) {
         }
     }
     {
+        // 60, 12
         puts("tri dimming");
-        Pico_Pos p1 = { 50, 33 };
-        Pico_Pos p2 = { 33, 66 };
-        Pico_Pos p3 = { 66, 66 };
-        for (int a = 255; a > 0; a-=5) {
+        Pico_Pos p1 = {  2, 12 };
+        Pico_Pos p2 = {  2, 24 };
+        Pico_Pos p3 = { 62, 24 };
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -87,9 +88,9 @@ int main (void) {
     }
     {
         puts("line dimming");
-        Pico_Pos p1 = {50-20, 50-6};
-        Pico_Pos p2 = {50+20, 50+6};
-        for (int a = 255; a > 0; a-=5) {
+        Pico_Pos p1 = { 12, 12 };
+        Pico_Pos p2 = { 52, 24 };
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -103,11 +104,12 @@ int main (void) {
     {
         puts("poly dimming");
         Pico_Pos poly[] = {
-            { 50, 33 },
-            { 33, 66 },
-            { 66, 66 },
+            {  5,  5 },
+            { 59, 10 },
+            { 20, 31 },
         };
-        for (int a = 255; a > 0; a-=5) {
+
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
