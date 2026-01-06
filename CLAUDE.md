@@ -167,6 +167,53 @@ Install on Ubuntu/Debian:
 sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl2-gfx-dev
 ```
 
+## Testing
+
+### Running Tests
+
+```bash
+make tests
+```
+
+### Visual Regression Testing
+
+Visual tests use `check.h` to compare rendered output against expected images.
+
+**Compilation modes** (exactly ONE required via `-D`):
+
+- `-DPICO_CHECK_ASR` - Assert mode (default): compares against expected images
+- `-DPICO_CHECK_GEN` - Generate mode: creates/updates expected images
+- `-DPICO_CHECK_INT` - Interactive mode: pauses for visual inspection
+
+**Examples:**
+
+```bash
+# Normal testing (default)
+./pico-sdl tst/anchor_pct.c
+
+# Generate expected images
+PICO_CHECK_MODE=GEN ./pico-sdl tst/anchor_pct.c
+
+# Interactive mode for visual inspection
+PICO_CHECK_MODE=INT ./pico-sdl tst/anchor_pct.c
+```
+
+**In test code:**
+
+```c
+#include "pico.h"
+#include "check.h"
+
+int main(void) {
+    pico_init(1);
+    pico_output_clear();
+    pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL});
+    _pico_check("centered_rect");  // Compares with expected/centered_rect.png
+    pico_init(0);
+    return 0;
+}
+```
+
 ## Code Style
 
 - Comments only before blocks or functions, never inline

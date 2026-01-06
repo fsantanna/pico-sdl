@@ -1,5 +1,5 @@
 #include <pico.h>
-#include "tst.c"
+#include "../check.h"
 
 int main(void) {
     pico_init(1);
