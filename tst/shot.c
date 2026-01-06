@@ -12,7 +12,7 @@ int main (void) {
     puts("entire screen - second.png");
     pico_set_color_draw((Pico_Color){200,0,0});
     pico_output_draw_rect_raw((Pico_Rect){30, 30, 10, 10});
-    assert(!strcmp(pico_output_screenshot("second.png"),"second.png"));
+    assert(!strcmp(pico_output_screenshot("gen/shot-01.png"),"asr/shot-01.png"));
     pico_input_event(NULL, PICO_KEYDOWN);
 
     puts("part of screen");
