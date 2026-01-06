@@ -9,7 +9,7 @@ EXE=$(basename -- "$1")             # d.c
 EXE="${EXE%.*}.exe"                 # d.exe
 
 # Default to PICO_CHECK_ASR if not set
-CHECK_MODE=${PICO_CHECK_MODE:-ASR}
+CHECK_MODE=${PICO_CHECK_MODE:-INT}
 
 #echo $PICO, $DIR, $EXE
 
