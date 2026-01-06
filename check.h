@@ -27,12 +27,12 @@
  * MODES:
  *
  *   Assert Mode (-DPICO_CHECK_ASR):
- *     - Compares generated screenshots against asr/*.png
+ *     - Compares generated screenshots against asr/.*.png
  *     - Fails if pixels don't match exactly
  *     - Use this for automated testing and CI
  *
  *   Generate Mode (-DPICO_CHECK_GEN):
- *     - Creates/updates asr/*.png files
+ *     - Creates/updates asr/.*.png files
  *     - Use this when you've verified output is correct
  *     - WARNING: Overwrites existing expected images
  *
@@ -71,7 +71,6 @@
 
 void _pico_check(const char *msg);
 
-// Implementation
 #ifdef PICO_CHECK_GEN
 void _pico_check(const char *msg) {
     char fmt[256];
@@ -80,11 +79,8 @@ void _pico_check(const char *msg) {
 }
 #endif
 
-#ifdef PICO_CHECK_INT
-void _pico_check(const char *msg) {
-    puts("interactive: press any key");
-    pico_input_event(NULL, PICO_KEYDOWN);
-
+#if defined(PICO_CHECK_INT) || defined(PICO_CHECK_ASR)
+static void _pico_check_assert(const char *msg) {
     char fmt1[256], fmt2[256];
     sprintf(fmt1, "gen/%s.png", msg);
     sprintf(fmt2, "asr/%s.png", msg);
@@ -97,24 +93,21 @@ void _pico_check(const char *msg) {
     assert(memcmp(sfc1->pixels, sfc2->pixels, sfc1->pitch*sfc1->h) == 0);
     SDL_FreeSurface(sfc1);
     SDL_FreeSurface(sfc2);
+}
+
+#ifdef PICO_CHECK_INT
+void _pico_check(const char *msg) {
+    puts("interactive: press any key");
+    pico_input_event(NULL, PICO_KEYDOWN);
+    _pico_check_assert(msg);
 }
 #endif
 
 #ifdef PICO_CHECK_ASR
 void _pico_check(const char *msg) {
-    char fmt1[256], fmt2[256];
-    sprintf(fmt1, "gen/%s.png", msg);
-    sprintf(fmt2, "asr/%s.png", msg);
-    pico_output_screenshot(fmt1);
-
-    SDL_Surface *sfc1 = IMG_Load(fmt1);
-    assert(sfc1 && "could not open gen file");
-    SDL_Surface *sfc2 = IMG_Load(fmt2);
-    assert(sfc2 && "could not open asr file");
-    assert(memcmp(sfc1->pixels, sfc2->pixels, sfc1->pitch*sfc1->h) == 0);
-    SDL_FreeSurface(sfc1);
-    SDL_FreeSurface(sfc2);
+    _pico_check_assert(msg);
 }
+#endif
 #endif
 
 #endif // PICO_CHECK_H
