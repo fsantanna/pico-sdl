@@ -102,7 +102,10 @@ static void _pico_check_assert(const char *msg) {
     assert(sfc1 && "could not open gen file");
     SDL_Surface *sfc2 = IMG_Load(fmt2);
     assert(sfc2 && "could not open asr file");
-    assert(memcmp(sfc1->pixels, sfc2->pixels, sfc1->pitch*sfc1->h) == 0);
+    if (memcmp(sfc1->pixels, sfc2->pixels, sfc1->pitch*sfc1->h) != 0) {
+        printf("CHECK ERROR : files mismatch : %s --- %s\n", fmt1, fmt2);
+        exit(1);
+    }
     SDL_FreeSurface(sfc1);
     SDL_FreeSurface(sfc2);
 }
