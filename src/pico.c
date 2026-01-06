@@ -628,8 +628,8 @@ void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n) {
 void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
     if (text[0] == '\0') return;
     TTF_Font* ttf = _font_open(NULL, rect.h);
-    SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text,
-        (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
+    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text,
+        (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF }
     );
     TTF_CloseFont(ttf);
     pico_assert(sfc != NULL);
@@ -647,8 +647,8 @@ void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text) {
     if (text[0] == '\0') return;
     Pico_Rect r1 = pico_cv_rect_pct_raw(rect);
     TTF_Font* ttf = _font_open(NULL, r1.h);
-    SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text,
-        (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha }
+    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text,
+        (SDL_Color) { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF }
     );
     TTF_CloseFont(ttf);
     pico_assert(sfc != NULL);
@@ -952,7 +952,7 @@ int pico_get_text_width (int h, const char* text) {
         return 0;
     }
     TTF_Font* ttf = _font_open(NULL, h);
-    SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text, (SDL_Color){0,0,0,255});
+    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, (SDL_Color){0,0,0,0});
     TTF_CloseFont(ttf);
     pico_assert(sfc != NULL);
     assert(sfc->h == h);
