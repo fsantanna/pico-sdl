@@ -7,15 +7,15 @@ int main (void) {
 
     Pico_Rect_Pct r = { 0.5,0.5, 0,0, PICO_ANCHOR_C, NULL };
     char fmt[64];
+    int N = 1;
 
     for (float i=0; i<=1; i+=0.25) {
         pico_output_clear();
         r.w = r.h = i;
         pico_output_draw_rect_pct(&r);
-        sprintf(fmt, "size: %.2f", i);
+        sprintf(fmt, "dim-%02d", N++);
         puts(fmt);
-        //_pico_check(fmt);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check(fmt);
     }
 
     r.w = r.h = 0.8;
@@ -31,10 +31,9 @@ int main (void) {
         pico_set_color_draw((Pico_Color){255,0,0});
         pico_output_draw_rect_pct(&rr);
 
-        sprintf(fmt, "size: %.2f", i);
+        sprintf(fmt, "dim-%02d", N++);
         puts(fmt);
-        //_pico_check(fmt);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check(fmt);
     }
 
     pico_init(0);

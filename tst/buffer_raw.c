@@ -29,8 +29,7 @@ int main (void) {
         Pico_Rect r = { 5-1,5-1, 0,0 };
         pico_output_clear();
         pico_output_draw_buffer_raw(r, buffer, (Pico_Dim){3,3});
-        //_pico_check("buf3w3h_center_black");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("buffer_raw-01");
     }
 
     {
@@ -39,8 +38,7 @@ int main (void) {
         pico_output_clear();
         Pico_Rect r = { 1,9, 0,0 };
         pico_output_draw_buffer_raw(r, buffer, (Pico_Dim){9,1});
-        //_pico_check("buf9w1h_rightbottom_white");
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("buffer_raw-02");
     }
 
     pico_init(0);

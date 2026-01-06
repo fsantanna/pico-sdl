@@ -32,8 +32,7 @@ int main (void) {
     Pico_Rect r4 = { r1.x+r1.w-12, r1.y+r1.h-12, 25, 25 };
     pico_set_color_draw((Pico_Color){0xFF,0xFF,0x00});
     pico_output_draw_rect_raw(r4);
-    pico_input_event(NULL, PICO_KEYDOWN);
-    //_pico_check("pct_rect30_inner50");
+    _pico_check("clip_raw-01");
 
     pico_init(0);
     return 0;

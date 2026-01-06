@@ -14,7 +14,7 @@ int main (void) {
             pico_output_draw_image_pct(&r, "open.png");
             pico_input_delay(50);
             if (a == 120) {
-                //_pico_check("image_dimmed");
+                _pico_check("blend_pct-01");
             }
         }
     }
@@ -28,7 +28,7 @@ int main (void) {
             pico_output_draw_pixel_pct(&p);
             pico_input_delay(50);
             if (a == 120) {
-                //_pico_check("pixel_dimmed");
+                _pico_check("blend_pct-02");
             }
         }
     }
@@ -42,7 +42,7 @@ int main (void) {
             pico_output_draw_text_pct(&r, "SOME TEXT");
             pico_input_delay(50);
             if (a == 120) {
-                //_pico_check("text_dimmed");
+                _pico_check("blend_pct-03");
             }
         }
     }
@@ -56,7 +56,7 @@ int main (void) {
             pico_output_draw_rect_pct(&r);
             pico_input_delay(50);
             if (a == 120) {
-                //_pico_check("rect_dimmed");
+                _pico_check("blend_pct-04");
             }
         }
     }
@@ -70,7 +70,7 @@ int main (void) {
             pico_output_draw_oval_pct(&r);
             pico_input_delay(50);
             if (a == 120) {
-                //_pico_check("oval_dimmed");
+                _pico_check("blend_pct-05");
             }
         }
     }
@@ -86,7 +86,7 @@ int main (void) {
             pico_output_draw_tri_pct(&p1, &p2, &p3);
             pico_input_delay(50);
             if (a == 120) {
-                //_pico_check("tri_dimmed");
+                _pico_check("blend_pct-06");
             }
         }
     }
@@ -101,7 +101,7 @@ int main (void) {
             pico_output_draw_line_pct(&p1, &p2);
             pico_input_delay(50);
             if (a == 120) {
-                //_pico_check("line_dimmed");
+                _pico_check("blend_pct-07");
             }
         }
     }
@@ -119,7 +119,7 @@ int main (void) {
             pico_output_draw_poly_pct(poly, 3);
             pico_input_delay(50);
             if (a == 120) {
-                //_pico_check("poly_dimmed");
+                _pico_check("blend_pct-08");
             }
         }
     }
