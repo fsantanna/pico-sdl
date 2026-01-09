@@ -573,6 +573,20 @@ int pico_vs_rect_rect_raw (Pico_Rect r1, Pico_Rect r2);
 /// @sa pico_vs_rect_rect_raw
 int pico_vs_rect_rect_pct (Pico_Rect_Pct* r1, Pico_Rect_Pct* r2);
 
+/// @brief Makes a color darker by the specified percentage.
+/// @param color the original color
+/// @param pct percentage to darken (0-100); negative values lighten
+/// @return the darkened color
+/// @sa pico_color_lighter
+Pico_Color pico_color_darker (Pico_Color color, int pct);
+
+/// @brief Makes a color lighter by the specified percentage.
+/// @param color the original color
+/// @param pct percentage to lighten (0-100); negative values darken
+/// @return the lightened color
+/// @sa pico_color_darker
+Pico_Color pico_color_lighter (Pico_Color color, int pct);
+
 /// @}
 
 #ifdef __cplusplus

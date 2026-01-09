@@ -144,6 +144,31 @@ int pico_vs_rect_rect_pct (Pico_Rect_Pct* r1, Pico_Rect_Pct* r2) {
     return pico_vs_rect_rect_raw(pico_cv_rect_pct_raw(r1), pico_cv_rect_pct_raw(r2));
 }
 
+Pico_Color pico_color_darker (Pico_Color color, int pct) {
+    if (pct < 0) {
+        return pico_color_lighter(color, -pct);
+    }
+    float factor = 1.0f - (pct / 100.0f);
+    if (factor < 0.0f) factor = 0.0f;
+    return (Pico_Color) {
+        (Uint8)(color.r * factor),
+        (Uint8)(color.g * factor),
+        (Uint8)(color.b * factor)
+    };
+}
+
+Pico_Color pico_color_lighter (Pico_Color color, int pct) {
+    if (pct < 0) {
+        return pico_color_darker(color, -pct);
+    }
+    float factor = pct / 100.0f;
+    return (Pico_Color) {
+        (Uint8)(color.r + (255 - color.r) * factor),
+        (Uint8)(color.g + (255 - color.g) * factor),
+        (Uint8)(color.b + (255 - color.b) * factor)
+    };
+}
+
 // INIT
 
 void pico_init (int on) {
