@@ -144,28 +144,23 @@ int pico_vs_rect_rect_pct (Pico_Rect_Pct* r1, Pico_Rect_Pct* r2) {
     return pico_vs_rect_rect_raw(pico_cv_rect_pct_raw(r1), pico_cv_rect_pct_raw(r2));
 }
 
-Pico_Color pico_color_darker (Pico_Color color, int pct) {
+Pico_Color pico_color_darker (Pico_Color clr, float pct) {
     if (pct < 0) {
-        return pico_color_lighter(color, -pct);
+        return pico_color_lighter(clr, -pct);
+    } else {
+        float X = MAX(0, 1-pct);
+        return (Pico_Color) { clr.r*X, clr.g*X, clr.b*X };
     }
-    float factor = 1.0f - (pct / 100.0f);
-    if (factor < 0.0f) factor = 0.0f;
-    return (Pico_Color) {
-        (Uint8)(color.r * factor),
-        (Uint8)(color.g * factor),
-        (Uint8)(color.b * factor)
-    };
 }
 
-Pico_Color pico_color_lighter (Pico_Color color, int pct) {
+Pico_Color pico_color_lighter (Pico_Color clr, float pct) {
     if (pct < 0) {
-        return pico_color_darker(color, -pct);
+        return pico_color_darker(clr, -pct);
     }
-    float factor = pct / 100.0f;
     return (Pico_Color) {
-        (Uint8)(color.r + (255 - color.r) * factor),
-        (Uint8)(color.g + (255 - color.g) * factor),
-        (Uint8)(color.b + (255 - color.b) * factor)
+        (clr.r + (255 - clr.r) * pct),
+        (clr.g + (255 - clr.g) * pct),
+        (clr.b + (255 - clr.b) * pct)
     };
 }
 
@@ -1180,6 +1175,7 @@ void pico_set_view_pct (
     Pico_Rect xsrc;
 
     Pico_Rect* xxclip = NULL;
+    Pico_Rect xclip;
 
     if (phy != NULL) {
         xphy = (Pico_Dim) { phy->x*S.view.phy.w, phy->y*S.view.phy.h };
@@ -1194,7 +1190,7 @@ void pico_set_view_pct (
         xxsrc = &xsrc;
     }
     if (clip != NULL) {
-        Pico_Rect xclip = pico_cv_rect_pct_raw(clip);
+        xclip = pico_cv_rect_pct_raw(clip);
         xxclip = &xclip;
     }
 

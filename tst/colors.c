@@ -74,15 +74,15 @@ int main (void) {
         y += h + 0.02;
 
         // Progressively darker
-        pico_set_color_draw(pico_color_darker(base, 25));
+        pico_set_color_draw(pico_color_darker(base, 0.25));
         pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, y, 0.8, h, PICO_ANCHOR_C, NULL});
         y += h + 0.02;
 
-        pico_set_color_draw(pico_color_darker(base, 50));
+        pico_set_color_draw(pico_color_darker(base, 0.50));
         pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, y, 0.8, h, PICO_ANCHOR_C, NULL});
         y += h + 0.02;
 
-        pico_set_color_draw(pico_color_darker(base, 75));
+        pico_set_color_draw(pico_color_darker(base, 0.75));
         pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, y, 0.8, h, PICO_ANCHOR_C, NULL});
 
         _pico_check("colors-02");
@@ -102,15 +102,15 @@ int main (void) {
         y += h + 0.02;
 
         // Progressively lighter
-        pico_set_color_draw(pico_color_lighter(base, 25));
+        pico_set_color_draw(pico_color_lighter(base, 0.25));
         pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, y, 0.8, h, PICO_ANCHOR_C, NULL});
         y += h + 0.02;
 
-        pico_set_color_draw(pico_color_lighter(base, 50));
+        pico_set_color_draw(pico_color_lighter(base, 0.50));
         pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, y, 0.8, h, PICO_ANCHOR_C, NULL});
         y += h + 0.02;
 
-        pico_set_color_draw(pico_color_lighter(base, 75));
+        pico_set_color_draw(pico_color_lighter(base, 0.75));
         pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, y, 0.8, h, PICO_ANCHOR_C, NULL});
 
         _pico_check("colors-03");
@@ -125,11 +125,11 @@ int main (void) {
         float h = 0.12;
 
         // Using darker with negative (should lighten)
-        pico_set_color_draw(pico_color_darker(base, -50));
+        pico_set_color_draw(pico_color_darker(base, -0.50));
         pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.3, y, 0.35, h, PICO_ANCHOR_C, NULL});
 
         // Using lighter with negative (should darken)
-        pico_set_color_draw(pico_color_lighter(base, -50));
+        pico_set_color_draw(pico_color_lighter(base, -0.50));
         pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.7, y, 0.35, h, PICO_ANCHOR_C, NULL});
 
         _pico_check("colors-04");
@@ -146,7 +146,7 @@ int main (void) {
 
         // Gradient from dark to light
         for (int i = 0; i <= 10; i++) {
-            int darkness = 90 - (i * 18);  // 90, 72, 54, 36, 18, 0, -18, -36, -54, -72, -90
+            float darkness = 0.90f - (i * 0.18f);  // 0.90, 0.72, 0.54, 0.36, 0.18, 0, -0.18, -0.36, -0.54, -0.72, -0.90
             pico_set_color_draw(pico_color_darker(base, darkness));
             pico_output_draw_rect_pct(&(Pico_Rect_Pct){
                 x_start + (i * w),
