@@ -14,6 +14,8 @@ tests:
 	$(EXE) tst/blend_pct.c
 	$(EXE) tst/buffer_raw.c
 	$(EXE) tst/buffer_pct.c
+	$(EXE) tst/clip_raw.c
+	$(EXE) tst/clip_pct.c
 
 	@echo ""
 	@echo "All tests passed!"
