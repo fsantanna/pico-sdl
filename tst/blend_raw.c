@@ -20,7 +20,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_pixel_raw((Pico_Pos){32,18});
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-01");
             }
@@ -35,7 +35,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_text_raw(r, "SOME TEXT");
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-02");
             }
@@ -49,7 +49,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_rect_raw(r);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-03");
             }
@@ -63,7 +63,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_oval_raw(r);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-04");
             }
@@ -80,7 +80,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_tri_raw(p1, p2, p3);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-05");
             }
@@ -95,7 +95,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_line_raw(p1, p2);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-06");
             }
@@ -114,7 +114,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_poly_raw(poly, 3);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-07");
             }

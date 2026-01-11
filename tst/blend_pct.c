@@ -20,7 +20,7 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_output_draw_image_pct(&r, "open.png");
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-01");
             }
@@ -34,7 +34,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_pixel_pct(&p);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-02");
             }
@@ -48,7 +48,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_text_pct(&r, "SOME TEXT");
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-03");
             }
@@ -62,7 +62,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_rect_pct(&r);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-04");
             }
@@ -76,7 +76,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_oval_pct(&r);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-05");
             }
@@ -92,7 +92,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_tri_pct(&p1, &p2, &p3);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-06");
             }
@@ -107,7 +107,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_line_pct(&p1, &p2);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-07");
             }
@@ -125,7 +125,7 @@ int main (void) {
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
             pico_output_draw_poly_pct(poly, 3);
-            pico_input_delay(50);
+            pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-08");
             }
