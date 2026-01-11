@@ -38,17 +38,37 @@ static double L_checkfieldfloat (lua_State* L, int i, const char* k) {
 
 static Pico_Color _color (lua_State* L, int idx) {
     Pico_Color clr;
-    if (lua_type(L, idx) == LUA_TTABLE) {  // clr = { r,g,b[,a] }
+    if (lua_type(L, idx) == LUA_TTABLE) {  // clr = { r,g,b }
         clr = (Pico_Color) {
             L_checkfieldnum(L, idx, "r"),
             L_checkfieldnum(L, idx, "g"),
             L_checkfieldnum(L, idx, "b"),
         };
-    } else {                            // r | g | b [| a]
+    } else {                            // r | g | b
         clr = (Pico_Color) {
             luaL_checknumber(L, idx),
             luaL_checknumber(L, idx+1),
             luaL_checknumber(L, idx+2),
+        };
+    }
+    return clr;
+}
+
+static Pico_Color_A _color_a (lua_State* L, int idx) {
+    Pico_Color_A clr;
+    if (lua_type(L, idx) == LUA_TTABLE) {  // clr = { r,g,b,a }
+        clr = (Pico_Color_A) {
+            L_checkfieldnum(L, idx, "r"),
+            L_checkfieldnum(L, idx, "g"),
+            L_checkfieldnum(L, idx, "b"),
+            L_checkfieldnum(L, idx, "a"),
+        };
+    } else {                            // r | g | b | a
+        clr = (Pico_Color_A) {
+            luaL_checknumber(L, idx),
+            luaL_checknumber(L, idx+1),
+            luaL_checknumber(L, idx+2),
+            luaL_checknumber(L, idx+3),
         };
     }
     return clr;
@@ -315,12 +335,12 @@ static int l_output_draw_buffer_raw (lua_State* L) {
     int h = lua_tointeger(L, -1);
     lua_pop(L, 2);
 
-    Pico_Color buffer[w * h];
+    Pico_Color_A buffer[w * h];
     for (int i = 0; i < w; i++) {
         lua_geti(L, 2, i+1);
         for (int j = 0; j < h; j++) {
             lua_geti(L, -1, j+1);
-            buffer[i*h + j] = _color(L, -1);
+            buffer[i*h + j] = _color_a(L, -1);
             lua_pop(L, 1);
         }
         lua_pop(L, 1);
@@ -344,12 +364,12 @@ static int l_output_draw_buffer_pct (lua_State* L) {
     int h = lua_tointeger(L, -1);
     lua_pop(L, 2);
 
-    Pico_Color buffer[w * h];
+    Pico_Color_A buffer[w * h];
     for (int i = 0; i < w; i++) {
         lua_geti(L, 2, i+1);
         for (int j = 0; j < h; j++) {
             lua_geti(L, -1, j+1);
-            buffer[i*h + j] = _color(L, -1);
+            buffer[i*h + j] = _color_a(L, -1);
             lua_pop(L, 1);
         }
         lua_pop(L, 1);
@@ -644,18 +664,36 @@ static int l_get_key (lua_State* L) {
     return 1;
 }
 
-static int l_get_mouse (lua_State* L) {
+static int l_get_mouse_raw (lua_State* L) {
     Pico_Pos pos;
     int button = PICO_MOUSE_BUTTON_NONE;
     if (lua_gettop(L) > 0) {
         button = luaL_checknumber(L, 1);
     }
-    int state = pico_get_mouse(&pos, button);
+    int state = pico_get_mouse_raw(&pos, button);
 
     lua_newtable(L);
     lua_pushinteger(L, pos.x);
     lua_setfield(L, -2, "x");
     lua_pushinteger(L, pos.y);
+    lua_setfield(L, -2, "y");
+    lua_pushboolean(L, state);
+    lua_setfield(L, -2, "pressed");
+    return 1;
+}
+
+static int l_get_mouse_pct (lua_State* L) {
+    Pico_Pos_Pct pos = {0, 0, PICO_ANCHOR_NW, NULL};
+    int button = PICO_MOUSE_BUTTON_NONE;
+    if (lua_gettop(L) > 0) {
+        button = luaL_checknumber(L, 1);
+    }
+    int state = pico_get_mouse_pct(&pos, button);
+
+    lua_newtable(L);
+    lua_pushnumber(L, pos.x);
+    lua_setfield(L, -2, "x");
+    lua_pushnumber(L, pos.y);
     lua_setfield(L, -2, "y");
     lua_pushboolean(L, state);
     lua_setfield(L, -2, "pressed");
@@ -924,11 +962,12 @@ static int l_set_view_pct (lua_State* L) {
     Pico_Pct* window = NULL;
     Pico_Rect* window_target = NULL;
     Pico_Pct* world = NULL;
-    Pico_Rect* world_source = NULL;
-    Pico_Rect* world_clip = NULL;
+    Pico_Rect_Pct* world_source = NULL;
+    Pico_Rect_Pct* world_clip = NULL;
 
     Pico_Pct window_val, world_val;
-    Pico_Rect window_target_val, world_source_val, world_clip_val;
+    Pico_Rect window_target_val;
+    Pico_Rect_Pct world_source_val, world_clip_val;
 
     if (lua_gettop(L) >= 1 && lua_isboolean(L, 1)) {
         window_fullscreen = lua_toboolean(L, 1);
@@ -950,12 +989,12 @@ static int l_set_view_pct (lua_State* L) {
     }
 
     if (lua_gettop(L) >= 5 && !lua_isnil(L, 5)) {
-        world_source_val = _rect_raw(L, 5);
+        world_source_val = _rect_pct(L, 5);
         world_source = &world_source_val;
     }
 
     if (lua_gettop(L) >= 6 && !lua_isnil(L, 6)) {
-        world_clip_val = _rect_raw(L, 6);
+        world_clip_val = _rect_pct(L, 6);
         world_clip = &world_clip_val;
     }
 
@@ -966,6 +1005,40 @@ static int l_set_view_pct (lua_State* L) {
     );
 
     return 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// CONVERSION UTILITIES
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_cv_rect_pct_raw (lua_State* L) {
+    Pico_Rect_Pct rect = _rect_pct(L, 1);
+    Pico_Rect result = pico_cv_rect_pct_raw(&rect);
+    _push_rect(L, result);
+    return 1;
+}
+
+static int l_cv_rect_pct_raw_ext (lua_State* L) {
+    Pico_Rect_Pct rect = _rect_pct(L, 1);
+    Pico_Rect ref = _rect_raw(L, 2);
+    Pico_Rect result = pico_cv_rect_pct_raw_ext(&rect, ref);
+    _push_rect(L, result);
+    return 1;
+}
+
+static int l_cv_pos_pct_raw (lua_State* L) {
+    Pico_Pos_Pct pos = _pos_pct(L, 1);
+    Pico_Pos result = pico_cv_pos_pct_raw(&pos);
+    _push_xy(L, result.x, result.y);
+    return 1;
+}
+
+static int l_cv_pos_pct_raw_ext (lua_State* L) {
+    Pico_Pos_Pct pos = _pos_pct(L, 1);
+    Pico_Rect ref = _rect_raw(L, 2);
+    Pico_Pos result = pico_cv_pos_pct_raw_ext(&pos, ref);
+    _push_xy(L, result.x, result.y);
+    return 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1063,7 +1136,8 @@ static const luaL_Reg ll_get[] = {
     { "fullscreen", l_get_fullscreen },
     { "grid", l_get_grid },
     { "key", l_get_key },
-    { "mouse", l_get_mouse },
+    { "mouse_raw", l_get_mouse_raw },
+    { "mouse_pct", l_get_mouse_pct },
     { "rotate", l_get_rotate },
     { "show", l_get_show },
     { "style", l_get_style },
@@ -1126,6 +1200,14 @@ static const luaL_Reg ll_collision[] = {
     { NULL, NULL }
 };
 
+static const luaL_Reg ll_convert[] = {
+    { "rect_pct_raw", l_cv_rect_pct_raw },
+    { "rect_pct_raw_ext", l_cv_rect_pct_raw_ext },
+    { "pos_pct_raw", l_cv_pos_pct_raw },
+    { "pos_pct_raw_ext", l_cv_pos_pct_raw_ext },
+    { NULL, NULL }
+};
+
 int luaopen_pico_native (lua_State* L) {
     lua_pushlightuserdata(L, (void*)&KEY);
     lua_newtable(L);
@@ -1164,6 +1246,10 @@ int luaopen_pico_native (lua_State* L) {
     // collision
     luaL_newlib(L, ll_collision);
     lua_setfield(L, -2, "collision");
+
+    // convert
+    luaL_newlib(L, ll_convert);
+    lua_setfield(L, -2, "convert");
 
     // Constants - anchor values
     lua_newtable(L);
