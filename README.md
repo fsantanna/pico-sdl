@@ -128,20 +128,30 @@ xvfb-run make tests
 
 ### Visual Regression Testing
 
-Tests use `check.h` for pixel-perfect screenshot comparison:
+Tests use `check.h` for pixel-perfect screenshot comparison.
+
+**Modes** (controlled by environment variables):
+- `PICO_CHECK_INT` - Interactive mode (pause for visual inspection, default: enabled)
+- `PICO_CHECK_ASR` - Assert mode (compare against expected images, default: disabled)
+
+**Examples:**
 
 ```bash
 # Interactive mode (default) - pause for visual inspection
 ./pico-sdl tst/anchor_pct.c
 
-# Assert mode - compare against expected images
-PICO_CHECK_MODE=ASR ./pico-sdl tst/anchor_pct.c
+# Generate mode - write to out/ without pause or assertion
+PICO_CHECK_INT= ./pico-sdl tst/anchor_pct.c
+# Then manually copy verified images: cp tst/out/*.png tst/asr/
 
-# Generate expected images
-PICO_CHECK_MODE=GEN ./pico-sdl tst/anchor_pct.c
+# Assert mode - compare against expected images (for CI/CD)
+PICO_CHECK_INT= PICO_CHECK_ASR=1 ./pico-sdl tst/anchor_pct.c
+
+# Interactive with assertion - pause AND assert
+PICO_CHECK_ASR=1 ./pico-sdl tst/anchor_pct.c
 
 # Headless testing (for CI/CD)
-PICO_CHECK_MODE=ASR xvfb-run ./pico-sdl tst/anchor_pct.c
+PICO_CHECK_INT= PICO_CHECK_ASR=1 xvfb-run ./pico-sdl tst/anchor_pct.c
 ```
 
 # Documentation

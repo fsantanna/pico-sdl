@@ -197,45 +197,61 @@ xvfb-run make tests
 
 Visual tests use `check.h` to compare rendered output against expected images.
 
-**Compilation modes** (exactly ONE required via `-D`):
+**Compilation modes** (can be combined):
 
-- `-DPICO_CHECK_INT` - Interactive mode (default): pauses for visual inspection
-- `-DPICO_CHECK_ASR` - Assert mode: compares against expected images
-- `-DPICO_CHECK_GEN` - Generate mode: creates/updates expected images
+- No defines - Generate mode: writes to `out/`, no pause, no assert
+- `-DPICO_CHECK_INT` - Interactive: pauses for visual inspection
+- `-DPICO_CHECK_ASR` - Assert: compares against expected images in `asr/`
+- Both defines - Interactive with assertion: pause AND assert
 
 **Directory structure:**
-- `tst/asr/` - Expected (reference) images
-- `tst/gen/` - Generated output images
+- `tst/asr/` - Expected (reference) images (manually maintained)
+- `tst/out/` - Generated output images (auto-created during tests)
 
 **Naming convention:**
 - Format: `filename-XX.png` (e.g., `anchor_pct-01.png`, `anchor_pct-02.png`)
 - `filename` matches the test file name
 - `XX` is the sequential test number (01, 02, 03, ...)
 
-**Examples:**
+**Workflow:**
 
-```bash
-# Interactive mode (default) - pauses for visual inspection
-./pico-sdl tst/anchor_pct.c
+1. **Developing new tests** (generate mode):
+   ```bash
+   PICO_CHECK_INT= ./pico-sdl tst/newtest.c
+   # Review images in tst/out/
+   # If correct, manually copy to asr/:
+   cp tst/out/newtest-*.png tst/asr/
+   ```
 
-# Assert mode - compares against expected images
-PICO_CHECK_MODE=ASR ./pico-sdl tst/anchor_pct.c
+2. **Interactive development** (default):
+   ```bash
+   ./pico-sdl tst/anchor_pct.c  # Pauses for visual inspection
+   ```
 
-# Generate expected images
-PICO_CHECK_MODE=GEN ./pico-sdl tst/anchor_pct.c
+3. **Automated testing** (CI/CD):
+   ```bash
+   PICO_CHECK_INT= PICO_CHECK_ASR=1 ./pico-sdl tst/anchor_pct.c
+   make tests  # uses ASR mode
+   ```
 
-# Headless testing with Xvfb (for CI/CD or servers)
-xvfb-run ./pico-sdl tst/anchor_pct.c
-make tests  # uses ASR mode for automated testing
-```
+4. **Interactive with validation**:
+   ```bash
+   PICO_CHECK_ASR=1 ./pico-sdl tst/anchor_pct.c
+   # Pauses AND asserts against asr/ files
+   ```
 
 **Headless Testing:**
 
-Xvfb (X Virtual Frame Buffer) provides a virtual display server for headless environments:
+Xvfb (X Virtual Frame Buffer) provides a virtual display server for headless
+environments:
 - Performs full graphical rendering in memory
 - Produces real pixel data for screenshot comparison
 - Essential for CI/CD pipelines and automated testing
-- Provides identical output to real display servers
+
+```bash
+xvfb-run ./pico-sdl tst/anchor_pct.c
+make tests  # automatically uses xvfb and ASR mode
+```
 
 **In test code:**
 
@@ -246,8 +262,9 @@ Xvfb (X Virtual Frame Buffer) provides a virtual display server for headless env
 int main(void) {
     pico_init(1);
     pico_output_clear();
-    pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL});
-    _pico_check("anchor_pct-01");  // Compares with asr/anchor_pct-01.png
+    pico_output_draw_rect_pct(&(Pico_Rect_Pct){
+        0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL});
+    _pico_check("anchor_pct-01");  // Writes to out/, compares with asr/
     pico_init(0);
     return 0;
 }

@@ -8,15 +8,22 @@ DIR=$(dirname -- "$1")              # /a/b/c/
 EXE=$(basename -- "$1")             # d.c
 EXE="${EXE%.*}.exe"                 # d.exe
 
-# Default to PICO_CHECK_INT if not set
-CHECK_MODE=${PICO_CHECK_MODE:-INT}
+# PICO_CHECK_INT defaults to enabled, set to empty to disable
+# PICO_CHECK_ASR defaults to disabled, set to any value to enable
+DEFINES=""
+if [ "${PICO_CHECK_INT-1}" != "" ]; then
+    DEFINES="$DEFINES -DPICO_CHECK_INT"
+fi
+if [ -n "$PICO_CHECK_ASR" ]; then
+    DEFINES="$DEFINES -DPICO_CHECK_ASR"
+fi
 
 #echo $PICO, $DIR, $EXE
 
 gcc -Wall -g -o "$DIR/$EXE" "$1"          \
     "$PICO/src/pico.c" "$PICO/src/hash.c" \
     -I "$PICO/src"                        \
-    -DPICO_CHECK_$CHECK_MODE              \
+    $DEFINES                              \
     -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
 
 if [ $? -eq 0 ]; then
