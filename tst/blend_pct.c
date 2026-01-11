@@ -16,7 +16,7 @@ int main (void) {
     {
         puts("image dimming");
         Pico_Rect_Pct r = { 0.5, 0.5, 0.5, 0, PICO_ANCHOR_C, NULL };
-        for (int a = 255; a > 0; a-=5) {
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_output_draw_image_pct(&r, "open.png");
@@ -29,7 +29,7 @@ int main (void) {
     {
         puts("pixel dimming");
         Pico_Pos_Pct p = { 0.5, 0.5, PICO_ANCHOR_NW, NULL };
-        for (int a = 255; a > 0; a-=5) {
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -42,8 +42,8 @@ int main (void) {
     }
     {
         puts("text dimming");
-        Pico_Rect_Pct r = { 0.5, 0.5, 0, 0.1, PICO_ANCHOR_C, NULL };
-        for (int a = 255; a > 0; a-=5) {
+        Pico_Rect_Pct r = { 0.5, 0.5, 0, 0.28, PICO_ANCHOR_C, NULL };
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -56,8 +56,8 @@ int main (void) {
     }
     {
         puts("rect dimming");
-        Pico_Rect_Pct r = { 0.5, 0.5, 0.9, 0.33, PICO_ANCHOR_C, NULL };
-        for (int a = 255; a > 0; a-=5) {
+        Pico_Rect_Pct r = { 0.5, 0.5, 0.95, 0.34, PICO_ANCHOR_C, NULL };
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -70,8 +70,8 @@ int main (void) {
     }
     {
         puts("oval dimming");
-        Pico_Rect_Pct r = { 0.5, 0.5, 0.9, 0.33, PICO_ANCHOR_C, NULL };
-        for (int a = 255; a > 0; a-=5) {
+        Pico_Rect_Pct r = { 0.5, 0.5, 0.95, 0.34, PICO_ANCHOR_C, NULL };
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -87,7 +87,7 @@ int main (void) {
         Pico_Pos_Pct p1 = { 0.50, 0.33, PICO_ANCHOR_C, NULL };
         Pico_Pos_Pct p2 = { 0.33, 0.66, PICO_ANCHOR_C, NULL };
         Pico_Pos_Pct p3 = { 0.66, 0.66, PICO_ANCHOR_C, NULL };
-        for (int a = 255; a > 0; a-=5) {
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -102,7 +102,7 @@ int main (void) {
         puts("line dimming");
         Pico_Pos_Pct p1 = { 0.33, 0.33, PICO_ANCHOR_C, NULL };
         Pico_Pos_Pct p2 = { 0.66, 0.66, PICO_ANCHOR_C, NULL };
-        for (int a = 255; a > 0; a-=5) {
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
@@ -120,7 +120,7 @@ int main (void) {
             { 0.33, 0.66, PICO_ANCHOR_C, NULL },
             { 0.66, 0.66, PICO_ANCHOR_C, NULL },
         };
-        for (int a = 255; a > 0; a-=5) {
+        for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
