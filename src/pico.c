@@ -845,30 +845,31 @@ const char* pico_output_screenshot_raw (const char* path, Pico_Rect r) {
         ret = _path_;
     }
 
-    int old_tgt = TGT;
     TGT = 0;
     SDL_SetRenderTarget(REN, NULL);
+    pico_input_delay(5);            // TODO: bug if removed
+    //SDL_RenderPresent(REN);
 
     void* buf = malloc(4 * r.w * r.h);
-    SDL_RenderReadPixels(REN, &r, SDL_PIXELFORMAT_RGBA32, buf, 4 * r.w);
-    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom(
-        buf, r.w, r.h, 32, 4 * r.w, SDL_PIXELFORMAT_RGBA32);
-    assert(IMG_SavePNG(sfc, ret) == 0 && "saving screenshot");
+    SDL_RenderReadPixels(REN, &r, SDL_PIXELFORMAT_RGBA32, buf, 4*r.w);
+    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
+        buf, r.w, r.h, 32, 4*r.w, SDL_PIXELFORMAT_RGBA32
+    );
+    pico_assert(IMG_SavePNG(sfc,ret) == 0);
     free(buf);
     SDL_FreeSurface(sfc);
 
     SDL_SetRenderTarget(REN, TEX);
-    TGT = old_tgt;
+    SDL_RenderSetClipRect(REN, &S.view.clip);
+    TGT = 1;
 
     return ret;
 }
 
-const char* pico_output_screenshot_pct (const char* path,
-                                        const Pico_Rect_Pct* rect) {
-    int old_tgt = TGT;
+const char* pico_output_screenshot_pct (const char* path, const Pico_Rect_Pct* rect) {
     TGT = 0;
     Pico_Rect r = pico_cv_rect_pct_raw(rect);
-    TGT = old_tgt;
+    TGT = 1;
     return pico_output_screenshot_raw(path, r);
 }
 
