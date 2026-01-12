@@ -290,18 +290,28 @@ void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text);
 /// @sa pico_set_expert
 void pico_output_present (void);
 
-/// @brief Takes a screenshot.
+/// @brief Takes a screenshot of the full physical screen.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
 /// @return The filepath of the screenshot.
-/// @sa pico_output_screenshot_ext
+/// @sa pico_output_screenshot_raw
+/// @sa pico_output_screenshot_pct
 const char* pico_output_screenshot (const char* path);
 
-/// @brief Takes a screenshot from a specific portion of the screen.
+/// @brief Takes a screenshot from a physical screen region.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
-/// @param r region to screenshot, in logical coordinates
+/// @param rect region in physical pixel coordinates
 /// @return The filepath of the screenshot.
 /// @sa pico_output_screenshot
-const char* pico_output_screenshot_ext (const char* path, Pico_Rect r);
+/// @sa pico_output_screenshot_pct
+const char* pico_output_screenshot_raw (const char* path, Pico_Rect rect);
+
+/// @brief Takes a screenshot from a physical screen region.
+/// @param path screenshot filepath (NULL uses timestamp in the name)
+/// @param rect region in percentage coordinates (0.0-1.0)
+/// @return The filepath of the screenshot.
+/// @sa pico_output_screenshot
+/// @sa pico_output_screenshot_raw
+const char* pico_output_screenshot_pct (const char* path, const Pico_Rect_Pct* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file

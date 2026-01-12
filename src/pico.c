@@ -822,13 +822,13 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 }
 
 const char* pico_output_screenshot (const char* path) {
-    return pico_output_screenshot_ext(
+    return pico_output_screenshot_raw(
         path,
-        (Pico_Rect){0,0,S.view.log.w,S.view.log.h}
+        (Pico_Rect){0, 0, S.view.phy.w, S.view.phy.h}
     );
 }
 
-const char* pico_output_screenshot_ext (const char* path, Pico_Rect r) {
+const char* pico_output_screenshot_raw (const char* path, Pico_Rect r) {
     const char* ret;
     if (path != NULL) {
         ret = path;
@@ -836,18 +836,35 @@ const char* pico_output_screenshot_ext (const char* path, Pico_Rect r) {
         static char _path_[32] = "";
         time_t ts = time(NULL);
         struct tm* ti = localtime(&ts);
-        assert(strftime(_path_,32,"pico-sdl-%Y%m%d-%H%M%S.png",ti) == 28);
+        assert(strftime(_path_, 32, "pico-sdl-%Y%m%d-%H%M%S.png", ti) == 28);
         ret = _path_;
     }
 
-    void* buf = malloc(4*r.w*r.h);
-    SDL_RenderReadPixels(REN, &r, SDL_PIXELFORMAT_RGBA32, buf, 4*r.w);
-    SDL_Surface *sfc = SDL_CreateRGBSurfaceWithFormatFrom(buf, r.w, r.h, 32, 4*r.w,
-                                                          SDL_PIXELFORMAT_RGBA32);
-    assert(IMG_SavePNG(sfc,ret)==0 && "saving screenshot");
+    int old_tgt = TGT;
+    TGT = 0;
+    SDL_SetRenderTarget(REN, NULL);
+
+    void* buf = malloc(4 * r.w * r.h);
+    SDL_RenderReadPixels(REN, &r, SDL_PIXELFORMAT_RGBA32, buf, 4 * r.w);
+    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom(
+        buf, r.w, r.h, 32, 4 * r.w, SDL_PIXELFORMAT_RGBA32);
+    assert(IMG_SavePNG(sfc, ret) == 0 && "saving screenshot");
     free(buf);
     SDL_FreeSurface(sfc);
+
+    SDL_SetRenderTarget(REN, TEX);
+    TGT = old_tgt;
+
     return ret;
+}
+
+const char* pico_output_screenshot_pct (const char* path,
+                                        const Pico_Rect_Pct* rect) {
+    int old_tgt = TGT;
+    TGT = 0;
+    Pico_Rect r = pico_cv_rect_pct_raw(rect);
+    TGT = old_tgt;
+    return pico_output_screenshot_raw(path, r);
 }
 
 void pico_output_sound (const char* path) {
