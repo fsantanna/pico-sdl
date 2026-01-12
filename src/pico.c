@@ -693,12 +693,14 @@ static void _show_grid (void) {
     {
         pico_set_alpha(0x77);
         if ((S.view.phy.w%S.view.log.w == 0) && (S.view.log.w< S.view.phy.w)) {
-            for (int i=0; i<=S.view.phy.w; i+=(S.view.phy.w/S.view.log.w)) {
+            for (int i=0; i<S.view.phy.w; i+=(S.view.phy.w/S.view.log.w)) {
+                if (i == 0) continue;
                 pico_output_draw_line_raw((Pico_Pos){i,0}, (Pico_Pos){i,S.view.phy.h});
             }
         }
         if ((S.view.phy.h%S.view.log.h == 0) && (S.view.log.h < S.view.phy.h)) {
-            for (int j=0; j<=S.view.phy.h; j+=(S.view.phy.h/S.view.log.h)) {
+            for (int j=0; j<S.view.phy.h; j+=(S.view.phy.h/S.view.log.h)) {
+                if (j == 0) continue;
                 pico_output_draw_line_raw((Pico_Pos){0,j}, (Pico_Pos){S.view.phy.w,j});
             }
         }
@@ -713,23 +715,26 @@ static void _show_grid (void) {
 
             float px = (float)cx / S.view.phy.w;
             float py = (float)cy / S.view.phy.h;
+            float h = 10.0 / S.view.phy.h;
 
             pico_output_draw_text_pct(
                 &(Pico_Rect_Pct) {
-                    px, py, 0, 0.02, PICO_ANCHOR_C, NULL
+                    px, py, 0, h, PICO_ANCHOR_C, NULL
                 },
                 lbl
             );
         }
 
         int dx = S.view.phy.w / 10;
-        for (int i=0; i<=S.view.phy.w; i+=dx) {
+        for (int i=0; i<S.view.phy.w; i+=dx) {
+            if (i == 0) continue;
             int x = S.view.src.x + (i * S.view.src.w / S.view.phy.w);
             aux(x, i, 7);
         }
 
         int dy = S.view.phy.h / 10;
-        for (int j=0; j<=S.view.phy.h; j+=dy) {
+        for (int j=0; j<S.view.phy.h; j+=dy) {
+            if (j == 0) continue;
             int y = S.view.src.y + (j * S.view.src.h / S.view.phy.h);
             aux(y, 7, j);
         }
