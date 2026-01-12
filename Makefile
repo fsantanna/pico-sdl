@@ -18,6 +18,7 @@ tests:
 	$(EXE) tst/clip_pct.c
 	$(EXE) tst/collide_raw.c
 	$(EXE) tst/collide_pct.c
+	$(EXE) tst/colors.c
 
 	@echo ""
 	@echo "All tests passed!"
