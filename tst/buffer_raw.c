@@ -29,7 +29,7 @@ int main (void) {
         Pico_Rect r = { 5-1,5-1, 0,0 };
         pico_output_clear();
         pico_output_draw_buffer_raw(r, buffer, (Pico_Dim){3,3});
-        _pico_check("buffer_raw-01");
+        _pico_check("buffer-01");       // same as pct
     }
 
     {
@@ -38,7 +38,7 @@ int main (void) {
         pico_output_clear();
         Pico_Rect r = { 1,9, 0,0 };
         pico_output_draw_buffer_raw(r, buffer, (Pico_Dim){9,1});
-        _pico_check("buffer_raw-02");
+        _pico_check("buffer-02");       // same as pct
     }
 
     pico_init(0);
