@@ -574,13 +574,27 @@ static int l_output_screenshot (lua_State* L) {
     return 0;
 }
 
-static int l_output_screenshot_ext (lua_State* L) {
+static int l_output_screenshot_raw (lua_State* L) {
     const char* path = NULL;
     if (lua_type(L, 1) == LUA_TSTRING) {
         path = lua_tostring(L, 1);
     }
     Pico_Rect r = _rect_raw(L, 2);
-    const char* result = pico_output_screenshot_ext(path, r);
+    const char* result = pico_output_screenshot_raw(path, r);
+    if (result) {
+        lua_pushstring(L, result);
+        return 1;
+    }
+    return 0;
+}
+
+static int l_output_screenshot_pct (lua_State* L) {
+    const char* path = NULL;
+    if (lua_type(L, 1) == LUA_TSTRING) {
+        path = lua_tostring(L, 1);
+    }
+    Pico_Rect_Pct rect = _rect_pct(L, 2);
+    const char* result = pico_output_screenshot_pct(path, &rect);
     if (result) {
         lua_pushstring(L, result);
         return 1;
@@ -1102,7 +1116,8 @@ static const luaL_Reg ll_output[] = {
     { "clear", l_output_clear },
     { "present", l_output_present },
     { "screenshot", l_output_screenshot },
-    { "screenshot_ext", l_output_screenshot_ext },
+    { "screenshot_raw", l_output_screenshot_raw },
+    { "screenshot_pct", l_output_screenshot_pct },
     { "sound", l_output_sound },
     { NULL, NULL }
 };
