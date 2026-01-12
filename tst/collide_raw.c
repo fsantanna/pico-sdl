@@ -1,4 +1,5 @@
 #include "pico.h"
+#include "../check.h"
 
 int main() {
     pico_init(1);
@@ -22,7 +23,32 @@ int main() {
 
             int in = pico_vs_pos_rect_raw(p, r);
             puts(in ? "in" : "out");
-            pico_input_event(NULL, PICO_KEYDOWN);
+            pico_input_delay(10);
+
+            if (x==7 && y==7) {
+                assert(!in);
+                _pico_check("collide_raw-01");
+            }
+            if (x==8 && y==8) {
+                assert(in);
+                _pico_check("collide_raw-02");
+            }
+            if (x==9 && y==9) {
+                assert(in);
+                _pico_check("collide_raw-03");
+            }
+            if (x==10 && y==10) {
+                assert(in);
+                _pico_check("collide_raw-04");
+            }
+            if (x==11 && y==11) {
+                assert(in);
+                _pico_check("collide_raw-05");
+            }
+            if (x==12 && y==12) {
+                assert(!in);
+                _pico_check("collide_raw-06");
+            }
         }
     }
 
@@ -39,7 +65,25 @@ int main() {
 
             int in = pico_vs_rect_rect_raw(r2, r);
             puts(in ? "overlap" : "naw");
-            pico_input_event(NULL, PICO_KEYDOWN);
+            pico_input_delay(10);
+
+            printf("%d/%d\n", x,y);
+            if (x==4 && y==4) {
+                assert(!in);
+                _pico_check("collide_raw-07");
+            }
+            if (x==5 && y==5) {
+                assert(in);
+                _pico_check("collide_raw-08");
+            }
+            if (x==11 && y==11) {
+                assert(in);
+                _pico_check("collide_raw-09");
+            }
+            if (x==12 && y==12) {
+                assert(!in);
+                _pico_check("collide_raw-10");
+            }
         }
     }
 
