@@ -1,6 +1,7 @@
 # Makefile for pico-sdl tests
 
-EXE = PICO_CHECK_INT= PICO_CHECK_ASR=1 xvfb-run -a ./pico-sdl
+EXE = PICO_CHECK_INT= PICO_CHECK_ASR=1 ./pico-sdl
+#EXE = PICO_CHECK_INT= PICO_CHECK_ASR=1 xvfb-run -a ./pico-sdl
 
 .PHONY: tests clean
 
@@ -19,6 +20,8 @@ tests:
 	$(EXE) tst/collide_raw.c
 	$(EXE) tst/collide_pct.c
 	$(EXE) tst/colors.c
+	$(EXE) tst/dim.c
+	$(EXE) tst/font.c
 
 	@echo ""
 	@echo "All tests passed!"

@@ -9,9 +9,9 @@ int main (void) {
     char fmt[64];
     int N = 1;
 
-    for (float i=0; i<=1; i+=0.25) {
+    for (float i=0; i<=100; i+=25) {
         pico_output_clear();
-        r.w = r.h = i;
+        r.w = r.h = i/100.0;
         pico_output_draw_rect_pct(&r);
         sprintf(fmt, "dim-%02d", N++);
         puts(fmt);
@@ -19,14 +19,14 @@ int main (void) {
     }
 
     r.w = r.h = 0.8;
-    for (float i=0; i<=1.25; i+=0.25) {
+    for (float i=0; i<=125; i+=25) {
         pico_output_clear();
 
         pico_set_alpha(255);
         pico_set_color_draw((Pico_Color){255,255,255});
         pico_output_draw_rect_pct(&r);
 
-        Pico_Rect_Pct rr = { 0.5,0.5, i,i, PICO_ANCHOR_C, &r };
+        Pico_Rect_Pct rr = { 0.5,0.5, i/100.0,i/100.0, PICO_ANCHOR_C, &r };
         pico_set_alpha(150);
         pico_set_color_draw((Pico_Color){255,0,0});
         pico_output_draw_rect_pct(&rr);
