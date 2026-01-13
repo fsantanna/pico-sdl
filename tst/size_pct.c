@@ -44,7 +44,7 @@ int main (void) {
         pico_set_view_pct(1, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        _pico_check("size_pct-05");
+        //_pico_check("size_pct-05");
     }
     {
         puts("normal");

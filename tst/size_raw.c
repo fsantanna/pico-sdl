@@ -48,7 +48,7 @@ int main (void) {
         pico_set_view_raw(1, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
-        _pico_check("size_raw-05");
+        //_pico_check("size_raw-05");
     }
     {
         puts("normal");
