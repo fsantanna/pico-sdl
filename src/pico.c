@@ -712,34 +712,30 @@ static void _show_grid (void) {
     // metric labels
     {
         pico_set_alpha(0xFF);
-        void aux (int v, int cx, int cy) {
-            char lbl[16];
+        int H = 10;
+
+        for (int x=0; x<S.view.phy.w; x+=50) {
+            if (x == 0) continue;
+            int v = S.view.src.x + (x * S.view.src.w / S.view.phy.w);
+            char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-
-            float px = (float)cx / S.view.phy.w;
-            float py = (float)cy / S.view.phy.h;
-            float h = 10.0 / S.view.phy.h;
-
-            pico_output_draw_text_pct(
-                &(Pico_Rect_Pct) {
-                    px, py, 0, h, PICO_ANCHOR_C, NULL
-                },
+            int W = pico_get_text_width(H, lbl);
+            pico_output_draw_text_raw (
+                (Pico_Rect) { x-W/2, 10-H/2, 0, H },
                 lbl
             );
         }
 
-        int dx = S.view.phy.w / 10;
-        for (int i=0; i<S.view.phy.w; i+=dx) {
-            if (i == 0) continue;
-            int x = S.view.src.x + (i * S.view.src.w / S.view.phy.w);
-            aux(x, i, 7);
-        }
-
-        int dy = S.view.phy.h / 10;
-        for (int j=0; j<S.view.phy.h; j+=dy) {
-            if (j == 0) continue;
-            int y = S.view.src.y + (j * S.view.src.h / S.view.phy.h);
-            aux(y, 7, j);
+        for (int y=0; y<S.view.phy.h; y+=50) {
+            if (y == 0) continue;
+            int v = S.view.src.y + (y * S.view.src.h / S.view.phy.h);
+            char lbl[8];
+            snprintf(lbl, sizeof(lbl), "%d", v);
+            int W = pico_get_text_width(H, lbl);
+            pico_output_draw_text_raw (
+                (Pico_Rect) { 10-W/2, y-H/2, 0, H },
+                lbl
+            );
         }
     }
 
