@@ -28,6 +28,8 @@ tests:
 	$(EXE) tst/pixels.c
 	$(EXE) tst/pos.c
 	$(EXE) tst/rect.c
+	$(EXE) tst/size_raw.c
+	$(EXE) tst/size_pct.c
 
 	@echo ""
 	@echo "All tests passed!"

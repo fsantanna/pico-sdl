@@ -1,4 +1,5 @@
 #include "pico.h"
+#include "../check.h"
 
 int main (void) {
     pico_init(1);
@@ -13,28 +14,28 @@ int main (void) {
         pico_set_view_pct(-1, &(Pico_Pct){1,1}, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-01");
     }
     {
         puts("double");
         pico_set_view_pct(-1, &(Pico_Pct){2,2}, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-02");
     }
     {
         puts("half");
         pico_set_view_pct(-1, &(Pico_Pct){0.25,0.25}, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-03");
     }
     {
         puts("normal");
         pico_set_view_pct(-1, &(Pico_Pct){2,2}, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-04");
     }
 
     // phy: normal -> full -> normal
@@ -43,14 +44,14 @@ int main (void) {
         pico_set_view_pct(1, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-05");
     }
     {
         puts("normal");
         pico_set_view_pct(0, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-06");
     }
 
     // log: normal -> double -> half -> normal
@@ -60,28 +61,28 @@ int main (void) {
         pico_set_view_pct(-1, NULL, NULL, &(Pico_Pct){1,1}, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-07");
     }
     {
         puts("double");
         pico_set_view_pct(-1, NULL, NULL, &(Pico_Pct){2,2}, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-08");
     }
     {
         puts("half");
         pico_set_view_pct(-1, NULL, NULL, &(Pico_Pct){0.25,0.25}, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-09");
     }
     {
         puts("normal");
         pico_set_view_pct(-1, NULL, NULL, &(Pico_Pct){2,2}, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
-        pico_input_event(NULL, PICO_KEYDOWN);
+        _pico_check("size_pct-10");
     }
 
     pico_init(0);
