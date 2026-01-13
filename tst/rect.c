@@ -9,7 +9,7 @@ int main (void) {
         puts("centered rect");
         pico_output_clear();
         pico_output_draw_rect_pct(&(Pico_Rect_Pct){0.5, 0.5, 0.5, 0.5, PICO_ANCHOR_C, NULL});
-	_pico_check("rect-01");
+        _pico_check("rect-01");
     }
 
     {
@@ -23,7 +23,7 @@ int main (void) {
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_rect_pct(&r2);
 
-	_pico_check("rect-02");
+        _pico_check("rect-02");
     }
 
     {
@@ -39,7 +39,7 @@ int main (void) {
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_rect_pct(&r2);
 
-	_pico_check("rect-03");
+        _pico_check("rect-03");
     }
 
     {
@@ -55,7 +55,7 @@ int main (void) {
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_rect_pct(&r2);
 
-	_pico_check("rect-04");
+        _pico_check("rect-04");
     }
 
     {
@@ -71,7 +71,7 @@ int main (void) {
         pico_set_color_draw((Pico_Color){0xFF,0x00,0x00});
         pico_output_draw_rect_pct(&r2);
 
-	_pico_check("rect-05");
+        _pico_check("rect-05");
     }
 
     pico_init(0);

@@ -27,6 +27,7 @@ tests:
 	$(EXE) tst/mouse.c
 	$(EXE) tst/pixels.c
 	$(EXE) tst/pos.c
+	$(EXE) tst/rect.c
 
 	@echo ""
 	@echo "All tests passed!"
