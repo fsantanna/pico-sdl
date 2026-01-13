@@ -222,10 +222,17 @@ void pico_output_draw_pixel_raw (Pico_Pos pos);
 /// @sa pico_output_draw_pixel_raw
 void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos);
 
-/// @brief Draws a batch of pixels.
+/// @brief Draws a batch of pixels using absolute coordinates.
 /// @param ps array of coordinates
 /// @param n number of coordinates
-void pico_output_draw_pixels (const Pico_Pos* ps, int n);
+/// @sa pico_output_draw_pixels_pct
+void pico_output_draw_pixels_raw (const Pico_Pos* ps, int n);
+
+/// @brief Draws a batch of pixels using percentage-based coordinates.
+/// @param ps array of coordinates
+/// @param n number of coordinates
+/// @sa pico_output_draw_pixels_raw
+void pico_output_draw_pixels_pct (const Pico_Pos_Pct* ps, int n);
 
 /// @brief Draws a rectangle using absolute coordinates.
 /// @param rect rectangle to draw

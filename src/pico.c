@@ -530,19 +530,20 @@ void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos) {
     pico_output_draw_pixel_raw(pico_cv_pos_pct_raw(pos));
 }
 
-#if 0
-void pico_output_draw_pixels (const Pico_Pos* ps, int n) {
-    Pico_Pos vec[n];
-    for (int i=0; i<n; i++) {
-        vec[i].x = X(ps[i].x,1);
-        vec[i].y = Y(ps[i].y,1);
-    }
+void pico_output_draw_pixels_raw (const Pico_Pos* ps, int n) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_RenderDrawPoints(REN, vec, n);
+    SDL_RenderDrawPoints(REN, ps, n);
     _pico_output_present(0);
 }
-#endif
+
+void pico_output_draw_pixels_pct (const Pico_Pos_Pct* ps, int n) {
+    Pico_Pos vs[n];
+    for (int i=0; i<n; i++) {
+        vs[i] = pico_cv_pos_pct_raw(&ps[i]);
+    }
+    pico_output_draw_pixels_raw(vs, n);
+}
 
 void pico_output_draw_rect_raw (Pico_Rect rect) {
     SDL_SetRenderDrawColor(REN,

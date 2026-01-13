@@ -25,6 +25,7 @@ tests:
 	$(EXE) tst/image_pct.c
 	$(EXE) tst/move.c
 	$(EXE) tst/mouse.c
+	$(EXE) tst/pixels.c
 
 	@echo ""
 	@echo "All tests passed!"
