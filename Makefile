@@ -21,6 +21,9 @@ tests:
 	$(EXE) tst/colors.c
 	$(EXE) tst/dim.c
 	$(EXE) tst/font.c
+	$(EXE) tst/image_raw.c
+	$(EXE) tst/image_pct.c
+	$(EXE) tst/move.c
 
 	@echo ""
 	@echo "All tests passed!"
