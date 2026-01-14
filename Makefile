@@ -1,6 +1,7 @@
 # Makefile for pico-sdl tests
 
 EXE = PICO_CHECK_INT= PICO_CHECK_ASR=1 xvfb-run -a ./pico-sdl
+#EXE = PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl
 
 .PHONY: tests clean
 
@@ -22,7 +23,7 @@ tests:
 	$(EXE) tst/dim.c
 	$(EXE) tst/font.c
 	$(EXE) tst/image_raw.c
-	#$(EXE) tst/image_pct.c
+	$(EXE) tst/image_pct.c
 	$(EXE) tst/move.c
 	$(EXE) tst/mouse.c
 	$(EXE) tst/pixels.c

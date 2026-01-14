@@ -179,8 +179,8 @@ void pico_init (int on) {
         pico_assert(WIN != NULL);
         pico_win = WIN;
 
-        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
-        //SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
+        //SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
+        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
 
         pico_assert(REN != NULL);
         SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
