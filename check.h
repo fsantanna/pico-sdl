@@ -121,10 +121,10 @@ void _pico_check(const char *msg) {
     char fmt_asr[256];
     sprintf(fmt_asr, "asr/%s.png", msg);
 
-    SDL_Surface *sfc_out = IMG_Load(fmt_out);
-    assert(sfc_out && "could not open out/ file");
-    SDL_Surface *sfc_asr = IMG_Load(fmt_asr);
-    assert(sfc_asr && "could not open asr/ file");
+    SDL_Surface* sfc_out = IMG_Load(fmt_out);
+    pico_assert(sfc_out != NULL);
+    SDL_Surface* sfc_asr = IMG_Load(fmt_asr);
+    pico_assert(sfc_asr != NULL);
 
     if (memcmp(sfc_out->pixels, sfc_asr->pixels,
                sfc_out->pitch * sfc_out->h) != 0) {
