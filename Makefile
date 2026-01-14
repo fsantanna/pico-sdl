@@ -20,6 +20,7 @@ tests:
 	$(EXE) tst/collide_raw.c
 	$(EXE) tst/collide_pct.c
 	$(EXE) tst/colors.c
+	$(EXE) tst/cross.c
 	$(EXE) tst/dim.c
 	$(EXE) tst/font.c
 	$(EXE) tst/image_raw.c
