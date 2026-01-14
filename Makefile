@@ -1,7 +1,7 @@
 # Makefile for pico-sdl tests
 
-EXE = PICO_CHECK_INT= PICO_CHECK_ASR=1 xvfb-run -a ./pico-sdl
-#EXE = PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl
+EXE = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR=1 xvfb-run -a ./pico-sdl
+#EXE = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl
 
 .PHONY: tests clean
 

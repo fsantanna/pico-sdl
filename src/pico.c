@@ -17,7 +17,10 @@
 #define SDL_ANY PICO_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
-SDL_Window* pico_win;       // (undocumented for tests)
+#ifdef PICO_TESTS
+SDL_Window* pico_win;
+#endif
+
 static SDL_Window*  WIN;
 static SDL_Texture* TEX;
 static int FS = 0;          // fullscreen pending (ignore RESIZED event)
@@ -177,10 +180,13 @@ void pico_init (int on) {
             (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
         );
         pico_assert(WIN != NULL);
-        pico_win = WIN;
 
-        //SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
+#ifdef PICO_TESTS
+        pico_win = WIN;
         SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
+#else
+        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
+#endif
 
         pico_assert(REN != NULL);
         SDL_SetRenderDrawBlendMode(REN, SDL_BLENDMODE_BLEND);
