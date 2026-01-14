@@ -73,7 +73,6 @@ int main (void) {
         pico_set_view_raw(-1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
         Pico_Rect r = {log.w-25, log.h-25, 50, 50};
-printf(">>> %d %d %d %d\n", r.x, r.y, r.w, r.h);
         pico_output_draw_rect_raw(r);
         _pico_check("size_raw-08");
     }
