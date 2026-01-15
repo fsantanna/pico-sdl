@@ -96,8 +96,8 @@ Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect_Pct* r, Pico_Rect up) {
     int w = r->w * up.w;
     int h = r->h * up.h;
     return (Pico_Rect) {
-        up.x + r->x*up.w - r->anchor.x*w + 0.5,
-        up.y + r->y*up.h - r->anchor.y*h + 0.5,
+        up.x + r->x*up.w - r->anchor.x*w, // + 0.5,
+        up.y + r->y*up.h - r->anchor.y*h, // + 0.5,
         w, h
     };
 }
@@ -261,7 +261,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 case SDLK_MINUS: {
                     // Zoom out
                     pico_set_view_pct(-1, NULL, NULL, NULL,
-                        &(Pico_Rect_Pct){0.5, 0.5, 1.1, 1.1, PICO_ANCHOR_C, NULL},
+                        &(Pico_Rect_Pct){0.5, 0.5, 1.1, 1.1, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
                     break;
@@ -269,7 +269,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 case SDLK_EQUALS: {
                     // Zoom in
                     pico_set_view_pct(-1, NULL, NULL, NULL,
-                        &(Pico_Rect_Pct){0.5, 0.5, 0.9, 0.9, PICO_ANCHOR_C, NULL},
+                        &(Pico_Rect_Pct){0.5, 0.5, 0.9, 0.9, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
                     break;
@@ -784,12 +784,12 @@ static void _pico_output_present (int force) {
                 a->h -= d;
                 a->y = 0;
             }
-            if (a->x + a->w > max_w) {
+            if (a->x + a->w>max_w) {
                 int d = (a->x + a->w) - max_w;
                 b->w -= (d * sw);
                 a->w -= d;
             }
-            if (a->y + a->h > max_h) {
+            if (a->y + a->h>max_h) {
                 int d = (a->y + a->h) - max_h;
                 b->h -= (d * sh);
                 a->h -= d;
