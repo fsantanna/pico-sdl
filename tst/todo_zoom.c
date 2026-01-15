@@ -5,21 +5,8 @@ int main (void) {
 
     Pico_Dim window, world;
     pico_get_view(NULL, &window, NULL, &world, NULL, NULL);
-    assert(window.w==640 && window.h==360);
-    assert(world.w==64 && world.h==36);
-
-    Pico_Pos ct = {32, 18};  // Center of 64x36 world
-
-#if 0
-    pico_set_style(PICO_STROKE);
-
-    while (1) {
-        pico_output_clear();
-        pico_output_draw_pixel(ct);
-        pico_output_draw_rect((Pico_Rect){ct.x,ct.y,64,36});
-        pico_input_event(NULL, PICO_KEYUP);
-    }
-#endif
+    assert(window.w==500 && window.h==500);
+    assert(world.w==100 && world.h==100);
 
     // DRAW_RECT
     puts("shows lower-left X, center rect, center/up-right line");
