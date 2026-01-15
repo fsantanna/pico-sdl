@@ -249,8 +249,8 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         }
 
         case SDL_KEYDOWN: {
-            const unsigned char* state = SDL_GetKeyboardState(NULL);
-            if (!state[SDL_SCANCODE_LCTRL] && !state[SDL_SCANCODE_RCTRL]) {
+            int ctrl = (e->key.keysym.mod & KMOD_CTRL);
+            if (!ctrl) {
                 break;
             }
             switch (e->key.keysym.sym) {
@@ -291,6 +291,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     break;
                 }
                 case SDLK_UP: {
+puts("TODO");
                     // Scroll up
                     pico_set_view_pct(-1, NULL, NULL, NULL,
                         &(Pico_Rect_Pct){0, -0.1, 1, 1, PICO_ANCHOR_NW, NULL},

@@ -1,5 +1,7 @@
-#include "pico.h"
 #include <SDL2/SDL.h>
+
+#include "pico.h"
+#include "../check.h"
 
 // Push a Ctrl+key event to simulate navigation
 void push_key (SDL_Keycode key) {
@@ -16,7 +18,7 @@ int main() {
 
     // draw
     {
-        // Draw X at center of world
+        // X at center
         pico_output_draw_line_pct(
             &(Pico_Pos_Pct){0.45, 0.45, PICO_ANCHOR_C, NULL},
             &(Pico_Pos_Pct){0.55, 0.55, PICO_ANCHOR_C, NULL}
@@ -26,22 +28,22 @@ int main() {
             &(Pico_Pos_Pct){0.45, 0.55, PICO_ANCHOR_C, NULL}
         );
 
-        // Draw rectangle at center of world (1/4 size)
+        // RECT at center
         pico_set_style(PICO_STROKE);
         pico_output_draw_rect_pct(
             &(Pico_Rect_Pct){0.5, 0.5, 0.25, 0.25, PICO_ANCHOR_C, NULL}
         );
     }
 
-    // Generate navigation key presses: 5 up, 3 left, 2 right, 4 down
+    // navigation keys: 5 up, 3 left, 2 right, 4 down
     _pico_check("navigate-01");
-    for (int i=0; i<5; i++) push_key(SDLK_UP);
+    for (int i=0; i<5; i++) { push_key(SDLK_UP);    pico_input_event(NULL, PICO_ANY); }
     _pico_check("navigate-02");
-    for (int i=0; i<3; i++) push_key(SDLK_LEFT);
+    for (int i=0; i<3; i++) { push_key(SDLK_LEFT);  pico_input_event(NULL, PICO_ANY); }
     _pico_check("navigate-03");
-    for (int i=0; i<2; i++) push_key(SDLK_RIGHT);
+    for (int i=0; i<2; i++) { push_key(SDLK_RIGHT); pico_input_event(NULL, PICO_ANY); }
     _pico_check("navigate-04");
-    for (int i=0; i<4; i++) push_key(SDLK_DOWN);
+    for (int i=0; i<4; i++) { push_key(SDLK_DOWN);  pico_input_event(NULL, PICO_ANY); }
     _pico_check("navigate-05");
 
     pico_init(0);
