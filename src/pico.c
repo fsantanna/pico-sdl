@@ -96,8 +96,8 @@ Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect_Pct* r, Pico_Rect up) {
     int w = r->w * up.w;
     int h = r->h * up.h;
     return (Pico_Rect) {
-        up.x + r->x*up.w - r->anchor.x*w, // + 0.5,
-        up.y + r->y*up.h - r->anchor.y*h, // + 0.5,
+        up.x + r->x*up.w - r->anchor.x*w + 0.5,
+        up.y + r->y*up.h - r->anchor.y*h + 0.5,
         w, h
     };
 }
@@ -1203,7 +1203,10 @@ void pico_set_view_pct (
         xxlog = &xlog;
     }
     if (src != NULL) {
+//printf(">>> pct: %f %f %f %f\n", src->x, src->y, src->w, src->h);
         xsrc = pico_cv_rect_pct_raw_ext(src, S.view.src); // relative to itself
+//printf(">>> raw: %d %d %d %d\n", xsrc.x, xsrc.y, xsrc.w, xsrc.h);
+//printf(">>> SRC: %d %d %d %d\n", S.view.src.x, S.view.src.y, S.view.src.w, S.view.src.h);
         xxsrc = &xsrc;
     }
     if (clip != NULL) {

@@ -36,7 +36,7 @@ int main (void) {
         Pico_Rect_Pct pct = {0.25, 0.25, 0.5, 0.25, PICO_ANCHOR_C, NULL};
         Pico_Rect     raw = pico_cv_rect_pct_raw_ext(&pct, up);
         printf("rect: (%d, %d, %d, %d)\n", raw.x, raw.y, raw.w, raw.h);
-        assert(raw.x==20 && raw.y==27 && raw.w==30 && raw.h==15);
+        assert(raw.x==20 && raw.y==28 && raw.w==30 && raw.h==15);
     }
     {
         puts("ext - rect - pct->raw - NE");
