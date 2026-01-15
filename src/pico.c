@@ -291,7 +291,6 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     break;
                 }
                 case SDLK_UP: {
-puts("TODO");
                     // Scroll up
                     pico_set_view_pct(-1, NULL, NULL, NULL,
                         &(Pico_Rect_Pct){0, -0.1, 1, 1, PICO_ANCHOR_NW, NULL},
@@ -1172,6 +1171,7 @@ void pico_set_view_raw (
         SDL_RenderSetClipRect(REN, &S.view.clip);
         _out3_:
     }
+    _pico_output_present(0);
 }
 
 void pico_set_view_pct (
