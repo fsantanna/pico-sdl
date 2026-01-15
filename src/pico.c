@@ -763,39 +763,43 @@ static void _pico_output_present (int force) {
     SDL_SetRenderDrawColor(REN, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(REN);
 
-    // Calculate clipped src and dst rectangles for viewport rendering
+    // Clip src/dst rectangles to their respective bounds
     {
+        // Clips rect 'a' to bounds [0,0,max_w,max_h] and propagates changes to 'b'
+        void aux (SDL_Rect* a, SDL_Rect* b, int max_w, int max_h) {
+            assert(a->w>0 && a->h>0);
+            float sw = b->w / (float)a->w;
+            float sh = b->h / (float)a->h;
+            if (a->x < 0) {
+                int d = -a->x;
+                b->x += (d * sw);
+                b->w -= (d * sw);
+                a->w -= d;
+                a->x = 0;
+            }
+            if (a->y < 0) {
+                int d = -a->y;
+                b->y += (d * sh);
+                b->h -= (d * sh);
+                a->h -= d;
+                a->y = 0;
+            }
+            if (a->x + a->w > max_w) {
+                int d = (a->x + a->w) - max_w;
+                b->w -= (d * sw);
+                a->w -= d;
+            }
+            if (a->y + a->h > max_h) {
+                int d = (a->y + a->h) - max_h;
+                b->h -= (d * sh);
+                a->h -= d;
+            }
+        }
         SDL_Rect src = S.view.src;
         SDL_Rect dst = S.view.dst;
-        if (dst.x < 0) {
-            int dx = -dst.x;
-            src.x += dx;
-            src.w -= dx;        // clip left edge (negative dst.x)
-            dst.x = 0;
-            dst.w -= dx;
-        }
-        if (dst.y < 0) {
-            int dy = -dst.y;
-            src.y += dy;
-            src.h -= dy;        // clip top edge (negative dst.y)
-            dst.y = 0;
-            dst.h -= dy;
-        }
-        if (dst.x+dst.w > S.view.phy.w) {
-            int ex = (dst.x + dst.w) - S.view.phy.w;
-            src.w -= ex;        // clip right edge (dst beyond physical width)
-            dst.w -= ex;
-        }
-        if (dst.y+dst.h > S.view.phy.h) {
-            int ex = (dst.y + dst.h) - S.view.phy.h;
-            src.h -= ex;        // clip bottom edge (dst beyond physical height)
-            dst.h -= ex;
-        }
-        // Only render if there's something visible
-        if (src.w>0 && src.h>0 && dst.w>0 && dst.h>0) {
-            SDL_RenderCopy(REN, TEX, &src, &dst);
-        }
-        //SDL_RenderCopy(REN, TEX, NULL, NULL);
+        aux(&dst, &src, S.view.phy.w, S.view.phy.h);
+        aux(&src, &dst, S.view.log.w, S.view.log.h);
+        SDL_RenderCopy(REN, TEX, &src, &dst);
     }
 
     _show_grid();
