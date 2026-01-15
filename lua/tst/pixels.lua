@@ -3,8 +3,8 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Pixels"
--- Set view to 5x5 world
-pico.set.view_raw(nil, nil, nil, {w=5, h=5}, nil, nil)
+pico.set.dim.window(100,100)
+pico.set.dim.world(5,5)
 
 local pixels = {
     {x=1, y=1}, {x=2, y=1}, {x=3, y=1},

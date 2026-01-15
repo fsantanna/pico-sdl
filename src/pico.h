@@ -31,13 +31,6 @@ typedef SDL_Rect  Pico_Rect;
 typedef SDL_Point Pico_Anchor;
 typedef SDL_Point Pico_Flip;
 
-#define PICO_LEFT   0
-#define PICO_CENTER 50
-#define PICO_RIGHT  100
-#define PICO_TOP    0
-#define PICO_MIDDLE 50
-#define PICO_BOTTOM 100
-
 typedef enum {
     PICO_FILL, PICO_STROKE
 } PICO_STYLE;

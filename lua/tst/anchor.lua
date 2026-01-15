@@ -3,88 +3,110 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Anchoring..."
-pico.set.view_raw(nil, {w=200, h=200}, nil, {w=10, h=10}, nil, nil)
+pico.set.dim.window(200,200)
+pico.set.dim.world(10,10)
 
--- PIXELS with different anchors using _pct
+-- PIXELS
 do
-    print "centered pixel (anchor C)"
+    print "centered pixel - 1dir/1baixo"
+    pico.set.anchor.pos('center', 'middle')
+    local pt = pico.pos { x=50, y=50 }
     pico.output.clear()
-    pico.output.draw.pixel_pct({x=0.5, y=0.5, anchor=pico.anchor.C})
-    pico.input.event('key.dn')
+    pico.output.draw.pixel(pt)
+    pico.input.event('key.dn');
+    --_pico_check("pixel50x50y_center")
+end
+do
+    print "centered pixel - 1dir/1baixo"
+    pico.set.anchor.pos { x='left', y='top' }
+    local pt = pico.pos { x=50, y=50 }
+    pico.output.clear()
+    pico.output.draw.pixel(pt)
+    pico.input.event('key.dn');
+    --_pico_check("pixel50x50y_lefttop")
+end
+do
+    print "centered pixel - 1esq/1cima"
+    pico.set.anchor.pos { x='right', y='bottom' }
+    local pt = pico.pos { x=50, y=50 }
+    pico.output.clear()
+    pico.output.draw.pixel(pt)
+    pico.input.event('key.dn');
+    --_pico_check("pixel50x50y_rightbottom");
 end
 
+-- RECTS
 do
-    print "pixel at 50% with NW anchor"
+    print "centered rect - exact"
+    pico.set.anchor.pos('center', 'middle')
+    local pt = pico.pos { x=50, y=50 }
+    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
     pico.output.clear()
-    pico.output.draw.pixel_pct({x=0.5, y=0.5, anchor=pico.anchor.NW})
-    pico.input.event('key.dn')
+    pico.output.draw.rect(rct)
+    pico.input.event('key.dn');
+    --_pico_check("rect50x50y_center")
+end
+do
+    print "topleft centered - 1lin/1col"
+    pico.set.anchor.pos { x='left', y='top' }
+    local pt = pico.pos { x=50, y=50 }
+    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    pico.output.clear()
+    pico.output.draw.rect(rct)
+    pico.input.event('key.dn');
+    --_pico_check("rect50x50y_lefttop")
+end
+do
+    print "bottomright centered - 1lin/1col"
+    pico.set.anchor.pos('right', 'bottom')
+    local pt = pico.pos { x=50, y=50 }
+    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    pico.output.clear()
+    pico.output.draw.rect(rct)
+    pico.input.event('key.dn');
+    --_pico_check("rect50x50y_rightbottom");
+end
+do
+    print "rightmiddle centered - 1col"
+    pico.set.anchor.pos { x='right', y='middle' }
+    local pt = pico.pos { x=50, y=50 }
+    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    pico.output.clear()
+    pico.output.draw.rect(rct)
+    pico.input.event('key.dn');
+    --_pico_check("rect50x50y_rightcenter")
+end
+do
+    print "anchor 25%25% 20%20% - 1lin/1col"
+    pico.set.anchor.pos { x=25, y=25 }
+    local pt = pico.pos { x=20, y=20 }
+    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    pico.output.clear()
+    pico.output.draw.rect(rct)
+    pico.input.event('key.dn');
+    --_pico_check("rect50x50y_rightcenter")
 end
 
+-- RECTS out of [0,100]
 do
-    print "pixel at 50% with SE anchor"
+    print "anchor -25%-25% centered - touching border"
+    pico.set.anchor.pos { x=-25, y=-25 }
+    local pt = pico.pos { x=50, y=50 }
+    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
     pico.output.clear()
-    pico.output.draw.pixel_pct({x=0.5, y=0.5, anchor=pico.anchor.SE})
-    pico.input.event('key.dn')
+    pico.output.draw.rect(rct)
+    pico.input.event('key.dn');
+    --_pico_check("rect20x20y_-25x-25y")
 end
-
--- RECTS with different anchors
 do
-    print "centered rect (anchor C)"
+    print "anchor 125%125% centered - touching border"
+    pico.set.anchor.pos { x=125, y=125 }
+    local pt = pico.pos { x=50, y=50 }
+    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
     pico.output.clear()
-    pico.output.draw.rect_pct({x=0.5, y=0.5, w=0.4, h=0.4, anchor=pico.anchor.C})
-    pico.input.event('key.dn')
-end
-
-do
-    print "rect at 50% with NW anchor"
-    pico.output.clear()
-    pico.output.draw.rect_pct({x=0.5, y=0.5, w=0.4, h=0.4, anchor=pico.anchor.NW})
-    pico.input.event('key.dn')
-end
-
-do
-    print "rect at 50% with SE anchor"
-    pico.output.clear()
-    pico.output.draw.rect_pct({x=0.5, y=0.5, w=0.4, h=0.4, anchor=pico.anchor.SE})
-    pico.input.event('key.dn')
-end
-
-do
-    print "rect at 50% with E anchor (right-middle)"
-    pico.output.clear()
-    pico.output.draw.rect_pct({x=0.5, y=0.5, w=0.4, h=0.4, anchor=pico.anchor.E})
-    pico.input.event('key.dn')
-end
-
-do
-    print "rect at 20%,20% with custom anchor (0.25, 0.25)"
-    pico.output.clear()
-    pico.output.draw.rect_pct({
-        x=0.2, y=0.2, w=0.4, h=0.4,
-        anchor={x=0.25, y=0.25}
-    })
-    pico.input.event('key.dn')
-end
-
--- RECTS with anchors outside [0,1]
-do
-    print "rect centered with anchor -0.25,-0.25 (extends beyond)"
-    pico.output.clear()
-    pico.output.draw.rect_pct({
-        x=0.5, y=0.5, w=0.4, h=0.4,
-        anchor={x=-0.25, y=-0.25}
-    })
-    pico.input.event('key.dn')
-end
-
-do
-    print "rect centered with anchor 1.25,1.25 (extends beyond)"
-    pico.output.clear()
-    pico.output.draw.rect_pct({
-        x=0.5, y=0.5, w=0.4, h=0.4,
-        anchor={x=1.25, y=1.25}
-    })
-    pico.input.event('key.dn')
+    pico.output.draw.rect(rct)
+    pico.input.event('key.dn');
+    --_pico_check("rect50x50y_125x125y");
 end
 
 pico.init(false)
