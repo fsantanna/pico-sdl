@@ -1,5 +1,4 @@
 #include "pico.h"
-#include "../src/colors.h"
 #include "../check.h"
 
 int main (void) {

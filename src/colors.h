@@ -1,8 +1,6 @@
 #ifndef PICO_COLORS_H
 #define PICO_COLORS_H
 
-#include "pico.h"
-
 /// @defgroup Predefined Colors
 /// @brief Predefined color constants for common colors.
 /// @{
