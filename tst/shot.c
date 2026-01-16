@@ -7,12 +7,10 @@ void compare (const char* out, const char* asr) {
     SDL_Surface* sfc_asr = IMG_Load(asr);
     pico_assert(sfc_asr != NULL);
 
-    if (memcmp(sfc_out->pixels, sfc_asr->pixels,
-               sfc_out->pitch * sfc_out->h) != 0) {
-        printf("CHECK ERROR : files mismatch : %s --- %s\n",
-               out, asr);
-        exit(1);
-    }
+    printf("Testing: %s\n", asr);
+    int ret = memcmp(sfc_out->pixels, sfc_asr->pixels,
+                     sfc_out->pitch * sfc_out->h);
+    assert(ret == 0);
 }
 
 int main (void) {

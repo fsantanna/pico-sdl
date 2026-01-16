@@ -104,15 +104,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-void _pico_check(const char *msg) {
+void _pico_check (const char* msg) {
     // Always write to out/
     char fmt_out[256];
     sprintf(fmt_out, "out/%s.png", msg);
     pico_output_screenshot(fmt_out);
+    printf("Testing: %s\n", msg);
 
     #ifdef PICO_CHECK_INT
     // Pause for visual inspection if INT is defined
-    puts("interactive: press any key");
+    puts("-=- press any key -=-");
     pico_input_event(NULL, PICO_KEYDOWN);
     #endif
 
@@ -126,12 +127,9 @@ void _pico_check(const char *msg) {
     SDL_Surface* sfc_asr = IMG_Load(fmt_asr);
     pico_assert(sfc_asr != NULL);
 
-    if (memcmp(sfc_out->pixels, sfc_asr->pixels,
-               sfc_out->pitch * sfc_out->h) != 0) {
-        printf("CHECK ERROR : files mismatch : %s --- %s\n",
-               fmt_out, fmt_asr);
-        exit(1);
-    }
+    int ret = memcmp(sfc_out->pixels, sfc_asr->pixels,
+                     sfc_out->pitch * sfc_out->h);
+    assert(ret == 0);
 
     SDL_FreeSurface(sfc_out);
     SDL_FreeSurface(sfc_asr);
