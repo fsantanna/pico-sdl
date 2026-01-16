@@ -30,7 +30,6 @@ extern "C" {
 
 typedef SDL_Point Pico_Pos;
 typedef SDL_Rect  Pico_Rect;
-typedef SDL_Point Pico_Anchor;
 typedef SDL_Point Pico_Flip;
 
 typedef enum {
@@ -327,14 +326,6 @@ void pico_output_sound (const char* path);
 
 // GET
 
-/// @brief Gets the origin used to position objects (center, topleft, etc).
-/// @sa pico_get_anchor_rotate
-Pico_Anchor pico_get_anchor_pos (void);
-
-/// @brief Gets the origin used to rotate objects (center, topleft, etc).
-/// @sa pico_get_anchor_pos
-Pico_Anchor pico_get_anchor_rotate (void);
-
 /// @brief Gets the color set to clear the screen.
 Pico_Color pico_get_color_clear (void);
 
@@ -427,16 +418,6 @@ void pico_get_view (
 /// @brief Sets the alpha transparency for drawing operations.
 /// @param a alpha value (0: transparent; 255: opaque)
 void pico_set_alpha (int a);
-
-/// @brief Changes the reference to position objects (center, topleft, etc).
-/// @include anchor.c
-/// @param anchor anchor for the x and y axis
-void pico_set_anchor_pos (Pico_Anchor anchor);
-
-/// @brief Changes the reference to rotate objects (center, topleft, etc).
-/// @include anchor.c
-/// @param anchor anchor for the x and y axis
-void pico_set_anchor_rotate (Pico_Anchor anchor);
 
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
