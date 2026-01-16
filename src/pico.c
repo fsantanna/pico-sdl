@@ -21,8 +21,8 @@ typedef enum {
 } PICO_RES;
 
 typedef struct {
-    PICO_RES   type;
-    const char path[];
+    PICO_RES type;
+    char path[];
 } Pico_Res;
 
 #define SDL_ANY PICO_ANY
