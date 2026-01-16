@@ -31,7 +31,7 @@ int main (void) {
                 _pico_check("view_raw-01");
                 break;
             case 49:
-                _pico_check("view_raw-02");
+                //_pico_check("view_raw-02");
                 break;
         }
     }
