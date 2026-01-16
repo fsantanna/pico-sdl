@@ -37,6 +37,16 @@ static SDL_Texture* TEX;
 static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 static int TGT = 1;         // 0:phy, 1:log
 
+Pico_Pct PICO_ANCHOR_C  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE };
+Pico_Pct PICO_ANCHOR_NW = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_TOP    };
+Pico_Pct PICO_ANCHOR_N  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_TOP    };
+Pico_Pct PICO_ANCHOR_NE = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_TOP    };
+Pico_Pct PICO_ANCHOR_E  = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_MIDDLE };
+Pico_Pct PICO_ANCHOR_SE = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_BOTTOM };
+Pico_Pct PICO_ANCHOR_S  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_BOTTOM };
+Pico_Pct PICO_ANCHOR_SW = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_BOTTOM };
+Pico_Pct PICO_ANCHOR_W  = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_MIDDLE };
+
 #define REN (SDL_GetRenderer(WIN))
 
 static ttl_hash* _pico_hash;
