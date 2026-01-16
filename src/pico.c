@@ -86,7 +86,13 @@ static int _round (float v) {
     return (v < 0.0) ? (v - 0.5) : (v + 0.5);
 }
 
-Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos_Pct* p, Pico_Rect up) {
+Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos_Pct* p, Pico_Rect ref) {
+    Pico_Rect up;
+    if (p->up == NULL) {
+        up = ref;
+    } else {
+        up = pico_cv_rect_pct_raw_ext(p->up, ref);
+    }
     return (Pico_Pos) {
         _round(up.x + p->x*up.w - p->anchor.x),
         _round(up.y + p->y*up.h - p->anchor.y),
@@ -94,20 +100,22 @@ Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos_Pct* p, Pico_Rect up) {
 }
 
 Pico_Pos pico_cv_pos_pct_raw (const Pico_Pos_Pct* p) {
-    if (p->up == NULL) {
-        Pico_Rect up = {
-            0, 0,
-            (TGT == 0) ? S.view.phy.w : S.view.log.w,
-            (TGT == 0) ? S.view.phy.h : S.view.log.h,
-        };
-        return pico_cv_pos_pct_raw_ext(p, up);
-    } else {
-        Pico_Rect up = pico_cv_rect_pct_raw(p->up);
-        return pico_cv_pos_pct_raw_ext(p, up);
-    }
+    Pico_Rect ref = {
+        0, 0,
+        (TGT == 0) ? S.view.phy.w : S.view.log.w,
+        (TGT == 0) ? S.view.phy.h : S.view.log.h,
+    };
+    return pico_cv_pos_pct_raw_ext(p, ref);
 }
 
-Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect_Pct* r, Pico_Rect up) {
+Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect_Pct* r, Pico_Rect ref) {
+    Pico_Rect up;
+    if (r->up == NULL) {
+        up = ref;
+    } else {
+        up = pico_cv_rect_pct_raw_ext(r->up, ref);
+    }
+
     int w = r->w * up.w;
     int h = r->h * up.h;
     return (Pico_Rect) {
@@ -118,17 +126,12 @@ Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect_Pct* r, Pico_Rect up) {
 }
 
 Pico_Rect pico_cv_rect_pct_raw (const Pico_Rect_Pct* r) {
-    if (r->up == NULL) {
-        Pico_Rect up = {
-            0, 0,
-            (TGT == 0) ? S.view.phy.w : S.view.log.w,
-            (TGT == 0) ? S.view.phy.h : S.view.log.h,
-        };
-        return pico_cv_rect_pct_raw_ext(r, up);
-    } else {
-        Pico_Rect up = pico_cv_rect_pct_raw(r->up);
-        return pico_cv_rect_pct_raw_ext(r, up);
-    }
+    Pico_Rect ref = {
+        0, 0,
+        (TGT == 0) ? S.view.phy.w : S.view.log.w,
+        (TGT == 0) ? S.view.phy.h : S.view.log.h,
+    };
+    return pico_cv_rect_pct_raw_ext(r, ref);
 }
 
 // INTERNAL
