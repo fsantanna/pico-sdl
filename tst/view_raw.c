@@ -30,8 +30,9 @@ int main (void) {
             case 0:
                 _pico_check("view_raw-01");
                 break;
-            case 49:
-                //_pico_check("view_raw-02");
+            //case 49:
+            case 48:
+                _pico_check("view_raw-02");
                 break;
         }
     }
