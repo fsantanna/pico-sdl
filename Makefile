@@ -27,7 +27,7 @@ tests:
 	$(EXE) tst/image_pct.c
 	$(EXE) tst/mouse.c
 	$(EXE) tst/move.c
-	#$(EXE) tst/navigate.c
+	$(EXE) tst/navigate.c
 	$(EXE) tst/pixels.c
 	$(EXE) tst/pos.c
 	$(EXE) tst/rect.c
