@@ -133,13 +133,13 @@ Pico_Rect pico_cv_rect_pct_raw (const Pico_Rect_Pct* r) {
 
 // INTERNAL
 
-static TTF_Font* _font_open (const char* file, int h) {
+static TTF_Font* _font_open (const char* path, int h) {
     TTF_Font* ttf;
-    if (file == NULL) {
+    if (path == NULL) {
         SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
         ttf = TTF_OpenFontRW(rw, 1, h);
     } else {
-        ttf = TTF_OpenFont(file, h);
+        ttf = TTF_OpenFont(path, h);
     }
     pico_assert(ttf != NULL);
     return ttf;
@@ -521,7 +521,7 @@ void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color_A 
     _pico_output_present(0);
 }
 
-void pico_output_draw_image_raw (Pico_Rect rect, const char* path) {
+SDL_Texture* _image (const char* path) {
     int n = sizeof(Pico_Res) + strlen(path) + 1;
     Pico_Res* res = alloca(n);
     res->type = PICO_RES_IMAGE;
@@ -533,6 +533,12 @@ void pico_output_draw_image_raw (Pico_Rect rect, const char* path) {
         ttl_hash_put(_pico_hash, n, res, tex);
     }
     pico_assert(tex != NULL);
+
+    return tex;
+}
+
+void pico_output_draw_image_raw (Pico_Rect rect, const char* path) {
+    SDL_Texture* tex = _image(path);
     Pico_Rect r = tex_rect_raw(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopy(REN, tex, NULL, &r);
@@ -540,19 +546,9 @@ void pico_output_draw_image_raw (Pico_Rect rect, const char* path) {
 }
 
 void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path) {
-    int n = sizeof(Pico_Res) + strlen(path) + 1;
-    Pico_Res* res = alloca(n);
-    res->type = PICO_RES_IMAGE;
-    strcpy(res->path, path);
-
-    SDL_Texture* tex = (SDL_Texture*)ttl_hash_get(_pico_hash, n, res);
-    if (tex == NULL) {
-        tex = IMG_LoadTexture(REN, path);
-        ttl_hash_put(_pico_hash, n, res, tex);
-    }
-    pico_assert(tex != NULL);
-    Pico_Rect r = tex_rect_pct(tex, rect);
+    SDL_Texture* tex = _image(path);
     SDL_SetTextureAlphaMod(tex, S.alpha);
+    Pico_Rect r = tex_rect_pct(tex, rect);
     SDL_RenderCopy(REN, tex, NULL, &r);
     _pico_output_present(0);
 }
@@ -1018,19 +1014,8 @@ int pico_get_rotate (void) {
     return S.angle;
 }
 
-Pico_Dim pico_get_dim_image (const char* file) {
-    int n = sizeof(Pico_Res) + strlen(file) + 1;
-    Pico_Res* res = alloca(n);
-    res->type = PICO_RES_IMAGE;
-    strcpy(res->path, file);
-
-    SDL_Texture* tex = (SDL_Texture*)ttl_hash_get(_pico_hash, n, res);
-    if (tex == NULL) {
-        tex = IMG_LoadTexture(REN, file);
-        ttl_hash_put(_pico_hash, n, res, tex);
-    }
-    pico_assert(tex != NULL);
-
+Pico_Dim pico_get_dim_image (const char* path) {
+    SDL_Texture* tex = _image(path);
     Pico_Dim dim;
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
     return dim;
@@ -1112,8 +1097,8 @@ void pico_set_flip (Pico_Flip flip) {
     S.flip = flip;
 }
 
-void pico_set_font (const char* file) {
-    S.font = file;
+void pico_set_font (const char* path) {
+    S.font = path;
 }
 
 void pico_set_grid (int on) {

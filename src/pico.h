@@ -385,8 +385,8 @@ int pico_get_mouse_pct (Pico_Pos_Pct* pos, int button);
 int pico_get_rotate (void);
 
 /// @brief Gets the dimensions of the given image.
-/// @param file image filepath
-Pico_Dim pico_get_dim_image (const char* file);
+/// @param path image filepath
+Pico_Dim pico_get_dim_image (const char* path);
 
 /// @brief Gets the dimensions of the given text.
 /// @param text text to measure
@@ -458,8 +458,8 @@ void pico_set_expert (int on);
 void pico_set_flip (Pico_Flip flip);
 
 /// @brief Changes the font used to draw texts.
-/// @param file path to font file
-void pico_set_font (const char* file);
+/// @param path path to font path
+void pico_set_font (const char* path);
 
 /// @brief Toggles a grid on top of logical pixels.
 /// @param on 1 to show it, or 0 to hide it
