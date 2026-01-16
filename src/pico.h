@@ -25,7 +25,8 @@ extern "C" {
 #define PICO_TITLE "pico-SDL"
 #define PICO_DIM_PHY ((Pico_Dim) {500,500})
 #define PICO_DIM_LOG ((Pico_Dim) {100,100})
-#define PICO_HASH  128
+#define PICO_HASH_BUK  128
+#define PICO_HASH_TTL  1000
 
 typedef SDL_Point Pico_Pos;
 typedef SDL_Rect  Pico_Rect;

@@ -10,9 +10,20 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
-#include "tiny_ttf.h"
+#define TTL_HASH_C
 #include "hash.h"
+#include "tiny_ttf.h"
 #include "pico.h"
+
+typedef enum {
+    PICO_RES_IMAGE,
+    PICO_RES_SOUND,
+} PICO_RES;
+
+typedef struct {
+    PICO_RES   type;
+    const char path[];
+} Pico_Res;
 
 #define SDL_ANY PICO_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
@@ -28,7 +39,7 @@ static int TGT = 1;         // 0:phy, 1:log
 
 #define REN (SDL_GetRenderer(WIN))
 
-static pico_hash* _pico_hash;
+static ttl_hash* _pico_hash;
 
 static struct {
     int alpha;
@@ -174,9 +185,24 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct) {
 
 // INIT
 
+static void _pico_hash_clean (int n, const void* key, void* value) {
+    const Pico_Res* res = (const Pico_Res*)key;
+    switch (res->type) {
+        case PICO_RES_IMAGE:
+            SDL_DestroyTexture((SDL_Texture*)value);
+            break;
+        case PICO_RES_SOUND:
+            Mix_FreeChunk((Mix_Chunk*)value);
+            break;
+        default:
+            assert(0 && "invalid resource");
+    }
+}
+
 void pico_init (int on) {
     if (on) {
-        _pico_hash = pico_hash_create(PICO_HASH);
+        _pico_hash = ttl_hash_open(PICO_HASH_BUK, PICO_HASH_TTL,
+                                   _pico_hash_clean);
         pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -215,7 +241,7 @@ void pico_init (int on) {
         SDL_DestroyRenderer(REN);
         SDL_DestroyWindow(WIN);
         SDL_Quit();
-        pico_hash_destroy(_pico_hash);
+        ttl_hash_close(_pico_hash);
     }
 }
 
@@ -362,6 +388,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
 }
 
 void pico_input_delay (int ms) {
+    ttl_hash_tick(_pico_hash);
     while (1) {
         int old = SDL_GetTicks();
         Pico_Event e;
@@ -378,6 +405,7 @@ void pico_input_delay (int ms) {
 }
 
 void pico_input_event (Pico_Event* evt, int type) {
+    ttl_hash_tick(_pico_hash);
     while (1) {
         Pico_Event x;
         SDL_WaitEvent(&x);
@@ -397,6 +425,7 @@ int pico_input_event_ask (Pico_Event* evt, int type) {
 }
 
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
+    ttl_hash_tick(_pico_hash);
     int has = SDL_WaitEventTimeout(evt, timeout);
     if (!has) {
         return 0;
@@ -493,10 +522,15 @@ void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color_A 
 }
 
 void pico_output_draw_image_raw (Pico_Rect rect, const char* path) {
-    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
+    int n = sizeof(Pico_Res) + strlen(path) + 1;
+    Pico_Res* res = alloca(n);
+    res->type = PICO_RES_IMAGE;
+    strcpy(res->path, path);
+
+    SDL_Texture* tex = (SDL_Texture*)ttl_hash_get(_pico_hash, n, res);
     if (tex == NULL) {
         tex = IMG_LoadTexture(REN, path);
-        pico_hash_add(_pico_hash, path, tex);
+        ttl_hash_put(_pico_hash, n, res, tex);
     }
     pico_assert(tex != NULL);
     Pico_Rect r = tex_rect_raw(tex, rect);
@@ -506,10 +540,15 @@ void pico_output_draw_image_raw (Pico_Rect rect, const char* path) {
 }
 
 void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path) {
-    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, path);
+    int n = sizeof(Pico_Res) + strlen(path) + 1;
+    Pico_Res* res = alloca(n);
+    res->type = PICO_RES_IMAGE;
+    strcpy(res->path, path);
+
+    SDL_Texture* tex = (SDL_Texture*)ttl_hash_get(_pico_hash, n, res);
     if (tex == NULL) {
         tex = IMG_LoadTexture(REN, path);
-        pico_hash_add(_pico_hash, path, tex);
+        ttl_hash_put(_pico_hash, n, res, tex);
     }
     pico_assert(tex != NULL);
     Pico_Rect r = tex_rect_pct(tex, rect);
@@ -822,10 +861,15 @@ static void _pico_output_sound_cache (const char* path, int cache) {
     Mix_Chunk* mix = NULL;
 
     if (cache) {
-        mix = (Mix_Chunk*)pico_hash_get(_pico_hash, path);
+        int n = sizeof(Pico_Res) + strlen(path) + 1;
+        Pico_Res* res = alloca(n);
+        res->type = PICO_RES_SOUND;
+        strcpy(res->path, path);
+
+        mix = (Mix_Chunk*)ttl_hash_get(_pico_hash, n, res);
         if (mix == NULL) {
             mix = Mix_LoadWAV(path);
-            pico_hash_add(_pico_hash, path, mix);
+            ttl_hash_put(_pico_hash, n, res, mix);
         }
     } else {
         mix = Mix_LoadWAV(path);
@@ -975,10 +1019,15 @@ int pico_get_rotate (void) {
 }
 
 Pico_Dim pico_get_dim_image (const char* file) {
-    SDL_Texture* tex = (SDL_Texture*)pico_hash_get(_pico_hash, file);
+    int n = sizeof(Pico_Res) + strlen(file) + 1;
+    Pico_Res* res = alloca(n);
+    res->type = PICO_RES_IMAGE;
+    strcpy(res->path, file);
+
+    SDL_Texture* tex = (SDL_Texture*)ttl_hash_get(_pico_hash, n, res);
     if (tex == NULL) {
         tex = IMG_LoadTexture(REN, file);
-        pico_hash_add(_pico_hash, file, tex);
+        ttl_hash_put(_pico_hash, n, res, tex);
     }
     pico_assert(tex != NULL);
 

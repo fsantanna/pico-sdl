@@ -28,14 +28,14 @@ Compile and run a C program:
 
 This script:
 
-- Compiles the program with `src/pico.c` and `src/hash.c`
+- Compiles the program with `src/pico.c`
 - Links against SDL2 libraries: `-lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx`
 - Runs the executable from the program's directory
 
 Manual compilation:
 
 ```bash
-gcc -Wall -g -o output program.c src/pico.c src/hash.c \
+gcc -Wall -g -o output program.c src/pico.c \
     -I src \
     -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx
 ```
@@ -53,7 +53,7 @@ pico-lua path/to/program.lua
 Build Lua native module manually:
 
 ```bash
-gcc -shared -o pico_native.so -fPIC src/pico.c src/hash.c lua/pico.c \
+gcc -shared -o pico_native.so -fPIC src/pico.c lua/pico.c \
     -llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 ```
 
@@ -80,7 +80,7 @@ The library is implemented in `src/`:
 
 - `pico.h` - Main API header with all function declarations and type definitions
 - `pico.c` - Core implementation wrapping SDL2 functionality
-- `hash.c/hash.h` - Hash table for resource management (textures, fonts, sounds)
+- `hash.h` - Hash table for resource management (uses ttl-hash library)
 - `tiny_ttf.h` - Embedded font for default text rendering
 - `keys.h` - Keyboard key constants (`PICO_KEY_*`)
 - `events.h` - Event type constants (PICO_KEYUP, PICO_MOUSEBUTTONDOWN, etc.)
@@ -132,11 +132,12 @@ Target mode (`TGT` variable) determines which coordinate space is active.
 
 ### Resource Management
 
-Resources (images, fonts, sounds) are cached in a hash table (`_pico_hash`) to avoid reloading. The hash implementation uses:
+Resources (images, sounds) are cached in a hash table (`_pico_hash`) with TTL-based eviction to avoid reloading. The hash implementation uses:
 
-- Size: `PICO_HASH` (128 by default)
-- Key: Resource file path
-- Value: SDL texture/font/sound pointer
+- Buckets: `PICO_HASH_BUK` (128 by default)
+- TTL: `PICO_HASH_TTL` (1000 ticks)
+- Key: `Pico_Res` struct containing resource type and file path
+- Value: SDL texture or Mix_Chunk pointer
 
 ### Rendering Pipeline
 
