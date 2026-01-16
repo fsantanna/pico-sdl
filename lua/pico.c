@@ -41,6 +41,14 @@ static Pico_Pct c_anchor (lua_State* L, int i) {
     }
 }
 
+static Pico_Dim c_dim (lua_State* L, int i) {
+    assert(lua_type(L,i) == LUA_TTABLE);    // dim = { w, h }
+    return (Pico_Dim) {
+        L_checkfieldnum(L, i, "w"),
+        L_checkfieldnum(L, i, "h"),
+    };
+}
+
 static Pico_Pos_Pct c_pos_pct (lua_State* L, int i) {
     assert(lua_type(L,i) == LUA_TTABLE);    // pct = { 'C', x, y }
     lua_geti(L, i, 1);                      // pct | anc
@@ -175,11 +183,55 @@ static const luaL_Reg ll_cv[] = {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static int l_set_view (lua_State* L) {
+    Pico_Dim  xphy,  *xxphy  = NULL;
+    Pico_Rect xdst,  *xxdst  = NULL;
+    Pico_Dim  xlog,  *xxlog  = NULL;
+    Pico_Rect xsrc,  *xxsrc  = NULL;
+    Pico_Rect xclip, *xxclip = NULL;
+
+    int fs = luaL_checkinteger(L, 1);   // fs | phy | dst | log | src | clip
+
+    if (lua_istable(L, 2)) {
+        xphy = c_dim(L, 2);
+        xxphy = &xphy;
+    }
+    if (lua_istable(L, 3)) {
+        xdst = c_rect(L, 3);
+        xxdst = &xdst;
+    }
+    if (lua_istable(L, 4)) {
+        xlog = c_dim(L, 4);
+        xxlog = &xlog;
+    }
+    if (lua_istable(L, 5)) {
+        xsrc = c_rect(L, 5);
+        xxsrc = &xsrc;
+    }
+    if (lua_istable(L, 6)) {
+        xclip = c_rect(L, 6);
+        xxclip = &xclip;
+    }
+
+    pico_set_view_raw(fs, xxphy, xxdst, xxlog, xxsrc, xxclip);
+    return 0;
+}
+
+static const luaL_Reg ll_set[] = {
+    { "view", l_set_view },
+    { NULL, NULL }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
 int luaopen_pico_native (lua_State* L) {
     luaL_newlib(L, ll_all);                 // pico
 
     luaL_newlib(L, ll_cv);                  // pico | cv
     lua_setfield(L, -2, "cv");              // pico
+
+    luaL_newlib(L, ll_set);                 // pico | set
+    lua_setfield(L, -2, "set");             // pico
 
     lua_pushlightuserdata(L, (void*)&KEY);  // pico | K
     lua_newtable(L);                        // pico | K | G
