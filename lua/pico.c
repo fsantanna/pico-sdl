@@ -56,6 +56,23 @@ static Pico_Pos_Pct c_pos_pct (lua_State* L, int i) {
     };
 }
 
+static Pico_Rect_Pct c_rect_pct (lua_State* L, int i) {
+    assert(lua_type(L,i) == LUA_TTABLE);    // pct = { 'C', x, y, w, h }
+    lua_geti(L, i, 1);                      // pct | anc
+    Pico_Pct anchor = c_anchor(L, -1);
+    lua_getfield(L, i, "up");               // pct | anc | up
+    assert(lua_isnil(L,-1) && "TODO: up");
+    lua_pop(L, 2);                          // pct
+    return (Pico_Rect_Pct) {
+        L_checkfieldnum(L, i, "x"),
+        L_checkfieldnum(L, i, "y"),
+        L_checkfieldnum(L, i, "w"),
+        L_checkfieldnum(L, i, "h"),
+        anchor,
+        NULL,
+    };
+}
+
 static Pico_Rect c_rect (lua_State* L, int i) {
     assert(lua_type(L,i) == LUA_TTABLE);    // r = { x, y, w, h }
     return (Pico_Rect) {
@@ -114,8 +131,45 @@ static int l_cv_pos (lua_State* L) {
     return 1;
 }
 
+static int l_cv_rect (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);   // rect | [up]
+
+    lua_geti(L, 1, 1);                  // rect | [up] | anc
+    int anc = !lua_isnil(L, -1);
+    lua_pop(L, 1);                      // rect | [up]
+
+    // pct -> raw
+    if (anc) {                          // pct | [up]
+        Pico_Rect_Pct pct = c_rect_pct(L, 1);
+
+        Pico_Rect raw;
+        if (lua_istable(L,2)) {         // pct | up
+            Pico_Rect up = c_rect(L, 2);
+            raw = pico_cv_rect_pct_raw_ext(&pct, up);
+        } else {                        // pct
+            raw = pico_cv_rect_pct_raw(&pct);
+        }
+
+        lua_newtable(L);                // pct | [up] | raw
+        lua_pushinteger(L, raw.x);
+        lua_setfield(L, -2, "x");
+        lua_pushinteger(L, raw.y);
+        lua_setfield(L, -2, "y");
+        lua_pushinteger(L, raw.w);
+        lua_setfield(L, -2, "w");
+        lua_pushinteger(L, raw.h);
+        lua_setfield(L, -2, "h");
+
+    // raw -> pct
+    } else {
+        assert(0 && "TODO");
+    }
+    return 1;
+}
+
 static const luaL_Reg ll_cv[] = {
-    { "pos",  l_cv_pos },
+    { "pos",  l_cv_pos  },
+    { "rect", l_cv_rect },
     { NULL, NULL }
 };
 

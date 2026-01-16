@@ -2,7 +2,7 @@ local pico = require 'pico'
 
 -- TODO: TGT=0 (phy)
 
-print "pico.cv.pos"
+print "pico.cv.pos: pct->raw"
 do
     print('', 1)
     local pct = { 'C', x=0.5, y=0.5 }
@@ -23,40 +23,40 @@ do
 
     print('', 4)
     local up  = {x=25, y=25, w=50, h=50}
-    local pct = {x=0.5, y=0.5, anchor=pico.ANCHOR_SE}
+    local pct = { 'SE', x=0.5, y=0.5 }
     local raw = pico.cv.pos(pct, up)
     assert(raw.x==49 and raw.y==49)
 end
 
--- EXT - RECT - PCT->RAW
+print "pico.cv.rect: pct->raw"
 do
-    print("ext - rect - pct->raw - C")
+    print('', 1)
+    local pct = { 'C', x=0.5, y=0.5, w=0.5, h=0.5 }
+    local raw = pico.cv.rect(pct)
+    assert(raw.x==25 and raw.y==25 and raw.w==50 and raw.h==50)
+
+    print('', 2)
     local up  = {x=20, y=20, w=60, h=60}
-    local pct = {x=0.25, y=0.25, w=0.5, h=0.25, anchor=pico.ANCHOR_C}
-    local raw = pico.cv_rect_pct_raw_ext(pct, up)
-    print(string.format("rect: (%d, %d, %d, %d)", raw.x, raw.y, raw.w, raw.h))
+    local pct = { 'C', x=0.25, y=0.25, w=0.5, h=0.25 }
+    local raw = pico.cv.rect(pct, up)
     assert(raw.x==20 and raw.y==28 and raw.w==30 and raw.h==15)
-end
-do
-    print("ext - rect - pct->raw - NE")
+
+    print('', 3)
     local up  = {x=20, y=20, w=60, h=60}
-    local pct = {x=0.5, y=0.5, w=0.5, h=0.5, anchor=pico.ANCHOR_NE}
-    local raw = pico.cv_rect_pct_raw_ext(pct, up)
-    print(string.format("rect: (%d, %d, %d, %d)", raw.x, raw.y, raw.w, raw.h))
+    local pct = { 'NE', x=0.5, y=0.5, w=0.5, h=0.5 }
+    local raw = pico.cv.rect(pct, up)
     assert(raw.x==20 and raw.y==50 and raw.w==30 and raw.h==30)
-end
-do
-    print("ext - rect - pct->raw - SW")
+
+    print('', 4)
     local up  = {x=20, y=20, w=60, h=60}
-    local pct = {x=0.5, y=0.5, w=0.5, h=0.5, anchor=pico.ANCHOR_SW}
-    local raw = pico.cv_rect_pct_raw_ext(pct, up)
-    print(string.format("rect: (%d, %d, %d, %d)", raw.x, raw.y, raw.w, raw.h))
+    local pct = { 'SW', x=0.5, y=0.5, w=0.5, h=0.5 }
+    local raw = pico.cv.rect(pct, up)
     assert(raw.x==50 and raw.y==20 and raw.w==30 and raw.h==30)
 end
 
 pico.init(true)
 local log = {w=100, h=100}
-pico.set_view_raw(-1, nil, nil, log, nil, nil)
+pico.set.view(-1, nil, nil, log, nil, nil)
 
 -- LOG - POS - PCT->RAW
 do
