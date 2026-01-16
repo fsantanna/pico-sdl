@@ -60,7 +60,6 @@ build = {
          sources = {
             "lua/pico.c",
             "src/pico.c",
-            "src/hash.c",
          },
          libraries = {
             "SDL2",
