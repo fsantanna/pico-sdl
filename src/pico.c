@@ -1223,17 +1223,10 @@ void pico_set_view_pct (
     Pico_Rect_Pct* src,
     Pico_Rect_Pct* clip
 ) {
-    Pico_Dim* xxphy = NULL;
-    Pico_Dim xphy;
-
-    Pico_Dim* xxlog = NULL;
-    Pico_Dim xlog;
-
-    Pico_Rect* xxsrc = NULL;
-    Pico_Rect xsrc;
-
-    Pico_Rect* xxclip = NULL;
-    Pico_Rect xclip;
+    Pico_Dim  xphy,  *xxphy  = NULL;
+    Pico_Dim  xlog,  *xxlog  = NULL;
+    Pico_Rect xsrc,  *xxsrc  = NULL;
+    Pico_Rect xclip, *xxclip = NULL;
 
     if (phy != NULL) {
         xphy = (Pico_Dim) { phy->x*S.view.phy.w, phy->y*S.view.phy.h };
