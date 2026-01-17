@@ -81,6 +81,14 @@ static Pico_Rect_Pct c_rect_pct (lua_State* L, int i) {
     };
 }
 
+static Pico_Pos c_pos (lua_State* L, int i) {
+    assert(lua_type(L,i) == LUA_TTABLE);    // dim = { w, h }
+    return (Pico_Pos) {
+        L_checkfieldnum(L, i, "x"),
+        L_checkfieldnum(L, i, "y"),
+    };
+}
+
 static Pico_Rect c_rect (lua_State* L, int i) {
     assert(lua_type(L,i) == LUA_TTABLE);    // r = { x, y, w, h }
     return (Pico_Rect) {
@@ -175,9 +183,71 @@ static int l_cv_rect (lua_State* L) {
     return 1;
 }
 
+static int l_vs_pos_rect (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);   // pos | rect
+    luaL_checktype(L, 2, LUA_TTABLE);
+
+    Pico_Pos pos;
+    lua_geti(L, 1, 1);                  // pos | rect | anc
+    if (lua_isnil(L, -1)) {
+        pos = c_pos(L, 1);
+    } else {
+        Pico_Pos_Pct pct = c_pos_pct(L, 1);
+        pos = pico_cv_pos_pct_raw(&pct);
+    }
+    lua_pop(L, 1);                      // pos | rect
+
+    Pico_Rect rect;
+    lua_geti(L, 2, 1);                  // pos | rect | anc
+    if (lua_isnil(L, -1)) {
+        rect = c_rect(L, 2);
+    } else {
+        Pico_Rect_Pct pct = c_rect_pct(L, 2);
+        rect = pico_cv_rect_pct_raw(&pct);
+    }
+    lua_pop(L, 1);
+
+    lua_pushboolean(L, pico_vs_pos_rect_raw(pos, rect));
+    return 1;
+}
+
+static int l_vs_rect_rect (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);   // r1 | r2
+    luaL_checktype(L, 2, LUA_TTABLE);
+
+    Pico_Rect r1;
+    lua_geti(L, 1, 1);                  // r1 | r2 | anc
+    if (lua_isnil(L, -1)) {
+        r1 = c_rect(L, 1);
+    } else {
+        Pico_Rect_Pct pct = c_rect_pct(L, 1);
+        r1 = pico_cv_rect_pct_raw(&pct);
+    }
+    lua_pop(L, 1);                      // r1 | r2
+
+    Pico_Rect r2;
+    lua_geti(L, 2, 1);                  // r1 | r2 | anc
+    if (lua_isnil(L, -1)) {
+        r2 = c_rect(L, 2);
+    } else {
+        Pico_Rect_Pct pct = c_rect_pct(L, 2);
+        r2 = pico_cv_rect_pct_raw(&pct);
+    }
+    lua_pop(L, 1);                      // r1 | r2
+
+    lua_pushboolean(L, pico_vs_rect_rect_raw(r1, r2));
+    return 1;
+}
+
 static const luaL_Reg ll_cv[] = {
     { "pos",  l_cv_pos  },
     { "rect", l_cv_rect },
+    { NULL, NULL }
+};
+
+static const luaL_Reg ll_vs[] = {
+    { "pos_rect",  l_vs_pos_rect  },
+    { "rect_rect", l_vs_rect_rect },
     { NULL, NULL }
 };
 
@@ -229,6 +299,9 @@ int luaopen_pico_native (lua_State* L) {
 
     luaL_newlib(L, ll_cv);                  // pico | cv
     lua_setfield(L, -2, "cv");              // pico
+
+    luaL_newlib(L, ll_vs);                  // pico | vs
+    lua_setfield(L, -2, "vs");              // pico
 
     luaL_newlib(L, ll_set);                 // pico | set
     lua_setfield(L, -2, "set");             // pico
