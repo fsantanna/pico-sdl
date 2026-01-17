@@ -86,16 +86,32 @@ static int _round (float v) {
     return (v < 0.0) ? (v - 0.5) : (v + 0.5);
 }
 
-Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos_Pct* p, Pico_Rect ref) {
-    Pico_Rect up;
-    if (p->up == NULL) {
-        up = ref;
+SDL_FRect _f (SDL_FRect dn, Pico_Pct a, SDL_FRect up) {
+    int w = dn.w * up.w;
+    int h = dn.h * up.h;
+    return (SDL_FRect) {
+        up.x + dn.x*up.w - a.x*w,
+        up.y + dn.y*up.h - a.y*h,
+        w, h,
+    };
+}
+
+SDL_FRect _g (const Pico_Rect_Pct* pct, SDL_FRect ref) {
+    if (pct == NULL) {
+        return ref;
     } else {
-        up = pico_cv_rect_pct_raw_ext(p->up, ref);
+        SDL_FRect raw = { pct->x, pct->y, pct->w, pct->h };
+        SDL_FRect tmp = _g(pct->up, ref);
+        return _f(raw, pct->anchor, tmp);
     }
+}
+
+Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos_Pct* p, Pico_Rect ref) {
+    SDL_FRect fref = { ref.x, ref.y, ref.w, ref.h };
+    SDL_FRect ret = _g(p->up, fref);
     return (Pico_Pos) {
-        _round(up.x + p->x*up.w - p->anchor.x),
-        _round(up.y + p->y*up.h - p->anchor.y),
+        _round(ret.x + p->x*ret.w - p->anchor.x),
+        _round(ret.y + p->y*ret.h - p->anchor.y),
     };
 }
 
@@ -109,20 +125,9 @@ Pico_Pos pico_cv_pos_pct_raw (const Pico_Pos_Pct* p) {
 }
 
 Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect_Pct* r, Pico_Rect ref) {
-    Pico_Rect up;
-    if (r->up == NULL) {
-        up = ref;
-    } else {
-        up = pico_cv_rect_pct_raw_ext(r->up, ref);
-    }
-
-    int w = r->w * up.w;
-    int h = r->h * up.h;
-    return (Pico_Rect) {
-        _round(up.x + r->x*up.w - r->anchor.x*w),
-        _round(up.y + r->y*up.h - r->anchor.y*h),
-        w, h,
-    };
+    SDL_FRect fref = { ref.x, ref.y, ref.w, ref.h };
+    SDL_FRect ret = _g(r, fref);
+    return (Pico_Rect) { _round(ret.x), _round(ret.y), ret.w, ret.h };
 }
 
 Pico_Rect pico_cv_rect_pct_raw (const Pico_Rect_Pct* r) {
