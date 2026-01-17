@@ -45,7 +45,6 @@ do
     assert(ret)
 
     print('', 2)
-    print("vs_rect_rect_raw - non-overlapping rects")
     local r1 = {x=10, y=10, w=30, h=30}
     local r2 = {x=50, y=50, w=30, h=30}
     local ret = pico.vs.rect_rect(r1, r2)

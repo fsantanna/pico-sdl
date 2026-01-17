@@ -49,6 +49,14 @@ static Pico_Dim c_dim (lua_State* L, int i) {
     };
 }
 
+static int c_is_raw (lua_State* L, int i) {
+    assert(lua_type(L,i) == LUA_TTABLE);
+    lua_geti(L, i, 1);                      // . | anc
+    int raw = lua_isnil(L, -1);
+    lua_pop(L, 1);
+    return raw;
+}
+
 static Pico_Pos_Pct c_pos_pct (lua_State* L, int i) {
     assert(lua_type(L,i) == LUA_TTABLE);    // pct = { 'C', x, y }
     lua_geti(L, i, 1);                      // pct | anc
@@ -118,12 +126,12 @@ static const luaL_Reg ll_all[] = {
 static int l_cv_pos (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);   // pos | [up]
 
-    lua_geti(L, 1, 1);                  // pos | [up] | anc
-    int anc = !lua_isnil(L, -1);
-    lua_pop(L, 1);                      // pos | [up]
+    // raw -> pct
+    if (c_is_raw(L,1)) {                // pct | [up]
+        assert(0 && "TODO");
 
     // pct -> raw
-    if (anc) {                          // pct | [up]
+    } else {
         Pico_Pos_Pct pct = c_pos_pct(L, 1);
 
         Pico_Pos raw;
@@ -139,10 +147,6 @@ static int l_cv_pos (lua_State* L) {
         lua_setfield(L, -2, "x");
         lua_pushinteger(L, raw.y);
         lua_setfield(L, -2, "y");
-
-    // raw -> pct
-    } else {
-        assert(0 && "TODO");
     }
     return 1;
 }
@@ -150,12 +154,12 @@ static int l_cv_pos (lua_State* L) {
 static int l_cv_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);   // rect | [up]
 
-    lua_geti(L, 1, 1);                  // rect | [up] | anc
-    int anc = !lua_isnil(L, -1);
-    lua_pop(L, 1);                      // rect | [up]
+    // raw -> pct
+    if (c_is_raw(L,1)) {                // pct | [up]
+        assert(0 && "TODO");
 
     // pct -> raw
-    if (anc) {                          // pct | [up]
+    } else {
         Pico_Rect_Pct pct = c_rect_pct(L, 1);
 
         Pico_Rect raw;
@@ -175,10 +179,6 @@ static int l_cv_rect (lua_State* L) {
         lua_setfield(L, -2, "w");
         lua_pushinteger(L, raw.h);
         lua_setfield(L, -2, "h");
-
-    // raw -> pct
-    } else {
-        assert(0 && "TODO");
     }
     return 1;
 }
@@ -188,24 +188,20 @@ static int l_vs_pos_rect (lua_State* L) {
     luaL_checktype(L, 2, LUA_TTABLE);
 
     Pico_Pos pos;
-    lua_geti(L, 1, 1);                  // pos | rect | anc
-    if (lua_isnil(L, -1)) {
+    if (c_is_raw(L,1)) {
         pos = c_pos(L, 1);
     } else {
         Pico_Pos_Pct pct = c_pos_pct(L, 1);
         pos = pico_cv_pos_pct_raw(&pct);
     }
-    lua_pop(L, 1);                      // pos | rect
 
     Pico_Rect rect;
-    lua_geti(L, 2, 1);                  // pos | rect | anc
-    if (lua_isnil(L, -1)) {
+    if (c_is_raw(L,2)) {
         rect = c_rect(L, 2);
     } else {
         Pico_Rect_Pct pct = c_rect_pct(L, 2);
         rect = pico_cv_rect_pct_raw(&pct);
     }
-    lua_pop(L, 1);
 
     lua_pushboolean(L, pico_vs_pos_rect_raw(pos, rect));
     return 1;
@@ -216,24 +212,20 @@ static int l_vs_rect_rect (lua_State* L) {
     luaL_checktype(L, 2, LUA_TTABLE);
 
     Pico_Rect r1;
-    lua_geti(L, 1, 1);                  // r1 | r2 | anc
-    if (lua_isnil(L, -1)) {
+    if (c_is_raw(L,1)) {
         r1 = c_rect(L, 1);
     } else {
         Pico_Rect_Pct pct = c_rect_pct(L, 1);
         r1 = pico_cv_rect_pct_raw(&pct);
     }
-    lua_pop(L, 1);                      // r1 | r2
 
     Pico_Rect r2;
-    lua_geti(L, 2, 1);                  // r1 | r2 | anc
-    if (lua_isnil(L, -1)) {
+    if (c_is_raw(L,2)) {
         r2 = c_rect(L, 2);
     } else {
         Pico_Rect_Pct pct = c_rect_pct(L, 2);
         r2 = pico_cv_rect_pct_raw(&pct);
     }
-    lua_pop(L, 1);                      // r1 | r2
 
     lua_pushboolean(L, pico_vs_rect_rect_raw(r1, r2));
     return 1;
