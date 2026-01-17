@@ -88,15 +88,15 @@ typedef struct {
     struct Pico_Rect_Pct* up;
 } Pico_Pos_Pct;
 
-extern Pico_Pct PICO_ANCHOR_C;
-extern Pico_Pct PICO_ANCHOR_NW;
-extern Pico_Pct PICO_ANCHOR_N;
-extern Pico_Pct PICO_ANCHOR_NE;
-extern Pico_Pct PICO_ANCHOR_E;
-extern Pico_Pct PICO_ANCHOR_SE;
-extern Pico_Pct PICO_ANCHOR_S;
-extern Pico_Pct PICO_ANCHOR_SW;
-extern Pico_Pct PICO_ANCHOR_W;
+extern const Pico_Pct PICO_ANCHOR_C;
+extern const Pico_Pct PICO_ANCHOR_NW;
+extern const Pico_Pct PICO_ANCHOR_N;
+extern const Pico_Pct PICO_ANCHOR_NE;
+extern const Pico_Pct PICO_ANCHOR_E;
+extern const Pico_Pct PICO_ANCHOR_SE;
+extern const Pico_Pct PICO_ANCHOR_S;
+extern const Pico_Pct PICO_ANCHOR_SW;
+extern const Pico_Pct PICO_ANCHOR_W;
 
 /// @}
 

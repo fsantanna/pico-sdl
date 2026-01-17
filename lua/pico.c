@@ -303,32 +303,32 @@ int luaopen_pico_native (lua_State* L) {
     lua_settable(L, LUA_REGISTRYINDEX);     // pico
 
     // anchors
-    {                                               // pico
-        lua_pushlightuserdata(L, (void*)&KEY);      // pico | K
-        lua_gettable(L, LUA_REGISTRYINDEX);         // pico | G
-        lua_newtable(L);                            // pico | G | ancs
-        lua_pushlightuserdata(L, &PICO_ANCHOR_C);   // pico | G | ancs | C
-        lua_setfield(L, -2, "C");                   // pico | G | ancs
-        lua_pushlightuserdata(L, &PICO_ANCHOR_NW);  // pico | G | ancs | NW
-        lua_setfield(L, -2, "NW");                  // pico | G | ancs
-        lua_pushlightuserdata(L, &PICO_ANCHOR_N);   // pico | G | ancs | N
-        lua_setfield(L, -2, "N");                   // pico | G | ancs
-        lua_pushlightuserdata(L, &PICO_ANCHOR_NE);  // pico | G | ancs | NE
-        lua_setfield(L, -2, "NE");                  // pico | G | ancs
-        lua_pushlightuserdata(L, &PICO_ANCHOR_E);   // pico | G | ancs | E
-        lua_setfield(L, -2, "E");                   // pico | G | ancs
-        lua_pushlightuserdata(L, &PICO_ANCHOR_SE);  // pico | G | ancs | SE
-        lua_setfield(L, -2, "SE");                  // pico | G | ancs
-        lua_pushlightuserdata(L, &PICO_ANCHOR_S);   // pico | G | ancs | S
-        lua_setfield(L, -2, "S");                   // pico | G | ancs
-        lua_pushlightuserdata(L, &PICO_ANCHOR_SW);  // pico | G | ancs | SW
-        lua_setfield(L, -2, "SW");                  // pico | G | ancs
-        lua_pushlightuserdata(L, &PICO_ANCHOR_W);   // pico | G | ancs | W
-        lua_setfield(L, -2, "W");                   // pico | G | ancs
-        lua_setfield(L, -2, "ancs");                // pico | G
-        lua_pop(L, 1);                              // pico
-    }                                               // pico
+    {                                                     // pico
+        lua_pushlightuserdata(L, (void*)&KEY);            // pico | K
+        lua_gettable(L, LUA_REGISTRYINDEX);               // pico | G
+        lua_newtable(L);                                  // pico | G | ancs
+        lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_C);  // pico | G | ancs | C
+        lua_setfield(L, -2, "C");                         // pico | G | ancs
+        lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_NW); // pico | G | ancs | NW
+        lua_setfield(L, -2, "NW");                        // pico | G | ancs
+        lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_N);  // pico | G | ancs | N
+        lua_setfield(L, -2, "N");                         // pico | G | ancs
+        lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_NE); // pico | G | ancs | NE
+        lua_setfield(L, -2, "NE");                        // pico | G | ancs
+        lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_E);  // pico | G | ancs | E
+        lua_setfield(L, -2, "E");                         // pico | G | ancs
+        lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_SE); // pico | G | ancs | SE
+        lua_setfield(L, -2, "SE");                        // pico | G | ancs
+        lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_S);  // pico | G | ancs | S
+        lua_setfield(L, -2, "S");                         // pico | G | ancs
+        lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_SW); // pico | G | ancs | SW
+        lua_setfield(L, -2, "SW");                        // pico | G | ancs
+        lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_W);  // pico | G | ancs | W
+        lua_setfield(L, -2, "W");                         // pico | G | ancs
+        lua_setfield(L, -2, "ancs");                      // pico | G
+        lua_pop(L, 1);                                    // pico
+    }                                                     // pico
 
-    return 1;                               // [pico]
+    return 1;   // [pico]
 }
 
