@@ -167,7 +167,7 @@ static int c_pos_raw_pct (lua_State* L, int i, Pico_Pos* raw, Pico_Pos_Pct** pct
 static PICO_RAW_PCT c_rect_raw_pct (lua_State* L, int i, Pico_Rect* raw, Pico_Rect_Pct** pct) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);    // r
-    if (c_is_raw(L,1)) {                    // raw
+    if (c_is_raw(L,i)) {                    // raw
         *raw = c_rect_raw(L, i);
         return 0;
     } else {                                // pct
@@ -282,13 +282,13 @@ static int l_vs_rect_rect (lua_State* L) {
     Pico_Rect_Pct* pct1;
     PICO_RAW_PCT tp1 = c_rect_raw_pct(L, 1, &raw1, &pct1);
 
-    Pico_Rect raw2;
-    Pico_Rect_Pct* pct2;
-    PICO_RAW_PCT tp2 = c_rect_raw_pct(L, 2, &raw2, &pct2);
-
     if (tp1 == PICO_PCT) {
         raw1 = pico_cv_rect_pct_raw(pct1);
     }
+
+    Pico_Rect raw2;
+    Pico_Rect_Pct* pct2;
+    PICO_RAW_PCT tp2 = c_rect_raw_pct(L, 2, &raw2, &pct2);
 
     if (tp2 == PICO_PCT) {
         raw2 = pico_cv_rect_pct_raw(pct2);
