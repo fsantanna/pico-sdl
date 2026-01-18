@@ -344,6 +344,10 @@ int pico_get_fullscreen (void);
 /// @return 1 if enabled, or 0 otherwise
 int pico_get_grid (void);
 
+/// @brief Gets the dimensions of the given image.
+/// @param path image filepath
+Pico_Dim pico_get_image (const char* path);
+
 /// @brief Gets the state of a key.
 /// @param key key constant
 /// @return 1 if key is pressed, or 0 otherwise
@@ -366,19 +370,15 @@ int pico_get_mouse_pct (Pico_Pos_Pct* pos, int button);
 /// @brief Gets the rotation angle of objects (in degrees).
 int pico_get_rotate (void);
 
-/// @brief Gets the dimensions of the given image.
-/// @param path image filepath
-Pico_Dim pico_get_dim_image (const char* path);
-
-/// @brief Gets the dimensions of the given text.
-/// @param text text to measure
-int pico_get_text_width (int h, const char* text);
-
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
 
 /// @brief Gets the drawing style.
 PICO_STYLE pico_get_style (void);
+
+/// @brief Gets the dimensions of the given text.
+/// @param text text to measure
+int pico_get_text (int h, const char* text);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
