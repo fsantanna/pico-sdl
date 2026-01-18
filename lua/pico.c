@@ -473,7 +473,7 @@ static int l_output_draw_text (lua_State* L) {
     if (tp == PICO_RAW) {
         pico_output_draw_text_raw(text, raw);
     } else {
-        pico_output_draw_text_pct(text, raw);
+        pico_output_draw_text_pct(text, pct);
     }
 
     return 0;
