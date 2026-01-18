@@ -52,6 +52,31 @@ static Pico_Pct c_anchor (lua_State* L, int i) {
     }
 }
 
+static Pico_Color c_color_t (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { r,g,b }
+    Pico_Color clr = {
+        L_checkfieldnum(L, i, "r"),
+        L_checkfieldnum(L, i, "g"),
+        L_checkfieldnum(L, i, "b"),
+    };
+    return clr;
+}
+
+static Pico_Color c_color (lua_State* L) {
+    Pico_Color clr;
+    if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b }
+        clr = c_color_t(L, 1);
+    } else {                            // r | g | b
+        clr = (Pico_Color) {
+            luaL_checknumber(L, 1),
+            luaL_checknumber(L, 2),
+            luaL_checknumber(L, 3),
+        };
+    }
+    return clr;
+}
+
 static Pico_Dim c_dim (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);    // dim = { w, h }
@@ -304,6 +329,34 @@ static int l_vs_rect_rect (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static int l_get_text (lua_State* L) {
+    int h = luaL_checknumber(L, 1);
+    char* path = luaL_checkstring(L, 2);
+    int w = pico_get_text(h, path);
+    lua_pushinteger(L, w);
+    return 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_set_alpha (lua_State* L) {
+    int a = luaL_checkinteger(L, 1);
+    pico_set_alpha(a);
+    return 0;
+}
+
+static int l_set_color_clear (lua_State* L) {
+    Pico_Color clr = c_color(L);
+    pico_set_color_clear(clr);
+    return 0;
+}
+
+static int l_set_color_draw (lua_State* L) {
+    Pico_Color clr = c_color(L);
+    pico_set_color_draw(clr);
+    return 0;
+}
+
 static int l_set_title (lua_State* L) {
     const char* title = luaL_checkstring(L, 1);   // title
     pico_set_title(title);
@@ -341,6 +394,14 @@ static int l_set_view (lua_State* L) {
     }
 
     pico_set_view_raw(fs, xxphy, xxdst, xxlog, xxsrc, xxclip);
+    return 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_input_delay (lua_State* L) {
+    int ms = luaL_checknumber(L, 1);       // ms
+    pico_input_delay(ms);
     return 0;
 }
 
@@ -415,7 +476,7 @@ static int l_output_screenshot (lua_State* L) {
         assert(0 && "TODO");
     }
 
-_RET_:
+    _RET_:
     assert(ret != NULL);
     lua_pushstring(L, ret);
     return 1;
@@ -427,6 +488,8 @@ static const luaL_Reg ll_all[] = {
     { "init", l_init },
     { NULL, NULL }
 };
+
+///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_cv[] = {
     { "pos",  l_cv_pos  },
@@ -440,11 +503,36 @@ static const luaL_Reg ll_vs[] = {
     { NULL, NULL }
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
+static const luaL_Reg ll_get[] = {
+    { "text", l_get_text },
+    { NULL, NULL }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
 static const luaL_Reg ll_set[] = {
+    { "alpha", l_set_alpha },
     { "title", l_set_title },
     { "view",  l_set_view  },
     { NULL, NULL }
 };
+
+static const luaL_Reg ll_set_color[] = {
+    { "clear", l_set_color_clear },
+    { "draw",  l_set_color_draw  },
+    { NULL, NULL }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+static const luaL_Reg ll_input[] = {
+    { "delay", l_input_delay },
+    { NULL, NULL }
+};
+
+///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_output[] = {
     { "clear",      l_output_clear      },
@@ -458,6 +546,8 @@ static const luaL_Reg ll_output_draw[] = {
     { NULL, NULL }
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
 int luaopen_pico_native (lua_State* L) {
     luaL_newlib(L, ll_all);                 // pico
 
@@ -467,8 +557,16 @@ int luaopen_pico_native (lua_State* L) {
     luaL_newlib(L, ll_vs);                  // pico | vs
     lua_setfield(L, -2, "vs");              // pico
 
+    luaL_newlib(L, ll_get);                 // pico | get
+    lua_setfield(L, -2, "get");             // pico
+
     luaL_newlib(L, ll_set);                 // pico | set
+    luaL_newlib(L, ll_set_color);           // pico | set | color
+    lua_setfield(L, -2, "color");           // pico | set
     lua_setfield(L, -2, "set");             // pico
+
+    luaL_newlib(L, ll_input);               // pico | input
+    lua_setfield(L, -2, "input");           // pico
 
     luaL_newlib(L, ll_output);              // pico | output
     luaL_newlib(L, ll_output_draw);         // pico | output | draw
