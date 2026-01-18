@@ -509,7 +509,7 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color_A buffer[], Pico_Dim dim) {
+void pico_output_draw_buffer_raw (Pico_Dim dim, const Pico_Color_A buffer[], const Pico_Rect rect) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
         (void*)buffer, dim.w, dim.h,
         32, 4*dim.w, SDL_PIXELFORMAT_RGBA32
@@ -524,7 +524,7 @@ void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color_A buffe
     _pico_output_present(0);
 }
 
-void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color_A buffer[], Pico_Dim dim) {
+void pico_output_draw_buffer_pct (Pico_Dim dim, const Pico_Color_A buffer[], const Pico_Rect_Pct* rect) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
         (void*)buffer, dim.w, dim.h,
         32, 4*dim.w, SDL_PIXELFORMAT_RGBA32
@@ -555,7 +555,7 @@ SDL_Texture* _image (const char* path) {
     return tex;
 }
 
-void pico_output_draw_image_raw (Pico_Rect rect, const char* path) {
+void pico_output_draw_image_raw (const char* path, Pico_Rect rect) {
     SDL_Texture* tex = _image(path);
     Pico_Rect r = tex_rect_raw(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
@@ -563,7 +563,7 @@ void pico_output_draw_image_raw (Pico_Rect rect, const char* path) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path) {
+void pico_output_draw_image_pct (const char* path, const Pico_Rect_Pct* rect) {
     SDL_Texture* tex = _image(path);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     Pico_Rect r = tex_rect_pct(tex, rect);
@@ -593,14 +593,14 @@ void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos) {
     pico_output_draw_pixel_raw(pico_cv_pos_pct_raw(pos));
 }
 
-void pico_output_draw_pixels_raw (const Pico_Pos* ps, int n) {
+void pico_output_draw_pixels_raw (int n, const Pico_Pos* ps) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     SDL_RenderDrawPoints(REN, ps, n);
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixels_pct (const Pico_Pos_Pct* ps, int n) {
+void pico_output_draw_pixels_pct (int n, const Pico_Pos_Pct* ps) {
     Pico_Pos vs[n];
     for (int i=0; i<n; i++) {
         vs[i] = pico_cv_pos_pct_raw(&ps[i]);
@@ -678,7 +678,7 @@ void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect) {
     pico_output_draw_oval_raw(pico_cv_rect_pct_raw(rect));
 }
 
-void pico_output_draw_poly_raw (const Pico_Pos* ps, int n) {
+void pico_output_draw_poly_raw (int n, const Pico_Pos* ps) {
     Sint16 xs[n], ys[n];
     for (int i=0; i<n; i++) {
         xs[i] = ps[i].x;
@@ -703,7 +703,7 @@ void pico_output_draw_poly_raw (const Pico_Pos* ps, int n) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n) {
+void pico_output_draw_poly_pct (int n, const Pico_Pos_Pct* ps) {
     Pico_Pos vs[n];
     for (int i=0; i<n; i++) {
         vs[i] = pico_cv_pos_pct_raw(&ps[i]);
@@ -711,7 +711,7 @@ void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n) {
     pico_output_draw_poly_raw(vs, n);
 }
 
-void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
+void pico_output_draw_text_raw (const char* text, Pico_Rect rect) {
     if (text[0] == '\0') return;
     TTF_Font* ttf = _font_open(NULL, rect.h);
     SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text,
@@ -729,7 +729,7 @@ void pico_output_draw_text_raw (Pico_Rect rect, const char* text) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text) {
+void pico_output_draw_text_pct (const char* text, Pico_Rect_Pct* rect) {
     if (text[0] == '\0') return;
     Pico_Rect r1 = pico_cv_rect_pct_raw(rect);
     TTF_Font* ttf = _font_open(NULL, r1.h);

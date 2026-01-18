@@ -14,7 +14,7 @@ int main (void) {
         };
         for (int i=1; i<=9; i++) {
             pico_output_clear();
-            pico_output_draw_pixels_raw(pixels, i);
+            pico_output_draw_pixels_raw(i, pixels);
             printf("%d pixels\n", i);
             pico_input_delay(10);
         }
@@ -28,7 +28,7 @@ int main (void) {
             {0, 1, PICO_ANCHOR_SW, NULL},
             {1, 1, PICO_ANCHOR_SE, NULL},
         };
-        pico_output_draw_pixels_pct(pixels, 4);
+        pico_output_draw_pixels_pct(4, pixels);
         _pico_check("pixels-02");
     }
 

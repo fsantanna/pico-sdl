@@ -156,34 +156,34 @@ int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 void pico_output_clear (void);
 
 /// @brief Draws an RGBA image buffer using absolute coordinates.
-/// @param rect drawing rectangle in logical pixels
-/// @param buffer the RGBA image data
 /// @param dim image dimensions
+/// @param buffer the RGBA image data
+/// @param rect drawing rectangle in logical pixels
 /// @sa pico_output_draw_buffer_pct
 /// @sa pico_output_draw_image_raw
-void pico_output_draw_buffer_raw (const Pico_Rect rect, const Pico_Color_A buffer[], Pico_Dim dim);
+void pico_output_draw_buffer_raw (Pico_Dim dim, const Pico_Color_A buffer[], const Pico_Rect rect);
 
 /// @brief Draws an RGBA image buffer using percentage-based coordinates.
-/// @param rect image target position and dimensions
-/// @param buffer the RGBA image data
 /// @param dim image source dimensions
+/// @param buffer the RGBA image data
+/// @param rect image target position and dimensions
 /// @sa pico_output_draw_buffer_raw
 /// @sa pico_output_draw_image_pct
-void pico_output_draw_buffer_pct (const Pico_Rect_Pct* rect, const Pico_Color_A buffer[], Pico_Dim dim);
+void pico_output_draw_buffer_pct (Pico_Dim dim, const Pico_Color_A buffer[], const Pico_Rect_Pct* rect);
 
 /// @brief Draws an image using absolute coordinates.
-/// @param rect image target position and dimension
 /// @param path path to the image file
+/// @param rect image target position and dimension
 /// @sa pico_output_draw_image_pct
 /// @sa pico_output_draw_buffer_raw
-void pico_output_draw_image_raw (Pico_Rect rect, const char* path);
+void pico_output_draw_image_raw (const char* path, Pico_Rect rect);
 
 /// @brief Draws an image using percentage-based coordinates.
-/// @param rect image target position and dimension
 /// @param path path to the image file
+/// @param rect image target position and dimension
 /// @sa pico_output_draw_image_raw
 /// @sa pico_output_draw_buffer_pct
-void pico_output_draw_image_pct (const Pico_Rect_Pct* rect, const char* path);
+void pico_output_draw_image_pct (const char* path, const Pico_Rect_Pct* rect);
 
 /// @brief Draws a line using absolute coordinates.
 /// @param p1 first endpoint position
@@ -208,16 +208,16 @@ void pico_output_draw_pixel_raw (Pico_Pos pos);
 void pico_output_draw_pixel_pct (Pico_Pos_Pct* pos);
 
 /// @brief Draws a batch of pixels using absolute coordinates.
-/// @param ps array of coordinates
 /// @param n number of coordinates
+/// @param ps array of coordinates
 /// @sa pico_output_draw_pixels_pct
-void pico_output_draw_pixels_raw (const Pico_Pos* ps, int n);
+void pico_output_draw_pixels_raw (int n, const Pico_Pos* ps);
 
 /// @brief Draws a batch of pixels using percentage-based coordinates.
-/// @param ps array of coordinates
 /// @param n number of coordinates
+/// @param ps array of coordinates
 /// @sa pico_output_draw_pixels_raw
-void pico_output_draw_pixels_pct (const Pico_Pos_Pct* ps, int n);
+void pico_output_draw_pixels_pct (int n, const Pico_Pos_Pct* ps);
 
 /// @brief Draws a rectangle using absolute coordinates.
 /// @param rect rectangle to draw
@@ -254,28 +254,28 @@ void pico_output_draw_oval_raw (Pico_Rect rect);
 void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect);
 
 /// @brief Draws a polygon using absolute coordinates.
-/// @param ps array of vertex positions
 /// @param n number of vertices
+/// @param ps array of vertex positions
 /// @sa pico_output_draw_poly_pct
-void pico_output_draw_poly_raw (const Pico_Pos* ps, int n);
+void pico_output_draw_poly_raw (int n, const Pico_Pos* ps);
 
 /// @brief Draws a polygon using percentage-based coordinates.
-/// @param ps array of vertex coordinates
 /// @param n number of vertices
+/// @param ps array of vertex coordinates
 /// @sa pico_output_draw_poly_raw
-void pico_output_draw_poly_pct (const Pico_Pos_Pct* ps, int n);
+void pico_output_draw_poly_pct (int n, const Pico_Pos_Pct* ps);
 
 /// @brief Draws text using absolute coordinates.
-/// @param rect drawing rectangle
 /// @param text text to draw
+/// @param rect drawing rectangle
 /// @sa pico_output_draw_text_pct
-void pico_output_draw_text_raw (Pico_Rect rect, const char* text);
+void pico_output_draw_text_raw (const char* text, Pico_Rect rect);
 
 /// @brief Draws text using percentage-based coordinates.
-/// @param rect drawing rectangle
 /// @param text text to draw
+/// @param rect drawing rectangle
 /// @sa pico_output_draw_text_raw
-void pico_output_draw_text_pct (Pico_Rect_Pct* rect, const char* text);
+void pico_output_draw_text_pct (const char* text, Pico_Rect_Pct* rect);
 
 /// @brief Shows what has been drawn onto the screen.
 /// Only does anything on expert mode.
