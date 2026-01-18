@@ -370,6 +370,24 @@ static int l_output_draw_pixel (lua_State* L) {
 }
 
 static int l_output_screenshot (lua_State* L) {
+    char* path = NULL;
+    if (lua_type(L,1) == LUA_TSTRING) {         // path
+        path = (char*) lua_tostring(L, 1);
+    }
+
+    char* ret = NULL;
+
+    int n = lua_gettop(L);
+    if (n == 1) {
+        ret = (char*) pico_output_screenshot(path);
+        goto _RET_;
+    } else {
+        assert(0 && "TODO");
+    }
+
+_RET_:
+    assert(ret != NULL);
+    lua_pushstring(L, ret);
     return 1;
 }
 
