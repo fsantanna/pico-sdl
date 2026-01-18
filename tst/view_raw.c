@@ -44,7 +44,7 @@ int main (void) {
             &(SDL_Rect){i, i, 100,100},
             NULL);
         pico_output_clear();
-        pico_output_draw_text_raw((Pico_Rect){10,50,0,10}, "Uma frase bem grande...");
+        pico_output_draw_text_raw("Uma frase bem grande...", (Pico_Rect){10,50,0,10});
         pico_input_delay(10);
         switch (i) {
             case 0:
