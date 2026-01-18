@@ -1,5 +1,5 @@
 #include "pico.h"
-#include "check.h"
+#include "../check.h"
 
 void check (const char* out, const char* asr) {
     printf("Testing: %s\n", asr);
