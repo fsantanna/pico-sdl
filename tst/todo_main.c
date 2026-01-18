@@ -39,7 +39,7 @@ int main (void) {
     puts("shows centered image");
     {
         Pico_Rect_Pct r = { 0.5,0.5, 0,0, PICO_ANCHOR_C, NULL };
-        pico_output_draw_image_pct(&r, "open.png");
+        pico_output_draw_image_pct("open.png", &r);
         pico_input_delay(2000);
     }
 
@@ -67,7 +67,7 @@ int main (void) {
     {
         int w = pico_get_text(20, "Hello!");
         Pico_Rect r = {50-w/2, 50-5, 0, 20};
-        pico_output_draw_text_raw(r, "Hello!");
+        pico_output_draw_text_raw("Hello!", r);
         pico_input_delay(2000);
     }
 

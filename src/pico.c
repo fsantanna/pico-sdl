@@ -595,7 +595,7 @@ void pico_output_draw_pixels_pct (int n, const Pico_Pos_Pct* ps) {
     for (int i=0; i<n; i++) {
         vs[i] = pico_cv_pos_pct_raw(&ps[i]);
     }
-    pico_output_draw_pixels_raw(vs, n);
+    pico_output_draw_pixels_raw(n, vs);
 }
 
 void pico_output_draw_rect_raw (Pico_Rect rect) {
@@ -698,7 +698,7 @@ void pico_output_draw_poly_pct (int n, const Pico_Pos_Pct* ps) {
     for (int i=0; i<n; i++) {
         vs[i] = pico_cv_pos_pct_raw(&ps[i]);
     }
-    pico_output_draw_poly_raw(vs, n);
+    pico_output_draw_poly_raw(n, vs);
 }
 
 void pico_output_draw_text_raw (const char* text, Pico_Rect rect) {
@@ -774,8 +774,8 @@ static void _show_grid (void) {
             snprintf(lbl, sizeof(lbl), "%d", v);
             int W = pico_get_text(H, lbl);
             pico_output_draw_text_raw (
-                (Pico_Rect) { x-W/2, 10-H/2, 0, H },
-                lbl
+                lbl,
+                (Pico_Rect) { x-W/2, 10-H/2, 0, H }
             );
         }
 
@@ -786,8 +786,8 @@ static void _show_grid (void) {
             snprintf(lbl, sizeof(lbl), "%d", v);
             int W = pico_get_text(H, lbl);
             pico_output_draw_text_raw (
-                (Pico_Rect) { 10-W/2, y-H/2, 0, H },
-                lbl
+                lbl,
+                (Pico_Rect) { 10-W/2, y-H/2, 0, H }
             );
         }
     }

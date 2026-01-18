@@ -34,7 +34,7 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_text_raw(r, "SOME TEXT");
+            pico_output_draw_text_raw("SOME TEXT", r);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-02");
@@ -113,7 +113,7 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_poly_raw(poly, 3);
+            pico_output_draw_poly_raw(3, poly);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-07");
