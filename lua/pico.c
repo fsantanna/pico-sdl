@@ -205,6 +205,28 @@ static PICO_RAW_PCT c_rect_raw_pct (lua_State* L, int i, Pico_Rect* raw, Pico_Re
     }
 }
 
+static Pico_Pos c_pos_raw_pct_raw (lua_State* L, int i) {
+    assert(i > 0);
+    Pico_Pos raw;
+    Pico_Pos_Pct* pct;
+    PICO_RAW_PCT tp = c_pos_raw_pct(L, i, &raw, &pct);
+    if (tp == PICO_PCT) {
+        raw = pico_cv_pos_pct_raw(pct);
+    }
+    return raw;
+}
+
+static Pico_Rect c_rect_raw_pct_raw (lua_State* L, int i) {
+    assert(i > 0);
+    Pico_Rect raw;
+    Pico_Rect_Pct* pct;
+    PICO_RAW_PCT tp = c_rect_raw_pct(L, i, &raw, &pct);
+    if (tp == PICO_PCT) {
+        raw = pico_cv_rect_pct_raw(pct);
+    }
+    return raw;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_init (lua_State* L) {
@@ -281,25 +303,11 @@ static int l_vs_pos_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);   // pos | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    Pico_Pos pos;
-    {
-        Pico_Pos_Pct* pct;
-        PICO_RAW_PCT tp = c_pos_raw_pct(L, 1, &pos, &pct);
-        if (tp == PICO_PCT) {
-            pos = pico_cv_pos_pct_raw(pct);
-        }
-    }
+    Pico_Pos  pos  = c_pos_raw_pct_raw(L, 1);
+    Pico_Rect rect = c_rect_raw_pct_raw(L, 2);
 
-    Pico_Rect rect;
-    {
-        Pico_Rect_Pct* pct;
-        PICO_RAW_PCT tp = c_rect_raw_pct(L, 2, &rect, &pct);
-        if (tp == PICO_PCT) {
-            rect = pico_cv_rect_pct_raw(pct);
-        }
-    }
-
-    lua_pushboolean(L, pico_vs_pos_rect_raw(pos, rect));
+    int ret = pico_vs_pos_rect_raw(pos, rect);
+    lua_pushboolean(L, ret);
     return 1;
 }
 
@@ -307,25 +315,11 @@ static int l_vs_rect_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);   // r1 | r2
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    Pico_Rect raw1;
-    {
-        Pico_Rect_Pct* pct;
-        PICO_RAW_PCT tp = c_rect_raw_pct(L, 1, &raw1, &pct);
-        if (tp == PICO_PCT) {
-            raw1 = pico_cv_rect_pct_raw(pct);
-        }
-    }
+    Pico_Rect r1 = c_rect_raw_pct_raw(L, 1);
+    Pico_Rect r2 = c_rect_raw_pct_raw(L, 2);
 
-    Pico_Rect raw2;
-    {
-        Pico_Rect_Pct* pct;
-        PICO_RAW_PCT tp = c_rect_raw_pct(L, 2, &raw2, &pct);
-        if (tp == PICO_PCT) {
-            raw2 = pico_cv_rect_pct_raw(pct);
-        }
-    }
-
-    lua_pushboolean(L, pico_vs_rect_rect_raw(raw1, raw2));
+    int ret = pico_vs_rect_rect_raw(r1, r2);
+    lua_pushboolean(L, ret);
     return 1;
 }
 
@@ -511,34 +505,11 @@ static int l_output_draw_tri (lua_State* L) {
     luaL_checktype(L, 2, LUA_TTABLE);
     luaL_checktype(L, 3, LUA_TTABLE);
 
-    Pico_Pos raw1;
-    {
-        Pico_Pos_Pct* pct;
-        PICO_RAW_PCT tp = c_pos_raw_pct(L, 1, &raw1, &pct);
-        if (tp == PICO_PCT) {
-            raw1 = pico_cv_pos_pct_raw(pct);
-        }
-    }
+    Pico_Pos p1 = c_pos_raw_pct_raw(L, 1);
+    Pico_Pos p2 = c_pos_raw_pct_raw(L, 2);
+    Pico_Pos p3 = c_pos_raw_pct_raw(L, 3);
 
-    Pico_Pos raw2;
-    {
-        Pico_Pos_Pct* pct;
-        PICO_RAW_PCT tp = c_pos_raw_pct(L, 2, &raw2, &pct);
-        if (tp == PICO_PCT) {
-            raw1 = pico_cv_pos_pct_raw(pct);
-        }
-    }
-
-    Pico_Pos raw3;
-    {
-        Pico_Pos_Pct* pct;
-        PICO_RAW_PCT tp = c_pos_raw_pct(L, 3, &raw3, &pct);
-        if (tp == PICO_PCT) {
-            raw1 = pico_cv_pos_pct_raw(pct);
-        }
-    }
-
-    pico_output_draw_tri_raw(raw1, raw2, raw3);
+    pico_output_draw_tri_raw(p1, p2, p3);
     return 0;
 }
 
