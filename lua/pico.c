@@ -331,7 +331,7 @@ static int l_vs_rect_rect (lua_State* L) {
 
 static int l_get_text (lua_State* L) {
     int h = luaL_checknumber(L, 1);
-    char* path = luaL_checkstring(L, 2);
+    const char* path = luaL_checkstring(L, 2);
     int w = pico_get_text(h, path);
     lua_pushinteger(L, w);
     return 1;
