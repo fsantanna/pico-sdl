@@ -19,7 +19,7 @@ int main (void) {
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
-            pico_output_draw_image_pct(&r, "open.png");
+            pico_output_draw_image_pct("open.png", &r);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-01");
@@ -47,7 +47,7 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_text_pct(&r, "SOME TEXT");
+            pico_output_draw_text_pct("SOME TEXT", &r);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-03");
@@ -124,7 +124,7 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_poly_pct(poly, 3);
+            pico_output_draw_poly_pct(3, poly);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-08");

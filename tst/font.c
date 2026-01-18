@@ -11,7 +11,7 @@ int main (void) {
     }
     {
         Pico_Rect_Pct r = { 0.5,0.5, 0,0.2, PICO_ANCHOR_C, NULL };
-        pico_output_draw_text_pct(&r, "hg - gh");
+        pico_output_draw_text_pct("hg - gh", &r);
         _pico_check("font-02");
     }
 
