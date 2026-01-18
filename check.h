@@ -99,10 +99,51 @@
 #define PICO_CHECK_H
 
 #include "pico.h"
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_surface.h>
-#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+
+static int _pico_cmp_files (const char* path1, const char* path2) {
+    int ok = 1;
+
+    FILE* f1 = fopen(path1, "rb");
+    if (f1 == NULL) return 0;
+    FILE* f2 = fopen(path2, "rb");
+    if (f2 == NULL) {
+        fclose(f1);
+        return 0;
+    }
+
+    fseek(f1, 0, SEEK_END);
+    int sz1 = ftell(f1);
+    fseek(f1, 0, SEEK_SET);
+
+    fseek(f2, 0, SEEK_END);
+    int sz2 = ftell(f2);
+    fseek(f2, 0, SEEK_SET);
+
+    if (sz1 != sz2) {
+        ok = 0;
+        goto _CLOSE_;
+    }
+
+    char buf1[4096];
+    char buf2[4096];
+    int i = sz1;
+    while (i>0 && ok) {
+        int n = (i > 4096) ? 4096 : i;
+        fread(buf1, 1, n, f1);
+        fread(buf2, 1, n, f2);
+        if (memcmp(buf1, buf2, n) != 0) {
+            ok = 0;
+        }
+        i -= n;
+    }
+
+_CLOSE_:
+    fclose(f1);
+    fclose(f2);
+    return ok;
+}
 
 void _pico_check (const char* msg) {
     // Always write to out/
@@ -121,18 +162,7 @@ void _pico_check (const char* msg) {
     // Assert if ASR is defined
     char fmt_asr[256];
     sprintf(fmt_asr, "asr/%s.png", msg);
-
-    SDL_Surface* sfc_out = IMG_Load(fmt_out);
-    pico_assert(sfc_out != NULL);
-    SDL_Surface* sfc_asr = IMG_Load(fmt_asr);
-    pico_assert(sfc_asr != NULL);
-
-    int ret = memcmp(sfc_out->pixels, sfc_asr->pixels,
-                     sfc_out->pitch * sfc_out->h);
-    assert(ret == 0);
-
-    SDL_FreeSurface(sfc_out);
-    SDL_FreeSurface(sfc_asr);
+    assert(_pico_cmp_files(fmt_out, fmt_asr));
     #endif
 }
 

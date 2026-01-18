@@ -1,16 +1,9 @@
 #include "pico.h"
-#include <SDL2/SDL_image.h>
+#include "check.h"
 
-void compare (const char* out, const char* asr) {
-    SDL_Surface* sfc_out = IMG_Load(out);
-    pico_assert(sfc_out != NULL);
-    SDL_Surface* sfc_asr = IMG_Load(asr);
-    pico_assert(sfc_asr != NULL);
-
+void check (const char* out, const char* asr) {
     printf("Testing: %s\n", asr);
-    int ret = memcmp(sfc_out->pixels, sfc_asr->pixels,
-                     sfc_out->pitch * sfc_out->h);
-    assert(ret == 0);
+    assert(_pico_cmp_files(out, asr));
 }
 
 int main (void) {
@@ -22,7 +15,7 @@ int main (void) {
         pico_output_draw_rect_raw((Pico_Rect){10, 10, 20, 20});
         const char* f = pico_output_screenshot(NULL);
         assert(f != NULL);
-        compare(f, "asr/shot-01.png");
+        check(f, "asr/shot-01.png");
         assert(remove(f) == 0);
     }
 
@@ -32,7 +25,7 @@ int main (void) {
         pico_output_draw_rect_raw((Pico_Rect){30, 30, 10, 10});
         const char* f = pico_output_screenshot("out/shot-02.png");
         assert(!strcmp(f, "out/shot-02.png"));
-        compare(f, "asr/shot-02.png");
+        check(f, "asr/shot-02.png");
     }
 
     {
@@ -41,7 +34,7 @@ int main (void) {
         pico_output_draw_rect_raw((Pico_Rect){40, 5, 10, 10});
         const char* f = pico_output_screenshot_raw(NULL, (Pico_Rect){0, 0, 250, 150});
         assert(f != NULL);
-        compare(f, "asr/shot-03.png");
+        check(f, "asr/shot-03.png");
         assert(remove(f) == 0);
     }
 
@@ -52,7 +45,7 @@ int main (void) {
         const char* f = pico_output_screenshot_pct(NULL,
             &(Pico_Rect_Pct){0, 0, 0.5, 0.3, {0, 0}, NULL});
         assert(f != NULL);
-        compare(f, "asr/shot-04.png");
+        check(f, "asr/shot-04.png");
         assert(remove(f) == 0);
     }
 
