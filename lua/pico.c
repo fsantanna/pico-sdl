@@ -517,7 +517,6 @@ static int l_output_draw_tri (lua_State* L) {
         PICO_RAW_PCT tp = c_pos_raw_pct(L, 1, &raw1, &pct);
         if (tp == PICO_PCT) {
             raw1 = pico_cv_pos_pct_raw(pct);
-            pico_output_draw_pixel_pct(pct);
         }
     }
 
@@ -527,7 +526,6 @@ static int l_output_draw_tri (lua_State* L) {
         PICO_RAW_PCT tp = c_pos_raw_pct(L, 2, &raw2, &pct);
         if (tp == PICO_PCT) {
             raw1 = pico_cv_pos_pct_raw(pct);
-            pico_output_draw_pixel_pct(pct);
         }
     }
 
@@ -537,7 +535,6 @@ static int l_output_draw_tri (lua_State* L) {
         PICO_RAW_PCT tp = c_pos_raw_pct(L, 3, &raw3, &pct);
         if (tp == PICO_PCT) {
             raw1 = pico_cv_pos_pct_raw(pct);
-            pico_output_draw_pixel_pct(pct);
         }
     }
 
