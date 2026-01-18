@@ -8,5 +8,5 @@ Assumes this directory structure:
 ```
 
 ```bash
-LUA_CPATH="../pico/?.so" LUA_PATH="../?/init.lua" lua5.4 init.lua
+LUA_CPATH="../pico/?.so;" LUA_PATH="../?/init.lua;../?.lua;" lua5.4 init.lua
 ```
