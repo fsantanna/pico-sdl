@@ -68,7 +68,7 @@ end
 
 do
     print("anchor 25%25% 20%20% - 1lin/1col")
-    local r = {{0.2,0.2}, x=0.2, y=0.2, w=0.4, h=0.4}
+    local r = {{x=0.2,y=0.2}, x=0.2, y=0.2, w=0.4, h=0.4}
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("anchor-08")
@@ -77,7 +77,7 @@ end
 -- RECTS out of [0,100]
 do
     print("anchor -25%-25% centered - touching border")
-    local r = {{-0.25,-0.25}, x=0.5, y=0.5, w=0.4, h=0.4}
+    local r = {{x=-0.25,y=-0.25}, x=0.5, y=0.5, w=0.4, h=0.4}
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("anchor-09")
@@ -85,7 +85,7 @@ end
 
 do
     print("anchor 125%125% centered - touching border")
-    local r = {{1.25,1.25}, x=0.5, y=0.5, w=0.4, h=0.4}
+    local r = {{x=1.25,y=1.25}, x=0.5, y=0.5, w=0.4, h=0.4}
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("anchor-10")
