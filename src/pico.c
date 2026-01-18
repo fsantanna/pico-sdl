@@ -772,7 +772,7 @@ static void _show_grid (void) {
             int v = S.view.src.x + (x * S.view.src.w / S.view.phy.w);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            int W = pico_get_text_width(H, lbl);
+            int W = pico_get_text(H, lbl);
             pico_output_draw_text_raw (
                 (Pico_Rect) { x-W/2, 10-H/2, 0, H },
                 lbl
@@ -784,7 +784,7 @@ static void _show_grid (void) {
             int v = S.view.src.y + (y * S.view.src.h / S.view.phy.h);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            int W = pico_get_text_width(H, lbl);
+            int W = pico_get_text(H, lbl);
             pico_output_draw_text_raw (
                 (Pico_Rect) { 10-W/2, y-H/2, 0, H },
                 lbl
@@ -1018,18 +1018,26 @@ Pico_Rect pico_get_crop (void) {
     return S.crop;
 }
 
-int pico_get_rotate (void) {
-    return S.angle;
-}
-
-Pico_Dim pico_get_dim_image (const char* path) {
+Pico_Dim pico_get_image (const char* path) {
     SDL_Texture* tex = _image(path);
     Pico_Dim dim;
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
     return dim;
 }
 
-int pico_get_text_width (int h, const char* text) {
+int pico_get_rotate (void) {
+    return S.angle;
+}
+
+int pico_get_show (void) {
+    return SDL_GetWindowFlags(WIN) & SDL_WINDOW_SHOWN;
+}
+
+PICO_STYLE pico_get_style (void) {
+    return S.style;
+}
+
+int pico_get_text (int h, const char* text) {
     if (text[0] == '\0') {
         return 0;
     }
@@ -1041,14 +1049,6 @@ int pico_get_text_width (int h, const char* text) {
     int w = sfc->w;
     SDL_FreeSurface(sfc);
     return w;
-}
-
-int pico_get_show (void) {
-    return SDL_GetWindowFlags(WIN) & SDL_WINDOW_SHOWN;
-}
-
-PICO_STYLE pico_get_style (void) {
-    return S.style;
 }
 
 Uint32 pico_get_ticks (void) {

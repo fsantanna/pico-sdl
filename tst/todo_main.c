@@ -65,7 +65,7 @@ int main (void) {
 
     puts("shows centered \"Hello!\" (on top of shapes)");
     {
-        int w = pico_get_text_width(20, "Hello!");
+        int w = pico_get_text(20, "Hello!");
         Pico_Rect r = {50-w/2, 50-5, 0, 20};
         pico_output_draw_text_raw(r, "Hello!");
         pico_input_delay(2000);

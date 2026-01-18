@@ -28,7 +28,7 @@ int main (void) {
     }
     {
         puts("text dimming");
-        int w = pico_get_text_width(10, "SOME TEXT");
+        int w = pico_get_text(10, "SOME TEXT");
         Pico_Rect r = {32-w/2, 18-5, 0, 10};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
