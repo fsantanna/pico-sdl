@@ -31,6 +31,7 @@ tests:
 	$(TST) tst/pos.lua
 	$(TST) tst/rect.lua
 	$(TST) tst/shot.lua
+	$(TST) tst/size_raw.lua
 
 install: pico_native.so
 	cp pico-lua /usr/local/bin/
