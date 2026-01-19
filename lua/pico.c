@@ -725,11 +725,18 @@ static int l_output_screenshot (lua_State* L) {
     char* ret = NULL;
 
     int n = lua_gettop(L);
-    if (n == 1) {
+    if (n <= 1) {
         ret = (char*) pico_output_screenshot(path);
         goto _RET_;
-    } else {
-        assert(0 && "TODO");
+    } else {                                    // path | rect
+        Pico_Rect raw;
+        Pico_Rect_Pct* pct;
+        PICO_RAW_PCT tp = c_rect_raw_pct(L, 2, &raw, &pct);
+        if (tp == PICO_RAW) {
+            ret = (char*) pico_output_screenshot_raw(path, raw);
+        } else {
+            ret = (char*) pico_output_screenshot_pct(path, pct);
+        }
     }
 
     _RET_:
