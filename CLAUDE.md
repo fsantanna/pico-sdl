@@ -98,7 +98,7 @@ containing:
 - Flip state
 - Font path
 - Grid display flag
-- Drawing style (`PICO_FILL` or `PICO_STROKE`)
+- Drawing style (`PICO_STYLE_FILL` or `PICO_STYLE_STROKE`)
 - View configuration (physical/logical dimensions, fullscreen, clipping)
 
 ### Color Types
