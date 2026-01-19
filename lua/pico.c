@@ -184,7 +184,7 @@ static int c_is_raw (lua_State* L, int i) {
 static int c_pos_raw_pct (lua_State* L, int i, Pico_Pos* raw, Pico_Pos_Pct** pct) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);    // r
-    if (c_is_raw(L,1)) {                    // raw
+    if (c_is_raw(L,i)) {                    // raw
         *raw = c_pos_raw(L, i);
         return 0;
     } else {                                // pct
@@ -408,6 +408,17 @@ static int l_output_clear (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_line (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);   // p1 | p2
+    luaL_checktype(L, 2, LUA_TTABLE);
+
+    Pico_Pos p1 = c_pos_raw_pct_raw(L, 1);
+    Pico_Pos p2 = c_pos_raw_pct_raw(L, 2);
+
+    pico_output_draw_line_raw(p1, p2);
+    return 0;
+}
+
 static int l_output_draw_oval (lua_State* L) {
     if (lua_type(L,1) == LUA_TSTRING) {             // 'C' | x | y | w | h
         assert(0 && "TODO");
@@ -453,6 +464,24 @@ static int l_output_draw_pixel (lua_State* L) {
             pico_output_draw_pixel_pct(pct);
         }
     }
+    return 0;
+}
+
+static int l_output_draw_poly (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // pts={{x,y}}
+    lua_len(L, 1);                          // pts | n
+    int n = lua_tointeger(L, -1);
+    Pico_Pos poly[n];
+    for (int i=1; i<=n; i++) {
+        lua_geti(L, 1, i);                  // pts | n | {x,y}
+        int k = lua_gettop(L);
+        if (lua_type(L,k) != LUA_TTABLE) {
+            return luaL_error(L, "expected point at index %d", i);
+        }
+        poly[i-1] = c_pos_raw_pct_raw(L, k);
+        lua_pop(L, 1);                      // pts | n
+    }
+    pico_output_draw_poly_raw(n, poly);
     return 0;
 }
 
@@ -594,8 +623,10 @@ static const luaL_Reg ll_output[] = {
 };
 
 static const luaL_Reg ll_output_draw[] = {
+    { "line",   l_output_draw_line  },
     { "oval",   l_output_draw_oval  },
     { "pixel",  l_output_draw_pixel },
+    { "poly",   l_output_draw_poly  },
     { "rect",   l_output_draw_rect  },
     { "text",   l_output_draw_text  },
     { "tri",    l_output_draw_tri   },
