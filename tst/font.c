@@ -6,7 +6,7 @@ int main (void) {
 
     {
         Pico_Rect r = { 10,10, 0,10 };
-        pico_output_draw_text_raw(r, "hg - gh");
+        pico_output_draw_text_raw("hg - gh", r);
         _pico_check("font-01");
     }
     {
