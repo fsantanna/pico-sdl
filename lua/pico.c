@@ -424,8 +424,6 @@ static int l_output_draw_buffer (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T | rect={x,y}
     luaL_checktype(L, 2, LUA_TTABLE);       // T | rect
 
-    Pico_Rect rect = c_rect_raw_pct_raw(L, 2);
-
     lua_len(L, 1);                          // T | rect | l
     int l = lua_tointeger(L, -1);
     lua_geti(L, 1, 1);                      // T | rect | l | T[1]
@@ -453,7 +451,16 @@ static int l_output_draw_buffer (lua_State* L) {
         }
         lua_pop(L, 1);                      // T | rect
     }
-    pico_output_draw_buffer_raw((Pico_Dim){c,l}, (Pico_Color_A*)buf, rect);
+
+    Pico_Rect raw;
+    Pico_Rect_Pct* pct;
+    PICO_RAW_PCT tp = c_rect_raw_pct(L, 2, &raw, &pct);
+
+    if (tp == PICO_RAW) {
+        pico_output_draw_buffer_raw((Pico_Dim){c,l}, (Pico_Color_A*)buf, raw);
+    } else {
+        pico_output_draw_buffer_pct((Pico_Dim){c,l}, (Pico_Color_A*)buf, pct);
+    }
     return 0;
 }
 
