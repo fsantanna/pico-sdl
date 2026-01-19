@@ -78,11 +78,11 @@ static Pico_Color_A c_color_a_t (lua_State* L, int i) {
 static Pico_Color c_color (lua_State* L) {
     Pico_Color clr;
     if (lua_type(L,1) == LUA_TSTRING) {         // clr = 'red'
-        lua_pushlightuserdata(L, (void*)&KEY);  // clr | K
-        lua_gettable(L, LUA_REGISTRYINDEX);     // clr | G
-        lua_getfield(L, -1, "colors");          // clr | G | clrs
-        lua_pushvalue(L, -3);                   // clr | G | clrs | clr
-        lua_gettable(L, -2);                    // clr | G | clrs | *clr*
+        lua_pushlightuserdata(L, (void*)&KEY);  // clr | . | K
+        lua_gettable(L, LUA_REGISTRYINDEX);     // clr | . | G
+        lua_getfield(L, -1, "colors");          // clr | . | G | clrs
+        lua_pushvalue(L, 1);                   // clr | . | G | clrs | clr
+        lua_gettable(L, -2);                    // clr | . | G | clrs | *clr*
         int ok = lua_islightuserdata(L, -1);
         if (!ok) {
             luaL_error(L, "invalid color \"%s\"", lua_tostring(L,1));
@@ -359,7 +359,7 @@ static void l_push_color (lua_State* L, Pico_Color clr) {
 }
 
 static int l_color_darker (lua_State* L) {
-    Pico_Color clr = c_color_t(L, 1);
+    Pico_Color clr = c_color(L);
     float pct = luaL_checknumber(L, 2);
     Pico_Color ret = pico_color_darker(clr, pct);
     l_push_color(L, ret);
@@ -367,7 +367,7 @@ static int l_color_darker (lua_State* L) {
 }
 
 static int l_color_lighter (lua_State* L) {
-    Pico_Color clr = c_color_t(L, 1);
+    Pico_Color clr = c_color(L);
     float pct = luaL_checknumber(L, 2);
     Pico_Color ret = pico_color_lighter(clr, pct);
     l_push_color(L, ret);
