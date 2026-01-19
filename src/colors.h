@@ -6,31 +6,31 @@
 /// @{
 
 // Grayscale
-#define PICO_COLOR_BLACK   ((Pico_Color) {0, 0, 0})
-#define PICO_COLOR_WHITE   ((Pico_Color) {255, 255, 255})
-#define PICO_COLOR_GRAY    ((Pico_Color) {128, 128, 128})
-#define PICO_COLOR_SILVER  ((Pico_Color) {192, 192, 192})
+const Pico_Color PICO_COLOR_BLACK   = {0, 0, 0};
+const Pico_Color PICO_COLOR_WHITE   = {255, 255, 255};
+const Pico_Color PICO_COLOR_GRAY    = {128, 128, 128};
+const Pico_Color PICO_COLOR_SILVER  = {192, 192, 192};
 
 // Primary colors
-#define PICO_COLOR_RED     ((Pico_Color) {255, 0, 0})
-#define PICO_COLOR_GREEN   ((Pico_Color) {0, 255, 0})
-#define PICO_COLOR_BLUE    ((Pico_Color) {0, 0, 255})
+const Pico_Color PICO_COLOR_RED     = {255, 0, 0};
+const Pico_Color PICO_COLOR_GREEN   = {0, 255, 0};
+const Pico_Color PICO_COLOR_BLUE    = {0, 0, 255};
 
 // Secondary colors
-#define PICO_COLOR_YELLOW  ((Pico_Color) {255, 255, 0})
-#define PICO_COLOR_CYAN    ((Pico_Color) {0, 255, 255})
-#define PICO_COLOR_MAGENTA ((Pico_Color) {255, 0, 255})
+const Pico_Color PICO_COLOR_YELLOW  = {255, 255, 0};
+const Pico_Color PICO_COLOR_CYAN    = {0, 255, 255};
+const Pico_Color PICO_COLOR_MAGENTA = {255, 0, 255};
 
 // Common colors
-#define PICO_COLOR_ORANGE  ((Pico_Color) {255, 165, 0})
-#define PICO_COLOR_PURPLE  ((Pico_Color) {128, 0, 128})
-#define PICO_COLOR_PINK    ((Pico_Color) {255, 192, 203})
-#define PICO_COLOR_BROWN   ((Pico_Color) {165, 42, 42})
-#define PICO_COLOR_LIME    ((Pico_Color) {0, 255, 0})
-#define PICO_COLOR_TEAL    ((Pico_Color) {0, 128, 128})
-#define PICO_COLOR_NAVY    ((Pico_Color) {0, 0, 128})
-#define PICO_COLOR_MAROON  ((Pico_Color) {128, 0, 0})
-#define PICO_COLOR_OLIVE   ((Pico_Color) {128, 128, 0})
+const Pico_Color PICO_COLOR_ORANGE  = {255, 165, 0};
+const Pico_Color PICO_COLOR_PURPLE  = {128, 0, 128};
+const Pico_Color PICO_COLOR_PINK    = {255, 192, 203};
+const Pico_Color PICO_COLOR_BROWN   = {165, 42, 42};
+const Pico_Color PICO_COLOR_LIME    = {0, 255, 0};
+const Pico_Color PICO_COLOR_TEAL    = {0, 128, 128};
+const Pico_Color PICO_COLOR_NAVY    = {0, 0, 128};
+const Pico_Color PICO_COLOR_MAROON  = {128, 0, 0};
+const Pico_Color PICO_COLOR_OLIVE   = {128, 128, 0};
 
 /// @}
 

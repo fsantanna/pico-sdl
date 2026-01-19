@@ -32,7 +32,7 @@ static Pico_Pct c_anchor (lua_State* L, int i) {
     if (lua_type(L,i) == LUA_TSTRING) {         // anc
         lua_pushlightuserdata(L, (void*)&KEY);  // anc | K
         lua_gettable(L, LUA_REGISTRYINDEX);     // anc | G
-        lua_getfield(L, -1, "ancs");            // anc | G | ancs
+        lua_getfield(L, -1, "anchors");         // anc | G | ancs
         lua_pushvalue(L, -3);                   // anc | G | ancs | anc
         lua_gettable(L, -2);                    // anc | G | ancs | *anc*
         int ok = lua_islightuserdata(L, -1);
@@ -77,7 +77,20 @@ static Pico_Color_A c_color_a_t (lua_State* L, int i) {
 
 static Pico_Color c_color (lua_State* L) {
     Pico_Color clr;
-    if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b }
+    if (lua_type(L,1) == LUA_TSTRING) {         // clr = 'red'
+        lua_pushlightuserdata(L, (void*)&KEY);  // clr | K
+        lua_gettable(L, LUA_REGISTRYINDEX);     // clr | G
+        lua_getfield(L, -1, "colors");          // clr | G | clrs
+        lua_pushvalue(L, -3);                   // clr | G | clrs | clr
+        lua_gettable(L, -2);                    // clr | G | clrs | *clr*
+        int ok = lua_islightuserdata(L, -1);
+        if (!ok) {
+            luaL_error(L, "invalid color \"%s\"", lua_tostring(L,1));
+        }
+        Pico_Color* clr = lua_touserdata(L, -1);
+        lua_pop(L, 3);                          // clr
+        return *clr;
+    } else if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b }
         clr = c_color_t(L, 1);
     } else {                            // r | g | b
         clr = (Pico_Color) {
@@ -332,6 +345,32 @@ static int l_vs_rect_rect (lua_State* L) {
 
     int ret = pico_vs_rect_rect_raw(r1, r2);
     lua_pushboolean(L, ret);
+    return 1;
+}
+
+static void l_push_color (lua_State* L, Pico_Color clr) {
+    lua_newtable(L);
+    lua_pushinteger(L, clr.r);
+    lua_setfield(L, -2, "r");
+    lua_pushinteger(L, clr.g);
+    lua_setfield(L, -2, "g");
+    lua_pushinteger(L, clr.b);
+    lua_setfield(L, -2, "b");
+}
+
+static int l_color_darker (lua_State* L) {
+    Pico_Color clr = c_color_t(L, 1);
+    float pct = luaL_checknumber(L, 2);
+    Pico_Color ret = pico_color_darker(clr, pct);
+    l_push_color(L, ret);
+    return 1;
+}
+
+static int l_color_lighter (lua_State* L) {
+    Pico_Color clr = c_color_t(L, 1);
+    float pct = luaL_checknumber(L, 2);
+    Pico_Color ret = pico_color_lighter(clr, pct);
+    l_push_color(L, ret);
     return 1;
 }
 
@@ -660,6 +699,12 @@ static const luaL_Reg ll_vs[] = {
     { NULL, NULL }
 };
 
+static const luaL_Reg ll_color[] = {
+    { "darker",  l_color_darker  },
+    { "lighter", l_color_lighter },
+    { NULL, NULL }
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
@@ -721,6 +766,9 @@ int luaopen_pico_native (lua_State* L) {
     luaL_newlib(L, ll_vs);                  // pico | vs
     lua_setfield(L, -2, "vs");              // pico
 
+    luaL_newlib(L, ll_color);               // pico | color
+    lua_setfield(L, -2, "color");           // pico
+
     luaL_newlib(L, ll_get);                 // pico | get
     lua_setfield(L, -2, "get");             // pico
 
@@ -764,9 +812,56 @@ int luaopen_pico_native (lua_State* L) {
         lua_setfield(L, -2, "SW");                        // pico | G | ancs
         lua_pushlightuserdata(L, (void*)&PICO_ANCHOR_W);  // pico | G | ancs | W
         lua_setfield(L, -2, "W");                         // pico | G | ancs
-        lua_setfield(L, -2, "ancs");                      // pico | G
+        lua_setfield(L, -2, "anchors");                   // pico | G
         lua_pop(L, 1);                                    // pico
     }                                                     // pico
+
+    // colors
+    {
+        lua_pushlightuserdata(L, (void*)&KEY);                  // pico | K
+        lua_gettable(L, LUA_REGISTRYINDEX);                     // pico | G
+        lua_newtable(L);                                        // pico | G | clrs
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_BLACK);     // pico | G | clrs | black
+        lua_setfield(L, -2, "black");                           // pico | G | clrs
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_WHITE);     // . | white
+        lua_setfield(L, -2, "white");                           // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_GRAY);      // . | gray
+        lua_setfield(L, -2, "gray");                            // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_SILVER);    // . | silver
+        lua_setfield(L, -2, "silver");                          // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_RED);       // . | red
+        lua_setfield(L, -2, "red");                             // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_GREEN);     // . | green
+        lua_setfield(L, -2, "green");                           // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_BLUE);      // . | blue
+        lua_setfield(L, -2, "blue");                            // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_YELLOW);    // . | yellow
+        lua_setfield(L, -2, "yellow");                          // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_CYAN);      // . | cyan
+        lua_setfield(L, -2, "cyan");                            // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_MAGENTA);   // . | magenta
+        lua_setfield(L, -2, "magenta");                         // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_ORANGE);    // . | orange
+        lua_setfield(L, -2, "orange");                         // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_PURPLE);    // . | purple
+        lua_setfield(L, -2, "purple");                          // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_PINK);      // . | pink
+        lua_setfield(L, -2, "pink");                            // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_BROWN);     // . | brown
+        lua_setfield(L, -2, "brown");                           // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_LIME);      // . | lime
+        lua_setfield(L, -2, "lime");                            // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_TEAL);      // . | teal
+        lua_setfield(L, -2, "teal");                            // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_NAVY);      // . | navy
+        lua_setfield(L, -2, "navy");                            // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_MAROON);    // . | maroon
+        lua_setfield(L, -2, "maroon");                          // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_OLIVE);     // . | olive
+        lua_setfield(L, -2, "olive");                           // pico | G | clrs
+        lua_setfield(L, -2, "colors");                          // pico | G
+        lua_pop(L, 1);                                          // pico
+    }
 
     return 1;   // [pico]
 }

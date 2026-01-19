@@ -10,7 +10,6 @@ extern "C" {
 #include <SDL2/SDL.h>
 #include "keys.h"
 #include "events.h"
-#include "colors.h"
 
 /// @example init.c
 /// @example delay.c
@@ -97,6 +96,27 @@ extern const Pico_Pct PICO_ANCHOR_SE;
 extern const Pico_Pct PICO_ANCHOR_S;
 extern const Pico_Pct PICO_ANCHOR_SW;
 extern const Pico_Pct PICO_ANCHOR_W;
+
+extern const Pico_Color PICO_COLOR_BLACK;
+extern const Pico_Color PICO_COLOR_WHITE;
+extern const Pico_Color PICO_COLOR_GRAY;
+extern const Pico_Color PICO_COLOR_SILVER;
+
+extern const Pico_Color PICO_COLOR_RED;
+extern const Pico_Color PICO_COLOR_GREEN;
+extern const Pico_Color PICO_COLOR_BLUE;
+extern const Pico_Color PICO_COLOR_YELLOW;
+extern const Pico_Color PICO_COLOR_CYAN;
+extern const Pico_Color PICO_COLOR_MAGENTA;
+extern const Pico_Color PICO_COLOR_ORANGE;
+extern const Pico_Color PICO_COLOR_PURPLE;
+extern const Pico_Color PICO_COLOR_PINK;
+extern const Pico_Color PICO_COLOR_BROWN;
+extern const Pico_Color PICO_COLOR_LIME;
+extern const Pico_Color PICO_COLOR_TEAL;
+extern const Pico_Color PICO_COLOR_NAVY;
+extern const Pico_Color PICO_COLOR_MAROON;
+extern const Pico_Color PICO_COLOR_OLIVE;
 
 /// @}
 

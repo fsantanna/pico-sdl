@@ -14,6 +14,7 @@
 #include "hash.h"
 #include "tiny_ttf.h"
 #include "pico.h"
+#include "colors.h"
 
 typedef enum {
     PICO_RES_IMAGE,
