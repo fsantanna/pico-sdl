@@ -385,7 +385,7 @@ static int l_set_view (lua_State* L) {
         xxphy = &xphy;
     }
     if (lua_istable(L, 3)) {
-        xdst = c_rect_raw(L, 3);
+        xdst = c_rect_raw_pct_raw(L, 3);
         xxdst = &xdst;
     }
     if (lua_istable(L, 4)) {
@@ -393,11 +393,11 @@ static int l_set_view (lua_State* L) {
         xxlog = &xlog;
     }
     if (lua_istable(L, 5)) {
-        xsrc = c_rect_raw(L, 5);
+        xsrc = c_rect_raw_pct_raw(L, 5);
         xxsrc = &xsrc;
     }
     if (lua_istable(L, 6)) {
-        xclip = c_rect_raw(L, 6);
+        xclip = c_rect_raw_pct_raw(L, 6);
         xxclip = &xclip;
     }
 
