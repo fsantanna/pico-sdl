@@ -5,7 +5,10 @@ pico.set.title("Anchoring...")
 
 local phy = {w=200, h=200}
 local log = {w=10, h=10}
-pico.set.view(-1, phy, nil, log, nil, nil)
+pico.set.view {
+    window = phy,
+    world  = log,
+}
 
 -- PIXELS
 do

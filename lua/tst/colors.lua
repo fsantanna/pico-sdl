@@ -2,14 +2,10 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.title("Colors Test")
-pico.set.view(
-    -1,
-    {w=640, h=480},
-    nil,
-    {w=64, h=48},
-    nil,
-    nil
-)
+pico.set.view {
+    window = {w=640, h=480},
+    world  = {w=64,  h=48},
+}
 
 do
     print("predefined colors")

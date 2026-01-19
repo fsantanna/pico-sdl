@@ -49,7 +49,7 @@ end
 
 pico.init(true)
 local log = {w=100, h=100}
-pico.set.view(-1, nil, nil, log, nil, nil)
+pico.set.view { world=log }
 
 print "pico.cv.pos [log]: pct->raw"
 do

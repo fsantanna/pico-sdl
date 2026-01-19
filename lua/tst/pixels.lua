@@ -2,7 +2,10 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.title("pixels")
-pico.set.view(-1, {w=100, h=100}, nil, {w=5, h=5}, nil, nil)
+pico.set.view {
+    window = {w=100, h=100},
+    world  = {w=5, h=5}
+}
 
 do
     local pixels = {

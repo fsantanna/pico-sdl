@@ -2,14 +2,10 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.title("Blend")
-pico.set.view(
-    -1,
-    {w=640, h=360},
-    nil,
-    {w=64, h=36},
-    nil,
-    nil
-)
+pico.set.view {
+    window = {w=640, h=360},
+    world  = {w=64,  h=36},
+}
 
 do
     print("image dimming")

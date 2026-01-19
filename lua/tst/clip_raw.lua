@@ -15,7 +15,7 @@ local r1 = {x=30-25, y=30-25, w=50, h=50}
 
 do
     print("gray background")
-    pico.set.view(-1, nil, nil, nil, nil, r1)
+    pico.set.view { clip=r1 }
     pico.set.color.clear(0xCC, 0xCC, 0xCC)
     pico.output.clear()
     pico.check("clip-02")

@@ -1,7 +1,10 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view(-1, {w=160, h=160}, nil, {w=16, h=16}, nil, nil)
+pico.set.view {
+    window = {w=160, h=160},
+    world  = {w=16,  h=16}
+}
 pico.output.clear()
 
 for i = 0, 15 do

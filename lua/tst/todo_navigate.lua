@@ -1,7 +1,9 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view(-1, nil, nil, {w=1000, h=1000}, nil, nil)
+pico.set.view {
+    world = {w=1000, h=1000}
+}
 
 -- draw
 do

@@ -4,14 +4,10 @@ pico.init(true)
 
 print("phy (500,500) -> log (50,50)")
 do
-    pico.set.view(
-        -1,
-        {w=500, h=500},
-        nil,
-        {w=50, h=50},
-        nil,
-        nil
-    )
+    pico.set.view {
+        window = {w=500, h=500},
+        world  = {w=50,  h=50},
+    }
 
     -- phy (0,0) -> log (0,0)
     do

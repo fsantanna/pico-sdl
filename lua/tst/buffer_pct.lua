@@ -5,7 +5,10 @@ pico.set.title("Buffer")
 
 local phy = {w=100, h=100}
 local log = {w=10, h=10}
-pico.set.view(-1, phy, nil, log, nil, nil)
+pico.set.view {
+    window = phy,
+    world  = log,
+}
 
 do
     -- .x.

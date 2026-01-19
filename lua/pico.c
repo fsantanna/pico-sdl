@@ -384,6 +384,71 @@ static int l_get_text (lua_State* L) {
     return 1;
 }
 
+static int l_get_view (lua_State* L) {
+    int fs;
+    Pico_Dim  phy;
+    Pico_Rect dst;
+    Pico_Dim  log;
+    Pico_Rect src;
+    Pico_Rect clip;
+
+    pico_get_view(&fs, &phy, &dst, &log, &src, &clip);
+
+    lua_newtable(L);                    // T
+
+    lua_pushboolean(L, fs);             // T | fs
+    lua_setfield(L, -2, "fullscreen");  // T
+
+    lua_newtable(L);                    // T | win
+    lua_pushinteger(L, phy.w);
+    lua_setfield(L, -2, "w");
+    lua_pushinteger(L, phy.h);
+    lua_setfield(L, -2, "h");
+    lua_setfield(L, -2, "phy");         // T
+
+    lua_newtable(L);                    // T | win_tgt
+    lua_pushinteger(L, dst.x);
+    lua_setfield(L, -2, "x");
+    lua_pushinteger(L, dst.y);
+    lua_setfield(L, -2, "y");
+    lua_pushinteger(L, dst.w);
+    lua_setfield(L, -2, "w");
+    lua_pushinteger(L, dst.h);
+    lua_setfield(L, -2, "h");
+    lua_setfield(L, -2, "target");      // T
+
+    lua_newtable(L);                    // T | wld
+    lua_pushinteger(L, log.w);
+    lua_setfield(L, -2, "w");
+    lua_pushinteger(L, log.h);
+    lua_setfield(L, -2, "h");
+    lua_setfield(L, -2, "world");       // T
+
+    lua_newtable(L);                    // T | wld_src
+    lua_pushinteger(L, src.x);
+    lua_setfield(L, -2, "x");
+    lua_pushinteger(L, src.y);
+    lua_setfield(L, -2, "y");
+    lua_pushinteger(L, src.w);
+    lua_setfield(L, -2, "w");
+    lua_pushinteger(L, src.h);
+    lua_setfield(L, -2, "h");
+    lua_setfield(L, -2, "source");      // T
+
+    lua_newtable(L);                    // T | wld_clip
+    lua_pushinteger(L, clip.x);
+    lua_setfield(L, -2, "x");
+    lua_pushinteger(L, clip.y);
+    lua_setfield(L, -2, "y");
+    lua_pushinteger(L, clip.w);
+    lua_setfield(L, -2, "w");
+    lua_pushinteger(L, clip.h);
+    lua_setfield(L, -2, "h");
+    lua_setfield(L, -2, "clip");        // T
+
+    return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_set_alpha (lua_State* L) {
@@ -429,34 +494,55 @@ static int l_set_title (lua_State* L) {
 }
 
 static int l_set_view (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);   // T
+
     Pico_Dim  xphy,  *xxphy  = NULL;
     Pico_Rect xdst,  *xxdst  = NULL;
     Pico_Dim  xlog,  *xxlog  = NULL;
     Pico_Rect xsrc,  *xxsrc  = NULL;
     Pico_Rect xclip, *xxclip = NULL;
 
-    int fs = luaL_checkinteger(L, 1);   // fs | phy | dst | log | src | clip
+    int fs = -1;
+    lua_getfield(L, 1, "fullscreen");   // T | fs
+    if (!lua_isnil(L, -1)) {
+        fs = lua_toboolean(L, -1);
+    }
+    lua_pop(L, 1);                      // T
 
-    if (lua_istable(L, 2)) {
-        xphy = c_dim(L, 2);
+    lua_getfield(L, 1, "window");       // T | phy
+    if (!lua_isnil(L, -1)) {
+        xphy = c_dim(L, lua_gettop(L));
         xxphy = &xphy;
     }
-    if (lua_istable(L, 3)) {
-        xdst = c_rect_raw_pct_raw(L, 3);
+    lua_pop(L, 1);                      // T
+
+    lua_getfield(L, 1, "target");       // T | dst
+    if (!lua_isnil(L, -1)) {
+        xdst = c_rect_raw_pct_raw(L, lua_gettop(L));
         xxdst = &xdst;
     }
-    if (lua_istable(L, 4)) {
-        xlog = c_dim(L, 4);
+    lua_pop(L, 1);                      // T
+
+    lua_getfield(L, 1, "world");        // T | log
+    if (!lua_isnil(L, -1)) {
+        xlog = c_dim(L, lua_gettop(L));
         xxlog = &xlog;
     }
-    if (lua_istable(L, 5)) {
-        xsrc = c_rect_raw_pct_raw(L, 5);
+    lua_pop(L, 1);                      // T
+
+    lua_getfield(L, 1, "source");       // T | src
+    if (!lua_isnil(L, -1)) {
+        xsrc = c_rect_raw_pct_raw(L, lua_gettop(L));
         xxsrc = &xsrc;
     }
-    if (lua_istable(L, 6)) {
-        xclip = c_rect_raw_pct_raw(L, 6);
+    lua_pop(L, 1);                      // T
+
+    lua_getfield(L, 1, "clip");         // T | clip
+    if (!lua_isnil(L, -1)) {
+        xclip = c_rect_raw_pct_raw(L, lua_gettop(L));
         xxclip = &xclip;
     }
+    lua_pop(L, 1);                      // T
 
     pico_set_view_raw(fs, xxphy, xxdst, xxlog, xxsrc, xxclip);
     return 0;
@@ -776,6 +862,7 @@ static const luaL_Reg ll_color[] = {
 
 static const luaL_Reg ll_get[] = {
     { "text", l_get_text },
+    { "view", l_get_view },
     { NULL, NULL }
 };
 

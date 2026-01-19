@@ -2,7 +2,10 @@ pico.init(true)
 
 local phy = {w=200, h=200}
 local log = {w=100, h=100}
-pico.set.view(-1, phy, nil, log, nil, nil)
+pico.set.view {
+    window = phy,
+    world  = log,
+}
 
 print "pico.vs.pos_rect (raw)"
 do
