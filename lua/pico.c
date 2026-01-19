@@ -408,6 +408,25 @@ static int l_output_clear (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_image (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TSTRING);  // path | rect
+    luaL_checktype(L, 2, LUA_TTABLE);
+
+    const char* path = lua_tostring(L, 1);
+
+    Pico_Rect raw;
+    Pico_Rect_Pct* pct;
+    PICO_RAW_PCT tp = c_rect_raw_pct(L, 2, &raw, &pct);
+
+    if (tp == PICO_RAW) {
+        pico_output_draw_image_raw(path, raw);
+    } else {
+        pico_output_draw_image_pct(path, pct);
+    }
+
+    return 0;
+}
+
 static int l_output_draw_line (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);   // p1 | p2
     luaL_checktype(L, 2, LUA_TTABLE);
@@ -623,6 +642,7 @@ static const luaL_Reg ll_output[] = {
 };
 
 static const luaL_Reg ll_output_draw[] = {
+    { "image",  l_output_draw_image },
     { "line",   l_output_draw_line  },
     { "oval",   l_output_draw_oval  },
     { "pixel",  l_output_draw_pixel },
