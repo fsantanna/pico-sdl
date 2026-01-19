@@ -206,6 +206,21 @@ static int c_is_raw (lua_State* L, int i) {
     return raw;
 }
 
+static int c_dim_raw_pct (lua_State* L, int i, Pico_Dim* raw, Pico_Pct* pct) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);    // dim
+    if (c_is_raw(L,i)) {
+        *raw = c_dim(L, i);
+        return 0;
+    } else {
+        *pct = (Pico_Pct) {
+            L_checkfieldnum(L, i, "w"),
+            L_checkfieldnum(L, i, "h"),
+        };
+        return 1;
+    }
+}
+
 static int c_pos_raw_pct (lua_State* L, int i, Pico_Pos* raw, Pico_Pos_Pct** pct) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);    // r
@@ -512,7 +527,13 @@ static int l_set_view (lua_State* L) {
 
     lua_getfield(L, 1, "window");       // T | phy
     if (!lua_isnil(L, -1)) {
-        xphy = c_dim(L, lua_gettop(L));
+        Pico_Pct xpct;
+        PICO_RAW_PCT tp = c_dim_raw_pct(L, lua_gettop(L), &xphy, &xpct);
+        if (tp == PICO_PCT) {
+            Pico_Dim cur;
+            pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+            xphy = (Pico_Dim) { xpct.x*cur.w , xpct.y*cur.h };
+        }
         xxphy = &xphy;
     }
     lua_pop(L, 1);                      // T
@@ -526,7 +547,13 @@ static int l_set_view (lua_State* L) {
 
     lua_getfield(L, 1, "world");        // T | log
     if (!lua_isnil(L, -1)) {
-        xlog = c_dim(L, lua_gettop(L));
+        Pico_Pct xpct;
+        PICO_RAW_PCT tp = c_dim_raw_pct(L, lua_gettop(L), &xlog, &xpct);
+        if (tp == PICO_PCT) {
+            Pico_Dim cur;
+            pico_get_view(NULL, NULL, NULL, &cur, NULL, NULL);
+            xlog = (Pico_Dim) { xpct.x*cur.w , xpct.y*cur.h };
+        }
         xxlog = &xlog;
     }
     lua_pop(L, 1);                      // T
