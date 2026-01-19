@@ -404,6 +404,24 @@ static int l_set_color_draw (lua_State* L) {
     return 0;
 }
 
+static int l_set_style (lua_State* L) {
+    const char* s = luaL_checkstring(L, 1);     // s
+    lua_pushlightuserdata(L, (void*)&KEY);      // s | K
+    lua_gettable(L, LUA_REGISTRYINDEX);         // s | G
+    lua_getfield(L, -1, "styles");              // s | G | styles
+    lua_pushvalue(L, 1);                        // s | G | styles | s
+    lua_gettable(L, -2);                        // s | G | styles | *s*
+
+    int ok;
+    int ss = lua_tointegerx(L, -1, &ok);
+    if (!ok) {
+        luaL_error(L, "invalid style \"%s\"", lua_tostring(L,1));
+    }
+
+    pico_set_style(ss);
+    return 0;
+}
+
 static int l_set_title (lua_State* L) {
     const char* title = luaL_checkstring(L, 1);   // title
     pico_set_title(title);
@@ -716,6 +734,7 @@ static const luaL_Reg ll_get[] = {
 
 static const luaL_Reg ll_set[] = {
     { "alpha", l_set_alpha },
+    { "style", l_set_style },
     { "title", l_set_title },
     { "view",  l_set_view  },
     { NULL, NULL }
@@ -861,6 +880,19 @@ int luaopen_pico_native (lua_State* L) {
         lua_setfield(L, -2, "olive");                           // pico | G | clrs
         lua_setfield(L, -2, "colors");                          // pico | G
         lua_pop(L, 1);                                          // pico
+    }
+
+    // styles
+    {                                           // pico
+        lua_pushlightuserdata(L, (void*)&KEY);  // . | K
+        lua_gettable(L, LUA_REGISTRYINDEX);     // . | G
+        lua_newtable(L);                        // . | G | styles
+        lua_pushinteger(L, PICO_STYLE_FILL);    // . | G | styles | fill
+        lua_setfield(L, -2, "fill");            // . | G | styles
+        lua_pushinteger(L, PICO_STYLE_STROKE);  // . | G | styles | stroke
+        lua_setfield(L, -2, "stroke");          // . | G | styles
+        lua_setfield(L, -2, "styles");          // . | G
+        lua_pop(L, 1);                          // .
     }
 
     return 1;   // [pico]
