@@ -1,112 +1,96 @@
-local pico = require 'pico'
+require 'pico.check'
 
 pico.init(true)
+pico.set.title("Anchoring...")
 
-pico.set.title "Anchoring..."
-pico.set.dim.window(200,200)
-pico.set.dim.world(10,10)
+local phy = {w=200, h=200}
+local log = {w=10, h=10}
+pico.set.view {
+    window = phy,
+    world  = log,
+}
 
 -- PIXELS
 do
-    print "centered pixel - 1dir/1baixo"
-    pico.set.anchor.pos('center', 'middle')
-    local pt = pico.pos { x=50, y=50 }
+    print("centered pixel - 1dir/1baixo")
+    local p = {'C', x=0.5, y=0.50}
     pico.output.clear()
-    pico.output.draw.pixel(pt)
-    pico.input.event('key.dn');
-    --_pico_check("pixel50x50y_center")
+    pico.output.draw.pixel(p)
+    pico.check("anchor-01")
 end
+
 do
-    print "centered pixel - 1dir/1baixo"
-    pico.set.anchor.pos { x='left', y='top' }
-    local pt = pico.pos { x=50, y=50 }
+    print("centered pixel - 1dir/1baixo")
+    local p = {'NW', x=0.5, y=0.5}
     pico.output.clear()
-    pico.output.draw.pixel(pt)
-    pico.input.event('key.dn');
-    --_pico_check("pixel50x50y_lefttop")
+    pico.output.draw.pixel(p)
+    pico.check("anchor-02")
 end
+
 do
-    print "centered pixel - 1esq/1cima"
-    pico.set.anchor.pos { x='right', y='bottom' }
-    local pt = pico.pos { x=50, y=50 }
+    print("centered pixel - 1esq/1cima")
+    local p = {'SE', x=0.5, y=0.5}
     pico.output.clear()
-    pico.output.draw.pixel(pt)
-    pico.input.event('key.dn');
-    --_pico_check("pixel50x50y_rightbottom");
+    pico.output.draw.pixel(p)
+    pico.check("anchor-03")
 end
 
 -- RECTS
 do
-    print "centered rect - exact"
-    pico.set.anchor.pos('center', 'middle')
-    local pt = pico.pos { x=50, y=50 }
-    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    print("centered rect - exact")
+    local r = {'C', x=0.5, y=0.5, w=0.4, h=0.4}
     pico.output.clear()
-    pico.output.draw.rect(rct)
-    pico.input.event('key.dn');
-    --_pico_check("rect50x50y_center")
+    pico.output.draw.rect(r)
+    pico.check("anchor-04")
 end
+
 do
-    print "topleft centered - 1lin/1col"
-    pico.set.anchor.pos { x='left', y='top' }
-    local pt = pico.pos { x=50, y=50 }
-    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    print("topleft centered - 1lin/1col")
+    local r = {'NW', x=0.5, y=0.5, w=0.4, h=0.4}
     pico.output.clear()
-    pico.output.draw.rect(rct)
-    pico.input.event('key.dn');
-    --_pico_check("rect50x50y_lefttop")
+    pico.output.draw.rect(r)
+    pico.check("anchor-05")
 end
+
 do
-    print "bottomright centered - 1lin/1col"
-    pico.set.anchor.pos('right', 'bottom')
-    local pt = pico.pos { x=50, y=50 }
-    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    print("bottomright centered - 1lin/1col")
+    local r = {'SE', x=0.5, y=0.5, w=0.4, h=0.4}
     pico.output.clear()
-    pico.output.draw.rect(rct)
-    pico.input.event('key.dn');
-    --_pico_check("rect50x50y_rightbottom");
+    pico.output.draw.rect(r)
+    pico.check("anchor-06")
 end
+
 do
-    print "rightmiddle centered - 1col"
-    pico.set.anchor.pos { x='right', y='middle' }
-    local pt = pico.pos { x=50, y=50 }
-    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    print("rightmiddle centered - 1col")
+    local r = {'E', x=0.5, y=0.5, w=0.4, h=0.4}
     pico.output.clear()
-    pico.output.draw.rect(rct)
-    pico.input.event('key.dn');
-    --_pico_check("rect50x50y_rightcenter")
+    pico.output.draw.rect(r)
+    pico.check("anchor-07")
 end
+
 do
-    print "anchor 25%25% 20%20% - 1lin/1col"
-    pico.set.anchor.pos { x=25, y=25 }
-    local pt = pico.pos { x=20, y=20 }
-    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    print("anchor 25%25% 20%20% - 1lin/1col")
+    local r = {{x=0.2,y=0.2}, x=0.2, y=0.2, w=0.4, h=0.4}
     pico.output.clear()
-    pico.output.draw.rect(rct)
-    pico.input.event('key.dn');
-    --_pico_check("rect50x50y_rightcenter")
+    pico.output.draw.rect(r)
+    pico.check("anchor-08")
 end
 
 -- RECTS out of [0,100]
 do
-    print "anchor -25%-25% centered - touching border"
-    pico.set.anchor.pos { x=-25, y=-25 }
-    local pt = pico.pos { x=50, y=50 }
-    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    print("anchor -25%-25% centered - touching border")
+    local r = {{x=-0.25,y=-0.25}, x=0.5, y=0.5, w=0.4, h=0.4}
     pico.output.clear()
-    pico.output.draw.rect(rct)
-    pico.input.event('key.dn');
-    --_pico_check("rect20x20y_-25x-25y")
+    pico.output.draw.rect(r)
+    pico.check("anchor-09")
 end
+
 do
-    print "anchor 125%125% centered - touching border"
-    pico.set.anchor.pos { x=125, y=125 }
-    local pt = pico.pos { x=50, y=50 }
-    local rct = { x=pt.x, y=pt.y, w=4, h=4 }
+    print("anchor 125%125% centered - touching border")
+    local r = {{x=1.25,y=1.25}, x=0.5, y=0.5, w=0.4, h=0.4}
     pico.output.clear()
-    pico.output.draw.rect(rct)
-    pico.input.event('key.dn');
-    --_pico_check("rect50x50y_125x125y");
+    pico.output.draw.rect(r)
+    pico.check("anchor-10")
 end
 
 pico.init(false)

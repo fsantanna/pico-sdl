@@ -1,25 +1,36 @@
-local pico = require 'pico'
+require 'pico.check'
 
 pico.init(true)
-
-pico.set.title "Pixels"
-pico.set.dim.window(100,100)
-pico.set.dim.world(5,5)
-
-local pixels = {
-    {x=1, y=1}, {x=2, y=1}, {x=3, y=1},
-    {x=1, y=2}, {x=2, y=2}, {x=3, y=2},
-    {x=1, y=3}, {x=2, y=3}, {x=3, y=3},
+pico.set.title("pixels")
+pico.set.view {
+    window = {w=100, h=100},
+    world  = {w=5, h=5}
 }
 
-print("press any key to start")
-pico.input.event('key.dn')
+do
+    local pixels = {
+        {x=1, y=1}, {x=2, y=1}, {x=3, y=1},
+        {x=1, y=2}, {x=2, y=2}, {x=3, y=2},
+        {x=1, y=3}, {x=2, y=3}, {x=3, y=3}
+    }
+    for i = 1, 9 do
+        pico.output.clear()
+        pico.output.draw.pixels({table.unpack(pixels, 1, i)})
+        print(i .. " pixels")
+        pico.input.delay(10)
+    end
+    pico.check("pixels-01")
+end
 
-while #pixels>0 do
-    pico.output.clear()
+do
+    local pixels = {
+        {'NW', x=0, y=0},
+        {'NE', x=1, y=0},
+        {'SW', x=0, y=1},
+        {'SE', x=1, y=1},
+    }
     pico.output.draw.pixels(pixels)
-    pico.input.event('key.dn')
-    pixels[#pixels] = nil
+    pico.check("pixels-02")
 end
 
 pico.init(false)

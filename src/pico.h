@@ -10,7 +10,6 @@ extern "C" {
 #include <SDL2/SDL.h>
 #include "keys.h"
 #include "events.h"
-#include "colors.h"
 
 /// @example init.c
 /// @example delay.c
@@ -50,25 +49,6 @@ typedef enum {
 #define PICO_ANCHOR_MIDDLE 0.5
 #define PICO_ANCHOR_BOTTOM 1
 
-#define PICO_ANCHOR_C  \
-    ((Pico_Pct) { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE })
-#define PICO_ANCHOR_NW \
-    ((Pico_Pct) { PICO_ANCHOR_LEFT,   PICO_ANCHOR_TOP    })
-#define PICO_ANCHOR_N  \
-    ((Pico_Pct) { PICO_ANCHOR_CENTER, PICO_ANCHOR_TOP    })
-#define PICO_ANCHOR_NE \
-    ((Pico_Pct) { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_TOP    })
-#define PICO_ANCHOR_E  \
-    ((Pico_Pct) { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_MIDDLE })
-#define PICO_ANCHOR_SE \
-    ((Pico_Pct) { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_BOTTOM })
-#define PICO_ANCHOR_S  \
-    ((Pico_Pct) { PICO_ANCHOR_CENTER, PICO_ANCHOR_BOTTOM })
-#define PICO_ANCHOR_SW \
-    ((Pico_Pct) { PICO_ANCHOR_LEFT,   PICO_ANCHOR_BOTTOM })
-#define PICO_ANCHOR_W  \
-    ((Pico_Pct) { PICO_ANCHOR_LEFT,   PICO_ANCHOR_MIDDLE })
-
 /// @brief RGB color without alpha channel.
 typedef struct {
     Uint8 r;
@@ -106,6 +86,37 @@ typedef struct {
     Pico_Pct anchor;
     struct Pico_Rect_Pct* up;
 } Pico_Pos_Pct;
+
+extern const Pico_Pct PICO_ANCHOR_C;
+extern const Pico_Pct PICO_ANCHOR_NW;
+extern const Pico_Pct PICO_ANCHOR_N;
+extern const Pico_Pct PICO_ANCHOR_NE;
+extern const Pico_Pct PICO_ANCHOR_E;
+extern const Pico_Pct PICO_ANCHOR_SE;
+extern const Pico_Pct PICO_ANCHOR_S;
+extern const Pico_Pct PICO_ANCHOR_SW;
+extern const Pico_Pct PICO_ANCHOR_W;
+
+extern const Pico_Color PICO_COLOR_BLACK;
+extern const Pico_Color PICO_COLOR_WHITE;
+extern const Pico_Color PICO_COLOR_GRAY;
+extern const Pico_Color PICO_COLOR_SILVER;
+
+extern const Pico_Color PICO_COLOR_RED;
+extern const Pico_Color PICO_COLOR_GREEN;
+extern const Pico_Color PICO_COLOR_BLUE;
+extern const Pico_Color PICO_COLOR_YELLOW;
+extern const Pico_Color PICO_COLOR_CYAN;
+extern const Pico_Color PICO_COLOR_MAGENTA;
+extern const Pico_Color PICO_COLOR_ORANGE;
+extern const Pico_Color PICO_COLOR_PURPLE;
+extern const Pico_Color PICO_COLOR_PINK;
+extern const Pico_Color PICO_COLOR_BROWN;
+extern const Pico_Color PICO_COLOR_LIME;
+extern const Pico_Color PICO_COLOR_TEAL;
+extern const Pico_Color PICO_COLOR_NAVY;
+extern const Pico_Color PICO_COLOR_MAROON;
+extern const Pico_Color PICO_COLOR_OLIVE;
 
 /// @}
 

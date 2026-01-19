@@ -1,40 +1,40 @@
-local pico = require 'pico'
+require 'pico.check'
 
 pico.init(true)
+pico.set.title("Dim")
 
-pico.set.title "Dimensions"
+local r = {'C', x=0.5, y=0.5, w=0, h=0}
+local N = 1
 
-local p = pico.pos(50, 50)
-
-for i=0, 100, 25 do
+for i = 0, 100, 25 do
     pico.output.clear()
-    local d = pico.dim(i, i)
-    pico.output.draw.rect {x=p.x,y=p.y,w=d.x,h=d.y}
-    print("size",i)
-    --_pico_check(fmt)
-    pico.input.event 'key.dn'
+    r.w = i/100.0
+    r.h = i/100.0
+    pico.output.draw.rect(r)
+    local fmt = string.format("dim-%02d", N)
+    N = N + 1
+    print(fmt)
+    pico.check(fmt)
 end
 
-for i=0, 120, 20 do
+r.w = 0.8
+r.h = 0.8
+for i = 0, 125, 25 do
     pico.output.clear()
-    local r = {x=p.x,y=p.y,w=50,h=20}
-    pico.set.color.draw(255,255,255)
+
+    pico.set.alpha(255)
+    pico.set.color.draw(255, 255, 255)
     pico.output.draw.rect(r)
 
-    local d
-    if i%2 == 0 then
-        d = pico.dim({x=i,y=i}, {x=r.w,y=r.h})
-    else
-        d = pico.dim(i,i, {x=r.w,y=r.h})
-    end
-    pico.set.color.draw(255,0,0,150)
-    pico.output.draw.rect {x=p.x,y=p.y,w=d.x,h=d.y}
-    print("size",i)
-    --_pico_check(fmt)
-    pico.input.event 'key.dn'
-end
+    local rr = {'C', x=0.5, y=0.5, w=i/100.0, h=i/100.0, up=r}
+    pico.set.alpha(150)
+    pico.set.color.draw(255, 0, 0)
+    pico.output.draw.rect(rr)
 
-print("ASSERT ERROR EXPECTED:")
-pico.dim(-1, -1)
+    local fmt = string.format("dim-%02d", N)
+    N = N + 1
+    print(fmt)
+    pico.check(fmt)
+end
 
 pico.init(false)
