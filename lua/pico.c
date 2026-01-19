@@ -33,7 +33,7 @@ static Pico_Pct c_anchor (lua_State* L, int i) {
         lua_pushlightuserdata(L, (void*)&KEY);  // anc | K
         lua_gettable(L, LUA_REGISTRYINDEX);     // anc | G
         lua_getfield(L, -1, "anchors");         // anc | G | ancs
-        lua_pushvalue(L, -3);                   // anc | G | ancs | anc
+        lua_pushvalue(L, i);                    // anc | G | ancs | anc
         lua_gettable(L, -2);                    // anc | G | ancs | *anc*
         int ok = lua_islightuserdata(L, -1);
         if (!ok) {
@@ -553,9 +553,18 @@ static int l_output_draw_line (lua_State* L) {
 
 static int l_output_draw_oval (lua_State* L) {
     if (lua_type(L,1) == LUA_TSTRING) {             // 'C' | x | y | w | h
-        assert(0 && "TODO");
+        Pico_Pct anc = c_anchor(L, 1);
+        Pico_Rect_Pct pct = {
+            luaL_checknumber(L, 2),
+            luaL_checknumber(L, 3),
+            luaL_checknumber(L, 4),
+            luaL_checknumber(L, 5),
+            anc,
+            NULL
+        };
+        pico_output_draw_oval_pct(&pct);
     } else if (lua_type(L,1) == LUA_TNUMBER) {      // x | y | w | h
-        Pico_Rect raw = (Pico_Rect) {
+        Pico_Rect raw = {
             luaL_checknumber(L, 1),
             luaL_checknumber(L, 2),
             luaL_checknumber(L, 3),
@@ -578,9 +587,16 @@ static int l_output_draw_oval (lua_State* L) {
 
 static int l_output_draw_pixel (lua_State* L) {
     if (lua_type(L,1) == LUA_TSTRING) {             // 'C' | x | y
-        assert(0 && "TODO");
+        Pico_Pct anc = c_anchor(L, 1);
+        Pico_Pos_Pct pct = {
+            luaL_checknumber(L, 2),
+            luaL_checknumber(L, 3),
+            anc,
+            NULL
+        };
+        pico_output_draw_pixel_pct(&pct);
     } else if (lua_type(L,1) == LUA_TNUMBER) {      // x | y
-        Pico_Pos raw = (Pico_Pos) {
+        Pico_Pos raw = {
             luaL_checknumber(L, 1),
             luaL_checknumber(L, 2)
         };
@@ -636,9 +652,18 @@ static int l_output_draw_poly (lua_State* L) {
 
 static int l_output_draw_rect (lua_State* L) {
     if (lua_type(L,1) == LUA_TSTRING) {             // 'C' | x | y | w | h
-        assert(0 && "TODO");
+        Pico_Pct anc = c_anchor(L, 1);
+        Pico_Rect_Pct pct = {
+            luaL_checknumber(L, 2),
+            luaL_checknumber(L, 3),
+            luaL_checknumber(L, 4),
+            luaL_checknumber(L, 5),
+            anc,
+            NULL
+        };
+        pico_output_draw_rect_pct(&pct);
     } else if (lua_type(L,1) == LUA_TNUMBER) {      // x | y | w | h
-        Pico_Rect raw = (Pico_Rect) {
+        Pico_Rect raw = {
             luaL_checknumber(L, 1),
             luaL_checknumber(L, 2),
             luaL_checknumber(L, 3),

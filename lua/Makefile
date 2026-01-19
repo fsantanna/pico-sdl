@@ -28,6 +28,7 @@ tests:
 	#$(TST) tst/move.lua
 	#$(TST) tst/navigate.lua
 	$(TST) tst/pixels.lua
+	$(TST) tst/pos.lua
 
 install: pico_native.so
 	cp pico-lua /usr/local/bin/
