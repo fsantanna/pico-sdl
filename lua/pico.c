@@ -392,7 +392,8 @@ static int l_get_view (lua_State* L) {
     Pico_Rect src;
     Pico_Rect clip;
 
-    pico_get_view(&fs, &phy, &dst, &log, &src, &clip);
+    // TODO: dst, src, clip
+    pico_get_view(&fs, &phy, NULL, &log, NULL, NULL);
 
     lua_newtable(L);                    // T
 
@@ -404,7 +405,7 @@ static int l_get_view (lua_State* L) {
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, phy.h);
     lua_setfield(L, -2, "h");
-    lua_setfield(L, -2, "phy");         // T
+    lua_setfield(L, -2, "window");      // T
 
     lua_newtable(L);                    // T | win_tgt
     lua_pushinteger(L, dst.x);
