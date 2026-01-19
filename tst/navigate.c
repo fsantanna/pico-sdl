@@ -29,7 +29,7 @@ int main() {
         );
 
         // RECT at center
-        pico_set_style(PICO_STROKE);
+        pico_set_style(PICO_STYLE_STROKE);
         pico_output_draw_rect_pct(
             &(Pico_Rect_Pct){0.5, 0.5, 0.25, 0.25, PICO_ANCHOR_C, NULL}
         );

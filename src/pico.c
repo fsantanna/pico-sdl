@@ -71,7 +71,7 @@ static struct {
     {0, 0},
     NULL,
     1,
-    PICO_FILL,
+    PICO_STYLE_FILL,
     {
         0,
         PICO_DIM_PHY,
@@ -602,10 +602,10 @@ void pico_output_draw_rect_raw (Pico_Rect rect) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
-        case PICO_FILL:
+        case PICO_STYLE_FILL:
             SDL_RenderFillRect(REN, &rect);
             break;
-        case PICO_STROKE:
+        case PICO_STYLE_STROKE:
             SDL_RenderDrawRect(REN, &rect);
             break;
     }
@@ -620,7 +620,7 @@ void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
-        case PICO_FILL:
+        case PICO_STYLE_FILL:
             filledTrigonRGBA(REN,
                 p1.x, p1.y,
                 p2.x, p2.y,
@@ -628,7 +628,7 @@ void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3) {
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
-        case PICO_STROKE:
+        case PICO_STYLE_STROKE:
             trigonRGBA(REN,
                 p1.x, p1.y,
                 p2.x, p2.y,
@@ -648,13 +648,13 @@ void pico_output_draw_oval_raw (Pico_Rect rect) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
-        case PICO_FILL:
+        case PICO_STYLE_FILL:
             filledEllipseRGBA (REN,
                 rect.x+rect.w/2, rect.y+rect.h/2, rect.w/2, rect.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
-        case PICO_STROKE:
+        case PICO_STYLE_STROKE:
             ellipseRGBA (REN,
                 rect.x+rect.w/2, rect.y+rect.h/2, rect.w/2, rect.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
@@ -677,13 +677,13 @@ void pico_output_draw_poly_raw (int n, const Pico_Pos* ps) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
-        case PICO_FILL:
+        case PICO_STYLE_FILL:
             filledPolygonRGBA(REN,
                 xs, ys, n,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
-        case PICO_STROKE:
+        case PICO_STYLE_STROKE:
             polygonRGBA(REN,
                 xs, ys, n,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha

@@ -33,7 +33,7 @@ typedef SDL_Rect  Pico_Rect;
 typedef SDL_Point Pico_Flip;
 
 typedef enum {
-    PICO_FILL, PICO_STROKE
+    PICO_STYLE_FILL, PICO_STYLE_STROKE
 } PICO_STYLE;
 
 typedef enum {
