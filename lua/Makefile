@@ -21,6 +21,7 @@ tests:
 	$(TST) tst/colors.lua
 	$(TST) tst/cross.lua
 	$(TST) tst/dim.lua
+	$(TST) tst/font.lua
 
 install: pico_native.so
 	cp pico-lua /usr/local/bin/
