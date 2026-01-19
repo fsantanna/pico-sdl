@@ -20,6 +20,7 @@ tests:
 	$(TST) tst/collide_pct.lua
 	$(TST) tst/colors.lua
 	$(TST) tst/cross.lua
+	$(TST) tst/dim.lua
 
 install: pico_native.so
 	cp pico-lua /usr/local/bin/
