@@ -16,6 +16,8 @@ tests:
 	$(TST) tst/buffer_pct.lua
 	$(TST) tst/clip_raw.lua
 	$(TST) tst/clip_pct.lua
+	$(TST) tst/collide_raw.lua
+	$(TST) tst/collide_pct.lua
 
 install: pico_native.so
 	cp pico-lua /usr/local/bin/
