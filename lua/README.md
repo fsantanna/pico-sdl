@@ -1,12 +1,7 @@
-Assumes this directory structure:
-
-```
-.
-└── lua/
-    ├── pico/
-    └── tst/    <-- we are here
-```
+# Testing
 
 ```bash
-LUA_CPATH="../pico/?.so;" LUA_PATH="../?/init.lua;../?.lua;" lua5.4 init.lua
+LUA_CPATH="../pico/?.so;" LUA_PATH="../?/init.lua;../?.lua;" ./pico-lua tst/init.lua
+# or
+make tests
 ```

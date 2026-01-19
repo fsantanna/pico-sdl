@@ -1,4 +1,3 @@
-local pico = require 'pico'
 require 'pico.check'
 
 pico.init(true)

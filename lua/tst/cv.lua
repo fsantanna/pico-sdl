@@ -1,5 +1,3 @@
-local pico = require 'pico'
-
 -- TODO: TGT=0 (phy)
 
 print "pico.cv.pos [ref]: pct->raw"

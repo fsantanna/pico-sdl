@@ -1,5 +1,3 @@
-local pico = require 'pico'
-
 pico.init(true)
 
 local phy = {w=200, h=200}

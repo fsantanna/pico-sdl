@@ -1,17 +1,16 @@
-TST = LUA_CPATH="../pico/?.so;" LUA_PATH="../?/init.lua;../?.lua;" xvfb-run -a lua5.4
+TST = LUA_CPATH="../pico/?.so;" LUA_PATH="../?/init.lua;../?.lua;" xvfb-run -a ./pico-lua
 
 .PHONY: tests install uninstall clean
-.ONESHELL:
 
 pico_native.so: ../src/pico.c pico.c
 	gcc -shared -fPIC -DPICO_TESTS -o pico/$@ $^ \
 		-llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 
 tests:
-	cd tst/
-	$(TST) cv.lua
-	$(TST) vs.lua
-	$(TST) anchor.lua
+	$(TST) tst/cv.lua
+	$(TST) tst/vs.lua
+	$(TST) tst/anchor.lua
+	$(TST) tst/blend_raw.lua
 
 install: pico_native.so
 	cp pico-lua /usr/local/bin/
