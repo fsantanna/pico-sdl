@@ -63,6 +63,18 @@ static Pico_Color c_color_t (lua_State* L, int i) {
     return clr;
 }
 
+static Pico_Color_A c_color_a_t (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { r,g,b,a }
+    Pico_Color_A clr = {
+        L_checkfieldnum(L, i, "r"),
+        L_checkfieldnum(L, i, "g"),
+        L_checkfieldnum(L, i, "b"),
+        L_checkfieldnum(L, i, "a"),
+    };
+    return clr;
+}
+
 static Pico_Color c_color (lua_State* L) {
     Pico_Color clr;
     if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b }
@@ -408,6 +420,43 @@ static int l_output_clear (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_buffer (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // T | rect={x,y}
+    luaL_checktype(L, 2, LUA_TTABLE);       // T | rect
+
+    Pico_Rect rect = c_rect_raw_pct_raw(L, 2);
+
+    lua_len(L, 1);                          // T | rect | l
+    int l = lua_tointeger(L, -1);
+    lua_geti(L, 1, 1);                      // T | rect | l | T[1]
+    if (lua_type(L,-1) != LUA_TTABLE) {
+        return luaL_error(L, "expected column tables");
+    }
+    lua_len(L, -1);                         // T | rect | l | T[1] | c
+    int c = lua_tointeger(L, -1);
+    lua_pop(L, 3);                          // T | rect
+
+    Pico_Color_A buf[l][c];
+    for (int i=1; i<=l; i++) {
+        lua_geti(L, 1, i);                  // T | rect | T[i]
+        if (lua_type(L,-1) != LUA_TTABLE) {
+            return luaL_error(L, "expected table at column %d", i);
+        }
+        for (int j=1; j<=c; j++) {
+            lua_geti(L, -1, j);             // T | rect | T[i] | T[j]
+            if (lua_type(L,-1) != LUA_TTABLE) {
+                return luaL_error(L, "expected color at position [%d,%d]", i, j);
+            }
+            Pico_Color_A clr = c_color_a_t(L, lua_gettop(L));
+            buf[i-1][j-1] = clr;
+            lua_pop(L, 1);                  // T | rect | T[i]
+        }
+        lua_pop(L, 1);                      // T | rect
+    }
+    pico_output_draw_buffer_raw((Pico_Dim){c,l}, (Pico_Color_A*)buf, rect);
+    return 0;
+}
+
 static int l_output_draw_image (lua_State* L) {
     luaL_checktype(L, 1, LUA_TSTRING);  // path | rect
     luaL_checktype(L, 2, LUA_TTABLE);
@@ -642,14 +691,15 @@ static const luaL_Reg ll_output[] = {
 };
 
 static const luaL_Reg ll_output_draw[] = {
-    { "image",  l_output_draw_image },
-    { "line",   l_output_draw_line  },
-    { "oval",   l_output_draw_oval  },
-    { "pixel",  l_output_draw_pixel },
-    { "poly",   l_output_draw_poly  },
-    { "rect",   l_output_draw_rect  },
-    { "text",   l_output_draw_text  },
-    { "tri",    l_output_draw_tri   },
+    { "buffer", l_output_draw_buffer },
+    { "image",  l_output_draw_image  },
+    { "line",   l_output_draw_line   },
+    { "oval",   l_output_draw_oval   },
+    { "pixel",  l_output_draw_pixel  },
+    { "poly",   l_output_draw_poly   },
+    { "rect",   l_output_draw_rect   },
+    { "text",   l_output_draw_text   },
+    { "tri",    l_output_draw_tri    },
     { NULL, NULL }
 };
 

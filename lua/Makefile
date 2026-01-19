@@ -11,6 +11,8 @@ tests:
 	$(TST) tst/vs.lua
 	$(TST) tst/anchor.lua
 	$(TST) tst/blend_raw.lua
+	$(TST) tst/blend_pct.lua
+	$(TST) tst/buffer_raw.lua
 
 install: pico_native.so
 	cp pico-lua /usr/local/bin/
