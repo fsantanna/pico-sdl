@@ -3,7 +3,7 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.title "Scale"
-pico.set.grid(false)
+pico.set.view {grid=false}
 pico.set.dim.window(500,500)
 pico.set.dim.world(100,100)
 

@@ -57,7 +57,7 @@ int main (void) {
 
     pico_init(1);
     Pico_Dim log = {100, 100};
-    pico_set_view_raw(-1, NULL, NULL, &log, NULL, NULL);
+    pico_set_view_raw(-1, -1, NULL, NULL, &log, NULL, NULL);
 
     // LOG - POS - PCT->RAW
     {

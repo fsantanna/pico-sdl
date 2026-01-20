@@ -12,7 +12,7 @@ int main(void) {
     puts("phy (500,500) -> log (50,50)");
     {
         pico_set_view_raw (
-            -1,
+            -1, -1,
             &(Pico_Dim){500, 500},
             NULL,
             &(Pico_Dim){50, 50},
@@ -52,7 +52,7 @@ int main(void) {
     // centered 100x100 logical
     puts("zoom out 2x");
     {
-        pico_set_view_raw(-1, NULL, NULL, NULL,
+        pico_set_view_raw(-1, -1, NULL, NULL, NULL,
             &(Pico_Rect){-25, -25, 100, 100},
             NULL);
 
@@ -89,7 +89,7 @@ int main(void) {
     // centered 10x10 logical
     puts("zoom in 5x");
     {
-        pico_set_view_raw(-1, NULL, NULL, NULL,
+        pico_set_view_raw(-1, -1, NULL, NULL, NULL,
             &(Pico_Rect){20, 20, 10, 10},
             NULL);
 
@@ -125,7 +125,7 @@ int main(void) {
     // bottom-right (SE) half
     puts("scroll/zoom SE");
     {
-        pico_set_view_raw( -1, NULL, NULL, NULL,
+        pico_set_view_raw(-1, -1, NULL, NULL, NULL,
             &(Pico_Rect){25, 25, 25, 25},
             NULL);
 
@@ -150,7 +150,7 @@ int main(void) {
 
     puts("normal PCT");
     {
-        pico_set_view_raw( -1, NULL, NULL, NULL,
+        pico_set_view_raw(-1, -1, NULL, NULL, NULL,
             &(Pico_Rect){0, 0, 50, 50},
             NULL);
 
@@ -177,7 +177,7 @@ int main(void) {
     {
         // Zoom with src = {20, 20, 10, 10}, but pct should still be 0-1 relative
         // to full logical world
-        pico_set_view_raw(-1, NULL, NULL, NULL,
+        pico_set_view_raw(-1, -1, NULL, NULL, NULL,
             &(Pico_Rect){20, 20, 10, 10},
             NULL);
 

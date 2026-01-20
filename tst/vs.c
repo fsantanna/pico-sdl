@@ -5,7 +5,7 @@ int main (void) {
 
     Pico_Dim phy = {200, 200};
     Pico_Dim log = {100, 100};
-    pico_set_view_raw(-1, &phy, NULL, &log, NULL, NULL);
+    pico_set_view_raw(-1, -1, &phy, NULL, &log, NULL, NULL);
 
     // pico_vs_pos_rect_raw
     {

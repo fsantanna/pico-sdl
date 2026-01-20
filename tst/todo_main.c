@@ -6,7 +6,7 @@ int main (void) {
     puts("shows dark screen");
     {
         Pico_Dim phy, log;
-        pico_get_view(NULL, &phy, NULL, &log, NULL, NULL);
+        pico_get_view(NULL, NULL, &phy, NULL, &log, NULL, NULL);
         assert(phy.w==500 && phy.h==500);
         assert(log.w==100 && log.h==100);
     }
@@ -88,7 +88,7 @@ int main (void) {
 
     puts("disables grid");
     {
-        pico_set_grid(0);
+        pico_set_view_raw(0, -1, NULL, NULL, NULL, NULL, NULL);
         pico_input_delay(2000);
     }
 

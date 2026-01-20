@@ -11,28 +11,28 @@ int main (void) {
     puts("WINDOW");
     {
         puts("normal");
-        pico_set_view_pct(-1, &(Pico_Pct){1,1}, NULL, NULL, NULL, NULL);
+        pico_set_view_pct(-1, -1, &(Pico_Pct){1,1}, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
         _pico_check("size_pct-01");
     }
     {
         puts("double");
-        pico_set_view_pct(-1, &(Pico_Pct){2,2}, NULL, NULL, NULL, NULL);
+        pico_set_view_pct(-1, -1, &(Pico_Pct){2,2}, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
         _pico_check("size_pct-02");
     }
     {
         puts("half");
-        pico_set_view_pct(-1, &(Pico_Pct){0.25,0.25}, NULL, NULL, NULL, NULL);
+        pico_set_view_pct(-1, -1, &(Pico_Pct){0.25,0.25}, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
         _pico_check("size_pct-03");
     }
     {
         puts("normal");
-        pico_set_view_pct(-1, &(Pico_Pct){2,2}, NULL, NULL, NULL, NULL);
+        pico_set_view_pct(-1, -1, &(Pico_Pct){2,2}, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
         _pico_check("size_pct-04");
@@ -41,14 +41,14 @@ int main (void) {
     // phy: normal -> full -> normal
     {
         puts("full");
-        pico_set_view_pct(1, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_pct(-1, 1, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
         //_pico_check("size_pct-05");
     }
     {
         puts("normal");
-        pico_set_view_pct(0, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_pct(-1, 0, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_pct(&r);
         _pico_check("size_pct-06");

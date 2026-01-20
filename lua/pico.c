@@ -406,6 +406,7 @@ static int l_get_ticks (lua_State* L) {
 }
 
 static int l_get_view (lua_State* L) {
+    int grid;
     int fs;
     Pico_Dim  phy;
     Pico_Rect dst;
@@ -414,9 +415,12 @@ static int l_get_view (lua_State* L) {
     Pico_Rect clip;
 
     // TODO: dst, src, clip
-    pico_get_view(&fs, &phy, NULL, &log, NULL, NULL);
+    pico_get_view(&grid, &fs, &phy, NULL, &log, NULL, NULL);
 
     lua_newtable(L);                    // T
+
+    lua_pushboolean(L, grid);           // T | grid
+    lua_setfield(L, -2, "grid");        // T
 
     lua_pushboolean(L, fs);             // T | fs
     lua_setfield(L, -2, "fullscreen");  // T
@@ -531,6 +535,13 @@ static int l_set_view (lua_State* L) {
     Pico_Rect xsrc,  *xxsrc  = NULL;
     Pico_Rect xclip, *xxclip = NULL;
 
+    int grid = -1;
+    lua_getfield(L, 1, "grid");         // T | grid
+    if (!lua_isnil(L, -1)) {
+        grid = lua_toboolean(L, -1);
+    }
+    lua_pop(L, 1);                      // T
+
     int fs = -1;
     lua_getfield(L, 1, "fullscreen");   // T | fs
     if (!lua_isnil(L, -1)) {
@@ -544,7 +555,7 @@ static int l_set_view (lua_State* L) {
         PICO_RAW_PCT tp = c_dim_raw_pct(L, lua_gettop(L), &xphy, &xpct);
         if (tp == PICO_PCT) {
             Pico_Dim cur;
-            pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+            pico_get_view(NULL, NULL, &cur, NULL, NULL, NULL, NULL);
             xphy = (Pico_Dim) { xpct.x*cur.w , xpct.y*cur.h };
         }
         xxphy = &xphy;
@@ -564,7 +575,7 @@ static int l_set_view (lua_State* L) {
         PICO_RAW_PCT tp = c_dim_raw_pct(L, lua_gettop(L), &xlog, &xpct);
         if (tp == PICO_PCT) {
             Pico_Dim cur;
-            pico_get_view(NULL, NULL, NULL, &cur, NULL, NULL);
+            pico_get_view(NULL, NULL, NULL, NULL, &cur, NULL, NULL);
             xlog = (Pico_Dim) { xpct.x*cur.w , xpct.y*cur.h };
         }
         xxlog = &xlog;
@@ -585,7 +596,7 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                      // T
 
-    pico_set_view_raw(fs, xxphy, xxdst, xxlog, xxsrc, xxclip);
+    pico_set_view_raw(grid, fs, xxphy, xxdst, xxlog, xxsrc, xxclip);
     return 0;
 }
 
