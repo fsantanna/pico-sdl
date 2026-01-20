@@ -5,7 +5,7 @@ int main (void) {
     pico_init(1);
     pico_set_title("Colors Test");
     pico_set_view_raw(
-        -1,
+        -1, -1,
         &(Pico_Dim){640, 480},
         NULL,
         &(Pico_Dim){64, 48},

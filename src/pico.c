@@ -63,9 +63,9 @@ static struct {
     int expert;
     Pico_Flip flip;
     const char* font;
-    int grid;
     PICO_STYLE style;
     struct {
+        int       grid;
         int       fs;
         Pico_Dim  phy;
         Pico_Rect dst;
@@ -81,9 +81,9 @@ static struct {
     0,
     {0, 0},
     NULL,
-    1,
     PICO_STYLE_FILL,
     {
+        1,
         0,
         PICO_DIM_PHY,
         {},
@@ -246,7 +246,7 @@ void pico_init (int on) {
         {
             Pico_Rect phy = { 0, 0, S.view.phy.w, S.view.phy.h };
             Pico_Rect log = { 0, 0, S.view.log.w, S.view.log.h };
-            pico_set_view_raw(-1, NULL, &phy, &S.view.log, &log, &log);
+            pico_set_view_raw(-1, -1, NULL, &phy, &S.view.log, &log, &log);
         }
 
         pico_output_clear();
@@ -291,7 +291,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     FS = 0;
                 } else {
                     Pico_Dim phy = { e->window.data1, e->window.data2 };
-                    pico_set_view_raw(-1, &phy, NULL, NULL, NULL, NULL);
+                    pico_set_view_raw(-1, -1, &phy, NULL, NULL, NULL, NULL);
                 }
             }
             break;
@@ -309,7 +309,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_MINUS: {
                     // Zoom out
-                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                    pico_set_view_pct(-1, -1, NULL, NULL, NULL,
                         &(Pico_Rect_Pct){0.5, 0.5, 1.1, 1.1, PICO_ANCHOR_C, NULL},
                         NULL
                     );
@@ -317,7 +317,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_EQUALS: {
                     // Zoom in
-                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                    pico_set_view_pct(-1, -1, NULL, NULL, NULL,
                         &(Pico_Rect_Pct){0.5, 0.5, 0.9, 0.9, PICO_ANCHOR_C, NULL},
                         NULL
                     );
@@ -325,7 +325,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_LEFT: {
                     // Scroll left
-                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                    pico_set_view_pct(-1, -1, NULL, NULL, NULL,
                         &(Pico_Rect_Pct){-0.1, 0, 1, 1, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
@@ -333,7 +333,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_RIGHT: {
                     // Scroll right
-                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                    pico_set_view_pct(-1, -1, NULL, NULL, NULL,
                         &(Pico_Rect_Pct){0.1, 0, 1, 1, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
@@ -341,7 +341,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_UP: {
                     // Scroll up
-                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                    pico_set_view_pct(-1, -1, NULL, NULL, NULL,
                         &(Pico_Rect_Pct){0, -0.1, 1, 1, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
@@ -349,14 +349,14 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_DOWN: {
                     // Scroll down
-                    pico_set_view_pct(-1, NULL, NULL, NULL,
+                    pico_set_view_pct(-1, -1, NULL, NULL, NULL,
                         &(Pico_Rect_Pct){0, 0.1, 1, 1, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
                     break;
                 }
                 case SDLK_g: {
-                    pico_set_grid(!S.grid);
+                    pico_set_view_raw(!S.view.grid, -1, NULL, NULL, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_s: {
@@ -750,7 +750,7 @@ void pico_output_draw_text_pct (const char* text, Pico_Rect_Pct* rect) {
 }
 
 static void _show_grid (void) {
-    if (!S.grid) return;
+    if (!S.view.grid) return;
 
     Pico_Color x_clr = S.color.draw;
     int x_alpha = S.alpha;
@@ -977,10 +977,6 @@ int pico_get_fullscreen (void) {
     return S.view.fs;
 }
 
-int pico_get_grid (void) {
-    return S.grid;
-}
-
 int pico_get_key (PICO_KEY key) {
     const Uint8* keys = SDL_GetKeyboardState(NULL);
     return keys[key];
@@ -1071,6 +1067,7 @@ const char* pico_get_title (void) {
 }
 
 void pico_get_view (
+    int* grid,
     int* fs,
     Pico_Dim* phy,
     Pico_Rect* dst,
@@ -1079,6 +1076,9 @@ void pico_get_view (
     Pico_Rect* clip
 ) {
     assert(dst==NULL && src==NULL && clip==NULL);
+    if (grid != NULL) {
+        *grid = S.view.grid;
+    }
     if (fs != NULL) {
         *fs = S.view.fs;
     }
@@ -1120,11 +1120,6 @@ void pico_set_font (const char* path) {
     S.font = path;
 }
 
-void pico_set_grid (int on) {
-    S.grid = on;
-    _pico_output_present(0);
-}
-
 void pico_set_rotate (int angle) {
     S.angle = angle;
 }
@@ -1147,6 +1142,7 @@ void pico_set_title (const char* title) {
 }
 
 void pico_set_view_raw (
+    int        grid,
     int        fs,
     Pico_Dim*  phy,
     Pico_Rect* dst,
@@ -1156,6 +1152,11 @@ void pico_set_view_raw (
 ) {
     Pico_Dim new;
 
+    { // grid: toggle grid overlay
+        if (grid != -1) {
+            S.view.grid = grid;
+        }
+    }
     { // dst, src, clip: only assign (no extra processing)
         if (dst != NULL) {
             S.view.dst = *dst;
@@ -1165,9 +1166,6 @@ void pico_set_view_raw (
         }
         if (clip != NULL) {
             S.view.clip = *clip;
-            //S.view.clip = rect;
-            //SDL_RenderSetClipRect(REN, &rect);
-            //pico_set_clip_raw(pico_cv_rect_pct_raw(rect));
         }
     }
 
@@ -1232,6 +1230,7 @@ void pico_set_view_raw (
 }
 
 void pico_set_view_pct (
+    int            grid,
     int            fs,
     Pico_Pct*      phy,
     void*          dst_todo,
@@ -1261,5 +1260,5 @@ void pico_set_view_pct (
         xxclip = &xclip;
     }
 
-    pico_set_view_raw(fs, xxphy, dst_todo, xxlog, xxsrc, xxclip);
+    pico_set_view_raw(grid, fs, xxphy, dst_todo, xxlog, xxsrc, xxclip);
 }

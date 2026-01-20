@@ -14,7 +14,7 @@ void push_key (SDL_Keycode key) {
 
 int main() {
     pico_init(1);
-    pico_set_view_raw(-1, NULL, NULL, &(Pico_Dim){1000, 1000}, NULL, NULL);
+    pico_set_view_raw(-1, -1, NULL, NULL, &(Pico_Dim){1000, 1000}, NULL, NULL);
 
     // draw
     {

@@ -360,10 +360,6 @@ const char* pico_get_font (void);
 /// @return 1 if enabled, or 0 otherwise
 int pico_get_fullscreen (void);
 
-/// @brief Gets the state of grid mode.
-/// @return 1 if enabled, or 0 otherwise
-int pico_get_grid (void);
-
 /// @brief Gets the dimensions of the given image.
 /// @param path image filepath
 Pico_Dim pico_get_image (const char* path);
@@ -407,6 +403,7 @@ Uint32 pico_get_ticks (void);
 const char* pico_get_title (void);
 
 /// @brief Gets the current view configuration. NULL arguments are ignored.
+/// @param grid pointer to retrieve grid state
 /// @param window_fullscreen pointer to retrieve fullscreen state
 /// @param window pointer to retrieve window dimensions
 /// @param window_target pointer to retrieve window target region
@@ -416,6 +413,7 @@ const char* pico_get_title (void);
 /// @sa pico_set_view_raw
 /// @sa pico_set_view_pct
 void pico_get_view (
+    int* grid,
     int* window_fullscreen,
     Pico_Dim* window,
     Pico_Rect* window_target,
@@ -453,10 +451,6 @@ void pico_set_flip (Pico_Flip flip);
 /// @param path path to font path
 void pico_set_font (const char* path);
 
-/// @brief Toggles a grid on top of logical pixels.
-/// @param on 1 to show it, or 0 to hide it
-void pico_set_grid (int on);
-
 /// @brief Sets the rotation angle of objects (in degrees).
 void pico_set_rotate (int angle);
 
@@ -473,7 +467,8 @@ void pico_set_style (PICO_STYLE style);
 void pico_set_title (const char* title);
 
 /// @brief Sets the view configuration using absolute dimensions. NULL arguments are ignored.
-/// @param window_fullscreen 1 to enable fullscreen, or 0 to disable it
+/// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
+/// @param window_fullscreen 1 to enable fullscreen, 0 to disable, or -1 to keep unchanged
 /// @param window window dimensions in pixels
 /// @param window_target target region within window
 /// @param world world/logical dimensions
@@ -482,6 +477,7 @@ void pico_set_title (const char* title);
 /// @sa pico_set_view_pct
 /// @sa pico_get_view
 void pico_set_view_raw (
+    int grid,
     int window_fullscreen,
     Pico_Dim* window,
     Pico_Rect* window_target,
@@ -491,7 +487,8 @@ void pico_set_view_raw (
 );
 
 /// @brief Sets the view configuration using percentage-based dimensions. NULL arguments are ignored.
-/// @param window_fullscreen 1 to enable fullscreen, or 0 to disable it
+/// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
+/// @param window_fullscreen 1 to enable fullscreen, 0 to disable, or -1 to keep unchanged
 /// @param window window dimensions as percentages
 /// @param window_target target region within window
 /// @param world world/logical dimensions as percentages
@@ -500,6 +497,7 @@ void pico_set_view_raw (
 /// @sa pico_set_view_raw
 /// @sa pico_get_view
 void pico_set_view_pct (
+    int            grid,
     int            window_fullscreen,
     Pico_Pct*      window,
     void*          window_target_todo,

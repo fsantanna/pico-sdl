@@ -11,7 +11,7 @@ int main (void) {
     pico_output_draw_rect_pct(&r1);
     _pico_check("clip-01");     // same as raw
 
-    pico_set_view_pct(-1, NULL, NULL, NULL, NULL, &r1);
+    pico_set_view_pct(-1, -1, NULL, NULL, NULL, NULL, &r1);
     pico_set_color_clear((Pico_Color){0xCC, 0xCC, 0xCC});
     pico_output_clear();
     _pico_check("clip-02");     // same as raw

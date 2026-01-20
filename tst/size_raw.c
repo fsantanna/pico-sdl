@@ -13,7 +13,7 @@ int main (void) {
     puts("WINDOW");
     {
         puts("normal");
-        pico_set_view_raw(-1, &phy, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, -1, &phy, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         _pico_check("size_raw-01");
@@ -21,7 +21,7 @@ int main (void) {
     {
         puts("double");
         Pico_Dim dim = (Pico_Dim){phy.w*2,phy.h*2};
-        pico_set_view_raw(-1, &dim, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, -1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         _pico_check("size_raw-02");
@@ -29,14 +29,14 @@ int main (void) {
     {
         puts("half");
         Pico_Dim dim = (Pico_Dim){phy.w/2,phy.h/2};
-        pico_set_view_raw(-1, &dim, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, -1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         _pico_check("size_raw-03");
     }
     {
         puts("normal");
-        pico_set_view_raw(-1, &phy, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, -1, &phy, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         _pico_check("size_raw-04");
@@ -45,14 +45,14 @@ int main (void) {
     // phy: normal -> full -> normal
     {
         puts("full");
-        pico_set_view_raw(1, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, 1, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         //_pico_check("size_raw-05");
     }
     {
         puts("normal");
-        pico_set_view_raw(0, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_raw(-1, 0, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         _pico_check("size_raw-06");
@@ -62,7 +62,7 @@ int main (void) {
     puts("WORLD");
     {
         puts("normal");
-        pico_set_view_raw(-1, NULL, NULL, &log, NULL, NULL);
+        pico_set_view_raw(-1, -1, NULL, NULL, &log, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         _pico_check("size_raw-07");
@@ -70,7 +70,7 @@ int main (void) {
     {
         puts("double");
         Pico_Dim dim = (Pico_Dim){log.w*2,log.h*2};
-        pico_set_view_raw(-1, NULL, NULL, &dim, NULL, NULL);
+        pico_set_view_raw(-1, -1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
         Pico_Rect r = {log.w-25, log.h-25, 50, 50};
         pico_output_draw_rect_raw(r);
@@ -79,7 +79,7 @@ int main (void) {
     {
         puts("half");
         Pico_Dim dim = (Pico_Dim){log.w/2,log.h/2};
-        pico_set_view_raw(-1, NULL, NULL, &dim, NULL, NULL);
+        pico_set_view_raw(-1, -1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
         Pico_Rect r = {log.w/4-25, log.w/4-25, 50, 50};
         pico_output_draw_rect_raw(r);
@@ -87,7 +87,7 @@ int main (void) {
     }
     {
         puts("normal");
-        pico_set_view_raw(-1, NULL, NULL, &log, NULL, NULL);
+        pico_set_view_raw(-1, -1, NULL, NULL, &log, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect_raw(r);
         _pico_check("size_raw-10");

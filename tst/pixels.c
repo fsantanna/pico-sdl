@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_title("pixels");
-    pico_set_view_raw(-1, &(Pico_Dim){100, 100}, NULL, &(Pico_Dim){5, 5}, NULL, NULL);
+    pico_set_view_raw(-1, -1, &(Pico_Dim){100, 100}, NULL, &(Pico_Dim){5, 5}, NULL, NULL);
 
     {
         Pico_Pos pixels[9] = {
