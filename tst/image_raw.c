@@ -6,6 +6,9 @@ int main (void) {
     pico_set_title("Image - Size - Crop");
     pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
 
+    Pico_Dim dim = pico_get_image("open.png");
+    assert(dim.w==48 && dim.h==48);
+
     {
         puts("show top-left from center");
         Pico_Rect r = { 50,50, 0,0 };

@@ -4,6 +4,9 @@ pico.init(true)
 pico.set.title("Image - Size - Crop")
 pico.set.color.clear(0xFF, 0xFF, 0xFF)
 
+local dim = pico.get.image("open.png");
+assert(dim.w==48 and dim.h==48);
+
 do
     print("show top-left from center")
     local r = {x=50, y=50, w=0, h=0}

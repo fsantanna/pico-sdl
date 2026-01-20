@@ -391,6 +391,17 @@ static int l_color_lighter (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static int l_get_image (lua_State* L) {
+    const char* path = luaL_checkstring(L, 1);  // path
+    Pico_Dim dim = pico_get_image(path);
+    lua_newtable(L);                            // path | dim
+    lua_pushinteger(L, dim.w);                  // path | dim | w
+    lua_setfield(L, -2, "w");                   // path | dim
+    lua_pushinteger(L, dim.h);                  // path | dim | h
+    lua_setfield(L, -2, "h");                   // path | dim
+    return 1;                                   // path | [dim]
+}
+
 static int l_get_text (lua_State* L) {
     int h = luaL_checknumber(L, 1);
     const char* path = luaL_checkstring(L, 2);
@@ -1010,6 +1021,7 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
+    { "image", l_get_image },
     { "text",  l_get_text  },
     { "ticks", l_get_ticks },
     { "view",  l_get_view  },
