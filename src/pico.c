@@ -1032,6 +1032,28 @@ Pico_Dim pico_get_image (const char* path) {
     return dim;
 }
 
+void pico_get_image_raw (const char* path, Pico_Dim* dim) {
+    SDL_Texture* tex = _image(path);
+    Pico_Rect r = { 0, 0, dim->w, dim->h };
+    r = tex_rect_raw(tex, r);
+    dim->w = r.w;
+    dim->h = r.h;
+}
+
+void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rect_Pct* ref) {
+    SDL_Texture* tex = _image(path);
+    Pico_Rect_Pct r = { 0, 0, pct->x, pct->y, PICO_ANCHOR_NW, ref };
+    Pico_Rect raw = tex_rect_pct(tex, &r);
+    Pico_Rect base;
+    if (ref == NULL) {
+        base = (Pico_Rect){ 0, 0, S.view.log.w, S.view.log.h };
+    } else {
+        base = pico_cv_rect_pct_raw(ref);
+    }
+    pct->x = raw.w / (float)base.w;
+    pct->y = raw.h / (float)base.h;
+}
+
 int pico_get_rotate (void) {
     return S.angle;
 }
@@ -1056,6 +1078,43 @@ int pico_get_text (int h, const char* text) {
     int w = sfc->w;
     SDL_FreeSurface(sfc);
     return w;
+}
+
+void pico_get_text_raw (const char* text, Pico_Dim* dim) {
+    if (text[0] == '\0') return;
+    TTF_Font* ttf = _font_open(NULL, dim->h);
+    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, (SDL_Color){0,0,0,0});
+    TTF_CloseFont(ttf);
+    pico_assert(sfc != NULL);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
+    Pico_Rect r = { 0, 0, dim->w, dim->h };
+    r = tex_rect_raw(tex, r);
+    dim->w = r.w;
+    dim->h = r.h;
+    SDL_DestroyTexture(tex);
+    SDL_FreeSurface(sfc);
+}
+
+void pico_get_text_pct (const char* text, Pico_Pct* pct, Pico_Rect_Pct* ref) {
+    if (text[0] == '\0') return;
+    Pico_Rect_Pct r = { 0, 0, pct->x, pct->y, PICO_ANCHOR_NW, ref };
+    Pico_Rect raw = pico_cv_rect_pct_raw(&r);
+    TTF_Font* ttf = _font_open(NULL, raw.h);
+    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, (SDL_Color){0,0,0,0});
+    TTF_CloseFont(ttf);
+    pico_assert(sfc != NULL);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
+    raw = tex_rect_pct(tex, &r);
+    Pico_Rect base;
+    if (ref == NULL) {
+        base = (Pico_Rect){ 0, 0, S.view.log.w, S.view.log.h };
+    } else {
+        base = pico_cv_rect_pct_raw(ref);
+    }
+    pct->x = raw.w / (float)base.w;
+    pct->y = raw.h / (float)base.h;
+    SDL_DestroyTexture(tex);
+    SDL_FreeSurface(sfc);
 }
 
 Uint32 pico_get_ticks (void) {

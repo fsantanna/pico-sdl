@@ -6,6 +6,25 @@ int main (void) {
     pico_set_title("Image - Size - Crop");
     pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
 
+    // pico_get_image
+    {
+        {
+            Pico_Pct p = { 0, 0.24 };
+            pico_get_image_pct("open.png", &p, NULL);
+            assert(p.x == 0.24f && p.y == 0.24f);
+        }
+        {
+            Pico_Pct p = { 0.48, 0 };
+            pico_get_image_pct("open.png", &p, NULL);
+            assert(p.x == 0.48f && p.y == 0.48f);
+        }
+        {
+            Pico_Pct p = { 0, 0 };
+            pico_get_image_pct("open.png", &p, NULL);
+            assert(p.x == 0.48f && p.y == 0.48f);
+        }
+    }
+
     {
         puts("show original centered");
         pico_output_clear();

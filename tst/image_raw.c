@@ -6,8 +6,28 @@ int main (void) {
     pico_set_title("Image - Size - Crop");
     pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
 
-    Pico_Dim dim = pico_get_image("open.png");
-    assert(dim.w==48 && dim.h==48);
+    // pico_get_image
+    {
+        {
+            Pico_Dim dim = pico_get_image("open.png");
+            assert(dim.w==48 && dim.h==48);
+        }
+        {
+            Pico_Dim d = { 0, 24 };
+            pico_get_image_raw("open.png", &d);
+            assert(d.w==24 && d.h==24);
+        }
+        {
+            Pico_Dim d = { 48, 0 };
+            pico_get_image_raw("open.png", &d);
+            assert(d.w==48 && d.h==48);
+        }
+        {
+            Pico_Dim d = { 0, 0 };
+            pico_get_image_raw("open.png", &d);
+            assert(d.w==48 && d.h==48);
+        }
+    }
 
     {
         puts("show top-left from center");
