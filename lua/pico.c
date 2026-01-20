@@ -399,6 +399,12 @@ static int l_get_text (lua_State* L) {
     return 1;
 }
 
+static int l_get_ticks (lua_State* L) {
+    Uint32 ms = pico_get_ticks();
+    lua_pushinteger(L, ms);         // ms
+    return 1;                       // [ms]
+}
+
 static int l_get_view (lua_State* L) {
     int fs;
     Pico_Dim  phy;
@@ -901,8 +907,9 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
-    { "text", l_get_text },
-    { "view", l_get_view },
+    { "text",  l_get_text  },
+    { "ticks", l_get_ticks },
+    { "view",  l_get_view  },
     { NULL, NULL }
 };
 
