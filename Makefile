@@ -19,6 +19,7 @@ tests:
 	$(EXE) tst/blend_pct.c
 	$(EXE) tst/buffer_raw.c
 	$(EXE) tst/buffer_pct.c
+	$(EXE) tst/expert.c
 	$(EXE) tst/clip_raw.c
 	$(EXE) tst/clip_pct.c
 	$(EXE) tst/collide_raw.c

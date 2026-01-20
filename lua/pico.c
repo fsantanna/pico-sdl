@@ -473,6 +473,13 @@ static int l_set_alpha (lua_State* L) {
     return 0;
 }
 
+static int l_set_expert (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TBOOLEAN);
+    int on = lua_toboolean(L, 1);
+    pico_set_expert(on);
+    return 0;
+}
+
 static int l_set_color_clear (lua_State* L) {
     Pico_Color clr = c_color(L);
     pico_set_color_clear(clr);
@@ -830,6 +837,11 @@ static int l_output_draw_tri (lua_State* L) {
     return 0;
 }
 
+static int l_output_present (lua_State* L) {
+    pico_output_present();
+    return 0;
+}
+
 static int l_output_screenshot (lua_State* L) {
     char* path = NULL;
     if (lua_type(L,1) == LUA_TSTRING) {         // path
@@ -897,10 +909,11 @@ static const luaL_Reg ll_get[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_set[] = {
-    { "alpha", l_set_alpha },
-    { "style", l_set_style },
-    { "title", l_set_title },
-    { "view",  l_set_view  },
+    { "alpha",  l_set_alpha  },
+    { "expert", l_set_expert },
+    { "style",  l_set_style  },
+    { "title",  l_set_title  },
+    { "view",   l_set_view   },
     { NULL, NULL }
 };
 
@@ -921,6 +934,7 @@ static const luaL_Reg ll_input[] = {
 
 static const luaL_Reg ll_output[] = {
     { "clear",      l_output_clear      },
+    { "present",    l_output_present    },
     { "screenshot", l_output_screenshot },
     { NULL, NULL }
 };

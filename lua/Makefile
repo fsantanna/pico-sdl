@@ -21,6 +21,7 @@ tests:
 	$(TST) tst/colors.lua
 	$(TST) tst/cross.lua
 	$(TST) tst/dim.lua
+	$(TST) tst/expert.lua
 	$(TST) tst/font.lua
 	$(TST) tst/image_raw.lua
 	$(TST) tst/image_pct.lua
