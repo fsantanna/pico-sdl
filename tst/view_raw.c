@@ -9,6 +9,11 @@ int main (void) {
     assert(window.w==500 && window.h==500);
     assert(world.w==100 && world.h==100);
 
+    _pico_check("view_raw-0a");
+    pico_set_grid(0);
+    _pico_check("view_raw-0b");
+    pico_set_grid(1);
+
     // WORLD - bigger
     puts("shows lower-left X, center rect, center/up-right line");
     for (int i=0; i<50; i++) {
