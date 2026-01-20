@@ -490,8 +490,8 @@ static Pico_Rect tex_rect_pct (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
         Pico_Rect v = pico_cv_rect_pct_raw(&r);
 
         if (rect->w==0 && rect->h==0) {
-            r.w = ((float)w) / v.w;
-            r.h = ((float)h) / v.h;
+            r.w = w / (float)v.w;
+            r.h = h / (float)v.h;
         } else if (rect->w == 0) {
             r.h = rect->h;
             r.w = r.h * w * v.h / h / v.w;
