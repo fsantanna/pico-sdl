@@ -1,9 +1,9 @@
 package = "pico-sdl"
-version = "0.1-2"
+version = "0.2-1"
 
 source = {
    url = "git://github.com/fsantanna/pico-sdl",
-   tag = "v0.1"
+   tag = "v0.2"
 }
 
 description = {
@@ -54,8 +54,8 @@ build = {
       },
    },
    modules = {
-      ["pico.init"] = "lua/init.lua",
-      ["pico.layout"] = "lua/layout.lua",
+      ["pico.init"] = "lua/pico/init.lua",
+      --["pico.layout"] = "lua/layout.lua",
       pico_native = {
          sources = {
             "lua/pico.c",
