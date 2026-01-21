@@ -582,6 +582,30 @@ void pico_output_draw_line_pct (Pico_Pos_Pct* p1, Pico_Pos_Pct* p2) {
     pico_output_draw_line_raw(pico_cv_pos_pct_raw(p1), pico_cv_pos_pct_raw(p2));
 }
 
+void pico_output_draw_oval_raw (Pico_Rect rect) {
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+    switch (S.style) {
+        case PICO_STYLE_FILL:
+            filledEllipseRGBA (REN,
+                rect.x+rect.w/2, rect.y+rect.h/2, rect.w/2, rect.h/2,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+        case PICO_STYLE_STROKE:
+            ellipseRGBA (REN,
+                rect.x+rect.w/2, rect.y+rect.h/2, rect.w/2, rect.h/2,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+    }
+    _pico_output_present(0);
+}
+
+void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect) {
+    pico_output_draw_oval_raw(pico_cv_rect_pct_raw(rect));
+}
+
 void pico_output_draw_pixel_raw (Pico_Pos pos) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -624,58 +648,6 @@ void pico_output_draw_rect_raw (Pico_Rect rect) {
 
 void pico_output_draw_rect_pct (const Pico_Rect_Pct* rect) {
     pico_output_draw_rect_raw(pico_cv_rect_pct_raw(rect));
-}
-
-void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3) {
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    switch (S.style) {
-        case PICO_STYLE_FILL:
-            filledTrigonRGBA(REN,
-                p1.x, p1.y,
-                p2.x, p2.y,
-                p3.x, p3.y,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-        case PICO_STYLE_STROKE:
-            trigonRGBA(REN,
-                p1.x, p1.y,
-                p2.x, p2.y,
-                p3.x, p3.y,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-    }
-    _pico_output_present(0);
-}
-void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, const Pico_Pos_Pct* p3) {
-    pico_output_draw_tri_raw(pico_cv_pos_pct_raw(p1), pico_cv_pos_pct_raw(p2), pico_cv_pos_pct_raw(p3));
-
-}
-
-void pico_output_draw_oval_raw (Pico_Rect rect) {
-    SDL_SetRenderDrawColor(REN,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    switch (S.style) {
-        case PICO_STYLE_FILL:
-            filledEllipseRGBA (REN,
-                rect.x+rect.w/2, rect.y+rect.h/2, rect.w/2, rect.h/2,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-        case PICO_STYLE_STROKE:
-            ellipseRGBA (REN,
-                rect.x+rect.w/2, rect.y+rect.h/2, rect.w/2, rect.h/2,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
-            );
-            break;
-    }
-    _pico_output_present(0);
-}
-
-void pico_output_draw_oval_pct (const Pico_Rect_Pct* rect) {
-    pico_output_draw_oval_raw(pico_cv_rect_pct_raw(rect));
 }
 
 void pico_output_draw_poly_raw (int n, const Pico_Pos* ps) {
@@ -746,6 +718,34 @@ void pico_output_draw_text_pct (const char* text, Pico_Rect_Pct* rect) {
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(sfc);
     _pico_output_present(0);
+}
+
+void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3) {
+    SDL_SetRenderDrawColor(REN,
+        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+    switch (S.style) {
+        case PICO_STYLE_FILL:
+            filledTrigonRGBA(REN,
+                p1.x, p1.y,
+                p2.x, p2.y,
+                p3.x, p3.y,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+        case PICO_STYLE_STROKE:
+            trigonRGBA(REN,
+                p1.x, p1.y,
+                p2.x, p2.y,
+                p3.x, p3.y,
+                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+            );
+            break;
+    }
+    _pico_output_present(0);
+}
+void pico_output_draw_tri_pct (const Pico_Pos_Pct* p1, const Pico_Pos_Pct* p2, const Pico_Pos_Pct* p3) {
+    pico_output_draw_tri_raw(pico_cv_pos_pct_raw(p1), pico_cv_pos_pct_raw(p2), pico_cv_pos_pct_raw(p3));
+
 }
 
 static void _show_grid (void) {
