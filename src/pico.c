@@ -462,18 +462,19 @@ static void _pico_output_present (int force);
 static Pico_Dim tex_dim_raw (SDL_Texture* tex, Pico_Dim dim) {
     if (dim.w!=0 && dim.h!=0) {
         return dim;
-    }
-    int w, h;
-    SDL_QueryTexture(tex, NULL, NULL, &w, &h);
-    if (dim.w==0 && dim.h==0) {
-        dim.w = w;
-        dim.h = h;
-    } else if (dim.w == 0) {
-        dim.w = dim.h * w / h;
     } else {
-        dim.h = dim.w * h / w;
+        int w, h;
+        SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+        if (dim.w==0 && dim.h==0) {
+            dim.w = w;
+            dim.h = h;
+        } else if (dim.w == 0) {
+            dim.w = dim.h * w / h;
+        } else {
+            dim.h = dim.w * h / w;
+        }
+        return dim;
     }
-    return dim;
 }
 
 static Pico_Rect tex_rect_pct (SDL_Texture* tex, const Pico_Rect_Pct* rect) {
@@ -516,9 +517,8 @@ void pico_output_draw_buffer_raw (Pico_Dim dim, const Pico_Color_A buffer[], con
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
     Pico_Dim d = tex_dim_raw(tex, (Pico_Dim){rect.w, rect.h});
-    Pico_Rect r = { rect.x, rect.y, d.w, d.h };
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopy(REN, tex, NULL, &r);
+    SDL_RenderCopy(REN, tex, NULL, &(Pico_Rect){rect.x,rect.y,d.w,d.h});
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(tex);
     _pico_output_present(0);
@@ -558,9 +558,8 @@ SDL_Texture* _image (const char* path) {
 void pico_output_draw_image_raw (const char* path, Pico_Rect rect) {
     SDL_Texture* tex = _image(path);
     Pico_Dim d = tex_dim_raw(tex, (Pico_Dim){rect.w, rect.h});
-    Pico_Rect r = { rect.x, rect.y, d.w, d.h };
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopy(REN, tex, NULL, &r);
+    SDL_RenderCopy(REN, tex, NULL, &(Pico_Rect){rect.x,rect.y,d.w,d.h});
     _pico_output_present(0);
 }
 
@@ -723,9 +722,8 @@ void pico_output_draw_text_raw (const char* text, Pico_Rect rect) {
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
     pico_assert(tex != NULL);
     Pico_Dim d = tex_dim_raw(tex, (Pico_Dim){rect.w, rect.h});
-    Pico_Rect r = { rect.x, rect.y, d.w, d.h };
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopy(REN, tex, NULL, &r);
+    SDL_RenderCopy(REN, tex, NULL, &(Pico_Rect){rect.x,rect.y,d.w,d.h});
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(sfc);
     _pico_output_present(0);
