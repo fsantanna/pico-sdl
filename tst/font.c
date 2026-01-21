@@ -8,20 +8,20 @@ int main (void) {
     {
         Pico_Dim d = { 0, 10 };
         pico_get_text_raw("ABC", &d);
-        assert(d.w>0 && d.h==10);
+        assert(d.w==17 && d.h==10);
     }
     // pico_get_text_pct: NULL ref
     {
         Pico_Pct p = { 0, 0.1 };
         pico_get_text_pct("ABC", &p, NULL);
-        assert(p.x>0 && p.y==0.1f);
+        assert(p.x==0.17f && p.y==0.1f);
     }
     // pico_get_text_pct: with ref (ref 50x50, h=0.2 -> 10px in ref)
     {
         Pico_Rect_Pct ref = { 0, 0, 0.5, 0.5, PICO_ANCHOR_NW, NULL };
         Pico_Pct p = { 0, 0.2 };
         pico_get_text_pct("ABC", &p, &ref);
-        assert(p.x>0 && p.y==0.2f);
+        assert(p.x==0.34f && p.y==0.2f);
     }
 
     {
