@@ -1036,8 +1036,7 @@ void pico_get_image_raw (const char* path, Pico_Dim* dim) {
     *dim = tex_dim_raw(tex, *dim);
 }
 
-void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rect_Pct* ref) {
-    SDL_Texture* tex = _image(path);
+static void _tex_dim_pct (SDL_Texture* tex, Pico_Pct* pct, Pico_Rect_Pct* ref) {
     Pico_Rect_Pct r = { 0, 0, pct->x, pct->y, PICO_ANCHOR_NW, ref };
     Pico_Rect raw = tex_rect_pct(tex, &r);
     Pico_Rect base;
@@ -1048,6 +1047,11 @@ void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rect_Pct* ref) {
     }
     pct->x = raw.w / (float)base.w;
     pct->y = raw.h / (float)base.h;
+}
+
+void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rect_Pct* ref) {
+    SDL_Texture* tex = _image(path);
+    _tex_dim_pct(tex, pct, ref);
 }
 
 int pico_get_rotate (void) {
@@ -1097,15 +1101,7 @@ void pico_get_text_pct (const char* text, Pico_Pct* pct, Pico_Rect_Pct* ref) {
     TTF_CloseFont(ttf);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(REN, sfc);
-    raw = tex_rect_pct(tex, &r);
-    Pico_Rect base;
-    if (ref == NULL) {
-        base = (Pico_Rect){ 0, 0, S.view.log.w, S.view.log.h };
-    } else {
-        base = pico_cv_rect_pct_raw(ref);
-    }
-    pct->x = raw.w / (float)base.w;
-    pct->y = raw.h / (float)base.h;
+    _tex_dim_pct(tex, pct, ref);
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(sfc);
 }
