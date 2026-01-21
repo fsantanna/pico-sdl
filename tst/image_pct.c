@@ -6,7 +6,7 @@ int main (void) {
     pico_set_title("Image - Size - Crop");
     pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
 
-    // pico_get_image
+    // pico_get_image_pct: NULL ref (world 100x100, image 48x48)
     {
         {
             Pico_Pct p = { 0, 0.24 };
@@ -21,6 +21,20 @@ int main (void) {
         {
             Pico_Pct p = { 0, 0 };
             pico_get_image_pct("open.png", &p, NULL);
+            assert(p.x == 0.48f && p.y == 0.48f);
+        }
+    }
+    // pico_get_image_pct: with ref (ref 50x50, image 48x48 -> 0.96x0.96)
+    {
+        Pico_Rect_Pct ref = { 0, 0, 0.5, 0.5, PICO_ANCHOR_NW, NULL };
+        {
+            Pico_Pct p = { 0, 0 };
+            pico_get_image_pct("open.png", &p, &ref);
+            assert(p.x == 0.96f && p.y == 0.96f);
+        }
+        {
+            Pico_Pct p = { 0, 0.48 };
+            pico_get_image_pct("open.png", &p, &ref);
             assert(p.x == 0.48f && p.y == 0.48f);
         }
     }
