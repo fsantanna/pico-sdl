@@ -4,6 +4,20 @@ pico.init(true)
 pico.set.title("Image - Size - Crop")
 pico.set.color.clear(0xFF, 0xFF, 0xFF)
 
+-- pico.get.image
+do
+    local dim = pico.get.image("open.png", {'%', w=0, h=0.24})
+    assert(dim.w == 0.24 and dim.h == 0.24)
+end
+do
+    local dim = pico.get.image("open.png", {'%', w=0.48, h=0})
+    assert(dim.w == 0.48 and dim.h == 0.48)
+end
+do
+    local dim = pico.get.image("open.png", {'%', w=0, h=0})
+    assert(dim.w == 0.48 and dim.h == 0.48)
+end
+
 do
     print("show original centered")
     pico.output.clear()

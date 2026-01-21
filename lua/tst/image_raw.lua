@@ -4,8 +4,23 @@ pico.init(true)
 pico.set.title("Image - Size - Crop")
 pico.set.color.clear(0xFF, 0xFF, 0xFF)
 
-local dim = pico.get.image("open.png");
-assert(dim.w==48 and dim.h==48);
+-- pico.get.image
+do
+    local dim = pico.get.image("open.png")
+    assert(dim.w==48 and dim.h==48)
+end
+do
+    local dim = pico.get.image("open.png", {w=0, h=24})
+    assert(dim.w==24 and dim.h==24)
+end
+do
+    local dim = pico.get.image("open.png", {w=48, h=0})
+    assert(dim.w==48 and dim.h==48)
+end
+do
+    local dim = pico.get.image("open.png", {w=0, h=0})
+    assert(dim.w==48 and dim.h==48)
+end
 
 do
     print("show top-left from center")
