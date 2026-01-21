@@ -214,8 +214,8 @@ static int c_dim_raw_pct (lua_State* L, int i, Pico_Dim* raw, Pico_Pct* pct) {
         return 0;
     } else {
         *pct = (Pico_Pct) {
-            L_checkfieldnum(L, i, "w"),
-            L_checkfieldnum(L, i, "h"),
+            L_checkfieldnum(L, i, "x"),
+            L_checkfieldnum(L, i, "y"),
         };
         return 1;
     }
@@ -392,54 +392,44 @@ static int l_color_lighter (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_get_image (lua_State* L) {
-    const char* path = luaL_checkstring(L, 1);  // path | [dim]
+    const char* path = luaL_checkstring(L, 1);  // path | [dim | ref]
 
     // pico.get.image(path) -> {w, h}
     if (lua_gettop(L) == 1) {
         Pico_Dim dim = pico_get_image(path);
         lua_newtable(L);                        // path | dim
-        lua_pushinteger(L, dim.w);
-        lua_setfield(L, -2, "w");
-        lua_pushinteger(L, dim.h);
-        lua_setfield(L, -2, "h");
-        return 1;
-    }
+        lua_pushinteger(L, dim.w);              // path | dim | w
+        lua_setfield(L, -2, "w");               // path | dim
+        lua_pushinteger(L, dim.h);              // path | dim | h
+        lua_setfield(L, -2, "h");               // path | dim
 
-    // pico.get.image(path, dim)
-    luaL_checktype(L, 2, LUA_TTABLE);
-
-    lua_geti(L, 2, 1);                          // path | dim | [1]
-    int is_pct = lua_isstring(L, -1) &&
-                 strcmp(lua_tostring(L, -1), "%") == 0;
-    lua_pop(L, 1);                              // path | dim
-
-    if (!is_pct) {
-        // raw: {w=, h=}
-        Pico_Dim dim = c_dim(L, 2);
-        pico_get_image_raw(path, &dim);
-        lua_newtable(L);
-        lua_pushinteger(L, dim.w);
-        lua_setfield(L, -2, "w");
-        lua_pushinteger(L, dim.h);
-        lua_setfield(L, -2, "h");
+    // pico.get.image(path, dim, [ref])
     } else {
-        // pct: {'%', w=, h=, [up=]}
-        Pico_Pct pct = {
-            L_checkfieldnum(L, 2, "w"),
-            L_checkfieldnum(L, 2, "h"),
-        };
-        lua_getfield(L, 2, "up");               // path | dim | up
-        Pico_Rect_Pct* ref = NULL;
-        if (!lua_isnil(L, -1)) {
-            ref = c_rect_pct(L, lua_gettop(L));
+        luaL_checktype(L, 2, LUA_TTABLE);       // path | dim | [ref]
+
+        if (c_is_raw(L,2)) {                    // path | {w,h}
+            Pico_Dim dim = c_dim(L, 2);
+            pico_get_image_raw(path, &dim);
+            lua_pushinteger(L, dim.w);          // path | {w,h} | w
+            lua_setfield(L, 2, "w");            // path | {w,h}
+            lua_pushinteger(L, dim.h);          // path | {w,h} | h
+            lua_setfield(L, 2, "h");            // path | {w,h}
+        } else {                                // path | {%,w,h} | [ref]
+            Pico_Pct pct = {
+                L_checkfieldnum(L, 2, "x"),
+                L_checkfieldnum(L, 2, "y"),
+            };
+            Pico_Rect_Pct* ref = NULL;
+            if (lua_gettop(L) >= 3) {           // path | {%,w,h} | ref
+                ref = c_rect_pct(L, 3);
+                lua_pop(L, 1);                  // path | {%,w,h}
+            }
+            pico_get_image_pct(path, &pct, ref);
+            lua_pushnumber(L, pct.x);           // path | {%,w,h} | w
+            lua_setfield(L, 2, "x");            // path | {%,w,h}
+            lua_pushnumber(L, pct.y);           // path | {%,w,h} | h
+            lua_setfield(L, 2, "y");            // path | {%,w,h}
         }
-        lua_pop(L, 1);                          // path | dim
-        pico_get_image_pct(path, &pct, ref);
-        lua_newtable(L);
-        lua_pushnumber(L, pct.x);
-        lua_setfield(L, -2, "w");
-        lua_pushnumber(L, pct.y);
-        lua_setfield(L, -2, "h");
     }
     return 1;
 }
@@ -451,45 +441,34 @@ static int l_get_text (lua_State* L) {
         const char* text = luaL_checkstring(L, 2);
         int w = pico_get_text(h, text);
         lua_pushinteger(L, w);
-        return 1;
-    }
-
-    // pico.get.text(text, dim)
-    const char* text = luaL_checkstring(L, 1);  // text | dim
-    luaL_checktype(L, 2, LUA_TTABLE);
-
-    lua_geti(L, 2, 1);                          // text | dim | [1]
-    int is_pct = lua_isstring(L, -1) &&
-                 strcmp(lua_tostring(L, -1), "%") == 0;
-    lua_pop(L, 1);                              // text | dim
-
-    if (!is_pct) {
-        // raw: {w=, h=}
-        Pico_Dim dim = c_dim(L, 2);
-        pico_get_text_raw(text, &dim);
-        lua_newtable(L);
-        lua_pushinteger(L, dim.w);
-        lua_setfield(L, -2, "w");
-        lua_pushinteger(L, dim.h);
-        lua_setfield(L, -2, "h");
     } else {
-        // pct: {'%', w=, h=, [up=]}
-        Pico_Pct pct = {
-            L_checkfieldnum(L, 2, "w"),
-            L_checkfieldnum(L, 2, "h"),
-        };
-        lua_getfield(L, 2, "up");               // text | dim | up
-        Pico_Rect_Pct* ref = NULL;
-        if (!lua_isnil(L, -1)) {
-            ref = c_rect_pct(L, lua_gettop(L));
+        // pico.get.text(text, dim, [ref])
+        const char* text = luaL_checkstring(L, 1);  // text | dim | [ref]
+        luaL_checktype(L, 2, LUA_TTABLE);
+
+        if (c_is_raw(L,2)) {                        // text | {w,h}
+            Pico_Dim dim = c_dim(L, 2);
+            pico_get_text_raw(text, &dim);
+            lua_pushinteger(L, dim.w);              // text | {w,h} | w
+            lua_setfield(L, -2, "w");               // text | {w,h}
+            lua_pushinteger(L, dim.h);              // text | {w,h} | h
+            lua_setfield(L, -2, "h");               // text | {w,h}
+        } else {                                    // text | {%,w,h} | [ref]
+            Pico_Pct pct = {
+                L_checkfieldnum(L, 2, "x"),
+                L_checkfieldnum(L, 2, "y"),
+            };
+            Pico_Rect_Pct* ref = NULL;
+            if (lua_gettop(L) >= 3) {               // text | {%,w,h} | ref
+                ref = c_rect_pct(L, 3);
+                lua_pop(L, 1);                      // text | {%,w,h}
+            }
+            pico_get_text_pct(text, &pct, ref);
+            lua_pushnumber(L, pct.x);               // text | {%,w,h} | w
+            lua_setfield(L, 2, "x");                // text | {%,w,h}
+            lua_pushnumber(L, pct.y);               // text | {%,w,h} | h
+            lua_setfield(L, 2, "y");                // text | {%,w,h}
         }
-        lua_pop(L, 1);                          // text | dim
-        pico_get_text_pct(text, &pct, ref);
-        lua_newtable(L);
-        lua_pushnumber(L, pct.x);
-        lua_setfield(L, -2, "w");
-        lua_pushnumber(L, pct.y);
-        lua_setfield(L, -2, "h");
     }
     return 1;
 }

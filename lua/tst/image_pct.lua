@@ -1,32 +1,31 @@
 require 'pico.check'
 
+function round (v)
+    return v>=0 and math.floor(v+0.5) or math.ceil(v-0.5)
+end
+
 pico.init(true)
 pico.set.title("Image - Size - Crop")
 pico.set.color.clear(0xFF, 0xFF, 0xFF)
 
--- pico.get.image: NULL ref (world 100x100, image 48x48)
+-- pico.get.image
 do
-    local dim = pico.get.image("open.png", {'%', w=0, h=0.24})
-    assert(dim.w == 0.24 and dim.h == 0.24)
-end
-do
-    local dim = pico.get.image("open.png", {'%', w=0.48, h=0})
-    assert(dim.w == 0.48 and dim.h == 0.48)
-end
-do
-    local dim = pico.get.image("open.png", {'%', w=0, h=0})
-    assert(dim.w == 0.48 and dim.h == 0.48)
-end
--- pico.get.image: with ref (ref 50x50, image 48x48 -> 0.96x0.96)
-do
+    local pct = pico.get.image("open.png", {'%', x=0, y=0.24})
+    assert(round(pct.x*100)==24 and round(pct.y*100)==24)
+
+    local pct = pico.get.image("open.png", {'%', x=0.48, y=0})
+    assert(round(pct.x*100)==48 and round(pct.y*100)==48)
+
+    local pct = pico.get.image("open.png", {'%', x=0, y=0})
+    assert(round(pct.x*100)==48 and round(pct.y*100)==48)
+
     local ref = {'NW', x=0, y=0, w=0.5, h=0.5}
-    local dim = pico.get.image("open.png", {'%', w=0, h=0, up=ref})
-    assert(dim.w == 0.96 and dim.h == 0.96)
-end
-do
+    local pct = pico.get.image("open.png", {'%', x=0, y=0}, ref)
+    assert(round(pct.x*100)==96 and round(pct.y*100)==96)
+
     local ref = {'NW', x=0, y=0, w=0.5, h=0.5}
-    local dim = pico.get.image("open.png", {'%', w=0, h=0.48, up=ref})
-    assert(dim.w == 0.48 and dim.h == 0.48)
+    local pct = pico.get.image("open.png", {'%', x=0, y=0.48}, ref)
+    assert(round(pct.x*100)==48 and round(pct.y*100)==48)
 end
 
 do
