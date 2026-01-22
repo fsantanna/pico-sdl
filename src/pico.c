@@ -524,6 +524,15 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
+SDL_Rect* _crop (void) {
+    if (S.crop.w==0 || S.crop.h==0) {
+        assert(S.crop.w==0 && S.crop.h==0 && S.crop.x==0 && S.crop.y==0);
+        return NULL;
+    } else {
+        return &S.crop;
+    }
+}
+
 void pico_output_draw_buffer_raw (Pico_Dim dim, const Pico_Color_A buffer[], const Pico_Rect rect) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
         (void*)buffer, dim.w, dim.h,
@@ -533,7 +542,7 @@ void pico_output_draw_buffer_raw (Pico_Dim dim, const Pico_Color_A buffer[], con
     pico_assert(tex != NULL);
     Pico_Dim d = tex_dim_raw(tex, (Pico_Dim){rect.w, rect.h});
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopy(REN, tex, NULL, &(Pico_Rect){rect.x,rect.y,d.w,d.h});
+    SDL_RenderCopy(REN, tex, _crop(), &(Pico_Rect){rect.x,rect.y,d.w,d.h});
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(tex);
     _pico_output_present(0);
@@ -548,7 +557,7 @@ void pico_output_draw_buffer_pct (Pico_Dim dim, const Pico_Color_A buffer[], con
     pico_assert(tex != NULL);
     Pico_Rect r = tex_rect_pct(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopy(REN, tex, NULL, &r);
+    SDL_RenderCopy(REN, tex, _crop(), &r);
     SDL_FreeSurface(sfc);
     SDL_DestroyTexture(tex);
     _pico_output_present(0);
@@ -574,7 +583,7 @@ void pico_output_draw_image_raw (const char* path, Pico_Rect rect) {
     SDL_Texture* tex = _image(path);
     Pico_Dim d = tex_dim_raw(tex, (Pico_Dim){rect.w, rect.h});
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopy(REN, tex, NULL, &(Pico_Rect){rect.x,rect.y,d.w,d.h});
+    SDL_RenderCopy(REN, tex, _crop(), &(Pico_Rect){rect.x,rect.y,d.w,d.h});
     _pico_output_present(0);
 }
 
@@ -582,7 +591,7 @@ void pico_output_draw_image_pct (const char* path, const Pico_Rect_Pct* rect) {
     SDL_Texture* tex = _image(path);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     Pico_Rect r = tex_rect_pct(tex, rect);
-    SDL_RenderCopy(REN, tex, NULL, &r);
+    SDL_RenderCopy(REN, tex, _crop(), &r);
     _pico_output_present(0);
 }
 
@@ -703,7 +712,7 @@ void pico_output_draw_text_raw (const char* text, Pico_Rect rect) {
     SDL_Texture* tex =  _text_tex(NULL, rect.h, text, S.color.draw);
     Pico_Dim d = tex_dim_raw(tex, (Pico_Dim){rect.w, rect.h});
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopy(REN, tex, NULL, &(Pico_Rect){rect.x,rect.y,d.w,d.h});
+    SDL_RenderCopy(REN, tex, _crop(), &(Pico_Rect){rect.x,rect.y,d.w,d.h});
     SDL_DestroyTexture(tex);
     _pico_output_present(0);
 }
@@ -714,7 +723,7 @@ void pico_output_draw_text_pct (const char* text, Pico_Rect_Pct* rect) {
     SDL_Texture* tex =  _text_tex(NULL, r1.h, text, S.color.draw);
     Pico_Rect r = tex_rect_pct(tex, rect);
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopy(REN, tex, NULL, &r);
+    SDL_RenderCopy(REN, tex, _crop(), &r);
     SDL_DestroyTexture(tex);
     _pico_output_present(0);
 }

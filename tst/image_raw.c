@@ -71,22 +71,23 @@ int main (void) {
         pico_output_draw_image_raw("open.png", r);
         _pico_check("image_raw-06");
     }
-#if 0
+
+    // CROP
     {
+        puts("show big croped");
         pico_output_clear();
         pico_set_crop((Pico_Rect){9,9,30,30});
-        pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){30,30});
-        puts("show big croped");
-        _pico_check("img_big_cropped");
-    }
-    {
+        Pico_Rect r1 = { 50-24,50-24, 0,0 };
+        pico_output_draw_image_raw("open.png", r1);
+        _pico_check("image_raw-07");
+
+        puts("show medium normal");
         pico_output_clear();
         pico_set_crop((Pico_Rect){0,0,0,0});
-        pico_output_draw_image_ext(cnt,"open.png",(Pico_Dim){0,15});
-        puts("show medium normal");
-        _pico_check("img_medium_normal2");
+        Pico_Rect r2 = { 50-10,50-10, 20,0 };
+        pico_output_draw_image_raw("open.png", r2);
+        _pico_check("image_raw-08");
     }
-#endif
 
     pico_init(0);
     return 0;

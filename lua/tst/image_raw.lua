@@ -70,4 +70,21 @@ do
     pico.check("image_raw-06")
 end
 
+-- CROP
+do
+    print "show big croped"
+    pico.output.clear();
+    pico.set.crop {x=9,y=9,w=30,h=30}
+    local r1 = { x=50-24,y=50-24, w=0,h=0 }
+    pico.output.draw.image("open.png", r1)
+    pico.check("image_raw-07")
+
+    print "show medium normal"
+    pico.output.clear()
+    pico.set.crop()
+    local r2 = { x=50-10,y=50-10, w=20,h=0 }
+    pico.output.draw.image("open.png", r2)
+    pico.check("image_raw-08")
+end
+
 pico.init(false)

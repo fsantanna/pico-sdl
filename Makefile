@@ -11,6 +11,9 @@ ttl:
 	curl -sL https://raw.githubusercontent.com/fsantanna/ttl-hash/v0.1/ttl_hash.h \
 		-o src/hash.h
 
+test:
+	$(EXE) tst/image_raw.c
+
 tests:
 	@echo "Running tests..."
 

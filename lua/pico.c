@@ -602,6 +602,23 @@ static int l_set_alpha (lua_State* L) {
     return 0;
 }
 
+static int l_set_crop (lua_State* L) {
+    Pico_Rect r;
+    if (lua_gettop(L) == 0) {               // -
+        r = (Pico_Rect) {0,0,0,0};
+    } else {
+        luaL_checktype(L, 1, LUA_TTABLE);   // r = {x,y,w,h}
+        r = (Pico_Rect) {
+            L_checkfieldnum(L, 1, "x"),
+            L_checkfieldnum(L, 1, "y"),
+            L_checkfieldnum(L, 1, "w"),
+            L_checkfieldnum(L, 1, "h"),
+        };
+    }
+    pico_set_crop(r);
+    return 0;
+}
+
 static int l_set_expert (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);
     int on = lua_toboolean(L, 1);
@@ -1141,6 +1158,7 @@ static const luaL_Reg ll_get[] = {
 
 static const luaL_Reg ll_set[] = {
     { "alpha",  l_set_alpha  },
+    { "crop",   l_set_crop   },
     { "expert", l_set_expert },
     { "style",  l_set_style  },
     { "title",  l_set_title  },

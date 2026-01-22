@@ -463,8 +463,9 @@ void pico_set_color_clear (Pico_Color color);
 /// @param color new color
 void pico_set_color_draw (Pico_Color color);
 
-/// @brief Changes the cropping that is applied to images before drawing them.
-/// @param crop cropping region, which may have 0 area to disable cropping
+/// @brief Changes the cropping that is applied to images, texts and buffers
+///        before drawing them.
+/// @param crop cropping region ({0,0,0,0} to disable)
 void pico_set_crop (Pico_Rect crop);
 
 /// @brief Toggles the expert mode.
