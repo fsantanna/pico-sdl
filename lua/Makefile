@@ -9,6 +9,7 @@ pico_native.so: ../src/pico.c pico.c
 		-llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 
 tests:
+	$(TST) tst/init.lua
 	$(TST) tst/cv.lua
 	$(TST) tst/vs.lua
 	$(TST) tst/anchor.lua

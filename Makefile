@@ -14,6 +14,7 @@ ttl:
 tests:
 	@echo "Running tests..."
 
+	$(EXE) tst/init.c
 	$(EXE) tst/cv.c
 	$(EXE) tst/vs.c
 	$(EXE) tst/anchor.c
