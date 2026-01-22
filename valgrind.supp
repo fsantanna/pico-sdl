@@ -62,6 +62,13 @@
    obj:*/libSDL2_gfx*
 }
 {
+   alsa
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libasound.so*
+}
+{
    sdl-init
    Memcheck:Leak
    match-leak-kinds: all
