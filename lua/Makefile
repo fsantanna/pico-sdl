@@ -8,6 +8,9 @@ pico_native.so: ../src/pico.c pico.c
 	gcc -g -shared -fPIC -DPICO_TESTS -o pico/$@ $^ \
 		-llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 
+test:
+	$(TST) tst/init.lua
+
 tests:
 	$(TST) tst/init.lua
 	$(TST) tst/cv.lua
