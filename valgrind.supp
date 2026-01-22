@@ -28,3 +28,23 @@
    fun:_dl_find_object_update
    ...
 }
+
+{
+   glibc-dlopen-dl-init
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:call_init.part.0
+   ...
+}
+
+{
+   glibc-dlopen-dl-init-new
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   ...
+   fun:call_init.part.0
+   ...
+}
