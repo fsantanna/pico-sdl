@@ -12,3 +12,10 @@
    ...
    obj:*/lua5.4
 }
+{
+   sdl2
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libSDL2*.so*
+}
