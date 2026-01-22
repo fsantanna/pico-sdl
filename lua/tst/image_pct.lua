@@ -10,28 +10,28 @@ pico.set.color.clear(0xFF, 0xFF, 0xFF)
 
 -- pico.get.image
 do
-    local pct = pico.get.image("open.png", {'%', y=0.24})
-    assert(round(pct.x*100)==24 and round(pct.y*100)==24)
+    local pct = pico.get.image("open.png", {'%', h=0.24})
+    assert(round(pct.w*100)==24 and round(pct.h*100)==24)
 
-    local pct = pico.get.image("open.png", {'%', x=0.48})
-    assert(round(pct.x*100)==48 and round(pct.y*100)==48)
+    local pct = pico.get.image("open.png", {'%', w=0.48})
+    assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 
     local pct = pico.get.image("open.png", {'%'})
-    assert(round(pct.x*100)==48 and round(pct.y*100)==48)
+    assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 
     local ref = {'NW', x=0, y=0, w=0.5, h=0.5}
-    local pct = pico.get.image("open.png", {'%', x=nil, y=nil}, ref)
-    assert(round(pct.x*100)==96 and round(pct.y*100)==96)
+    local pct = pico.get.image("open.png", {'%', w=nil, h=nil}, ref)
+    assert(round(pct.w*100)==96 and round(pct.h*100)==96)
 
     local ref = {'NW', x=0, y=0, w=0.5, h=0.5}
-    local pct = pico.get.image("open.png", {'%',y=0.48}, ref)
-    assert(round(pct.x*100)==48 and round(pct.y*100)==48)
+    local pct = pico.get.image("open.png", {'%',h=0.48}, ref)
+    assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 end
 
 do
     print("show original centered")
     pico.output.clear()
-    local r = {'C', x=0.5, y=0.5, w=0, h=0}
+    local r = {'C', h=0.5, y=0.5}
     pico.output.draw.image("open.png", r)
     pico.check("image_pct-01")
 end
@@ -55,7 +55,7 @@ end
 do
     print("show w-half proportional")
     pico.output.clear()
-    local r = {'C', x=0.5, y=0.5, w=0.5, h=0}
+    local r = {'C', x=0.5, y=0.5, w=0.5}
     pico.output.draw.image("open.png", r)
     pico.check("image_pct-04")
 end

@@ -454,9 +454,9 @@ static void L_image_get_dim_raw_pct (lua_State* L, int i, const char* path) {
         lua_setfield(L, i, "h");            // {w,h}
     } else {
         pico_get_image_pct(path, &pct, ref);
-        lua_pushnumber(L, pct.x);           // {%,w,h} | w
+        lua_pushnumber(L, pct.w);           // {%,w,h} | w
         lua_setfield(L, i, "w");            // {%,w,h}
-        lua_pushnumber(L, pct.y);           // {%,w,h} | h
+        lua_pushnumber(L, pct.h);           // {%,w,h} | h
         lua_setfield(L, i, "h");            // {%,w,h}
     }
 }
@@ -476,9 +476,9 @@ static void L_text_get_dim_raw_pct (lua_State* L, int i, const char* text) {
         lua_setfield(L, i, "h");            // {w,h}
     } else {
         pico_get_text_pct(text, &pct, ref);
-        lua_pushnumber(L, pct.x);           // {%,w,h} | w
+        lua_pushnumber(L, pct.w);           // {%,w,h} | w
         lua_setfield(L, i, "w");            // {%,w,h}
-        lua_pushnumber(L, pct.y);           // {%,w,h} | h
+        lua_pushnumber(L, pct.h);           // {%,w,h} | h
         lua_setfield(L, i, "h");            // {%,w,h}
     }
 }
