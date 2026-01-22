@@ -69,6 +69,20 @@
    obj:*/libasound.so*
 }
 {
+   llvm
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libLLVM*.so*
+}
+{
+   gallium
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libgallium*.so
+}
+{
    sdl-init
    Memcheck:Leak
    match-leak-kinds: all
