@@ -17,6 +17,6 @@ pico.check("expert-03")
 local a = pico.get.ticks();
 pico.input.delay(100);
 local b = pico.get.ticks();
-assert(b>=a+100 and b<=a+101);
+assert(b>=a+100 and b<=a+110);  -- 110 b/c of valgrind
 
 pico.init(false)
