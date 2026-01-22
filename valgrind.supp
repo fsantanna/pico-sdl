@@ -1,0 +1,30 @@
+# Suppress false positives from external libraries
+
+# glibc dynamic loader strncmp reads
+{
+   glibc-ld-strncmp-is_dst
+   Memcheck:Addr8
+   fun:strncmp
+   fun:is_dst
+   ...
+}
+
+{
+   glibc-ld-strncmp-dst_substitute
+   Memcheck:Addr8
+   fun:strncmp
+   fun:is_dst
+   fun:_dl_dst_substitute
+   ...
+}
+
+# glibc dlopen leak
+{
+   glibc-dlopen-find-object
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:malloc
+   fun:_dl_find_object_update
+   ...
+}
