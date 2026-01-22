@@ -33,8 +33,9 @@ typedef struct {
 SDL_Window* pico_win;
 #endif
 
-static SDL_Window*  WIN;
-static SDL_Texture* TEX;
+static SDL_Window*   WIN;
+static SDL_Renderer* REN;
+static SDL_Texture*  TEX = NULL;
 static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 static int TGT = 1;         // 0:phy, 1:log
 
@@ -47,8 +48,6 @@ const Pico_Pct PICO_ANCHOR_SE = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_BOTTOM };
 const Pico_Pct PICO_ANCHOR_S  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_BOTTOM };
 const Pico_Pct PICO_ANCHOR_SW = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_BOTTOM };
 const Pico_Pct PICO_ANCHOR_W  = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_MIDDLE };
-
-#define REN (SDL_GetRenderer(WIN))
 
 static ttl_hash* _pico_hash;
 
@@ -245,9 +244,9 @@ void pico_init (int on) {
 
 #ifdef PICO_TESTS
         pico_win = WIN;
-        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
+        REN = SDL_CreateRenderer(WIN, -1, SDL_RENDERER_SOFTWARE);
 #else
-        SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
+        REN = SDL_CreateRenderer(WIN, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
 #endif
 
         pico_assert(REN != NULL);
@@ -270,6 +269,9 @@ void pico_init (int on) {
     } else {
         Mix_CloseAudio();
         TTF_Quit();
+        if (TEX != NULL) {
+            SDL_DestroyTexture(TEX);
+        }
         SDL_DestroyRenderer(REN);
         SDL_DestroyWindow(WIN);
         SDL_Quit();
@@ -1247,7 +1249,9 @@ void pico_set_view_raw (
         if (clip == NULL) {
             S.view.clip = (SDL_Rect) { 0, 0, log->w, log->h };
         }
-        SDL_DestroyTexture(TEX);
+        if (TEX != NULL) {
+            SDL_DestroyTexture(TEX);
+        }
         TEX = SDL_CreateTexture (
             REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
             log->w, log->h
