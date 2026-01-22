@@ -1,6 +1,6 @@
 # Suppress false positives from external libraries
 
-# glibc dynamic loader
+# glibc dynamic loader (invalid reads)
 {
    glibc-ld-strncmp
    Memcheck:Addr8
@@ -9,15 +9,7 @@
    ...
 }
 
-{
-   glibc-dlopen
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   fun:_dl_*
-   ...
-}
-
+# Library initialization (before user code runs)
 {
    glibc-call-init
    Memcheck:Leak
@@ -34,68 +26,4 @@
    match-leak-kinds: all
    ...
    src:pico.c:237
-}
-
-# External libraries (no user code in trace)
-{
-   libX11
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   obj:/usr/lib/x86_64-linux-gnu/libX11*
-   ...
-}
-
-{
-   libglib
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   obj:/usr/lib/x86_64-linux-gnu/libglib*
-   ...
-}
-
-{
-   libgobject
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   obj:/usr/lib/x86_64-linux-gnu/libgobject*
-   ...
-}
-
-{
-   pulseaudio
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   obj:/usr/lib/x86_64-linux-gnu/pulseaudio/*
-   ...
-}
-
-{
-   libpulse
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   obj:/usr/lib/x86_64-linux-gnu/libpulse*
-   ...
-}
-
-{
-   libdbus
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   obj:/usr/lib/x86_64-linux-gnu/libdbus*
-   ...
-}
-
-{
-   ld-linux
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   obj:/usr/lib/x86_64-linux-gnu/ld-linux*
-   ...
 }
