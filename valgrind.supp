@@ -83,6 +83,13 @@
    obj:*/libgallium*.so
 }
 {
+   mesa-glx
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libGLX_mesa.so*
+}
+{
    sdl-init
    Memcheck:Leak
    match-leak-kinds: all
