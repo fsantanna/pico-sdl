@@ -504,9 +504,9 @@ static int l_get_image (lua_State* L) {
 
 static int l_get_text (lua_State* L) {
     // pico.get.text(h, text) -> w
-    if (lua_type(L, 1) == LUA_TNUMBER) {
+    if (lua_tostring(L,2) != NULL) {
         int h = luaL_checknumber(L, 1);
-        const char* text = luaL_checkstring(L, 2);
+        const char* text = lua_tostring(L, 2);
         int w = pico_get_text(h, text);
         lua_pushinteger(L, w);
 
@@ -874,7 +874,7 @@ static int l_output_draw_image (lua_State* L) {
     luaL_checktype(L, 1, LUA_TSTRING);      // path | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    const char* path = lua_tostring(L, 1);
+    const char* path = lua_tostring(L, 1);  // (checked above)
     L_image_get_dim_raw_pct(L, 2, path);    // path | *rect*
 
     Pico_Rect raw;
@@ -1035,11 +1035,10 @@ static int l_output_draw_rect (lua_State* L) {
 }
 
 static int l_output_draw_text (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TSTRING);  // text | rect
+    const char* text = luaL_checkstring(L, 1);  // text | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    const char* text = lua_tostring(L, 1);
-    L_text_get_dim_raw_pct(L, 2, text); // text | *rect*
+    L_text_get_dim_raw_pct(L, 2, text);         // text | *rect*
 
     Pico_Rect raw;
     Pico_Rect_Pct* pct;
@@ -1073,9 +1072,9 @@ static int l_output_present (lua_State* L) {
 }
 
 static int l_output_screenshot (lua_State* L) {
-    char* path = NULL;
+    const char* path = NULL;
     if (lua_type(L,1) == LUA_TSTRING) {         // path
-        path = (char*) lua_tostring(L, 1);
+        path = lua_tostring(L, 1);
     }
 
     char* ret = NULL;
