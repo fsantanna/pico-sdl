@@ -31,7 +31,7 @@ end
 do
     print("show original centered")
     pico.output.clear()
-    local r = {'C', h=0.5, y=0.5}
+    local r = {'C', x=0.5, y=0.5}
     pico.output.draw.image("open.png", r)
     pico.check("image_pct-01")
 end

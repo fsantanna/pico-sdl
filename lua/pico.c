@@ -871,10 +871,11 @@ static int l_output_draw_buffer (lua_State* L) {
 }
 
 static int l_output_draw_image (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TSTRING);  // path | rect
+    luaL_checktype(L, 1, LUA_TSTRING);      // path | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
     const char* path = lua_tostring(L, 1);
+    L_image_get_dim_raw_pct(L, 2, path);    // path | *rect*
 
     Pico_Rect raw;
     Pico_Rect_Pct* pct;
@@ -1038,6 +1039,7 @@ static int l_output_draw_text (lua_State* L) {
     luaL_checktype(L, 2, LUA_TTABLE);
 
     const char* text = lua_tostring(L, 1);
+    L_text_get_dim_raw_pct(L, 2, text); // text | *rect*
 
     Pico_Rect raw;
     Pico_Rect_Pct* pct;
