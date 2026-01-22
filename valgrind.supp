@@ -48,3 +48,180 @@
    fun:call_init.part.0
    ...
 }
+
+# External library leaks (still reachable)
+{
+   libX11-leaks
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libX11.so*
+   ...
+}
+
+# SDL2 internal leaks (from SDL_Init, not resource creation)
+{
+   libSDL2-init-leaks
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   fun:call_init*
+   ...
+}
+
+{
+   libSDL2-init-video
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   fun:main
+}
+
+{
+   libSDL2-init-video2
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   fun:main
+}
+
+{
+   libSDL2-init-video3
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   fun:main
+}
+
+{
+   libSDL2-init-video4
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   fun:main
+}
+
+{
+   libSDL2-init-video5
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   fun:main
+}
+
+# pico_init patterns (SDL_Init via pico)
+{
+   libSDL2-pico-init1
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   fun:pico_init
+   ...
+}
+
+{
+   libSDL2-pico-init2
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   fun:pico_init
+   ...
+}
+
+{
+   libSDL2-pico-init3
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   obj:/usr/lib/x86_64-linux-gnu/libSDL2*
+   fun:pico_init
+   ...
+}
+
+{
+   libglib-leaks
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libglib*
+   ...
+}
+
+{
+   libgobject-leaks
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libgobject*
+   ...
+}
+
+{
+   pulseaudio-leaks
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/pulseaudio/*
+   ...
+}
+
+{
+   libpulse-leaks
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libpulse*
+   ...
+}
+
+{
+   ld-linux-leaks
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/ld-linux*
+   ...
+}
+
+{
+   libdbus-leaks
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libdbus*
+   ...
+}
