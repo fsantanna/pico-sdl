@@ -439,6 +439,50 @@ static PICO_RAW_PCT L_get_dim_raw_pct (lua_State* L, int i, Pico_Dim* raw, Pico_
     }
 }
 
+static void L_image_get_dim_raw_pct (lua_State* L, int i, const char* path) {
+    assert(i > 0);
+    luaL_checktype(L, i, LUA_TTABLE);       // {w,h} | [ref]
+    Pico_Dim raw;
+    Pico_Pct pct;
+    Pico_Rect_Pct* ref;
+    PICO_RAW_PCT tp = L_get_dim_raw_pct(L, i, &raw, &pct, &ref); // removes [ref]
+    if (tp == PICO_RAW) {                   // {w,h}
+        pico_get_image_raw(path, &raw);
+        lua_pushinteger(L, raw.w);          // {w,h} | w
+        lua_setfield(L, i, "w");            // {w,h}
+        lua_pushinteger(L, raw.h);          // {w,h} | h
+        lua_setfield(L, i, "h");            // {w,h}
+    } else {
+        pico_get_image_pct(path, &pct, ref);
+        lua_pushnumber(L, pct.x);           // {%,x,y} | x
+        lua_setfield(L, i, "x");            // {%,x,y}
+        lua_pushnumber(L, pct.y);           // {%,x,y} | y
+        lua_setfield(L, i, "y");            // {%,x,y}
+    }
+}
+
+static void L_text_get_dim_raw_pct (lua_State* L, int i, const char* text) {
+    assert(i > 0);
+    luaL_checktype(L, i, LUA_TTABLE);       // {w,h} | [ref]
+    Pico_Dim raw;
+    Pico_Pct pct;
+    Pico_Rect_Pct* ref;
+    PICO_RAW_PCT tp = L_get_dim_raw_pct(L, i, &raw, &pct, &ref); // removes [ref]
+    if (tp == PICO_RAW) {                   // {w,h}
+        pico_get_text_raw(text, &raw);
+        lua_pushinteger(L, raw.w);          // {w,h} | w
+        lua_setfield(L, i, "w");            // {w,h}
+        lua_pushinteger(L, raw.h);          // {w,h} | h
+        lua_setfield(L, i, "h");            // {w,h}
+    } else {
+        pico_get_text_pct(text, &pct, ref);
+        lua_pushnumber(L, pct.x);           // {%,x,y} | x
+        lua_setfield(L, i, "x");            // {%,x,y}
+        lua_pushnumber(L, pct.y);           // {%,x,y} | y
+        lua_setfield(L, i, "y");            // {%,x,y}
+    }
+}
+
 static int l_get_image (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);  // path | [dim | ref]
 
@@ -453,23 +497,7 @@ static int l_get_image (lua_State* L) {
 
     // pico.get.image(path, dim, [ref])
     } else {
-        Pico_Dim raw;
-        Pico_Pct pct;
-        Pico_Rect_Pct* ref;
-        PICO_RAW_PCT tp = L_get_dim_raw_pct(L, 2, &raw, &pct, &ref); // removes [ref]
-        if (tp == PICO_RAW) {                   // path | {w,h}
-            pico_get_image_raw(path, &raw);
-            lua_pushinteger(L, raw.w);          // path | {w,h} | w
-            lua_setfield(L, 2, "w");            // path | {w,h}
-            lua_pushinteger(L, raw.h);          // path | {w,h} | h
-            lua_setfield(L, 2, "h");            // path | {w,h}
-        } else {
-            pico_get_image_pct(path, &pct, ref);
-            lua_pushnumber(L, pct.x);           // path | {%,x,y} | w
-            lua_setfield(L, 2, "x");            // path | {%,x,y}
-            lua_pushnumber(L, pct.y);           // path | {%,x,y} | h
-            lua_setfield(L, 2, "y");            // path | {%,x,y}
-        }
+        L_image_get_dim_raw_pct(L, 2, path);    // path | *dim*
     }
     return 1;
 }
@@ -485,24 +513,7 @@ static int l_get_text (lua_State* L) {
     // pico.get.text(text, dim, [ref])
     } else {
         const char* text = luaL_checkstring(L, 1);  // text | dim | [ref]
-
-        Pico_Dim raw;
-        Pico_Pct pct;
-        Pico_Rect_Pct* ref;
-        PICO_RAW_PCT tp = L_get_dim_raw_pct(L, 2, &raw, &pct, &ref); // removes [ref]
-        if (tp == PICO_RAW) {                   // text | {w,h}
-            pico_get_text_raw(text, &raw);
-            lua_pushinteger(L, raw.w);          // text | {w,h} | w
-            lua_setfield(L, 2, "w");            // text | {w,h}
-            lua_pushinteger(L, raw.h);          // text | {w,h} | h
-            lua_setfield(L, 2, "h");            // text | {w,h}
-        } else {
-            pico_get_text_pct(text, &pct, ref);
-            lua_pushnumber(L, pct.x);           // text | {%,x,y} | w
-            lua_setfield(L, 2, "x");            // text | {%,x,y}
-            lua_pushnumber(L, pct.y);           // text | {%,x,y} | h
-            lua_setfield(L, 2, "y");            // text | {%,x,y}
-        }
+        L_text_get_dim_raw_pct(L, 2, text);         // text | *dim*
     }
     return 1;
 }
