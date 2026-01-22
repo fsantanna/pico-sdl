@@ -4,6 +4,10 @@
 
 PICO=$(dirname $(realpath "$0"))    # /x/y/
 
+VALGRIND="valgrind --leak-check=full --show-leak-kinds=definite,possible \
+            --track-origins=yes --suppressions="$PICO/valgrind.supp" \
+            --error-exitcode=1 -q"
+
 DIR=$(dirname -- "$1")              # /a/b/c/
 EXE=$(basename -- "$1")             # d.c
 EXE="${EXE%.*}.exe"                 # d.exe
@@ -32,9 +36,7 @@ gcc -Wall -g -o "$DIR/$EXE" "$1" \
 
 cd $DIR/
 if [ -n "$PICO_TESTS" ]; then
-    valgrind --leak-check=full --show-leak-kinds=definite,possible \
-        --track-origins=yes --suppressions="$PICO/valgrind.supp" \
-        --error-exitcode=1 -q "./$EXE"
+    $VALGRIND "./$EXE"
 else
     "./$EXE"
 fi

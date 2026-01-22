@@ -2,9 +2,19 @@
 
 # pico-sdl-lua /a/b/c/x.lua
 
+PICO=$(dirname $(realpath "$0"))/..   # pico-sdl root
+
+VALGRIND="valgrind --leak-check=full --show-leak-kinds=definite,possible \
+            --track-origins=yes --suppressions="$PICO/valgrind.supp" \
+            --error-exitcode=1 -q"
+
 LUA=lua5.4
 DIR=$(dirname -- "$1")  # /a/b/c
 EXE=$(basename -- "$1") # x.lua
 
 cd $DIR/
-$LUA -lpico $EXE
+if [ -n "$PICO_TESTS" ]; then
+    $VALGRIND $LUA -lpico $EXE
+else
+    $LUA -lpico $EXE
+fi

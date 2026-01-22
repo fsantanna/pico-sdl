@@ -267,6 +267,7 @@ void pico_init (int on) {
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
         SDL_SetWindowResizable(WIN, 1);
     } else {
+        ttl_hash_close(_pico_hash);
         Mix_CloseAudio();
         TTF_Quit();
         if (TEX != NULL) {
@@ -275,7 +276,6 @@ void pico_init (int on) {
         SDL_DestroyRenderer(REN);
         SDL_DestroyWindow(WIN);
         SDL_Quit();
-        ttl_hash_close(_pico_hash);
     }
 }
 
