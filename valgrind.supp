@@ -55,6 +55,13 @@
    fun:_dl_close*
 }
 {
+   sdl2-gfx-polygon
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libSDL2_gfx*
+}
+{
    sdl-init
    Memcheck:Leak
    match-leak-kinds: all

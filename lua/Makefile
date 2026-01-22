@@ -5,7 +5,7 @@ TST = PICO_TESTS=1 $(LUA) $(XVFB) ./pico-lua
 .PHONY: tests install uninstall clean
 
 pico_native.so: ../src/pico.c pico.c
-	gcc -shared -fPIC -DPICO_TESTS -o pico/$@ $^ \
+	gcc -g -shared -fPIC -DPICO_TESTS -o pico/$@ $^ \
 		-llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 
 tests:

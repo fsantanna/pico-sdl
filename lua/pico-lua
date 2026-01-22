@@ -2,11 +2,13 @@
 
 # pico-sdl-lua /a/b/c/x.lua
 
-PICO=$(dirname $(realpath "$0"))/..   # pico-sdl root
+PICO=$(dirname $(realpath "$0"))/../   # pico-sdl root
 
 VALGRIND="valgrind -q --leak-check=full --show-leak-kinds=all \
             --errors-for-leak-kinds=all --track-origins=yes \
-            --suppressions=$PICO/valgrind.supp --error-exitcode=1"
+            --suppressions=$PICO/valgrind.supp \
+            --suppressions=$PICO/lua/valgrind.supp \
+            --error-exitcode=1"
 
 LUA=lua5.4
 DIR=$(dirname -- "$1")  # /a/b/c
