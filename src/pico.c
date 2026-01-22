@@ -234,7 +234,7 @@ void pico_init (int on) {
     if (on) {
         _pico_hash = ttl_hash_open(PICO_HASH_BUK, PICO_HASH_TTL,
                                    _pico_hash_clean);
-        pico_assert(0 == SDL_Init(SDL_INIT_VIDEO));
+        pico_assert(0 == SDL_Init(SDL_INIT_EVERYTHING));
         WIN = SDL_CreateWindow (
             PICO_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             S.view.phy.w, S.view.phy.h,

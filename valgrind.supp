@@ -1,25 +1,59 @@
-# Suppress false positives from external libraries
-
-# glibc dynamic loader (invalid reads)
 {
-   glibc-ld-strncmp
+   dl-strncmp-addr8
    Memcheck:Addr8
    fun:strncmp
    fun:is_dst
    ...
 }
-
-# Library initialization (before user code runs)
 {
-   glibc-call-init
+   dl-init
    Memcheck:Leak
    match-leak-kinds: all
    ...
-   fun:call_init*
-   ...
+   fun:_dl_init
 }
-
-# SDL_Init leaks (pico.c:237)
+{
+   libx11-xlc
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   fun:_XlcCreateLC
+}
+{
+   pulseaudio
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   fun:pa_*
+}
+{
+   glib
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libglib-2.0.so*
+}
+{
+   libdbus
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libdbus-1.so*
+}
+{
+   dl-open
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   fun:_dl_open
+}
+{
+   dl-close
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   fun:_dl_close*
+}
 {
    sdl-init
    Memcheck:Leak

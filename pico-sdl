@@ -4,10 +4,9 @@
 
 PICO=$(dirname $(realpath "$0"))    # /x/y/
 
-VALGRIND="valgrind --leak-check=full --show-leak-kinds=all \
-            --errors-for-leak-kinds=all \
-            --track-origins=yes --suppressions=$PICO/valgrind.supp \
-            --error-exitcode=1"
+VALGRIND="valgrind -q --leak-check=full --show-leak-kinds=all \
+            --errors-for-leak-kinds=all --track-origins=yes \
+            --suppressions=$PICO/valgrind.supp --error-exitcode=1"
 
 DIR=$(dirname -- "$1")              # /a/b/c/
 EXE=$(basename -- "$1")             # d.c
