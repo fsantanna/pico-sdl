@@ -9,33 +9,33 @@ int main (void) {
     // pico_get_image_pct: NULL ref (world 100x100, image 48x48)
     {
         {
-            Pico_Pct p = { 0, 0.24 };
+            Pico_Pct_WH p = { 0, 0.24 };
             pico_get_image_pct("open.png", &p, NULL);
-            assert(p.x == 0.24f && p.y == 0.24f);
+            assert(p.w==0.24f && p.h==0.24f);
         }
         {
-            Pico_Pct p = { 0.48, 0 };
+            Pico_Pct_WH p = { 0.48, 0 };
             pico_get_image_pct("open.png", &p, NULL);
-            assert(p.x == 0.48f && p.y == 0.48f);
+            assert(p.w==0.48f && p.h==0.48f);
         }
         {
-            Pico_Pct p = { 0, 0 };
+            Pico_Pct_WH p = { 0, 0 };
             pico_get_image_pct("open.png", &p, NULL);
-            assert(p.x == 0.48f && p.y == 0.48f);
+            assert(p.w==0.48f && p.h==0.48f);
         }
     }
     // pico_get_image_pct: with ref (ref 50x50, image 48x48 -> 0.96x0.96)
     {
         Pico_Rect_Pct ref = { 0, 0, 0.5, 0.5, PICO_ANCHOR_NW, NULL };
         {
-            Pico_Pct p = { 0, 0 };
+            Pico_Pct_WH p = { 0, 0 };
             pico_get_image_pct("open.png", &p, &ref);
-            assert(p.x == 0.96f && p.y == 0.96f);
+            assert(p.w==0.96f && p.h==0.96f);
         }
         {
-            Pico_Pct p = { 0, 0.48 };
+            Pico_Pct_WH p = { 0, 0.48 };
             pico_get_image_pct("open.png", &p, &ref);
-            assert(p.x == 0.48f && p.y == 0.48f);
+            assert(p.w==0.48f && p.h==0.48f);
         }
     }
 

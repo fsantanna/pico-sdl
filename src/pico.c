@@ -39,15 +39,15 @@ static SDL_Texture*  TEX = NULL;
 static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 static int TGT = 1;         // 0:phy, 1:log
 
-const Pico_Pct PICO_ANCHOR_C  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE };
-const Pico_Pct PICO_ANCHOR_NW = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_TOP    };
-const Pico_Pct PICO_ANCHOR_N  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_TOP    };
-const Pico_Pct PICO_ANCHOR_NE = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_TOP    };
-const Pico_Pct PICO_ANCHOR_E  = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_MIDDLE };
-const Pico_Pct PICO_ANCHOR_SE = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_BOTTOM };
-const Pico_Pct PICO_ANCHOR_S  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_BOTTOM };
-const Pico_Pct PICO_ANCHOR_SW = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_BOTTOM };
-const Pico_Pct PICO_ANCHOR_W  = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_MIDDLE };
+const Pico_Pct_XY PICO_ANCHOR_C  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE };
+const Pico_Pct_XY PICO_ANCHOR_NW = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_TOP    };
+const Pico_Pct_XY PICO_ANCHOR_N  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_TOP    };
+const Pico_Pct_XY PICO_ANCHOR_NE = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_TOP    };
+const Pico_Pct_XY PICO_ANCHOR_E  = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_MIDDLE };
+const Pico_Pct_XY PICO_ANCHOR_SE = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_BOTTOM };
+const Pico_Pct_XY PICO_ANCHOR_S  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_BOTTOM };
+const Pico_Pct_XY PICO_ANCHOR_SW = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_BOTTOM };
+const Pico_Pct_XY PICO_ANCHOR_W  = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_MIDDLE };
 
 static ttl_hash* _pico_hash;
 
@@ -96,7 +96,7 @@ static int _round (float v) {
     return (v < 0.0) ? (v - 0.5) : (v + 0.5);
 }
 
-static SDL_FRect _cv_rect_pct_raw_pre (SDL_FRect dn, Pico_Pct a, SDL_FRect up) {
+static SDL_FRect _cv_rect_pct_raw_pre (SDL_FRect dn, Pico_Pct_XY a, SDL_FRect up) {
     int w = dn.w * up.w;
     int h = dn.h * up.h;
     return (SDL_FRect) {
@@ -1035,8 +1035,8 @@ void pico_get_image_raw (const char* path, Pico_Dim* dim) {
     *dim = tex_dim_raw(tex, *dim);
 }
 
-static void _tex_dim_pct (SDL_Texture* tex, Pico_Pct* pct, Pico_Rect_Pct* ref) {
-    Pico_Rect_Pct r = { 0, 0, pct->x, pct->y, PICO_ANCHOR_NW, ref };
+static void _tex_dim_pct (SDL_Texture* tex, Pico_Pct_WH* pct, Pico_Rect_Pct* ref) {
+    Pico_Rect_Pct r = { 0, 0, pct->w, pct->h, PICO_ANCHOR_NW, ref };
     Pico_Rect raw = tex_rect_pct(tex, &r);
     Pico_Rect base;
     if (ref == NULL) {
@@ -1044,11 +1044,11 @@ static void _tex_dim_pct (SDL_Texture* tex, Pico_Pct* pct, Pico_Rect_Pct* ref) {
     } else {
         base = pico_cv_rect_pct_raw(ref);
     }
-    pct->x = raw.w / (float)base.w;
-    pct->y = raw.h / (float)base.h;
+    pct->w = raw.w / (float)base.w;
+    pct->h = raw.h / (float)base.h;
 }
 
-void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rect_Pct* ref) {
+void pico_get_image_pct (const char* path, Pico_Pct_WH* pct, Pico_Rect_Pct* ref) {
     SDL_Texture* tex = _image(path);
     _tex_dim_pct(tex, pct, ref);
 }
@@ -1083,9 +1083,9 @@ void pico_get_text_raw (const char* text, Pico_Dim* dim) {
     SDL_DestroyTexture(tex);
 }
 
-void pico_get_text_pct (const char* text, Pico_Pct* pct, Pico_Rect_Pct* ref) {
+void pico_get_text_pct (const char* text, Pico_Pct_WH* pct, Pico_Rect_Pct* ref) {
     if (text[0] == '\0') return;
-    Pico_Rect_Pct r = { 0, 0, pct->x, pct->y, PICO_ANCHOR_NW, ref };
+    Pico_Rect_Pct r = { 0, 0, pct->w, pct->h, PICO_ANCHOR_NW, ref };
     Pico_Rect raw = pico_cv_rect_pct_raw(&r);
     SDL_Texture* tex = _text_tex(NULL, raw.h, text, (Pico_Color){0,0,0});
     _tex_dim_pct(tex, pct, ref);
@@ -1268,9 +1268,9 @@ void pico_set_view_raw (
 void pico_set_view_pct (
     int            grid,
     int            fs,
-    Pico_Pct*      phy,
+    Pico_Pct_WH*   phy,
     void*          dst_todo,
-    Pico_Pct*      log,
+    Pico_Pct_WH*   log,
     Pico_Rect_Pct* src,
     Pico_Rect_Pct* clip
 ) {
@@ -1280,11 +1280,11 @@ void pico_set_view_pct (
     Pico_Rect xclip, *xxclip = NULL;
 
     if (phy != NULL) {
-        xphy = (Pico_Dim) { phy->x*S.view.phy.w, phy->y*S.view.phy.h };
+        xphy = (Pico_Dim) { phy->w*S.view.phy.w, phy->h*S.view.phy.h };
         xxphy = &xphy;
     }
     if (log != NULL) {
-        xlog = (Pico_Dim) { log->x*S.view.log.w, log->y*S.view.log.h };
+        xlog = (Pico_Dim) { log->w*S.view.log.w, log->h*S.view.log.h };
         xxlog = &xlog;
     }
     if (src != NULL) {
