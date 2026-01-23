@@ -16,7 +16,6 @@ test:
 
 tests:
 	@echo "Running tests..."
-
 	$(EXE) tst/init.c
 	$(EXE) tst/cv.c
 	$(EXE) tst/vs.c
@@ -46,7 +45,6 @@ tests:
 	$(EXE) tst/size_raw.c
 	$(EXE) tst/size_pct.c
 	$(EXE) tst/view_raw.c
-
 	@echo ""
 	@echo "All tests passed!"
 
