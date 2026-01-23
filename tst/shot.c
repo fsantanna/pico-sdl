@@ -43,7 +43,7 @@ int main (void) {
         pico_set_color_draw((Pico_Color){0, 0, 200});
         pico_output_draw_rect_raw((Pico_Rect){50, 50, 10, 10});
         const char* f = pico_output_screenshot_pct(NULL,
-            &(Pico_Rect_Pct){0, 0, 0.5, 0.3, {0, 0}, NULL});
+            &(Pico_Rect_Pct){0, 0, 0.5, 0.3, {.x=0,.y=0}, NULL});
         assert(f != NULL);
         check(f, "asr/shot-04.png");
         assert(remove(f) == 0);

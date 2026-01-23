@@ -89,7 +89,7 @@ static int _round (float v) {
     return (v < 0.0) ? (v - 0.5) : (v + 0.5);
 }
 
-static SDL_FRect _cv_rect_pct_raw_pre (SDL_FRect dn, Pico_Pct_XY a, SDL_FRect up) {
+static SDL_FRect _cv_rect_pct_raw_pre (SDL_FRect dn, Pico_Pct a, SDL_FRect up) {
     int w = dn.w * up.w;
     int h = dn.h * up.h;
     return (SDL_FRect) {
@@ -1033,7 +1033,7 @@ void pico_get_image_raw (const char* path, Pico_Dim* dim) {
     *dim = tex_dim_raw(tex, *dim);
 }
 
-static void _tex_dim_pct (SDL_Texture* tex, Pico_Pct_WH* pct, Pico_Rect_Pct* ref) {
+static void _tex_dim_pct (SDL_Texture* tex, Pico_Pct* pct, Pico_Rect_Pct* ref) {
     Pico_Rect_Pct r = { 0, 0, pct->w, pct->h, PICO_ANCHOR_NW, ref };
     Pico_Rect raw = tex_rect_pct(tex, &r);
     Pico_Rect base;
@@ -1046,7 +1046,7 @@ static void _tex_dim_pct (SDL_Texture* tex, Pico_Pct_WH* pct, Pico_Rect_Pct* ref
     pct->h = raw.h / (float)base.h;
 }
 
-void pico_get_image_pct (const char* path, Pico_Pct_WH* pct, Pico_Rect_Pct* ref) {
+void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rect_Pct* ref) {
     SDL_Texture* tex = _image(path);
     _tex_dim_pct(tex, pct, ref);
 }
@@ -1081,7 +1081,7 @@ void pico_get_text_raw (const char* text, Pico_Dim* dim) {
     SDL_DestroyTexture(tex);
 }
 
-void pico_get_text_pct (const char* text, Pico_Pct_WH* pct, Pico_Rect_Pct* ref) {
+void pico_get_text_pct (const char* text, Pico_Pct* pct, Pico_Rect_Pct* ref) {
     if (text[0] == '\0') return;
     Pico_Rect_Pct r = { 0, 0, pct->w, pct->h, PICO_ANCHOR_NW, ref };
     Pico_Rect raw = pico_cv_rect_pct_raw(&r);
@@ -1262,9 +1262,9 @@ void pico_set_view_raw (
 void pico_set_view_pct (
     int            grid,
     int            fs,
-    Pico_Pct_WH*   phy,
+    Pico_Pct*      phy,
     void*          dst_todo,
-    Pico_Pct_WH*   log,
+    Pico_Pct*      log,
     Pico_Rect_Pct* src,
     Pico_Rect_Pct* clip
 ) {

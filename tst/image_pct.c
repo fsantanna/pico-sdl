@@ -9,17 +9,17 @@ int main (void) {
     // pico_get_image_pct: NULL ref (world 100x100, image 48x48)
     {
         {
-            Pico_Pct_WH p = { 0, 0.24 };
+            Pico_Pct p = { .w=0, .h=0.24 };
             pico_get_image_pct("open.png", &p, NULL);
             assert(p.w==0.24f && p.h==0.24f);
         }
         {
-            Pico_Pct_WH p = { 0.48, 0 };
+            Pico_Pct p = { .w=0.48, .h=0 };
             pico_get_image_pct("open.png", &p, NULL);
             assert(p.w==0.48f && p.h==0.48f);
         }
         {
-            Pico_Pct_WH p = { 0, 0 };
+            Pico_Pct p = { .w=0, .h=0 };
             pico_get_image_pct("open.png", &p, NULL);
             assert(p.w==0.48f && p.h==0.48f);
         }
@@ -28,12 +28,12 @@ int main (void) {
     {
         Pico_Rect_Pct ref = { 0, 0, 0.5, 0.5, PICO_ANCHOR_NW, NULL };
         {
-            Pico_Pct_WH p = { 0, 0 };
+            Pico_Pct p = { .w=0, .h=0 };
             pico_get_image_pct("open.png", &p, &ref);
             assert(p.w==0.96f && p.h==0.96f);
         }
         {
-            Pico_Pct_WH p = { 0, 0.48 };
+            Pico_Pct p = { .w=0, .h=0.48 };
             pico_get_image_pct("open.png", &p, &ref);
             assert(p.w==0.48f && p.h==0.48f);
         }

@@ -5,10 +5,23 @@
 extern "C" {
 #endif
 
-typedef struct {
-    float x;
-    float y;
-} Pico_Pct_XY;
+// MODES:
+// '!': raw
+// '%': pct
+// '#': tile (TODO)
+// '*': mix
+// '?': unk/err
+
+typedef union {
+    struct {
+        float x;
+        float y;
+    };
+    struct {
+        float w;
+        float h;
+    };
+} Pico_Pct;
 
 #include <stdio.h>
 #include <assert.h>
@@ -42,21 +55,16 @@ typedef struct {
     int h;
 } Pico_Dim;
 
-typedef struct {
-    float w;
-    float h;
-} Pico_Pct_WH;
-
 typedef struct Pico_Rect_Pct {
     float x, y;
     float w, h;
-    Pico_Pct_XY anchor;
+    Pico_Pct anchor;
     struct Pico_Rect_Pct* up;
 } Pico_Rect_Pct;
 
 typedef struct {
     float x, y;
-    Pico_Pct_XY anchor;
+    Pico_Pct anchor;
     struct Pico_Rect_Pct* up;
 } Pico_Pos_Pct;
 
@@ -316,7 +324,7 @@ void pico_get_image_raw (const char* path, Pico_Dim* dim);
 /// @param path image filepath
 /// @param pct dimensions as percentages (x=w, y=h; 0 means auto-calculate)
 /// @param ref reference rect for percentages (NULL uses world)
-void pico_get_image_pct (const char* path, Pico_Pct_WH* pct, Pico_Rect_Pct* ref);
+void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rect_Pct* ref);
 
 /// @brief Gets the state of a key.
 /// @param key key constant
@@ -356,7 +364,7 @@ void pico_get_text_raw (const char* text, Pico_Dim* dim);
 /// @param text text to measure
 /// @param pct dimensions as percentages (y=h for font size, x=w to fill)
 /// @param ref reference rect for percentages (NULL uses world)
-void pico_get_text_pct (const char* text, Pico_Pct_WH* pct, Pico_Rect_Pct* ref);
+void pico_get_text_pct (const char* text, Pico_Pct* pct, Pico_Rect_Pct* ref);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
@@ -456,9 +464,9 @@ void pico_set_view_raw (
 void pico_set_view_pct (
     int            grid,
     int            window_fullscreen,
-    Pico_Pct_WH*   window,
+    Pico_Pct*      window,
     void*          window_target_todo,
-    Pico_Pct_WH*   world,
+    Pico_Pct*      world,
     Pico_Rect_Pct* world_source,
     Pico_Rect_Pct* world_clip
 );
