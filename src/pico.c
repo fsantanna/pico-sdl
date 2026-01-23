@@ -60,7 +60,6 @@ static struct {
     } color;
     Pico_Rect crop;
     int expert;
-    Pico_Flip flip;
     const char* font;
     PICO_STYLE style;
     struct {
@@ -78,7 +77,6 @@ static struct {
     { {0x00,0x00,0x00}, {0xFF,0xFF,0xFF} },
     {},
     0,
-    {0, 0},
     NULL,
     PICO_STYLE_FILL,
     {
@@ -972,10 +970,6 @@ int pico_get_expert (void) {
     return S.expert;
 }
 
-Pico_Flip pico_get_flip (void) {
-    return S.flip;
-}
-
 const char* pico_get_font (void) {
     return S.font;
 }
@@ -1153,10 +1147,6 @@ void pico_set_crop (Pico_Rect crop) {
 
 void pico_set_expert (int on) {
     S.expert = on;
-}
-
-void pico_set_flip (Pico_Flip flip) {
-    S.flip = flip;
 }
 
 void pico_set_font (const char* path) {

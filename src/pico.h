@@ -29,7 +29,6 @@ extern "C" {
 
 typedef SDL_Point Pico_Pos;
 typedef SDL_Rect  Pico_Rect;
-typedef SDL_Point Pico_Flip;
 
 typedef enum {
     PICO_STYLE_FILL, PICO_STYLE_STROKE
@@ -355,9 +354,6 @@ Pico_Rect pico_get_crop (void);
 /// @return 1 if enabled, or 0 otherwise
 int pico_get_expert (void);
 
-/// @brief Gets the flipping state of objects.
-Pico_Flip pico_get_flip (void);
-
 /// @brief Gets the font used to draw texts.
 const char* pico_get_font (void);
 
@@ -398,9 +394,6 @@ int pico_get_mouse_raw (Pico_Pos* pos, int button);
 /// @return state of specified button
 /// @sa pico_get_mouse_raw
 int pico_get_mouse_pct (Pico_Pos_Pct* pos, int button);
-
-/// @brief Gets the rotation angle of objects (in degrees).
-int pico_get_rotate (void);
 
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
@@ -472,15 +465,9 @@ void pico_set_crop (Pico_Rect crop);
 /// @param on 1 to enable it, or 0 to disable it
 void pico_set_expert (int on);
 
-/// @brief Sets the flipping state of objects.
-void pico_set_flip (Pico_Flip flip);
-
 /// @brief Changes the font used to draw texts.
 /// @param path path to font path
 void pico_set_font (const char* path);
-
-/// @brief Sets the rotation angle of objects (in degrees).
-void pico_set_rotate (int angle);
 
 /// @brief Toggles the aplication window visibility.
 /// @param on 1 to show, or 0 to hide
