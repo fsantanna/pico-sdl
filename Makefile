@@ -19,7 +19,8 @@ tests:
 	$(EXE) tst/init.c
 	$(EXE) tst/cv.c
 	$(EXE) tst/vs.c
-	$(EXE) tst/anchor.c
+	$(EXE) tst/anchor_raw.c
+	$(EXE) tst/anchor_pct.c
 	$(EXE) tst/blend_raw.c
 	$(EXE) tst/blend_pct.c
 	$(EXE) tst/buffer_raw.c
