@@ -102,7 +102,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static int _pico_cmp_files (const char* path1, const char* path2) {
+int _pico_cmp_files (const char* path1, const char* path2) {
     int ok = 1;
 
     FILE* f1 = fopen(path1, "rb");

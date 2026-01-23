@@ -184,12 +184,7 @@ void pico_output_draw_line_pct (Pico_Pos* p1, Pico_Pos* p2);
 /// @brief Draws a single pixel using absolute coordinates.
 /// @param pos drawing position
 /// @sa pico_output_draw_pixel_pct
-void pico_output_draw_pixel_raw (Pico_Pos pos);
-
-/// @brief Draws a single pixel using percentage-based coordinates.
-/// @param pos drawing position
-/// @sa pico_output_draw_pixel_raw
-void pico_output_draw_pixel_pct (Pico_Pos* pos);
+void pico_output_draw_pixel (Pico_Pos* pos);
 
 /// @brief Draws a batch of pixels using absolute coordinates.
 /// @param n number of coordinates
@@ -206,12 +201,7 @@ void pico_output_draw_pixels_pct (int n, const Pico_Pos* ps);
 /// @brief Draws a rectangle using absolute coordinates.
 /// @param rect rectangle to draw
 /// @sa pico_output_draw_rect_pct
-void pico_output_draw_rect_raw (Pico_Rect rect);
-
-/// @brief Draws a rectangle using percentage-based coordinates.
-/// @param rect rectangle to draw
-/// @sa pico_output_draw_rect_raw
-void pico_output_draw_rect_pct (const Pico_Rect* rect);
+void pico_output_draw_rect (Pico_Rect* rect);
 
 /// @brief Draws a triangle using absolute coordinates.
 /// @param p1 first vertex position
