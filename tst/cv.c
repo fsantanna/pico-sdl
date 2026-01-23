@@ -116,8 +116,8 @@ int main (void) {
         printf("rect: (%d, %d, %d, %d)\n", raw.x, raw.y, raw.w, raw.h);
         assert(raw.x==50 && raw.y==50 && raw.w==30 && raw.h==30);
     }
-#endif
 
     pico_init(0);
+#endif
     return 0;
 }
