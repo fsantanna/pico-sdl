@@ -167,9 +167,11 @@ static SDL_FPoint _raw_pos (const Pico_Pos* pos, Pico_Rect_Raw* ref) {
     SDL_FPoint ret;
     switch (pos->mode) {
         case '!':
-            assert(pos->anchor.x==PICO_ANCHOR_LEFT && pos->anchor.y==PICO_ANCHOR_TOP && "TODO");
-            assert(pos->up==NULL && "TODO");
-            ret = (SDL_FPoint) { pos->x, pos->y };
+            assert(ref==NULL && pos->up==NULL && "TODO");
+            ret = (SDL_FPoint) {
+                roundf(pos->x - pos->anchor.x),
+                roundf(pos->y - pos->anchor.y),
+            };
             break;
         case '%': {
             SDL_FRect r0;
@@ -214,13 +216,17 @@ static SDL_FDim _raw_dim (const Pico_Dim* dim) {
 }
 
 static SDL_FRect _raw_rect (const Pico_Rect* rect, Pico_Rect_Raw* ref) {
-    // TODO: verify if ref is used in '!'
     SDL_FRect ret;
     switch (rect->mode) {
         case '!':
-            assert(rect->anchor.x==PICO_ANCHOR_LEFT && rect->anchor.y==PICO_ANCHOR_TOP && "TODO");
-            assert(rect->up==NULL && "TODO");
-            ret = (SDL_FRect) { rect->x, rect->y, rect->w, rect->h };
+            // TODO: verify if ref is used in '!'
+            assert(ref==NULL && rect->up==NULL && "TODO");
+            ret = (SDL_FRect) {
+                roundf(rect->x - rect->anchor.x*rect->w),
+                roundf(rect->y - rect->anchor.y*rect->h),
+                rect->w,
+                rect->h
+            };
             break;
         case '%': {
             SDL_FRect r0;
