@@ -149,7 +149,7 @@ void _pico_check (const char* msg) {
     // Always write to out/
     char fmt_out[256];
     sprintf(fmt_out, "out/%s.png", msg);
-    pico_output_screenshot(fmt_out);
+    pico_output_screenshot(fmt_out, NULL);
     printf("Testing: %s\n", msg);
 
     #ifdef PICO_CHECK_INT

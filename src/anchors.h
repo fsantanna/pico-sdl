@@ -8,6 +8,7 @@
 #define PICO_ANCHOR_MIDDLE 0.5
 #define PICO_ANCHOR_BOTTOM 1
 
+extern const Pico_Pct PICO_ANCHOR_X;
 extern const Pico_Pct PICO_ANCHOR_C;
 extern const Pico_Pct PICO_ANCHOR_NW;
 extern const Pico_Pct PICO_ANCHOR_N;
@@ -22,6 +23,7 @@ extern const Pico_Pct PICO_ANCHOR_W;
 
 #ifdef PICO_ANCHORS_C
 
+const Pico_Pct PICO_ANCHOR_X  = { .x=-1, .y=-1 };
 const Pico_Pct PICO_ANCHOR_C  = { .x=PICO_ANCHOR_CENTER, .y=PICO_ANCHOR_MIDDLE };
 const Pico_Pct PICO_ANCHOR_NW = { .x=PICO_ANCHOR_LEFT,   .y=PICO_ANCHOR_TOP    };
 const Pico_Pct PICO_ANCHOR_N  = { .x=PICO_ANCHOR_CENTER, .y=PICO_ANCHOR_TOP    };

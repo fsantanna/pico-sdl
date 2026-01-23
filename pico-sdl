@@ -32,7 +32,7 @@ gcc -Wall -Werror -g -o "$DIR/$EXE" "$1" \
     "$PICO/src/pico.c"           \
     -I "$PICO/src"               \
     $DEFINES                     \
-    -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx \
+    -lm -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx \
         || exit 1
 
 cd $DIR/
