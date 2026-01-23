@@ -464,20 +464,19 @@ void pico_set_view (
 /// @sa pico_cv_rect_pct_raw_ext
 Pico_Rel_Rect pico_cv_rect_pct_raw (const Pico_Rel_Rect* r);
 
-/// @brief Converts a percentage-based rectangle to absolute coordinates relative to a reference rectangle.
-/// @param r percentage-based rectangle (0.0-1.0)
-/// @param ref reference rectangle to use as basis
-/// @return absolute rectangle in logical pixels
-/// @sa pico_cv_rect_pct_raw
-Pico_Rel_Rect pico_cv_rect_pct_raw_ext (const Pico_Rel_Rect* r, Pico_Rel_Rect ref);
-
 /// @brief Converts a percentage-based position to absolute coordinates relative to a reference rectangle.
 /// @param p percentage-based position (0.0-1.0)
 /// @param ref reference rectangle to use as basis
 /// @return absolute position in logical pixels
 /// @sa pico_cv_pos_pct_raw
-Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* p, Pico_Abs_Rect* ref);
+Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref);
 
+/// @brief Converts a percentage-based rectangle to absolute coordinates relative to a reference rectangle.
+/// @param r percentage-based rectangle (0.0-1.0)
+/// @param ref reference rectangle to use as basis
+/// @return absolute rectangle in logical pixels
+/// @sa pico_cv_rect_pct_raw
+Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref);
 
 /// @brief Asserts condition and shows SDL error on failure.
 /// @param x condition to assert

@@ -319,9 +319,14 @@ Pico_Abs_Rect* _crop (void) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* p, Pico_Abs_Rect* ref) {
-    SDL_FPoint pf = _sdl_pos(p, ref);
+Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref) {
+    SDL_FPoint pf = _sdl_pos(pos, ref);
     return (Pico_Abs_Pos) { pf.x, pf.y };
+}
+
+Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref) {
+    SDL_FRect rf = _sdl_rect(rect, ref);
+    return (Pico_Abs_Rect) { rf.x, rf.y, rf.w, rf.h };
 }
 
 int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect) {

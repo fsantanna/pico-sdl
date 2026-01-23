@@ -28,75 +28,74 @@ int main (void) {
         printf("pos: (%d, %d)\n", abs.x, abs.y);
         assert(abs.x==49 && abs.y==49);
     }
-#if 0
 
     // EXT - RECT - PCT->RAW
     {
         puts("ext - rect - pct->abs - C");
-        Pico_Abs_Rect  ref  = {20, 20, 60, 60};
-        Pico_Rel_Rect pct = {0.25, 0.25, 0.5, 0.25, PICO_ANCHOR_C, NULL};
-        Pico_Abs_Rect  abs = pico_cv_rect_pct_abs_ext(&pct, ref);
+        Pico_Abs_Rect ref = {20, 20, 60, 60};
+        Pico_Rel_Rect pct = { '%', {0.25, 0.25, 0.5, 0.25}, PICO_ANCHOR_C, NULL};
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&pct, &ref);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
         assert(abs.x==20 && abs.y==28 && abs.w==30 && abs.h==15);
     }
     {
         puts("ext - rect - pct->abs - NE");
-        Pico_Abs_Rect  ref  = {20, 20, 60, 60};
-        Pico_Rel_Rect pct = {0.5, 0.5, 0.5, 0.5, PICO_ANCHOR_NE, NULL};
-        Pico_Abs_Rect  abs = pico_cv_rect_pct_abs_ext(&pct, ref);
+        Pico_Abs_Rect ref  = {20, 20, 60, 60};
+        Pico_Rel_Rect pct = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_NE, NULL};
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&pct, &ref);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
         assert(abs.x==20 && abs.y==50 && abs.w==30 && abs.h==30);
     }
     {
         puts("ext - rect - pct->abs - SW");
-        Pico_Abs_Rect  ref  = {20, 20, 60, 60};
-        Pico_Rel_Rect pct = {0.5, 0.5, 0.5, 0.5, PICO_ANCHOR_SW, NULL};
-        Pico_Abs_Rect  abs = pico_cv_rect_pct_abs_ext(&pct, ref);
+        Pico_Abs_Rect ref = {20, 20, 60, 60};
+        Pico_Rel_Rect pct = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_SW, NULL};
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&pct, &ref);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
         assert(abs.x==50 && abs.y==20 && abs.w==30 && abs.h==30);
     }
 
     pico_init(1);
-    Pico_Rel_Dim log = {100, 100};
-    pico_set_view_abs(-1, -1, NULL, NULL, &log, NULL, NULL);
+    Pico_Rel_Dim log = { '!', {100, 100}, NULL };
+    pico_set_view(-1, -1, NULL, NULL, &log, NULL, NULL);
 
     // LOG - POS - PCT->RAW
     {
         puts("log - pos - pct->abs - C");
-        Pico_Rel_Pos pct = {0.4, 0.7, PICO_ANCHOR_C, NULL};
-        Pico_Rel_Pos     abs = pico_cv_pos_pct_abs(&pct);
+        Pico_Rel_Pos pct = { '%', {0.4, 0.7}, PICO_ANCHOR_C, NULL };
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pct, NULL);
         printf("pos: (%d, %d)\n", abs.x, abs.y);
         assert(abs.x==40 && abs.y==70);
     }
     {
         puts("log - pos - pct->abs - NW");
-        Pico_Rel_Pos pct = {0.55, 0.45, PICO_ANCHOR_NW, NULL};
-        Pico_Rel_Pos     abs = pico_cv_pos_pct_abs(&pct);
+        Pico_Rel_Pos pct = { '%', {0.55, 0.45}, PICO_ANCHOR_NW, NULL };
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pct, NULL);
         printf("pos: (%d, %d)\n", abs.x, abs.y);
         assert(abs.x==55 && abs.y==45);
     }
     {
         puts("log - pos - pct->abs - SE");
-        Pico_Rel_Pos pct = {0.5, 0.5, PICO_ANCHOR_SE, NULL};
-        Pico_Rel_Pos     abs = pico_cv_pos_pct_abs(&pct);
+        Pico_Rel_Pos pct = { '%', {0.5, 0.5}, PICO_ANCHOR_SE, NULL };
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pct, NULL);
         printf("pos: (%d, %d)\n", abs.x, abs.y);
         assert(abs.x==49 && abs.y==49);
     }
     {
         puts("log - pos - pct->abs - corners");
-        Pico_Rel_Pos p1 = {0.0, 0.0, PICO_ANCHOR_NW, NULL};
-        Pico_Rel_Pos p2 = {1.0, 1.0, PICO_ANCHOR_NW, NULL};
-        Pico_Rel_Pos     r1 = pico_cv_pos_pct_abs(&p1);
-        Pico_Rel_Pos     r2 = pico_cv_pos_pct_abs(&p2);
+        Pico_Rel_Pos p1 = { '%', {0.0, 0.0}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Pos p2 = { '%', {1.0, 1.0}, PICO_ANCHOR_NW, NULL };
+        Pico_Abs_Pos r1 = pico_cv_pos_rel_abs(&p1, NULL);
+        Pico_Abs_Pos r2 = pico_cv_pos_rel_abs(&p2, NULL);
         assert(r1.x==0   && r1.y==0);
         assert(r2.x==100 && r2.y==100);
     }
     {
         puts("log - pos - pct->abs - corners");
-        Pico_Rel_Pos p1 = {0.0, 0.0, PICO_ANCHOR_C, NULL};
-        Pico_Rel_Pos p2 = {1.0, 1.0, PICO_ANCHOR_C, NULL};
-        Pico_Rel_Pos     r1 = pico_cv_pos_pct_abs(&p1);
-        Pico_Rel_Pos     r2 = pico_cv_pos_pct_abs(&p2);
+        Pico_Rel_Pos p1 = { '%', {0.0, 0.0}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Pos p2 = { '%', {1.0, 1.0}, PICO_ANCHOR_C, NULL };
+        Pico_Abs_Pos r1 = pico_cv_pos_rel_abs(&p1, NULL);
+        Pico_Abs_Pos r2 = pico_cv_pos_rel_abs(&p2, NULL);
         assert(r1.x==-1  && r1.y==-1);
         assert(r2.x==100 && r2.y==100);
     }
@@ -104,20 +103,19 @@ int main (void) {
     // LOG - RECT - PCT->RAW
     {
         puts("log - rect - pct->abs - C");
-        Pico_Rel_Rect pct = {0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL};
-        Pico_Abs_Rect  abs = pico_cv_rect_pct_abs(&pct);
+        Pico_Rel_Rect pct = { '%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_C, NULL };
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&pct, NULL);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
         assert(abs.x==30 && abs.y==30 && abs.w==40 && abs.h==40);
     }
     {
         puts("log - rect - pct->abs - NW");
-        Pico_Rel_Rect pct = {0.5, 0.5, 0.3, 0.3, PICO_ANCHOR_NW, NULL};
-        Pico_Abs_Rect  abs = pico_cv_rect_pct_abs(&pct);
+        Pico_Rel_Rect pct = { '%', {0.5, 0.5, 0.3, 0.3}, PICO_ANCHOR_NW, NULL };
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&pct, NULL);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
         assert(abs.x==50 && abs.y==50 && abs.w==30 && abs.h==30);
     }
 
     pico_init(0);
-#endif
     return 0;
 }
