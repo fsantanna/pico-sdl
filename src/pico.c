@@ -177,7 +177,8 @@ static SDL_FDim _raw_dim (const Pico_Dim* dim) {
     return ret;
 }
 
-static SDL_FRect _raw_rect (const Pico_Rect* rect) {
+static SDL_FRect _raw_rect (const Pico_Rect* rect, Pico_Rect_Raw* ref) {
+    // TODO: verify if ref is used in '!'
     SDL_FRect ret;
     switch (rect->mode) {
         case '!':
@@ -185,9 +186,43 @@ static SDL_FRect _raw_rect (const Pico_Rect* rect) {
             assert(rect->up==NULL && "TODO");
             ret = (SDL_FRect) { rect->x, rect->y, rect->w, rect->h };
             break;
-        case '%':
-            assert(0 && "TODO");
+        case '%': {
+            SDL_FRect f2 (SDL_FRect dn, Pico_Pct a, SDL_FRect up) {
+                int w = dn.w * up.w;
+                int h = dn.h * up.h;
+                return (SDL_FRect) {
+                    up.x + dn.x*up.w - a.x*w,
+                    up.y + dn.y*up.h - a.y*h,
+                    w, h,
+                };
+            }
+            SDL_FRect f1 (const Pico_Rect* r, SDL_FRect ref) {
+                if (r == NULL) {
+                    return ref;
+                } else {
+                    SDL_FRect raw = { r->x, r->y, r->w, r->h };
+                    SDL_FRect tmp = f1(r->up, ref);
+                    return f2(raw, r->anchor, tmp);
+                }
+            }
+            {
+                SDL_FRect r0;
+                if (ref == NULL) {
+                    r0 = (SDL_FRect) {
+                        0, 0,
+                        (TGT == 0) ? S.view.phy.w : S.view.log.w,
+                        (TGT == 0) ? S.view.phy.h : S.view.log.h,
+                    };
+                } else {
+                    r0 = (SDL_FRect) {
+                        ref->x, ref->y, ref->w, ref->h
+                    };
+                }
+                SDL_FRect r1 = f1(rect, r0);
+                ret = (SDL_FRect) { roundf(r1.x), roundf(r1.y), r1.w, r1.h };
+            }
             break;
+        }
         default:
             assert(0 && "invalid mode");
     }
@@ -263,26 +298,6 @@ Pico_Rect_Raw* _crop (void) {
 ///////////////////////////////////////////////////////////////////////////////
 
 #if TODO
-static SDL_FRect _cv_rect_pct_raw_pre (SDL_FRect dn, Pico_Pct a, SDL_FRect up) {
-    int w = dn.w * up.w;
-    int h = dn.h * up.h;
-    return (SDL_FRect) {
-        up.x + dn.x*up.w - a.x*w,
-        up.y + dn.y*up.h - a.y*h,
-        w, h,
-    };
-}
-
-static SDL_FRect _cv_rect_pct_raw_pre_rev (const Pico_Rect* pct, SDL_FRect ref) {
-    if (pct == NULL) {
-        return ref;
-    } else {
-        SDL_FRect raw = { pct->x, pct->y, pct->w, pct->h };
-        SDL_FRect tmp = _cv_rect_pct_raw_pre_rev(pct->up, ref);
-        return _cv_rect_pct_raw_pre(raw, pct->anchor, tmp);
-    }
-}
-
 Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos* p, Pico_Rect ref) {
     SDL_FRect fref = { ref.x, ref.y, ref.w, ref.h };
     SDL_FRect ret = _cv_rect_pct_raw_pre_rev(p->up, fref);
@@ -319,15 +334,15 @@ Pico_Rect pico_cv_rect_pct_raw (const Pico_Rect* r) {
 
 int pico_vs_pos_rect (Pico_Pos* pos, Pico_Rect* rect) {
     SDL_FPoint pf = _raw_pos(pos);
-    SDL_FRect  rf = _raw_rect(rect);
+    SDL_FRect  rf = _raw_rect(rect, NULL);
     SDL_Point  pi = _fi_pos(&pf);
     SDL_Rect   ri = _fi_rect(&rf);
     return SDL_PointInRect(&pi, &ri);
 }
 
 int pico_vs_rect_rect (Pico_Rect* r1, Pico_Rect* r2) {
-    SDL_FRect f1 = _raw_rect(r1);
-    SDL_FRect f2 = _raw_rect(r2);
+    SDL_FRect f1 = _raw_rect(r1, NULL);
+    SDL_FRect f2 = _raw_rect(r2, NULL);
     SDL_Rect  i1 = _fi_rect(&f1);
     SDL_Rect  i2 = _fi_rect(&f2);
     return SDL_HasIntersection(&i1, &i2);
@@ -629,7 +644,7 @@ void pico_output_draw_buffer (Pico_Dim_Raw dim, const Pico_Color_A buffer[], con
     pico_assert(tex != NULL);
     SDL_FreeSurface(sfc);
 
-    SDL_FRect rf = _raw_rect(rect);
+    SDL_FRect rf = _raw_rect(rect, NULL);
     Pico_Dim_Raw d = _tex_dim_raw(tex, (Pico_Dim_Raw){rf.w, rf.h});
     rf.w = d.w;
     rf.h = d.h;
@@ -641,7 +656,7 @@ void pico_output_draw_buffer (Pico_Dim_Raw dim, const Pico_Color_A buffer[], con
 }
 
 void pico_output_draw_image (const char* path, Pico_Rect* rect) {
-    SDL_FRect rf = _raw_rect(rect);
+    SDL_FRect rf = _raw_rect(rect, NULL);
     SDL_Texture* tex = _tex_image(path);
     Pico_Dim_Raw d = _tex_dim_raw(tex, (Pico_Dim_Raw){rf.w, rf.h});
     rf.w = d.w;
@@ -663,7 +678,7 @@ void pico_output_draw_line (Pico_Pos* p1, Pico_Pos* p2) {
 }
 
 void pico_output_draw_oval (Pico_Rect* rect) {
-    SDL_FRect f = _raw_rect(rect);
+    SDL_FRect f = _raw_rect(rect, NULL);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
@@ -703,7 +718,7 @@ void pico_output_draw_pixels (int n, const Pico_Pos* ps) {
 }
 
 void pico_output_draw_rect (Pico_Rect* rect) {
-    SDL_FRect f = _raw_rect(rect);
+    SDL_FRect f = _raw_rect(rect, NULL);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
@@ -746,7 +761,7 @@ void pico_output_draw_poly (int n, const Pico_Pos* ps) {
 void pico_output_draw_text (const char* text, Pico_Rect* rect) {
     if (text[0] == '\0') return;
 
-    SDL_FRect rf = _raw_rect(rect);
+    SDL_FRect rf = _raw_rect(rect, NULL);
     SDL_Texture* tex =  _tex_text(NULL, rf.h, text, S.color.draw);
     Pico_Dim_Raw d = _tex_dim_raw(tex, (Pico_Dim_Raw){rf.w, rf.h});
     rf.w = d.w;
@@ -946,7 +961,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rect* r) {
     if (r == NULL) {
         ri = (SDL_Rect){0, 0, S.view.phy.w, S.view.phy.h};
     } else {
-        SDL_FRect rf = _raw_rect(r);
+        SDL_FRect rf = _raw_rect(r, NULL);
         ri = _fi_rect(&rf);
     }
 
@@ -1216,17 +1231,17 @@ void pico_set_view (
     }
     { // dst, src, clip: only assign (no extra processing)
         if (dst != NULL) {
-            SDL_FRect rf = _raw_rect(dst);
+            SDL_FRect rf = _raw_rect(dst, NULL);
             SDL_Rect  ri = _fi_rect(&rf);
             S.view.dst = ri;
         }
         if (src != NULL) {
-            SDL_FRect rf = _raw_rect(src);
+            SDL_FRect rf = _raw_rect(src, NULL);
             SDL_Rect  ri = _fi_rect(&rf);
             S.view.src = ri;
         }
         if (clip != NULL) {
-            SDL_FRect rf = _raw_rect(clip);
+            SDL_FRect rf = _raw_rect(clip, NULL);
             SDL_Rect  ri = _fi_rect(&rf);
             S.view.clip = ri;
         }
