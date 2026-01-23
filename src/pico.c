@@ -161,9 +161,11 @@ static SDL_FPoint _raw_pos (const Pico_Pos* pos) {
 }
 
 static SDL_FDim _raw_dim (const Pico_Dim* dim) {
+    SDL_FDim ret;
     switch (dim->mode) {
         case '!':
-            assert(0 && "TODO");
+            assert(dim->up==NULL && "TODO");
+            ret = (SDL_FDim) { dim->w, dim->h };
             break;
         case '%':
             assert(0 && "TODO");
@@ -171,6 +173,7 @@ static SDL_FDim _raw_dim (const Pico_Dim* dim) {
         default:
             assert(0 && "invalid mode");
     }
+    return ret;
 }
 
 static SDL_FRect _raw_rect (const Pico_Rect* rect) {
@@ -390,9 +393,9 @@ void pico_init (int on) {
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
         {
-            Pico_Rect phy = { '!', {0, 0, S.view.phy.w, S.view.phy.h}, PICO_ANCHOR_X, NULL };
-            Pico_Rect log = { '!', {0, 0, S.view.log.w, S.view.log.h}, PICO_ANCHOR_X, NULL };
-            pico_set_view(-1, -1, NULL, &phy, NULL, &log, NULL);
+            Pico_Dim phy = { '!', {S.view.phy.w, S.view.phy.h}, NULL };
+            Pico_Dim log = { '!', {S.view.log.w, S.view.log.h}, NULL };
+            pico_set_view(-1, -1, &phy, NULL, &log, NULL, NULL);
         }
 
         pico_output_clear();
@@ -937,8 +940,13 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 }
 
 const char* pico_output_screenshot (const char* path, const Pico_Rect* r) {
-    SDL_FRect rf = _raw_rect(r);
-    SDL_Rect  ri = _fi_rect(&rf);
+    SDL_Rect ri;
+    if (r == NULL) {
+        ri = (SDL_Rect){0, 0, S.view.phy.w, S.view.phy.h};
+    } else {
+        SDL_FRect rf = _raw_rect(r);
+        ri = _fi_rect(&rf);
+    }
 
     const char* ret;
     if (path != NULL) {
@@ -1248,10 +1256,11 @@ void pico_set_view (
             goto _out2_;
         }
         assert(fs==-1 && !S.view.fs);
-        _phy_:
         SDL_FDim df = _raw_dim(phy);
         Pico_Dim_Raw di = _fi_dim(&df);
-        S.view.phy = di;
+        new = di;
+        _phy_:
+        S.view.phy = new;
         if (dst == NULL) {
             S.view.dst = (SDL_Rect) { 0, 0, new.w, new.h };
         }
