@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_title("Anchoring Raw...");
+    pico_set_title("Anchoring Abs...");
 
     Pico_Rel_Dim phy = { '!', {200,200}, NULL };
     Pico_Rel_Dim log = { '!', { 10, 10}, NULL };

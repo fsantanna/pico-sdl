@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_title("Blend");
-    pico_set_view_raw(
+    pico_set_view_abs(
         -1, -1,
         &(Pico_Dim){640, 360},
         NULL,
@@ -19,10 +19,10 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_pixel_raw((Pico_Pos){32,18});
+            pico_output_draw_pixel_abs((Pico_Pos){32,18});
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_raw-01");
+                _pico_check("blend_abs-01");
             }
         }
     }
@@ -34,10 +34,10 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_text_raw("SOME TEXT", r);
+            pico_output_draw_text_abs("SOME TEXT", r);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_raw-02");
+                _pico_check("blend_abs-02");
             }
         }
     }
@@ -48,10 +48,10 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_rect_raw(r);
+            pico_output_draw_rect_abs(r);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_raw-03");
+                _pico_check("blend_abs-03");
             }
         }
     }
@@ -62,10 +62,10 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_oval_raw(r);
+            pico_output_draw_oval_abs(r);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_raw-04");
+                _pico_check("blend_abs-04");
             }
         }
     }
@@ -79,10 +79,10 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_tri_raw(p1, p2, p3);
+            pico_output_draw_tri_abs(p1, p2, p3);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_raw-05");
+                _pico_check("blend_abs-05");
             }
         }
     }
@@ -94,10 +94,10 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_line_raw(p1, p2);
+            pico_output_draw_line_abs(p1, p2);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_raw-06");
+                _pico_check("blend_abs-06");
             }
         }
     }
@@ -113,10 +113,10 @@ int main (void) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_poly_raw(3, poly);
+            pico_output_draw_poly_abs(3, poly);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_raw-07");
+                _pico_check("blend_abs-07");
             }
         }
     }
