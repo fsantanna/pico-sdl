@@ -148,6 +148,7 @@ static SDL_FPoint _raw_pos (const Pico_Pos* pos) {
     SDL_FPoint ret;
     switch (pos->mode) {
         case '!':
+            assert(pos->anchor.x==PICO_ANCHOR_LEFT && pos->anchor.y==PICO_ANCHOR_TOP && "TODO");
             assert(pos->up==NULL && "TODO");
             ret = (SDL_FPoint) { pos->x, pos->y };
             break;
@@ -180,6 +181,7 @@ static SDL_FRect _raw_rect (const Pico_Rect* rect) {
     SDL_FRect ret;
     switch (rect->mode) {
         case '!':
+            assert(rect->anchor.x==PICO_ANCHOR_LEFT && rect->anchor.y==PICO_ANCHOR_TOP && "TODO");
             assert(rect->up==NULL && "TODO");
             ret = (SDL_FRect) { rect->x, rect->y, rect->w, rect->h };
             break;
