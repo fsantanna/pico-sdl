@@ -1,6 +1,45 @@
 #ifndef PICO_COLORS_H
 #define PICO_COLORS_H
 
+/// @brief RGB color without alpha channel.
+typedef struct {
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+} Pico_Color;
+
+/// @brief RGBA color with per-pixel alpha channel.
+typedef struct {
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+    Uint8 a;
+} Pico_Color_A;
+
+extern const Pico_Color PICO_COLOR_BLACK;
+extern const Pico_Color PICO_COLOR_WHITE;
+extern const Pico_Color PICO_COLOR_GRAY;
+extern const Pico_Color PICO_COLOR_SILVER;
+extern const Pico_Color PICO_COLOR_RED;
+extern const Pico_Color PICO_COLOR_GREEN;
+extern const Pico_Color PICO_COLOR_BLUE;
+extern const Pico_Color PICO_COLOR_YELLOW;
+extern const Pico_Color PICO_COLOR_CYAN;
+extern const Pico_Color PICO_COLOR_MAGENTA;
+extern const Pico_Color PICO_COLOR_ORANGE;
+extern const Pico_Color PICO_COLOR_PURPLE;
+extern const Pico_Color PICO_COLOR_PINK;
+extern const Pico_Color PICO_COLOR_BROWN;
+extern const Pico_Color PICO_COLOR_LIME;
+extern const Pico_Color PICO_COLOR_TEAL;
+extern const Pico_Color PICO_COLOR_NAVY;
+extern const Pico_Color PICO_COLOR_MAROON;
+extern const Pico_Color PICO_COLOR_OLIVE;
+
+#endif // PICO_COLORS_H
+
+#ifdef PICO_COLORS_C
+
 /// @defgroup Predefined Colors
 /// @brief Predefined color constants for common colors.
 /// @{
@@ -34,4 +73,4 @@ const Pico_Color PICO_COLOR_OLIVE   = {128, 128, 0};
 
 /// @}
 
-#endif // PICO_COLORS_H
+#endif // PICO_COLORS_C

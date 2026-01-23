@@ -5,11 +5,18 @@
 extern "C" {
 #endif
 
+typedef struct {
+    float x;
+    float y;
+} Pico_Pct_XY;
+
 #include <stdio.h>
 #include <assert.h>
 #include <SDL2/SDL.h>
 #include "keys.h"
 #include "events.h"
+#include "colors.h"
+#include "anchors.h"
 
 /// @example init.c
 /// @example delay.c
@@ -30,48 +37,10 @@ extern "C" {
 typedef SDL_Point Pico_Pos;
 typedef SDL_Rect  Pico_Rect;
 
-typedef enum {
-    PICO_STYLE_FILL, PICO_STYLE_STROKE
-} PICO_STYLE;
-
-typedef enum {
-    PICO_MOUSE_BUTTON_NONE   = 0,
-    PICO_MOUSE_BUTTON_LEFT   = SDL_BUTTON_LEFT,
-    PICO_MOUSE_BUTTON_MIDDLE = SDL_BUTTON_MIDDLE,
-    PICO_MOUSE_BUTTON_RIGHT  = SDL_BUTTON_RIGHT
-} PICO_MOUSE_BUTTON;
-
-#define PICO_ANCHOR_LEFT   0
-#define PICO_ANCHOR_CENTER 0.5
-#define PICO_ANCHOR_RIGHT  1
-#define PICO_ANCHOR_TOP    0
-#define PICO_ANCHOR_MIDDLE 0.5
-#define PICO_ANCHOR_BOTTOM 1
-
-/// @brief RGB color without alpha channel.
-typedef struct {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-} Pico_Color;
-
-/// @brief RGBA color with per-pixel alpha channel.
-typedef struct {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-    Uint8 a;
-} Pico_Color_A;
-
 typedef struct {
     int w;
     int h;
 } Pico_Dim;
-
-typedef struct {
-    float x;
-    float y;
-} Pico_Pct_XY;
 
 typedef struct {
     float w;
@@ -91,36 +60,9 @@ typedef struct {
     struct Pico_Rect_Pct* up;
 } Pico_Pos_Pct;
 
-extern const Pico_Pct_XY PICO_ANCHOR_C;
-extern const Pico_Pct_XY PICO_ANCHOR_NW;
-extern const Pico_Pct_XY PICO_ANCHOR_N;
-extern const Pico_Pct_XY PICO_ANCHOR_NE;
-extern const Pico_Pct_XY PICO_ANCHOR_E;
-extern const Pico_Pct_XY PICO_ANCHOR_SE;
-extern const Pico_Pct_XY PICO_ANCHOR_S;
-extern const Pico_Pct_XY PICO_ANCHOR_SW;
-extern const Pico_Pct_XY PICO_ANCHOR_W;
-
-extern const Pico_Color PICO_COLOR_BLACK;
-extern const Pico_Color PICO_COLOR_WHITE;
-extern const Pico_Color PICO_COLOR_GRAY;
-extern const Pico_Color PICO_COLOR_SILVER;
-
-extern const Pico_Color PICO_COLOR_RED;
-extern const Pico_Color PICO_COLOR_GREEN;
-extern const Pico_Color PICO_COLOR_BLUE;
-extern const Pico_Color PICO_COLOR_YELLOW;
-extern const Pico_Color PICO_COLOR_CYAN;
-extern const Pico_Color PICO_COLOR_MAGENTA;
-extern const Pico_Color PICO_COLOR_ORANGE;
-extern const Pico_Color PICO_COLOR_PURPLE;
-extern const Pico_Color PICO_COLOR_PINK;
-extern const Pico_Color PICO_COLOR_BROWN;
-extern const Pico_Color PICO_COLOR_LIME;
-extern const Pico_Color PICO_COLOR_TEAL;
-extern const Pico_Color PICO_COLOR_NAVY;
-extern const Pico_Color PICO_COLOR_MAROON;
-extern const Pico_Color PICO_COLOR_OLIVE;
+typedef enum {
+    PICO_STYLE_FILL, PICO_STYLE_STROKE
+} PICO_STYLE;
 
 /// @}
 

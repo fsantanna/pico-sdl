@@ -3,6 +3,13 @@
 
 #include <SDL2/SDL_events.h>
 
+typedef enum {
+    PICO_MOUSE_BUTTON_NONE   = 0,
+    PICO_MOUSE_BUTTON_LEFT   = SDL_BUTTON_LEFT,
+    PICO_MOUSE_BUTTON_MIDDLE = SDL_BUTTON_MIDDLE,
+    PICO_MOUSE_BUTTON_RIGHT  = SDL_BUTTON_RIGHT
+} PICO_MOUSE_BUTTON;
+
 typedef SDL_Event Pico_Event;
 
 typedef enum PICO_EVENT {

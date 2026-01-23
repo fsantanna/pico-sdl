@@ -14,7 +14,12 @@
 #include "hash.h"
 #include "tiny_ttf.h"
 #include "pico.h"
+
+#define PICO_COLORS_C
 #include "colors.h"
+
+#define PICO_ANCHORS_C
+#include "anchors.h"
 
 typedef enum {
     PICO_RES_IMAGE,
@@ -38,16 +43,6 @@ static SDL_Renderer* REN;
 static SDL_Texture*  TEX = NULL;
 static int FS = 0;          // fullscreen pending (ignore RESIZED event)
 static int TGT = 1;         // 0:phy, 1:log
-
-const Pico_Pct_XY PICO_ANCHOR_C  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_MIDDLE };
-const Pico_Pct_XY PICO_ANCHOR_NW = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_TOP    };
-const Pico_Pct_XY PICO_ANCHOR_N  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_TOP    };
-const Pico_Pct_XY PICO_ANCHOR_NE = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_TOP    };
-const Pico_Pct_XY PICO_ANCHOR_E  = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_MIDDLE };
-const Pico_Pct_XY PICO_ANCHOR_SE = { PICO_ANCHOR_RIGHT,  PICO_ANCHOR_BOTTOM };
-const Pico_Pct_XY PICO_ANCHOR_S  = { PICO_ANCHOR_CENTER, PICO_ANCHOR_BOTTOM };
-const Pico_Pct_XY PICO_ANCHOR_SW = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_BOTTOM };
-const Pico_Pct_XY PICO_ANCHOR_W  = { PICO_ANCHOR_LEFT,   PICO_ANCHOR_MIDDLE };
 
 static ttl_hash* _pico_hash;
 
