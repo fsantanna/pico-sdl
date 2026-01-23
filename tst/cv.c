@@ -7,8 +7,8 @@ int main (void) {
     {
         puts("ext - pos - pct->raw - C");
         Pico_Abs_Rect ref = {25, 25, 50, 50};
-        Pico_Rel_Pos      pct = { '%', {0.5, 0.5}, PICO_ANCHOR_C, NULL};
-        Pico_Abs_Pos  raw = pico_cv_pos_pct_raw(&pct, ref);
+        Pico_Rel_Pos  pct = { '%', {0.5, 0.5}, PICO_ANCHOR_C, NULL};
+        Pico_Abs_Pos  raw = pico_cv_pos_rel_abs(&pct, &ref);
         printf("pos: (%d, %d)\n", raw.x, raw.y);
         assert(raw.x==50 && raw.y==50);
     }

@@ -319,7 +319,7 @@ Pico_Abs_Dim pico_get_image (const char* path);
 /// @brief Fills in missing w/h in dim based on image aspect ratio.
 /// @param path image filepath
 /// @param dim dimensions to fill (0 means auto-calculate)
-void pico_get_image_raw (const char* path, Pico_Abs_Dim* dim);
+void pico_get_image_abs (const char* path, Pico_Abs_Dim* dim);
 
 /// @brief Fills in missing w/h in pct based on image aspect ratio.
 /// @param path image filepath
@@ -359,7 +359,7 @@ int pico_get_text (int h, const char* text);
 /// @brief Fills in missing w/h in dim based on text dimensions.
 /// @param text text to measure
 /// @param dim dimensions with h for font size, w to fill (0 means auto-calculate)
-void pico_get_text_raw (const char* text, Pico_Abs_Dim* dim);
+void pico_get_text_abs (const char* text, Pico_Abs_Dim* dim);
 
 /// @brief Fills in missing w/h in pct based on text dimensions.
 /// @param text text to measure
@@ -476,7 +476,7 @@ Pico_Rel_Rect pico_cv_rect_pct_raw_ext (const Pico_Rel_Rect* r, Pico_Rel_Rect re
 /// @param ref reference rectangle to use as basis
 /// @return absolute position in logical pixels
 /// @sa pico_cv_pos_pct_raw
-Pico_Abs_Pos pico_cv_pos_pct_raw (const Pico_Rel_Pos* p, Pico_Abs_Rect* ref);
+Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* p, Pico_Abs_Rect* ref);
 
 
 /// @brief Asserts condition and shows SDL error on failure.
