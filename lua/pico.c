@@ -1117,6 +1117,13 @@ static int l_output_screenshot (lua_State* L) {
     return 1;
 }
 
+static int l_output_sound (lua_State* L) {
+    const char* path = luaL_checkstring(L, 1);   // path
+    pico_output_sound(path);
+    return 0;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_all[] = {
@@ -1186,6 +1193,7 @@ static const luaL_Reg ll_output[] = {
     { "clear",      l_output_clear      },
     { "present",    l_output_present    },
     { "screenshot", l_output_screenshot },
+    { "sound",      l_output_sound      },
     { NULL, NULL }
 };
 
