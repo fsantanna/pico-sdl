@@ -5,8 +5,8 @@ int main (void) {
     pico_init(1);
     pico_set_title("Buffer");
 
-    Pico_Dim phy = { '!', {100,100}, NULL };
-    Pico_Dim log = { '!', { 10, 10}, NULL };
+    Pico_Rel_Dim phy = { '!', {100,100}, NULL };
+    Pico_Rel_Dim log = { '!', { 10, 10}, NULL };
     pico_set_view(-1, -1, &phy, NULL, &log, NULL, NULL);
 
     // .x.
@@ -26,9 +26,9 @@ int main (void) {
 
     {
         puts("centered 3x3 on black - 1dir/1baixo");
-        Pico_Rect r = { '!', {5-1,5-1,0,0}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect r = { '!', {5-1,5-1,0,0}, PICO_ANCHOR_NW, NULL };
         pico_output_clear();
-        pico_output_draw_buffer((Pico_Raw_Dim){3,3}, buffer, &r);
+        pico_output_draw_buffer((Pico_Abs_Dim){3,3}, buffer, &r);
         _pico_check("buffer-01");       // same as pct
     }
 
@@ -36,8 +36,8 @@ int main (void) {
         puts("bottomright 9x1 on white");
         pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF});
         pico_output_clear();
-        Pico_Rect r = { '!', {1,9,0,0}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_buffer((Pico_Raw_Dim){9,1}, buffer, &r);
+        Pico_Rel_Rect r = { '!', {1,9,0,0}, PICO_ANCHOR_NW, NULL };
+        pico_output_draw_buffer((Pico_Abs_Dim){9,1}, buffer, &r);
         _pico_check("buffer-02");       // same as pct
     }
 

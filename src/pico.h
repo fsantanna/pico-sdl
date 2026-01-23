@@ -35,17 +35,18 @@ typedef union {
 /// @{
 ///
 #define PICO_TITLE "pico-SDL"
-#define PICO_DIM_PHY ((Pico_Dim_Raw) {500,500})
-#define PICO_DIM_LOG ((Pico_Dim_Raw) {100,100})
+#define PICO_DIM_PHY ((Pico_Abs_Dim) {500,500})
+#define PICO_DIM_LOG ((Pico_Abs_Dim) {100,100})
 #define PICO_HASH_BUK  128
 #define PICO_HASH_TTL  1000
 
-typedef SDL_Rect Pico_Rect_Raw;
+typedef SDL_Rect  Pico_Abs_Rect;
+typedef SDL_Point Pico_Abs_Pos;
 
 typedef struct {
     int w;
     int h;
-} Pico_Dim_Raw;
+} Pico_Abs_Dim;
 
 typedef struct {
     float w;
@@ -59,15 +60,15 @@ typedef struct {
 // '*': mix
 // '?': unk/err
 
-typedef struct Pico_Rect {
+typedef struct Pico_Rel_Rect {
     char mode;
     struct {
         float x, y;
         float w, h;
     };
     Pico_Pct anchor;
-    struct Pico_Rect* up;
-} Pico_Rect;
+    struct Pico_Rel_Rect* up;
+} Pico_Rel_Rect;
 
 typedef struct {
     char mode;
@@ -75,16 +76,16 @@ typedef struct {
         float x, y;
     };
     Pico_Pct anchor;
-    struct Pico_Rect* up;
-} Pico_Pos;
+    struct Pico_Rel_Rect* up;
+} Pico_Rel_Pos;
 
 typedef struct {
     char mode;
     struct {
         float w, h;
     };
-    struct Pico_Rect* up;
-} Pico_Dim;
+    struct Pico_Rel_Rect* up;
+} Pico_Rel_Dim;
 
 typedef enum {
     PICO_STYLE_FILL, PICO_STYLE_STROKE
@@ -153,103 +154,103 @@ void pico_output_clear (void);
 /// @param rect drawing rectangle in logical pixels
 /// @sa pico_output_draw_buffer_pct
 /// @sa pico_output_draw_image_raw
-void pico_output_draw_buffer (Pico_Dim_Raw dim, const Pico_Color_A buffer[], const Pico_Rect* rect);
+void pico_output_draw_buffer (Pico_Abs_Dim dim, const Pico_Color_A buffer[], const Pico_Rel_Rect* rect);
 
 /// @brief Draws an image using absolute coordinates.
 /// @param path path to the image file
 /// @param rect image target position and dimension
 /// @sa pico_output_draw_image_pct
 /// @sa pico_output_draw_buffer_raw
-void pico_output_draw_image_raw (const char* path, Pico_Rect rect);
+void pico_output_draw_image_raw (const char* path, Pico_Rel_Rect rect);
 
 /// @brief Draws an image using percentage-based coordinates.
 /// @param path path to the image file
 /// @param rect image target position and dimension
 /// @sa pico_output_draw_image_raw
 /// @sa pico_output_draw_buffer_pct
-void pico_output_draw_image_pct (const char* path, const Pico_Rect* rect);
+void pico_output_draw_image_pct (const char* path, const Pico_Rel_Rect* rect);
 
 /// @brief Draws a line using absolute coordinates.
 /// @param p1 first endpoint position
 /// @param p2 second endpoint position
 /// @sa pico_output_draw_line_pct
-void pico_output_draw_line_raw (Pico_Pos p1, Pico_Pos p2);
+void pico_output_draw_line_raw (Pico_Rel_Pos p1, Pico_Rel_Pos p2);
 
 /// @brief Draws a line using percentage-based coordinates.
 /// @param p1 first endpoint position
 /// @param p2 second endpoint position
 /// @sa pico_output_draw_line_raw
-void pico_output_draw_line_pct (Pico_Pos* p1, Pico_Pos* p2);
+void pico_output_draw_line_pct (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2);
 
 /// @brief Draws a single pixel using absolute coordinates.
 /// @param pos drawing position
 /// @sa pico_output_draw_pixel_pct
-void pico_output_draw_pixel (Pico_Pos* pos);
+void pico_output_draw_pixel (Pico_Rel_Pos* pos);
 
 /// @brief Draws a batch of pixels using absolute coordinates.
 /// @param n number of coordinates
 /// @param ps array of coordinates
 /// @sa pico_output_draw_pixels_pct
-void pico_output_draw_pixels_raw (int n, const Pico_Pos* ps);
+void pico_output_draw_pixels_raw (int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws a batch of pixels using percentage-based coordinates.
 /// @param n number of coordinates
 /// @param ps array of coordinates
 /// @sa pico_output_draw_pixels_raw
-void pico_output_draw_pixels_pct (int n, const Pico_Pos* ps);
+void pico_output_draw_pixels_pct (int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws a rectangle using absolute coordinates.
 /// @param rect rectangle to draw
 /// @sa pico_output_draw_rect_pct
-void pico_output_draw_rect (Pico_Rect* rect);
+void pico_output_draw_rect (Pico_Rel_Rect* rect);
 
 /// @brief Draws a triangle using absolute coordinates.
 /// @param p1 first vertex position
 /// @param p2 second vertex position
 /// @param p3 third vertex position
 /// @sa pico_output_draw_tri_pct
-void pico_output_draw_tri_raw (Pico_Pos p1, Pico_Pos p2, Pico_Pos p3);
+void pico_output_draw_tri_raw (Pico_Rel_Pos p1, Pico_Rel_Pos p2, Pico_Rel_Pos p3);
 
 /// @brief Draws a triangle using percentage-based coordinates.
 /// @param p1 first vertex position
 /// @param p2 second vertex position
 /// @param p3 third vertex position
 /// @sa pico_output_draw_tri_raw
-void pico_output_draw_tri_pct (const Pico_Pos* p1, const Pico_Pos* p2, const Pico_Pos* p3);
+void pico_output_draw_tri_pct (const Pico_Rel_Pos* p1, const Pico_Rel_Pos* p2, const Pico_Rel_Pos* p3);
 
 /// @brief Draws an ellipse using absolute coordinates.
 /// @param rect bounding rectangle
 /// @sa pico_output_draw_oval_pct
-void pico_output_draw_oval_raw (Pico_Rect rect);
+void pico_output_draw_oval_raw (Pico_Rel_Rect rect);
 
 /// @brief Draws an ellipse using percentage-based coordinates.
 /// @param rect bounding rectangle as percentages (0.0-1.0)
 /// @sa pico_output_draw_oval_raw
-void pico_output_draw_oval_pct (const Pico_Rect* rect);
+void pico_output_draw_oval_pct (const Pico_Rel_Rect* rect);
 
 /// @brief Draws a polygon using absolute coordinates.
 /// @param n number of vertices
 /// @param ps array of vertex positions
 /// @sa pico_output_draw_poly_pct
-void pico_output_draw_poly_raw (int n, const Pico_Pos* ps);
+void pico_output_draw_poly_raw (int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws a polygon using percentage-based coordinates.
 /// @param n number of vertices
 /// @param ps array of vertex coordinates
 /// @sa pico_output_draw_poly_raw
-void pico_output_draw_poly_pct (int n, const Pico_Pos* ps);
+void pico_output_draw_poly_pct (int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws text using absolute coordinates.
 /// @param text text to draw
 /// @param rect drawing rectangle
 /// @sa pico_output_draw_text_pct
-void pico_output_draw_text_raw (const char* text, Pico_Rect rect);
+void pico_output_draw_text_raw (const char* text, Pico_Rel_Rect rect);
 
 /// @brief Draws text using percentage-based coordinates.
 /// @param text text to draw
 /// @param rect drawing rectangle
 /// @sa pico_output_draw_text_raw
-void pico_output_draw_text_pct (const char* text, Pico_Rect* rect);
+void pico_output_draw_text_pct (const char* text, Pico_Rel_Rect* rect);
 
 /// @brief Shows what has been drawn onto the screen.
 /// Only does anything on expert mode.
@@ -261,7 +262,7 @@ void pico_output_present (void);
 /// @return The filepath of the screenshot.
 /// @sa pico_output_screenshot_raw
 /// @sa pico_output_screenshot_pct
-const char* pico_output_screenshot (const char* path, const Pico_Rect* r);
+const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r);
 
 /// @brief Takes a screenshot from a physical screen region.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
@@ -269,7 +270,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rect* r);
 /// @return The filepath of the screenshot.
 /// @sa pico_output_screenshot
 /// @sa pico_output_screenshot_pct
-const char* pico_output_screenshot_raw (const char* path, Pico_Rect rect);
+const char* pico_output_screenshot_raw (const char* path, Pico_Rel_Rect rect);
 
 /// @brief Takes a screenshot from a physical screen region.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
@@ -277,7 +278,7 @@ const char* pico_output_screenshot_raw (const char* path, Pico_Rect rect);
 /// @return The filepath of the screenshot.
 /// @sa pico_output_screenshot
 /// @sa pico_output_screenshot_raw
-const char* pico_output_screenshot_pct (const char* path, const Pico_Rect* rect);
+const char* pico_output_screenshot_pct (const char* path, const Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file
@@ -298,7 +299,7 @@ Pico_Color pico_get_color_clear (void);
 Pico_Color pico_get_color_draw (void);
 
 /// @brief Gets the cropping applied to objects when drawing them.
-Pico_Rect_Raw pico_get_crop (void);
+Pico_Abs_Rect pico_get_crop (void);
 
 /// @brief Gets the state of expert mode.
 /// @return 1 if enabled, or 0 otherwise
@@ -313,18 +314,18 @@ int pico_get_fullscreen (void);
 
 /// @brief Gets the dimensions of the given image.
 /// @param path image filepath
-Pico_Dim_Raw pico_get_image (const char* path);
+Pico_Abs_Dim pico_get_image (const char* path);
 
 /// @brief Fills in missing w/h in dim based on image aspect ratio.
 /// @param path image filepath
 /// @param dim dimensions to fill (0 means auto-calculate)
-void pico_get_image_raw (const char* path, Pico_Dim_Raw* dim);
+void pico_get_image_raw (const char* path, Pico_Abs_Dim* dim);
 
 /// @brief Fills in missing w/h in pct based on image aspect ratio.
 /// @param path image filepath
 /// @param pct dimensions as percentages (x=w, y=h; 0 means auto-calculate)
 /// @param ref reference rect for percentages (NULL uses world)
-void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rect* ref);
+void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rel_Rect* ref);
 
 /// @brief Gets the state of a key.
 /// @param key key constant
@@ -336,14 +337,14 @@ int pico_get_key (PICO_KEY key);
 /// @param button which button state to retrieve
 /// @return state of specified button
 /// @sa pico_get_mouse_pct
-int pico_get_mouse_raw (Pico_Pos* pos, int button);
+int pico_get_mouse_raw (Pico_Rel_Pos* pos, int button);
 
 /// @brief Gets the mouse state using percentage-based coordinates.
 /// @param pos pointer to retrieve pointer position (may be NULL)
 /// @param button which button state to retrieve
 /// @return state of specified button
 /// @sa pico_get_mouse_raw
-int pico_get_mouse_pct (Pico_Pos* pos, int button);
+int pico_get_mouse_pct (Pico_Rel_Pos* pos, int button);
 
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
@@ -358,13 +359,13 @@ int pico_get_text (int h, const char* text);
 /// @brief Fills in missing w/h in dim based on text dimensions.
 /// @param text text to measure
 /// @param dim dimensions with h for font size, w to fill (0 means auto-calculate)
-void pico_get_text_raw (const char* text, Pico_Dim_Raw* dim);
+void pico_get_text_raw (const char* text, Pico_Abs_Dim* dim);
 
 /// @brief Fills in missing w/h in pct based on text dimensions.
 /// @param text text to measure
 /// @param pct dimensions as percentages (y=h for font size, x=w to fill)
 /// @param ref reference rect for percentages (NULL uses world)
-void pico_get_text_pct (const char* text, Pico_Pct* pct, Pico_Rect* ref);
+void pico_get_text_pct (const char* text, Pico_Pct* pct, Pico_Rel_Rect* ref);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
@@ -385,11 +386,11 @@ const char* pico_get_title (void);
 void pico_get_view (
     int* grid,
     int* window_fullscreen,
-    Pico_Dim_Raw* window,
-    Pico_Rect* window_target,
-    Pico_Dim_Raw* world,
-    Pico_Rect* world_source,
-    Pico_Rect* world_clip
+    Pico_Abs_Dim* window,
+    Pico_Rel_Rect* window_target,
+    Pico_Abs_Dim* world,
+    Pico_Rel_Rect* world_source,
+    Pico_Rel_Rect* world_clip
 );
 
 // SET
@@ -409,7 +410,7 @@ void pico_set_color_draw (Pico_Color color);
 /// @brief Changes the cropping that is applied to images, texts and buffers
 ///        before drawing them.
 /// @param crop cropping region ({0,0,0,0} to disable)
-void pico_set_crop (Pico_Rect_Raw crop);
+void pico_set_crop (Pico_Abs_Rect crop);
 
 /// @brief Toggles the expert mode.
 /// @param on 1 to enable it, or 0 to disable it
@@ -444,11 +445,11 @@ void pico_set_title (const char* title);
 void pico_set_view (
     int window_grid,
     int window_fullscreen,
-    Pico_Dim*  window,
-    Pico_Rect* window_target,
-    Pico_Dim*  world,
-    Pico_Rect* world_source,
-    Pico_Rect* world_clip
+    Pico_Rel_Dim*  window,
+    Pico_Rel_Rect* window_target,
+    Pico_Rel_Dim*  world,
+    Pico_Rel_Rect* world_source,
+    Pico_Rel_Rect* world_clip
 );
 
 /// @}
@@ -461,27 +462,21 @@ void pico_set_view (
 /// @param r percentage-based rectangle (0.0-1.0)
 /// @return absolute rectangle in logical pixels
 /// @sa pico_cv_rect_pct_raw_ext
-Pico_Rect pico_cv_rect_pct_raw (const Pico_Rect* r);
+Pico_Rel_Rect pico_cv_rect_pct_raw (const Pico_Rel_Rect* r);
 
 /// @brief Converts a percentage-based rectangle to absolute coordinates relative to a reference rectangle.
 /// @param r percentage-based rectangle (0.0-1.0)
 /// @param ref reference rectangle to use as basis
 /// @return absolute rectangle in logical pixels
 /// @sa pico_cv_rect_pct_raw
-Pico_Rect pico_cv_rect_pct_raw_ext (const Pico_Rect* r, Pico_Rect ref);
-
-/// @brief Converts a percentage-based position to absolute coordinates.
-/// @param p percentage-based position (0.0-1.0)
-/// @return absolute position in logical pixels
-/// @sa pico_cv_pos_pct_raw_ext
-Pico_Pos pico_cv_pos_pct_raw (const Pico_Pos* p);
+Pico_Rel_Rect pico_cv_rect_pct_raw_ext (const Pico_Rel_Rect* r, Pico_Rel_Rect ref);
 
 /// @brief Converts a percentage-based position to absolute coordinates relative to a reference rectangle.
 /// @param p percentage-based position (0.0-1.0)
 /// @param ref reference rectangle to use as basis
 /// @return absolute position in logical pixels
 /// @sa pico_cv_pos_pct_raw
-Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos* p, Pico_Rect ref);
+Pico_Abs_Pos pico_cv_pos_pct_raw (const Pico_Rel_Pos* p, Pico_Abs_Rect* ref);
 
 
 /// @brief Asserts condition and shows SDL error on failure.
@@ -494,7 +489,7 @@ Pico_Pos pico_cv_pos_pct_raw_ext (const Pico_Pos* p, Pico_Rect ref);
 /// @param rect rectangle in logical pixels
 /// @return 1 if pos is inside rect, or 0 otherwise
 /// @sa pico_vs_pos_rect_pct
-int pico_vs_pos_rect_raw (Pico_Pos pos, Pico_Rect rect);
+int pico_vs_pos_rect_raw (Pico_Rel_Pos pos, Pico_Rel_Rect rect);
 
 /// @brief Checks if a point is inside a rectangle using percentage-based coordinates.
 /// Assumes that both primitives use the same anchor.
@@ -502,7 +497,7 @@ int pico_vs_pos_rect_raw (Pico_Pos pos, Pico_Rect rect);
 /// @param rect rectangle as percentages (0.0-1.0)
 /// @return 1 if pos is inside rect, or 0 otherwise
 /// @sa pico_vs_pos_rect_raw
-int pico_vs_pos_rect_pct (Pico_Pos* pos, Pico_Rect* rect);
+int pico_vs_pos_rect_pct (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
 
 /// @brief Checks if two rectangles overlap using absolute coordinates.
 /// Assumes that both rectangles use the same anchor.
@@ -510,7 +505,7 @@ int pico_vs_pos_rect_pct (Pico_Pos* pos, Pico_Rect* rect);
 /// @param r2 second rectangle in logical pixels
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_vs_rect_rect_pct
-int pico_vs_rect_rect_raw (Pico_Rect r1, Pico_Rect r2);
+int pico_vs_rect_rect_raw (Pico_Rel_Rect r1, Pico_Rel_Rect r2);
 
 /// @brief Checks if two rectangles overlap using percentage-based coordinates.
 /// Assumes that both rectangles use the same anchor.
@@ -518,7 +513,7 @@ int pico_vs_rect_rect_raw (Pico_Rect r1, Pico_Rect r2);
 /// @param r2 second rectangle as percentages (0.0-1.0)
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_vs_rect_rect_raw
-int pico_vs_rect_rect_pct (Pico_Rect* r1, Pico_Rect* r2);
+int pico_vs_rect_rect_pct (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2);
 
 /// @brief Makes a color darker by the specified percentage.
 /// @param clr the original color
