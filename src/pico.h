@@ -488,15 +488,7 @@ Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* re
 /// @param rect rectangle in logical pixels
 /// @return 1 if pos is inside rect, or 0 otherwise
 /// @sa pico_vs_pos_rect_pct
-int pico_vs_pos_rect_raw (Pico_Rel_Pos pos, Pico_Rel_Rect rect);
-
-/// @brief Checks if a point is inside a rectangle using percentage-based coordinates.
-/// Assumes that both primitives use the same anchor.
-/// @param pos point as percentages (0.0-1.0)
-/// @param rect rectangle as percentages (0.0-1.0)
-/// @return 1 if pos is inside rect, or 0 otherwise
-/// @sa pico_vs_pos_rect_raw
-int pico_vs_pos_rect_pct (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
+int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
 
 /// @brief Checks if two rectangles overlap using absolute coordinates.
 /// Assumes that both rectangles use the same anchor.
@@ -504,7 +496,7 @@ int pico_vs_pos_rect_pct (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
 /// @param r2 second rectangle in logical pixels
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_vs_rect_rect_pct
-int pico_vs_rect_rect_raw (Pico_Rel_Rect r1, Pico_Rel_Rect r2);
+int pico_vs_rect_rect (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2);
 
 /// @brief Checks if two rectangles overlap using percentage-based coordinates.
 /// Assumes that both rectangles use the same anchor.
