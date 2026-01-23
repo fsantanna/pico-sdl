@@ -28,7 +28,7 @@ int main (void) {
         puts("centered 3x3 on black - 1dir/1baixo");
         Pico_Rect r = { '!', {5-1,5-1,0,0}, PICO_ANCHOR_NW, NULL };
         pico_output_clear();
-        pico_output_draw_buffer((Pico_Dim_Raw){3,3}, buffer, &r);
+        pico_output_draw_buffer((Pico_Raw_Dim){3,3}, buffer, &r);
         _pico_check("buffer-01");       // same as pct
     }
 
@@ -37,7 +37,7 @@ int main (void) {
         pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF});
         pico_output_clear();
         Pico_Rect r = { '!', {1,9,0,0}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_buffer((Pico_Dim_Raw){9,1}, buffer, &r);
+        pico_output_draw_buffer((Pico_Raw_Dim){9,1}, buffer, &r);
         _pico_check("buffer-02");       // same as pct
     }
 

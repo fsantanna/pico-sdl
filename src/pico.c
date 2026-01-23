@@ -54,18 +54,18 @@ static struct {
         Pico_Color clear;
         Pico_Color draw;
     } color;
-    Pico_Rect_Raw crop;
+    Pico_Raw_Rect crop;
     int expert;
     const char* font;
     PICO_STYLE style;
     struct {
         int           grid;
         int           fs;
-        Pico_Dim_Raw  phy;
-        Pico_Rect_Raw dst;
-        Pico_Dim_Raw  log;
-        Pico_Rect_Raw src;
-        Pico_Rect_Raw clip;
+        Pico_Raw_Dim  phy;
+        Pico_Raw_Rect dst;
+        Pico_Raw_Dim  log;
+        Pico_Raw_Rect src;
+        Pico_Raw_Rect clip;
     } view;
 } S = {
     0xFF,
@@ -163,7 +163,7 @@ static SDL_FRect _f1 (const Pico_Rect* r, SDL_FRect ref) {
     }
 }
 
-static SDL_FPoint _raw_pos (const Pico_Pos* pos, Pico_Rect_Raw* ref) {
+static SDL_FPoint _raw_pos (const Pico_Pos* pos, Pico_Raw_Rect* ref) {
     SDL_FPoint ret;
     switch (pos->mode) {
         case '!':
@@ -215,7 +215,7 @@ static SDL_FDim _raw_dim (const Pico_Dim* dim) {
     return ret;
 }
 
-static SDL_FRect _raw_rect (const Pico_Rect* rect, Pico_Rect_Raw* ref) {
+static SDL_FRect _raw_rect (const Pico_Rect* rect, Pico_Raw_Rect* ref) {
     SDL_FRect ret;
     switch (rect->mode) {
         case '!':
@@ -251,8 +251,8 @@ static SDL_FRect _raw_rect (const Pico_Rect* rect, Pico_Rect_Raw* ref) {
     return ret;
 }
 
-static Pico_Dim_Raw _fi_dim (const SDL_FDim* f) {
-    return (Pico_Dim_Raw) { roundf(f->w), roundf(f->h) };
+static Pico_Raw_Dim _fi_dim (const SDL_FDim* f) {
+    return (Pico_Raw_Dim) { roundf(f->w), roundf(f->h) };
 }
 
 static SDL_Point _fi_pos (const SDL_FPoint* f) {
@@ -263,7 +263,7 @@ static SDL_Rect _fi_rect (const SDL_FRect* f) {
     return (SDL_Rect) { roundf(f->x), roundf(f->y), roundf(f->w), roundf(f->h) };
 }
 
-static Pico_Dim_Raw _tex_dim_raw (SDL_Texture* tex, Pico_Dim_Raw dim) {
+static Pico_Raw_Dim _tex_dim_raw (SDL_Texture* tex, Pico_Raw_Dim dim) {
     if (dim.w!=0 && dim.h!=0) {
         return dim;
     } else {
@@ -308,7 +308,7 @@ static Pico_Rect _tex_rect_pct (SDL_Texture* tex, const Pico_Rect* rect) {
 }
 #endif
 
-Pico_Rect_Raw* _crop (void) {
+Pico_Raw_Rect* _crop (void) {
     if (S.crop.w==0 || S.crop.h==0) {
         assert(S.crop.w==0 && S.crop.h==0 && S.crop.x==0 && S.crop.y==0);
         return NULL;
@@ -622,7 +622,7 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_buffer (Pico_Dim_Raw dim, const Pico_Color_A buffer[], const Pico_Rect* rect) {
+void pico_output_draw_buffer (Pico_Raw_Dim dim, const Pico_Color_A buffer[], const Pico_Rect* rect) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
         (void*)buffer, dim.w, dim.h,
         32, 4*dim.w, SDL_PIXELFORMAT_RGBA32
@@ -632,7 +632,7 @@ void pico_output_draw_buffer (Pico_Dim_Raw dim, const Pico_Color_A buffer[], con
     SDL_FreeSurface(sfc);
 
     SDL_FRect rf = _raw_rect(rect, NULL);
-    Pico_Dim_Raw d = _tex_dim_raw(tex, (Pico_Dim_Raw){rf.w, rf.h});
+    Pico_Raw_Dim d = _tex_dim_raw(tex, (Pico_Raw_Dim){rf.w, rf.h});
     rf.w = d.w;
     rf.h = d.h;
 
@@ -645,7 +645,7 @@ void pico_output_draw_buffer (Pico_Dim_Raw dim, const Pico_Color_A buffer[], con
 void pico_output_draw_image (const char* path, Pico_Rect* rect) {
     SDL_FRect rf = _raw_rect(rect, NULL);
     SDL_Texture* tex = _tex_image(path);
-    Pico_Dim_Raw d = _tex_dim_raw(tex, (Pico_Dim_Raw){rf.w, rf.h});
+    Pico_Raw_Dim d = _tex_dim_raw(tex, (Pico_Raw_Dim){rf.w, rf.h});
     rf.w = d.w;
     rf.h = d.h;
 
@@ -750,7 +750,7 @@ void pico_output_draw_text (const char* text, Pico_Rect* rect) {
 
     SDL_FRect rf = _raw_rect(rect, NULL);
     SDL_Texture* tex =  _tex_text(NULL, rf.h, text, S.color.draw);
-    Pico_Dim_Raw d = _tex_dim_raw(tex, (Pico_Dim_Raw){rf.w, rf.h});
+    Pico_Raw_Dim d = _tex_dim_raw(tex, (Pico_Raw_Dim){rf.w, rf.h});
     rf.w = d.w;
     rf.h = d.h;
 
@@ -1057,18 +1057,18 @@ int pico_get_mouse_pct (Pico_Pos* pos, int button) {
     return ret;
 }
 
-Pico_Rect_Raw pico_get_crop (void) {
+Pico_Raw_Rect pico_get_crop (void) {
     return S.crop;
 }
 
-Pico_Dim_Raw pico_get_image (const char* path) {
+Pico_Raw_Dim pico_get_image (const char* path) {
     SDL_Texture* tex = _tex_image(path);
-    Pico_Dim_Raw dim;
+    Pico_Raw_Dim dim;
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
     return dim;
 }
 
-void pico_get_image_raw (const char* path, Pico_Dim_Raw* dim) {
+void pico_get_image_raw (const char* path, Pico_Raw_Dim* dim) {
     SDL_Texture* tex = _tex_image(path);
     *dim = _tex_dim_raw(tex, *dim);
 }
@@ -1103,7 +1103,7 @@ int pico_get_text (int h, const char* text) {
     return w;
 }
 
-void pico_get_text_raw (const char* text, Pico_Dim_Raw* dim) {
+void pico_get_text_raw (const char* text, Pico_Raw_Dim* dim) {
     if (text[0] == '\0') return;
     SDL_Texture* tex = _tex_text(NULL, dim->h, text, (Pico_Color){0,0,0});
     *dim = _tex_dim_raw(tex, *dim);
@@ -1132,9 +1132,9 @@ const char* pico_get_title (void) {
 void pico_get_view (
     int* grid,
     int* fs,
-    Pico_Dim_Raw* phy,
+    Pico_Raw_Dim* phy,
     Pico_Rect* dst,
-    Pico_Dim_Raw* log,
+    Pico_Raw_Dim* log,
     Pico_Rect* src,
     Pico_Rect* clip
 ) {
@@ -1167,7 +1167,7 @@ void pico_set_color_draw  (Pico_Color color) {
     S.color.draw = color;
 }
 
-void pico_set_crop (Pico_Rect_Raw crop) {
+void pico_set_crop (Pico_Raw_Rect crop) {
     S.crop = crop;
 }
 
@@ -1209,7 +1209,7 @@ void pico_set_view (
     Pico_Rect* src,
     Pico_Rect* clip
 ) {
-    Pico_Dim_Raw new;
+    Pico_Raw_Dim new;
 
     { // grid: toggle grid overlay
         if (grid != -1) {
@@ -1239,7 +1239,7 @@ void pico_set_view (
             goto _out1_;
         }
         assert(phy == NULL);
-        static Pico_Dim_Raw _old;
+        static Pico_Raw_Dim _old;
         FS = 1;
         if (fs) {
             _old = S.view.phy;
@@ -1261,7 +1261,7 @@ void pico_set_view (
         }
         assert(fs==-1 && !S.view.fs);
         SDL_FDim df = _raw_dim(phy);
-        Pico_Dim_Raw di = _fi_dim(&df);
+        Pico_Raw_Dim di = _fi_dim(&df);
         new = di;
         _phy_:
         S.view.phy = new;
@@ -1276,7 +1276,7 @@ void pico_set_view (
             goto _out3_;
         }
         SDL_FDim df = _raw_dim(log);
-        Pico_Dim_Raw di = _fi_dim(&df);
+        Pico_Raw_Dim di = _fi_dim(&df);
         S.view.log = di;
         if (src == NULL) {
             S.view.src = (SDL_Rect) { 0, 0, log->w, log->h };
