@@ -44,11 +44,12 @@ static Pico_Pct c_anchor (lua_State* L, int i) {
         return *anc;
     } else if (lua_type(L,i) == LUA_TTABLE) {   // {x, y}
         return (Pico_Pct) {
-            L_checkfieldnum(L, i, "x"),
-            L_checkfieldnum(L, i, "y"),
+            .x = L_checkfieldnum(L, i, "x"),
+            .y = L_checkfieldnum(L, i, "y"),
         };
     } else {
         luaL_error(L, "invalid anchor");
+        __builtin_unreachable();
     }
 }
 
@@ -214,8 +215,8 @@ static int c_dim_raw_pct (lua_State* L, int i, Pico_Dim* raw, Pico_Pct* pct) {
         return 0;
     } else {
         *pct = (Pico_Pct) {
-            L_checkfieldnum(L, i, "w"),
-            L_checkfieldnum(L, i, "h"),
+            .w = L_checkfieldnum(L, i, "w"),
+            .h = L_checkfieldnum(L, i, "h"),
         };
         return 1;
     }
@@ -314,7 +315,7 @@ static int l_cv_rect (lua_State* L) {
     PICO_RAW_PCT tp = c_rect_raw_pct(L, 1, &raw, &pct);
 
     // raw -> pct
-    if (tp = PICO_RAW) {                // raw | [up]
+    if (tp == PICO_RAW) {                // raw | [up]
         assert(0 && "TODO");
 
     // pct -> raw
@@ -428,14 +429,15 @@ static PICO_RAW_PCT L_get_dim_raw_pct (lua_State* L, int i, Pico_Dim* raw, Pico_
             lua_pop(L, 1);                  // {%,w,h} | [ref]
         }
         *pct = (Pico_Pct) {
-            L_checkfieldnum(L, i, "w"),
-            L_checkfieldnum(L, i, "h"),
+            .w = L_checkfieldnum(L, i, "w"),
+            .h = L_checkfieldnum(L, i, "h"),
         };
         *ref = NULL;
         if (lua_gettop(L) >= i+1) {         // {%,w,h} | ref
             *ref = c_rect_pct(L, i+1);
             lua_pop(L, 1);                  // {%,w,h}
         }
+        return PICO_PCT;
     }
 }
 
@@ -528,10 +530,10 @@ static int l_get_view (lua_State* L) {
     int grid;
     int fs;
     Pico_Dim  phy;
-    Pico_Rect dst;
+    //Pico_Rect dst;
     Pico_Dim  log;
-    Pico_Rect src;
-    Pico_Rect clip;
+    //Pico_Rect src;
+    //Pico_Rect clip;
 
     // TODO: dst, src, clip
     pico_get_view(&grid, &fs, &phy, NULL, &log, NULL, NULL);
@@ -544,14 +546,15 @@ static int l_get_view (lua_State* L) {
     lua_pushboolean(L, fs);             // T | fs
     lua_setfield(L, -2, "fullscreen");  // T
 
-    lua_newtable(L);                    // T | win
+    lua_newtable(L);                    // T | phy
     lua_pushinteger(L, phy.w);
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, phy.h);
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "window");      // T
 
-    lua_newtable(L);                    // T | win_tgt
+#if 0
+    lua_newtable(L);                    // T | dst
     lua_pushinteger(L, dst.x);
     lua_setfield(L, -2, "x");
     lua_pushinteger(L, dst.y);
@@ -561,15 +564,17 @@ static int l_get_view (lua_State* L) {
     lua_pushinteger(L, dst.h);
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "target");      // T
+#endif
 
-    lua_newtable(L);                    // T | wld
+    lua_newtable(L);                    // T | log
     lua_pushinteger(L, log.w);
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, log.h);
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "world");       // T
 
-    lua_newtable(L);                    // T | wld_src
+#if 0
+    lua_newtable(L);                    // T | src
     lua_pushinteger(L, src.x);
     lua_setfield(L, -2, "x");
     lua_pushinteger(L, src.y);
@@ -579,8 +584,10 @@ static int l_get_view (lua_State* L) {
     lua_pushinteger(L, src.h);
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "source");      // T
+#endif
 
-    lua_newtable(L);                    // T | wld_clip
+#if 0
+    lua_newtable(L);                    // T | clip
     lua_pushinteger(L, clip.x);
     lua_setfield(L, -2, "x");
     lua_pushinteger(L, clip.y);
@@ -590,6 +597,7 @@ static int l_get_view (lua_State* L) {
     lua_pushinteger(L, clip.h);
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "clip");        // T
+#endif
 
     return 1;
 }
@@ -649,7 +657,7 @@ static int l_set_style (lua_State* L) {
     int ok;
     int ss = lua_tointegerx(L, -1, &ok);
     if (!ok) {
-        luaL_error(L, "invalid style \"%s\"", lua_tostring(L,1));
+        luaL_error(L, "invalid style \"%s\"", s);
     }
 
     pico_set_style(ss);
