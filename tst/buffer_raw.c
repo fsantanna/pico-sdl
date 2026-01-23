@@ -6,7 +6,7 @@ int main (void) {
     pico_set_title("Buffer");
 
     Pico_Dim phy = { '!', {100,100}, NULL };
-    Pico_Dim log = { '!', {10, 10},  NULL };
+    Pico_Dim log = { '!', { 10, 10}, NULL };
     pico_set_view(-1, -1, &phy, NULL, &log, NULL, NULL);
 
     // .x.
