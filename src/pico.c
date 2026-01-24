@@ -184,8 +184,8 @@ static SDL_FPoint _sdl_pos (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref) {
         case '!':
             assert(ref==NULL && pos->up==NULL && "TODO");
             ret = (SDL_FPoint) {
-                roundf(pos->x - pos->anchor.x),
-                roundf(pos->y - pos->anchor.y),
+                (pos->x - pos->anchor.x),
+                (pos->y - pos->anchor.y),
             };
             break;
         case '%': {
@@ -203,8 +203,8 @@ static SDL_FPoint _sdl_pos (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref) {
             }
             SDL_FRect r1 = _f1(pos->up, r0, NULL);
             ret = (SDL_FPoint) {
-                roundf(r1.x + pos->x*r1.w - pos->anchor.x),
-                roundf(r1.y + pos->y*r1.h - pos->anchor.y),
+                (r1.x + pos->x*r1.w - pos->anchor.x),
+                (r1.y + pos->y*r1.h - pos->anchor.y),
             };
             break;
         }
@@ -238,8 +238,8 @@ static SDL_FRect _sdl_rect (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref, Pico_
             assert(ref==NULL && rect->up==NULL && "TODO");
             SDL_FDim d = _f3(rect->w, rect->h, dim);
             ret = (SDL_FRect) {
-                roundf(rect->x - rect->anchor.x*d.w),
-                roundf(rect->y - rect->anchor.y*d.h),
+                (rect->x - rect->anchor.x*d.w),
+                (rect->y - rect->anchor.y*d.h),
                 d.w,
                 d.h
             };
@@ -258,8 +258,7 @@ static SDL_FRect _sdl_rect (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref, Pico_
                     ref->x, ref->y, ref->w, ref->h
                 };
             }
-            SDL_FRect r1 = _f1(rect, r0, dim);
-            ret = (SDL_FRect) { roundf(r1.x), roundf(r1.y), r1.w, r1.h };
+            ret = _f1(rect, r0, dim);
             break;
         }
         default:
@@ -340,12 +339,12 @@ Pico_Abs_Rect* _crop (void) {
 
 Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref) {
     SDL_FPoint pf = _sdl_pos(pos, ref);
-    return (Pico_Abs_Pos) { pf.x, pf.y };
+    return (Pico_Abs_Pos) _fi_pos(&pf);
 }
 
 Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref) {
     SDL_FRect rf = _sdl_rect(rect, ref, NULL);
-    return (Pico_Abs_Rect) { rf.x, rf.y, rf.w, rf.h };
+    return (Pico_Abs_Rect) _fi_rect(&rf);
 }
 
 int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect) {
@@ -723,10 +722,12 @@ void pico_output_draw_oval (Pico_Rel_Rect* rect) {
 }
 
 void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
-    SDL_FPoint f = _sdl_pos(pos, NULL);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_RenderDrawPoint(REN, f.x, f.y);
+    SDL_FPoint f = _sdl_pos(pos, NULL);
+    SDL_Point i = _fi_pos(&f);
+    SDL_RenderDrawPoint(REN, i.x, i.y);
+        // TODO: could use PointF, but 4.5->4 (not 5 desired)
     _pico_output_present(0);
 }
 
@@ -790,7 +791,7 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
     Pico_Abs_Dim* dp = NULL;
     if (rect->w == 0) {
         // texture with any height to get aspect ratio
-        SDL_Texture* tex = _tex_text(NULL, 100, text, S.color.draw);
+        SDL_Texture* tex = _tex_text(NULL, 10, text, S.color.draw);
         pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
         SDL_DestroyTexture(tex);
         dp = &d;
