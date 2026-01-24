@@ -64,7 +64,7 @@ typedef struct {
 // '!': raw
 // '%': pct
 // '#': tile (TODO)
-// '*': mix
+// '*': mix  (TODO)
 // '?': unk/err
 
 typedef struct Pico_Rel_Rect {

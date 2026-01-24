@@ -144,22 +144,37 @@ static void _tex_dim_pct (SDL_Texture* tex, Pico_Pct* pct, Pico_Rel_Rect* ref) {
 }
 #endif
 
-static SDL_FRect _f2 (SDL_FRect dn, Pico_Pct a, SDL_FRect up) {
-    int w = dn.w * up.w;
-    int h = dn.h * up.h;
+static SDL_FDim _f3 (float w, float h, Pico_Abs_Dim* dim) {
+    if (w==0 || h==0) {
+        assert(dim != NULL);
+        if (w == 0 && h == 0) {
+            w = dim->w;
+            h = dim->h;
+        } else if (w == 0) {
+            w = h * dim->w / dim->h;
+        } else {
+            h = w * dim->h / dim->w;
+        }
+    }
+    return (SDL_FDim) { w, h };
+}
+
+static SDL_FRect _f2 (SDL_FRect dn, Pico_Pct a, SDL_FRect up, Pico_Abs_Dim* dim) {
+    SDL_FDim d = _f3(dn.w*up.w, dn.h*up.h, dim);
     return (SDL_FRect) {
-        up.x + dn.x*up.w - a.x*w,
-        up.y + dn.y*up.h - a.y*h,
-        w, h,
+        up.x + dn.x*up.w - a.x*d.w,
+        up.y + dn.y*up.h - a.y*d.h,
+        d.w, d.h,
     };
 }
-static SDL_FRect _f1 (const Pico_Rel_Rect* r, SDL_FRect ref) {
+
+static SDL_FRect _f1 (const Pico_Rel_Rect* r, SDL_FRect ref, Pico_Abs_Dim* dim) {
     if (r == NULL) {
         return ref;
     } else {
         SDL_FRect abs = { r->x, r->y, r->w, r->h };
-        SDL_FRect tmp = _f1(r->up, ref);
-        return _f2(abs, r->anchor, tmp);
+        SDL_FRect tmp = _f1(r->up, ref, NULL);
+        return _f2(abs, r->anchor, tmp, dim);
     }
 }
 
@@ -186,7 +201,7 @@ static SDL_FPoint _sdl_pos (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref) {
                     ref->x, ref->y, ref->w, ref->h
                 };
             }
-            SDL_FRect r1 = _f1(pos->up, r0);
+            SDL_FRect r1 = _f1(pos->up, r0, NULL);
             ret = (SDL_FPoint) {
                 roundf(r1.x + pos->x*r1.w - pos->anchor.x),
                 roundf(r1.y + pos->y*r1.h - pos->anchor.y),
@@ -215,19 +230,21 @@ static SDL_FDim _sdl_dim (const Pico_Rel_Dim* dim) {
     return ret;
 }
 
-static SDL_FRect _sdl_rect (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref) {
+static SDL_FRect _sdl_rect (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref, Pico_Abs_Dim* dim) {
     SDL_FRect ret;
     switch (rect->mode) {
-        case '!':
+        case '!': {
             // TODO: verify if ref is used in '!'
             assert(ref==NULL && rect->up==NULL && "TODO");
+            SDL_FDim d = _f3(rect->w, rect->h, dim);
             ret = (SDL_FRect) {
-                roundf(rect->x - rect->anchor.x*rect->w),
-                roundf(rect->y - rect->anchor.y*rect->h),
-                rect->w,
-                rect->h
+                roundf(rect->x - rect->anchor.x*d.w),
+                roundf(rect->y - rect->anchor.y*d.h),
+                d.w,
+                d.h
             };
             break;
+        }
         case '%': {
             SDL_FRect r0;
             if (ref == NULL) {
@@ -241,7 +258,7 @@ static SDL_FRect _sdl_rect (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref) {
                     ref->x, ref->y, ref->w, ref->h
                 };
             }
-            SDL_FRect r1 = _f1(rect, r0);
+            SDL_FRect r1 = _f1(rect, r0, dim);
             ret = (SDL_FRect) { roundf(r1.x), roundf(r1.y), r1.w, r1.h };
             break;
         }
@@ -263,6 +280,7 @@ static SDL_Rect _fi_rect (const SDL_FRect* f) {
     return (SDL_Rect) { roundf(f->x), roundf(f->y), roundf(f->w), roundf(f->h) };
 }
 
+// TODO: remove
 static Pico_Abs_Dim _tex_dim_abs (SDL_Texture* tex, Pico_Abs_Dim dim) {
     if (dim.w!=0 && dim.h!=0) {
         return dim;
@@ -326,21 +344,21 @@ Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref) {
 }
 
 Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref) {
-    SDL_FRect rf = _sdl_rect(rect, ref);
+    SDL_FRect rf = _sdl_rect(rect, ref, NULL);
     return (Pico_Abs_Rect) { rf.x, rf.y, rf.w, rf.h };
 }
 
 int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect) {
     SDL_FPoint pf = _sdl_pos(pos, NULL);
-    SDL_FRect  rf = _sdl_rect(rect, NULL);
+    SDL_FRect  rf = _sdl_rect(rect, NULL, NULL);
     SDL_Point  pi = _fi_pos(&pf);
     SDL_Rect   ri = _fi_rect(&rf);
     return SDL_PointInRect(&pi, &ri);
 }
 
 int pico_vs_rect_rect (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2) {
-    SDL_FRect f1 = _sdl_rect(r1, NULL);
-    SDL_FRect f2 = _sdl_rect(r2, NULL);
+    SDL_FRect f1 = _sdl_rect(r1, NULL, NULL);
+    SDL_FRect f2 = _sdl_rect(r2, NULL, NULL);
     SDL_Rect  i1 = _fi_rect(&f1);
     SDL_Rect  i2 = _fi_rect(&f2);
     return SDL_HasIntersection(&i1, &i2);
@@ -633,7 +651,11 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_buffer (Pico_Abs_Dim dim, const Pico_Color_A buffer[], const Pico_Rel_Rect* rect) {
+void pico_output_draw_buffer (
+    Pico_Abs_Dim dim,
+    const Pico_Color_A buffer[],
+    const Pico_Rel_Rect* rect
+) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
         (void*)buffer, dim.w, dim.h,
         32, 4*dim.w, SDL_PIXELFORMAT_RGBA32
@@ -642,23 +664,27 @@ void pico_output_draw_buffer (Pico_Abs_Dim dim, const Pico_Color_A buffer[], con
     pico_assert(tex != NULL);
     SDL_FreeSurface(sfc);
 
-    SDL_FRect rf = _sdl_rect(rect, NULL);
-    Pico_Abs_Dim d = _tex_dim_abs(tex, (Pico_Abs_Dim){rf.w, rf.h});
-    rf.w = d.w;
-    rf.h = d.h;
-
+    Pico_Abs_Dim  d;
+    Pico_Abs_Dim* dp = NULL;
+    if (rect->w == 0 || rect->h == 0) {
+        pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
+        dp = &d;
+    }
+    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopyF(REN, tex, _crop(), &rf);
     _pico_output_present(0);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
-    SDL_FRect rf = _sdl_rect(rect, NULL);
     SDL_Texture* tex = _tex_image(path);
-    Pico_Abs_Dim d = _tex_dim_abs(tex, (Pico_Abs_Dim){rf.w, rf.h});
-    rf.w = d.w;
-    rf.h = d.h;
-
+    Pico_Abs_Dim  d;
+    Pico_Abs_Dim* dp = NULL;
+    if (rect->w == 0 || rect->h == 0) {
+        pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
+        dp = &d;
+    }
+    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopyF(REN, tex, _crop(), &rf);
     _pico_output_present(0);
@@ -674,7 +700,7 @@ void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
 }
 
 void pico_output_draw_oval (Pico_Rel_Rect* rect) {
-    SDL_FRect f = _sdl_rect(rect, NULL);
+    SDL_FRect f = _sdl_rect(rect, NULL, NULL);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
@@ -714,7 +740,7 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
 }
 
 void pico_output_draw_rect (Pico_Rel_Rect* rect) {
-    SDL_FRect f = _sdl_rect(rect, NULL);
+    SDL_FRect f = _sdl_rect(rect, NULL, NULL);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
@@ -757,11 +783,18 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
 void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
     if (text[0] == '\0') return;
 
-    SDL_FRect rf = _sdl_rect(rect, NULL);
-    SDL_Texture* tex =  _tex_text(NULL, rf.h, text, S.color.draw);
-    Pico_Abs_Dim d = _tex_dim_abs(tex, (Pico_Abs_Dim){rf.w, rf.h});
-    rf.w = d.w;
-    rf.h = d.h;
+    // For text, h is the font size (must be specified), w can be 0 (auto)
+    // Create texture with a default height to get aspect ratio
+    SDL_Texture* tex = _tex_text(NULL, 100, text, S.color.draw);
+    Pico_Abs_Dim d;
+    pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
+
+    Pico_Abs_Dim* dp = (rect->w == 0) ? &d : NULL;
+    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
+
+    // Recreate texture with correct height
+    SDL_DestroyTexture(tex);
+    tex = _tex_text(NULL, rf.h, text, S.color.draw);
 
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopyF(REN, tex, _crop(), &rf);
@@ -957,7 +990,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r) {
     if (r == NULL) {
         ri = (SDL_Rect){0, 0, S.view.phy.w, S.view.phy.h};
     } else {
-        SDL_FRect rf = _sdl_rect(r, NULL);
+        SDL_FRect rf = _sdl_rect(r, NULL, NULL);
         ri = _fi_rect(&rf);
     }
 
@@ -1227,17 +1260,17 @@ void pico_set_view (
     }
     { // dst, src, clip: only assign (no extra processing)
         if (dst != NULL) {
-            SDL_FRect rf = _sdl_rect(dst, NULL);
+            SDL_FRect rf = _sdl_rect(dst, NULL, NULL);
             SDL_Rect  ri = _fi_rect(&rf);
             S.view.dst = ri;
         }
         if (src != NULL) {
-            SDL_FRect rf = _sdl_rect(src, NULL);
+            SDL_FRect rf = _sdl_rect(src, NULL, NULL);
             SDL_Rect  ri = _fi_rect(&rf);
             S.view.src = ri;
         }
         if (clip != NULL) {
-            SDL_FRect rf = _sdl_rect(clip, NULL);
+            SDL_FRect rf = _sdl_rect(clip, NULL, NULL);
             SDL_Rect  ri = _fi_rect(&rf);
             S.view.clip = ri;
         }
