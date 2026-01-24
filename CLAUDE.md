@@ -7,7 +7,8 @@ code in this repository.
 
 pico-sdl is a C graphics library for developing 2D games and applications,
 targeting educational use.
-It's implemented as a facade over SDL2, providing simplified APIs organized into three groups:
+It's implemented as a facade over SDL2, providing simplified APIs organized
+into three groups:
 
 - `pico_output_*` for output operations (drawing shapes, playing audio)
 - `pico_input_*` for input events (waiting time, key presses)
@@ -29,7 +30,8 @@ Compile and run a C program:
 This script:
 
 - Compiles the program with `src/pico.c`
-- Links against SDL2 libraries: `-lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx`
+- Links against SDL2 libraries:
+  `-lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx`
 - Runs the executable from the program's directory
 
 Manual compilation:
@@ -78,12 +80,17 @@ cd docs
 
 The library is implemented in `src/`:
 
-- `pico.h` - Main API header with all function declarations and type definitions
+- `pico.h` - Main API header with all function declarations and type
+  definitions
 - `pico.c` - Core implementation wrapping SDL2 functionality
 - `hash.h` - Hash table for resource management (uses ttl-hash library)
 - `tiny_ttf.h` - Embedded font for default text rendering
 - `keys.h` - Keyboard key constants (`PICO_KEY_*`)
 - `events.h` - Event type constants (PICO_KEYUP, PICO_MOUSEBUTTONDOWN, etc.)
+- `colors.h` - Color types (`Pico_Color`, `Pico_Color_A`) and predefined color
+  constants (`PICO_COLOR_RED`, `PICO_COLOR_BLUE`, etc.)
+- `anchors.h` - Anchor constants for positioning (`PICO_ANCHOR_C`,
+  `PICO_ANCHOR_NW`, etc.)
 
 ### State Management
 
@@ -101,30 +108,87 @@ containing:
 - Drawing style (`PICO_STYLE_FILL` or `PICO_STYLE_STROKE`)
 - View configuration (physical/logical dimensions, fullscreen, clipping)
 
+### Type System
+
+The library uses two categories of types:
+
+**Absolute types** (fixed pixel values):
+- `Pico_Abs_Rect` - Rectangle in logical pixels (SDL_Rect alias)
+- `Pico_Abs_Pos` - Position in logical pixels (SDL_Point alias)
+- `Pico_Abs_Dim` - Dimensions in logical pixels (w, h)
+
+**Relative types** (mode-aware, supports anchoring and hierarchy):
+- `Pico_Rel_Rect` - Rectangle with mode, anchor, and parent reference
+- `Pico_Rel_Pos` - Position with mode, anchor, and parent reference
+- `Pico_Rel_Dim` - Dimensions with mode and parent reference
+
+Relative types have a `mode` field (first field) that determines how values
+are interpreted:
+- `'!'` - Raw/absolute mode: values are logical pixel coordinates
+- `'%'` - Percentage mode: values are normalized (0.0-1.0)
+- `'#'` - Tile mode (TODO)
+- `'*'` - Mixed mode
+- `'?'` - Unknown/error
+
+Example usage:
+```c
+// Raw mode: 5,5 position with 4x4 size in logical pixels
+Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_C, NULL };
+
+// Percentage mode: centered at 50%,50% with 40%x40% size
+Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_C, NULL };
+```
+
 ### Color Types
 
-The library provides two color types:
+The library provides two color types (defined in `colors.h`):
 
 - **Pico_Color**: RGB color without alpha (3 bytes: r, g, b)
-  - Used for setting drawing and clear colors via `pico_set_color_draw()` and `pico_set_color_clear()`
+    - Used for setting drawing and clear colors via `pico_set_color_draw()`
+      and `pico_set_color_clear()`
+    - Predefined constants: `PICO_COLOR_RED`, `PICO_COLOR_GREEN`,
+      `PICO_COLOR_BLUE`, `PICO_COLOR_WHITE`, `PICO_COLOR_BLACK`, etc.
 
 - **Pico_Color_A**: RGBA color with per-pixel alpha (4 bytes: r, g, b, a)
-  - Used for buffer drawing functions: `pico_output_draw_buffer_raw()` and `pico_output_draw_buffer_pct()`
-  - Each pixel can have its own alpha value (0-255)
-  - Alpha values are applied directly from the buffer data (global alpha from `pico_set_alpha()` is not used)
+    - Used for buffer drawing functions: `pico_output_draw_buffer()`
+    - Each pixel can have its own alpha value (0-255)
+    - Alpha values are applied directly from the buffer data (global alpha
+      from `pico_set_alpha()` is not used)
 
-### Coordinate Systems
+### Coordinate Systems and API Suffixes
 
-The library supports two coordinate systems, each with two API variants:
+The library supports two coordinate systems with corresponding API suffixes:
 
 1. **Raw (Absolute)**: Functions ending in `_raw` use logical pixel coordinates
-   - Example: `pico_output_draw_rect_raw(Pico_Rect rect)`
+   - Example: `pico_output_draw_image_raw(path, rect)`
+   - Uses `Pico_Rel_*` types with mode `'!'`
 
 2. **Percentage-based**: Functions ending in `_pct` use normalized coordinates
    (0.0-1.0)
-   - Example: `pico_output_draw_rect_pct(const Pico_Rect_Pct* rect)`
+   - Example: `pico_output_draw_image_pct(path, rect)`
+   - Uses `Pico_Rel_*` types with mode `'%'`
    - Supports hierarchical positioning with `anchor` and `up` (parent) fields
-   - Anchor values: `PICO_ANCHOR_LEFT/CENTER/RIGHT` (0, 0.5, 1) and `TOP/MIDDLE/BOTTOM`
+
+Some functions accept `Pico_Rel_*` types directly and interpret the mode field:
+- `pico_output_draw_rect(Pico_Rel_Rect* rect)` - mode determines coordinate
+  interpretation
+
+### Anchors
+
+Anchors define the reference point for positioning (defined in `anchors.h`):
+
+**Basic values** (can be combined):
+- `PICO_ANCHOR_LEFT` (0), `PICO_ANCHOR_CENTER` (0.5), `PICO_ANCHOR_RIGHT` (1)
+- `PICO_ANCHOR_TOP` (0), `PICO_ANCHOR_MIDDLE` (0.5), `PICO_ANCHOR_BOTTOM` (1)
+
+**Cardinal direction presets** (`Pico_Pct` structs):
+- `PICO_ANCHOR_NW`, `PICO_ANCHOR_N`, `PICO_ANCHOR_NE`
+- `PICO_ANCHOR_W`, `PICO_ANCHOR_C`, `PICO_ANCHOR_E`
+- `PICO_ANCHOR_SW`, `PICO_ANCHOR_S`, `PICO_ANCHOR_SE`
+
+**Special values**:
+- `PICO_ANCHOR_X` - Unset/invalid anchor (-1, -1)
+- `PICO_ANCHOR_C` - Center (equivalent to CENTER, MIDDLE)
 
 The library maintains both physical (window) and logical (game world)
 dimensions, with automatic scaling between them.
@@ -132,7 +196,8 @@ Target mode (`TGT` variable) determines which coordinate space is active.
 
 ### Resource Management
 
-Resources (images, sounds) are cached in a hash table (`_pico_hash`) with TTL-based eviction to avoid reloading. The hash implementation uses:
+Resources (images, sounds) are cached in a hash table (`_pico_hash`) with
+TTL-based eviction to avoid reloading. The hash implementation uses:
 
 - Buckets: `PICO_HASH_BUK` (128 by default)
 - TTL: `PICO_HASH_TTL` (1000 ticks)
@@ -145,24 +210,49 @@ Resources (images, sounds) are cached in a hash table (`_pico_hash`) with TTL-ba
 2. In immediate mode (default), display updates instantly after each operation
 3. In expert mode (`pico_set_expert(1)`), rendering is buffered until
    `pico_output_present()` is called
-4. Grid overlay (enabled by default) shows logical pixel boundaries for debugging
+4. Grid overlay (enabled by default) shows logical pixel boundaries for
+   debugging
+
+### Utility Functions
+
+The library provides utility functions for common operations:
+
+**Conversion functions** (`pico_cv_*`):
+- `pico_cv_rect_pct_raw()` - Convert percentage rect to absolute
+- `pico_cv_pos_rel_abs()` - Convert relative position to absolute
+- `pico_cv_rect_rel_abs()` - Convert relative rect to absolute
+
+**Collision detection** (`pico_vs_*`):
+- `pico_vs_pos_rect()` - Check if point is inside rectangle
+- `pico_vs_rect_rect()` - Check if two rectangles overlap
+- `pico_vs_rect_rect_pct()` - Same with percentage coordinates
+
+**Color manipulation**:
+- `pico_color_darker(color, pct)` - Make color darker
+- `pico_color_lighter(color, pct)` - Make color lighter
 
 ### Test Structure
 
 The `tst/` directory contains example programs demonstrating features:
-- `main.c` - Comprehensive feature demonstration
 - Individual test files for specific features:
-    `anchor_pct.c`, `blend_pct.c`, `buffer_pct.c`, `collide_pct.c`, etc.
-- Files with `_pct` suffix test percentage-based APIs
-- Files with `_raw` suffix test absolute coordinate APIs
+    `anchor_abs.c`, `anchor_pct.c`, `blend_abs.c`, `blend_pct.c`,
+    `buffer_abs.c`, `collide_abs.c`, `colors.c`, `cv.c`, `vs.c`, etc.
+- Files with `_abs` suffix test raw/absolute coordinate APIs (mode `'!'`)
+- Files with `_pct` suffix test percentage-based APIs (mode `'%'`)
+- Files prefixed with `todo_` are work-in-progress tests
 
 ## Key Design Principles
 
-- **Single-buffer rendering**: Changes are visible immediately, enabling step-by-step visual debugging
-- **Sensible defaults**: Black background, white foreground, built-in font, grid enabled
-- **Standardized naming**: Consistent `pico_output_*`, `pico_input_*`, `pico_get_*`, `pico_set_*` patterns
-- **Educational focus**: Visual aids (grid), zoom/scroll support, immediate feedback prioritized over performance
-- **SDL2 facade**: Simplifies SDL2 while allowing direct SDL2 fallback when needed
+- **Single-buffer rendering**: Changes are visible immediately, enabling
+  step-by-step visual debugging
+- **Sensible defaults**: Black background, white foreground, built-in font,
+  grid enabled
+- **Standardized naming**: Consistent `pico_output_*`, `pico_input_*`,
+  `pico_get_*`, `pico_set_*` patterns
+- **Educational focus**: Visual aids (grid), zoom/scroll support, immediate
+  feedback prioritized over performance
+- **SDL2 facade**: Simplifies SDL2 while allowing direct SDL2 fallback when
+  needed
 
 ## Dependencies
 
@@ -177,7 +267,8 @@ Required SDL2 libraries:
 Install on Ubuntu/Debian:
 
 ```bash
-sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl2-gfx-dev
+sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev \
+    libsdl2-ttf-dev libsdl2-gfx-dev
 ```
 
 ## Testing
@@ -210,8 +301,8 @@ Visual tests use `check.h` to compare rendered output against expected images.
 - `tst/out/` - Generated output images (auto-created during tests)
 
 **Naming convention:**
-- Format: `filename-XX.png` (e.g., `anchor_pct-01.png`, `anchor_pct-02.png`)
-- `filename` matches the test file name
+- Format: `filename-XX.png` (e.g., `anchor_pct-01.png`, `anchor-02.png`)
+- `filename` matches the test file name (or a common prefix for shared tests)
 - `XX` is the sequential test number (01, 02, 03, ...)
 
 **Workflow:**
@@ -258,14 +349,17 @@ make tests  # automatically uses xvfb and ASR mode
 
 ```c
 #include "pico.h"
-#include "check.h"
+#include "../check.h"
 
 int main(void) {
     pico_init(1);
     pico_output_clear();
-    pico_output_draw_rect_pct(&(Pico_Rect_Pct){
-        0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL});
+
+    // Using percentage mode
+    Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_C, NULL };
+    pico_output_draw_rect(&r);
     _pico_check("anchor_pct-01");  // Writes to out/, compares with asr/
+
     pico_init(0);
     return 0;
 }
