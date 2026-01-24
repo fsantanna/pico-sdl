@@ -706,18 +706,19 @@ void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
 
 void pico_output_draw_oval (Pico_Rel_Rect* rect) {
     SDL_FRect f = _sdl_rect(rect, NULL, NULL);
+    SDL_Rect  i = _fi_rect(&f);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
         case PICO_STYLE_FILL:
             filledEllipseRGBA (REN,
-                f.x+f.w/2, f.y+f.h/2, f.w/2, f.h/2,
+                i.x+i.w/2, i.y+i.h/2, i.w/2, i.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
         case PICO_STYLE_STROKE:
             ellipseRGBA (REN,
-                f.x+f.w/2, f.y+f.h/2, f.w/2, f.h/2,
+                i.x+i.w/2, i.y+i.h/2, i.w/2, i.h/2,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
@@ -729,7 +730,7 @@ void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     SDL_FPoint f = _sdl_pos(pos, NULL);
-    SDL_Point i = _fi_pos(&f);
+    SDL_Point  i = _fi_pos(&f);
     SDL_RenderDrawPoint(REN, i.x, i.y);
         // TODO: could use PointF, but 4.5->4 (not 5 desired)
     _pico_output_present(0);
@@ -768,8 +769,9 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
     Sint16 xs[n], ys[n];
     for (int i=0; i<n; i++) {
         SDL_FPoint f = _sdl_pos(&ps[i], NULL);
-        xs[i] = f.x;
-        ys[i] = f.y;
+        SDL_Point  v = _fi_pos(&f);
+        xs[i] = v.x;
+        ys[i] = v.y;
     }
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -817,23 +819,26 @@ void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3)
     SDL_FPoint f1 = _sdl_pos(p1, NULL);
     SDL_FPoint f2 = _sdl_pos(p2, NULL);
     SDL_FPoint f3 = _sdl_pos(p3, NULL);
+    SDL_Point  i1 = _fi_pos(&f1);
+    SDL_Point  i2 = _fi_pos(&f2);
+    SDL_Point  i3 = _fi_pos(&f3);
 
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
         case PICO_STYLE_FILL:
             filledTrigonRGBA(REN,
-                f1.x, f1.y,
-                f2.x, f2.y,
-                f3.x, f3.y,
+                i1.x, i1.y,
+                i2.x, i2.y,
+                i3.x, i3.y,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
         case PICO_STYLE_STROKE:
             trigonRGBA(REN,
-                f1.x, f1.y,
-                f2.x, f2.y,
-                f3.x, f3.y,
+                i1.x, i1.y,
+                i2.x, i2.y,
+                i3.x, i3.y,
                 S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
             );
             break;
