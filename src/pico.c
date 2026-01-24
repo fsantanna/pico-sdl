@@ -669,9 +669,10 @@ void pico_output_draw_buffer (
         pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
         dp = &d;
     }
-    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopyF(REN, tex, _crop(), &rf);
+    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
+    SDL_Rect  ri = _fi_rect(&rf);
+    SDL_RenderCopy(REN, tex, _crop(), &ri);
     _pico_output_present(0);
 }
 
@@ -685,18 +686,21 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
         dp = &d;
     }
 
-    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopyF(REN, tex, _crop(), &rf);
+    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
+    SDL_Rect  ri = _fi_rect(&rf);
+    SDL_RenderCopy(REN, tex, _crop(), &ri);
     _pico_output_present(0);
 }
 
 void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
-    SDL_FPoint f1 = _sdl_pos(p1, NULL);
-    SDL_FPoint f2 = _sdl_pos(p2, NULL);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_RenderDrawLineF(REN, f1.x,f1.y, f2.x,f2.y);
+    SDL_FPoint f1 = _sdl_pos(p1, NULL);
+    SDL_FPoint f2 = _sdl_pos(p2, NULL);
+    SDL_Point  i1 = _fi_pos(&f1);
+    SDL_Point  i2 = _fi_pos(&f2);
+    SDL_RenderDrawLine(REN, i1.x,i1.y, i2.x,i2.y);
     _pico_output_present(0);
 }
 
@@ -732,26 +736,29 @@ void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
 }
 
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
-    SDL_FPoint vs[n];
+    SDL_Point vs[n];
     for (int i=0; i<n; i++) {
-        vs[i] = _sdl_pos(&ps[i], NULL);
+        SDL_FPoint f = _sdl_pos(&ps[i], NULL);
+        vs[i] = _fi_pos(&f);
     }
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_RenderDrawPointsF(REN, vs, n);
+    SDL_RenderDrawPoints(REN, vs, n);
     _pico_output_present(0);
 }
 
 void pico_output_draw_rect (Pico_Rel_Rect* rect) {
-    SDL_FRect f = _sdl_rect(rect, NULL, NULL);
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+
+    SDL_FRect f = _sdl_rect(rect, NULL, NULL);
+    SDL_Rect  i = _fi_rect(&f);
     switch (S.style) {
         case PICO_STYLE_FILL:
-            SDL_RenderFillRectF(REN, &f);
+            SDL_RenderFillRect(REN, &i);
             break;
         case PICO_STYLE_STROKE:
-            SDL_RenderDrawRectF(REN, &f);
+            SDL_RenderDrawRect(REN, &i);
             break;
     }
     _pico_output_present(0);
@@ -800,7 +807,8 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
     SDL_FRect rf = _sdl_rect(rect, NULL, dp);
     SDL_Texture* tex = _tex_text(NULL, rf.h, text, S.color.draw);
     SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_RenderCopyF(REN, tex, _crop(), &rf);
+    SDL_Rect ri = _fi_rect(&rf);
+    SDL_RenderCopy(REN, tex, _crop(), &ri);
     SDL_DestroyTexture(tex);
     _pico_output_present(0);
 }
