@@ -678,12 +678,14 @@ void pico_output_draw_buffer (
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
     SDL_Texture* tex = _tex_image(path);
+
     Pico_Abs_Dim  d;
     Pico_Abs_Dim* dp = NULL;
     if (rect->w == 0 || rect->h == 0) {
         pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
         dp = &d;
     }
+
     SDL_FRect rf = _sdl_rect(rect, NULL, dp);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopyF(REN, tex, _crop(), &rf);
@@ -782,20 +784,20 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
 
 void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
     if (text[0] == '\0') return;
+    assert(rect->h != 0);
 
-    // For text, h is the font size (must be specified), w can be 0 (auto)
-    // Create texture with a default height to get aspect ratio
-    SDL_Texture* tex = _tex_text(NULL, 100, text, S.color.draw);
-    Pico_Abs_Dim d;
-    pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
+    Pico_Abs_Dim  d;
+    Pico_Abs_Dim* dp = NULL;
+    if (rect->w == 0) {
+        // texture with any height to get aspect ratio
+        SDL_Texture* tex = _tex_text(NULL, 100, text, S.color.draw);
+        pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
+        SDL_DestroyTexture(tex);
+        dp = &d;
+    }
 
-    Pico_Abs_Dim* dp = (rect->w == 0) ? &d : NULL;
     SDL_FRect rf = _sdl_rect(rect, NULL, dp);
-
-    // Recreate texture with correct height
-    SDL_DestroyTexture(tex);
-    tex = _tex_text(NULL, rf.h, text, S.color.draw);
-
+    SDL_Texture* tex = _tex_text(NULL, rf.h, text, S.color.draw);
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopyF(REN, tex, _crop(), &rf);
     SDL_DestroyTexture(tex);
