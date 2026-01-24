@@ -43,10 +43,12 @@ int main (void) {
     {
         puts("text dimming");
         Pico_Rel_Rect r = {'%', {0.5, 0.5, 0, 0.28}, PICO_ANCHOR_C, NULL};
+        Pico_Rel_Rect z = {'!', {6.296000, 12.960000, 51.408001, 10.080000}, PICO_ANCHOR_NW, NULL};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);
             pico_set_color_draw((Pico_Color){255,0,0});
+            pico_output_draw_rect(&z);
             pico_output_draw_text("SOME TEXT", &r);
             pico_input_delay(10);
             if (a == 120) {
