@@ -773,7 +773,7 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
 void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3) {
     SDL_FPoint f1 = _sdl_pos(p1, NULL);
     SDL_FPoint f2 = _sdl_pos(p2, NULL);
-    SDL_FPoint f3 = _sdl_pos(p2, NULL);
+    SDL_FPoint f3 = _sdl_pos(p3, NULL);
 
     SDL_SetRenderDrawColor(REN,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
