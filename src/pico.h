@@ -163,6 +163,12 @@ void pico_output_clear (void);
 /// @sa pico_output_draw_image
 void pico_output_draw_buffer (Pico_Abs_Dim dim, const Pico_Color_A buffer[], const Pico_Rel_Rect* rect);
 
+/// @brief Draws an image using absolute coordinates.
+/// @param path path to the image file
+/// @param rect image target position and dimension
+/// @sa pico_output_draw_buffer
+void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect);
+
 /// @brief Draws a line using absolute coordinates.
 /// @param p1 first endpoint position
 /// @param p2 second endpoint position
