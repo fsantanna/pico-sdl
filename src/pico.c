@@ -268,7 +268,8 @@ static Pico_Abs_Dim _tex_dim_abs (SDL_Texture* tex, Pico_Abs_Dim dim) {
         return dim;
     } else {
         int w, h;
-        SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+        int ret = SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+        pico_assert(ret == 0);
         if (dim.w==0 && dim.h==0) {
             dim.w = w;
             dim.h = h;
@@ -648,7 +649,6 @@ void pico_output_draw_buffer (Pico_Abs_Dim dim, const Pico_Color_A buffer[], con
 
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopyF(REN, tex, _crop(), &rf);
-    SDL_DestroyTexture(tex);
     _pico_output_present(0);
 }
 
@@ -661,7 +661,6 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
 
     SDL_SetTextureAlphaMod(tex, S.alpha);
     SDL_RenderCopyF(REN, tex, _crop(), &rf);
-    SDL_DestroyTexture(tex);
     _pico_output_present(0);
 }
 
