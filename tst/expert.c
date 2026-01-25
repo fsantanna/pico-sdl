@@ -5,8 +5,8 @@ int main (void) {
     pico_init(1);
     pico_set_title("Expert");
 
-    Pico_Rect_Pct r = { 0.5,0.5, 0.5,0.5, PICO_ANCHOR_C, NULL };
-    pico_output_draw_rect_pct(&r);
+    Pico_Rel_Rect r = { '%', {0.5,0.5, 0.5,0.5}, PICO_ANCHOR_C, NULL };
+    pico_output_draw_rect(&r);
     _pico_check("expert-01");
 
     pico_set_expert(1);
