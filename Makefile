@@ -12,7 +12,7 @@ ttl:
 		-o src/hash.h
 
 test:
-	$(EXE) tst/init.c
+	$(EXE) tst/$(T).c
 
 tests:
 	@echo "Running tests..."
