@@ -4,24 +4,24 @@
 int main() {
     pico_init(1);
 
-    Pico_Dim phy = {200,200};
-    Pico_Dim log = { 20, 20};
-    pico_set_view_abs(-1, -1, &phy, NULL, &log, NULL, NULL);
+    Pico_Rel_Dim phy = { '!', {200,200}, NULL };
+    Pico_Rel_Dim log = { '!', { 20, 20}, NULL };
+    pico_set_view(-1, -1, &phy, NULL, &log, NULL, NULL);
 
-    Pico_Rect r = { 10-2, 10-2, 4, 4 };
+    Pico_Rel_Rect r = { '!', { 10-2, 10-2, 4, 4 }, PICO_ANCHOR_NW, NULL };
 
     puts("pos_vs_rect");
     for (int y=r.y-1; y<=r.y+r.h; y++) {
         for (int x=r.x-1; x<=r.x+r.w; x++) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255});
-            pico_output_draw_rect_abs(r);
+            pico_output_draw_rect(&r);
 
-            Pico_Pos p = {x, y};
+            Pico_Rel_Pos p = { '!', {x, y}, PICO_ANCHOR_NW, NULL };
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_pixel_abs(p);
+            pico_output_draw_pixel(&p);
 
-            int in = pico_vs_pos_rect_abs(p, r);
+            int in = pico_vs_pos_rect(&p, &r);
             puts(in ? "in" : "out");
             pico_input_delay(10);
 
@@ -57,13 +57,13 @@ int main() {
         for (int x=r.x-r.w; x<=r.x+r.w; x++) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255});
-            pico_output_draw_rect_abs(r);
+            pico_output_draw_rect(&r);
 
-            Pico_Rect r2 = {x,y,4,4};
+            Pico_Rel_Rect r2 = { '!', {x,y,4,4}, PICO_ANCHOR_NW, NULL };
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_rect_abs(r2);
+            pico_output_draw_rect(&r2);
 
-            int in = pico_vs_rect_rect_abs(r2, r);
+            int in = pico_vs_rect_rect(&r2, &r);
             puts(in ? "overlap" : "naw");
             pico_input_delay(10);
 

@@ -4,24 +4,24 @@
 int main() {
     pico_init(1);
 
-    Pico_Dim phy = {200,200};
-    Pico_Dim log = { 20, 20};
-    pico_set_view_raw(-1, -1, &phy, NULL, &log, NULL, NULL);
+    Pico_Rel_Dim phy = { '!', {200,200}, NULL };
+    Pico_Rel_Dim log = { '!', { 20, 20}, NULL };
+    pico_set_view(-1, -1, &phy, NULL, &log, NULL, NULL);
 
-    Pico_Rect_Pct r = { 0.5,0.5, 0.5,0.5, PICO_ANCHOR_C, NULL };
+    Pico_Rel_Rect r = { '%', {0.5,0.5, 0.5,0.5}, PICO_ANCHOR_C, NULL };
 
     puts("pos_vs_rect");
     for (float y=-1; y<=10; y+=1) {
         for (float x=-1; x<=10; x+=1) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255});
-            pico_output_draw_rect_pct(&r);
+            pico_output_draw_rect(&r);
 
-            Pico_Pos_Pct p = {x/10.0,y/10.0, PICO_ANCHOR_C, &r};
+            Pico_Rel_Pos p = { '%', {x/10.0,y/10.0}, PICO_ANCHOR_C, &r };
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_pixel_pct(&p);
+            pico_output_draw_pixel(&p);
 
-            int in = pico_vs_pos_rect_pct(&p, &r);
+            int in = pico_vs_pos_rect(&p, &r);
             puts(in ? "in" : "out");
 
             if (x==-1 && y==-1) {
@@ -50,13 +50,13 @@ int main() {
         for (float x=-25; x<=125; x+=10) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255});
-            pico_output_draw_rect_pct(&r);
+            pico_output_draw_rect(&r);
 
-            Pico_Rect_Pct r2 = { x/100.0,y/100.0, 0.5,0.5, PICO_ANCHOR_C, &r };
+            Pico_Rel_Rect r2 = { '%', {x/100.0,y/100.0, 0.5,0.5}, PICO_ANCHOR_C, &r };
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_rect_pct(&r2);
+            pico_output_draw_rect(&r2);
 
-            int in = pico_vs_rect_rect_pct(&r2, &r);
+            int in = pico_vs_rect_rect(&r2, &r);
             puts(in ? "overlap" : "naw");
 
             if (x==-25 && y==-25) {
@@ -85,13 +85,13 @@ int main() {
         for (float x=-5; x<=10; x+=1) {
             pico_output_clear();
             pico_set_color_draw((Pico_Color){255,255,255});
-            pico_output_draw_rect_pct(&r);
+            pico_output_draw_rect(&r);
 
-            Pico_Rect_Pct r2 = { x/10.0,y/10.0, 0.5,0.5, PICO_ANCHOR_NW, &r };
+            Pico_Rel_Rect r2 = { '%', {x/10.0,y/10.0, 0.5,0.5}, PICO_ANCHOR_NW, &r };
             pico_set_color_draw((Pico_Color){255,0,0});
-            pico_output_draw_rect_pct(&r2);
+            pico_output_draw_rect(&r2);
 
-            int in = pico_vs_rect_rect_pct(&r2, &r);
+            int in = pico_vs_rect_rect(&r2, &r);
             puts(in ? "overlap" : "naw");
 
             if (x==-5 && y==-5) {
