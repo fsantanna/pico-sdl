@@ -28,8 +28,8 @@ int main (void) {
     }
     {
         puts("text dimming");
-        int w = pico_get_text(10, "SOME TEXT");
-        Pico_Rel_Rect r = {'!', {32-w/2, 18-5, 0, 10}, PICO_ANCHOR_NW, NULL};
+        Pico_Abs_Dim dim = pico_get_text("SOME TEXT", &(Pico_Rel_Dim){'!',{0,10},NULL});
+        Pico_Rel_Rect r = {'!', {32-dim.w/2, 18-5, 0, 10}, PICO_ANCHOR_NW, NULL};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_alpha(a);

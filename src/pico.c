@@ -879,10 +879,10 @@ static void _show_grid (void) {
             int v = S.view.src.x + (x * S.view.src.w / S.view.phy.w);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            int W = pico_get_text(H, lbl);
+            Pico_Abs_Dim dim = pico_get_text(lbl, &(Pico_Rel_Dim){ '!', {0, H}, NULL });
             pico_output_draw_text (
                 lbl,
-                &(Pico_Rel_Rect){ '!', {x-W/2, 10-H/2, 0, H}, PICO_ANCHOR_NW, NULL }
+                &(Pico_Rel_Rect){ '!', {x-dim.w/2, 10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW, NULL }
             );
         }
 
@@ -891,10 +891,10 @@ static void _show_grid (void) {
             int v = S.view.src.y + (y * S.view.src.h / S.view.phy.h);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            int W = pico_get_text(H, lbl);
+            Pico_Abs_Dim dim = pico_get_text(lbl, &(Pico_Rel_Dim){ '!', {0, H}, NULL });
             pico_output_draw_text (
                 lbl,
-                &(Pico_Rel_Rect){ '!', {10-W/2, y-H/2, 0, H}, PICO_ANCHOR_NW, NULL }
+                &(Pico_Rel_Rect){ '!', {10-dim.w/2, y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW, NULL }
             );
         }
     }
@@ -1111,24 +1111,18 @@ Pico_Abs_Rect pico_get_crop (void) {
     return S.crop;
 }
 
-Pico_Abs_Dim pico_get_image (const char* path) {
+Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
     SDL_Texture* tex = _tex_image(path);
-    Pico_Abs_Dim dim;
-    SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
-    return dim;
+    Pico_Abs_Dim ret;
+    if (dim == NULL) {
+        SDL_QueryTexture(tex, NULL, NULL, &ret.w, &ret.h);
+    } else {
+        Pico_Rel_Rect r = { dim->mode, {0, 0, dim->w, dim->h}, PICO_ANCHOR_NW, dim->up };
+        SDL_FRect rf = _sdl_rect(&r, NULL, NULL);
+        ret = _tex_dim_abs(tex, (Pico_Abs_Dim){rf.w, rf.h});
+    }
+    return ret;
 }
-
-void pico_get_image_abs (const char* path, Pico_Abs_Dim* dim) {
-    SDL_Texture* tex = _tex_image(path);
-    *dim = _tex_dim_abs(tex, *dim);
-}
-
-#if TODO
-void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rel_Rect* ref) {
-    SDL_Texture* tex = _tex_image(path);
-    _tex_dim_pct(tex, pct, ref);
-}
-#endif
 
 int pico_get_rotate (void) {
     return S.angle;
@@ -1142,34 +1136,18 @@ PICO_STYLE pico_get_style (void) {
     return S.style;
 }
 
-int pico_get_text (int h, const char* text) {
+Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim) {
     if (text[0] == '\0') {
-        return 0;
+        return ret;
     }
-    SDL_Texture* tex = _tex_text(NULL, h, text, (Pico_Color){0,0,0});
-    int w;
-    SDL_QueryTexture(tex, NULL, NULL, &w, NULL);
+    Pico_Abs_Dim ret = {0, 0};
+    Pico_Rel_Rect r = { dim->mode, {0, 0, dim->w, dim->h}, PICO_ANCHOR_NW, dim->up };
+    SDL_FRect rf = _sdl_rect(&r, NULL, NULL);
+    SDL_Texture* tex = _tex_text(NULL, rf.h, text, (Pico_Color){0,0,0});
+    ret = _tex_dim_abs(tex, (Pico_Abs_Dim){rf.w, rf.h});
     SDL_DestroyTexture(tex);
-    return w;
+    return ret;
 }
-
-void pico_get_text_abs (const char* text, Pico_Abs_Dim* dim) {
-    if (text[0] == '\0') return;
-    SDL_Texture* tex = _tex_text(NULL, dim->h, text, (Pico_Color){0,0,0});
-    *dim = _tex_dim_abs(tex, *dim);
-    SDL_DestroyTexture(tex);
-}
-
-#if TODO
-void pico_get_text_pct (const char* text, Pico_Pct* pct, Pico_Rel_Rect* ref) {
-    if (text[0] == '\0') return;
-    Pico_Rel_Rect r = { 0, 0, pct->w, pct->h, PICO_ANCHOR_NW, ref };
-    Pico_Rel_Rect raw = pico_cv_rect_pct_raw(&r);
-    SDL_Texture* tex = _tex_text(NULL, raw.h, text, (Pico_Color){0,0,0});
-    _tex_dim_pct(tex, pct, ref);
-    SDL_DestroyTexture(tex);
-}
-#endif
 
 Uint32 pico_get_ticks (void) {
     return SDL_GetTicks();

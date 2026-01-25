@@ -251,18 +251,9 @@ int pico_get_fullscreen (void);
 
 /// @brief Gets the dimensions of the given image.
 /// @param path image filepath
-Pico_Abs_Dim pico_get_image (const char* path);
-
-/// @brief Fills in missing w/h in dim based on image aspect ratio.
-/// @param path image filepath
-/// @param dim dimensions to fill (0 means auto-calculate)
-void pico_get_image_abs (const char* path, Pico_Abs_Dim* dim);
-
-/// @brief Fills in missing w/h in pct based on image aspect ratio.
-/// @param path image filepath
-/// @param pct dimensions as percentages (x=w, y=h; 0 means auto-calculate)
-/// @param ref reference rect for percentages (NULL uses world)
-void pico_get_image_pct (const char* path, Pico_Pct* pct, Pico_Rel_Rect* ref);
+/// @param dim optional dim with w/h to complete (NULL returns raw dimensions)
+/// @return absolute dimensions (missing w or h filled based on aspect ratio)
+Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 
 /// @brief Gets the state of a key.
 /// @param key key constant
@@ -291,18 +282,9 @@ PICO_STYLE pico_get_style (void);
 
 /// @brief Gets the dimensions of the given text.
 /// @param text text to measure
-int pico_get_text (int h, const char* text);
-
-/// @brief Fills in missing w/h in dim based on text dimensions.
-/// @param text text to measure
-/// @param dim dimensions with h for font size, w to fill (0 means auto-calculate)
-void pico_get_text_abs (const char* text, Pico_Abs_Dim* dim);
-
-/// @brief Fills in missing w/h in pct based on text dimensions.
-/// @param text text to measure
-/// @param pct dimensions as percentages (y=h for font size, x=w to fill)
-/// @param ref reference rect for percentages (NULL uses world)
-void pico_get_text_pct (const char* text, Pico_Pct* pct, Pico_Rel_Rect* ref);
+/// @param dim dim with h for font size (mode '!' or '%'), w filled in
+/// @return absolute dimensions
+Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 Uint32 pico_get_ticks (void);
