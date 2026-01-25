@@ -3,11 +3,20 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_view_raw(-1, -1, &(Pico_Dim){160, 160}, NULL, &(Pico_Dim){16, 16}, NULL, NULL);
+    pico_set_view(-1, -1,
+        &(Pico_Rel_Dim){ '!', {160, 160}, NULL },
+        NULL,
+        &(Pico_Rel_Dim){ '!', {16, 16}, NULL },
+        NULL, NULL
+    );
     pico_output_clear();
     for (int i=0; i<16; i++) {
-        pico_output_draw_pixel_raw((Pico_Pos) {i, i});
-        pico_output_draw_pixel_raw((Pico_Pos) {15-i, i});
+        pico_output_draw_pixel (
+            &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_NW, NULL }
+        );
+        pico_output_draw_pixel (
+            &(Pico_Rel_Pos) { '!', {15-i, i}, PICO_ANCHOR_NW, NULL }
+        );
         pico_input_delay(10);
         switch (i) {
             case 0:
