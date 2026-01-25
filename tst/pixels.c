@@ -4,17 +4,27 @@
 int main (void) {
     pico_init(1);
     pico_set_title("pixels");
-    pico_set_view_raw(-1, -1, &(Pico_Dim){100, 100}, NULL, &(Pico_Dim){5, 5}, NULL, NULL);
+    pico_set_view(-1, -1,
+        &(Pico_Rel_Dim){ '!', {100, 100}, NULL },
+        NULL,
+        &(Pico_Rel_Dim){ '!', {5, 5}, NULL },
+        NULL, NULL);
 
     {
-        Pico_Pos pixels[9] = {
-            {1, 1}, {2, 1}, {3, 1},
-            {1, 2}, {2, 2}, {3, 2},
-            {1, 3}, {2, 3}, {3, 3}
+        Pico_Rel_Pos pixels[9] = {
+            { '!', {1, 1}, PICO_ANCHOR_NW, NULL },
+            { '!', {2, 1}, PICO_ANCHOR_NW, NULL },
+            { '!', {3, 1}, PICO_ANCHOR_NW, NULL },
+            { '!', {1, 2}, PICO_ANCHOR_NW, NULL },
+            { '!', {2, 2}, PICO_ANCHOR_NW, NULL },
+            { '!', {3, 2}, PICO_ANCHOR_NW, NULL },
+            { '!', {1, 3}, PICO_ANCHOR_NW, NULL },
+            { '!', {2, 3}, PICO_ANCHOR_NW, NULL },
+            { '!', {3, 3}, PICO_ANCHOR_NW, NULL }
         };
         for (int i=1; i<=9; i++) {
             pico_output_clear();
-            pico_output_draw_pixels_raw(i, pixels);
+            pico_output_draw_pixels(i, pixels);
             printf("%d pixels\n", i);
             pico_input_delay(10);
         }
@@ -22,13 +32,13 @@ int main (void) {
     }
 
     {
-        Pico_Pos_Pct pixels[4] = {
-            {0, 0, PICO_ANCHOR_NW, NULL},
-            {1, 0, PICO_ANCHOR_NE, NULL},
-            {0, 1, PICO_ANCHOR_SW, NULL},
-            {1, 1, PICO_ANCHOR_SE, NULL},
+        Pico_Rel_Pos pixels[4] = {
+            { '%', {0, 0}, PICO_ANCHOR_NW, NULL },
+            { '%', {1, 0}, PICO_ANCHOR_NE, NULL },
+            { '%', {0, 1}, PICO_ANCHOR_SW, NULL },
+            { '%', {1, 1}, PICO_ANCHOR_SE, NULL },
         };
-        pico_output_draw_pixels_pct(4, pixels);
+        pico_output_draw_pixels(4, pixels);
         _pico_check("pixels-02");
     }
 
