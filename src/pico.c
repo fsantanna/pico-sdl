@@ -180,34 +180,30 @@ static SDL_FRect _f1 (const Pico_Rel_Rect* r, SDL_FRect ref, Pico_Abs_Dim* dim) 
 
 static SDL_FPoint _sdl_pos (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref) {
     SDL_FPoint ret;
+    SDL_FRect r0;
+    if (ref == NULL) {
+        r0 = (SDL_FRect) {
+            0, 0,
+            (TGT == 0) ? S.view.phy.w : S.view.log.w,
+            (TGT == 0) ? S.view.phy.h : S.view.log.h,
+        };
+    } else {
+        r0 = (SDL_FRect) { ref->x, ref->y, ref->w, ref->h };
+    }
+    SDL_FRect r1 = _f1(pos->up, r0, NULL);
     switch (pos->mode) {
         case '!':
-            assert(ref==NULL && pos->up==NULL && "TODO");
             ret = (SDL_FPoint) {
-                (pos->x - pos->anchor.x),
-                (pos->y - pos->anchor.y),
+                r1.x + pos->x - pos->anchor.x,
+                r1.y + pos->y - pos->anchor.y,
             };
             break;
-        case '%': {
-            SDL_FRect r0;
-            if (ref == NULL) {
-                r0 = (SDL_FRect) {
-                    0, 0,
-                    (TGT == 0) ? S.view.phy.w : S.view.log.w,
-                    (TGT == 0) ? S.view.phy.h : S.view.log.h,
-                };
-            } else {
-                r0 = (SDL_FRect) {
-                    ref->x, ref->y, ref->w, ref->h
-                };
-            }
-            SDL_FRect r1 = _f1(pos->up, r0, NULL);
+        case '%':
             ret = (SDL_FPoint) {
-                (r1.x + pos->x*r1.w - pos->anchor.x),
-                (r1.y + pos->y*r1.h - pos->anchor.y),
+                r1.x + pos->x*r1.w - pos->anchor.x,
+                r1.y + pos->y*r1.h - pos->anchor.y,
             };
             break;
-        }
         default:
             assert(0 && "invalid mode");
     }
@@ -230,37 +226,35 @@ static SDL_FDim _sdl_dim (const Pico_Rel_Dim* dim) {
     return ret;
 }
 
-static SDL_FRect _sdl_rect (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref, Pico_Abs_Dim* dim) {
+static SDL_FRect _sdl_rect (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref,
+                            Pico_Abs_Dim* dim)
+{
     SDL_FRect ret;
+    SDL_FRect r0;
+    if (ref == NULL) {
+        r0 = (SDL_FRect) {
+            0, 0,
+            (TGT == 0) ? S.view.phy.w : S.view.log.w,
+            (TGT == 0) ? S.view.phy.h : S.view.log.h,
+        };
+    } else {
+        r0 = (SDL_FRect) { ref->x, ref->y, ref->w, ref->h };
+    }
+    SDL_FRect r1 = _f1(rect->up, r0, NULL);
     switch (rect->mode) {
         case '!': {
-            // TODO: verify if ref is used in '!'
-            assert(ref==NULL && rect->up==NULL && "TODO");
             SDL_FDim d = _f3(rect->w, rect->h, dim);
             ret = (SDL_FRect) {
-                (rect->x - rect->anchor.x*d.w),
-                (rect->y - rect->anchor.y*d.h),
+                r1.x + rect->x - rect->anchor.x*d.w,
+                r1.y + rect->y - rect->anchor.y*d.h,
                 d.w,
                 d.h
             };
             break;
         }
-        case '%': {
-            SDL_FRect r0;
-            if (ref == NULL) {
-                r0 = (SDL_FRect) {
-                    0, 0,
-                    (TGT == 0) ? S.view.phy.w : S.view.log.w,
-                    (TGT == 0) ? S.view.phy.h : S.view.log.h,
-                };
-            } else {
-                r0 = (SDL_FRect) {
-                    ref->x, ref->y, ref->w, ref->h
-                };
-            }
+        case '%':
             ret = _f1(rect, r0, dim);
             break;
-        }
         default:
             assert(0 && "invalid mode");
     }
