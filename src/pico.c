@@ -145,8 +145,7 @@ static void _tex_dim_pct (SDL_Texture* tex, Pico_Pct* pct, Pico_Rel_Rect* ref) {
 #endif
 
 static SDL_FDim _f3 (float w, float h, Pico_Abs_Dim* dim) {
-    if (w==0 || h==0) {
-        assert(dim != NULL);
+    if (dim!=NULL && (w==0 || h==0)) {
         if (w == 0 && h == 0) {
             w = dim->w;
             h = dim->h;
