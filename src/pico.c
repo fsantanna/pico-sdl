@@ -1137,10 +1137,10 @@ PICO_STYLE pico_get_style (void) {
 }
 
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim) {
+    Pico_Abs_Dim ret = {0, 0};
     if (text[0] == '\0') {
         return ret;
     }
-    Pico_Abs_Dim ret = {0, 0};
     Pico_Rel_Rect r = { dim->mode, {0, 0, dim->w, dim->h}, PICO_ANCHOR_NW, dim->up };
     SDL_FRect rf = _sdl_rect(&r, NULL, NULL);
     SDL_Texture* tex = _tex_text(NULL, rf.h, text, (Pico_Color){0,0,0});
