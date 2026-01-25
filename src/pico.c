@@ -995,12 +995,12 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 }
 
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r) {
-    TGT = 0;
+    Pico_Abs_Rect phy = {0, 0, S.view.phy.w, S.view.phy.h};
     SDL_Rect ri;
     if (r == NULL) {
-        ri = (SDL_Rect){0, 0, S.view.phy.w, S.view.phy.h};
+        ri = phy;
     } else {
-        SDL_FRect rf = _sdl_rect(r, NULL, NULL);
+        SDL_FRect rf = _sdl_rect(r, &phy, NULL);
         ri = _fi_rect(&rf);
     }
 
@@ -1030,7 +1030,6 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r) {
 
     SDL_SetRenderTarget(REN, TEX);
     SDL_RenderSetClipRect(REN, &S.view.clip);
-    TGT = 1;
 
     return ret;
 }
