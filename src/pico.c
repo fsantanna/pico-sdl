@@ -995,6 +995,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 }
 
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r) {
+    TGT = 0;
     SDL_Rect ri;
     if (r == NULL) {
         ri = (SDL_Rect){0, 0, S.view.phy.w, S.view.phy.h};
@@ -1014,7 +1015,6 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r) {
         ret = _path_;
     }
 
-    TGT = 0;
     SDL_SetRenderTarget(REN, NULL);
     pico_input_delay(5);            // TODO: bug if removed
     //SDL_RenderPresent(REN);
