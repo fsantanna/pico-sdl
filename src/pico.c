@@ -541,8 +541,8 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:  {
-            Pico_Rel_Pos pos;
-            pico_get_mouse_raw(&pos, PICO_MOUSE_BUTTON_NONE);
+            Pico_Rel_Pos pos = { '!' };
+            pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
             e->button.x = pos.x;
             e->button.y = pos.y;
             break;
@@ -1028,7 +1028,7 @@ int pico_get_key (PICO_KEY key) {
     return keys[key];
 }
 
-int pico_get_mouse_raw (Pico_Rel_Pos* pos, int button) {
+int pico_get_mouse (Pico_Rel_Pos* pos, int button) {
     int phy_x, phy_y;
     Uint32 masks = SDL_GetMouseState(&phy_x, &phy_y);
     if (button == 0) {
@@ -1044,28 +1044,28 @@ int pico_get_mouse_raw (Pico_Rel_Pos* pos, int button) {
     // 2. Convert to logical position within src (zoom/scroll viewport)
     float log_x = S.view.src.x + rel_x * S.view.src.w;
     float log_y = S.view.src.y + rel_y * S.view.src.h;
-    pos->x = log_x; //(log_x >= 0) ? (log_x + 0.5) : (log_x - 0.5);
-    pos->y = log_y; //(log_y >= 0) ? (log_y + 0.5) : (log_y - 0.5);
 
-    return masks & SDL_BUTTON(button);
-}
-
-int pico_get_mouse_pct (Pico_Rel_Pos* pos, int button) {
-    Pico_Rel_Pos raw;
-    int ret = pico_get_mouse_raw(&raw, button);
-
-    Pico_Rel_Rect up;
-    if (pos->up == NULL) {
-        up = (Pico_Rel_Rect){ '!', {0, 0, S.view.log.w, S.view.log.h}, PICO_ANCHOR_NW, NULL };
-    } else {
-        assert(0 && "TODO");
-        //up = pico_cv_rect_pct_raw(pos->up);
+    switch (pos->mode) {
+        case '!':
+            pos->x = log_x;
+            pos->y = log_y;
+            break;
+        case '%': {
+            Pico_Rel_Rect up;
+            if (pos->up == NULL) {
+                up = (Pico_Rel_Rect){ '!', {0, 0, S.view.log.w, S.view.log.h}, PICO_ANCHOR_NW, NULL };
+            } else {
+                assert(0 && "TODO");
+            }
+            pos->x = (log_x - up.x) / up.w;
+            pos->y = (log_y - up.y) / up.h;
+            break;
+        }
+        default:
+            assert(0 && "invalid mode");
     }
 
-    pos->x = (float)(raw.x - up.x) / up.w;
-    pos->y = (float)(raw.y - up.y) / up.h;
-
-    return ret;
+    return masks & SDL_BUTTON(button);
 }
 
 Pico_Abs_Rect pico_get_crop (void) {

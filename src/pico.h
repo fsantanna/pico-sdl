@@ -249,19 +249,7 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 /// @return 1 if key is pressed, or 0 otherwise
 int pico_get_key (PICO_KEY key);
 
-/// @brief Gets the mouse state using raw coordinates.
-/// @param pos pointer to retrieve pointer position (may be NULL)
-/// @param button which button state to retrieve
-/// @return state of specified button
-/// @sa pico_get_mouse_pct
-int pico_get_mouse_raw (Pico_Rel_Pos* pos, int button);
-
-/// @brief Gets the mouse state using percentage-based coordinates.
-/// @param pos pointer to retrieve pointer position (may be NULL)
-/// @param button which button state to retrieve
-/// @return state of specified button
-/// @sa pico_get_mouse_raw
-int pico_get_mouse_pct (Pico_Rel_Pos* pos, int button);
+int pico_get_mouse (Pico_Rel_Pos* pos, int button);
 
 /// @brief Gets the visibility state of the window.
 int pico_get_show (void);
