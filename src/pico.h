@@ -5,17 +5,6 @@
 extern "C" {
 #endif
 
-typedef union {
-    struct {
-        float x;
-        float y;
-    };
-    struct {
-        float w;
-        float h;
-    };
-} Pico_Pct;
-
 #include <stdio.h>
 #include <assert.h>
 #include <SDL2/SDL.h>
@@ -73,7 +62,7 @@ typedef struct Pico_Rel_Rect {
         float x, y;
         float w, h;
     };
-    Pico_Pct anchor;
+    Pico_Anchor anchor;
     struct Pico_Rel_Rect* up;
 } Pico_Rel_Rect;
 
@@ -82,7 +71,7 @@ typedef struct {
     struct {
         float x, y;
     };
-    Pico_Pct anchor;
+    Pico_Anchor anchor;
     struct Pico_Rel_Rect* up;
 } Pico_Rel_Pos;
 

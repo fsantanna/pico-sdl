@@ -144,9 +144,9 @@ static SDL_FDim _f3 (float w, float h, const Pico_Abs_Dim* ratio) {
 }
 
 static SDL_FRect _f2 (
-    SDL_FRect dn,
-    Pico_Pct  anc,
-    SDL_FRect up,
+    SDL_FRect   dn,
+    Pico_Anchor anc,
+    SDL_FRect   up,
     const Pico_Abs_Dim* ratio
 ) {
     SDL_FDim d = _f3(dn.w*up.w, dn.h*up.h, ratio);
