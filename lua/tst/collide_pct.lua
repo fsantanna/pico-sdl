@@ -2,14 +2,14 @@ require 'pico.check'
 
 pico.init(true)
 
-local phy = {w=200, h=200}
-local log = {w=20, h=20}
+local phy = {'!', w=200, h=200}
+local log = {'!', w=20, h=20}
 pico.set.view {
     window = phy,
     world  = log,
 }
 
-local r = {'C', x=0.5, y=0.5, w=0.5, h=0.5}
+local r = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 
 print("pos_vs_rect")
 for y = -1, 10 do
@@ -18,7 +18,7 @@ for y = -1, 10 do
         pico.set.color.draw(255, 255, 255)
         pico.output.draw.rect(r)
 
-        local p = {'C', x=x/10.0, y=y/10.0, up=r}
+        local p = {'%', x=x/10.0, y=y/10.0, up=r}
         pico.set.color.draw(255, 0, 0)
         pico.output.draw.pixel(p)
 
@@ -53,7 +53,7 @@ for y = -25, 125, 10 do
         pico.set.color.draw(255, 255, 255)
         pico.output.draw.rect(r)
 
-        local r2 = {'C', x=x/100.0, y=y/100.0, w=0.5, h=0.5, up=r}
+        local r2 = {'%', x=x/100.0, y=y/100.0, w=0.5, h=0.5, up=r}
         pico.set.color.draw(255, 0, 0)
         pico.output.draw.rect(r2)
 
@@ -88,7 +88,7 @@ for y = -5, 10 do
         pico.set.color.draw(255, 255, 255)
         pico.output.draw.rect(r)
 
-        local r2 = {'NW', x=x/10.0, y=y/10.0, w=0.5, h=0.5, up=r}
+        local r2 = {'%', x=x/10.0, y=y/10.0, w=0.5, h=0.5, anc='NW', up=r}
         pico.set.color.draw(255, 0, 0)
         pico.output.draw.rect(r2)
 

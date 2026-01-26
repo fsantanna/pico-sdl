@@ -2,14 +2,14 @@ require 'pico.check'
 
 pico.init(true)
 
-local phy = {w=200, h=200}
-local log = {w=20, h=20}
+local phy = {'!', w=200, h=200}
+local log = {'!', w=20, h=20}
 pico.set.view {
     window = phy,
     world  = log,
 }
 
-local r = {x=10-2, y=10-2, w=4, h=4}
+local r = {'!', x=10-2, y=10-2, w=4, h=4, anc='NW'}
 
 print("pos_vs_rect")
 for y = r.y-1, r.y+r.h do
@@ -18,7 +18,7 @@ for y = r.y-1, r.y+r.h do
         pico.set.color.draw(255, 255, 255)
         pico.output.draw.rect(r)
 
-        local p = {x=x, y=y}
+        local p = {'!', x=x, y=y, anc='NW'}
         pico.set.color.draw(255, 0, 0)
         pico.output.draw.pixel(p)
 
@@ -60,7 +60,7 @@ for y = r.y-r.h, r.y+r.h do
         pico.set.color.draw(255, 255, 255)
         pico.output.draw.rect(r)
 
-        local r2 = {x=x, y=y, w=4, h=4}
+        local r2 = {'!', x=x, y=y, w=4, h=4, anc='NW'}
         pico.set.color.draw(255, 0, 0)
         pico.output.draw.rect(r2)
 

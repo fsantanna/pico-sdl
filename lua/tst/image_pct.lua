@@ -19,19 +19,19 @@ do
     local pct = pico.get.image("open.png", {'%'})
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 
-    local ref = {'NW', x=0, y=0, w=0.5, h=0.5}
+    local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
     local pct = pico.get.image("open.png", {'%', w=nil, h=nil}, ref)
     assert(round(pct.w*100)==96 and round(pct.h*100)==96)
 
-    local ref = {'NW', x=0, y=0, w=0.5, h=0.5}
-    local pct = pico.get.image("open.png", {'%',h=0.48}, ref)
+    local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
+    local pct = pico.get.image("open.png", {'%', h=0.48}, ref)
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 end
 
 do
     print("show original centered")
     pico.output.clear()
-    local r = {'C', x=0.5, y=0.5}
+    local r = {'%', x=0.5, y=0.5}
     pico.output.draw.image("open.png", r)
     pico.check("image_pct-01")
 end
@@ -39,7 +39,7 @@ end
 do
     print("show big centered")
     pico.output.clear()
-    local r = {'C', x=0.5, y=0.5, w=1.0, h=1.0}
+    local r = {'%', x=0.5, y=0.5, w=1.0, h=1.0}
     pico.output.draw.image("open.png", r)
     pico.check("image_pct-02")
 end
@@ -47,7 +47,7 @@ end
 do
     print("show small centered")
     pico.output.clear()
-    local r = {'C', x=0.5, y=0.5, w=0.2, h=0.2}
+    local r = {'%', x=0.5, y=0.5, w=0.2, h=0.2}
     pico.output.draw.image("open.png", r)
     pico.check("image_pct-03")
 end
@@ -55,7 +55,7 @@ end
 do
     print("show w-half proportional")
     pico.output.clear()
-    local r = {'C', x=0.5, y=0.5, w=0.5}
+    local r = {'%', x=0.5, y=0.5, w=0.5}
     pico.output.draw.image("open.png", r)
     pico.check("image_pct-04")
 end
@@ -63,7 +63,7 @@ end
 do
     print("show w-half h-quart distorted")
     pico.output.clear()
-    local r = {'C', x=0.5, y=0.5, w=0.5, h=0.25}
+    local r = {'%', x=0.5, y=0.5, w=0.5, h=0.25}
     pico.output.draw.image("open.png", r)
     pico.check("image_pct-05")
 end

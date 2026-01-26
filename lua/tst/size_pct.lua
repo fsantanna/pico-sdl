@@ -3,7 +3,7 @@ require 'pico.check'
 pico.init(true)
 pico.set.title("Size - Fullscreen")
 
-local r = {'C', x=0.5, y=0.5, w=0.5, h=0.5}
+local r = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 
 -- phy: normal -> double -> half -> normal
 print("WINDOW")

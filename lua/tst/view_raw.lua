@@ -16,15 +16,17 @@ for i = 0, 49 do
     pico.set.view { world = world }
     pico.output.clear()
     pico.set.color.draw(255, 255, 255)
-    pico.output.draw.rect (
-        world.w/2 - 5,
-        world.h/2 - 5,
-        10, 10
-    )
+    pico.output.draw.rect({'!',
+        x = world.w/2 - 5,
+        y = world.h/2 - 5,
+        w = 10,
+        h = 10,
+        anc = 'NW'
+    })
     pico.set.color.draw(255, 0, 0)
     pico.output.draw.line(
-        { 'C', x=0.5, y=0.5 },
-        { 'C', x=1.0, y=0 }
+        {'%', x=0.5, y=0.5},
+        {'%', x=1.0, y=0}
     )
     pico.input.delay(10)
     if i == 0 then
@@ -38,10 +40,10 @@ end
 print("scrolls left/up")
 for i = 0, 49 do
     pico.set.view {
-        source = { x=i, y=i, w=100, h=100 }
+        source = {'!', x=i, y=i, w=100, h=100, anc='NW'}
     }
     pico.output.clear()
-    pico.output.draw.text("Uma frase bem grande...", {x=10, y=50, w=0, h=10})
+    pico.output.draw.text("Uma frase bem grande...", {'!', x=10, y=50, w=0, h=10, anc='NW'})
     pico.input.delay(10)
     if i == 0 then
         pico.check("view_raw-03")

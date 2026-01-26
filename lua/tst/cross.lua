@@ -2,14 +2,14 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.view {
-    window = {w=160, h=160},
-    world  = {w=16,  h=16}
+    window = {'!', w=160, h=160},
+    world  = {'!', w=16,  h=16}
 }
 pico.output.clear()
 
 for i = 0, 15 do
-    pico.output.draw.pixel({x=i, y=i})
-    pico.output.draw.pixel({x=15-i, y=i})
+    pico.output.draw.pixel({'!', x=i, y=i, anc='NW'})
+    pico.output.draw.pixel({'!', x=15-i, y=i, anc='NW'})
     pico.input.delay(10)
     if i == 0 then
         pico.check("cross-01")

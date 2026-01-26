@@ -3,13 +3,13 @@ require 'pico.check'
 pico.init(true)
 pico.set.title("Blend")
 pico.set.view {
-    window = {w=640, h=360},
-    world  = {w=64,  h=36},
+    window = {'!', w=640, h=360},
+    world  = {'!', w=64,  h=36},
 }
 
 do
     print("image dimming")
-    local r = {'C', x=0.5, y=0.5, w=0.5, h=0}
+    local r = {'%', x=0.5, y=0.5, w=0.5, h=0, anc='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -23,7 +23,7 @@ end
 
 do
     print("pixel dimming")
-    local p = {'NW', x=0.5, y=0.5}
+    local p = {'%', x=0.5, y=0.5, anc='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -38,7 +38,7 @@ end
 
 do
     print("text dimming")
-    local r = {'C', x=0.5, y=0.5, w=0, h=0.28}
+    local r = {'%', x=0.5, y=0.5, w=0, h=0.28, anc='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -53,7 +53,7 @@ end
 
 do
     print("rect dimming")
-    local r = {'C', x=0.5, y=0.5, w=0.95, h=0.34}
+    local r = {'%', x=0.5, y=0.5, w=0.95, h=0.34, anc='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -68,7 +68,7 @@ end
 
 do
     print("oval dimming")
-    local r = {'C', x=0.5, y=0.5, w=0.95, h=0.34}
+    local r = {'%', x=0.5, y=0.5, w=0.95, h=0.34, anc='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -83,9 +83,9 @@ end
 
 do
     print("tri dimming")
-    local p1 = {'C', x=0.50, y=0.33}
-    local p2 = {'C', x=0.33, y=0.66}
-    local p3 = {'C', x=0.66, y=0.66}
+    local p1 = {'%', x=0.50, y=0.33, anc='C'}
+    local p2 = {'%', x=0.33, y=0.66, anc='C'}
+    local p3 = {'%', x=0.66, y=0.66, anc='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -100,8 +100,8 @@ end
 
 do
     print("line dimming")
-    local p1 = {'C', x=0.33, y=0.33}
-    local p2 = {'C', x=0.66, y=0.66}
+    local p1 = {'%', x=0.33, y=0.33, anc='C'}
+    local p2 = {'%', x=0.66, y=0.66, anc='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -117,9 +117,9 @@ end
 do
     print("poly dimming")
     local poly = {
-        {'C', x=0.50, y=0.33},
-        {'C', x=0.33, y=0.66},
-        {'C', x=0.66, y=0.66},
+        {'%', x=0.50, y=0.33, anc='C'},
+        {'%', x=0.33, y=0.66, anc='C'},
+        {'%', x=0.66, y=0.66, anc='C'},
     }
     for a = 255, 1, -5 do
         pico.output.clear()

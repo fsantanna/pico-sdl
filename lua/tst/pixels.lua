@@ -3,15 +3,15 @@ require 'pico.check'
 pico.init(true)
 pico.set.title("pixels")
 pico.set.view {
-    window = {w=100, h=100},
-    world  = {w=5, h=5}
+    window = {'!', w=100, h=100},
+    world  = {'!', w=5, h=5}
 }
 
 do
     local pixels = {
-        {x=1, y=1}, {x=2, y=1}, {x=3, y=1},
-        {x=1, y=2}, {x=2, y=2}, {x=3, y=2},
-        {x=1, y=3}, {x=2, y=3}, {x=3, y=3}
+        {'!', x=1, y=1, anc='NW'}, {'!', x=2, y=1, anc='NW'}, {'!', x=3, y=1, anc='NW'},
+        {'!', x=1, y=2, anc='NW'}, {'!', x=2, y=2, anc='NW'}, {'!', x=3, y=2, anc='NW'},
+        {'!', x=1, y=3, anc='NW'}, {'!', x=2, y=3, anc='NW'}, {'!', x=3, y=3, anc='NW'}
     }
     for i = 1, 9 do
         pico.output.clear()
@@ -24,10 +24,10 @@ end
 
 do
     local pixels = {
-        {'NW', x=0, y=0},
-        {'NE', x=1, y=0},
-        {'SW', x=0, y=1},
-        {'SE', x=1, y=1},
+        {'%', x=0, y=0, anc='NW'},
+        {'%', x=1, y=0, anc='NE'},
+        {'%', x=0, y=1, anc='SW'},
+        {'%', x=1, y=1, anc='SE'},
     }
     pico.output.draw.pixels(pixels)
     pico.check("pixels-02")
