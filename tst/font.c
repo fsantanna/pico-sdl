@@ -22,7 +22,7 @@ int main (void) {
         Pico_Rel_Dim d = { '%', {0, 0.2}, &ref };
         Pico_Abs_Dim r = pico_get_text("ABC", &d);
         assert(r.w==17 && r.h==10);
-        assert(p.w==0.34f && p.h==0.2f);
+        assert(d.w==0.34f && d.h==0.2f);
     }
 
     {
