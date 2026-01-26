@@ -36,6 +36,11 @@ extern "C" {
         fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); \
     }
 
+typedef struct {
+    float w;
+    float h;
+} SDL_FDim;
+
 typedef SDL_Rect  Pico_Abs_Rect;
 typedef SDL_Point Pico_Abs_Pos;
 
@@ -43,11 +48,6 @@ typedef struct {
     int w;
     int h;
 } Pico_Abs_Dim;
-
-typedef struct {
-    float w;
-    float h;
-} SDL_FDim;
 
 // MODES:
 // '!': raw
@@ -69,19 +69,19 @@ typedef struct Pico_Rel_Rect {
 typedef struct {
     char mode;
     struct {
+        float w, h;
+    };
+    struct Pico_Rel_Rect* up;
+} Pico_Rel_Dim;
+
+typedef struct {
+    char mode;
+    struct {
         float x, y;
     };
     Pico_Anchor anchor;
     struct Pico_Rel_Rect* up;
 } Pico_Rel_Pos;
-
-typedef struct {
-    char mode;
-    struct {
-        float w, h;
-    };
-    struct Pico_Rel_Rect* up;
-} Pico_Rel_Dim;
 
 typedef enum {
     PICO_STYLE_FILL, PICO_STYLE_STROKE

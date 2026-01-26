@@ -13,7 +13,7 @@ int main (void) {
         NULL
     );
 
-    Pico_Pct C = PICO_ANCHOR_C;
+    Pico_Anchor C = PICO_ANCHOR_C;
 
     puts("predefined colors");
     {
