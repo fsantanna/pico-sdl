@@ -1217,7 +1217,17 @@ void pico_set_view (
             S.view.dst = ri;
         }
         if (src != NULL) {
-            SDL_FRect rf = _sdl_rect(src, NULL, NULL);
+            SDL_FRect rf;
+            switch (src->mode) {
+                case '!':
+                    rf = _sdl_rect(src, NULL, NULL);
+                    break;
+                case '%':
+                    rf = _sdl_rect(src, &S.view.src, NULL);
+                    break;
+                default:
+                    assert(0 && "TODO");
+            }
             SDL_Rect  ri = _fi_rect(&rf);
             S.view.src = ri;
         }
