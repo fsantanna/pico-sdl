@@ -144,56 +144,55 @@ int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 /// @brief Clears screen with color set by @ref pico_set_color_clear.
 void pico_output_clear (void);
 
-/// @brief Draws an RGBA image buffer using absolute coordinates.
-/// @param dim image dimensions
+/// @brief Draws an RGBA image buffer.
+/// @param dim image dimensions in pixels
 /// @param buffer the RGBA image data
-/// @param rect drawing rectangle in logical pixels
-/// @sa pico_output_draw_buffer
+/// @param rect drawing rectangle (mode determines coordinate interpretation)
 /// @sa pico_output_draw_image
 void pico_output_draw_buffer (Pico_Abs_Dim dim, const Pico_Color_A buffer[], const Pico_Rel_Rect* rect);
 
-/// @brief Draws an image using absolute coordinates.
+/// @brief Draws an image.
 /// @param path path to the image file
-/// @param rect image target position and dimension
+/// @param rect target position and dimension (mode determines coordinates)
 /// @sa pico_output_draw_buffer
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect);
 
-/// @brief Draws a line using absolute coordinates.
-/// @param p1 first endpoint position
-/// @param p2 second endpoint position
+/// @brief Draws a line.
+/// @param p1 first endpoint position (mode determines coordinates)
+/// @param p2 second endpoint position (mode determines coordinates)
 void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2);
 
-/// @brief Draws a single pixel using absolute coordinates.
-/// @param pos drawing position
+/// @brief Draws a single pixel.
+/// @param pos drawing position (mode determines coordinates)
 void pico_output_draw_pixel (Pico_Rel_Pos* pos);
 
-/// @brief Draws a batch of pixels using absolute coordinates.
-/// @param n number of coordinates
-/// @param ps array of coordinates
+/// @brief Draws a batch of pixels.
+/// @param n number of positions
+/// @param ps array of positions (mode determines coordinates)
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
 
-/// @brief Draws a rectangle using absolute coordinates.
-/// @param rect rectangle to draw
+/// @brief Draws a rectangle.
+/// @param rect rectangle to draw (mode determines coordinates)
 void pico_output_draw_rect (Pico_Rel_Rect* rect);
 
-/// @brief Draws a triangle using absolute coordinates.
-/// @param p1 first vertex position
-/// @param p2 second vertex position
-/// @param p3 third vertex position
+/// @brief Draws a triangle.
+/// @param p1 first vertex position (mode determines coordinates)
+/// @param p2 second vertex position (mode determines coordinates)
+/// @param p3 third vertex position (mode determines coordinates)
 void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3);
 
-/// @brief Draws an ellipse using absolute coordinates.
-/// @param rect bounding rectangle
+/// @brief Draws an ellipse.
+/// @param rect bounding rectangle (mode determines coordinates)
 void pico_output_draw_oval (Pico_Rel_Rect* rect);
 
-/// @brief Draws a polygon using absolute coordinates.
+/// @brief Draws a polygon.
 /// @param n number of vertices
-/// @param ps array of vertex positions
+/// @param ps array of vertex positions (mode determines coordinates)
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps);
 
-/// @brief Draws text using absolute coordinates.
+/// @brief Draws text.
 /// @param text text to draw
-/// @param rect drawing rectangle
+/// @param rect drawing rectangle (mode determines coordinates)
 void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect);
 
 /// @brief Shows what has been drawn onto the screen.
@@ -201,9 +200,10 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect);
 /// @sa pico_set_expert
 void pico_output_present (void);
 
-/// @brief Takes a screenshot of the full physical screen.
+/// @brief Takes a screenshot.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
-/// @return The filepath of the screenshot.
+/// @param r region to capture (NULL captures full screen)
+/// @return the filepath of the screenshot
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r);
 
 /// @brief Plays a sound.
@@ -219,12 +219,15 @@ void pico_output_sound (const char* path);
 // GET
 
 /// @brief Gets the color set to clear the screen.
+/// @return the current clear color
 Pico_Color pico_get_color_clear (void);
 
 /// @brief Gets the color set to draw.
+/// @return the current draw color
 Pico_Color pico_get_color_draw (void);
 
 /// @brief Gets the cropping applied to objects when drawing them.
+/// @return the current crop rectangle
 Pico_Abs_Rect pico_get_crop (void);
 
 /// @brief Gets the state of expert mode.
@@ -232,6 +235,7 @@ Pico_Abs_Rect pico_get_crop (void);
 int pico_get_expert (void);
 
 /// @brief Gets the font used to draw texts.
+/// @return path to the current font file
 const char* pico_get_font (void);
 
 /// @brief Gets the state of fullscreen mode.
@@ -249,12 +253,18 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 /// @return 1 if key is pressed, or 0 otherwise
 int pico_get_key (PICO_KEY key);
 
+/// @brief Gets the mouse state.
+/// @param pos where to save the mouse position, or NULL to ignore
+/// @param button mouse button to check (1=left, 2=middle, 3=right), or 0 for any
+/// @return 1 if the specified button is pressed, or 0 otherwise
 int pico_get_mouse (Pico_Rel_Pos* pos, int button);
 
 /// @brief Gets the visibility state of the window.
+/// @return 1 if visible, or 0 otherwise
 int pico_get_show (void);
 
 /// @brief Gets the drawing style.
+/// @return PICO_STYLE_FILL or PICO_STYLE_STROKE
 PICO_STYLE pico_get_style (void);
 
 /// @brief Gets the dimensions of the given text.
@@ -264,9 +274,11 @@ PICO_STYLE pico_get_style (void);
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
+/// @return elapsed time in milliseconds
 Uint32 pico_get_ticks (void);
 
-/// @brief Gets the aplication title.
+/// @brief Gets the application title.
+/// @return the current window title
 const char* pico_get_title (void);
 
 /// @brief Gets the current view configuration. NULL arguments are ignored.
@@ -312,10 +324,10 @@ void pico_set_crop (Pico_Abs_Rect crop);
 void pico_set_expert (int on);
 
 /// @brief Changes the font used to draw texts.
-/// @param path path to font path
+/// @param path path to font file
 void pico_set_font (const char* path);
 
-/// @brief Toggles the aplication window visibility.
+/// @brief Toggles the application window visibility.
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
 
@@ -323,16 +335,16 @@ void pico_set_show (int on);
 /// @param style new style
 void pico_set_style (PICO_STYLE style);
 
-/// @brief Sets the aplication title.
+/// @brief Sets the application title.
 /// @param title new title
 void pico_set_title (const char* title);
 
-/// @brief Sets the view configuration using absolute dimensions. NULL arguments are ignored.
-/// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
-/// @param window_fullscreen 1 to enable fullscreen, 0 to disable, or -1 to keep unchanged
-/// @param window window dimensions in pixels
+/// @brief Sets the view configuration. NULL arguments are ignored.
+/// @param window_grid 1 to show grid, 0 to hide, or -1 to keep unchanged
+/// @param window_fullscreen 1 to enable fullscreen, 0 to disable, or -1 to keep
+/// @param window window dimensions (mode determines interpretation)
 /// @param window_target target region within window
-/// @param world world/logical dimensions
+/// @param world world/logical dimensions (mode determines interpretation)
 /// @param world_source source region within world
 /// @param world_clip clipping region within world
 /// @sa pico_get_view
@@ -352,32 +364,30 @@ void pico_set_view (
 /// @brief Utilities for users
 /// @{
 
-/// @brief Converts a percentage-based position to absolute coordinates relative to a reference rectangle.
-/// @param p percentage-based position (0.0-1.0)
-/// @param ref reference rectangle to use as basis
+/// @brief Converts a relative position to absolute coordinates.
+/// @param pos relative position to convert
+/// @param ref reference rectangle to use as basis (NULL uses world dimensions)
 /// @return absolute position in logical pixels
-/// @sa pico_cv_rect_rel_ab
+/// @sa pico_cv_rect_rel_abs
 Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref);
 
-/// @brief Converts a percentage-based rectangle to absolute coordinates relative to a reference rectangle.
-/// @param r percentage-based rectangle (0.0-1.0)
-/// @param ref reference rectangle to use as basis
+/// @brief Converts a relative rectangle to absolute coordinates.
+/// @param rect relative rectangle to convert
+/// @param ref reference rectangle to use as basis (NULL uses world dimensions)
 /// @return absolute rectangle in logical pixels
 /// @sa pico_cv_pos_rel_abs
 Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref);
 
-/// @brief Checks if a point is inside a rectangle using absolute coordinates.
-/// Assumes that both primitives use the same anchor.
-/// @param pos point in logical pixels
-/// @param rect rectangle in logical pixels
+/// @brief Checks if a point is inside a rectangle.
+/// @param pos point to test (mode determines coordinates)
+/// @param rect rectangle to test against (mode determines coordinates)
 /// @return 1 if pos is inside rect, or 0 otherwise
 /// @sa pico_vs_rect_rect
 int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
 
-/// @brief Checks if two rectangles overlap using absolute coordinates.
-/// Assumes that both rectangles use the same anchor.
-/// @param r1 first rectangle in logical pixels
-/// @param r2 second rectangle in logical pixels
+/// @brief Checks if two rectangles overlap.
+/// @param r1 first rectangle (mode determines coordinates)
+/// @param r2 second rectangle (mode determines coordinates)
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_vs_pos_rect
 int pico_vs_rect_rect (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2);
