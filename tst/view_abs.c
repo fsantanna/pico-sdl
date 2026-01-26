@@ -53,6 +53,7 @@ int main (void) {
         pico_output_draw_text("Uma frase bem grande...",
             &(Pico_Rel_Rect){ '!', {10, 50, 0, 10}, PICO_ANCHOR_NW, NULL });
         pico_input_delay(10);
+        //pico_input_event(NULL, PICO_KEYDOWN);
         switch (i) {
             case 0:
                 _pico_check("view_abs-03");
