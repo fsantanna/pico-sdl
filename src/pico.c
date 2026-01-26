@@ -1254,7 +1254,9 @@ void pico_set_view (
             goto _out2_;
         }
         assert(fs==-1 && !S.view.fs);
+        TGT = 0;
         SDL_FDim df = _sdl_dim(phy, NULL, NULL);
+        TGT = 1;
         Pico_Abs_Dim di = _fi_dim(&df);
         new = di;
         _phy_:
@@ -1273,17 +1275,17 @@ void pico_set_view (
         Pico_Abs_Dim di = _fi_dim(&df);
         S.view.log = di;
         if (src == NULL) {
-            S.view.src = (SDL_Rect) { 0, 0, log->w, log->h };
+            S.view.src = (SDL_Rect) { 0, 0, di.w, di.h };
         }
         if (clip == NULL) {
-            S.view.clip = (SDL_Rect) { 0, 0, log->w, log->h };
+            S.view.clip = (SDL_Rect) { 0, 0, di.w, di.h };
         }
         if (TEX != NULL) {
             SDL_DestroyTexture(TEX);
         }
         TEX = SDL_CreateTexture (
             REN, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-            log->w, log->h
+            di.w, di.h
         );
         pico_assert(TEX != NULL);
         SDL_SetTextureBlendMode(TEX, SDL_BLENDMODE_NONE); // prevents 2x blend
