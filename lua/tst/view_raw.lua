@@ -7,6 +7,8 @@ local window = all.window
 local world = all.world
 assert(window.w == 500 and window.h == 500)
 assert(world.w == 100 and world.h == 100)
+window[1] = '!'
+world[1] = '!'
 
 -- WORLD - bigger
 print("shows lower-left X, center rect, center/up-right line")
@@ -17,8 +19,8 @@ for i = 0, 49 do
     pico.output.clear()
     pico.set.color.draw(255, 255, 255)
     pico.output.draw.rect({'!',
-        x = world.w/2 - 5,
-        y = world.h/2 - 5,
+        x = world.w//2 - 5,
+        y = world.h//2 - 5,
         w = 10,
         h = 10,
         anc = 'NW'

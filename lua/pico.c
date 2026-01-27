@@ -142,7 +142,7 @@ static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
     assert(lua_type(L,i) == LUA_TTABLE);
 
     char mode = c_mode(L, i);
-    Pico_Anchor anchor = c_anchor(L, i);
+    Pico_Anchor anc = c_anchor(L, i);
 
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
@@ -158,7 +158,7 @@ static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
         .y = L_checkfieldnum(L, i, "y"),
         .w = L_checkfieldnum(L, i, "w"),
         .h = L_checkfieldnum(L, i, "h"),
-        .anchor = anchor,
+        .anchor = anc,
         .up = up,
     };
 
@@ -194,7 +194,7 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     assert(lua_type(L,i) == LUA_TTABLE);
 
     char mode = c_mode(L, i);
-    Pico_Anchor anchor = c_anchor(L, i);
+    Pico_Anchor anc = c_anchor(L, i);
 
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
@@ -208,7 +208,7 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
         .mode = mode,
         .x = L_checkfieldnum(L, i, "x"),
         .y = L_checkfieldnum(L, i, "y"),
-        .anchor = anchor,
+        .anchor = anc,
         .up = up,
     };
 
