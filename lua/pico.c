@@ -678,10 +678,14 @@ static int l_input_event (lua_State* L) {
         case PICO_MOUSEMOTION:
             lua_pushstring(L, "mouse.motion");      // . | t | tag
             lua_setfield(L, -2, "tag");             // . | t
+            lua_pushstring(L, "!");                 // . | t | !
+            lua_seti(L, -2, 1);                     // . | t
             lua_pushinteger(L, e.motion.x);         // . | t | x
             lua_setfield(L, -2, "x");               // . | t
             lua_pushinteger(L, e.motion.y);         // . | t | y
             lua_setfield(L, -2, "y");               // . | t
+            lua_pushstring(L, "NE");                // . | t | NE
+            lua_setfield(L, -2, "anc");             // . | t
             break;
         case PICO_MOUSEBUTTONDOWN:
         case PICO_MOUSEBUTTONUP:
@@ -689,10 +693,14 @@ static int l_input_event (lua_State* L) {
                 (e.type == PICO_MOUSEBUTTONDOWN ?
                     "mouse.button.dn" : "mouse.button.up"));
             lua_setfield(L, -2, "tag");             // . | t
+            lua_pushstring(L, "!");                 // . | t | !
+            lua_seti(L, -2, 1);                     // . | t
             lua_pushinteger(L, e.button.x);         // . | t | x
             lua_setfield(L, -2, "x");               // . | t
             lua_pushinteger(L, e.button.y);         // . | t | y
             lua_setfield(L, -2, "y");               // . | t
+            lua_pushstring(L, "NE");                // . | t | NE
+            lua_setfield(L, -2, "anc");             // . | t
             L_mouse_button(L, e.button.button);     // . | t | but
             lua_setfield(L, -2, "but");             // . | t
             break;

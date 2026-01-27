@@ -1167,6 +1167,7 @@ void pico_set_crop (Pico_Abs_Rect crop) {
 
 void pico_set_expert (int on) {
     S.expert = on;
+    S.view.grid = 0;
 }
 
 void pico_set_font (const char* path) {
