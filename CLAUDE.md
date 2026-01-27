@@ -17,6 +17,19 @@ into three groups:
 The library features immediate display through single-buffer rendering,
 allowing real-time visual feedback as operations execute.
 
+## Key Design Principles
+
+- **Single-buffer rendering**: Changes are visible immediately, enabling
+  step-by-step visual debugging
+- **Sensible defaults**: Black background, white foreground, built-in font,
+  grid enabled
+- **Standardized naming**: Consistent `pico_output_*`, `pico_input_*`,
+  `pico_get_*`, `pico_set_*` patterns
+- **Educational focus**: Visual aids (grid), zoom/scroll support, immediate
+  feedback prioritized over performance
+- **SDL2 facade**: Simplifies SDL2 while allowing direct SDL2 fallback when
+  needed
+
 ## Build and Run Commands
 
 ### C Programs
@@ -241,18 +254,45 @@ The `tst/` directory contains example programs demonstrating features:
 - Files with `_pct` suffix test percentage-based APIs (mode `'%'`)
 - Files prefixed with `todo_` are work-in-progress tests
 
-## Key Design Principles
+### Lua Bindings
 
-- **Single-buffer rendering**: Changes are visible immediately, enabling
-  step-by-step visual debugging
-- **Sensible defaults**: Black background, white foreground, built-in font,
-  grid enabled
-- **Standardized naming**: Consistent `pico_output_*`, `pico_input_*`,
-  `pico_get_*`, `pico_set_*` patterns
-- **Educational focus**: Visual aids (grid), zoom/scroll support, immediate
-  feedback prioritized over performance
-- **SDL2 facade**: Simplifies SDL2 while allowing direct SDL2 fallback when
-  needed
+The `lua/` directory contains Lua 5.4 bindings implemented in `lua/pico.c`.
+
+**Type Mapping:**
+
+Lua tables map to C relative types with the following conventions:
+- `{'!', x=10, y=20, w=30, h=40}` → `Pico_Rel_Rect` with mode `'!'`
+- `{'%', x=0.5, y=0.5, anc='C'}` → `Pico_Rel_Pos` with anchor
+- `{'!', w=0, h=0}` → `Pico_Rel_Dim` for dimension queries
+
+Conversion functions in `lua/pico.c`:
+- `c_rel_rect()` - Converts Lua table to `Pico_Rel_Rect*`
+- `c_rel_pos()` - Converts Lua table to `Pico_Rel_Pos*`
+- `c_rel_dim()` - Converts Lua table to `Pico_Rel_Dim*`
+- `c_anchor()` - Extracts anchor from table's `anc` field (string or table)
+- `c_color()` - Parses color as string (`'red'`), table (`{r,g,b}`), or args
+
+**API Structure:**
+
+The Lua API mirrors the C API with nested tables:
+- `pico.get.image(path, [dim])` - Get image dimensions
+- `pico.get.text(text, dim)` - Get text dimensions
+- `pico.set.color.draw(color)` - Set drawing color
+- `pico.output.draw.rect(rect)` - Draw rectangle
+- `pico.input.event([filter], [timeout])` - Wait for input event
+
+**Constants:**
+
+Predefined constants are stored in the Lua registry and accessed by name:
+- Anchors: `'C'`, `'NW'`, `'N'`, `'NE'`, `'E'`, `'SE'`, `'S'`, `'SW'`, `'W'`
+- Colors: `'red'`, `'green'`, `'blue'`, `'white'`, `'black'`, etc.
+- Styles: `'fill'`, `'stroke'`
+- Events: `'quit'`, `'key.dn'`, `'key.up'`, `'mouse.button.dn'`
+
+**Memory Management:**
+
+Relative type structs are allocated as Lua userdata via `lua_newuserdata()`,
+ensuring proper lifetime management by the Lua garbage collector.
 
 ## Dependencies
 
