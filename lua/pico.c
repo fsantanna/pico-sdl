@@ -138,7 +138,9 @@ static Pico_Abs_Rect c_abs_rect (lua_State* L, int i) {
 ///////////////////////////////////////////////////////////////////////////////
 
 #define REL_STACK_MAX 32
-static Pico_Rel_Rect _rel_stack[REL_STACK_MAX];
+static Pico_Rel_Rect _rel_rect_stack[REL_STACK_MAX];
+static Pico_Rel_Dim  _rel_dim_stack[REL_STACK_MAX];
+static Pico_Rel_Pos  _rel_pos_stack[REL_STACK_MAX];
 static int _rel_depth = 0;
 
 static void c_rel_reset (void) {
@@ -161,7 +163,7 @@ static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
     }
     lua_pop(L, 1);                          // T
 
-    _rel_stack[cur] = (Pico_Rel_Rect) {
+    _rel_rect_stack[cur] = (Pico_Rel_Rect) {
         .mode = mode,
         .x = L_checkfieldnum(L, i, "x"),
         .y = L_checkfieldnum(L, i, "y"),
@@ -171,13 +173,15 @@ static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
         .up = up,
     };
 
-    return &_rel_stack[cur];
+    return &_rel_rect_stack[cur];
 }
 
 static Pico_Rel_Dim* c_rel_dim (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
+    assert(_rel_depth < REL_STACK_MAX);
 
+    int cur = _rel_depth++;
     char mode = c_mode(L, i);
 
     lua_getfield(L, i, "up");               // T | up
@@ -187,21 +191,22 @@ static Pico_Rel_Dim* c_rel_dim (lua_State* L, int i) {
     }
     lua_pop(L, 1);                          // T
 
-    static Pico_Rel_Dim dim;
-    dim = (Pico_Rel_Dim) {
+    _rel_dim_stack[cur] = (Pico_Rel_Dim) {
         .mode = mode,
         .w = L_checkfieldnum(L, i, "w"),
         .h = L_checkfieldnum(L, i, "h"),
         .up = up,
     };
 
-    return &dim;
+    return &_rel_dim_stack[cur];
 }
 
 static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
+    assert(_rel_depth < REL_STACK_MAX);
 
+    int cur = _rel_depth++;
     char mode = c_mode(L, i);
     Pico_Anchor anchor = c_anchor(L, i);
 
@@ -212,8 +217,7 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     }
     lua_pop(L, 1);                          // T
 
-    static Pico_Rel_Pos pos;
-    pos = (Pico_Rel_Pos) {
+    _rel_pos_stack[cur] = (Pico_Rel_Pos) {
         .mode = mode,
         .x = L_checkfieldnum(L, i, "x"),
         .y = L_checkfieldnum(L, i, "y"),
@@ -221,7 +225,7 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
         .up = up,
     };
 
-    return &pos;
+    return &_rel_pos_stack[cur];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
