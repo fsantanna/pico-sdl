@@ -4,13 +4,13 @@
 
 ```bash
 cd ../  # pico-sdl root
-sudo luarocks make lua/pico-sdl-0.2-1.rockspec --lua-version=5.4
+sudo luarocks --lua-version=5.4 make lua/pico-sdl-0.2-1.rockspec
 ```
 
 ## Remote
 
 ```bash
-sudo luarocks install pico-sdl 0.2 --lua-version=5.4
+sudo luarocks --lua-version=5.4 install pico-sdl 0.2
 ```
 
 # Testing
