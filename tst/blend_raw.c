@@ -22,7 +22,7 @@ int main (void) {
             pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {32,18}, PICO_ANCHOR_NW, NULL});
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_abs-01");
+                _pico_check("blend_raw-01");
             }
         }
     }
@@ -37,7 +37,7 @@ int main (void) {
             pico_output_draw_text("SOME TEXT", &r);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_abs-02");
+                _pico_check("blend_raw-02");
             }
         }
     }
@@ -51,7 +51,7 @@ int main (void) {
             pico_output_draw_rect(&r);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_abs-03");
+                _pico_check("blend_raw-03");
             }
         }
     }
@@ -65,7 +65,7 @@ int main (void) {
             pico_output_draw_oval(&r);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_abs-04");
+                _pico_check("blend_raw-04");
             }
         }
     }
@@ -81,7 +81,7 @@ int main (void) {
             pico_output_draw_tri(&p1, &p2, &p3);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_abs-05");
+                _pico_check("blend_raw-05");
             }
         }
     }
@@ -96,7 +96,7 @@ int main (void) {
             pico_output_draw_line(&p1, &p2);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_abs-06");
+                _pico_check("blend_raw-06");
             }
         }
     }
@@ -115,7 +115,7 @@ int main (void) {
             pico_output_draw_poly(3, poly);
             pico_input_delay(10);
             if (a == 120) {
-                _pico_check("blend_abs-07");
+                _pico_check("blend_raw-07");
             }
         }
     }

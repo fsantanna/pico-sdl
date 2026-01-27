@@ -9,9 +9,9 @@ int main (void) {
     assert(window.w==500 && window.h==500);
     assert(world.w==100 && world.h==100);
 
-    _pico_check("view_abs-0a");
+    _pico_check("view_raw-0a");
     pico_set_view(0, -1, NULL, NULL, NULL, NULL, NULL);
-    _pico_check("view_abs-0b");
+    _pico_check("view_raw-0b");
     pico_set_view(1, -1, NULL, NULL, NULL, NULL, NULL);
 
     // WORLD - bigger
@@ -34,11 +34,11 @@ int main (void) {
         pico_input_delay(10);
         switch (i) {
             case 0:
-                _pico_check("view_abs-01");
+                _pico_check("view_raw-01");
                 break;
             //case 49:
             case 48:
-                _pico_check("view_abs-02");
+                _pico_check("view_raw-02");
                 break;
         }
     }
@@ -56,10 +56,10 @@ int main (void) {
         //pico_input_event(NULL, PICO_KEYDOWN);
         switch (i) {
             case 0:
-                _pico_check("view_abs-03");
+                _pico_check("view_raw-03");
                 break;
             case 49:
-                _pico_check("view_abs-04");
+                _pico_check("view_raw-04");
                 break;
         }
     }

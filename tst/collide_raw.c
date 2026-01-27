@@ -27,27 +27,27 @@ int main() {
 
             if (x==7 && y==7) {
                 assert(!in);
-                _pico_check("collide_abs-01");
+                _pico_check("collide_raw-01");
             }
             if (x==8 && y==8) {
                 assert(in);
-                _pico_check("collide_abs-02");
+                _pico_check("collide_raw-02");
             }
             if (x==9 && y==9) {
                 assert(in);
-                _pico_check("collide_abs-03");
+                _pico_check("collide_raw-03");
             }
             if (x==10 && y==10) {
                 assert(in);
-                _pico_check("collide_abs-04");
+                _pico_check("collide_raw-04");
             }
             if (x==11 && y==11) {
                 assert(in);
-                _pico_check("collide_abs-05");
+                _pico_check("collide_raw-05");
             }
             if (x==12 && y==12) {
                 assert(!in);
-                _pico_check("collide_abs-06");
+                _pico_check("collide_raw-06");
             }
         }
     }
@@ -70,19 +70,19 @@ int main() {
             printf("%d/%d\n", x,y);
             if (x==4 && y==4) {
                 assert(!in);
-                _pico_check("collide_abs-07");
+                _pico_check("collide_raw-07");
             }
             if (x==5 && y==5) {
                 assert(in);
-                _pico_check("collide_abs-08");
+                _pico_check("collide_raw-08");
             }
             if (x==11 && y==11) {
                 assert(in);
-                _pico_check("collide_abs-09");
+                _pico_check("collide_raw-09");
             }
             if (x==12 && y==12) {
                 assert(!in);
-                _pico_check("collide_abs-10");
+                _pico_check("collide_raw-10");
             }
         }
     }

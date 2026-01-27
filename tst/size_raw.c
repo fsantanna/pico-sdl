@@ -17,7 +17,7 @@ int main (void) {
         pico_set_view(-1, -1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
-        _pico_check("size_abs-01");
+        _pico_check("size_raw-01");
     }
     {
         puts("double");
@@ -25,7 +25,7 @@ int main (void) {
         pico_set_view(-1, -1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
-        _pico_check("size_abs-02");
+        _pico_check("size_raw-02");
     }
     {
         puts("half");
@@ -33,7 +33,7 @@ int main (void) {
         pico_set_view(-1, -1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
-        _pico_check("size_abs-03");
+        _pico_check("size_raw-03");
     }
     {
         puts("normal");
@@ -41,7 +41,7 @@ int main (void) {
         pico_set_view(-1, -1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
-        _pico_check("size_abs-04");
+        _pico_check("size_raw-04");
     }
 
     // phy: normal -> full -> normal
@@ -50,14 +50,14 @@ int main (void) {
         pico_set_view(-1, 1, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
-        //_pico_check("size_abs-05");
+        //_pico_check("size_raw-05");
     }
     {
         puts("normal");
         pico_set_view(-1, 0, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
-        _pico_check("size_abs-06");
+        _pico_check("size_raw-06");
     }
 
     // log: normal -> double -> half -> normal
@@ -68,7 +68,7 @@ int main (void) {
         pico_set_view(-1, -1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
-        _pico_check("size_abs-07");
+        _pico_check("size_raw-07");
     }
     {
         puts("double");
@@ -77,7 +77,7 @@ int main (void) {
         pico_output_clear();
         Pico_Rel_Rect r = { '!', {log.w-25, log.h-25, 50, 50}, PICO_ANCHOR_NW, NULL };
         pico_output_draw_rect(&r);
-        _pico_check("size_abs-08");
+        _pico_check("size_raw-08");
     }
     {
         puts("half");
@@ -86,7 +86,7 @@ int main (void) {
         pico_output_clear();
         Pico_Rel_Rect r = { '!', {log.w/4-25, log.w/4-25, 50, 50}, PICO_ANCHOR_NW, NULL };
         pico_output_draw_rect(&r);
-        _pico_check("size_abs-09");
+        _pico_check("size_raw-09");
     }
     {
         puts("normal");
@@ -94,7 +94,7 @@ int main (void) {
         pico_set_view(-1, -1, NULL, NULL, &dim, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
-        _pico_check("size_abs-10");
+        _pico_check("size_raw-10");
     }
 
     pico_init(0);
