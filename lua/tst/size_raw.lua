@@ -6,7 +6,11 @@ pico.set.title("Size - Fullscreen")
 local all = pico.get.view()
 local phy = all.window
 local log = all.world
+phy[1] = '!'
+log[1] = '!'
+
 local r = {'!', x=50-25, y=50-25, w=50, h=50, anc='NW'}
+
 
 -- phy: normal -> double -> half -> normal
 print("WINDOW")

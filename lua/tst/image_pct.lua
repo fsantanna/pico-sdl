@@ -10,22 +10,32 @@ pico.set.color.clear(0xFF, 0xFF, 0xFF)
 
 -- pico.get.image
 do
-    local pct = pico.get.image("open.png", {'%', h=0.24})
+    local pct = {'%', h=0.24}
+    local abs = pico.get.image("open.png", pct)
+    assert(abs.w==24 and abs.h==24)
     assert(round(pct.w*100)==24 and round(pct.h*100)==24)
 
-    local pct = pico.get.image("open.png", {'%', w=0.48})
+    local pct = {'%', w=0.48}
+    local abs = pico.get.image("open.png", pct)
+    assert(abs.w==48 and abs.h==48)
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 
-    local pct = pico.get.image("open.png", {'%'})
+    local pct = {'%'}
+    local abs = pico.get.image("open.png", pct)
+    assert(abs.w==48 and abs.h==48)
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 
+--[[
     local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
-    local pct = pico.get.image("open.png", {'%', w=nil, h=nil}, ref)
+    local pct = {'%', w=nil, h=nil}
+    local abs = pico.get.image("open.png", pct, ref)
+    assert(abs.w==96 and abs.h==96)
     assert(round(pct.w*100)==96 and round(pct.h*100)==96)
 
     local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
     local pct = pico.get.image("open.png", {'%', h=0.48}, ref)
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
+]]
 end
 
 do

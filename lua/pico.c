@@ -347,16 +347,23 @@ static void L_dim_default_wh (lua_State* L, int i) {
 
 static void L_image_get_dim (lua_State* L, int i, const char* path) {
     assert(i > 0);
-    luaL_checktype(L, i, LUA_TTABLE);
+    luaL_checktype(L, i, LUA_TTABLE);               // rel
     L_dim_default_wh(L, i);
 
-    Pico_Rel_Dim* dim = c_rel_dim(L, i);
-    pico_get_image(path, dim);
+    Pico_Rel_Dim* dim = c_rel_dim(L, i);            // rel | ud
+    Pico_Abs_Dim abs = pico_get_image(path, dim);
+    lua_pop(L, 1);                                  // rel
 
     lua_pushnumber(L, dim->w);
     lua_setfield(L, i, "w");
     lua_pushnumber(L, dim->h);
     lua_setfield(L, i, "h");
+
+    lua_newtable(L);                                // rel | abs
+    lua_pushnumber(L, abs.w);                       // rel | abs | w
+    lua_setfield(L, -2, "w");                       // rel | abs
+    lua_pushnumber(L, abs.h);                       // rel | abs | h
+    lua_setfield(L, -2, "h");                       // rel | *abs*
 }
 
 static void L_text_get_dim (lua_State* L, int i, const char* text) {
@@ -383,21 +390,17 @@ static void L_text_get_dim (lua_State* L, int i, const char* text) {
 static int l_get_image (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);  // path | [dim]
 
-    // pico.get.image(path) -> {'!', w, h}
-    if (lua_gettop(L) == 1) {
-        Pico_Abs_Dim dim = pico_get_image(path, NULL);
-        lua_newtable(L);
+    if (lua_gettop(L) == 1) { // default dim={'!',w=0,h=0}
+        lua_newtable(L);                        // path | dim
         lua_pushstring(L, "!");
         lua_rawseti(L, -2, 1);
-        lua_pushinteger(L, dim.w);
+        lua_pushinteger(L, 0);
         lua_setfield(L, -2, "w");
-        lua_pushinteger(L, dim.h);
+        lua_pushinteger(L, 0);
         lua_setfield(L, -2, "h");
-
-    // pico.get.image(path, dim)
-    } else {
-        L_image_get_dim(L, 2, path);
     }
+
+    L_image_get_dim(L, 2, path);
     return 1;
 }
 
