@@ -7,11 +7,13 @@ do
     local dim = pico.get.text("ABC", {'!', w=nil, h=10})
     assert(dim.w>0 and dim.h==10)
 
-    local pct = pico.get.text("ABC", {'%', w=nil, h=0.1})
+    local pct = {'%', w=nil, h=0.1}
+    pico.get.text("ABC", pct)
     assert(pct.w*100//1==17 and pct.h*100//1==10)
 
     local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
-    local pct = pico.get.text("ABC", {'%', h=0.2}, ref)
+    local pct = {'%', h=0.2}
+    pico.get.text("ABC", pct, ref)
     assert(pct.w*100//1==34 and pct.h*100//1==20)
 
     local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='W'}
