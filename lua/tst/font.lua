@@ -8,8 +8,9 @@ do
     assert(dim.w>0 and dim.h==10)
 
     local pct = {'%', w=nil, h=0.1}
-    pico.get.text("ABC", pct)
+    local dim = pico.get.text("ABC", pct)
     assert(pct.w*100//1==17 and pct.h*100//1==10)
+    assert(dim.w==17 and dim.h==10)
 
     local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
     local pct = {'%', h=0.2}
@@ -23,7 +24,7 @@ do
 end
 
 -- numbers
-pico.get.text(10,10)
+--pico.get.text(10,10)
 pico.output.draw.text(10, {'!', x=0, y=0, anc='NW'})
 pico.output.clear()
 
