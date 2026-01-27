@@ -137,22 +137,10 @@ static Pico_Abs_Rect c_abs_rect (lua_State* L, int i) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#define REL_STACK_MAX 32
-static Pico_Rel_Rect _rel_rect_stack[REL_STACK_MAX];
-static Pico_Rel_Dim  _rel_dim_stack[REL_STACK_MAX];
-static Pico_Rel_Pos  _rel_pos_stack[REL_STACK_MAX];
-static int _rel_depth = 0;
-
-static void c_rel_reset (void) {
-    _rel_depth = 0;
-}
-
 static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
-    assert(_rel_depth < REL_STACK_MAX);
 
-    int cur = _rel_depth++;
     char mode = c_mode(L, i);
     Pico_Anchor anchor = c_anchor(L, i);
 
@@ -163,7 +151,8 @@ static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
     }
     lua_pop(L, 1);                          // T
 
-    _rel_rect_stack[cur] = (Pico_Rel_Rect) {
+    Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
+    *r = (Pico_Rel_Rect) {                  // T | ud
         .mode = mode,
         .x = L_checkfieldnum(L, i, "x"),
         .y = L_checkfieldnum(L, i, "y"),
@@ -173,15 +162,13 @@ static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
         .up = up,
     };
 
-    return &_rel_rect_stack[cur];
+    return r;                               // T | *ud*
 }
 
 static Pico_Rel_Dim* c_rel_dim (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
-    assert(_rel_depth < REL_STACK_MAX);
 
-    int cur = _rel_depth++;
     char mode = c_mode(L, i);
 
     lua_getfield(L, i, "up");               // T | up
@@ -191,22 +178,21 @@ static Pico_Rel_Dim* c_rel_dim (lua_State* L, int i) {
     }
     lua_pop(L, 1);                          // T
 
-    _rel_dim_stack[cur] = (Pico_Rel_Dim) {
+    Pico_Rel_Dim* d = lua_newuserdata(L, sizeof(Pico_Rel_Dim));
+    *d = (Pico_Rel_Dim) {                   // T | ud
         .mode = mode,
         .w = L_checkfieldnum(L, i, "w"),
         .h = L_checkfieldnum(L, i, "h"),
         .up = up,
     };
 
-    return &_rel_dim_stack[cur];
+    return d;                               // T | *ud*
 }
 
 static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
-    assert(_rel_depth < REL_STACK_MAX);
 
-    int cur = _rel_depth++;
     char mode = c_mode(L, i);
     Pico_Anchor anchor = c_anchor(L, i);
 
@@ -217,7 +203,8 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     }
     lua_pop(L, 1);                          // T
 
-    _rel_pos_stack[cur] = (Pico_Rel_Pos) {
+    Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
+    *p = (Pico_Rel_Pos) {                   // T | ud
         .mode = mode,
         .x = L_checkfieldnum(L, i, "x"),
         .y = L_checkfieldnum(L, i, "y"),
@@ -225,7 +212,7 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
         .up = up,
     };
 
-    return &_rel_pos_stack[cur];
+    return p;                               // T | *ud*
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -266,7 +253,6 @@ static int l_cv_pos (lua_State* L) {
 static int l_cv_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // rect | [ref]
 
-    c_rel_reset();
     Pico_Rel_Rect* rel = c_rel_rect(L, 1);
     Pico_Abs_Rect* ref = NULL;
     Pico_Abs_Rect ref_rect;
@@ -296,7 +282,6 @@ static int l_vs_pos_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // pos | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    c_rel_reset();
     Pico_Rel_Pos*  pos  = c_rel_pos(L, 1);
     Pico_Rel_Rect* rect = c_rel_rect(L, 2);
 
@@ -309,7 +294,6 @@ static int l_vs_rect_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // r1 | r2
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    c_rel_reset();
     Pico_Rel_Rect* r1 = c_rel_rect(L, 1);
     Pico_Rel_Rect* r2 = c_rel_rect(L, 2);
 
@@ -566,7 +550,6 @@ static int l_set_title (lua_State* L) {
 static int l_set_view (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    c_rel_reset();
     Pico_Rel_Dim*  xwin  = NULL;
     Pico_Rel_Rect* xdst  = NULL;
     Pico_Rel_Dim*  xwld  = NULL;
@@ -732,7 +715,6 @@ static int l_output_draw_buffer (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    c_rel_reset();
     lua_len(L, 1);                          // T | rect | l
     int l = lua_tointeger(L, -1);
     lua_geti(L, 1, 1);                      // T | rect | l | T[1]
@@ -770,7 +752,6 @@ static int l_output_draw_image (lua_State* L) {
     luaL_checktype(L, 1, LUA_TSTRING);      // path | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    c_rel_reset();
     const char* path = lua_tostring(L, 1);
     L_image_get_dim(L, 2, path);
 
@@ -792,7 +773,6 @@ static int l_output_draw_line (lua_State* L) {
 
 static int l_output_draw_oval (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);
-    c_rel_reset();
     Pico_Rel_Rect* rect = c_rel_rect(L, 1);
     pico_output_draw_oval(rect);
     return 0;
@@ -844,7 +824,6 @@ static int l_output_draw_poly (lua_State* L) {
 
 static int l_output_draw_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);
-    c_rel_reset();
     Pico_Rel_Rect* rect = c_rel_rect(L, 1);
     pico_output_draw_rect(rect);
     return 0;
@@ -854,7 +833,6 @@ static int l_output_draw_text (lua_State* L) {
     const char* text = luaL_checkstring(L, 1);  // text | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    c_rel_reset();
     L_text_get_dim(L, 2, text);
 
     Pico_Rel_Rect* rect = c_rel_rect(L, 2);
@@ -886,7 +864,6 @@ static int l_output_screenshot (lua_State* L) {
         path = lua_tostring(L, 1);
     }
 
-    c_rel_reset();
     Pico_Rel_Rect* rect = NULL;
     if (lua_gettop(L) >= 2 && lua_istable(L, 2)) {
         rect = c_rel_rect(L, 2);
