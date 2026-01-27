@@ -39,10 +39,12 @@ end
 do
     print("text dimming")
     local r = {'%', x=0.5, y=0.5, w=0, h=0.28, anc='C'}
+    local z = {'!', x=6.296000, y=12.960000, w=51.408001, h=10.080000, anc='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
         pico.set.color.draw(255, 0, 0)
+        pico.output.draw.rect(z);
         pico.output.draw.text("SOME TEXT", r)
         pico.input.delay(10)
         if a == 120 then
