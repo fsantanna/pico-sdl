@@ -36,6 +36,7 @@ tests:
 	#$(TST) tst/navigate.lua
 	$(TST) tst/pixels.lua
 	$(TST) tst/pos.lua
+	$(TST) tst/quit.lua
 	$(TST) tst/rect.lua
 	$(TST) tst/shot.lua
 	$(TST) tst/size_raw.lua

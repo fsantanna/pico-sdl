@@ -411,6 +411,11 @@ void pico_init (int on) {
     }
 }
 
+void pico_quit (void) {
+    SDL_Event e = { .type = SDL_QUIT };
+    SDL_PushEvent(&e);
+}
+
 // INPUT
 
 // Pre-handles input from environment:

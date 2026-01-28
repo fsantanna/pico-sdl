@@ -224,6 +224,11 @@ static int l_init (lua_State* L) {
     return 0;
 }
 
+static int l_quit (lua_State* L) {
+    pico_quit();
+    return 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_cv_pos (lua_State* L) {
@@ -904,6 +909,7 @@ static int l_output_sound (lua_State* L) {
 
 static const luaL_Reg ll_all[] = {
     { "init", l_init },
+    { "quit", l_quit },
     { NULL, NULL }
 };
 

@@ -98,6 +98,9 @@ typedef enum {
 /// @param on 1 to initialize, or 0 to terminate
 void pico_init (int on);
 
+/// @brief Pushes a quit event.
+void pico_quit (void);
+
 /// @}
 
 /// @defgroup Input

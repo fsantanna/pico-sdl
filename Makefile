@@ -41,6 +41,7 @@ tests:
 	$(EXE) tst/navigate.c
 	$(EXE) tst/pixels.c
 	$(EXE) tst/pos.c
+	$(EXE) tst/quit.c
 	$(EXE) tst/rect.c
 	$(EXE) tst/shot.c
 	$(EXE) tst/size_raw.c
