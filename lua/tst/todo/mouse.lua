@@ -38,7 +38,7 @@ end
 -- centered 100x100 logical
 print("zoom out 2x")
 do
-    pico.set.view(-1, nil, nil, nil, {x=-25, y=-25, w=100, h=100}, nil)
+    pico.set.view { source={'!', x=-25, y=-25, w=100, h=100} }
 
     -- phy (250, 250) -> log (25,25)
     do
@@ -70,7 +70,7 @@ end
 -- centered 10x10 logical
 print("zoom in 5x")
 do
-    pico.set.view(-1, nil, nil, nil, {x=20, y=20, w=10, h=10}, nil)
+    pico.set.view { source={'!', x=20, y=20, w=10, h=10} }
 
     -- phy (0,0) -> log (20,20)
     do
@@ -101,7 +101,7 @@ end
 -- bottom-right (SE) half
 print("scroll/zoom SE")
 do
-    pico.set.view(-1, nil, nil, nil, {x=25, y=25, w=25, h=25}, nil)
+    pico.set.view { source={'!', x=25, y=25, w=25, h=25} }
 
     -- phy (0,0) -> log (25,25)
     do
@@ -122,7 +122,7 @@ end
 
 print("normal PCT")
 do
-    pico.set.view(-1, nil, nil, nil, {x=0, y=0, w=50, h=50}, nil)
+    pico.set.view { source={'!', x=0, y=0, w=50, h=50} }
 
     -- phy (250,250) -> pct (0.5,0.5)
     do
@@ -145,7 +145,7 @@ print("zoom PCT")
 do
     -- Zoom with src = {20, 20, 10, 10}, but pct should still be 0-1 relative
     -- to full logical world
-    pico.set.view(-1, nil, nil, nil, {x=20, y=20, w=10, h=10}, nil)
+    pico.set.view { source={'!', x=20, y=20, w=10, h=10} }
 
     -- phy (0,0) -> raw (20,20) -> pct (0.4,0.4)
     do

@@ -2,7 +2,7 @@ local pico = require 'pico'
 
 pico.init(true)
 
-pico.set.title "Ticks"
+pico.set.view { title="Ticks" }
 
 local t0 = pico.get.ticks()
 pico.input.delay(1000)

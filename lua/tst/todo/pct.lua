@@ -2,7 +2,7 @@ local pico = require 'pico'
 
 pico.init(true)
 
-pico.set.title "Pct-To-Pos"
+pico.set.view { title="Pct-To-Pos" }
 
 do
     print("centered rect")

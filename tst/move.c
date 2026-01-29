@@ -3,8 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_title("Moving Around");
-    pico_set_view(-1, -1,
+    pico_set_view("Moving Around", -1, -1,
         &(Pico_Rel_Dim){ '!', {640, 360}, NULL }, NULL,
         &(Pico_Rel_Dim){ '!', {64, 18}, NULL },
         NULL, NULL

@@ -1,7 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.title("Size - Fullscreen")
+pico.set.view { title="Size - Fullscreen" }
 
 local all = pico.get.view()
 local phy = all.window

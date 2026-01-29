@@ -16,7 +16,7 @@ pico.input.event('key.up')
 
 -- TITLE
 print 'changes window title to "Testing..."'
-pico.set.title "Testing..."
+pico.set.view { title="Testing..." }
 pico.input.delay(2000)
 
 -- SOUND

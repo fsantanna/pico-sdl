@@ -117,7 +117,7 @@ int main (void) {
 
     pico_init(1);
     Pico_Rel_Dim log = { '!', {100, 100}, NULL };
-    pico_set_view(-1, -1, NULL, NULL, &log, NULL, NULL);
+    pico_set_view(NULL, -1, -1, NULL, NULL, &log, NULL, NULL);
 
     // ABS - POS - with up (0/1) - requires pico_init
     {

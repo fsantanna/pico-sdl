@@ -1,11 +1,10 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.title("Buffer")
-
 local phy = {'!', w=100, h=100}
 local log = {'!', w=10, h=10}
 pico.set.view {
+    title  = "Buffer",
     window = phy,
     world  = log,
 }

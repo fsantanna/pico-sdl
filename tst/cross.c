@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_view(-1, -1,
+    pico_set_view(NULL, -1, -1,
         &(Pico_Rel_Dim){ '!', {160, 160}, NULL },
         NULL,
         &(Pico_Rel_Dim){ '!', {16, 16}, NULL },

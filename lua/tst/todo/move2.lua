@@ -1,11 +1,11 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.title("Moving Around")
-pico.set.view(-1,
-    {w=640, h=360}, nil, {w=64, h=18},
-    nil, nil
-)
+pico.set.view {
+    title  = "Moving Around",
+    window = {'!', w=640, h=360},
+    world  = {'!', w=64, h=18}
+}
 math.randomseed(0)
 
 local pos = {x=32, y=9}  -- Center of world (50%, 50%)

@@ -390,7 +390,7 @@ void pico_init (int on) {
         {
             Pico_Rel_Dim phy = { '!', {S.view.phy.w, S.view.phy.h}, NULL };
             Pico_Rel_Dim log = { '!', {S.view.log.w, S.view.log.h}, NULL };
-            pico_set_view(-1, -1, &phy, NULL, &log, NULL, NULL);
+            pico_set_view(NULL, -1, -1, &phy, NULL, &log, NULL, NULL);
         }
 
         pico_output_clear();
@@ -443,7 +443,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     FS = 0;
                 } else {
                     Pico_Rel_Dim phy = { '!', {e->window.data1, e->window.data2}, NULL };
-                    pico_set_view(-1, -1, &phy, NULL, NULL, NULL, NULL);
+                    pico_set_view(NULL, -1, -1, &phy, NULL, NULL, NULL, NULL);
                 }
             }
             break;
@@ -461,7 +461,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_MINUS: {
                     // Zoom out
-                    pico_set_view(-1, -1, NULL, NULL, NULL,
+                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0.5, 0.5, 1.1, 1.1}, PICO_ANCHOR_C, NULL},
                         NULL
                     );
@@ -469,7 +469,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_EQUALS: {
                     // Zoom in
-                    pico_set_view(-1, -1, NULL, NULL, NULL,
+                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.9, 0.9}, PICO_ANCHOR_C, NULL},
                         NULL
                     );
@@ -477,7 +477,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_LEFT: {
                     // Scroll left
-                    pico_set_view(-1, -1, NULL, NULL, NULL,
+                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {-0.1, 0, 1, 1}, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
@@ -485,7 +485,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_RIGHT: {
                     // Scroll right
-                    pico_set_view(-1, -1, NULL, NULL, NULL,
+                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0.1, 0, 1, 1}, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
@@ -493,7 +493,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_UP: {
                     // Scroll up
-                    pico_set_view(-1, -1, NULL, NULL, NULL,
+                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0, -0.1, 1, 1}, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
@@ -501,14 +501,14 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_DOWN: {
                     // Scroll down
-                    pico_set_view(-1, -1, NULL, NULL, NULL,
+                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0, 0.1, 1, 1}, PICO_ANCHOR_NW, NULL},
                         NULL
                     );
                     break;
                 }
                 case SDLK_g: {
-                    pico_set_view(!S.view.grid, -1, NULL, NULL, NULL, NULL, NULL);
+                    pico_set_view(NULL, !S.view.grid, -1, NULL, NULL, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_s: {
@@ -1124,11 +1124,8 @@ Uint32 pico_get_ticks (void) {
     return SDL_GetTicks();
 }
 
-const char* pico_get_title (void) {
-    return SDL_GetWindowTitle(WIN);
-}
-
 void pico_get_view (
+    const char** title,
     int* grid,
     int* fs,
     Pico_Abs_Dim* phy,
@@ -1138,6 +1135,9 @@ void pico_get_view (
     Pico_Rel_Rect* clip
 ) {
     assert(dst==NULL && src==NULL && clip==NULL);
+    if (title != NULL) {
+        *title = SDL_GetWindowTitle(WIN);
+    }
     if (grid != NULL) {
         *grid = S.view.grid;
     }
@@ -1196,11 +1196,8 @@ void pico_set_style (PICO_STYLE style) {
     S.style = style;
 }
 
-void pico_set_title (const char* title) {
-    SDL_SetWindowTitle(WIN, title);
-}
-
 void pico_set_view (
+    const char*    title,
     int        grid,
     int        fs,
     Pico_Rel_Dim*  phy,
@@ -1211,6 +1208,11 @@ void pico_set_view (
 ) {
     Pico_Abs_Dim new;
 
+    { // title: set window title
+        if (title != NULL) {
+            SDL_SetWindowTitle(WIN, title);
+        }
+    }
     { // grid: toggle grid overlay
         if (grid != -1) {
             S.view.grid = grid;

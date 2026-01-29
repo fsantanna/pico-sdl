@@ -2,6 +2,13 @@ require 'pico.check'
 
 pico.init(true)
 
+-- TITLE
+print("title: set and get")
+pico.set.view { title="Test Title" }
+local all = pico.get.view()
+assert(all.title == "Test Title", "title mismatch: " .. tostring(all.title))
+pico.set.view { title="View Raw" }
+
 local all = pico.get.view()
 local window = all.window
 local world = all.world

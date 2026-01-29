@@ -1,8 +1,8 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.title("pixels")
 pico.set.view {
+    title  = "pixels",
     window = {'!', w=100, h=100},
     world  = {'!', w=5, h=5}
 }

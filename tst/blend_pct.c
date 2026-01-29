@@ -3,9 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_title("Blend");
-    pico_set_view(
-        -1, -1,
+    pico_set_view("Blend", -1, -1,
         &(Pico_Rel_Dim){'!', {640, 360}, NULL},
         NULL,
         &(Pico_Rel_Dim){'!', {64, 36}, NULL},

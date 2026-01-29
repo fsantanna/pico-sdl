@@ -43,7 +43,9 @@ The following example draws an `X` on screen gradually with instant feedback:
 
 int main (void) {
     pico_init(1);
-    pico_set_view(-1, -1,
+    pico_set_view (
+        "Draws an X",                               // window title
+        -1, -1,
         &(Pico_Rel_Dim){ '!', {160, 160}, NULL },   // physical screen size
         NULL,
         &(Pico_Rel_Dim){ '!', {16, 16}, NULL },     // logical screen size (10x10 pixel size)

@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_title("Rect");
+    pico_set_view("Rect", -1, -1, NULL, NULL, NULL, NULL, NULL);
 
     {
         puts("centered rect");

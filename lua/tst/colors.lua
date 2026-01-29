@@ -1,8 +1,8 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.title("Colors Test")
 pico.set.view {
+    title  = "Colors Test",
     window = {'!', w=640, h=480},
     world  = {'!', w=64,  h=48},
 }

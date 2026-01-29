@@ -1,8 +1,8 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.title("Blend")
 pico.set.view {
+    title  = "Blend",
     window = {'!', w=640, h=360},
     world  = {'!', w=64,  h=36},
 }

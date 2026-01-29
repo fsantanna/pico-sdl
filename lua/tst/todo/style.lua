@@ -1,9 +1,8 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.title("Style")
-
 pico.set.view {
+    title  = "Style",
     window = {w=200, h=200},
     world  = {w=50, h=50},
 }

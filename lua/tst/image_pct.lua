@@ -5,7 +5,7 @@ function round (v)
 end
 
 pico.init(true)
-pico.set.title("Image - Size - Crop")
+pico.set.view { title="Image - Size - Crop" }
 pico.set.color.clear(0xFF, 0xFF, 0xFF)
 
 -- pico.get.image

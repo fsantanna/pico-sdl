@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_title("Expert");
+    pico_set_view("Expert", -1, -1, NULL, NULL, NULL, NULL, NULL);
 
     Pico_Rel_Rect r = { '%', {0.5,0.5, 0.5,0.5}, PICO_ANCHOR_C, NULL };
     pico_output_draw_rect(&r);

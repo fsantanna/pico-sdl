@@ -280,13 +280,10 @@ Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
 /// @return elapsed time in milliseconds
 Uint32 pico_get_ticks (void);
 
-/// @brief Gets the application title.
-/// @return the current window title
-const char* pico_get_title (void);
-
 /// @brief Gets the current view configuration. NULL arguments are ignored.
 /// @param grid pointer to retrieve grid state
 /// @param window_fullscreen pointer to retrieve fullscreen state
+/// @param title pointer to retrieve window title (NULL to skip)
 /// @param window pointer to retrieve window dimensions
 /// @param window_target pointer to retrieve window target region
 /// @param world pointer to retrieve world/logical dimensions
@@ -294,6 +291,7 @@ const char* pico_get_title (void);
 /// @param world_clip pointer to retrieve world clipping region
 /// @sa pico_set_view
 void pico_get_view (
+    const char** title,
     int* grid,
     int* window_fullscreen,
     Pico_Abs_Dim* window,
@@ -338,20 +336,18 @@ void pico_set_show (int on);
 /// @param style new style
 void pico_set_style (PICO_STYLE style);
 
-/// @brief Sets the application title.
-/// @param title new title
-void pico_set_title (const char* title);
-
 /// @brief Sets the view configuration. NULL arguments are ignored.
 /// @param window_grid 1 to show grid, 0 to hide, or -1 to keep unchanged
 /// @param window_fullscreen 1 to enable fullscreen, 0 to disable, or -1 to keep
 /// @param window window dimensions (mode determines interpretation)
 /// @param window_target target region within window
+/// @param title window title (NULL to keep current)
 /// @param world world/logical dimensions (mode determines interpretation)
 /// @param world_source source region within world
 /// @param world_clip clipping region within world
 /// @sa pico_get_view
 void pico_set_view (
+    const char*    title,
     int window_grid,
     int window_fullscreen,
     Pico_Rel_Dim*  window,

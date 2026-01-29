@@ -46,7 +46,7 @@
     - **pico.get.ticks**: Gets milliseconds since initialization.
         - `pico.get.ticks () -> integer`
     - **pico.get.view**: Gets view configuration.
-        - `pico.get.view () -> { [grid: boolean], [fullscreen: boolean], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect] }`
+        - `pico.get.view () -> { [title: string], [grid: boolean], [fullscreen: boolean], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect] }`
 - **pico.set**
     - **pico.set.alpha**: Sets alpha transparency.
         - `pico.set.alpha (a: integer)`
@@ -56,10 +56,8 @@
         - `pico.set.expert (on: boolean)`
     - **pico.set.style**: Sets drawing style.
         - `pico.set.style (style: 'fill'|'stroke')`
-    - **pico.set.title**: Sets window title.
-        - `pico.set.title (title: string)`
     - **pico.set.view**: Sets view configuration.
-        - `pico.set.view (cfg: { [grid: boolean], [fullscreen: boolean], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect] })`
+        - `pico.set.view (cfg: { [title: string], [grid: boolean], [fullscreen: boolean], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect] })`
     - **pico.set.color**
         - **pico.set.color.clear**: Sets clear color.
             - `pico.set.color.clear (clr: Color)`

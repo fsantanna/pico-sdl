@@ -434,6 +434,7 @@ static int l_get_ticks (lua_State* L) {
 }
 
 static int l_get_view (lua_State* L) {
+    const char* title;
     int grid;
     int fs;
     Pico_Abs_Dim  phy;
@@ -443,9 +444,12 @@ static int l_get_view (lua_State* L) {
     //Pico_Abs_Rect clip;
 
     // TODO: dst, src, clip
-    pico_get_view(&grid, &fs, &phy, NULL, &log, NULL, NULL);
+    pico_get_view(&title, &grid, &fs, &phy, NULL, &log, NULL, NULL);
 
     lua_newtable(L);                    // T
+
+    lua_pushstring(L, title);           // T | title
+    lua_setfield(L, -2, "title");       // T
 
     lua_pushboolean(L, grid);           // T | grid
     lua_setfield(L, -2, "grid");        // T
@@ -566,12 +570,6 @@ static int l_set_style (lua_State* L) {
     return 0;
 }
 
-static int l_set_title (lua_State* L) {
-    const char* title = luaL_checkstring(L, 1);   // title
-    pico_set_title(title);
-    return 0;
-}
-
 static int l_set_view (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
@@ -592,6 +590,13 @@ static int l_set_view (lua_State* L) {
     lua_getfield(L, 1, "fullscreen");       // T | fs
     if (!lua_isnil(L, -1)) {
         fs = lua_toboolean(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+
+    const char* title = NULL;
+    lua_getfield(L, 1, "title");            // T | title
+    if (!lua_isnil(L, -1)) {
+        title = lua_tostring(L, -1);
     }
     lua_pop(L, 1);                          // T
 
@@ -625,7 +630,7 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_view(grid, fs, xwin, xdst, xwld, xsrc, xclip);
+    pico_set_view(title, grid, fs, xwin, xdst, xwld, xsrc, xclip);
     return 0;
 }
 
@@ -960,7 +965,6 @@ static const luaL_Reg ll_set[] = {
     { "crop",   l_set_crop   },
     { "expert", l_set_expert },
     { "style",  l_set_style  },
-    { "title",  l_set_title  },
     { "view",   l_set_view   },
     { NULL, NULL }
 };

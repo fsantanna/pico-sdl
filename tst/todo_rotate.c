@@ -2,7 +2,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_title("Rotate");
+    pico_set_view("Rotate", -1, -1, NULL, NULL, NULL, NULL, NULL);
     pico_set_view_raw(0, -1, &(Pico_Dim){500, 500}, NULL, &(Pico_Dim){100, 100}, NULL, NULL);
     pico_set_anchor_pos((Pico_Anchor){PICO_CENTER, PICO_MIDDLE});
     pico_set_font(NULL, 16);

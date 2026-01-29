@@ -1,7 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.title("Rect")
+pico.set.view { title="Rect" }
 
 do
     print("centered rect")

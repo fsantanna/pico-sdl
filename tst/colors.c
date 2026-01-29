@@ -3,9 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_title("Colors Test");
-    pico_set_view(
-        -1, -1,
+    pico_set_view("Colors Test", -1, -1,
         &(Pico_Rel_Dim){ '!', {640, 480}, NULL },
         NULL,
         &(Pico_Rel_Dim){ '!', {64, 48}, NULL },

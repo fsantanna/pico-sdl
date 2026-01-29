@@ -2,7 +2,7 @@ local pico = require 'pico'
 
 pico.init(true)
 
-pico.set.title "Events"
+pico.set.view { title="Events" }
 
 while true do
     local e = pico.input.event()

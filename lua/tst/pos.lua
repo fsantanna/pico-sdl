@@ -1,7 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.title("Pct-To-Pos")
+pico.set.view { title="Pct-To-Pos" }
 
 do
     print("white centered rect")
