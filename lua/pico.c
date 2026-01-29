@@ -71,11 +71,21 @@ static Pico_Color c_color_t (lua_State* L, int i) {
 static Pico_Color_A c_color_a_t (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);    // clr = { r,g,b,a }
+
+    int a = 0xFF;
+    {
+        lua_getfield(L, i, "a");            // clr | a
+        if (!lua_isnil(L,-1)) {
+            a = L_checkfieldnum(L, i, "a");
+        }
+        lua_pop(L, 1);
+    }
+
     Pico_Color_A clr = {
         L_checkfieldnum(L, i, "r"),
         L_checkfieldnum(L, i, "g"),
         L_checkfieldnum(L, i, "b"),
-        L_checkfieldnum(L, i, "a"),
+        a
     };
     return clr;
 }
