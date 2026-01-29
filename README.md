@@ -1,13 +1,27 @@
 # pico-sdl
 
-(Project is under maintenance. Do not use the `main` branch.)
-
 [![Tests][badge]][tests]
 
 [badge]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml/badge.svg
 [tests]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml
 
+***A 2D graphics library for C and Lua***
+
+[
+    [`v0.2`](https://github.com/fsantanna/pico-sdl/v0.2) |
+    [`v0.1`](https://github.com/fsantanna/pico-sdl/v0.1)
+]
+
+This is the unstable `main` branch.
+Please, switch to stable [`v0.5`](https://github.com/lua-atmos/atmos/tree/v0.4).
+<!--
+-->
+
 `pico-sdl` is a C graphics library for developing 2D games and applications.
+
+See also [pico-lua][pico-lua], the official Lua binding for `pico-sdl`.
+
+[pico-lua]: https://github.com/fsantanna/pico-sdl/tree/main/lua
 
 `pico-sdl` is designed around 3 groups of APIs:
 
