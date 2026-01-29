@@ -2,116 +2,114 @@
 
 ## Types
 
-- [Anchor](#TODO): `{ x: integer|string, y: integer|string }`
-    - `x: string` (`'left'`, `'center'`, `'right'`)
-    - `y: string` (`'top'`, `'middle'`, `'bottom'`)
-- [Color](#TODO): `{ r: integer, g: integer, b: integer [, a: integer=0xFF] }`
-    - `pico.color.*`: `black`, `red`, `white`
-- [Dim](#TODO): `{ x: integer, y: integer }`
-- [Event](#TODO): `{ TODO }`
-- [Pct](#TODO): `{ x: integer, y: integer }`
-- [Pos](#TODO): `{ x: integer, y: integer }`
-- [Rect](#TODO): `{ x: integer, y: integer, w: integer, h: integer }`
+- **Anchor**: `string` | `{ x: number, y: number }`
+    - Strings: `'C'`, `'NW'`, `'N'`, `'NE'`, `'E'`, `'SE'`, `'S'`, `'SW'`, `'W'`
+- **Color**: `string` | `{ r: integer, g: integer, b: integer }`
+    - Strings: `'black'`, `'white'`, `'gray'`, `'silver'`, `'red'`, `'green'`,
+      `'blue'`, `'yellow'`, `'cyan'`, `'magenta'`, `'orange'`, `'purple'`,
+      `'pink'`, `'brown'`, `'lime'`, `'teal'`, `'navy'`, `'maroon'`, `'olive'`
+- **Color_A**: `{ r: integer, g: integer, b: integer, a: integer }`
+- **Dim**: `{ w: integer, h: integer }`
+- **Event**: `{ tag: string, ... }`
+    - `{ tag='quit' }`
+    - `{ tag='key.dn'|'key.up', key: string }`
+    - `{ tag='mouse.motion'|'mouse.button.dn'|'mouse.button.up',
+        '!', x: integer, y: integer, anc: string [, but: string] }`
+- **Rel_Dim**: `{ '!'|'%', w: number, h: number [, up: Rel_Rect] }`
+- **Rel_Pos**: `{ '!'|'%', x: number, y: number [, anc: Anchor, up: Rel_Rect] }`
+- **Rel_Rect**: `{ '!'|'%', x: number, y: number, w: number, h: number
+    [, anc: Anchor, up: Rel_Rect] }`
+- **Abs_Rect**: `{ x: integer, y: integer, w: integer, h: integer }`
 
 ## Operations
 
-- [pico.init](#TODO): Initializes and terminates `pico`.
+- **pico.init**: Initializes and finalizes pico.
     - `pico.init (on: boolean)`
-- [pico.dim](#TODO): Dimension relative to the screen size (or given rectangle).
-    - `pico.dim (pct: Pct [,out: Dim]) -> Dim`
-    - `pico.dim (x: integer, y: integer [,out: Dim]) -> Dim`
-- [pico.pos](#TODO): Position relative to the screen size (or given rectangle with anchor).
-    - `pico.pos (pct: Pct [,out: Rect [, anc: Anchor]]) -> Pos`
-    - `pico.pos (x: integer, y: integer) -> Pos`
-- **pico.get**
-    - [pico.get.rotate](#TODO): Rotation angle in degrees.
-        - `pico.get.rotate () -> integer`
-    - **pico.get.size**
-        - [pico.get.size.image](#TODO): Image dimensions.
-            - `pico.get.size.image (path: string) -> Dim`
-        - [pico.get.size.window](#TODO): Physical and logical window dimensions.
-            - `pico.get.size.window () -> { phy=Dim, log=Dim }`
-    - [pico.get.ticks](#TODO): Number of milliseconds initialization.
-        - `pico.get.ticks () -> integer`
-- **pico.set**
-    - [pico.set.crop](#TODO): Crop area.
-        - `pico.set.crop ([r: Rect])`
-    - [pico.set.cursor](#TODO): Text cursor position.
-        - `pico.set.cursor (pos: Pos)`
-    - [pico.set.expert](#TODO): Expert operation mode.
-        - `pico.set.expert (on: boolean)`
-    - [pico.set.font](#TODO): Font for texts.
-        - `pico.set.font (path: [string], h: integer)`
-    - [pico.set.grid](#TODO): Toggles window grid.
-        - `pico.set.grid (on: boolean)`
-    - [pico.set.rotate](#TODO): Rotation angle in degrees.
-        - `pico.set.rotate (ang: integer)`
-    - [pico.set.scale](#TODO): Scale relative to original dimensions.
-        - `pico.set.scale (pct: Pct)`
-    - **pico.set.size**
-        - [pico.set.size.window](#TODO): Physical and logical window dimensions.
-            - `pico.set.size.window (phy: Dim|boolean, log: Dim|boolean)`
-    - [pico.set.style](#TODO): Drawing style.
-        - `pico.set.style (['fill'|'stroke'])`
-    - [pico.set.title](#TODO): Window title.
-        - `pico.set.title (title: string)`
-    - [pico.set.zoom](#TODO): Window zoom.
-        - `pico.set.zoom (pct: Pct)`
-    - **pico.set.color**
-        - [pico.set.color.clear](#TODO): Window clear color.
-            - `pico.set.color.clear (clr: Color)`
-            - `pico.set.color.clear (r, g, b [,a])`
-        - [pico.set.color.draw](#TODO): Draw color.
-            - `pico.set.color.draw (clr: Color)`
-            - `pico.set.color.draw (r, g, b [,a])`
-    - **pico.set.anchor**
-        - [pico.set.anchor.draw](#TODO): Draw anchor.
-            - `pico.set.anchor.draw (anc: Anchor)`
-            - `pico.set.anchor.draw (x, y)`
-        - [pico.set.anchor.rotate](#TODO): Rotate anchor.
-            - `pico.set.anchor.rotate (anc: Anchor)`
-            - `pico.set.anchor.rotate (x, y)`
-- **pico.input**
-    - [pico.input.delay](#TODO): Freezes execution for milliseconds.
-        - `pico.input.delay (ms: integer)`
-    - [pico.input.event](#TODO): Waits event for a number of milliseconds.
-        - `pico.input.event ([evt: Event], [ms: integer])`
-- **pico.output**
-    - [pico.output.clear](#TODO): Clears window.
-        - `pico.output.clear ()`
-    - **pico.output.draw**
-        - [pico.output.draw.buffer](#TODO): Draws array of colors.
-            - `pico.output.draw.buffer (pos: Pos, buffer: {{Color}})`
-        - [pico.output.draw.image](#TODO): Draws image.
-            - `pico.output.draw.image (pos: Pos, path: string [,Dim])`
-        - [pico.output.draw.line](#TODO): Draws line.
-            - `pico.output.draw.line (p1: Pos, p2: Pos)`
-        - [pico.output.draw.oval](#TODO): Draws oval.
-            - `pico.output.draw.oval (rect: Rect)`
-        - [pico.output.draw.pixel](#TODO): Draws pixel.
-            - `pico.output.draw.pixel (pos: Pos)`
-        - [pico.output.draw.pixels](#TODO): Draws vector of pixels.
-            - `pico.output.draw.pixels (poss: {Pos})`
-        - [pico.output.draw.poly](#TODO): Draws polygon.
-            - `pico.output.draw.poly (pts: {Pos})`
-        - [pico.output.draw.rect](#TODO): Draws rectangle.
-            - `pico.output.draw.rect (rect: Rect)`
-        - [pico.output.draw.text](#TODO): Draws text.
-            - `pico.output.draw.text (pos: Pos, text: string)`
-        - [pico.output.draw.tri](#TODO): Draws triangle.
-            - `pico.output.draw.tri (rect: Rect)`
-    - [pico.output.preset](#TODO): Redraws the window.
-        - `pico.output.present ()`
-    - [pico.output.screenshot](#TODO): Takes a window screenshot.
-        - `pico.output.screenshot ([path: string], [rect: Rect])`
-    - [pico.output.sound](#TODO): Plays sound.
-        - `pico.output.sound (path: string)`
-    - [pico.output.write](#TODO): Writes text.
-        - `pico.output.write (text: string)`
-    - [pico.output.writeln](#TODO): Writes text and breaks line.
-        - `pico.output.writeln (text: string)`
+- **pico.quit**: Pushes a quit event to terminate the application.
+    - `pico.quit ()`
+- **pico.cv**
+    - **pico.cv.pos**: Converts relative position to absolute.
+        - `pico.cv.pos (pos: Rel_Pos [, ref: Abs_Rect]) -> Rel_Pos`
+    - **pico.cv.rect**: Converts relative rectangle to absolute.
+        - `pico.cv.rect (rect: Rel_Rect [, ref: Abs_Rect]) -> Rel_Rect`
 - **pico.vs**
-    - [pico.vs.pos_rect](#TODO): Collision between position and rectangle.
-        - `pico.vs.pos_rect (pos: Pos, rect: Rect [,ap, ar]) -> boolean`
-    - [pico.vs.rect_rect](#TODO): Collision between two rectangles.
-        - `pico.vs.rect_rect (r1: Rect, r2: Rect [,a1, a2]) -> boolean`
+    - **pico.vs.pos_rect**: Collision between position and rectangle.
+        - `pico.vs.pos_rect (pos: Rel_Pos, rect: Rel_Rect) -> boolean`
+    - **pico.vs.rect_rect**: Collision between two rectangles.
+        - `pico.vs.rect_rect (r1: Rel_Rect, r2: Rel_Rect) -> boolean`
+- **pico.color**
+    - **pico.color.darker**: Makes a color darker.
+        - `pico.color.darker (clr: Color, pct: number) -> Color`
+    - **pico.color.lighter**: Makes a color lighter.
+        - `pico.color.lighter (clr: Color, pct: number) -> Color`
+- **pico.get**
+    - **pico.get.image**: Gets image dimensions.
+        - `pico.get.image (path: string [, dim: Rel_Dim]) -> Dim`
+    - **pico.get.text**: Gets text dimensions.
+        - `pico.get.text (text: string, dim: Rel_Dim) -> Dim`
+    - **pico.get.ticks**: Gets milliseconds since initialization.
+        - `pico.get.ticks () -> integer`
+    - **pico.get.view**: Gets view configuration.
+        - `pico.get.view () -> { grid: boolean, fullscreen: boolean,
+            window: Dim, world: Dim }`
+- **pico.set**
+    - **pico.set.alpha**: Sets alpha transparency.
+        - `pico.set.alpha (a: integer)`
+    - **pico.set.crop**: Sets crop area.
+        - `pico.set.crop ([rect: Abs_Rect])`
+    - **pico.set.expert**: Toggles expert mode.
+        - `pico.set.expert (on: boolean)`
+    - **pico.set.style**: Sets drawing style.
+        - `pico.set.style (style: 'fill'|'stroke')`
+    - **pico.set.title**: Sets window title.
+        - `pico.set.title (title: string)`
+    - **pico.set.view**: Sets view configuration.
+        - `pico.set.view (config: { grid: boolean, fullscreen: boolean,
+            window: Rel_Dim, target: Rel_Rect, world: Rel_Dim,
+            source: Rel_Rect, clip: Rel_Rect })`
+    - **pico.set.color**
+        - **pico.set.color.clear**: Sets clear color.
+            - `pico.set.color.clear (clr: Color)`
+            - `pico.set.color.clear (r, g, b)`
+        - **pico.set.color.draw**: Sets draw color.
+            - `pico.set.color.draw (clr: Color)`
+            - `pico.set.color.draw (r, g, b)`
+- **pico.input**
+    - **pico.input.delay**: Freezes execution for milliseconds.
+        - `pico.input.delay (ms: integer)`
+    - **pico.input.event**: Waits for an event.
+        - `pico.input.event () -> Event`
+        - `pico.input.event (ms: integer) -> Event?`
+        - `pico.input.event (filter: string) -> Event`
+        - `pico.input.event (filter: string, ms: integer) -> Event?`
+        - Filters: `'quit'`, `'key.dn'`, `'key.up'`, `'mouse.button.dn'`
+- **pico.output**
+    - **pico.output.clear**: Clears window.
+        - `pico.output.clear ()`
+    - **pico.output.present**: Presents buffer (expert mode only).
+        - `pico.output.present ()`
+    - **pico.output.screenshot**: Takes a window screenshot.
+        - `pico.output.screenshot ([path: string] [, rect: Rel_Rect]) -> string`
+    - **pico.output.sound**: Plays sound.
+        - `pico.output.sound (path: string)`
+    - **pico.output.draw**
+        - **pico.output.draw.buffer**: Draws array of RGBA colors.
+            - `pico.output.draw.buffer (buffer: {{Color_A}}, rect: Rel_Rect)`
+        - **pico.output.draw.image**: Draws image.
+            - `pico.output.draw.image (path: string, rect: Rel_Rect)`
+        - **pico.output.draw.line**: Draws line.
+            - `pico.output.draw.line (p1: Rel_Pos, p2: Rel_Pos)`
+        - **pico.output.draw.oval**: Draws oval.
+            - `pico.output.draw.oval (rect: Rel_Rect)`
+        - **pico.output.draw.pixel**: Draws pixel.
+            - `pico.output.draw.pixel (pos: Rel_Pos)`
+        - **pico.output.draw.pixels**: Draws multiple pixels.
+            - `pico.output.draw.pixels (poss: {Rel_Pos})`
+        - **pico.output.draw.poly**: Draws polygon.
+            - `pico.output.draw.poly (pts: {Rel_Pos})`
+        - **pico.output.draw.rect**: Draws rectangle.
+            - `pico.output.draw.rect (rect: Rel_Rect)`
+        - **pico.output.draw.text**: Draws text.
+            - `pico.output.draw.text (text: string, rect: Rel_Rect)`
+        - **pico.output.draw.tri**: Draws triangle.
+            - `pico.output.draw.tri (p1: Rel_Pos, p2: Rel_Pos, p3: Rel_Pos)`
