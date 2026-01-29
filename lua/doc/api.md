@@ -57,7 +57,8 @@
     - **pico.set.style**: Sets drawing style.
         - `pico.set.style (style: 'fill'|'stroke')`
     - **pico.set.view**: Sets view configuration.
-        - `pico.set.view (cfg: { [title: string], [grid: boolean], [fullscreen: boolean], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect] })`
+        - `pico.set.view (cfg: { [title: string], [grid: boolean], [fullscreen: boolean], [size: Dim], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect] })`
+        - `size` sets both `window` and `world` to the same dimensions (1:1 pixel mapping)
     - **pico.set.color**
         - **pico.set.color.clear**: Sets clear color.
             - `pico.set.color.clear (clr: Color)`

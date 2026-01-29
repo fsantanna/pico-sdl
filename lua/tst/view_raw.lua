@@ -17,6 +17,12 @@ assert(world.w == 100 and world.h == 100)
 window[1] = '!'
 world[1] = '!'
 
+-- SIZE
+pico.set.view { size=window }
+local all = pico.get.view()
+assert(all.world.w==window.w and all.world.h==window.h)
+pico.set.view { world=world }   -- fallback after test
+
 -- WORLD - bigger
 print("shows lower-left X, center rect, center/up-right line")
 for i = 0, 49 do

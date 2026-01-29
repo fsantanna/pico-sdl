@@ -618,6 +618,18 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
+    lua_getfield(L, 1, "size");             // T | size
+    if (!lua_isnil(L, -1)) {
+        int n = lua_gettop(L);
+        if (xwin == NULL) {
+            xwin = c_rel_dim(L, n);
+        }
+        if (xwld == NULL) {
+            xwld = c_rel_dim(L, n);
+        }
+    }
+    lua_pop(L, 1);                          // T
+
     lua_getfield(L, 1, "source");           // T | src
     if (!lua_isnil(L, -1)) {
         xsrc = c_rel_rect(L, lua_gettop(L));

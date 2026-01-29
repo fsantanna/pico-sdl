@@ -94,8 +94,6 @@
         - `pico.set.scale (x: integer, y: integer)`
     - [pico.set.style](#TODO): Drawing style.
         - `pico.set.style (['fill'|'stroke'])`
-    - [pico.set.title](#TODO): Window title.
-        - `pico.set.title (title: string)`
     - [pico.set.viewport](#TODO): Viewport area.
         - `pico.set.viewport ([r: Rect])`
     - [pico.set.zoom](#TODO): Window zoom.
