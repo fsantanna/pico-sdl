@@ -128,8 +128,8 @@ static char c_mode (lua_State* L, int i) {
     const char* s = lua_tostring(L, -1);
     char mode = s[0];
     lua_pop(L, 1);                              // T
-    if (mode != '!' && mode != '%') {
-        luaL_error(L, "invalid mode '%c', expected '!' or '%%'", mode);
+    if (mode!='!' && mode!='%' && mode!='#') {
+        luaL_error(L, "invalid mode '%c', expected '!', '%%', or '#'", mode);
     }
     return mode;
 }
@@ -442,9 +442,10 @@ static int l_get_view (lua_State* L) {
     Pico_Abs_Dim  log;
     //Pico_Abs_Rect src;
     //Pico_Abs_Rect clip;
+    Pico_Abs_Dim  tile;
 
     // TODO: dst, src, clip
-    pico_get_view(&title, &grid, &fs, &phy, NULL, &log, NULL, NULL);
+    pico_get_view(&title, &grid, &fs, &phy, NULL, &log, NULL, NULL, &tile);
 
     lua_newtable(L);                    // T
 
@@ -484,6 +485,13 @@ static int l_get_view (lua_State* L) {
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "world");       // T
 
+    lua_newtable(L);                    // T | tile
+    lua_pushinteger(L, tile.w);
+    lua_setfield(L, -2, "w");
+    lua_pushinteger(L, tile.h);
+    lua_setfield(L, -2, "h");
+    lua_setfield(L, -2, "tile");        // T
+
 #if 0
     lua_newtable(L);                    // T | src
     lua_pushinteger(L, src.x);
@@ -510,6 +518,28 @@ static int l_get_view (lua_State* L) {
     lua_setfield(L, -2, "clip");        // T
 #endif
 
+    return 1;
+}
+
+static int l_get_mouse (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);           // pos
+
+    char mode = c_mode(L, 1);
+    Pico_Rel_Pos pos = { .mode = mode };
+
+    int button = PICO_MOUSE_BUTTON_NONE;
+    if (lua_gettop(L) >= 2 && lua_isinteger(L, 2)) {
+        button = lua_tointeger(L, 2);
+    }
+
+    int ret = pico_get_mouse(&pos, button);
+
+    lua_pushnumber(L, pos.x);
+    lua_setfield(L, 1, "x");
+    lua_pushnumber(L, pos.y);
+    lua_setfield(L, 1, "y");
+
+    lua_pushboolean(L, ret);
     return 1;
 }
 
@@ -642,7 +672,17 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_view(title, grid, fs, xwin, xdst, xwld, xsrc, xclip);
+    Pico_Abs_Dim* xtile = NULL;
+    Pico_Abs_Dim tile_dim;
+    lua_getfield(L, 1, "tile");             // T | tile
+    if (!lua_isnil(L, -1)) {
+        tile_dim.w = L_checkfieldnum(L, lua_gettop(L), "w");
+        tile_dim.h = L_checkfieldnum(L, lua_gettop(L), "h");
+        xtile = &tile_dim;
+    }
+    lua_pop(L, 1);                          // T
+
+    pico_set_view(title, grid, fs, xwin, xdst, xwld, xsrc, xclip, xtile);
     return 0;
 }
 
@@ -964,6 +1004,7 @@ static const luaL_Reg ll_color[] = {
 
 static const luaL_Reg ll_get[] = {
     { "image", l_get_image },
+    { "mouse", l_get_mouse },
     { "text",  l_get_text  },
     { "ticks", l_get_ticks },
     { "view",  l_get_view  },
