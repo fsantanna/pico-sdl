@@ -66,6 +66,7 @@ static struct {
         Pico_Abs_Dim  log;
         Pico_Abs_Rect src;
         Pico_Abs_Rect clip;
+        Pico_Abs_Dim  tile;
     } view;
 } S = {
     0xFF,
@@ -81,6 +82,7 @@ static struct {
         PICO_DIM_PHY,
         {},
         PICO_DIM_LOG,
+        {},
         {},
         {},
     },
@@ -199,6 +201,14 @@ static SDL_FDim _sdl_dim (
             if (dim->w == 0) dim->w = ret.w / r1.w;
             if (dim->h == 0) dim->h = ret.h / r1.h;
             break;
+        case '#': {
+            float tw = S.view.tile.w;
+            float th = S.view.tile.h;
+            ret = _f3(dim->w * tw, dim->h * th, ratio);
+            if (dim->w == 0) dim->w = ret.w / tw;
+            if (dim->h == 0) dim->h = ret.h / th;
+            break;
+        }
         default:
             assert(0 && "invalid mode");
     }
@@ -234,6 +244,15 @@ static SDL_FPoint _sdl_pos (
                 r1.y + pos->y*r1.h - pos->anchor.y,
             };
             break;
+        case '#': {
+            float tw = S.view.tile.w;
+            float th = S.view.tile.h;
+            ret = (SDL_FPoint) {
+                r1.x + (pos->x - 1) * tw - pos->anchor.x * tw,
+                r1.y + (pos->y - 1) * th - pos->anchor.y * th,
+            };
+            break;
+        }
         default:
             assert(0 && "invalid mode");
     }
@@ -271,6 +290,18 @@ static SDL_FRect _sdl_rect (
         case '%':
             ret = _f1(rect, r0, ratio);
             break;
+        case '#': {
+            float tw = S.view.tile.w;
+            float th = S.view.tile.h;
+            SDL_FDim d = _f3(rect->w * tw, rect->h * th, ratio);
+            ret = (SDL_FRect) {
+                r1.x + (rect->x - 1) * tw - rect->anchor.x * d.w,
+                r1.y + (rect->y - 1) * th - rect->anchor.y * d.h,
+                d.w,
+                d.h
+            };
+            break;
+        }
         default:
             assert(0 && "invalid mode");
     }
@@ -390,7 +421,7 @@ void pico_init (int on) {
         {
             Pico_Rel_Dim phy = { '!', {S.view.phy.w, S.view.phy.h}, NULL };
             Pico_Rel_Dim log = { '!', {S.view.log.w, S.view.log.h}, NULL };
-            pico_set_view(NULL, -1, -1, &phy, NULL, &log, NULL, NULL);
+            pico_set_view(NULL, -1, -1, &phy, NULL, &log, NULL, NULL, NULL);
         }
 
         pico_output_clear();
@@ -443,7 +474,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     FS = 0;
                 } else {
                     Pico_Rel_Dim phy = { '!', {e->window.data1, e->window.data2}, NULL };
-                    pico_set_view(NULL, -1, -1, &phy, NULL, NULL, NULL, NULL);
+                    pico_set_view(NULL, -1, -1, &phy, NULL, NULL, NULL, NULL, NULL);
                 }
             }
             break;
@@ -463,7 +494,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     // Zoom out
                     pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0.5, 0.5, 1.1, 1.1}, PICO_ANCHOR_C, NULL},
-                        NULL
+                        NULL, NULL
                     );
                     break;
                 }
@@ -471,7 +502,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     // Zoom in
                     pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.9, 0.9}, PICO_ANCHOR_C, NULL},
-                        NULL
+                        NULL, NULL
                     );
                     break;
                 }
@@ -479,7 +510,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     // Scroll left
                     pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {-0.1, 0, 1, 1}, PICO_ANCHOR_NW, NULL},
-                        NULL
+                        NULL, NULL
                     );
                     break;
                 }
@@ -487,7 +518,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     // Scroll right
                     pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0.1, 0, 1, 1}, PICO_ANCHOR_NW, NULL},
-                        NULL
+                        NULL, NULL
                     );
                     break;
                 }
@@ -495,7 +526,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     // Scroll up
                     pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0, -0.1, 1, 1}, PICO_ANCHOR_NW, NULL},
-                        NULL
+                        NULL, NULL
                     );
                     break;
                 }
@@ -503,12 +534,12 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     // Scroll down
                     pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0, 0.1, 1, 1}, PICO_ANCHOR_NW, NULL},
-                        NULL
+                        NULL, NULL
                     );
                     break;
                 }
                 case SDLK_g: {
-                    pico_set_view(NULL, !S.view.grid, -1, NULL, NULL, NULL, NULL, NULL);
+                    pico_set_view(NULL, !S.view.grid, -1, NULL, NULL, NULL, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_s: {
@@ -1132,7 +1163,8 @@ void pico_get_view (
     Pico_Rel_Rect* dst,
     Pico_Abs_Dim* log,
     Pico_Rel_Rect* src,
-    Pico_Rel_Rect* clip
+    Pico_Rel_Rect* clip,
+    Pico_Abs_Dim* tile
 ) {
     assert(dst==NULL && src==NULL && clip==NULL);
     if (title != NULL) {
@@ -1149,6 +1181,9 @@ void pico_get_view (
     }
     if (log != NULL) {
         *log = S.view.log;
+    }
+    if (tile != NULL) {
+        *tile = S.view.tile;
     }
 }
 
@@ -1204,7 +1239,8 @@ void pico_set_view (
     Pico_Rel_Rect* dst,
     Pico_Rel_Dim*  log,
     Pico_Rel_Rect* src,
-    Pico_Rel_Rect* clip
+    Pico_Rel_Rect* clip,
+    Pico_Abs_Dim*  tile
 ) {
     Pico_Abs_Dim new;
 
@@ -1243,6 +1279,11 @@ void pico_set_view (
             SDL_FRect rf = _sdl_rect(clip, NULL, NULL);
             SDL_Rect  ri = _fi_rect(&rf);
             S.view.clip = ri;
+        }
+    }
+    { // tile: store tile size (must be set before log with '#' mode)
+        if (tile != NULL) {
+            S.view.tile = *tile;
         }
     }
 
