@@ -45,7 +45,7 @@ The `pico.init` function initializes and finalizes the library.
 The `pico.set.view` function configures the window.
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -61,7 +61,7 @@ and a visible grid.
 ## 2.1. Window Title
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.set.view { title="Hello!" }
@@ -75,7 +75,7 @@ and a visible grid.
 ## 2.2. Grid Toggle
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.set.view { title="No Grid", grid=false }
@@ -92,7 +92,7 @@ The `window` sets the physical pixel dimensions.
 The `world` sets the logical coordinate space.
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.set.view {
@@ -117,7 +117,7 @@ Drawing operations appear immediately on screen (single-buffer rendering).
 ## 3.1. Clear
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -133,7 +133,7 @@ default).
 ## 3.2. Pixel
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -147,7 +147,7 @@ default).
 ## 3.3. Rectangle
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -161,7 +161,7 @@ default).
 ## 3.4. Line
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -175,7 +175,7 @@ default).
 ## 3.5. Oval
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -189,7 +189,7 @@ default).
 ## 3.6. Triangle
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -207,7 +207,7 @@ default).
 ## 3.7. Text
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -221,7 +221,7 @@ default).
 ## 3.8. Colors
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -248,7 +248,7 @@ Colors can be specified as:
 ## 3.9. Alpha
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -268,7 +268,7 @@ Alpha ranges from 0 (transparent) to 255 (opaque). Default is 255.
 ## 3.10. Style
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -295,7 +295,7 @@ Position and rectangle tables have a **mode** as the first element:
 ## 4.1. Raw Mode (`'!'`)
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -311,7 +311,7 @@ Coordinates are in logical pixels (the world coordinate space).
 ## 4.2. Percentage Mode (`'%'`)
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -330,7 +330,7 @@ right/bottom edge.
 The `anc` field defines the reference point within the shape:
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 NW  N  NE
  W  C  E
@@ -347,7 +347,7 @@ different anchors.
 ## 4.4. Anchor Effect
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -377,7 +377,7 @@ place them differently relative to that point.
 The `up` field references a parent rectangle for relative positioning:
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -402,7 +402,7 @@ screen.
 Tile mode uses 1-indexed grid coordinates. Requires setting `tile` in the view:
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.set.view {
@@ -430,7 +430,7 @@ Tile `(1,1)` is the top-left corner.
 When the world is smaller than the window, the view is zoomed in:
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.set.view {
@@ -446,7 +446,7 @@ When the world is smaller than the window, the view is zoomed in:
 </table>
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.set.view {
@@ -468,7 +468,7 @@ The same logical rectangle appears twice as large with 2x zoom.
 The `source` parameter pans the view:
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.set.view {
@@ -491,7 +491,7 @@ The view is scrolled by (40, 40), so the rectangle appears at the top-left.
 The `pico.set.crop()` function limits drawing to a region:
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -514,7 +514,7 @@ The red rectangle is clipped to the crop region.
 The `pico.input.delay(ms)` function pauses execution:
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.output.clear()
@@ -526,7 +526,7 @@ The `pico.input.delay(ms)` function pauses execution:
 </table>
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.input.delay(500)  -- wait 500ms
 > pico.output.draw.pixel({'!', x=8, y=8})
@@ -537,7 +537,7 @@ The `pico.input.delay(ms)` function pauses execution:
 </table>
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.input.delay(500)  -- wait 500ms
 > pico.output.draw.pixel({'!', x=12, y=8})
@@ -616,7 +616,7 @@ instantly.
 Expert mode disables this, requiring explicit `present()` calls.
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.init(true)
 > pico.set.expert(true)
@@ -630,7 +630,7 @@ Expert mode disables this, requiring explicit `present()` calls.
 </table>
 
 <table width="100%">
-<tr><td>
+<tr><td style="width: 100%">
 <pre>
 > pico.output.present()
 -- now the rectangle is visible
