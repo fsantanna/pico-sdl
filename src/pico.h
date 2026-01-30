@@ -50,9 +50,9 @@ typedef struct {
 } Pico_Abs_Dim;
 
 // MODES:
-// '!': raw
-// '%': pct
-// '#': tile (TODO)
+// '!': raw (pixels)
+// '%': pct (0.0-1.0)
+// '#': tile (1-indexed grid coordinates)
 // '*': mix  (TODO)
 // '?': unk/err
 
@@ -289,6 +289,7 @@ Uint32 pico_get_ticks (void);
 /// @param world pointer to retrieve world/logical dimensions
 /// @param world_source pointer to retrieve world source region
 /// @param world_clip pointer to retrieve world clipping region
+/// @param tile pointer to retrieve tile dimensions in pixels
 /// @sa pico_set_view
 void pico_get_view (
     const char** title,
@@ -298,7 +299,8 @@ void pico_get_view (
     Pico_Rel_Rect* window_target,
     Pico_Abs_Dim* world,
     Pico_Rel_Rect* world_source,
-    Pico_Rel_Rect* world_clip
+    Pico_Rel_Rect* world_clip,
+    Pico_Abs_Dim* tile
 );
 
 // SET
@@ -342,9 +344,10 @@ void pico_set_style (PICO_STYLE style);
 /// @param window window dimensions (mode determines interpretation)
 /// @param window_target target region within window
 /// @param title window title (NULL to keep current)
-/// @param world world/logical dimensions (mode determines interpretation)
+/// @param world world/logical dimensions (mode '#' = tiles, otherwise pixels)
 /// @param world_source source region within world
 /// @param world_clip clipping region within world
+/// @param tile tile size in pixels (required when world mode is '#')
 /// @sa pico_get_view
 void pico_set_view (
     const char*    title,
@@ -354,7 +357,8 @@ void pico_set_view (
     Pico_Rel_Rect* window_target,
     Pico_Rel_Dim*  world,
     Pico_Rel_Rect* world_source,
-    Pico_Rel_Rect* world_clip
+    Pico_Rel_Rect* world_clip,
+    Pico_Abs_Dim*  tile
 );
 
 /// @}

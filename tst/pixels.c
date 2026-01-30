@@ -7,7 +7,7 @@ int main (void) {
         &(Pico_Rel_Dim){ '!', {100, 100}, NULL },
         NULL,
         &(Pico_Rel_Dim){ '!', {5, 5}, NULL },
-        NULL, NULL);
+        NULL, NULL, NULL);
 
     {
         Pico_Rel_Pos pixels[9] = {

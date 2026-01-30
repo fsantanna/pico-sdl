@@ -7,7 +7,7 @@ int main (void) {
         &(Pico_Rel_Dim){ '!', {160, 160}, NULL },
         NULL,
         &(Pico_Rel_Dim){ '!', {16, 16}, NULL },
-        NULL, NULL
+        NULL, NULL, NULL
     );
     pico_output_clear();
     for (int i=0; i<16; i++) {

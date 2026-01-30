@@ -8,6 +8,7 @@ int main (void) {
         NULL,
         &(Pico_Rel_Dim){'!', {64, 36}, NULL},
         NULL,
+        NULL,
         NULL
     );
 

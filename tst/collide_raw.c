@@ -6,7 +6,7 @@ int main() {
 
     Pico_Rel_Dim phy = { '!', {200,200}, NULL };
     Pico_Rel_Dim log = { '!', { 20, 20}, NULL };
-    pico_set_view(NULL, -1, -1, &phy, NULL, &log, NULL, NULL);
+    pico_set_view(NULL, -1, -1, &phy, NULL, &log, NULL, NULL, NULL);
 
     Pico_Rel_Rect r = { '!', { 10-2, 10-2, 4, 4 }, PICO_ANCHOR_NW, NULL };
 

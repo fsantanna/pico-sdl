@@ -2,7 +2,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_view("Show - Hide", -1, -1, NULL, NULL, NULL, NULL, NULL);
+    pico_set_view("Show - Hide", -1, -1, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     pico_input_event(NULL, PICO_KEYDOWN);
 
     pico_set_show(0);

@@ -6,7 +6,7 @@ int main (void) {
     pico_set_view("Moving Around", -1, -1,
         &(Pico_Rel_Dim){ '!', {640, 360}, NULL }, NULL,
         &(Pico_Rel_Dim){ '!', {64, 18}, NULL },
-        NULL, NULL
+        NULL, NULL, NULL
     );
     srand(0);
 
