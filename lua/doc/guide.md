@@ -45,12 +45,11 @@ The `pico.init` function initializes and finalizes the library.
 The `pico.set.view` function configures the window.
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-01.png" width="200">
 </td></tr>
 </table>
@@ -61,13 +60,12 @@ and a visible grid.
 ## 2.1. Window Title
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.set.view { title="Hello!" }
 > pico.output.clear()
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-02.png" width="200">
 </td></tr>
 </table>
@@ -75,13 +73,12 @@ and a visible grid.
 ## 2.2. Grid Toggle
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.set.view { title="No Grid", grid=false }
 > pico.output.clear()
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-03.png" width="200">
 </td></tr>
 </table>
@@ -92,8 +89,7 @@ The `window` sets the physical pixel dimensions.
 The `world` sets the logical coordinate space.
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.set.view {
 >>     title  = "Custom Size",
@@ -102,7 +98,7 @@ The `world` sets the logical coordinate space.
 >> }
 > pico.output.clear()
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-04.png" width="200">
 </td></tr>
 </table>
@@ -117,12 +113,11 @@ Drawing operations appear immediately on screen (single-buffer rendering).
 ## 3.1. Clear
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-05.png" width="200">
 </td></tr>
 </table>
@@ -133,13 +128,12 @@ default).
 ## 3.2. Pixel
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.pixel({'!', x=8, y=8})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-06.png" width="200">
 </td></tr>
 </table>
@@ -147,13 +141,12 @@ default).
 ## 3.3. Rectangle
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.rect({'!', x=4, y=4, w=8, h=8, anc='NW'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-07.png" width="200">
 </td></tr>
 </table>
@@ -161,13 +154,12 @@ default).
 ## 3.4. Line
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.line({'!', x=2, y=2}, {'!', x=14, y=14})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-08.png" width="200">
 </td></tr>
 </table>
@@ -175,13 +167,12 @@ default).
 ## 3.5. Oval
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.oval({'!', x=8, y=8, w=10, h=6, anc='C'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-09.png" width="200">
 </td></tr>
 </table>
@@ -189,8 +180,7 @@ default).
 ## 3.6. Triangle
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.tri(
@@ -199,7 +189,7 @@ default).
 >>     {'!', x=14, y=14}
 >> )
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-10.png" width="200">
 </td></tr>
 </table>
@@ -207,13 +197,12 @@ default).
 ## 3.7. Text
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.text("Hi", {'%', x=0.5, y=0.5, w=0.5, h=0.3, anc='C'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-11.png" width="200">
 </td></tr>
 </table>
@@ -221,8 +210,7 @@ default).
 ## 3.8. Colors
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.set.color.draw('red')
@@ -233,7 +221,7 @@ default).
 > pico.output.draw.rect({'!', x=11, y=1, w=4, h=4, anc='NW'})
 > -- ... more colors
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-12.png" width="200">
 </td></tr>
 </table>
@@ -248,8 +236,7 @@ Colors can be specified as:
 ## 3.9. Alpha
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.set.color.draw('red')
@@ -258,7 +245,7 @@ Colors can be specified as:
 > pico.set.alpha(128)
 > pico.output.draw.rect({'!', x=6, y=4, w=8, h=8, anc='NW'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-13.png" width="200">
 </td></tr>
 </table>
@@ -268,8 +255,7 @@ Alpha ranges from 0 (transparent) to 255 (opaque). Default is 255.
 ## 3.10. Style
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.set.style('fill')
@@ -277,7 +263,7 @@ Alpha ranges from 0 (transparent) to 255 (opaque). Default is 255.
 > pico.set.style('stroke')
 > pico.output.draw.rect({'!', x=9, y=4, w=5, h=8, anc='NW'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-14.png" width="200">
 </td></tr>
 </table>
@@ -295,13 +281,12 @@ Position and rectangle tables have a **mode** as the first element:
 ## 4.1. Raw Mode (`'!'`)
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.rect({'!', x=2, y=2, w=6, h=6, anc='NW'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-15.png" width="200">
 </td></tr>
 </table>
@@ -311,13 +296,12 @@ Coordinates are in logical pixels (the world coordinate space).
 ## 4.2. Percentage Mode (`'%'`)
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.4, h=0.4, anc='C'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-16.png" width="200">
 </td></tr>
 </table>
@@ -330,13 +314,12 @@ right/bottom edge.
 The `anc` field defines the reference point within the shape:
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 NW  N  NE
  W  C  E
 SW  S  SE
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-17.png" width="200">
 </td></tr>
 </table>
@@ -347,8 +330,7 @@ different anchors.
 ## 4.4. Anchor Effect
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > -- gray dot marks (0.5, 0.5)
@@ -364,7 +346,7 @@ different anchors.
 > pico.set.color.draw('blue')
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='SE'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-18.png" width="200">
 </td></tr>
 </table>
@@ -377,8 +359,7 @@ place them differently relative to that point.
 The `up` field references a parent rectangle for relative positioning:
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > local parent = {'%', x=0.5, y=0.5, w=0.6, h=0.6, anc='C'}
@@ -389,7 +370,7 @@ The `up` field references a parent rectangle for relative positioning:
 >>     '%', x=0.5, y=0.5, w=0.5, h=0.5, anc='C', up=parent
 >> })
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-19.png" width="200">
 </td></tr>
 </table>
@@ -402,8 +383,7 @@ screen.
 Tile mode uses 1-indexed grid coordinates. Requires setting `tile` in the view:
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.set.view {
 >>     window = {'!', w=160, h=160},
@@ -415,7 +395,7 @@ Tile mode uses 1-indexed grid coordinates. Requires setting `tile` in the view:
 > pico.output.draw.rect({'#', x=3, y=2, w=1, h=1, anc='NW'})
 > pico.output.draw.rect({'#', x=2, y=4, w=2, h=1, anc='NW'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-20.png" width="200">
 </td></tr>
 </table>
@@ -430,8 +410,7 @@ Tile `(1,1)` is the top-left corner.
 When the world is smaller than the window, the view is zoomed in:
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.set.view {
 >>     window = {'!', w=160, h=160},
@@ -440,14 +419,13 @@ When the world is smaller than the window, the view is zoomed in:
 > pico.output.clear()
 > pico.output.draw.rect({'!', x=40, y=40, w=80, h=80, anc='NW'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-21.png" width="200">
 </td></tr>
 </table>
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.set.view {
 >>     window = {'!', w=160, h=160},
@@ -456,7 +434,7 @@ When the world is smaller than the window, the view is zoomed in:
 > pico.output.clear()
 > pico.output.draw.rect({'!', x=20, y=20, w=40, h=40, anc='NW'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-22.png" width="200">
 </td></tr>
 </table>
@@ -468,8 +446,7 @@ The same logical rectangle appears twice as large with 2x zoom.
 The `source` parameter pans the view:
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.set.view {
 >>     window = {'!', w=160, h=160},
@@ -479,7 +456,7 @@ The `source` parameter pans the view:
 > pico.output.clear()
 > pico.output.draw.rect({'!', x=40, y=40, w=80, h=80, anc='NW'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-23.png" width="200">
 </td></tr>
 </table>
@@ -491,8 +468,7 @@ The view is scrolled by (40, 40), so the rectangle appears at the top-left.
 The `pico.set.crop()` function limits drawing to a region:
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.8, h=0.8, anc='C'})
@@ -500,7 +476,7 @@ The `pico.set.crop()` function limits drawing to a region:
 > pico.set.color.draw('red')
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.6, h=0.6, anc='C'})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-24.png" width="200">
 </td></tr>
 </table>
@@ -514,35 +490,32 @@ The red rectangle is clipped to the crop region.
 The `pico.input.delay(ms)` function pauses execution:
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.output.clear()
 > pico.output.draw.pixel({'!', x=4, y=8})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-25.png" width="200">
 </td></tr>
 </table>
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.input.delay(500)  -- wait 500ms
 > pico.output.draw.pixel({'!', x=8, y=8})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-26.png" width="200">
 </td></tr>
 </table>
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.input.delay(500)  -- wait 500ms
 > pico.output.draw.pixel({'!', x=12, y=8})
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-27.png" width="200">
 </td></tr>
 </table>
@@ -616,26 +589,24 @@ instantly.
 Expert mode disables this, requiring explicit `present()` calls.
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.init(true)
 > pico.set.expert(true)
 > pico.output.clear()
 > pico.output.draw.rect({'!', x=4, y=4, w=8, h=8, anc='NW'})
 -- nothing visible yet
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-28.png" width="200">
 </td></tr>
 </table>
 
 <table width="100%">
-<tr><td style="width: 100%">
-<pre>
+<tr><td width="75%"><pre>
 > pico.output.present()
 -- now the rectangle is visible
 </pre>
-</td><td width="200">
+</td><td width="25%">
 <img src="img/guide-29.png" width="200">
 </td></tr>
 </table>
