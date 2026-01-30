@@ -20,7 +20,7 @@
 
 4. Positioning: Mode & Anchor
 
-- modes
+- modes: `'!'` (pixels), `'%'` (percentage), `'#'` (tiles)
 - anchors
 
 5. Advanced View

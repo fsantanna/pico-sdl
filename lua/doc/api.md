@@ -8,14 +8,15 @@
     - Strings: `'black'`, `'white'`, `'gray'`, `'silver'`, `'red'`, `'green'`,
       `'blue'`, `'yellow'`, `'cyan'`, `'magenta'`, `'orange'`, `'purple'`,
       `'pink'`, `'brown'`, `'lime'`, `'teal'`, `'navy'`, `'maroon'`, `'olive'`
-- **Dim**: `{ w: number, h: number ['!'|'%', up: Rect] }`
+- **Dim**: `{ w: number, h: number ['!'|'%'|'#', up: Rect] }`
 - **Event**: `{ tag: string, ... }`
     - `{ tag='quit' }`
     - `{ tag='key.dn'|'key.up', key: string }`
     - `{ tag='mouse.motion'|'mouse.button.dn'|'mouse.button.up',
         '!', x: integer, y: integer, anc: string [, but: string] }`
-- **Pos**: `{ x: number, y: number [,'!'|'%', anc: Anchor, up: Rect] }`
-- **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%', anc: Anchor, up: Rect] }`
+- **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anc: Anchor, up: Rect] }`
+- **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anc: Anchor, up: Rect] }`
+- **Tile**: `{ w: integer, h: integer }`
 
 ## Operations
 
@@ -41,12 +42,16 @@
 - **pico.get**
     - **pico.get.image**: Gets image dimensions.
         - `pico.get.image (path: string [, dim: Dim]) -> Dim`
+    - **pico.get.mouse**: Gets mouse position and button state.
+        - `pico.get.mouse (pos: Pos [, button: integer]) -> boolean`
+        - Updates `pos.x` and `pos.y` based on mode (`'!'`, `'%'`, or `'#'`)
+        - Returns true if specified button is pressed (1=left, 2=mid, 3=right)
     - **pico.get.text**: Gets text dimensions.
         - `pico.get.text (text: string, dim: Dim) -> Dim`
     - **pico.get.ticks**: Gets milliseconds since initialization.
         - `pico.get.ticks () -> integer`
     - **pico.get.view**: Gets view configuration.
-        - `pico.get.view () -> { [title: string], [grid: boolean], [fullscreen: boolean], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect] }`
+        - `pico.get.view () -> { [title: string], [grid: boolean], [fullscreen: boolean], [window: Dim], [world: Dim], [tile: Tile] }`
 - **pico.set**
     - **pico.set.alpha**: Sets alpha transparency.
         - `pico.set.alpha (a: integer)`
@@ -57,8 +62,9 @@
     - **pico.set.style**: Sets drawing style.
         - `pico.set.style (style: 'fill'|'stroke')`
     - **pico.set.view**: Sets view configuration.
-        - `pico.set.view (cfg: { [title: string], [grid: boolean], [fullscreen: boolean], [size: Dim], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect] })`
+        - `pico.set.view (cfg: { [title: string], [grid: boolean], [fullscreen: boolean], [size: Dim], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect], [tile: Tile] })`
         - `size` sets both `window` and `world` to the same dimensions (1:1 pixel mapping)
+        - `tile` sets tile size in pixels (required when `world` mode is `'#'`)
     - **pico.set.color**
         - **pico.set.color.clear**: Sets clear color.
             - `pico.set.color.clear (clr: Color)`

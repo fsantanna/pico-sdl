@@ -139,7 +139,7 @@ Relative types have a `mode` field (first field) that determines how values
 are interpreted:
 - `'!'` - Raw/absolute mode: values are logical pixel coordinates
 - `'%'` - Percentage mode: values are normalized (0.0-1.0)
-- `'#'` - Tile mode (TODO)
+- `'#'` - Tile mode: 1-indexed grid coordinates (requires tile size in view)
 - `'*'` - Mixed mode
 - `'?'` - Unknown/error
 
@@ -150,7 +150,31 @@ Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_C, NULL };
 
 // Percentage mode: centered at 50%,50% with 40%x40% size
 Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_C, NULL };
+
+// Tile mode: tile (2,3) with 1x1 tile size (requires pico_set_view with tile)
+Pico_Rel_Rect r = { '#', {2, 3, 1, 1}, PICO_ANCHOR_NW, NULL };
 ```
+
+### Tile Mode
+
+Tile mode (`'#'`) enables grid-based positioning for tile-based games.
+Coordinates are 1-indexed to match Lua table conventions.
+
+**Setup:**
+```c
+// 4x4 grid of 4x4 pixel tiles = 16x16 logical world
+Pico_Rel_Dim log  = { '#', {4, 4}, NULL };  // 4x4 tiles
+Pico_Abs_Dim tile = { 4, 4 };               // each tile is 4x4 pixels
+pico_set_view("Game", -1, -1, NULL, NULL, &log, NULL, NULL, &tile);
+```
+
+**Coordinate conversion:**
+- Position: `pixel = (tile - 1) * tile_size`
+- Size: `pixels = tiles * tile_size`
+- Mouse: `tile = (pixel / tile_size) + 1`
+
+**Anchoring:** Anchor applies to both the tile cell and the drawn object,
+providing symmetric alignment within the tile.
 
 ### Color Types
 
@@ -249,9 +273,11 @@ The library provides utility functions for common operations:
 The `tst/` directory contains example programs demonstrating features:
 - Individual test files for specific features:
     `anchor_abs.c`, `anchor_pct.c`, `blend_abs.c`, `blend_pct.c`,
-    `buffer_abs.c`, `collide_abs.c`, `colors.c`, `cv.c`, `vs.c`, etc.
+    `buffer_abs.c`, `collide_abs.c`, `colors.c`, `cv.c`, `vs.c`,
+    `tiles.c`, etc.
 - Files with `_abs` suffix test raw/absolute coordinate APIs (mode `'!'`)
 - Files with `_pct` suffix test percentage-based APIs (mode `'%'`)
+- `tiles.c` tests tile mode APIs (mode `'#'`)
 - Files prefixed with `todo_` are work-in-progress tests
 
 ### Lua Bindings
@@ -263,6 +289,7 @@ The `lua/` directory contains Lua 5.4 bindings implemented in `lua/pico.c`.
 Lua tables map to C relative types with the following conventions:
 - `{'!', x=10, y=20, w=30, h=40}` → `Pico_Rel_Rect` with mode `'!'`
 - `{'%', x=0.5, y=0.5, anc='C'}` → `Pico_Rel_Pos` with anchor
+- `{'#', x=2, y=3, w=1, h=1, anc='NW'}` → `Pico_Rel_Rect` with tile mode
 - `{'!', w=0, h=0}` → `Pico_Rel_Dim` for dimension queries
 
 Conversion functions in `lua/pico.c`:
@@ -276,10 +303,33 @@ Conversion functions in `lua/pico.c`:
 
 The Lua API mirrors the C API with nested tables:
 - `pico.get.image(path, [dim])` - Get image dimensions
+- `pico.get.mouse(pos)` - Get mouse position (updates pos.x, pos.y based on
+  pos mode: `'!'`, `'%'`, or `'#'`)
 - `pico.get.text(text, dim)` - Get text dimensions
+- `pico.get.view()` - Get view settings (returns table with tile field)
 - `pico.set.color.draw(color)` - Set drawing color
+- `pico.set.view({...})` - Set view (accepts tile={w,h} for tile mode)
 - `pico.output.draw.rect(rect)` - Draw rectangle
 - `pico.input.event([filter], [timeout])` - Wait for input event
+
+**Tile Mode Example:**
+```lua
+-- Setup 4x4 grid with 4x4 pixel tiles
+pico.set.view {
+    window = {'!', w=160, h=160},
+    world  = {'#', w=4, h=4},
+    tile   = {w=4, h=4}
+}
+
+-- Draw at tile position (2,3)
+local r = {'#', x=2, y=3, w=1, h=1, anc='NW'}
+pico.output.draw.rect(r)
+
+-- Get mouse in tile coordinates
+local pos = {'#', x=0, y=0}
+pico.get.mouse(pos)
+print(pos.x, pos.y)  -- 1-indexed tile position
+```
 
 **Constants:**
 

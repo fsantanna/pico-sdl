@@ -257,7 +257,8 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 int pico_get_key (PICO_KEY key);
 
 /// @brief Gets the mouse state.
-/// @param pos where to save the mouse position, or NULL to ignore
+/// @param pos where to save the mouse position (mode determines coordinate
+///            system: '!' for pixels, '%' for percentage, '#' for tiles)
 /// @param button mouse button to check (1=left, 2=middle, 3=right), or 0 for any
 /// @return 1 if the specified button is pressed, or 0 otherwise
 int pico_get_mouse (Pico_Rel_Pos* pos, int button);
