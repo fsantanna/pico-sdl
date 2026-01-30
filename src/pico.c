@@ -201,14 +201,11 @@ static SDL_FDim _sdl_dim (
             if (dim->w == 0) dim->w = ret.w / r1.w;
             if (dim->h == 0) dim->h = ret.h / r1.h;
             break;
-        case '#': {
-            float tw = S.view.tile.w;
-            float th = S.view.tile.h;
-            ret = _f3(dim->w * tw, dim->h * th, ratio);
-            if (dim->w == 0) dim->w = ret.w / tw;
-            if (dim->h == 0) dim->h = ret.h / th;
+        case '#':
+            ret = _f3(dim->w * S.view.tile.w, dim->h * S.view.tile.h, ratio);
+            if (dim->w == 0) dim->w = ret.w / S.view.tile.w;
+            if (dim->h == 0) dim->h = ret.h / S.view.tile.h;
             break;
-        }
         default:
             assert(0 && "invalid mode");
     }
@@ -244,15 +241,12 @@ static SDL_FPoint _sdl_pos (
                 r1.y + pos->y*r1.h - pos->anchor.y,
             };
             break;
-        case '#': {
-            float tw = S.view.tile.w;
-            float th = S.view.tile.h;
+        case '#':
             ret = (SDL_FPoint) {
-                r1.x + (pos->x - 1) * tw - pos->anchor.x * tw,
-                r1.y + (pos->y - 1) * th - pos->anchor.y * th,
+                r1.x + (pos->x-1)*S.view.tile.w - pos->anchor.x*S.view.tile.w,
+                r1.y + (pos->y-1)*S.view.tile.h - pos->anchor.y*S.view.tile.h,
             };
             break;
-        }
         default:
             assert(0 && "invalid mode");
     }
@@ -290,18 +284,19 @@ static SDL_FRect _sdl_rect (
         case '%':
             ret = _f1(rect, r0, ratio);
             break;
-        case '#': {
-            float tw = S.view.tile.w;
-            float th = S.view.tile.h;
-            SDL_FDim d = _f3(rect->w * tw, rect->h * th, ratio);
+        case '#':
+            SDL_FDim d = _f3 (
+                rect->w * S.view.tile.w,
+                rect->h * S.view.tile.h,
+                ratio
+            );
             ret = (SDL_FRect) {
-                r1.x + (rect->x - 1) * tw - rect->anchor.x * d.w,
-                r1.y + (rect->y - 1) * th - rect->anchor.y * d.h,
+                r1.x + (rect->x - 1)*S.view.tile.w - rect->anchor.x*d.w,
+                r1.y + (rect->y - 1)*S.view.tile.h - rect->anchor.y*d.h,
                 d.w,
                 d.h
             };
             break;
-        }
         default:
             assert(0 && "invalid mode");
     }
@@ -1097,6 +1092,10 @@ int pico_get_mouse (Pico_Rel_Pos* pos, int button) {
             pos->y = (log_y - up.y) / up.h;
             break;
         }
+        case '#':
+            pos->x = (log_x / S.view.tile.w) + 1;
+            pos->y = (log_y / S.view.tile.h) + 1;
+            break;
         default:
             assert(0 && "invalid mode");
     }
