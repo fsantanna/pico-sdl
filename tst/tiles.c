@@ -25,7 +25,7 @@ int main (void) {
         pico_output_clear();
         Pico_Rel_Rect r = { '#', {1, 1, 1, 1}, PICO_ANCHOR_NW, NULL };
         pico_output_draw_buffer((Pico_Abs_Dim){4,4}, white, &r);
-        _pico_check("tile-01");
+        _pico_check("tiles-01");
     }
 
     // Test 2: tile (2,2) with C anchor - centered in tile
@@ -34,7 +34,7 @@ int main (void) {
         pico_output_clear();
         Pico_Rel_Rect r = { '#', {2, 2, 1, 1}, PICO_ANCHOR_C, NULL };
         pico_output_draw_buffer((Pico_Abs_Dim){4,4}, white, &r);
-        _pico_check("tile-02");
+        _pico_check("tiles-02");
     }
 
     // Test 3: 2x2 tiles at (1,1) with NW anchor
@@ -43,7 +43,7 @@ int main (void) {
         pico_output_clear();
         Pico_Rel_Rect r = { '#', {1, 1, 2, 2}, PICO_ANCHOR_NW, NULL };
         pico_output_draw_buffer((Pico_Abs_Dim){4,4}, white, &r);
-        _pico_check("tile-03");
+        _pico_check("tiles-03");
     }
 
     // Test 4: 2x2 tiles centered at (2.5, 2.5)
@@ -52,7 +52,7 @@ int main (void) {
         pico_output_clear();
         Pico_Rel_Rect r = { '#', {2.5, 2.5, 2, 2}, PICO_ANCHOR_C, NULL };
         pico_output_draw_buffer((Pico_Abs_Dim){4,4}, white, &r);
-        _pico_check("tile-04");
+        _pico_check("tiles-04");
     }
 
     // Test 5: mouse position in tile mode
