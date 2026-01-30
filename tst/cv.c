@@ -198,6 +198,76 @@ int main (void) {
         assert(abs.x==50 && abs.y==50 && abs.w==30 && abs.h==30);
     }
 
+    // TILE MODE - set up 4x4 grid of 4x4 pixel tiles = 16x16 logical
+    {
+        Pico_Rel_Dim log  = { '#', {4, 4}, NULL };
+        Pico_Abs_Dim tile = { 4, 4 };
+        pico_set_view(NULL, -1, -1, NULL, NULL, &log, NULL, NULL, &tile);
+    }
+
+    // TILE - POS - tile->abs
+    {
+        puts("tile - pos - tile->abs - NW");
+        Pico_Rel_Pos pos = { '#', {2, 3}, PICO_ANCHOR_NW, NULL };
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
+        printf("pos: (%d, %d)\n", abs.x, abs.y);
+        // tile (2,3) NW -> pixel ((2-1)*4, (3-1)*4) = (4, 8)
+        assert(abs.x==4 && abs.y==8);
+    }
+    {
+        puts("tile - pos - tile->abs - C");
+        Pico_Rel_Pos pos = { '#', {2, 2}, PICO_ANCHOR_C, NULL };
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
+        printf("pos: (%d, %d)\n", abs.x, abs.y);
+        // tile (2,2) C -> pixel ((2-1)*4 - 0.5*4, (2-1)*4 - 0.5*4) = (2, 2)
+        assert(abs.x==2 && abs.y==2);
+    }
+    {
+        puts("tile - pos - tile->abs - corners");
+        Pico_Rel_Pos p1 = { '#', {1, 1}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Pos p4 = { '#', {4, 4}, PICO_ANCHOR_NW, NULL };
+        Pico_Abs_Pos r1 = pico_cv_pos_rel_abs(&p1, NULL);
+        Pico_Abs_Pos r4 = pico_cv_pos_rel_abs(&p4, NULL);
+        // tile (1,1) -> pixel (0, 0)
+        // tile (4,4) -> pixel (12, 12)
+        assert(r1.x==0  && r1.y==0);
+        assert(r4.x==12 && r4.y==12);
+    }
+
+    // TILE - RECT - tile->abs
+    {
+        puts("tile - rect - tile->abs - NW");
+        Pico_Rel_Rect rect = { '#', {1, 1, 1, 1}, PICO_ANCHOR_NW, NULL };
+        Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
+        printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
+        // tile (1,1,1,1) NW -> pixel (0, 0, 4, 4)
+        assert(abs.x==0 && abs.y==0 && abs.w==4 && abs.h==4);
+    }
+    {
+        puts("tile - rect - tile->abs - C");
+        Pico_Rel_Rect rect = { '#', {2, 2, 2, 2}, PICO_ANCHOR_C, NULL };
+        Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
+        printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
+        // tile (2,2,2,2) C -> d=(8,8), x=(2-1)*4-0.5*8=0, y=0 -> (0, 0, 8, 8)
+        assert(abs.x==0 && abs.y==0 && abs.w==8 && abs.h==8);
+    }
+    {
+        puts("tile - rect - tile->abs - 2x2 at (2,2) NW");
+        Pico_Rel_Rect rect = { '#', {2, 2, 2, 2}, PICO_ANCHOR_NW, NULL };
+        Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
+        printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
+        // tile (2,2,2,2) NW -> pixel ((2-1)*4, (2-1)*4, 8, 8) = (4, 4, 8, 8)
+        assert(abs.x==4 && abs.y==4 && abs.w==8 && abs.h==8);
+    }
+    {
+        puts("tile - rect - tile->abs - fractional position");
+        Pico_Rel_Rect rect = { '#', {2.5, 2.5, 2, 2}, PICO_ANCHOR_C, NULL };
+        Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
+        printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
+        // tile (2.5,2.5,2,2) C -> d=(8,8), x=(2.5-1)*4-0.5*8=6-4=2, y=2
+        assert(abs.x==2 && abs.y==2 && abs.w==8 && abs.h==8);
+    }
+
     pico_init(0);
     return 0;
 }
