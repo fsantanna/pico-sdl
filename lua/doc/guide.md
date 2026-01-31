@@ -225,7 +225,7 @@ visible.
 
 - `'!'` - Raw: logical pixel coordinates
 - `'%'` - Percentage: coordinates relative to the world size (from `0.0` to `1.0`)
-- `'#'` - Tile: 1-indexed grid coordinates
+- `'#'` - Tile: grid coordinates based on a tile dimension
 
 The mode must be set at index `1` of position, dimension, and rectangle tables.
 
@@ -244,13 +244,15 @@ percentages:
 
 The rectangle is centered at `(0.5, 0.5)`, or half, of the screen.
 
-In addition to the positioning mode, `pico-lua` also supports anchoring, which
+The rectangle appears in gray because the drawing color white applies with the
+half transparency (`0xCC`) over a black background.
+
+In addition to positioning mode, `pico-lua` also supports anchoring, which
 determines the reference point within a shape:
 
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.set.color.draw('white')
 > pico.output.draw.pixel({'%', x=0.5, y=0.5})
 > pico.set.color.draw('red')
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='NW'})
@@ -264,7 +266,8 @@ determines the reference point within a shape:
 </td></tr>
 </table>
 
-We draw all three rectangles at the pixel position, but with different anchors.
+We draw all three rectangles at the same pixel position, but with different
+anchors.
 
 The anchor determines the position inside the object that should appear at the
 given drawing point:
@@ -276,6 +279,10 @@ given drawing point:
 |SW   S   SE|
 +-----------+
 ```
+
+By default, `pico-lua` uses the center anchor.
+
+The tile mode
 
 For tile-based games, we can use tile mode with 1-indexed coordinates:
 
