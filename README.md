@@ -17,7 +17,7 @@ Please, switch to stable [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.
 <!--
 -->
 
-`pico-sdl` is a C graphics library for developing 2D games and applications.
+`pico-sdl` is a C graphics library for 2D games and applications.
 
 See also [pico-lua][pico-lua], the official Lua binding for `pico-sdl`.
 
