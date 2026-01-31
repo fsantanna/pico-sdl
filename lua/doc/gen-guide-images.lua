@@ -31,12 +31,6 @@ end
 
 do
     pico.init(true)
-    pico.init(false)
-    shot("guide-02-03")
-end
-
-do
-    pico.init(true)
     shot("guide-02-04")
     pico.init(false)
 end
@@ -48,6 +42,7 @@ end
 do
     pico.init(true)
     pico.output.clear()
+    pico.output.draw.pixel({'!', x=50, y=50})
     shot("guide-03-01")
     pico.init(false)
 end
@@ -55,7 +50,6 @@ end
 do
     pico.init(true)
     pico.output.clear()
-    pico.output.draw.pixel({'!', x=50, y=50})
     shot("guide-03-02")
     pico.init(false)
 end

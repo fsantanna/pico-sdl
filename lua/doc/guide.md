@@ -131,7 +131,7 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 > pico.output.draw.pixel({'!', x=50, y=50})
 </pre>
 </td><td>
-<img src="img/guide-03-02.png" width="200">
+<img src="img/guide-03-01.png" width="200">
 </td></tr>
 </table>
 
@@ -145,7 +145,7 @@ To clear the screen, we call `pico.output.clear`:
 > pico.output.clear()
 </pre>
 </td><td>
-<img src="img/guide-03-01.png" width="200">
+<img src="img/guide-03-02.png" width="200">
 </td></tr>
 </table>
 
