@@ -21,7 +21,8 @@ It is designed around 3 groups of APIs:
 - `pico.get.*` and `pico.set.*` for the library state,
     such as the drawing color, and window title.
 
-This guide is an interactive walkthrough of `pico-lua`.
+This guide is an interactive walk-through of `pico-lua`.
+It is not meant to be exhaustive: consult the [API](api.md) for completeness.
 
 From the command line, simply execute `pico-lua` with no parameters:
 
@@ -56,6 +57,8 @@ The library maintains global state including:
 
 # 2. Initialization
 
+## 2.1. Open
+
 To initialize `pico-lua`, we call `pico.init(true)`:
 
 <table>
@@ -73,6 +76,8 @@ representing logical pixels.
 By default, `pico-lua` conventionally exhibit a grid and coordinate labels to
 aid development with visual inspection.
 You may click in the image to zoom in.
+
+## 2.2. Configure
 
 To change the window title, grid, and size, we call `pico.set.view`:
 
@@ -94,6 +99,8 @@ Now the window title is set, the grid is disabled, and the window and world
 sizes are the same.
 The character `'!'` indicates a dimension in "raw mode", which we discuss
 further.
+
+## 2.3. Close
 
 In the end, we call `pico.init(false)` to terminate `pico-lua`:
 
@@ -124,6 +131,8 @@ We can see that the title, grid, and sizes are now reset to default.
 Drawing operations appear immediately on screen:
 `pico-lua` simulates single-buffer rendering to ease prototyping.
 
+## 3.1. Pixel
+
 To draw a single pixel, we call `pico.output.draw.pixel`:
 
 <table>
@@ -138,6 +147,8 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 The pixel occupies a physical `5x5` square representing a single logical pixel,
 as expected.
 
+## 3.2. Clear
+
 To clear the screen, we call `pico.output.clear`:
 
 <table>
@@ -150,6 +161,8 @@ To clear the screen, we call `pico.output.clear`:
 </table>
 
 The pixel is gone.
+
+## 3.3. Rectangle
 
 To draw a rectangle, we call `pico.output.draw.rect`:
 
@@ -167,6 +180,8 @@ The table specifies a rectangle at position `(20,20)` with size `30x30`.
 Unlike most graphics libraries, `pico-lua` centers the rectangle at the given
 position by default.
 We discuss positioning and anchoring further.
+
+## 3.4. Image
 
 To draw an image, we call `pico.output.draw.image`:
 
@@ -186,6 +201,8 @@ Other drawing operations include `draw.line`, `draw.polygon`, and `draw.text`.
 `pico-lua` maintains internal state that affects drawing operations, such as
 the current color, alpha transparency, and drawing style.
 
+## 4.1. Color
+
 To change the drawing color for further operations, we call
 `pico.set.color.draw`:
 
@@ -203,6 +220,8 @@ The text appears in red, centered at the given position.
 
 Note that the text width should not be set to preserve the correct aspect
 ratio.
+
+## 4.2. Transparency
 
 We may also change the drawing transparency:
 
@@ -229,6 +248,8 @@ visible.
 
 The mode must be set at index `1` of position, dimension, and rectangle tables.
 
+## 5.1. Percentages
+
 Since we already used the raw mode in previous sections, let's now try
 percentages:
 
@@ -246,6 +267,8 @@ The rectangle is centered at `(0.5, 0.5)`, or half, of the screen.
 
 The rectangle appears in gray because the drawing color white applies with the
 half transparency (`0xCC`) over a black background.
+
+## 5.2. Anchors
 
 In addition to positioning mode, `pico-lua` also supports anchoring, which
 determines the reference point within a shape:
@@ -281,6 +304,8 @@ given drawing point:
 ```
 
 By default, `pico-lua` uses the center anchor.
+
+## 5.3. Tiles
 
 The tile mode
 
