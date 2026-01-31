@@ -221,42 +221,37 @@ visible.
 
 # 5. Positioning: Mode & Anchor
 
-Position and rectangle tables have a **mode** as the first element:
+`pico-lua` supports positioning **modes** as follows:
 
-- `'!'` - Raw mode: logical pixel coordinates
-- `'%'` - Percentage mode: normalized 0.0 to 1.0
-- `'#'` - Tile mode: 1-indexed grid coordinates
+- `'!'` - Raw: logical pixel coordinates
+- `'%'` - Percentage: coordinates relative to the world size (from `0.0` to `1.0`)
+- `'#'` - Tile: 1-indexed grid coordinates
 
-We already used raw mode in the previous section.
-Now let's try percentage mode:
+The mode must be set at index `1` of position, dimension, and rectangle tables.
+
+Since we already used the raw mode in previous sections, let's now try
+percentages:
 
 <table>
 <tr><td><pre>
-> pico.init(true)
 > pico.output.clear()
-> pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='C'})
+> pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
 <img src="img/guide-05-01.png" width="200">
 </td></tr>
 </table>
 
-The rectangle is centered at `(0.5, 0.5)` with size `50%x50%` of the screen.
-The `anc='C'` means the center of the rectangle is at the given position.
+The rectangle is centered at `(0.5, 0.5)`, or half, of the screen.
 
-Anchors define the reference point within the shape:
-
-```
-NW   N   NE
- W   C   E
-SW   S   SE
-```
-
-Let's see how the same position with different anchors affects placement:
+In addition to the positioning mode, `pico-lua` also supports anchoring, which
+determines the reference point within a shape:
 
 <table>
 <tr><td><pre>
 > pico.output.clear()
+> pico.set.color.draw('white')
+> pico.output.draw.pixel({'%', x=0.5, y=0.5})
 > pico.set.color.draw('red')
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='NW'})
 > pico.set.color.draw('green')
@@ -269,8 +264,18 @@ Let's see how the same position with different anchors affects placement:
 </td></tr>
 </table>
 
-All three rectangles have position `(0.5, 0.5)`, but different anchors place
-them differently relative to that point.
+We draw all three rectangles at the pixel position, but with different anchors.
+
+The anchor determines the position inside the object that should appear at the
+given drawing point:
+
+```
++-----------+
+|NW   N   NE|
+| W   C   E |
+|SW   S   SE|
++-----------+
+```
 
 For tile-based games, we can use tile mode with 1-indexed coordinates:
 

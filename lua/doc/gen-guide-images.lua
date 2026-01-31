@@ -105,15 +105,19 @@ end
 
 do
     pico.init(true)
+    pico.set.alpha(0x88)
     pico.output.clear()
-    pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='C'})
+    pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
     shot("guide-05-01")
     pico.init(false)
 end
 
 do
     pico.init(true)
+    pico.set.alpha(0x88)
     pico.output.clear()
+    pico.set.color.draw('white')
+    pico.output.draw.pixel({'%', x=0.5, y=0.5})
     pico.set.color.draw('red')
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='NW'})
     pico.set.color.draw('green')
