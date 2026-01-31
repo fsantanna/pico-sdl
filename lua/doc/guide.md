@@ -186,20 +186,38 @@ Other drawing operations include `draw.line`, `draw.polygon`, and `draw.text`.
 `pico-lua` maintains internal state that affects drawing operations, such as
 the current color, alpha transparency, and drawing style.
 
-To change the drawing color, we call `pico.set.color.draw`:
+To change the drawing color for further operations, we call
+`pico.set.color.draw`:
 
 <table>
 <tr><td><pre>
 > pico.set.color.draw('red')
-> pico.output.draw.rect({'!', x=50, y=10, w=30, h=30})
+> pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
 </pre>
 </td><td>
 <img src="img/guide-04-01.png" width="200">
 </td></tr>
 </table>
 
-Colors can be named strings (`'red'`, `'green'`, `'blue'`, `'white'`, etc.),
-RGB arguments (`255, 0, 0`), or RGB tables (`{r=255, g=0, b=0}`).
+The text appears in red, centered at the given position.
+
+Note that the text width should not be set to preserve the correct aspect
+ratio.
+
+We may also change the drawing transparency:
+
+<table>
+<tr><td><pre>
+> pico.set.color.alpha(0x88)
+> pico.output.draw.oval({'!', x=50, y=80, w=35, h=15})
+</pre>
+</td><td>
+<img src="img/guide-04-02.png" width="200">
+</td></tr>
+</table>
+
+The oval appears on top of the text, but the transparency keeps the text
+visible.
 
 # 5. Positioning: Mode & Anchor
 

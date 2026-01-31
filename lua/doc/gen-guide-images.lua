@@ -78,12 +78,24 @@ end
 do
     pico.init(true)
     pico.output.clear()
-    pico.output.draw.pixel({'!', x=50, y=50})
     pico.output.draw.rect({'!', x=20, y=20, w=30, h=30})
     pico.output.draw.image('img/open.png', {'!', x=70, y=20, w=20, h=20})
     pico.set.color.draw('red')
-    pico.output.draw.rect({'!', x=50, y=10, w=30, h=30})
+    pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
     shot("guide-04-01")
+    pico.init(false)
+end
+
+do
+    pico.init(true)
+    pico.output.clear()
+    pico.output.draw.rect({'!', x=20, y=20, w=30, h=30})
+    pico.output.draw.image('img/open.png', {'!', x=70, y=20, w=20, h=20})
+    pico.set.color.draw('red')
+    pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
+    pico.set.alpha(0x88)
+    pico.output.draw.oval({'!', x=50, y=80, w=35, h=15})
+    shot("guide-04-02")
     pico.init(false)
 end
 
