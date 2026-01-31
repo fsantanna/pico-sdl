@@ -1,5 +1,7 @@
 -- TODO: TGT=0 (phy)
 
+pico.init(true)
+
 print "pico.cv.pos [ref]: pct->raw"
 do
     print('', 1)
@@ -48,7 +50,6 @@ do
     assert(raw.x==50 and raw.y==20 and raw.w==30 and raw.h==30)
 end
 
-pico.init(true)
 local log = {'!', w=100, h=100}
 pico.set.view { world=log }
 

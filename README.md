@@ -30,7 +30,7 @@ See also [pico-lua][pico-lua], the official Lua binding for `pico-sdl`.
 - `pico_input_*` for input events,
     such as waiting time and key presses.
 - `pico_get_*` and `pico_set_*` for the library state,
-    such as modifying the drawing color, and window title.
+    such as modifying the drawing color and style.
 
 The following example draws an `X` on screen gradually with instant feedback:
 
