@@ -3,10 +3,11 @@
 1. [Introduction](#1-introduction)
 2. [Initialization](#2-initialization)
 3. [Basic Drawing](#3-basic-drawing)
-4. [Positioning: Mode & Anchor](#4-positioning-mode--anchor)
-5. [Advanced View](#5-advanced-view)
-6. [Events](#6-events)
-7. [Expert Mode](#7-expert-mode)
+4. [Internal State](#4-internal-state)
+5. [Positioning: Mode & Anchor](#5-positioning-mode--anchor)
+6. [Advanced View](#6-advanced-view)
+7. [Events](#7-events)
+8. [Expert Mode](#8-expert-mode)
 
 # 1. Introduction
 
@@ -119,7 +120,9 @@ We can see that the title, grid, and sizes are now reset to default.
 
 # 3. Basic Drawing
 
-Drawing operations appear immediately on screen (single-buffer rendering).
+Drawing operations appear immediately on screen:
+`pico-lua` simulates single-buffer rendering to ease exploration and initial
+development.
 
 To clear the screen, we call `pico.output.clear`:
 
@@ -131,6 +134,8 @@ To clear the screen, we call `pico.output.clear`:
 <img src="img/guide-03-01.png" width="300">
 </td></tr>
 </table>
+
+TODO: start with a pixel. indicate that it is logical
 
 To draw a rectangle, we call `pico.output.draw.rect`:
 
@@ -145,8 +150,15 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 
 The table `{'!', x=10, y=10, w=30, h=30}` specifies a rectangle at position
 `(10,10)` with size `30x30`.
-The character `'!'` indicates "raw mode", meaning coordinates are in logical
-pixels.
+
+TODO: add image example
+
+Other drawing operations include `draw.line`, `draw.oval`,
+`draw.tri`, and `draw.text`.
+
+# 4. Internal State
+
+TODO: some brief intro text
 
 To change the drawing color, we call `pico.set.color.draw`:
 
@@ -156,17 +168,14 @@ To change the drawing color, we call `pico.set.color.draw`:
 > pico.output.draw.rect({'!', x=50, y=10, w=30, h=30})
 </pre>
 </td><td>
-<img src="img/guide-03-03.png" width="300">
+<img src="img/guide-04-01.png" width="300">
 </td></tr>
 </table>
 
 Colors can be named strings (`'red'`, `'green'`, `'blue'`, `'white'`, etc.),
 RGB arguments (`255, 0, 0`), or RGB tables (`{r=255, g=0, b=0}`).
 
-Other drawing operations include `draw.pixel`, `draw.line`, `draw.oval`,
-`draw.tri`, `draw.text`, and `draw.image`.
-
-# 4. Positioning: Mode & Anchor
+# 5. Positioning: Mode & Anchor
 
 Position and rectangle tables have a **mode** as the first element:
 
@@ -184,7 +193,7 @@ Now let's try percentage mode:
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='C'})
 </pre>
 </td><td>
-<img src="img/guide-04-01.png" width="300">
+<img src="img/guide-05-01.png" width="300">
 </td></tr>
 </table>
 
@@ -212,7 +221,7 @@ Let's see how the same position with different anchors affects placement:
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='SE'})
 </pre>
 </td><td>
-<img src="img/guide-04-02.png" width="300">
+<img src="img/guide-05-02.png" width="300">
 </td></tr>
 </table>
 
@@ -235,14 +244,14 @@ For tile-based games, we can use tile mode with 1-indexed coordinates:
 > pico.output.draw.rect({'#', x=2, y=4, w=2, h=1})
 </pre>
 </td><td>
-<img src="img/guide-04-03.png" width="300">
+<img src="img/guide-05-03.png" width="300">
 </td></tr>
 </table>
 
 The world is a 4x4 grid where each tile is 25x25 pixels.
 Tile `(1,1)` is the top-left corner.
 
-# 5. Advanced View
+# 6. Advanced View
 
 When the world is smaller than the window, the view is zoomed in.
 Let's compare 1:1 and 2x zoom:
@@ -258,7 +267,7 @@ Let's compare 1:1 and 2x zoom:
 > pico.output.draw.rect({'!', x=50, y=50, w=100, h=100})
 </pre>
 </td><td>
-<img src="img/guide-05-01.png" width="300">
+<img src="img/guide-06-01.png" width="300">
 </td></tr>
 </table>
 
@@ -269,7 +278,7 @@ Let's compare 1:1 and 2x zoom:
   }
 </pre>
 </td><td>
-<img src="img/guide-05-02.png" width="300">
+<img src="img/guide-06-02.png" width="300">
 </td></tr>
 </table>
 
@@ -285,13 +294,13 @@ The `source` parameter pans the view:
   }
 </pre>
 </td><td>
-<img src="img/guide-05-03.png" width="300">
+<img src="img/guide-06-03.png" width="300">
 </td></tr>
 </table>
 
 The view is scrolled by `(50, 50)`, so the rectangle appears at the top-left.
 
-# 6. Events
+# 7. Events
 
 The `pico.input.delay(ms)` function pauses execution for a given time:
 
@@ -306,7 +315,7 @@ The `pico.input.delay(ms)` function pauses execution for a given time:
 > pico.output.draw.pixel({'!', x=75, y=50})
 </pre>
 </td><td>
-<img src="img/guide-06-01.png" width="300">
+<img src="img/guide-07-01.png" width="300">
 </td></tr>
 </table>
 
@@ -341,7 +350,7 @@ The `pico.get.mouse(pos)` function polls the current mouse position:
 > print(pos.x, pos.y)
 ```
 
-# 7. Expert Mode
+# 8. Expert Mode
 
 By default, `pico-lua` uses immediate mode: every draw operation is visible
 instantly.
@@ -355,7 +364,7 @@ Expert mode disables this, requiring explicit `present()` calls.
 > pico.output.draw.rect({'!', x=25, y=25, w=50, h=50})
 </pre>
 </td><td>
-<img src="img/guide-07-01.png" width="300">
+<img src="img/guide-08-01.png" width="300">
 </td></tr>
 </table>
 
@@ -366,7 +375,7 @@ Nothing is visible yet because we haven't called `present()`.
 > pico.output.present()
 </pre>
 </td><td>
-<img src="img/guide-07-02.png" width="300">
+<img src="img/guide-08-02.png" width="300">
 </td></tr>
 </table>
 

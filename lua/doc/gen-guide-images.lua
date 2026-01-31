@@ -60,25 +60,29 @@ do
     pico.init(false)
 end
 
+-------------------------------------------------------------------------------
+-- Section 4: Internal State
+-------------------------------------------------------------------------------
+
 do
     pico.init(true)
     pico.output.clear()
     pico.output.draw.rect({'!', x=10, y=10, w=30, h=30})
     pico.set.color.draw('red')
     pico.output.draw.rect({'!', x=50, y=10, w=30, h=30})
-    shot("guide-03-03")
+    shot("guide-04-01")
     pico.init(false)
 end
 
 -------------------------------------------------------------------------------
--- Section 4: Positioning - Mode & Anchor
+-- Section 5: Positioning - Mode & Anchor
 -------------------------------------------------------------------------------
 
 do
     pico.init(true)
     pico.output.clear()
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='C'})
-    shot("guide-04-01")
+    shot("guide-05-01")
     pico.init(false)
 end
 
@@ -91,7 +95,7 @@ do
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='C'})
     pico.set.color.draw('blue')
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='SE'})
-    shot("guide-04-02")
+    shot("guide-05-02")
     pico.init(false)
 end
 
@@ -106,12 +110,12 @@ do
     pico.output.draw.rect({'#', x=1, y=1, w=1, h=1})
     pico.output.draw.rect({'#', x=3, y=2, w=1, h=1})
     pico.output.draw.rect({'#', x=2, y=4, w=2, h=1})
-    shot("guide-04-03")
+    shot("guide-05-03")
     pico.init(false)
 end
 
 -------------------------------------------------------------------------------
--- Section 5: Advanced View
+-- Section 6: Advanced View
 -------------------------------------------------------------------------------
 
 do
@@ -123,7 +127,7 @@ do
     }
     pico.output.clear()
     pico.output.draw.rect({'!', x=50, y=50, w=100, h=100})
-    shot("guide-05-01")
+    shot("guide-06-01")
     pico.init(false)
 end
 
@@ -139,7 +143,7 @@ do
     pico.set.view {
         world  = {'!', w=100, h=100},
     }
-    shot("guide-05-02")
+    shot("guide-06-02")
     pico.init(false)
 end
 
@@ -156,12 +160,12 @@ do
         world  = {'!', w=200, h=200},
         source = {'!', x=50, y=50, w=200, h=200},
     }
-    shot("guide-05-03")
+    shot("guide-06-03")
     pico.init(false)
 end
 
 -------------------------------------------------------------------------------
--- Section 6: Events
+-- Section 7: Events
 -------------------------------------------------------------------------------
 
 do
@@ -170,12 +174,12 @@ do
     pico.output.draw.pixel({'!', x=25, y=50})
     pico.output.draw.pixel({'!', x=50, y=50})
     pico.output.draw.pixel({'!', x=75, y=50})
-    shot("guide-06-01")
+    shot("guide-07-01")
     pico.init(false)
 end
 
 -------------------------------------------------------------------------------
--- Section 7: Expert Mode
+-- Section 8: Expert Mode
 -------------------------------------------------------------------------------
 
 do
@@ -183,7 +187,7 @@ do
     pico.set.expert(true)
     pico.output.clear()
     pico.output.draw.rect({'!', x=25, y=25, w=50, h=50})
-    shot("guide-07-01")
+    shot("guide-08-01")
     pico.init(false)
 end
 
@@ -193,7 +197,7 @@ do
     pico.output.clear()
     pico.output.draw.rect({'!', x=25, y=25, w=50, h=50})
     pico.output.present()
-    shot("guide-07-02")
+    shot("guide-08-02")
     pico.init(false)
 end
 
