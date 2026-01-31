@@ -188,7 +188,7 @@ do
         world  = {'!', w=200, h=200},
         source = {'!', x=50, y=50, w=200, h=200},
     }
-    shot("guide-06-01-03")
+    shot("guide-06-02-01")
     pico.init(false)
 end
 
