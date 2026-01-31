@@ -38,7 +38,7 @@ The Lua prompt `>` indicates that `pico-lua` is ready to receive commands.
 
 ### 2.1. Open
 
-To initialize `pico-lua`, we call `pico.init(true)`:
+To initialize `pico-lua`, we pass `true` to `pico.init`:
 
 <table>
 <tr><td><pre>
@@ -81,7 +81,7 @@ further.
 
 ### 2.3. Close
 
-In the end, we call `pico.init(false)` to terminate `pico-lua`:
+In the end, we pass `false` to `pico.init` to properly finalize `pico-lua`:
 
 <table>
 <tr><td><pre>
@@ -107,8 +107,8 @@ We can see that the title, grid, and sizes are now reset to default.
 
 ## 3. Basic Drawing
 
-Drawing operations appear immediately on screen:
-`pico-lua` simulates single-buffer rendering to ease prototyping.
+In `pico-lua`, drawing operations have immediate effect.
+It simulates single-buffer rendering to ease prototyping.
 
 ### 3.1. Pixel
 
@@ -116,7 +116,7 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 
 <table>
 <tr><td><pre>
-> pico.output.draw.pixel({'!', x=50, y=50})
+> pico.output.draw.pixel {'!', x=50, y=50}
 </pre>
 </td><td>
 <img src="img/guide-03-01-01.png" width="200">
@@ -147,7 +147,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 
 <table>
 <tr><td><pre>
-> pico.output.draw.rect({'!', x=20, y=20, w=30, h=30})
+> pico.output.draw.rect {'!', x=20, y=20, w=30, h=30}
 </pre>
 </td><td>
 <img src="img/guide-03-03-01.png" width="200">
@@ -156,8 +156,8 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
 
-Unlike most graphics libraries, `pico-lua` centers the rectangle at the given
-position by default.
+Unlike most graphics libraries, by default `pico-lua` centers the rectangle at
+the given position.
 We discuss positioning and anchoring further.
 
 ### 3.4. Image
@@ -177,13 +177,12 @@ Other drawing operations include `draw.line`, `draw.polygon`, and `draw.text`.
 
 ## 4. Internal State
 
-`pico-lua` maintains internal state that affects drawing operations, such as
+`pico-lua` keeps an internal state that affects drawing operations, such as
 the current color, alpha transparency, and drawing style.
 
 ### 4.1. Color
 
-To change the drawing color for further operations, we call
-`pico.set.color.draw`:
+To change the drawing color state, we call `pico.set.color.draw`:
 
 <table>
 <tr><td><pre>
@@ -197,8 +196,8 @@ To change the drawing color for further operations, we call
 
 The text appears in red, centered at the given position.
 
-Note that the text width should not be set to preserve the correct aspect
-ratio.
+Note that `pico-lua` handles the text width automatically, preserving the
+correct aspect ratio.
 
 ### 4.2. Transparency
 
@@ -206,8 +205,8 @@ We may also change the drawing transparency:
 
 <table>
 <tr><td><pre>
-> pico.set.color.alpha(0x88)
-> pico.output.draw.oval({'!', x=50, y=80, w=35, h=15})
+> pico.set.alpha(0x88)
+> pico.output.draw.oval {'!', x=50, y=80, w=35, h=15}
 </pre>
 </td><td>
 <img src="img/guide-04-02-01.png" width="200">
@@ -219,13 +218,14 @@ visible.
 
 ## 5. Positioning: Mode & Anchor
 
-`pico-lua` supports positioning **modes** as follows:
+`pico-lua` supports positioning modes as follows:
 
-- `'!'` - Raw: logical pixel coordinates
-- `'%'` - Percentage: coordinates relative to the world size (from `0.0` to `1.0`)
-- `'#'` - Tile: grid coordinates based on a tile dimension
+- `'!'`: Raw: logical pixel coordinates
+- `'%'`: Percentage: coordinates relative to the world size (from `0.0` to `1.0`)
+- `'#'`: Tile: grid coordinates based on a tile dimension
 
-The mode must be set at index `1` of position, dimension, and rectangle tables.
+The mode must be set at index `1` for tables representing positions,
+dimensions, and rectangles.
 
 ### 5.1. Percentages
 
@@ -235,7 +235,7 @@ percentages:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 </pre>
 </td><td>
 <img src="img/guide-05-01-01.png" width="200">
@@ -243,9 +243,6 @@ percentages:
 </table>
 
 The rectangle is centered at `(0.5, 0.5)`, or half, of the screen.
-
-The rectangle appears in gray because the drawing color white applies with the
-half transparency (`0xCC`) over a black background.
 
 ### 5.2. Anchors
 
@@ -255,13 +252,13 @@ determines the reference point within a shape:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.output.draw.pixel({'%', x=0.5, y=0.5})
+> pico.output.draw.pixel {'%', x=0.5, y=0.5}
 > pico.set.color.draw('red')
-> pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='NW'})
+> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='NW'}
 > pico.set.color.draw('green')
-> pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='C'})
+> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='C'}
 > pico.set.color.draw('blue')
-> pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='SE'})
+> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='SE'}
 </pre>
 </td><td>
 <img src="img/guide-05-02-01.png" width="200">
@@ -300,9 +297,9 @@ For tile-based games, we can use tile mode with 1-indexed coordinates:
     tile   = {w=25, h=25},
   }
 > pico.output.clear()
-> pico.output.draw.rect({'#', x=1, y=1, w=1, h=1})
-> pico.output.draw.rect({'#', x=3, y=2, w=1, h=1})
-> pico.output.draw.rect({'#', x=2, y=4, w=2, h=1})
+> pico.output.draw.rect {'#', x=1, y=1, w=1, h=1}
+> pico.output.draw.rect {'#', x=3, y=2, w=1, h=1}
+> pico.output.draw.rect {'#', x=2, y=4, w=2, h=1}
 </pre>
 </td><td>
 <img src="img/guide-05-03-01.png" width="200">
@@ -328,7 +325,7 @@ When the world is smaller than the window, the view is zoomed in:
     world  = {'!', w=200, h=200},  -- 1:1
   }
 > pico.output.clear()
-> pico.output.draw.rect({'!', x=50, y=50, w=100, h=100})
+> pico.output.draw.rect {'!', x=50, y=50, w=100, h=100}
 </pre>
 </td><td>
 <img src="img/guide-06-01-01.png" width="200">
@@ -378,11 +375,11 @@ The `pico.input.delay(ms)` function pauses execution for a given time:
 <tr><td><pre>
 > pico.init(true)
 > pico.output.clear()
-> pico.output.draw.pixel({'!', x=25, y=50})
+> pico.output.draw.pixel {'!', x=25, y=50}
 > pico.input.delay(500)
-> pico.output.draw.pixel({'!', x=50, y=50})
+> pico.output.draw.pixel {'!', x=50, y=50}
 > pico.input.delay(500)
-> pico.output.draw.pixel({'!', x=75, y=50})
+> pico.output.draw.pixel {'!', x=75, y=50}
 </pre>
 </td><td>
 <img src="img/guide-07-01-01.png" width="200">
@@ -439,7 +436,7 @@ To enable expert mode, we call `pico.set.expert(true)`:
 > pico.init(true)
 > pico.set.expert(true)
 > pico.output.clear()
-> pico.output.draw.rect({'!', x=25, y=25, w=50, h=50})
+> pico.output.draw.rect {'!', x=25, y=25, w=50, h=50}
 </pre>
 </td><td>
 <img src="img/guide-08-01-01.png" width="200">
