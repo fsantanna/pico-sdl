@@ -9,7 +9,7 @@
 7. [Events](#7-events)
 8. [Expert Mode](#8-expert-mode)
 
-# 1. Introduction
+## 1. Introduction
 
 `pico-lua` is a graphics library for 2D games and applications.
 It is designed around 3 groups of APIs:
@@ -55,9 +55,9 @@ The library maintains global state including:
 - View configuration (window size, world size, zoom)
 -->
 
-# 2. Initialization
+## 2. Initialization
 
-## 2.1. Open
+### 2.1. Open
 
 To initialize `pico-lua`, we call `pico.init(true)`:
 
@@ -77,7 +77,7 @@ By default, `pico-lua` conventionally exhibit a grid and coordinate labels to
 aid development with visual inspection.
 You may click in the image to zoom in.
 
-## 2.2. Configure
+### 2.2. Configure
 
 To change the window title, grid, and size, we call `pico.set.view`:
 
@@ -100,7 +100,7 @@ sizes are the same.
 The character `'!'` indicates a dimension in "raw mode", which we discuss
 further.
 
-## 2.3. Close
+### 2.3. Close
 
 In the end, we call `pico.init(false)` to terminate `pico-lua`:
 
@@ -126,12 +126,12 @@ Then, we can restart `pico-lua` by calling `pico.init(true)` again:
 
 We can see that the title, grid, and sizes are now reset to default.
 
-# 3. Basic Drawing
+## 3. Basic Drawing
 
 Drawing operations appear immediately on screen:
 `pico-lua` simulates single-buffer rendering to ease prototyping.
 
-## 3.1. Pixel
+### 3.1. Pixel
 
 To draw a single pixel, we call `pico.output.draw.pixel`:
 
@@ -147,7 +147,7 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 The pixel occupies a physical `5x5` square representing a single logical pixel,
 as expected.
 
-## 3.2. Clear
+### 3.2. Clear
 
 To clear the screen, we call `pico.output.clear`:
 
@@ -162,7 +162,7 @@ To clear the screen, we call `pico.output.clear`:
 
 The pixel is gone.
 
-## 3.3. Rectangle
+### 3.3. Rectangle
 
 To draw a rectangle, we call `pico.output.draw.rect`:
 
@@ -181,7 +181,7 @@ Unlike most graphics libraries, `pico-lua` centers the rectangle at the given
 position by default.
 We discuss positioning and anchoring further.
 
-## 3.4. Image
+### 3.4. Image
 
 To draw an image, we call `pico.output.draw.image`:
 
@@ -196,12 +196,12 @@ To draw an image, we call `pico.output.draw.image`:
 
 Other drawing operations include `draw.line`, `draw.polygon`, and `draw.text`.
 
-# 4. Internal State
+## 4. Internal State
 
 `pico-lua` maintains internal state that affects drawing operations, such as
 the current color, alpha transparency, and drawing style.
 
-## 4.1. Color
+### 4.1. Color
 
 To change the drawing color for further operations, we call
 `pico.set.color.draw`:
@@ -221,7 +221,7 @@ The text appears in red, centered at the given position.
 Note that the text width should not be set to preserve the correct aspect
 ratio.
 
-## 4.2. Transparency
+### 4.2. Transparency
 
 We may also change the drawing transparency:
 
@@ -238,7 +238,7 @@ We may also change the drawing transparency:
 The oval appears on top of the text, but the transparency keeps the text
 visible.
 
-# 5. Positioning: Mode & Anchor
+## 5. Positioning: Mode & Anchor
 
 `pico-lua` supports positioning **modes** as follows:
 
@@ -248,7 +248,7 @@ visible.
 
 The mode must be set at index `1` of position, dimension, and rectangle tables.
 
-## 5.1. Percentages
+### 5.1. Percentages
 
 Since we already used the raw mode in previous sections, let's now try
 percentages:
@@ -268,7 +268,7 @@ The rectangle is centered at `(0.5, 0.5)`, or half, of the screen.
 The rectangle appears in gray because the drawing color white applies with the
 half transparency (`0xCC`) over a black background.
 
-## 5.2. Anchors
+### 5.2. Anchors
 
 In addition to positioning mode, `pico-lua` also supports anchoring, which
 determines the reference point within a shape:
@@ -305,7 +305,7 @@ given drawing point:
 
 By default, `pico-lua` uses the center anchor.
 
-## 5.3. Tiles
+### 5.3. Tiles
 
 TODO
 The tile mode
@@ -333,7 +333,7 @@ For tile-based games, we can use tile mode with 1-indexed coordinates:
 The world is a 4x4 grid where each tile is 25x25 pixels.
 Tile `(1,1)` is the top-left corner.
 
-# 6. Advanced View
+## 6. Advanced View
 
 When the world is smaller than the window, the view is zoomed in.
 Let's compare 1:1 and 2x zoom:
@@ -382,7 +382,7 @@ The `source` parameter pans the view:
 
 The view is scrolled by `(50, 50)`, so the rectangle appears at the top-left.
 
-# 7. Events
+## 7. Events
 
 The `pico.input.delay(ms)` function pauses execution for a given time:
 
@@ -432,7 +432,7 @@ The `pico.get.mouse(pos)` function polls the current mouse position:
 > print(pos.x, pos.y)
 ```
 
-# 8. Expert Mode
+## 8. Expert Mode
 
 By default, `pico-lua` uses immediate mode: every draw operation is visible
 instantly.
