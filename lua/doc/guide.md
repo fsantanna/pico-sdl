@@ -34,27 +34,6 @@ Lua 5.4.4  Copyright (C) 1994-2022 Lua.org, PUC-Rio
 
 The Lua prompt `>` indicates that `pico-lua` is ready to receive commands.
 
-<!--
-**Basic Structure:**
-
-Every pico-lua program follows this pattern:
-
-```lua
-pico.init(true)     -- initialize the library
--- ... drawing and input operations ...
-pico.init(false)    -- finalize the library
-```
-
-**Internal State:**
-
-The library maintains global state including:
-
-- Colors (draw and clear)
-- Alpha transparency
-- Drawing style (fill or stroke)
-- View configuration (window size, world size, zoom)
--->
-
 ## 2. Initialization
 
 ### 2.1. Open
@@ -335,8 +314,11 @@ Tile `(1,1)` is the top-left corner.
 
 ## 6. Advanced View
 
-When the world is smaller than the window, the view is zoomed in.
-Let's compare 1:1 and 2x zoom:
+The view controls how the logical world maps to the physical window.
+
+### 6.1. Zoom
+
+When the world is smaller than the window, the view is zoomed in:
 
 <table>
 <tr><td><pre>
@@ -366,6 +348,8 @@ Let's compare 1:1 and 2x zoom:
 
 The same logical rectangle appears twice as large with 2x zoom.
 
+### 6.2. Pan
+
 The `source` parameter pans the view:
 
 <table>
@@ -376,13 +360,17 @@ The `source` parameter pans the view:
   }
 </pre>
 </td><td>
-<img src="img/guide-06-01-03.png" width="200">
+<img src="img/guide-06-02-01.png" width="200">
 </td></tr>
 </table>
 
 The view is scrolled by `(50, 50)`, so the rectangle appears at the top-left.
 
 ## 7. Events
+
+`pico-lua` provides functions to handle time and user input.
+
+### 7.1. Delay
 
 The `pico.input.delay(ms)` function pauses execution for a given time:
 
@@ -400,6 +388,8 @@ The `pico.input.delay(ms)` function pauses execution for a given time:
 <img src="img/guide-07-01-01.png" width="200">
 </td></tr>
 </table>
+
+### 7.2. Event
 
 The `pico.input.event()` function waits for input events:
 
@@ -424,6 +414,8 @@ We can also filter events and set timeouts:
 > local e = pico.input.event('key.dn', 1000)  -- wait up to 1000ms
 ```
 
+### 7.3. Mouse
+
 The `pico.get.mouse(pos)` function polls the current mouse position:
 
 ```lua
@@ -437,6 +429,10 @@ The `pico.get.mouse(pos)` function polls the current mouse position:
 By default, `pico-lua` uses immediate mode: every draw operation is visible
 instantly.
 Expert mode disables this, requiring explicit `present()` calls.
+
+### 8.1. Buffered
+
+To enable expert mode, we call `pico.set.expert(true)`:
 
 <table>
 <tr><td><pre>
@@ -462,6 +458,8 @@ Nothing is visible yet because we haven't called `present()`.
 </table>
 
 Now the rectangle is visible.
+
+### 8.2. Animation
 
 Expert mode is useful for animation with controlled frame timing:
 
