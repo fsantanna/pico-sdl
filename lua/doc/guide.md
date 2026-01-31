@@ -79,10 +79,10 @@ To change the window title, grid, and size, we call `pico.set.view`:
 <table>
 <tr><td><pre>
 > pico.set.view {
-    title  = "Hello!",              -- changes title
-    grid   = false,                 -- disables grid
-    window = {'!', w=200, h=200},   -- physical size
-    world  = {'!', w=200, h=200},   -- logical size
+    title  = "Hello!",            -- changes title
+    grid   = false,               -- disables grid
+    window = {'!', w=200, h=200}, -- physical size
+    world  = {'!', w=200, h=200}, -- logical size
   }
 </pre>
 </td><td>
@@ -91,7 +91,7 @@ To change the window title, grid, and size, we call `pico.set.view`:
 </table>
 
 Now the window title is set, the grid is disabled, and the window and world
-sizes are the same (`200x200`).
+sizes are the same.
 The character `'!'` indicates a dimension in "raw mode", which we discuss
 further.
 
@@ -122,19 +122,7 @@ We can see that the title, grid, and sizes are now reset to default.
 # 3. Basic Drawing
 
 Drawing operations appear immediately on screen:
-`pico-lua` simulates single-buffer rendering to ease exploration and initial
-development.
-
-To clear the screen, we call `pico.output.clear`:
-
-<table>
-<tr><td><pre>
-> pico.output.clear()
-</pre>
-</td><td>
-<img src="img/guide-03-01.png" width="200">
-</td></tr>
-</table>
+`pico-lua` simulates single-buffer rendering to ease prototyping.
 
 To draw a single pixel, we call `pico.output.draw.pixel`:
 
@@ -149,6 +137,19 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 
 The pixel occupies a `5x5` square representing a single logical pixel, as
 expected.
+
+To clear the screen, we call `pico.output.clear`:
+
+<table>
+<tr><td><pre>
+> pico.output.clear()
+</pre>
+</td><td>
+<img src="img/guide-03-01.png" width="200">
+</td></tr>
+</table>
+
+The pixel is gone.
 
 To draw a rectangle, we call `pico.output.draw.rect`:
 
