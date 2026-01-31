@@ -168,13 +168,15 @@ Pico_Abs_Dim tile = { 4, 4 };               // each tile is 4x4 pixels
 pico_set_view("Game", -1, -1, NULL, NULL, &log, NULL, NULL, &tile);
 ```
 
-**Coordinate conversion:**
-- Position: `pixel = (tile - 1) * tile_size`
+**Coordinate conversion (symmetric anchoring):**
+- Position: `pixel = (tile - 1 + anchor) * tile_size`
+- Rect: `pixel = (tile - 1 + anchor) * tile_size - anchor * object_size`
 - Size: `pixels = tiles * tile_size`
-- Mouse: `tile = (pixel / tile_size) + 1`
+- Mouse: `tile = (pixel / tile_size) + (1 - anchor)`
 
-**Anchoring:** Anchor applies to both the tile cell and the drawn object,
-providing symmetric alignment within the tile.
+**Anchoring:** Anchor applies symmetrically to both the tile cell reference
+point and the object alignment point. With anchor C, tile 1 references the
+center of the first tile cell, and drawing aligns the object's center there.
 
 ### Color Types
 

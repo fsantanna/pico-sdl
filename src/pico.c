@@ -227,8 +227,8 @@ static SDL_FPoint _sdl_pos (
             break;
         case '#':
             ret = (SDL_FPoint) {
-                r1.x + (pos->x-1)*S.view.tile.w - pos->anchor.x*S.view.tile.w,
-                r1.y + (pos->y-1)*S.view.tile.h - pos->anchor.y*S.view.tile.h,
+                r1.x + (pos->x - 1 + pos->anchor.x)*S.view.tile.w,
+                r1.y + (pos->y - 1 + pos->anchor.y)*S.view.tile.h,
             };
             break;
         default:
@@ -268,19 +268,20 @@ static SDL_FRect _sdl_rect (
         case '%':
             ret = _f1(rect, r0, ratio);
             break;
-        case '#':
+        case '#': {
             SDL_FDim d = _f3 (
                 rect->w * S.view.tile.w,
                 rect->h * S.view.tile.h,
                 ratio
             );
             ret = (SDL_FRect) {
-                r1.x + (rect->x - 1)*S.view.tile.w - rect->anchor.x*d.w,
-                r1.y + (rect->y - 1)*S.view.tile.h - rect->anchor.y*d.h,
+                r1.x + (rect->x - 1 + rect->anchor.x)*S.view.tile.w - rect->anchor.x*d.w,
+                r1.y + (rect->y - 1 + rect->anchor.y)*S.view.tile.h - rect->anchor.y*d.h,
                 d.w,
                 d.h
             };
             break;
+        }
         default:
             assert(0 && "invalid mode");
     }
@@ -1113,8 +1114,8 @@ int pico_get_mouse (Pico_Rel_Pos* pos, int button) {
             break;
         }
         case '#':
-            pos->x = (log_x / S.view.tile.w) + 1;
-            pos->y = (log_y / S.view.tile.h) + 1;
+            pos->x = (log_x / (float)S.view.tile.w) + (1 - pos->anchor.x);
+            pos->y = (log_y / (float)S.view.tile.h) + (1 - pos->anchor.y);
             break;
         default:
             assert(0 && "invalid mode");
