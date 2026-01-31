@@ -62,7 +62,7 @@ To initialize `pico-lua`, we call `pico.init(true)`:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="img/guide-02-01.png" width="200">
+<img src="img/guide-02-01.png" width="300">
 </td></tr>
 </table>
 
@@ -84,7 +84,7 @@ To change the window title, grid, and size, we call `pico.set.view`:
   }
 </pre>
 </td><td>
-<img src="img/guide-02-02.png" width="200">
+<img src="img/guide-02-02.png" width="300">
 </td></tr>
 </table>
 
@@ -100,7 +100,7 @@ In the end, we call `pico.init(false)` to terminate `pico-lua`:
 > pico.init(false)
 </pre>
 </td><td>
-<img src="img/guide-02-03.png" width="200">
+<img src="img/guide-02-03.png" width="300">
 </td></tr>
 </table>
 
@@ -111,7 +111,7 @@ Then, we can restart `pico-lua` by calling `pico.init(true)` again:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="img/guide-02-04.png" width="200">
+<img src="img/guide-02-04.png" width="300">
 </td></tr>
 </table>
 
@@ -128,7 +128,7 @@ To clear the screen, we call `pico.output.clear`:
 > pico.output.clear()
 </pre>
 </td><td>
-<img src="img/guide-03-01.png" width="200">
+<img src="img/guide-03-01.png" width="300">
 </td></tr>
 </table>
 
@@ -139,7 +139,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 > pico.output.draw.rect({'!', x=10, y=10, w=30, h=30})
 </pre>
 </td><td>
-<img src="img/guide-03-02.png" width="200">
+<img src="img/guide-03-02.png" width="300">
 </td></tr>
 </table>
 
@@ -156,7 +156,7 @@ To change the drawing color, we call `pico.set.color.draw`:
 > pico.output.draw.rect({'!', x=50, y=10, w=30, h=30})
 </pre>
 </td><td>
-<img src="img/guide-03-03.png" width="200">
+<img src="img/guide-03-03.png" width="300">
 </td></tr>
 </table>
 
@@ -184,7 +184,7 @@ Now let's try percentage mode:
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='C'})
 </pre>
 </td><td>
-<img src="img/guide-04-01.png" width="200">
+<img src="img/guide-04-01.png" width="300">
 </td></tr>
 </table>
 
@@ -212,7 +212,7 @@ Let's see how the same position with different anchors affects placement:
 > pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='SE'})
 </pre>
 </td><td>
-<img src="img/guide-04-02.png" width="200">
+<img src="img/guide-04-02.png" width="300">
 </td></tr>
 </table>
 
@@ -235,7 +235,7 @@ For tile-based games, we can use tile mode with 1-indexed coordinates:
 > pico.output.draw.rect({'#', x=2, y=4, w=2, h=1})
 </pre>
 </td><td>
-<img src="img/guide-04-03.png" width="200">
+<img src="img/guide-04-03.png" width="300">
 </td></tr>
 </table>
 
@@ -258,7 +258,7 @@ Let's compare 1:1 and 2x zoom:
 > pico.output.draw.rect({'!', x=50, y=50, w=100, h=100})
 </pre>
 </td><td>
-<img src="img/guide-05-01.png" width="200">
+<img src="img/guide-05-01.png" width="300">
 </td></tr>
 </table>
 
@@ -269,7 +269,7 @@ Let's compare 1:1 and 2x zoom:
   }
 </pre>
 </td><td>
-<img src="img/guide-05-02.png" width="200">
+<img src="img/guide-05-02.png" width="300">
 </td></tr>
 </table>
 
@@ -285,7 +285,7 @@ The `source` parameter pans the view:
   }
 </pre>
 </td><td>
-<img src="img/guide-05-03.png" width="200">
+<img src="img/guide-05-03.png" width="300">
 </td></tr>
 </table>
 
@@ -306,7 +306,7 @@ The `pico.input.delay(ms)` function pauses execution for a given time:
 > pico.output.draw.pixel({'!', x=75, y=50})
 </pre>
 </td><td>
-<img src="img/guide-06-01.png" width="200">
+<img src="img/guide-06-01.png" width="300">
 </td></tr>
 </table>
 
@@ -355,7 +355,7 @@ Expert mode disables this, requiring explicit `present()` calls.
 > pico.output.draw.rect({'!', x=25, y=25, w=50, h=50})
 </pre>
 </td><td>
-<img src="img/guide-07-01.png" width="200">
+<img src="img/guide-07-01.png" width="300">
 </td></tr>
 </table>
 
@@ -366,7 +366,7 @@ Nothing is visible yet because we haven't called `present()`.
 > pico.output.present()
 </pre>
 </td><td>
-<img src="img/guide-07-02.png" width="200">
+<img src="img/guide-07-02.png" width="300">
 </td></tr>
 </table>
 
