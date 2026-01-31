@@ -135,7 +135,19 @@ To clear the screen, we call `pico.output.clear`:
 </td></tr>
 </table>
 
-TODO: start with a pixel. indicate that it is logical
+To draw a single pixel, we call `pico.output.draw.pixel`:
+
+<table>
+<tr><td><pre>
+> pico.output.draw.pixel({'!', x=50, y=50})
+</pre>
+</td><td>
+<img src="img/guide-03-02.png" width="300">
+</td></tr>
+</table>
+
+The pixel appears as a `5x5` square because the window is `500x500` physical
+pixels but only `100x100` logical pixels.
 
 To draw a rectangle, we call `pico.output.draw.rect`:
 
@@ -144,21 +156,26 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 > pico.output.draw.rect({'!', x=10, y=10, w=30, h=30})
 </pre>
 </td><td>
-<img src="img/guide-03-02.png" width="300">
+<img src="img/guide-03-03.png" width="300">
 </td></tr>
 </table>
 
 The table `{'!', x=10, y=10, w=30, h=30}` specifies a rectangle at position
 `(10,10)` with size `30x30`.
 
-TODO: add image example
+To draw an image, we call `pico.output.draw.image`:
 
-Other drawing operations include `draw.line`, `draw.oval`,
+```lua
+> pico.output.draw.image('sprite.png', {'!', x=60, y=10, w=30, h=30})
+```
+
+Other drawing operations include `draw.pixel`, `draw.line`, `draw.oval`,
 `draw.tri`, and `draw.text`.
 
 # 4. Internal State
 
-TODO: some brief intro text
+`pico-lua` maintains internal state that affects drawing operations, such as
+the current color, alpha transparency, and drawing style.
 
 To change the drawing color, we call `pico.set.color.draw`:
 

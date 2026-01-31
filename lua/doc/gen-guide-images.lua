@@ -55,8 +55,17 @@ end
 do
     pico.init(true)
     pico.output.clear()
-    pico.output.draw.rect({'!', x=10, y=10, w=30, h=30})
+    pico.output.draw.pixel({'!', x=50, y=50})
     shot("guide-03-02")
+    pico.init(false)
+end
+
+do
+    pico.init(true)
+    pico.output.clear()
+    pico.output.draw.pixel({'!', x=50, y=50})
+    pico.output.draw.rect({'!', x=10, y=10, w=30, h=30})
+    shot("guide-03-03")
     pico.init(false)
 end
 
