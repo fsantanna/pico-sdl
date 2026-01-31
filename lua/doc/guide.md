@@ -186,7 +186,7 @@ To change the drawing color state, we call `pico.set.color.draw`:
 
 <table>
 <tr><td><pre>
-> pico.set.color.draw('red')
+> pico.set.color.draw 'red'
 > pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
 </pre>
 </td><td>
@@ -242,7 +242,7 @@ percentages:
 </td></tr>
 </table>
 
-The rectangle is centered at `(0.5, 0.5)`, or half, of the screen.
+The rectangle is centered at `(0.5,0.5)`, or half, of the screen.
 
 ### 5.2. Anchors
 
@@ -252,12 +252,13 @@ determines the reference point within a shape:
 <table>
 <tr><td><pre>
 > pico.output.clear()
+> pico.set.color.draw 'white'
 > pico.output.draw.pixel {'%', x=0.5, y=0.5}
-> pico.set.color.draw('red')
+> pico.set.color.draw 'red'
 > pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='NW'}
-> pico.set.color.draw('green')
+> pico.set.color.draw 'green'
 > pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='C'}
-> pico.set.color.draw('blue')
+> pico.set.color.draw 'blue'
 > pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='SE'}
 </pre>
 </td><td>
@@ -268,8 +269,8 @@ determines the reference point within a shape:
 We draw all three rectangles at the same pixel position, but with different
 anchors.
 
-The anchor determines the position inside the object that should appear at the
-given drawing point:
+The anchor determines a position inside the object, which should be fixed at
+the given drawing point:
 
 ```
 +-----------+
