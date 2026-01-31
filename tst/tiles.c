@@ -63,7 +63,7 @@ int main (void) {
         SDL_PumpEvents();
         Pico_Rel_Pos pos = { '#' };
         pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
-        assert(pos.x == 1 && pos.y == 1);
+        assert(pos.x==1 && pos.y==1);
     }
 
     // phy (40,40) -> log (4,4) -> tile (2,2)
@@ -74,7 +74,7 @@ int main (void) {
         SDL_PumpEvents();
         Pico_Rel_Pos pos = { '#' };
         pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
-        assert(pos.x == 2 && pos.y == 2);
+        assert(pos.x==2 && pos.y==2);
     }
 
     // phy (80,120) -> log (8,12) -> tile (3,4)
@@ -84,7 +84,7 @@ int main (void) {
         SDL_PumpEvents();
         Pico_Rel_Pos pos = { '#' };
         pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
-        assert(pos.x == 3 && pos.y == 4);
+        assert(pos.x==3 && pos.y==4);
     }
 
     pico_init(0);
