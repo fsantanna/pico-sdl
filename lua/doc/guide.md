@@ -62,7 +62,7 @@ To initialize `pico-lua`, we call `pico.init(true)`:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="img/guide-02-01.png" width="300">
+<img src="img/guide-02-01.png" width="500">
 </td></tr>
 </table>
 
