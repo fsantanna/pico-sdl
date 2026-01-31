@@ -135,8 +135,8 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 </td></tr>
 </table>
 
-The pixel occupies a `5x5` square representing a single logical pixel, as
-expected.
+The pixel occupies a physical `5x5` square representing a single logical pixel,
+as expected.
 
 To clear the screen, we call `pico.output.clear`:
 
