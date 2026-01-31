@@ -307,6 +307,7 @@ By default, `pico-lua` uses the center anchor.
 
 ## 5.3. Tiles
 
+TODO
 The tile mode
 
 For tile-based games, we can use tile mode with 1-indexed coordinates:
