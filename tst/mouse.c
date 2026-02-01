@@ -12,7 +12,7 @@ int main(void) {
     puts("phy (500,500) -> log (50,50)");
     {
         pico_set_window("Mouse", -1, &(Pico_Rel_Dim){ '!', {500, 500}, NULL });
-        pico_set_view(-1, NULL, &(Pico_Rel_Dim){ '!', {50, 50}, NULL }, NULL, NULL, NULL);
+        pico_set_view(-1, &(Pico_Rel_Dim){ '!', {50, 50}, NULL }, NULL, NULL, NULL, NULL);
 
         // phy (0,0) -> log (0,0)
         {

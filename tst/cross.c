@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window(NULL, -1, &(Pico_Rel_Dim){ '!', {160, 160}, NULL });
-    pico_set_view(-1, NULL, &(Pico_Rel_Dim){ '!', {16, 16}, NULL }, NULL, NULL, NULL);
+    pico_set_view(-1, &(Pico_Rel_Dim){ '!', {16, 16}, NULL }, NULL, NULL, NULL, NULL);
     pico_output_clear();
     for (int i=0; i<16; i++) {
         pico_output_draw_pixel (

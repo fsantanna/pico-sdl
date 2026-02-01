@@ -7,7 +7,7 @@ int main (void) {
     {
         Pico_Dim phy, log;
         pico_get_window(NULL, NULL, &phy);
-        pico_get_view(NULL, NULL, &log, NULL, NULL, NULL);
+        pico_get_view(NULL, &log, NULL, NULL, NULL, NULL);
         assert(phy.w==500 && phy.h==500);
         assert(log.w==100 && log.h==100);
     }

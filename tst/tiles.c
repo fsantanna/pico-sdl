@@ -12,7 +12,7 @@ int main (void) {
     Pico_Rel_Dim log  = { '#', {4, 4}, NULL };
     Pico_Abs_Dim tile = { 4, 4 };
     pico_set_window("Tile", -1, &phy);
-    pico_set_view(-1, NULL, &log, NULL, NULL, &tile);
+    pico_set_view(-1, &log, NULL, NULL, NULL, &tile);
 
     // 4x4 pixel white tile
     Pico_Color_A white[16];

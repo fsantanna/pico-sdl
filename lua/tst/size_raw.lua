@@ -1,10 +1,11 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view { title="Size - Fullscreen" }
+pico.set.window { title="Size - Fullscreen" }
 
+local win = pico.get.window()
 local all = pico.get.view()
-local phy = all.window
+local phy = win.dim
 local log = all.world
 phy[1] = '!'
 log[1] = '!'
@@ -16,7 +17,7 @@ local r = {'!', x=50-25, y=50-25, w=50, h=50, anc='NW'}
 print("WINDOW")
 do
     print("normal")
-    pico.set.view { window=phy }
+    pico.set.window { dim=phy }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-01")
@@ -25,7 +26,7 @@ end
 do
     print("double")
     local dim = {'!', w=phy.w*2, h=phy.h*2}
-    pico.set.view { window=dim }
+    pico.set.window { dim=dim }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-02")
@@ -34,7 +35,7 @@ end
 do
     print("half")
     local dim = {'!', w=phy.w/2, h=phy.h/2}
-    pico.set.view { window=dim }
+    pico.set.window { dim=dim }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-03")
@@ -42,7 +43,7 @@ end
 
 do
     print("normal")
-    pico.set.view { window=phy }
+    pico.set.window { dim=phy }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-04")
@@ -51,7 +52,7 @@ end
 -- phy: normal -> full -> normal
 do
     print("full")
-    pico.set.view { fullscreen=true }
+    pico.set.window { fullscreen=true }
     pico.output.clear()
     pico.output.draw.rect(r)
     -- pico.check("size_raw-05")
@@ -59,7 +60,7 @@ end
 
 do
     print("normal")
-    pico.set.view { fullscreen=false }
+    pico.set.window { fullscreen=false }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-06")

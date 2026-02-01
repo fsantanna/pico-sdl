@@ -165,7 +165,8 @@ Coordinates are 1-indexed to match Lua table conventions.
 // 4x4 grid of 4x4 pixel tiles = 16x16 logical world
 Pico_Rel_Dim log  = { '#', {4, 4}, NULL };  // 4x4 tiles
 Pico_Abs_Dim tile = { 4, 4 };               // each tile is 4x4 pixels
-pico_set_view("Game", -1, -1, NULL, NULL, &log, NULL, NULL, &tile);
+pico_set_window("Game", -1, NULL);
+pico_set_view(-1, &log, NULL, NULL, NULL, &tile);
 ```
 
 **Coordinate conversion (symmetric anchoring):**

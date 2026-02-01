@@ -63,7 +63,7 @@ int main (void) {
     {
         puts("normal");
         Pico_Rel_Dim dim = { '%', {1, 1}, NULL };
-        pico_set_view(-1, NULL, &dim, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-07");
@@ -71,7 +71,7 @@ int main (void) {
     {
         puts("double");
         Pico_Rel_Dim dim = { '%', {2, 2}, NULL };
-        pico_set_view(-1, NULL, &dim, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-08");
@@ -79,7 +79,7 @@ int main (void) {
     {
         puts("half");
         Pico_Rel_Dim dim = { '%', {0.25, 0.25}, NULL };
-        pico_set_view(-1, NULL, &dim, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-09");
@@ -87,7 +87,7 @@ int main (void) {
     {
         puts("normal");
         Pico_Rel_Dim dim = { '%', {2, 2}, NULL };
-        pico_set_view(-1, NULL, &dim, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-10");

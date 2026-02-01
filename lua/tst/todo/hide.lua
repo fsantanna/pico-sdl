@@ -2,7 +2,7 @@ local pico = require 'pico'
 
 pico.init(true)
 
-pico.set.view { title="Show - Hide" }
+pico.set.window { title="Show - Hide" }
 
 pico.input.event 'key.dn'
 

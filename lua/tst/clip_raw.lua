@@ -1,7 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view { title="Clip" }
+pico.set.window { title="Clip" }
 
 do
     print("rect at 30%")

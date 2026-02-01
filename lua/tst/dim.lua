@@ -1,7 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view { title="Dim" }
+pico.set.window { title="Dim" }
 
 local r = {'%', x=0.5, y=0.5, w=0, h=0}
 local N = 1

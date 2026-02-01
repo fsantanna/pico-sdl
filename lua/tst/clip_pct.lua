@@ -1,7 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view { title="Clip" }
+pico.set.window { title="Clip" }
 
 local r1 = {'%', x=0.3, y=0.3, w=0.5, h=0.5}
 

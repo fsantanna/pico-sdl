@@ -2,7 +2,7 @@ local pico = require 'pico'
 
 pico.init(true)
 
-pico.set.view { title="Control" }
+pico.set.window { title="Control" }
 
 local pt = pico.pos(50, 50)
 while true do

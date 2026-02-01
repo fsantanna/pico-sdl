@@ -1,7 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view { title="Expert" }
+pico.set.window { title="Expert" }
 
 local r = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 pico.output.draw.rect(r)
