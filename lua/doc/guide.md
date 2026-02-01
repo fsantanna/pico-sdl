@@ -304,8 +304,13 @@ dimensions:
 </td></tr>
 </table>
 
-The world is a 4x4 grid where each tile is 25x25 pixels.
-Tile `(1,1)` is the top-left corner.
+In the example, we set each tile to `20x20` and create a world of `5x5` tiles.
+Note that the window can also be specified in tiles.
+
+We draw two rectangles also using the tile mode `'#'`:
+The first is centered at `(3,3)` occupying `1x1`.
+The second uses anchor `NE`, to properly occupy the top right of the screen
+with `2x1`.
 
 ## 6. Advanced View
 
