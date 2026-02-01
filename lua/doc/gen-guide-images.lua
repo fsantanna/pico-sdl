@@ -132,14 +132,13 @@ end
 do
     pico.init(true)
     pico.set.view {
-        window = {'!', w=200, h=200},
-        world  = {'#', w=4, h=4},
-        tile   = {w=25, h=25},
+        window = {'#', w=40, h=40},
+        world  = {'#', w=5, h=5},
+        tile   = {w=20, h=20},
     }
     pico.output.clear()
-    pico.output.draw.rect({'#', x=1, y=1, w=1, h=1})
-    pico.output.draw.rect({'#', x=3, y=2, w=1, h=1})
-    pico.output.draw.rect({'#', x=2, y=4, w=2, h=1})
+    pico.output.draw.rect {'#', x=3, y=3, w=1, h=1}
+    pico.output.draw.rect {'#', x=5, y=1, w=2, h=1, anc='NE'}
     shot("guide-05-03-01")
     pico.init(false)
 end
