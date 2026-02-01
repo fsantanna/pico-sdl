@@ -117,7 +117,7 @@ int main (void) {
 
     pico_init(1);
     Pico_Rel_Dim log = { '!', {100, 100}, NULL };
-    pico_set_view(NULL, -1, -1, NULL, NULL, &log, NULL, NULL, NULL);
+    pico_set_view(-1, NULL, &log, NULL, NULL, NULL);
 
     // ABS - POS - with up (0/1) - requires pico_init
     {
@@ -202,7 +202,7 @@ int main (void) {
     {
         Pico_Rel_Dim log  = { '#', {4, 4}, NULL };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_view(NULL, -1, -1, NULL, NULL, &log, NULL, NULL, &tile);
+        pico_set_view(-1, NULL, &log, NULL, NULL, &tile);
     }
 
     // TILE - POS - tile->abs

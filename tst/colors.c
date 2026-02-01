@@ -3,14 +3,8 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_view("Colors Test", -1, -1,
-        &(Pico_Rel_Dim){ '!', {640, 480}, NULL },
-        NULL,
-        &(Pico_Rel_Dim){ '!', {64, 48}, NULL },
-        NULL,
-        NULL,
-        NULL
-    );
+    pico_set_window("Colors Test", -1, &(Pico_Rel_Dim){ '!', {640, 480}, NULL });
+    pico_set_view(-1, NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL }, NULL, NULL, NULL);
 
     Pico_Anchor C = PICO_ANCHOR_C;
 
