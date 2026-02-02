@@ -23,15 +23,15 @@
 #include "anchors.h"
 
 typedef enum {
-    PICO_RES_IMAGE,
-    PICO_RES_SOUND,
-    PICO_RES_LAYER,
-} PICO_RES;
+    PICO_KEY_IMAGE,
+    PICO_KEY_SOUND,
+    PICO_KEY_LAYER,
+} PICO_KEY_TYPE;
 
 typedef struct {
-    PICO_RES type;
-    char path[];
-} Pico_Res;
+    PICO_KEY_TYPE type;
+    char key[];
+} Pico_Key;
 
 #define SDL_ANY PICO_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
@@ -89,10 +89,10 @@ static TTF_Font* _font_open (const char* path, int h) {
 }
 
 static SDL_Texture* _tex_image (const char* path) {
-    int n = sizeof(Pico_Res) + strlen(path) + 1;
-    Pico_Res* res = alloca(n);
-    res->type = PICO_RES_IMAGE;
-    strcpy(res->path, path);
+    int n = sizeof(Pico_Key) + strlen(path) + 1;
+    Pico_Key* res = alloca(n);
+    res->type = PICO_KEY_IMAGE;
+    strcpy(res->key, path);
 
     SDL_Texture* tex = (SDL_Texture*)ttl_hash_get(G.hash, n, res);
     if (tex == NULL) {
@@ -362,13 +362,13 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct) {
 // INIT
 
 static void _pico_hash_clean (int n, const void* key, void* value) {
-    const Pico_Res* res = (const Pico_Res*)key;
+    const Pico_Key* res = (const Pico_Key*)key;
     switch (res->type) {
-        case PICO_RES_IMAGE:
-        case PICO_RES_LAYER:
+        case PICO_KEY_IMAGE:
+        case PICO_KEY_LAYER:
             SDL_DestroyTexture((SDL_Texture*)value);
             break;
-        case PICO_RES_SOUND:
+        case PICO_KEY_SOUND:
             Mix_FreeChunk((Mix_Chunk*)value);
             break;
         default:
@@ -993,10 +993,10 @@ static void _pico_output_sound_cache (const char* path, int cache) {
     Mix_Chunk* mix = NULL;
 
     if (cache) {
-        int n = sizeof(Pico_Res) + strlen(path) + 1;
-        Pico_Res* res = alloca(n);
-        res->type = PICO_RES_SOUND;
-        strcpy(res->path, path);
+        int n = sizeof(Pico_Key) + strlen(path) + 1;
+        Pico_Key* res = alloca(n);
+        res->type = PICO_KEY_SOUND;
+        strcpy(res->key, path);
 
         mix = (Mix_Chunk*)ttl_hash_get(G.hash, n, res);
         if (mix == NULL) {
@@ -1161,10 +1161,10 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 
     // store in hash
-    int n = sizeof(Pico_Res) + strlen(name) + 1;
-    Pico_Res* res = alloca(n);
-    res->type = PICO_RES_LAYER;
-    strcpy(res->path, name);
+    int n = sizeof(Pico_Key) + strlen(name) + 1;
+    Pico_Key* res = alloca(n);
+    res->type = PICO_KEY_LAYER;
+    strcpy(res->key, name);
     ttl_hash_put(G.hash, n, res, tex);
 
     return name;
@@ -1270,10 +1270,10 @@ void pico_set_layer (const char* name) {
         tex = G.tex;
     }
     else {
-        int n = sizeof(Pico_Res) + strlen(name) + 1;
-        Pico_Res* res = alloca(n);
-        res->type = PICO_RES_LAYER;
-        strcpy(res->path, name);
+        int n = sizeof(Pico_Key) + strlen(name) + 1;
+        Pico_Key* res = alloca(n);
+        res->type = PICO_KEY_LAYER;
+        strcpy(res->key, name);
         tex = (SDL_Texture*)ttl_hash_get(G.hash, n, res);
         pico_assert(tex != NULL && "layer does not exist");
     }
