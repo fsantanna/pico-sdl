@@ -5,6 +5,8 @@
 int main (void) {
     pico_init(1);
 
+    Pico_Abs_Dim dim = { 64, 64 };
+
     // get_layer returns NULL (main layer)
     puts("get_layer returns NULL initially");
     const char* layer = pico_get_layer();
@@ -18,7 +20,7 @@ int main (void) {
 
     // create layer, set it, verify get returns it
     puts("create and switch to layer");
-    const char* bg = pico_layer_empty("background");
+    const char* bg = pico_layer_empty("background", dim);
     assert(strcmp(bg, "background") == 0);
     pico_set_layer(bg);
     layer = pico_get_layer();
@@ -27,7 +29,7 @@ int main (void) {
 
     // switch to another layer
     puts("switch to another layer");
-    const char* ui = pico_layer_empty("ui");
+    const char* ui = pico_layer_empty("ui", dim);
     pico_set_layer(ui);
     layer = pico_get_layer();
     assert(layer == ui);

@@ -25,6 +25,7 @@
 typedef enum {
     PICO_RES_IMAGE,
     PICO_RES_SOUND,
+    PICO_RES_LAYER,
 } PICO_RES;
 
 typedef struct {
@@ -364,6 +365,7 @@ static void _pico_hash_clean (int n, const void* key, void* value) {
     const Pico_Res* res = (const Pico_Res*)key;
     switch (res->type) {
         case PICO_RES_IMAGE:
+        case PICO_RES_LAYER:
             SDL_DestroyTexture((SDL_Texture*)value);
             break;
         case PICO_RES_SOUND:
@@ -1146,9 +1148,25 @@ const char* pico_get_layer (void) {
     return G.layer;
 }
 
-const char* pico_layer_empty (const char* name) {
+const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(name != NULL && "layer name required");
     assert(name[0] != '/' && "layer name cannot start with '/'");
+
+    // create texture
+    SDL_Texture* tex = SDL_CreateTexture(
+        G.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+        dim.w, dim.h
+    );
+    pico_assert(tex != NULL);
+    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+
+    // store in hash
+    int n = sizeof(Pico_Res) + strlen(name) + 1;
+    Pico_Res* res = alloca(n);
+    res->type = PICO_RES_LAYER;
+    strcpy(res->path, name);
+    ttl_hash_put(G.hash, n, res, tex);
+
     return name;
 }
 
@@ -1247,8 +1265,20 @@ void pico_set_font (const char* path) {
 }
 
 void pico_set_layer (const char* name) {
-    // TODO: assert layer exists in hash (or is NULL for main)
+    SDL_Texture* tex;
+    if (name == NULL) {
+        tex = G.tex;
+    }
+    else {
+        int n = sizeof(Pico_Res) + strlen(name) + 1;
+        Pico_Res* res = alloca(n);
+        res->type = PICO_RES_LAYER;
+        strcpy(res->path, name);
+        tex = (SDL_Texture*)ttl_hash_get(G.hash, n, res);
+        pico_assert(tex != NULL && "layer does not exist");
+    }
     G.layer = name;
+    SDL_SetRenderTarget(G.ren, tex);
 }
 
 void pico_set_rotate (int angle) {

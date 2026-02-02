@@ -258,8 +258,9 @@ const char* pico_get_layer (void);
 
 /// @brief Creates an empty layer.
 /// @param name layer name (must not be NULL or start with '/')
+/// @param dim layer dimensions
 /// @return the layer name
-const char* pico_layer_empty (const char* name);
+const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim);
 
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
