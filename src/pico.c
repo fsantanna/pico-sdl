@@ -710,6 +710,32 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
     _pico_output_present(0);
 }
 
+void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
+    assert(name!=NULL && "layer name required");
+
+    // get layer texture from hash
+    int n = sizeof(Pico_Key) + strlen(name) + 1;
+    Pico_Key* res = alloca(n);
+    res->type = PICO_KEY_LAYER;
+    strcpy(res->key, name);
+    SDL_Texture* tex = (SDL_Texture*)ttl_hash_get(G.hash, n, res);
+    pico_assert(tex!=NULL && "layer does not exist");
+
+    // get layer dimensions for aspect ratio
+    Pico_Abs_Dim  d;
+    Pico_Abs_Dim* dp = NULL;
+    if (rect->w == 0 || rect->h == 0) {
+        pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
+        dp = &d;
+    }
+
+    SDL_SetTextureAlphaMod(tex, S.alpha);
+    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
+    SDL_Rect  ri = _fi_rect(&rf);
+    SDL_RenderCopy(G.ren, tex, _crop(), &ri);
+    _pico_output_present(0);
+}
+
 void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);

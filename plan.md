@@ -18,12 +18,12 @@ Layers feature for pico-sdl.
 | `pico_set_dim()` constraint | Asserts layer==NULL |
 | Auto-present skip | Skips when G.layer != NULL |
 | Hash key rename | `Pico_Key` with `PICO_KEY_*` types |
+| `pico_output_draw_layer(name, rect)` | Composite layer to current layer |
 
 ### Remaining
 
 | Item | Description |
 |------|-------------|
-| `pico_output_draw_layer(name, rect)` | Composite layer to current layer |
 | `pico_layer_image(name, path)` | Create layer from image (returns `/image/path`) |
 | `pico_layer_buffer(name, dim, pixels)` | Create layer from buffer |
 | `pico_layer_text(name, text)` | Create layer from text |
@@ -73,7 +73,7 @@ Layers feature for pico-sdl.
 | `pico_layer_image(name, path)` | name | Create from image | |
 | `pico_layer_buffer(name, dim, pixels)` | name | Create from buffer | |
 | `pico_layer_text(name, text)` | name | Create from text | |
-| `pico_output_draw_layer(name, rect)` | void | Draw layer to current | |
+| `pico_output_draw_layer(name, rect)` | void | Draw layer to current | ✓ |
 
 ### Destination Logic
 

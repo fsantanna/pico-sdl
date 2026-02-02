@@ -47,6 +47,19 @@ int main (void) {
     layer = pico_get_layer();
     assert(layer == NULL);
 
+    // draw layer onto main
+    puts("draw layer onto main");
+    pico_output_clear();
+    pico_output_draw_layer(bg, &(Pico_Rel_Rect){ '!', {0, 0, 0, 0}, PICO_ANCHOR_NW, NULL });
+
+    // draw ui layer at different position
+    puts("draw ui layer at position");
+    pico_set_layer(ui);
+    pico_set_color_draw((Pico_Color){0x00, 0xFF, 0x00});
+    pico_output_draw_rect(&(Pico_Rel_Rect){ '!', {5, 5, 10, 10}, PICO_ANCHOR_NW, NULL });
+    pico_set_layer(NULL);
+    pico_output_draw_layer(ui, &(Pico_Rel_Rect){ '!', {32, 32, 0, 0}, PICO_ANCHOR_NW, NULL });
+
     // present works on main
     puts("present works on main");
     pico_output_present();

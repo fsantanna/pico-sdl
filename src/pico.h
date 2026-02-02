@@ -174,6 +174,11 @@ void pico_output_draw_pixel (Pico_Rel_Pos* pos);
 /// @param ps array of positions (mode determines coordinates)
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
 
+/// @brief Draws a layer onto the current layer.
+/// @param name layer name (must exist)
+/// @param rect target position and dimension (mode determines coordinates)
+void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect);
+
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw (mode determines coordinates)
 void pico_output_draw_rect (Pico_Rel_Rect* rect);
