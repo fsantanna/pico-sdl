@@ -44,6 +44,7 @@ static struct { // internal global state
     ttl_hash*     hash;
     int           fs;
     int           tgt;
+    const char*   layer;
     SDL_Window*   win;
     SDL_Renderer* ren;
     SDL_Texture*  tex;
@@ -376,7 +377,7 @@ static void _pico_hash_clean (int n, const void* key, void* value) {
 void pico_init (int on) {
     if (on) {
         G = (typeof(G)) {
-            0, NULL, 0, 1, NULL, NULL, NULL
+            0, NULL, 0, 1, NULL, NULL, NULL, NULL
         };
         S = (typeof(S)) {
             0xFF,
@@ -1142,7 +1143,13 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
 }
 
 const char* pico_get_layer (void) {
-    return NULL;
+    return G.layer;
+}
+
+const char* pico_layer_empty (const char* name) {
+    assert(name != NULL && "layer name required");
+    assert(name[0] != '/' && "layer name cannot start with '/'");
+    return name;
 }
 
 int pico_get_rotate (void) {
@@ -1240,7 +1247,8 @@ void pico_set_font (const char* path) {
 }
 
 void pico_set_layer (const char* name) {
-    assert(name == NULL && "only main layer supported");
+    // TODO: assert layer exists in hash (or is NULL for main)
+    G.layer = name;
 }
 
 void pico_set_rotate (int angle) {

@@ -256,6 +256,11 @@ int pico_get_key (PICO_KEY key);
 /// @return layer name (NULL = main layer)
 const char* pico_get_layer (void);
 
+/// @brief Creates an empty layer.
+/// @param name layer name (must not be NULL or start with '/')
+/// @return the layer name
+const char* pico_layer_empty (const char* name);
+
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
 ///            system: '!' for pixels, '%' for percentage, '#' for tiles)
