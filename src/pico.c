@@ -376,7 +376,7 @@ static void _pico_hash_clean (int n, const void* key, void* value) {
 void pico_init (int on) {
     if (on) {
         G = (typeof(G)) {
-            1, NULL, 0, 1, NULL, NULL, NULL
+            0, NULL, 0, 1, NULL, NULL, NULL
         };
         S = (typeof(S)) {
             0xFF,
@@ -425,8 +425,10 @@ void pico_init (int on) {
         {
             Pico_Rel_Dim phy = { '!', {S.view.phy.w, S.view.phy.h}, NULL };
             Pico_Rel_Dim log = { '!', {S.view.log.w, S.view.log.h}, NULL };
-            pico_set_view(NULL, -1, -1, &phy, NULL, &log, NULL, NULL, NULL);
+            pico_set_window(NULL, -1, &phy);
+            pico_set_view(-1, &log, NULL, NULL, NULL, NULL);
         }
+        G.init = 1;
 
         pico_output_clear();
 
@@ -490,7 +492,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     G.fs = 0;
                 } else {
                     Pico_Rel_Dim phy = { '!', {e->window.data1, e->window.data2}, NULL };
-                    pico_set_view(NULL, -1, -1, &phy, NULL, NULL, NULL, NULL, NULL);
+                    pico_set_window(NULL, -1, &phy);
                 }
             }
             break;
@@ -508,7 +510,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_MINUS: {
                     // Zoom out
-                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+                    pico_set_view(-1, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0.5, 0.5, 1.1, 1.1}, PICO_ANCHOR_C, NULL},
                         NULL, NULL
                     );
@@ -516,7 +518,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_EQUALS: {
                     // Zoom in
-                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+                    pico_set_view(-1, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.9, 0.9}, PICO_ANCHOR_C, NULL},
                         NULL, NULL
                     );
@@ -524,7 +526,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_LEFT: {
                     // Scroll left
-                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+                    pico_set_view(-1, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {-0.1, 0, 1, 1}, PICO_ANCHOR_NW, NULL},
                         NULL, NULL
                     );
@@ -532,7 +534,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_RIGHT: {
                     // Scroll right
-                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+                    pico_set_view(-1, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0.1, 0, 1, 1}, PICO_ANCHOR_NW, NULL},
                         NULL, NULL
                     );
@@ -540,7 +542,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_UP: {
                     // Scroll up
-                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+                    pico_set_view(-1, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0, -0.1, 1, 1}, PICO_ANCHOR_NW, NULL},
                         NULL, NULL
                     );
@@ -548,14 +550,14 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_DOWN: {
                     // Scroll down
-                    pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+                    pico_set_view(-1, NULL, NULL,
                         &(Pico_Rel_Rect){'%', {0, 0.1, 1, 1}, PICO_ANCHOR_NW, NULL},
                         NULL, NULL
                     );
                     break;
                 }
                 case SDLK_g: {
-                    pico_set_view(NULL, !S.view.grid, -1, NULL, NULL, NULL, NULL, NULL, NULL);
+                    pico_set_view(!S.view.grid, NULL, NULL, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_s: {
@@ -924,6 +926,9 @@ static void _pico_output_present (int force) {
     } else if (S.expert) {
         return;
     }
+    if (!G.init) {
+        return;
+    }
 
     G.tgt = 0;
     SDL_SetRenderTarget(G.ren, NULL);
@@ -1176,34 +1181,34 @@ Uint32 pico_get_ticks (void) {
 }
 
 void pico_get_view (
-    const char** title,
     int* grid,
-    int* fs,
-    Pico_Abs_Dim* phy,
-    Pico_Rel_Rect* dst,
-    Pico_Abs_Dim* log,
-    Pico_Rel_Rect* src,
+    Pico_Abs_Dim* dim,
+    Pico_Rel_Rect* target,
+    Pico_Rel_Rect* source,
     Pico_Rel_Rect* clip,
     Pico_Abs_Dim* tile
 ) {
-    assert(dst==NULL && src==NULL && clip==NULL);
-    if (title != NULL) {
-        *title = SDL_GetWindowTitle(G.win);
-    }
+    assert(target==NULL && source==NULL && clip==NULL);
     if (grid != NULL) {
         *grid = S.view.grid;
+    }
+    if (dim != NULL) {
+        *dim = S.view.log;
+    }
+    if (tile != NULL) {
+        *tile = S.view.tile;
+    }
+}
+
+void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
+    if (title != NULL) {
+        *title = SDL_GetWindowTitle(G.win);
     }
     if (fs != NULL) {
         *fs = S.view.fs;
     }
-    if (phy != NULL) {
-        *phy = S.view.phy;
-    }
-    if (log != NULL) {
-        *log = S.view.log;
-    }
-    if (tile != NULL) {
-        *tile = S.view.tile;
+    if (dim != NULL) {
+        *dim = S.view.phy;
     }
 }
 
@@ -1252,42 +1257,32 @@ void pico_set_style (PICO_STYLE style) {
 }
 
 void pico_set_view (
-    const char*    title,
-    int        grid,
-    int        fs,
-    Pico_Rel_Dim*  phy,
-    Pico_Rel_Rect* dst,
-    Pico_Rel_Dim*  log,
-    Pico_Rel_Rect* src,
+    int            grid,
+    Pico_Rel_Dim*  dim,
+    Pico_Rel_Rect* target,
+    Pico_Rel_Rect* source,
     Pico_Rel_Rect* clip,
     Pico_Abs_Dim*  tile
 ) {
-    Pico_Abs_Dim new;
-
-    { // title: set window title
-        if (title != NULL) {
-            SDL_SetWindowTitle(G.win, title);
-        }
-    }
     { // grid: toggle grid overlay
         if (grid != -1) {
             S.view.grid = grid;
         }
     }
-    { // dst, src, clip: only assign (no extra processing)
-        if (dst != NULL) {
-            SDL_FRect rf = _sdl_rect(dst, NULL, NULL);
+    { // target, source, clip: only assign (no extra processing)
+        if (target != NULL) {
+            SDL_FRect rf = _sdl_rect(target, NULL, NULL);
             SDL_Rect  ri = _fi_rect(&rf);
             S.view.dst = ri;
         }
-        if (src != NULL) {
+        if (source != NULL) {
             SDL_FRect rf;
-            switch (src->mode) {
+            switch (source->mode) {
                 case '!':
-                    rf = _sdl_rect(src, NULL, NULL);
+                    rf = _sdl_rect(source, NULL, NULL);
                     break;
                 case '%':
-                    rf = _sdl_rect(src, &S.view.src, NULL);
+                    rf = _sdl_rect(source, &S.view.src, NULL);
                     break;
                 default:
                     assert(0 && "TODO");
@@ -1301,59 +1296,19 @@ void pico_set_view (
             S.view.clip = ri;
         }
     }
-    { // tile: store tile size (must be set before log with '#' mode)
+    { // tile: store tile size (must be set before dim with '#' mode)
         if (tile != NULL) {
             S.view.tile = *tile;
         }
     }
-
-    { // fs - fullscreen
-        if ((fs == -1) || (fs && S.view.fs) || (!fs && !S.view.fs)) {
-            goto _out1_;
+    { // dim - world
+        if (dim == NULL) {
+            goto _out_;
         }
-        assert(phy == NULL);
-        static Pico_Abs_Dim _old;
-        G.fs = 1;
-        if (fs) {
-            _old = S.view.phy;
-            int ret = SDL_SetWindowFullscreen(G.win, SDL_WINDOW_FULLSCREEN_DESKTOP);
-            pico_assert(ret == 0);
-            pico_input_delay(50);    // TODO: required for some reason
-            SDL_GetWindowSize(G.win, &new.w, &new.h);
-        } else {
-            pico_assert(0 == SDL_SetWindowFullscreen(G.win, 0));
-            new = _old;
-        }
-        S.view.fs = fs;
-        goto _phy_;
-        _out1_:
-    }
-    { // phy - window
-        if (phy == NULL) {
-            goto _out2_;
-        }
-        assert(fs==-1 && !S.view.fs);
-        G.tgt = 0;
-        SDL_FDim df = _sdl_dim(phy, NULL, NULL);
-        G.tgt = 1;
-        Pico_Abs_Dim di = _fi_dim(&df);
-        new = di;
-        _phy_:
-        S.view.phy = new;
-        if (dst == NULL) {
-            S.view.dst = (SDL_Rect) { 0, 0, new.w, new.h };
-        }
-        SDL_SetWindowSize(G.win, new.w, new.h);
-        _out2_:
-    }
-    { // log - world
-        if (log == NULL) {
-            goto _out3_;
-        }
-        SDL_FDim df = _sdl_dim(log, NULL, NULL);
+        SDL_FDim df = _sdl_dim(dim, NULL, NULL);
         Pico_Abs_Dim di = _fi_dim(&df);
         S.view.log = di;
-        if (src == NULL) {
+        if (source == NULL) {
             S.view.src = (SDL_Rect) { 0, 0, di.w, di.h };
         }
         if (clip == NULL) {
@@ -1370,7 +1325,60 @@ void pico_set_view (
         SDL_SetTextureBlendMode(G.tex, SDL_BLENDMODE_NONE); // prevents 2x blend
         SDL_SetRenderTarget(G.ren, G.tex);
         SDL_RenderSetClipRect(G.ren, &S.view.clip);
-        _out3_:
+        _out_:
     }
     _pico_output_present(0);
+}
+
+void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
+    Pico_Abs_Dim new;
+
+    { // title: set window title
+        if (title != NULL) {
+            SDL_SetWindowTitle(G.win, title);
+        }
+    }
+    { // fs - fullscreen
+        if ((fs == -1) || (fs && S.view.fs) || (!fs && !S.view.fs)) {
+            goto _out1_;
+        }
+        assert(dim == NULL);
+        static Pico_Abs_Dim _old;
+        G.fs = 1;
+        if (fs) {
+            _old = S.view.phy;
+            int ret = SDL_SetWindowFullscreen(G.win, SDL_WINDOW_FULLSCREEN_DESKTOP);
+            pico_assert(ret == 0);
+            pico_input_delay(50);    // TODO: required for some reason
+            SDL_GetWindowSize(G.win, &new.w, &new.h);
+        } else {
+            pico_assert(0 == SDL_SetWindowFullscreen(G.win, 0));
+            new = _old;
+        }
+        S.view.fs = fs;
+        goto _dim_;
+        _out1_:
+    }
+    { // dim - window
+        if (dim == NULL) {
+            goto _out2_;
+        }
+        assert(fs==-1 && !S.view.fs);
+        G.tgt = 0;
+        SDL_FDim df = _sdl_dim(dim, NULL, NULL);
+        G.tgt = 1;
+        Pico_Abs_Dim di = _fi_dim(&df);
+        new = di;
+        _dim_:
+        S.view.phy = new;
+        S.view.dst = (SDL_Rect) { 0, 0, new.w, new.h };
+        SDL_SetWindowSize(G.win, new.w, new.h);
+        _out2_:
+    }
+    _pico_output_present(0);
+}
+
+void pico_set_dim (Pico_Rel_Dim* dim) {
+    pico_set_window(NULL, -1, dim);
+    pico_set_view(-1, dim, NULL, NULL, NULL, NULL);
 }

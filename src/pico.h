@@ -283,26 +283,26 @@ Uint32 pico_get_ticks (void);
 
 /// @brief Gets the current view configuration. NULL arguments are ignored.
 /// @param grid pointer to retrieve grid state
-/// @param window_fullscreen pointer to retrieve fullscreen state
-/// @param title pointer to retrieve window title (NULL to skip)
-/// @param window pointer to retrieve window dimensions
-/// @param window_target pointer to retrieve window target region
-/// @param world pointer to retrieve world/logical dimensions
-/// @param world_source pointer to retrieve world source region
-/// @param world_clip pointer to retrieve world clipping region
+/// @param dst pointer to retrieve window target region
+/// @param dim pointer to retrieve world/logical dimensions
+/// @param src pointer to retrieve world source region
+/// @param clip pointer to retrieve world clipping region
 /// @param tile pointer to retrieve tile dimensions in pixels
 /// @sa pico_set_view
 void pico_get_view (
-    const char** title,
     int* grid,
-    int* window_fullscreen,
-    Pico_Abs_Dim* window,
-    Pico_Rel_Rect* window_target,
-    Pico_Abs_Dim* world,
-    Pico_Rel_Rect* world_source,
-    Pico_Rel_Rect* world_clip,
+    Pico_Abs_Dim* dim,
+    Pico_Rel_Rect* target,
+    Pico_Rel_Rect* source,
+    Pico_Rel_Rect* clip,
     Pico_Abs_Dim* tile
 );
+
+/// @brief Gets window properties. NULL arguments are ignored.
+/// @param title pointer to retrieve window title
+/// @param fs pointer to retrieve fullscreen state
+/// @param dim pointer to retrieve window dimensions
+void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 
 // SET
 
@@ -340,27 +340,31 @@ void pico_set_show (int on);
 void pico_set_style (PICO_STYLE style);
 
 /// @brief Sets the view configuration. NULL arguments are ignored.
-/// @param window_grid 1 to show grid, 0 to hide, or -1 to keep unchanged
-/// @param window_fullscreen 1 to enable fullscreen, 0 to disable, or -1 to keep
-/// @param window window dimensions (mode determines interpretation)
-/// @param window_target target region within window
-/// @param title window title (NULL to keep current)
-/// @param world world/logical dimensions (mode '#' = tiles, otherwise pixels)
-/// @param world_source source region within world
-/// @param world_clip clipping region within world
-/// @param tile tile size in pixels (required when world mode is '#')
+/// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
+/// @param dim world/logical dimensions (mode '#' = tiles, otherwise pixels)
+/// @param target target region within window
+/// @param source source region within world
+/// @param clip clipping region within world
+/// @param tile tile size in pixels (required when dim mode is '#')
 /// @sa pico_get_view
 void pico_set_view (
-    const char*    title,
-    int window_grid,
-    int window_fullscreen,
-    Pico_Rel_Dim*  window,
-    Pico_Rel_Rect* window_target,
-    Pico_Rel_Dim*  world,
-    Pico_Rel_Rect* world_source,
-    Pico_Rel_Rect* world_clip,
+    int grid,
+    Pico_Rel_Dim*  dim,
+    Pico_Rel_Rect* target,
+    Pico_Rel_Rect* source,
+    Pico_Rel_Rect* clip,
     Pico_Abs_Dim*  tile
 );
+
+/// @brief Sets window properties. NULL/(-1) arguments are ignored.
+/// @param title window title (NULL to keep current)
+/// @param fs fullscreen: 1=enable, 0=disable, -1=unchanged
+/// @param dim window dimensions (NULL to keep current)
+void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim);
+
+/// @brief Sets both window and world to the same dimensions.
+/// @param dim dimensions for both window and world
+void pico_set_dim (Pico_Rel_Dim* dim);
 
 /// @}
 
