@@ -316,24 +316,36 @@ with `2x1`.
 
 The view controls how the logical world maps to the physical window.
 
-### 6.1. Zoom
+By default, `pico-lua` provides key bindings to zoom and scroll the view:
 
-When the world is smaller than the window, the view is zoomed in:
+- `+` / `-`: zoom in / out
+- Arrow keys: scroll the view
+
+### 6.1. Key Bindings
+
+Let's draw a centered image and use the key bindings to explore it:
 
 <table>
 <tr><td><pre>
 > pico.init(true)
 > pico.set.view {
     window = {'!', w=200, h=200},
-    world  = {'!', w=200, h=200},  -- 1:1
+    world  = {'!', w=200, h=200},
   }
 > pico.output.clear()
-> pico.output.draw.rect {'!', x=50, y=50, w=100, h=100}
+> pico.output.draw.image('img/logo.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
 <img src="img/guide-06-01-01.png" width="200">
 </td></tr>
 </table>
+
+Now try pressing `+` to zoom in, then use the arrow keys to scroll around.
+Press `-` to zoom back out.
+
+### 6.2. Zoom
+
+The zoom level is controlled by the ratio between `window` and `world` sizes:
 
 <table>
 <tr><td><pre>
@@ -342,15 +354,15 @@ When the world is smaller than the window, the view is zoomed in:
   }
 </pre>
 </td><td>
-<img src="img/guide-06-01-02.png" width="200">
+<img src="img/guide-06-02-01.png" width="200">
 </td></tr>
 </table>
 
-The same logical rectangle appears twice as large with 2x zoom.
+A smaller world means more zoom: 200x200 window with 100x100 world = 2x zoom.
 
-### 6.2. Pan
+### 6.3. Scroll
 
-The `source` parameter pans the view:
+The `source` parameter scrolls the view:
 
 <table>
 <tr><td><pre>
@@ -360,11 +372,11 @@ The `source` parameter pans the view:
   }
 </pre>
 </td><td>
-<img src="img/guide-06-02-01.png" width="200">
+<img src="img/guide-06-03-01.png" width="200">
 </td></tr>
 </table>
 
-The view is scrolled by `(50, 50)`, so the rectangle appears at the top-left.
+The view is scrolled by `(50, 50)`, so the image appears offset.
 
 ## 7. Events
 

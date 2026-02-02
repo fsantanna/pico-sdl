@@ -155,7 +155,7 @@ do
         grid   = false,
     }
     pico.output.clear()
-    pico.output.draw.rect({'!', x=50, y=50, w=100, h=100})
+    pico.output.draw.image('img/open.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     shot("guide-06-01-01")
     pico.init(false)
 end
@@ -168,11 +168,11 @@ do
         grid   = false,
     }
     pico.output.clear()
-    pico.output.draw.rect({'!', x=50, y=50, w=100, h=100})
+    pico.output.draw.image('img/open.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.view {
         world  = {'!', w=100, h=100},
     }
-    shot("guide-06-01-02")
+    shot("guide-06-02-01")
     pico.init(false)
 end
 
@@ -184,12 +184,12 @@ do
         grid   = false,
     }
     pico.output.clear()
-    pico.output.draw.rect({'!', x=50, y=50, w=100, h=100})
+    pico.output.draw.image('img/open.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.view {
         world  = {'!', w=200, h=200},
         source = {'!', x=50, y=50, w=200, h=200},
     }
-    shot("guide-06-02-01")
+    shot("guide-06-03-01")
     pico.init(false)
 end
 
