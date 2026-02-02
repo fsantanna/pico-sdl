@@ -35,11 +35,21 @@ int main (void) {
     assert(layer == ui);
     assert(strcmp(layer, "ui") == 0);
 
+    // draw on layer (no auto-present)
+    puts("draw on layer (no auto-present)");
+    pico_set_layer(bg);
+    pico_output_clear();
+    pico_output_draw_rect(&(Pico_Rel_Rect){ '!', {10, 10, 20, 20}, PICO_ANCHOR_NW, NULL });
+
     // switch back to main
     puts("switch back to main");
     pico_set_layer(NULL);
     layer = pico_get_layer();
     assert(layer == NULL);
+
+    // present works on main
+    puts("present works on main");
+    pico_output_present();
 
     pico_init(0);
     return 0;

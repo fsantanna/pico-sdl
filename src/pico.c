@@ -928,6 +928,8 @@ static void _pico_output_present (int force) {
         // ok
     } else if (S.expert) {
         return;
+    } else if (G.layer != NULL) {
+        return;  // auto-present only on main layer
     }
     if (!G.init) {
         return;
@@ -986,6 +988,7 @@ static void _pico_output_present (int force) {
 }
 
 void pico_output_present (void) {
+    assert(G.layer==NULL && "can only present from main layer");
     _pico_output_present(1);
 }
 
@@ -1421,6 +1424,7 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
 }
 
 void pico_set_dim (Pico_Rel_Dim* dim) {
+    assert(G.layer==NULL && "can only set dim from main layer");
     pico_set_window(NULL, -1, dim);
     pico_set_view(-1, dim, NULL, NULL, NULL, NULL);
 }
