@@ -241,10 +241,6 @@ int pico_get_expert (void);
 /// @return path to the current font file
 const char* pico_get_font (void);
 
-/// @brief Gets the state of fullscreen mode.
-/// @return 1 if enabled, or 0 otherwise
-int pico_get_fullscreen (void);
-
 /// @brief Gets the dimensions of the given image.
 /// @param path image filepath
 /// @param dim optional dim with w/h to complete (NULL returns raw dimensions)
@@ -255,6 +251,10 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 /// @param key key constant
 /// @return 1 if key is pressed, or 0 otherwise
 int pico_get_key (PICO_KEY key);
+
+/// @brief Gets current layer name.
+/// @return layer name (NULL = main layer)
+const char* pico_get_layer (void);
 
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
@@ -330,6 +330,10 @@ void pico_set_expert (int on);
 /// @brief Changes the font used to draw texts.
 /// @param path path to font file
 void pico_set_font (const char* path);
+
+/// @brief Switches to a layer.
+/// @param name layer name (NULL = main layer, must exist)
+void pico_set_layer (const char* name);
 
 /// @brief Toggles the application window visibility.
 /// @param on 1 to show, or 0 to hide

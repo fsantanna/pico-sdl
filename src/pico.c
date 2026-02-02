@@ -1076,10 +1076,6 @@ const char* pico_get_font (void) {
     return S.font;
 }
 
-int pico_get_fullscreen (void) {
-    return S.view.fs;
-}
-
 int pico_get_key (PICO_KEY key) {
     const Uint8* keys = SDL_GetKeyboardState(NULL);
     return keys[key];
@@ -1143,6 +1139,10 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
         SDL_FDim fd = _sdl_dim(dim, NULL, &ratio);
         return (Pico_Abs_Dim){fd.w, fd.h};
     }
+}
+
+const char* pico_get_layer (void) {
+    return NULL;
 }
 
 int pico_get_rotate (void) {
@@ -1237,6 +1237,10 @@ void pico_set_expert (int on) {
 
 void pico_set_font (const char* path) {
     S.font = path;
+}
+
+void pico_set_layer (const char* name) {
+    assert(name == NULL && "only main layer supported");
 }
 
 void pico_set_rotate (int angle) {
