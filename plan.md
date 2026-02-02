@@ -19,6 +19,8 @@ Layers feature for pico-sdl.
 | Auto-present skip | Skips when G.layer != NULL |
 | Hash key rename | `Pico_Key` with `PICO_KEY_*` types |
 | `pico_output_draw_layer(name, rect)` | Composite layer to current layer |
+| Per-layer view settings | `Pico_View` struct, `S.layer->view` |
+| Refactor S/G structs | `S.win`, `S.layer`, `S.grid`, `G.main` |
 
 ### Remaining
 
@@ -27,7 +29,6 @@ Layers feature for pico-sdl.
 | `pico_layer_image(name, path)` | Create layer from image (returns `/image/path`) |
 | `pico_layer_buffer(name, dim, pixels)` | Create layer from buffer |
 | `pico_layer_text(name, text)` | Create layer from text |
-| Per-layer view settings | Currently view is global |
 | Refactor draw_image/buffer/text | Make them aliases using layer_* + draw_layer |
 
 ---
