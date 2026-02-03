@@ -43,7 +43,7 @@ typedef struct {
 } Pico_View;
 
 typedef struct {
-    const char*  name;
+    Pico_Key*    key;   // NULL for main layer
     SDL_Texture* tex;
     Pico_View    view;
 } Pico_Layer;
@@ -411,7 +411,7 @@ void pico_init (int on) {
             .fsing = 0,
             .hash  = ttl_hash_open(PICO_HASH_BUK, PICO_HASH_TTL, _pico_hash_clean),
             .main  = {
-                .name = NULL,
+                .key  = NULL,
                 .tex  = NULL,   // needs G.ren
                 .view = {
                     .grid = 1,
@@ -745,12 +745,8 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
     rect->w = dim.w;
     rect->h = dim.h;
 
-    SDL_Texture* tex = _tex_image(path);
-    SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_FRect rf = _sdl_rect(rect, NULL, NULL);
-    SDL_Rect  ri = _fi_rect(&rf);
-    SDL_RenderCopy(G.ren, tex, _crop(), &ri);
-    _pico_output_present(0);
+    const char* name = pico_layer_image(NULL, path);
+    pico_output_draw_layer(name, rect);
 }
 
 void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
@@ -1223,16 +1219,21 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
 }
 
 const char* pico_get_layer (void) {
-    return S.layer->name;
+    return S.layer->key ? S.layer->key->key : NULL;
 }
 
 const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
-    assert(name != NULL && "layer name required");
-    assert(name[0] != '/' && "layer name cannot start with '/'");
+    assert(name!=NULL && "layer name required");
+    assert(name[0]!='/' && "layer name cannot start with '/'");
+
+    int n = sizeof(Pico_Key) + strlen(name) + 1;
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_LAYER;
+    strcpy(key->key, name);
 
     Pico_Layer* data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
-        .name = name,
+        .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = _tex_create(dim),
         .view = {
             .grid = 0,
@@ -1243,22 +1244,57 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
             .tile = {0, 0},
         },
     };
+    assert(data->key != NULL);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 
-    // store in hash
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-    Pico_Key* res = alloca(n);
-    res->type = PICO_KEY_LAYER;
-    strcpy(res->key, name);
-    ttl_hash_put(G.hash, n, res, data);
-
-    return name;
+    return data->key->key;
 }
 
-    SDL_SetRenderTarget(G.ren, S.layer->tex);
-    SDL_RenderSetClipRect(G.ren, &S.layer->view.clip);
+const char* pico_layer_image (const char* name, const char* path) {
+    assert(path!=NULL && "image path required");
 
-    return name;
+    int n;
+    if (name == NULL) {
+        n = sizeof(Pico_Key) + strlen("/image/") + strlen(path) + 1;
+    } else {
+        assert(name[0]!='/' && "layer name cannot start with '/'");
+        n = sizeof(Pico_Key) + strlen(name) + 1;
+    }
+
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_LAYER;
+    if (name == NULL) {
+        snprintf(key->key, n - sizeof(Pico_Key), "/image/%s", path);
+    } else {
+        strcpy(key->key, name);
+    }
+
+    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    if (data != NULL) {
+        return data->key->key;
+}
+
+    SDL_Texture* tex = _tex_image(path);
+    Pico_Abs_Dim dim;
+    SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
+
+    data = malloc(sizeof(Pico_Layer));
+    *data = (Pico_Layer) {
+        .key  = ttl_hash_put(G.hash, n, key, data),
+        .tex  = _tex_create(dim),
+        .view = {
+            .dim  = dim,
+            .dst  = { 0, 0, dim.w, dim.h },
+            .grid = 0,
+            .src  = { 0, 0, dim.w, dim.h },
+            .clip = { 0, 0, dim.w, dim.h },
+            .tile = {0, 0},
+        },
+    };
+    assert(data->key != NULL);
+    SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
+
+    return data->key->key;
 }
 
 int pico_get_rotate (void) {

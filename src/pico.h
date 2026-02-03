@@ -267,6 +267,13 @@ const char* pico_get_layer (void);
 /// @return the layer name
 const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim);
 
+/// @brief Creates a layer from an image file.
+/// @param name layer name (NULL uses "/image/<path>", otherwise must not
+///             start with '/')
+/// @param path path to the image file
+/// @return the layer name
+const char* pico_layer_image (const char* name, const char* path);
+
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
 ///            system: '!' for pixels, '%' for percentage, '#' for tiles)
