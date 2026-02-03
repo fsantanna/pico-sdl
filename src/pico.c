@@ -844,7 +844,6 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
     int height = (int)fd.h;
 
     const char* name = pico_layer_text(NULL, height, text);
-    if (name == NULL) return;
 
     // Update rect->w from text dimensions
     Pico_Rel_Dim dim = { rect->mode, {rect->w, rect->h}, rect->up };
