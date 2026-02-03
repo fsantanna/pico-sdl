@@ -1038,9 +1038,7 @@ static int l_output_draw_rect (lua_State* L) {
 static int l_output_draw_text (lua_State* L) {
     const char* text = luaL_checkstring(L, 1);  // text | rect
     luaL_checktype(L, 2, LUA_TTABLE);
-
     L_text_get_dim(L, 2, text);                 // text | rect | abs
-
     Pico_Rel_Rect* rect = c_rel_rect(L, 2);
     pico_output_draw_text(text, rect);
     return 0;
