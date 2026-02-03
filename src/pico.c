@@ -43,9 +43,9 @@ typedef struct {
 } Pico_View;
 
 typedef struct {
-    Pico_Key*    key;   // NULL for main layer
-    SDL_Texture* tex;
-    Pico_View    view;
+    const Pico_Key* key;   // NULL for main layer
+    SDL_Texture*    tex;
+    Pico_View       view;
 } Pico_Layer;
 
 #define SDL_ANY PICO_ANY
