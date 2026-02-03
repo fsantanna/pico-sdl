@@ -603,7 +603,7 @@ static int l_set_color_draw (lua_State* L) {
 
 static int l_set_layer (lua_State* L) {
     const char* name = NULL;
-    if (lua_gettop(L) >= 1) {
+    if (lua_gettop(L)>=1 && !lua_isnil(L, 1)) {
         name = luaL_checkstring(L, 1);
     }
     pico_set_layer(name);
