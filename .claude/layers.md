@@ -27,7 +27,7 @@ Layers feature for pico-sdl.
 | `pico_layer_buffer(name, dim, pixels)` | Create layer from buffer, reuses if exists |
 | `pico_output_draw_buffer` refactor | Uses `pico_layer_buffer` + `pico_output_draw_layer` |
 | `pico_layer_empty` reuse fix | Check-first pattern like `_pico_layer_image` |
-| Lua bindings for layers | `pico.get.layer`, `pico.set.layer`, `pico.layer.empty/image`, `pico.output.draw.layer` |
+| Lua bindings for layers | `pico.get.layer`, `pico.set.layer`, `pico.layer.empty/image/buffer`, `pico.output.draw.layer` |
 | Lua API rename | `pico.set.view{world=}` → `{dim=}` |
 | Lua test fixes | Split `set.view{title,window}` → `set.window` + `set.view` (12 files) |
 | Lua `set.layer(nil)` fix | Handle nil argument to switch to main layer |
@@ -39,7 +39,6 @@ Layers feature for pico-sdl.
 | `pico_layer_text(name, text)` | Create layer from text |
 | Refactor `pico_output_draw_text` | Use `pico_layer_text` + `pico_output_draw_layer` |
 | Optimize `pico_output_draw_image` | Remove redundant layer lookup (see below) |
-| Lua `pico.layer.buffer` | Lua binding for `pico_layer_buffer` |
 
 ### TODO: Optimize `pico_output_draw_image`
 

@@ -1103,8 +1103,9 @@ static const luaL_Reg ll_set_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_layer[] = {
-    { "empty", l_layer_empty },
-    { "image", l_layer_image },
+    { "buffer", l_layer_buffer },
+    { "empty",  l_layer_empty  },
+    { "image",  l_layer_image  },
     { NULL, NULL }
 };
 
