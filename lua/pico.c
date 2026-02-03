@@ -804,6 +804,15 @@ static int l_layer_buffer (lua_State* L) {
     return 1;
 }
 
+static int l_layer_text (lua_State* L) {
+    const char* name = luaL_checkstring(L, 1);      // name | height | text
+    int height = luaL_checkinteger(L, 2);
+    const char* text = luaL_checkstring(L, 3);
+    const char* ret = pico_layer_text(name, height, text);
+    lua_pushstring(L, ret);
+    return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_input_delay (lua_State* L) {
@@ -1146,6 +1155,7 @@ static const luaL_Reg ll_layer[] = {
     { "buffer", l_layer_buffer },
     { "empty",  l_layer_empty  },
     { "image",  l_layer_image  },
+    { "text",   l_layer_text   },
     { NULL, NULL }
 };
 

@@ -108,19 +108,6 @@ static TTF_Font* _font_open (const char* path, int h) {
 }
 
 
-static SDL_Texture* _tex_text (const char* font, int h, const char* text, Pico_Color clr) {
-    SDL_Color c = { clr.r, clr.g, clr.b, 0xFF };
-    TTF_Font* ttf = _font_open(font, h);
-    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
-    pico_assert(sfc != NULL);
-    //assert(sfc->h == h);  // TODO: 11 vs 10
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
-    pico_assert(tex != NULL);
-    SDL_FreeSurface(sfc);
-    TTF_CloseFont(ttf);
-    return tex;
-}
-
 static SDL_FDim _f3 (float w, float h, const Pico_Abs_Dim* ratio) {
     if (ratio!=NULL && (w==0 || h==0)) {
         if (w == 0 && h == 0) {
@@ -851,17 +838,20 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
     if (text[0] == '\0') return;
     assert(rect->h != 0);
 
+    // Get absolute height for texture creation
+    Pico_Rel_Dim dim_h = { rect->mode, {0, rect->h}, rect->up };
+    SDL_FDim fd = _sdl_dim(&dim_h, NULL, NULL);
+    int height = (int)fd.h;
+
+    const char* name = pico_layer_text(NULL, height, text);
+    if (name == NULL) return;
+
+    // Update rect->w from text dimensions
     Pico_Rel_Dim dim = { rect->mode, {rect->w, rect->h}, rect->up };
     pico_get_text(text, &dim);
     rect->w = dim.w;
 
-    SDL_FRect rf = _sdl_rect(rect, NULL, NULL);
-    SDL_Texture* tex = _tex_text(NULL, rf.h, text, S.color.draw);
-    SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_Rect ri = _fi_rect(&rf);
-    SDL_RenderCopy(G.ren, tex, _crop(), &ri);
-    SDL_DestroyTexture(tex);
-    _pico_output_present(0);
+    pico_output_draw_layer(name, rect);
 }
 
 void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3) {
@@ -1338,6 +1328,76 @@ const char* pico_layer_buffer (
     return _pico_layer_buffer(name, dim, pixels)->key->key;
 }
 
+static Pico_Layer* _pico_layer_text (
+    const char* name,
+    int height,
+    const char* text
+) {
+    assert(text!=NULL && text[0]!='\0' && "text required");
+
+    const char* font = S.font;
+    Pico_Color clr = S.color.draw;
+
+    int n;
+    if (name == NULL) {
+        // /text/<font>/<height>/<r>.<g>.<b>/<text>
+        const char* font_str = font ? font : "null";
+        n = sizeof(Pico_Key) + strlen("/text/") + strlen(font_str) + 1
+            + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
+    } else {
+        assert(name[0]!='/' && "layer name cannot start with '/'");
+        n = sizeof(Pico_Key) + strlen(name) + 1;
+    }
+
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_LAYER;
+    if (name == NULL) {
+        const char* font_str = font ? font : "null";
+        snprintf(key->key, n - sizeof(Pico_Key), "/text/%s/%d/%d.%d.%d/%s",
+                 font_str, height, clr.r, clr.g, clr.b, text);
+        n = sizeof(Pico_Key) + strlen(key->key) + 1;
+    } else {
+        strcpy(key->key, name);
+    }
+
+    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    if (data != NULL) {
+        return data;
+    }
+
+    SDL_Color c = { clr.r, clr.g, clr.b, 0xFF };
+    TTF_Font* ttf = _font_open(font, height);
+    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
+    pico_assert(sfc != NULL);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
+    pico_assert(tex != NULL);
+    Pico_Abs_Dim dim = { sfc->w, sfc->h };
+    SDL_FreeSurface(sfc);
+    TTF_CloseFont(ttf);
+
+    data = malloc(sizeof(Pico_Layer));
+    *data = (Pico_Layer) {
+        .key  = ttl_hash_put(G.hash, n, key, data),
+        .tex  = tex,
+        .view = {
+            .grid = 0,
+            .dim  = dim,
+            .dst  = { 0, 0, dim.w, dim.h },
+            .src  = { 0, 0, dim.w, dim.h },
+            .clip = { 0, 0, dim.w, dim.h },
+            .tile = {0, 0},
+        },
+    };
+    assert(data->key != NULL);
+    SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
+
+    return data;
+}
+
+const char* pico_layer_text (const char* name, int height, const char* text) {
+    return _pico_layer_text(name, height, text)->key->key;
+}
+
 int pico_get_rotate (void) {
     return S.angle;
 }
@@ -1358,10 +1418,9 @@ Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim) {
     Pico_Abs_Dim  ratio;
     Pico_Abs_Dim* rp = NULL;
     if (dim->w == 0) {
-        // texture with any height to get aspect ratio
-        SDL_Texture* tex = _tex_text(NULL, 10, text, (Pico_Color){0,0,0});
-        pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &ratio.w, &ratio.h));
-        SDL_DestroyTexture(tex);
+        // layer with any height to get aspect ratio
+        Pico_Layer* layer = _pico_layer_text(NULL, 10, text);
+        ratio = layer->view.dim;
         rp = &ratio;
     }
 

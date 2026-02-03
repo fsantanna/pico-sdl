@@ -33,13 +33,14 @@ Layers feature for pico-sdl.
 | Lua `set.layer(nil)` fix | Handle nil argument to switch to main layer |
 | `pico_output_draw_buffer(name,...)` | Name now required (was pointer-based, broken in Lua) |
 | Lua `c_buffer_dim`/`c_buffer_fill` | Extracted helpers for buffer parsing |
+| `pico_layer_text(name, height, text)` | Create layer from text (uses current font/color) |
+| `pico_output_draw_text` refactor | Uses `pico_layer_text` + `pico_output_draw_layer` |
+| Lua `pico.layer.text(name, height, text)` | Lua binding for text layers |
 
 ### Remaining
 
 | Item | Description |
 |------|-------------|
-| `pico_layer_text(name, text)` | Create layer from text |
-| Refactor `pico_output_draw_text` | Use `pico_layer_text` + `pico_output_draw_layer` |
 | Optimize `pico_output_draw_image` | Remove redundant layer lookup (see below) |
 
 ### TODO: Optimize `pico_output_draw_image`
@@ -80,11 +81,12 @@ this via `_sdl_dim`. May need similar logic or accept absolute-only update.
 | Prefix | Source | Dim | Example |
 |--------|--------|-----|---------|
 | `/image/...` | Image file | Fixed (from image) | `/image/hero.png` |
-| `/text/...` | Text render | Fixed (from text) | `/text/NULL/12/Hello` |
+| `/text/...` | Text render | Fixed (from text) | `/text/null/12/255.255.255/Hello` |
 | No `/` | User layer | Configurable | `background`, `ui`, `buf1` |
 
 - `/` layers: auto-generated from content, dim fixed
-- User layers: created via `pico_layer_empty()` or `pico_layer_buffer()`, name must NOT start with `/`
+- User layers: created via `pico_layer_empty()`, `pico_layer_buffer()`, or `pico_layer_text()` with explicit name
+- Text layer auto-name format: `/text/<font>/<height>/<r>.<g>.<b>/<text>`
 
 ### Constraints
 
@@ -105,7 +107,7 @@ this via `_sdl_dim`. May need similar logic or accept absolute-only update.
 | `pico_layer_empty(name, dim)` | name | Create empty layer | ✓ |
 | `pico_layer_image(name, path)` | name | Create from image | ✓ |
 | `pico_layer_buffer(name, dim, pixels)` | name | Create from buffer | ✓ |
-| `pico_layer_text(name, text)` | name | Create from text | |
+| `pico_layer_text(name, height, text)` | name | Create from text | ✓ |
 | `pico_output_draw_layer(name, rect)` | void | Draw layer to current | ✓ |
 
 ### Destination Logic

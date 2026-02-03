@@ -286,6 +286,15 @@ const char* pico_layer_image (const char* name, const char* path);
 const char* pico_layer_buffer (const char* name, Pico_Abs_Dim dim,
                                const Pico_Color_A* pixels);
 
+/// @brief Creates a layer from text.
+/// @param name layer name (NULL auto-generates from font/height/color/text,
+///             otherwise must not start with '/')
+/// @param height text height in pixels
+/// @param text the text to render
+/// @return the layer name
+/// @note Uses current font (pico_set_font) and draw color (pico_set_color_draw)
+const char* pico_layer_text (const char* name, int height, const char* text);
+
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
 ///            system: '!' for pixels, '%' for percentage, '#' for tiles)
