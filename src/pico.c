@@ -1271,9 +1271,9 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = tex,
         .view = {
+            .grid = 0,
             .dim  = dim,
             .dst  = { 0, 0, dim.w, dim.h },
-            .grid = 0,
             .src  = { 0, 0, dim.w, dim.h },
             .clip = { 0, 0, dim.w, dim.h },
             .tile = {0, 0},
@@ -1287,6 +1287,61 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
 
 const char* pico_layer_image (const char* name, const char* path) {
     return _pico_layer_image(name, path)->key->key;
+}
+
+static Pico_Layer* _pico_layer_buffer (
+    const char* name,
+    Pico_Abs_Dim dim,
+    const Pico_Color_A* pixels
+) {
+    assert(pixels!=NULL && "pixels required");
+
+    int n;
+    if (name == NULL) {
+        n = sizeof(Pico_Key) + strlen("/buffer/") + 20 + 1;  // %p max ~18 chars
+    } else {
+        assert(name[0]!='/' && "layer name cannot start with '/'");
+        n = sizeof(Pico_Key) + strlen(name) + 1;
+    }
+
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_LAYER;
+    if (name == NULL) {
+        snprintf(key->key, n - sizeof(Pico_Key), "/buffer/%p", (void*)pixels);
+    } else {
+        strcpy(key->key, name);
+    }
+
+    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    if (data != NULL) {
+        return data;
+    }
+
+    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom(
+        (void*)pixels, dim.w, dim.h,
+        32, 4 * dim.w, SDL_PIXELFORMAT_RGBA32
+    );
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
+    pico_assert(tex != NULL);
+    SDL_FreeSurface(sfc);
+
+    data = malloc(sizeof(Pico_Layer));
+    *data = (Pico_Layer) {
+        .key  = ttl_hash_put(G.hash, n, key, data),
+        .tex  = tex,
+        .view = {
+            .grid = 0,
+            .dim  = dim,
+            .dst  = { 0, 0, dim.w, dim.h },
+            .src  = { 0, 0, dim.w, dim.h },
+            .clip = { 0, 0, dim.w, dim.h },
+            .tile = {0, 0},
+        },
+    };
+    assert(data->key != NULL);
+    SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
+
+    return data;
 }
 
 int pico_get_rotate (void) {
