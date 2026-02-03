@@ -532,34 +532,9 @@ const char* pico_get_font (void) {
     return S.font;
 }
 
-static Pico_Layer* _pico_get_image (int force, const char* path, Pico_Rel_Dim* dim) {
-    Pico_Layer* layer = NULL;
-    if (force || (dim!=NULL && (dim->w==0 || dim->h==0))) {
-        layer = _pico_layer_image(NULL, path);
-    }
-
-    if (dim == NULL) {
-        // nothing to fill
-    } else if (dim->w!=0 && dim->h!=0) {
-        SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
-        dim->w = fd.w;
-        dim->h = fd.h;
-    } else {
-        assert(layer != NULL);
-        SDL_FDim fd = _sdl_dim(dim, NULL, &layer->view.dim);
-        dim->w = fd.w;
-        dim->h = fd.h;
-    }
-    return layer;
-}
-
-Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
-    Pico_Layer* layer = _pico_get_image(0, path, dim);
-    if (dim == NULL) {
-        return layer->view.dim;
-    } else {
-        return (Pico_Abs_Dim){dim->w, dim->h};
-    }
+Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
+    // TODO
+    return TODO;
 }
 
 int pico_get_key (PICO_KEY key) {
@@ -627,37 +602,11 @@ PICO_STYLE pico_get_style (void) {
     return S.style;
 }
 
-static Pico_Layer* _pico_get_text (int force, const char* text, Pico_Rel_Dim* dim) {
-    assert(dim != NULL);
-    Pico_Layer* layer = NULL;
-    Pico_Abs_Dim orig;
-
-    if (force) {
-        Pico_Rel_Dim dim_h = { dim->mode, {0, dim->h}, dim->up };
-        SDL_FDim fd_h = _sdl_dim(&dim_h, NULL, NULL);
-        int height = (int)fd_h.h;
-        layer = _pico_layer_text(NULL, height, text);
-        orig = layer->view.dim;
-    } else if (dim->w == 0) {
-        SDL_Texture* tex = _tex_text(10, text, &orig);
-        SDL_DestroyTexture(tex);
-    }
-
-    {
-        Pico_Abs_Dim* p = (dim->w == 0) ? &orig : NULL;
-        SDL_FDim fd = _sdl_dim(dim, NULL, p);
-        dim->w = fd.w;
-        dim->h = fd.h;
-    }
-
-    return layer;
-}
-
-Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim) {
+Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
     assert(text[0] != '\0');
-    assert(dim != NULL && dim->h != 0);
-    _pico_get_text(0, text, dim);
-    return (Pico_Abs_Dim){dim->w, dim->h};
+    assert(rel!=NULL && rel->h!=0);
+    // TODO
+    return TODO;
 }
 
 Uint32 pico_get_ticks (void) {
@@ -1302,10 +1251,11 @@ void pico_output_draw_buffer (
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
-    Pico_Rel_Dim dim = { rect->mode, {rect->w, rect->h}, rect->up };
-    Pico_Layer* layer = _pico_get_image(1, path, &dim);
-    rect->w = dim.w;
-    rect->h = dim.h;
+    Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h}, rect->up };
+    Pico_Layer* layer = TODO
+    // TODO: _sdl_dim for rel
+    rect->w = rel.w;
+    rect->h = rel.h;
     _pico_output_draw_layer(layer, rect);
 }
 
@@ -1443,7 +1393,8 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
     assert(text[0] != '\0');
     assert(rect->h != 0);
     Pico_Rel_Dim dim = { rect->mode, {rect->w, rect->h}, rect->up };
-    Pico_Layer* layer = _pico_get_text(1, text, &dim);
+    Pico_Layer* layer = TODO;
+    // TODO: _sdl_dim for dim
     rect->w = dim.w;
     _pico_output_draw_layer(layer, rect);
 }
