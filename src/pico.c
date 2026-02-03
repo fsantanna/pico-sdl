@@ -85,6 +85,15 @@ static struct { // exposed global state
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
+    SDL_Texture* tex = SDL_CreateTexture (
+        G.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+        dim.w, dim.h
+    );
+    pico_assert(tex != NULL);
+    return tex;
+}
+
 static TTF_Font* _font_open (const char* path, int h) {
     TTF_Font* ttf;
     if (path == NULL) {
@@ -394,6 +403,8 @@ void pico_init (int on) {
     if (on) {
         assert(G.init == 0);
         pico_assert(0 == SDL_Init(SDL_INIT_EVERYTHING));
+        TTF_Init();
+        Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
         G = (typeof(G)) {
             .init  = 0,
@@ -401,70 +412,68 @@ void pico_init (int on) {
             .hash  = ttl_hash_open(PICO_HASH_BUK, PICO_HASH_TTL, _pico_hash_clean),
             .main  = {
                 .name = NULL,
-                .tex  = NULL,               // reset below in pico_set_view
+                .tex  = NULL,   // needs G.ren
                 .view = {
-                    //.dim = PICO_DIM_LOG,  // set below in pico_set_view
                     .grid = 1,
-                    //dst,src,clip          // set below in pico_set_view
-                    .tile = {0,0},
+                    .dim  = PICO_DIM_LOG,
+                    .dst  = { 0, 0, PICO_DIM_PHY.w, PICO_DIM_PHY.h },
+                    .src  = { 0, 0, PICO_DIM_LOG.w, PICO_DIM_LOG.h },
+                    .clip = { 0, 0, PICO_DIM_LOG.w, PICO_DIM_LOG.h },
+                    .tile = {0, 0},
                 },
             },
-            //.ren;
-            .tgt   = 1,
-            .win   = SDL_CreateWindow (
-                        PICO_TITLE,
-                        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                        PICO_DIM_PHY.w, PICO_DIM_PHY.h,
-                        (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
-                     ),
+            .ren = NULL,        // needs G.win
+            .tgt = 1,
+            .win = SDL_CreateWindow (
+                       PICO_TITLE,
+                       SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                       PICO_DIM_PHY.w, PICO_DIM_PHY.h,
+                       (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
+                   ),
         };
         assert(G.hash != NULL);
         pico_assert(G.win != NULL);
+        SDL_SetWindowResizable(G.win, 1);
 
         S = (typeof(S)) {
             .alpha  = 0xFF,
             .angle  = 0,
-            .color  = { {0x00,0x00,0x00}, {0xFF,0xFF,0xFF} },
+            .color  = { PICO_COLOR_BLACK, PICO_COLOR_WHITE },
             .crop   = {},
             .expert = 0,
             .font   = NULL,
             .layer  = &G.main,
             .style  = PICO_STYLE_FILL,
             .win    = {
-                //.dim = PICO_DIM_PHY,      // set below in pico_set_view
-                .fs = 0,
+                .dim = PICO_DIM_PHY,
+                .fs  = 0,
             },
         };
 
-#ifdef PICO_TESTS
-        pico_win = G.win;
-        G.ren = SDL_CreateRenderer(G.win, -1, SDL_RENDERER_SOFTWARE);
-#else
-        G.ren = SDL_CreateRenderer(G.win, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
-#endif
-        pico_assert(G.ren != NULL);
-        SDL_SetRenderDrawBlendMode(G.ren, SDL_BLENDMODE_BLEND);
-
-        TTF_Init();
-        Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
-
-        // initialize main layer
+        // create ren after win
         {
-            pico_set_window(NULL, -1,
-                &(Pico_Rel_Dim){ '!', {PICO_DIM_PHY.w, PICO_DIM_PHY.h}, NULL }
-            );
-            pico_set_view(-1,
-                &(Pico_Rel_Dim){ '!', {PICO_DIM_LOG.w, PICO_DIM_LOG.h}, NULL },
-                NULL, NULL, NULL, NULL
-            );
+#ifdef PICO_TESTS
+            pico_win = G.win;
+            G.ren = SDL_CreateRenderer(G.win, -1, SDL_RENDERER_SOFTWARE);
+#else
+            G.ren = SDL_CreateRenderer(G.win, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
+#endif
+            pico_assert(G.ren != NULL);
+            SDL_SetRenderDrawBlendMode(G.ren, SDL_BLENDMODE_BLEND);
         }
-        G.init = 1;
 
-        pico_output_clear();
+        // create tex after ren
+        {
+            G.main.tex = _tex_create(PICO_DIM_LOG);
+            SDL_SetTextureBlendMode(G.main.tex, SDL_BLENDMODE_NONE);
+            SDL_SetRenderTarget(G.ren, G.main.tex);
+            SDL_RenderSetClipRect(G.ren, &G.main.view.clip);
+            pico_output_clear();
+        }
 
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-        SDL_SetWindowResizable(G.win, 1);
+        G.init = 1;
     }
     else {
         if (!G.init) {
@@ -1224,13 +1233,17 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     Pico_Layer* data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
         .name = name,
-        .tex  = NULL,               // reset in pico_set_view
+        .tex  = _tex_create(dim),
         .view = {
             .grid = 0,
-            // dim,dst,src,clip     // set in pico_set_view
-            .tile = {0,0},
+            .dim  = dim,
+            .dst  = { 0, 0, dim.w, dim.h },
+            .src  = { 0, 0, dim.w, dim.h },
+            .clip = { 0, 0, dim.w, dim.h },
+            .tile = {0, 0},
         },
     };
+    SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 
     // store in hash
     int n = sizeof(Pico_Key) + strlen(name) + 1;
@@ -1239,14 +1252,8 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     strcpy(res->key, name);
     ttl_hash_put(G.hash, n, res, data);
 
-    // temporarily switch to new layer to initialize it
-    Pico_Layer* prev = S.layer;
-    S.layer = data;             // do not use get/set layer (tex is still null)
-    pico_set_view(-1,
-        &(Pico_Rel_Dim){ '!', {dim.w, dim.h}, NULL },
-        NULL, NULL, NULL, NULL
-    );
-    S.layer = prev;
+    return name;
+}
 
     SDL_SetRenderTarget(G.ren, S.layer->tex);
     SDL_RenderSetClipRect(G.ren, &S.layer->view.clip);
