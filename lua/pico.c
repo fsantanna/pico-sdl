@@ -247,9 +247,6 @@ static Pico_Abs_Dim c_buffer_dim (lua_State* L, int i) {
 static void c_buffer_fill (lua_State* L, int i, Pico_Abs_Dim dim,
                            Pico_Color_A* buf) {
     assert(i > 0);
-    int l = dim.h;
-    int c = dim.w;
-
     for (int row=1; row<=dim.h; row++) {
         lua_geti(L, i, row);                    // T | T[row]
         if (lua_type(L, -1) != LUA_TTABLE) {
@@ -260,7 +257,7 @@ static void c_buffer_fill (lua_State* L, int i, Pico_Abs_Dim dim,
             if (lua_type(L, -1) != LUA_TTABLE) {
                 luaL_error(L, "expected color at position [%d,%d]", row, col);
             }
-            buf[(row-1)*c + (col-1)] = c_color_a_t(L, lua_gettop(L));
+            buf[(row-1)*dim.w + (col-1)] = c_color_a_t(L, lua_gettop(L));
             lua_pop(L, 1);                      // T | T[row]
         }
         lua_pop(L, 1);                          // T
