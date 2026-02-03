@@ -1,11 +1,8 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view {
-    title  = "Colors Test",
-    window = {'!', w=640, h=480},
-    world  = {'!', w=64,  h=48},
-}
+pico.set.window { title="Colors Test", dim={'!', w=640, h=480} }
+pico.set.view { dim={'!', w=64, h=48} }
 
 do
     print("predefined colors")

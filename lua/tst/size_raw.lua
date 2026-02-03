@@ -6,7 +6,7 @@ pico.set.window { title="Size - Fullscreen" }
 local win = pico.get.window()
 local all = pico.get.view()
 local phy = win.dim
-local log = all.world
+local log = all.dim
 phy[1] = '!'
 log[1] = '!'
 
@@ -70,7 +70,7 @@ end
 print("WORLD")
 do
     print("normal")
-    pico.set.view { world=log }
+    pico.set.view { dim=log }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-07")
@@ -79,7 +79,7 @@ end
 do
     print("double")
     local dim = {'!', w=log.w*2, h=log.h*2}
-    pico.set.view { world=dim }
+    pico.set.view { dim=dim }
     pico.output.clear()
     local r = {'!', x=log.w-25, y=log.h-25, w=50, h=50, anc='NW'}
     pico.output.draw.rect(r)
@@ -89,7 +89,7 @@ end
 do
     print("half")
     local dim = {'!', w=log.w/2, h=log.h/2}
-    pico.set.view { world=dim }
+    pico.set.view { dim=dim }
     pico.output.clear()
     local r = {'!', x=log.w/4-25, y=log.w/4-25, w=50, h=50, anc='NW'}
     pico.output.draw.rect(r)
@@ -98,7 +98,7 @@ end
 
 do
     print("normal")
-    pico.set.view { world=log }
+    pico.set.view { dim=log }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-10")

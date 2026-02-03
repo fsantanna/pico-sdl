@@ -3,11 +3,8 @@ require 'pico.check'
 pico.init(true)
 local phy = {'!', w=100, h=100}
 local log = {'!', w=10, h=10}
-pico.set.view {
-    title  = "Buffer",
-    window = phy,
-    world  = log,
-}
+pico.set.window { title="Buffer", dim=phy }
+pico.set.view { dim=log }
 
 do
     -- .x.

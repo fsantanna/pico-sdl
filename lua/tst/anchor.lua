@@ -3,11 +3,8 @@ require 'pico.check'
 pico.init(true)
 local phy = {'!', w=200, h=200}
 local log = {'!', w=10, h=10}
-pico.set.view {
-    title  = "Anchoring...",
-    window = phy,
-    world  = log,
-}
+pico.set.window { title="Anchoring...", dim=phy }
+pico.set.view { dim=log }
 
 -- PIXELS
 do

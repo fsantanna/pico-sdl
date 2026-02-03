@@ -1,11 +1,8 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view {
-    title  = "Blend",
-    window = {'!', w=640, h=360},
-    world  = {'!', w=64,  h=36},
-}
+pico.set.window { title="Blend", dim={'!', w=640, h=360} }
+pico.set.view { dim={'!', w=64, h=36} }
 
 do
     print("pixel dimming")

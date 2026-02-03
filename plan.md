@@ -24,6 +24,7 @@ Layers feature for pico-sdl.
 | `pico_layer_image(name, path)` | Returns `/image/path` when name=NULL |
 | Unified images as layers | Removed `PICO_KEY_IMAGE`, all images are `PICO_KEY_LAYER` |
 | `pico_output_draw_image` refactor | Uses `pico_layer_image` + `pico_output_draw_layer` |
+| Lua bindings for layers | `pico.get.layer`, `pico.set.layer`, `pico.layer.empty/image`, `pico.output.draw.layer` |
 
 ### Remaining
 

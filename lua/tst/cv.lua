@@ -51,7 +51,7 @@ do
 end
 
 local log = {'!', w=100, h=100}
-pico.set.view { world=log }
+pico.set.view { dim=log }
 
 print "pico.cv.pos [log]: pct->raw"
 do

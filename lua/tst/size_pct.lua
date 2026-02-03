@@ -60,7 +60,7 @@ end
 print("WORLD")
 do
     print("normal")
-    pico.set.view { world={'%', w=1, h=1} }
+    pico.set.view { dim={'%', w=1, h=1} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-07")
@@ -68,7 +68,7 @@ end
 
 do
     print("double")
-    pico.set.view { world={'%', w=2, h=2} }
+    pico.set.view { dim={'%', w=2, h=2} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-08")
@@ -76,7 +76,7 @@ end
 
 do
     print("half")
-    pico.set.view { world={'%', w=0.25, h=0.25} }
+    pico.set.view { dim={'%', w=0.25, h=0.25} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-09")
@@ -84,7 +84,7 @@ end
 
 do
     print("normal")
-    pico.set.view { world={'%', w=2, h=2} }
+    pico.set.view { dim={'%', w=2, h=2} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-10")
