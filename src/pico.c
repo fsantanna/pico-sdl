@@ -533,26 +533,24 @@ const char* pico_get_font (void) {
 }
 
 static Pico_Layer* _pico_get_image (int force, const char* path, Pico_Rel_Dim* dim) {
-    if (!force && dim != NULL && dim->w != 0 && dim->h != 0) {
+    Pico_Layer* layer = NULL;
+    if (force || (dim!=NULL && (dim->w==0 || dim->h==0))) {
+        layer = _pico_layer_image(NULL, path);
+    }
+
+    if (dim == NULL) {
+        // nothing to fill
+    } else if (dim->w!=0 && dim->h!=0) {
         SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
         dim->w = fd.w;
         dim->h = fd.h;
-        return NULL;
     } else {
-        Pico_Layer* layer = _pico_layer_image(NULL, path);
-        if (dim == NULL) {
-            // nothing to fill
-        } else if (dim->w != 0 && dim->h != 0) {
-            SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
-            dim->w = fd.w;
-            dim->h = fd.h;
-        } else {
-            SDL_FDim fd = _sdl_dim(dim, NULL, &layer->view.dim);
-            dim->w = fd.w;
-            dim->h = fd.h;
-        }
-        return layer;
+        assert(layer != NULL);
+        SDL_FDim fd = _sdl_dim(dim, NULL, &layer->view.dim);
+        dim->w = fd.w;
+        dim->h = fd.h;
     }
+    return layer;
 }
 
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
@@ -630,35 +628,29 @@ PICO_STYLE pico_get_style (void) {
 }
 
 static Pico_Layer* _pico_get_text (int force, const char* text, Pico_Rel_Dim* dim) {
-    if (!force && dim->w!=0) {
-        SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
-        dim->w = fd.w;
-        dim->h = fd.h;
-        return NULL;
-    } else if (!force) {
-        Pico_Abs_Dim orig;
-        SDL_Texture* tex = _tex_text(10, text, &orig);
-        SDL_DestroyTexture(tex);
-        SDL_FDim fd = _sdl_dim(dim, NULL, &orig);
-        dim->w = fd.w;
-        dim->h = fd.h;
-        return NULL;
-    } else {
+    assert(dim != NULL);
+    Pico_Layer* layer = NULL;
+    Pico_Abs_Dim orig;
+
+    if (force) {
         Pico_Rel_Dim dim_h = { dim->mode, {0, dim->h}, dim->up };
         SDL_FDim fd_h = _sdl_dim(&dim_h, NULL, NULL);
         int height = (int)fd_h.h;
-
-        Pico_Layer* layer = _pico_layer_text(NULL, height, text);
-
-        if (dim->w != 0) {
-            SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
-            dim->w = fd.w;
-        } else {
-            SDL_FDim fd = _sdl_dim(dim, NULL, &layer->view.dim);
-            dim->w = fd.w;
-        }
-        return layer;
+        layer = _pico_layer_text(NULL, height, text);
+        orig = layer->view.dim;
+    } else if (dim->w == 0) {
+        SDL_Texture* tex = _tex_text(10, text, &orig);
+        SDL_DestroyTexture(tex);
     }
+
+    {
+        Pico_Abs_Dim* p = (dim->w == 0) ? &orig : NULL;
+        SDL_FDim fd = _sdl_dim(dim, NULL, p);
+        dim->w = fd.w;
+        dim->h = fd.h;
+    }
+
+    return layer;
 }
 
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim) {
