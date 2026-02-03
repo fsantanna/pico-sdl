@@ -84,7 +84,10 @@ static struct { // exposed global state
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static Pico_Layer* _pico_get_image (int force, const char* path, Pico_Rel_Dim* dim);
+static Pico_Layer* _pico_get_text (int force, const char* text, Pico_Rel_Dim* dim);
 static Pico_Layer* _pico_layer_image (const char* name, const char* path);
+static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect);
 
 static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
     SDL_Texture* tex = SDL_CreateTexture (
@@ -708,12 +711,10 @@ void pico_output_draw_buffer (
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
     Pico_Rel_Dim dim = { rect->mode, {rect->w, rect->h}, rect->up };
-    pico_get_image(path, &dim);
+    Pico_Layer* layer = _pico_get_image(1, path, &dim);
     rect->w = dim.w;
     rect->h = dim.h;
-
-    const char* name = pico_layer_image(NULL, path);
-    pico_output_draw_layer(name, rect);
+    _pico_output_draw_layer(layer, rect);
 }
 
 static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
@@ -847,22 +848,12 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
 }
 
 void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
-    if (text[0] == '\0') return;
+    assert(text[0] != '\0');
     assert(rect->h != 0);
-
-    // Get absolute height for texture creation
-    Pico_Rel_Dim dim_h = { rect->mode, {0, rect->h}, rect->up };
-    SDL_FDim fd = _sdl_dim(&dim_h, NULL, NULL);
-    int height = (int)fd.h;
-
-    const char* name = pico_layer_text(NULL, height, text);
-
-    // Update rect->w from text dimensions
     Pico_Rel_Dim dim = { rect->mode, {rect->w, rect->h}, rect->up };
-    pico_get_text(text, &dim);
+    Pico_Layer* layer = _pico_get_text(1, text, &dim);
     rect->w = dim.w;
-
-    pico_output_draw_layer(name, rect);
+    _pico_output_draw_layer(layer, rect);
 }
 
 void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3) {
@@ -1175,19 +1166,35 @@ Pico_Abs_Rect pico_get_crop (void) {
     return S.crop;
 }
 
-Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
-    if (dim!=NULL && dim->w!=0 && dim->h!=0) {
+static Pico_Layer* _pico_get_image (int force, const char* path, Pico_Rel_Dim* dim) {
+    if (!force && dim != NULL && dim->w != 0 && dim->h != 0) {
         SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
-        return (Pico_Abs_Dim){fd.w, fd.h};
+        dim->w = fd.w;
+        dim->h = fd.h;
+        return NULL;
     } else {
         Pico_Layer* layer = _pico_layer_image(NULL, path);
-        Pico_Abs_Dim orig = layer->view.dim;
         if (dim == NULL) {
-            return orig;
+            // nothing to fill
+        } else if (dim->w != 0 && dim->h != 0) {
+            SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
+            dim->w = fd.w;
+            dim->h = fd.h;
         } else {
-            SDL_FDim fd = _sdl_dim(dim, NULL, &orig);
-            return (Pico_Abs_Dim){fd.w, fd.h};
+            SDL_FDim fd = _sdl_dim(dim, NULL, &layer->view.dim);
+            dim->w = fd.w;
+            dim->h = fd.h;
         }
+        return layer;
+    }
+}
+
+Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
+    Pico_Layer* layer = _pico_get_image(0, path, dim);
+    if (dim == NULL) {
+        return layer->view.dim;
+    } else {
+        return (Pico_Abs_Dim){dim->w, dim->h};
     }
 }
 
@@ -1400,20 +1407,43 @@ PICO_STYLE pico_get_style (void) {
     return S.style;
 }
 
-Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim) {
-    assert(text[0] != '\0');
-    assert(dim!=NULL && dim->h!=0);
-
-    if (dim->w != 0) {
+static Pico_Layer* _pico_get_text (int force, const char* text, Pico_Rel_Dim* dim) {
+    if (!force && dim->w!=0) {
         SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
-        return (Pico_Abs_Dim){fd.w, fd.h};
-    } else {
+        dim->w = fd.w;
+        dim->h = fd.h;
+        return NULL;
+    } else if (!force) {
         Pico_Abs_Dim orig;
         SDL_Texture* tex = _tex_text(10, text, &orig);
         SDL_DestroyTexture(tex);
         SDL_FDim fd = _sdl_dim(dim, NULL, &orig);
-        return (Pico_Abs_Dim){fd.w, fd.h};
+        dim->w = fd.w;
+        dim->h = fd.h;
+        return NULL;
+    } else {
+        Pico_Rel_Dim dim_h = { dim->mode, {0, dim->h}, dim->up };
+        SDL_FDim fd_h = _sdl_dim(&dim_h, NULL, NULL);
+        int height = (int)fd_h.h;
+
+        Pico_Layer* layer = _pico_layer_text(NULL, height, text);
+
+        if (dim->w != 0) {
+            SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
+            dim->w = fd.w;
+        } else {
+            SDL_FDim fd = _sdl_dim(dim, NULL, &layer->view.dim);
+            dim->w = fd.w;
+        }
+        return layer;
     }
+}
+
+Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim) {
+    assert(text[0] != '\0');
+    assert(dim != NULL && dim->h != 0);
+    _pico_get_text(0, text, dim);
+    return (Pico_Abs_Dim){dim->w, dim->h};
 }
 
 Uint32 pico_get_ticks (void) {
