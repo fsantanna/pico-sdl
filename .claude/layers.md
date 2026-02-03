@@ -38,34 +38,15 @@ Layers feature for pico-sdl.
 | Lua `pico.layer.text(name, height, text)` | Lua binding for text layers |
 | Simplified image key | Image uses `path` directly (no `/image/` prefix) |
 | Removed `/` assertions | User can use any name, collision risk accepted |
-
-### Remaining
-
-| Item | Description |
-|------|-------------|
-| Optimize `pico_output_draw_image` | Remove redundant layer lookup (see below) |
-
-### TODO: Optimize `pico_output_draw_image`
-
-Current implementation does two layer lookups:
-1. `pico_get_image` → `_pico_layer_image` (creates/caches)
-2. `pico_layer_image` → looks up same layer again
-
-The `pico_get_image` call exists to update `rect->w`/`rect->h` for caller.
-
-**Proposed fix:** Use `_pico_layer_image` directly, update rect from `layer->view.dim`:
-```c
-void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
-    Pico_Layer* layer = _pico_layer_image(NULL, path);
-    if (rect->w == 0) rect->w = layer->view.dim.w;  // mode-aware?
-    if (rect->h == 0) rect->h = layer->view.dim.h;
-    pico_output_draw_layer(layer->key->key, rect);
-}
-```
-
-**Issue:** rect dimensions are mode-dependent (`!`, `%`, `#`). Need to convert
-`layer->view.dim` (absolute) to rect's mode. Current `pico_get_image` handles
-this via `_sdl_dim`. May need similar logic or accept absolute-only update.
+| `_tex_text(height, text, dim)` | Renders text, returns texture + dim, no caching |
+| `_pico_layer_text` refactor | Uses `_tex_text` internally |
+| `_pico_output_draw_layer(layer, rect)` | Draws layer without hash lookup |
+| `_pico_get_image(force, path, dim)` | Returns layer (if force), fills dim |
+| `_pico_get_text(force, text, dim)` | Returns layer (if force), fills dim |
+| `pico_get_image` refactor | Uses `_pico_get_image(0, ...)` |
+| `pico_get_text` refactor | Uses `_pico_get_text(0, ...)`, no cache pollution |
+| `pico_output_draw_image` refactor | Single lookup: `_pico_get_image(1, ...)` + `_pico_output_draw_layer` |
+| `pico_output_draw_text` refactor | Single lookup: `_pico_get_text(1, ...)` + `_pico_output_draw_layer` |
 
 ---
 
