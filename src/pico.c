@@ -1272,7 +1272,7 @@ const char* pico_layer_image (const char* name, const char* path) {
     Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
     if (data != NULL) {
         return data->key->key;
-}
+    }
 
     SDL_Texture* tex = _tex_image(path);
     Pico_Abs_Dim dim;
