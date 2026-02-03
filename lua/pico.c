@@ -227,6 +227,48 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static Pico_Abs_Dim c_buffer_dim (lua_State* L, int i) {
+    assert(i > 0);
+    luaL_checktype(L, i, LUA_TTABLE);
+
+    lua_len(L, i);                              // T | l
+    int l = lua_tointeger(L, -1);
+    lua_geti(L, i, 1);                          // T | l | T[1]
+    if (lua_type(L, -1) != LUA_TTABLE) {
+        luaL_error(L, "expected row tables");
+    }
+    lua_len(L, -1);                             // T | l | T[1] | c
+    int c = lua_tointeger(L, -1);
+    lua_pop(L, 3);                              // T
+
+    return (Pico_Abs_Dim) { .w=c, .h=l };
+}
+
+static void c_buffer_fill (lua_State* L, int i, Pico_Abs_Dim dim,
+                           Pico_Color_A* buf) {
+    assert(i > 0);
+    int l = dim.h;
+    int c = dim.w;
+
+    for (int row=1; row<=dim.h; row++) {
+        lua_geti(L, i, row);                    // T | T[row]
+        if (lua_type(L, -1) != LUA_TTABLE) {
+            luaL_error(L, "expected table at row %d", row);
+        }
+        for (int col=1; col<=dim.w; col++) {
+            lua_geti(L, -1, col);               // T | T[row] | T[col]
+            if (lua_type(L, -1) != LUA_TTABLE) {
+                luaL_error(L, "expected color at position [%d,%d]", row, col);
+            }
+            buf[(row-1)*c + (col-1)] = c_color_a_t(L, lua_gettop(L));
+            lua_pop(L, 1);                      // T | T[row]
+        }
+        lua_pop(L, 1);                          // T
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 static int l_init (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);
     int on = lua_toboolean(L, 1);
@@ -741,6 +783,30 @@ static int l_layer_image (lua_State* L) {
     return 1;
 }
 
+static int l_layer_buffer (lua_State* L) {
+    const char* name = luaL_checkstring(L, 1);      // name | dim | buffer
+    luaL_checktype(L, 2, LUA_TTABLE);
+    luaL_checktype(L, 3, LUA_TTABLE);
+
+    Pico_Abs_Dim dim = {
+        (int) L_checkfieldnum(L, 2, "w"),
+        (int) L_checkfieldnum(L, 2, "h"),
+    };
+
+    Pico_Abs_Dim buf_dim = c_buffer_dim(L, 3);
+    if (buf_dim.w != dim.w || buf_dim.h != dim.h) {
+        return luaL_error(L, "buffer size %dx%d doesn't match dim %dx%d",
+                          buf_dim.w, buf_dim.h, dim.w, dim.h);
+    }
+
+    Pico_Color_A buf[buf_dim.h][buf_dim.w];
+    c_buffer_fill(L, 3, buf_dim, (Pico_Color_A*)buf);
+
+    const char* ret = pico_layer_buffer(name, dim, (Pico_Color_A*)buf);
+    lua_pushstring(L, ret);
+    return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_input_delay (lua_State* L) {
@@ -857,39 +923,15 @@ static int l_output_clear (lua_State* L) {
 }
 
 static int l_output_draw_buffer (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // T | rect
+    luaL_checktype(L, 1, LUA_TTABLE);       // buf | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    lua_len(L, 1);                          // T | rect | l
-    int l = lua_tointeger(L, -1);
-    lua_geti(L, 1, 1);                      // T | rect | l | T[1]
-    if (lua_type(L,-1) != LUA_TTABLE) {
-        return luaL_error(L, "expected column tables");
-    }
-    lua_len(L, -1);                         // T | rect | l | T[1] | c
-    int c = lua_tointeger(L, -1);
-    lua_pop(L, 3);                          // T | rect
-
-    Pico_Color_A buf[l][c];
-    for (int i=1; i<=l; i++) {
-        lua_geti(L, 1, i);                  // T | rect | T[i]
-        if (lua_type(L,-1) != LUA_TTABLE) {
-            return luaL_error(L, "expected table at column %d", i);
-        }
-        for (int j=1; j<=c; j++) {
-            lua_geti(L, -1, j);             // T | rect | T[i] | T[j]
-            if (lua_type(L,-1) != LUA_TTABLE) {
-                return luaL_error(L, "expected color at position [%d,%d]", i, j);
-            }
-            Pico_Color_A clr = c_color_a_t(L, lua_gettop(L));
-            buf[i-1][j-1] = clr;
-            lua_pop(L, 1);                  // T | rect | T[i]
-        }
-        lua_pop(L, 1);                      // T | rect
-    }
+    Pico_Abs_Dim dim = c_buffer_dim(L, 1);
+    Pico_Color_A buf[dim.h][dim.w];
+    c_buffer_fill(L, 1, dim, (Pico_Color_A*)buf);
 
     Pico_Rel_Rect* rect = c_rel_rect(L, 2);
-    pico_output_draw_buffer((Pico_Abs_Dim){c,l}, (Pico_Color_A*)buf, rect);
+    pico_output_draw_buffer(dim, (Pico_Color_A*)buf, rect);
     return 0;
 }
 
