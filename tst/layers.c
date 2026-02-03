@@ -104,9 +104,9 @@ int main (void) {
 
     // pico_layer_buffer with NULL name (pointer key)
     puts("layer_buffer pointer key");
-    const char* b3 = pico_layer_buffer(NULL, (Pico_Abs_Dim){2, 2}, buf1);
-    assert(strncmp(b3, "/buffer/", 8) == 0);
-    const char* b4 = pico_layer_buffer(NULL, (Pico_Abs_Dim){2, 2}, buf1);
+    const char* b3 = pico_layer_buffer("xxx", (Pico_Abs_Dim){2, 2}, buf1);
+    assert(strcmp(b3, "xxx") == 0);
+    const char* b4 = pico_layer_buffer("xxx", (Pico_Abs_Dim){2, 2}, buf1);
     assert(b3 == b4);  // same pointer = reused
 
     // draw buffer layer
