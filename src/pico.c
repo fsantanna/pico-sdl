@@ -1164,13 +1164,18 @@ Pico_Abs_Rect pico_get_crop (void) {
 }
 
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
-    Pico_Layer* layer = _pico_layer_image(NULL, path);
-    Pico_Abs_Dim ratio = layer->view.dim;
-    if (dim == NULL) {
-        return ratio;
-    } else {
-        SDL_FDim fd = _sdl_dim(dim, NULL, &ratio);
+    if (dim!=NULL && dim->w!=0 && dim->h!=0) {
+        SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
         return (Pico_Abs_Dim){fd.w, fd.h};
+    } else {
+        Pico_Layer* layer = _pico_layer_image(NULL, path);
+        Pico_Abs_Dim orig = layer->view.dim;
+        if (dim == NULL) {
+            return orig;
+        } else {
+            SDL_FDim fd = _sdl_dim(dim, NULL, &orig);
+            return (Pico_Abs_Dim){fd.w, fd.h};
+        }
     }
 }
 
@@ -1410,21 +1415,18 @@ PICO_STYLE pico_get_style (void) {
 }
 
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim) {
-    if (text[0] == '\0') {
-        return (Pico_Abs_Dim){0, 0};
-    }
+    assert(text[0] != '\0');
+    assert(dim!=NULL && dim->h!=0);
 
-    Pico_Abs_Dim  ratio;
-    Pico_Abs_Dim* rp = NULL;
-    if (dim->w == 0) {
-        // layer with any height to get aspect ratio
+    if (dim->w != 0) {
+        SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
+        return (Pico_Abs_Dim){fd.w, fd.h};
+    } else {
         Pico_Layer* layer = _pico_layer_text(NULL, 10, text);
-        ratio = layer->view.dim;
-        rp = &ratio;
+        Pico_Abs_Dim orig = layer->view.dim;
+        SDL_FDim fd = _sdl_dim(dim, NULL, &orig);
+        return (Pico_Abs_Dim){fd.w, fd.h};
     }
-
-    SDL_FDim fd = _sdl_dim(dim, NULL, rp);
-    return (Pico_Abs_Dim){fd.w, fd.h};
 }
 
 Uint32 pico_get_ticks (void) {
