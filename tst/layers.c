@@ -91,6 +91,32 @@ int main (void) {
     pico_output_draw_layer(e2, &(Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL});
     _pico_check("layers-04");
 
+    // pico_layer_buffer with name (reuse)
+    puts("layer_buffer with name");
+    static Pico_Color_A buf1[4] = {
+        {255, 0, 0, 255}, {0, 255, 0, 255},
+        {0, 0, 255, 255}, {255, 255, 0, 255}
+    };
+    const char* b1 = pico_layer_buffer("mybuf", (Pico_Abs_Dim){2, 2}, buf1);
+    assert(strcmp(b1, "mybuf") == 0);
+    const char* b2 = pico_layer_buffer("mybuf", (Pico_Abs_Dim){2, 2}, buf1);
+    assert(b1 == b2);  // reused
+
+    // pico_layer_buffer with NULL name (pointer key)
+    puts("layer_buffer pointer key");
+    const char* b3 = pico_layer_buffer(NULL, (Pico_Abs_Dim){2, 2}, buf1);
+    assert(strncmp(b3, "/buffer/", 8) == 0);
+    const char* b4 = pico_layer_buffer(NULL, (Pico_Abs_Dim){2, 2}, buf1);
+    assert(b3 == b4);  // same pointer = reused
+
+    // draw buffer layer
+    puts("draw buffer layer");
+    pico_set_layer(NULL);
+    pico_set_color_clear((Pico_Color){0x00, 0x00, 0x00});
+    pico_output_clear();
+    pico_output_draw_layer(b1, &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL});
+    _pico_check("layers-05");
+
     pico_init(0);
     return 0;
 }

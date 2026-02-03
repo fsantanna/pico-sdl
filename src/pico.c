@@ -701,25 +701,8 @@ void pico_output_draw_buffer (
     const Pico_Color_A buffer[],
     const Pico_Rel_Rect* rect
 ) {
-    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
-        (void*)buffer, dim.w, dim.h,
-        32, 4*dim.w, SDL_PIXELFORMAT_RGBA32
-    );
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
-    pico_assert(tex != NULL);
-    SDL_FreeSurface(sfc);
-
-    Pico_Abs_Dim  d;
-    Pico_Abs_Dim* dp = NULL;
-    if (rect->w == 0 || rect->h == 0) {
-        pico_assert(0 == SDL_QueryTexture(tex, NULL, NULL, &d.w, &d.h));
-        dp = &d;
-    }
-    SDL_SetTextureAlphaMod(tex, S.alpha);
-    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
-    SDL_Rect  ri = _fi_rect(&rf);
-    SDL_RenderCopy(G.ren, tex, _crop(), &ri);
-    _pico_output_present(0);
+    const char* name = pico_layer_buffer(NULL, dim, buffer);
+    pico_output_draw_layer(name, (Pico_Rel_Rect*)rect);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
