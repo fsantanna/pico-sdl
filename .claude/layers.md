@@ -24,6 +24,9 @@ Layers feature for pico-sdl.
 | `pico_layer_image(name, path)` | Returns `/image/path` when name=NULL |
 | Unified images as layers | Removed `PICO_KEY_IMAGE`, all images are `PICO_KEY_LAYER` |
 | `pico_output_draw_image` refactor | Uses `pico_layer_image` + `pico_output_draw_layer` |
+| `pico_layer_buffer(name, dim, pixels)` | Create layer from buffer, reuses if exists |
+| `pico_output_draw_buffer` refactor | Uses `pico_layer_buffer` + `pico_output_draw_layer` |
+| `pico_layer_empty` reuse fix | Check-first pattern like `_pico_layer_image` |
 | Lua bindings for layers | `pico.get.layer`, `pico.set.layer`, `pico.layer.empty/image`, `pico.output.draw.layer` |
 | Lua API rename | `pico.set.view{world=}` → `{dim=}` |
 | Lua test fixes | Split `set.view{title,window}` → `set.window` + `set.view` (12 files) |
@@ -33,10 +36,10 @@ Layers feature for pico-sdl.
 
 | Item | Description |
 |------|-------------|
-| `pico_layer_buffer(name, dim, pixels)` | Create layer from buffer |
 | `pico_layer_text(name, text)` | Create layer from text |
-| Refactor draw_buffer/text | Make them aliases using layer_* + draw_layer |
+| Refactor `pico_output_draw_text` | Use `pico_layer_text` + `pico_output_draw_layer` |
 | Optimize `pico_output_draw_image` | Remove redundant layer lookup (see below) |
+| Lua `pico.layer.buffer` | Lua binding for `pico_layer_buffer` |
 
 ### TODO: Optimize `pico_output_draw_image`
 
@@ -101,7 +104,7 @@ this via `_sdl_dim`. May need similar logic or accept absolute-only update.
 | `pico_get_layer()` | name | Get current layer name | ✓ |
 | `pico_layer_empty(name, dim)` | name | Create empty layer | ✓ |
 | `pico_layer_image(name, path)` | name | Create from image | ✓ |
-| `pico_layer_buffer(name, dim, pixels)` | name | Create from buffer | |
+| `pico_layer_buffer(name, dim, pixels)` | name | Create from buffer | ✓ |
 | `pico_layer_text(name, text)` | name | Create from text | |
 | `pico_output_draw_layer(name, rect)` | void | Draw layer to current | ✓ |
 
