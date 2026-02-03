@@ -274,6 +274,15 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim);
 /// @return the layer name
 const char* pico_layer_image (const char* name, const char* path);
 
+/// @brief Creates a layer from a pixel buffer.
+/// @param name layer name (NULL uses "/buffer/<pointer>", otherwise must not
+///             start with '/')
+/// @param dim buffer dimensions
+/// @param pixels RGBA pixel data (must remain valid while layer exists)
+/// @return the layer name
+const char* pico_layer_buffer (const char* name, Pico_Abs_Dim dim,
+                               const Pico_Color_A* pixels);
+
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
 ///            system: '!' for pixels, '%' for percentage, '#' for tiles)

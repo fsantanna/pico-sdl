@@ -1344,6 +1344,14 @@ static Pico_Layer* _pico_layer_buffer (
     return data;
 }
 
+const char* pico_layer_buffer (
+    const char* name,
+    Pico_Abs_Dim dim,
+    const Pico_Color_A* pixels
+) {
+    return _pico_layer_buffer(name, dim, pixels)->key->key;
+}
+
 int pico_get_rotate (void) {
     return S.angle;
 }
