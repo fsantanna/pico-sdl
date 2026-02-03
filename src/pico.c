@@ -1049,7 +1049,7 @@ static void _pico_output_present (int force) {
 
     G.tgt = 1;
     SDL_SetRenderTarget(G.ren, G.main.tex);
-    SDL_RenderSetClipRect(G.ren, &S.layer->view.clip);
+    SDL_RenderSetClipRect(G.ren, &G.main.view.clip);
 }
 
 void pico_output_present (void) {
@@ -1231,10 +1231,6 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
             .tile = {0,0},
         },
     };
-    pico_set_view (-1,
-        &(Pico_Rel_Dim){ '!', {PICO_DIM_LOG.w, PICO_DIM_LOG.h}, NULL },
-        NULL, NULL, NULL, NULL
-    );
 
     // store in hash
     int n = sizeof(Pico_Key) + strlen(name) + 1;
@@ -1242,6 +1238,18 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     res->type = PICO_KEY_LAYER;
     strcpy(res->key, name);
     ttl_hash_put(G.hash, n, res, data);
+
+    // temporarily switch to new layer to initialize it
+    Pico_Layer* prev = S.layer;
+    S.layer = data;             // do not use get/set layer (tex is still null)
+    pico_set_view(-1,
+        &(Pico_Rel_Dim){ '!', {dim.w, dim.h}, NULL },
+        NULL, NULL, NULL, NULL
+    );
+    S.layer = prev;
+
+    SDL_SetRenderTarget(G.ren, S.layer->tex);
+    SDL_RenderSetClipRect(G.ren, &S.layer->view.clip);
 
     return name;
 }
