@@ -697,12 +697,14 @@ void pico_output_clear (void) {
 }
 
 void pico_output_draw_buffer (
+    const char* name,
     Pico_Abs_Dim dim,
     const Pico_Color_A buffer[],
     const Pico_Rel_Rect* rect
 ) {
-    const char* name = pico_layer_buffer(NULL, dim, buffer);
-    pico_output_draw_layer(name, (Pico_Rel_Rect*)rect);
+    assert(name!=NULL && "layer name required");
+    const char* key = pico_layer_buffer(name, dim, buffer);
+    pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {

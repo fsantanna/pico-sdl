@@ -25,7 +25,7 @@ int main (void) {
         puts("tile (1,1) NW anchor");
         pico_output_clear();
         Pico_Rel_Rect r = { '#', {1, 1, 1, 1}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_buffer((Pico_Abs_Dim){4,4}, white, &r);
+        pico_output_draw_buffer("tile", (Pico_Abs_Dim){4,4}, white, &r);
         _pico_check("tiles-01");
     }
 
@@ -34,7 +34,7 @@ int main (void) {
         puts("tile (2,2) C anchor");
         pico_output_clear();
         Pico_Rel_Rect r = { '#', {2, 2, 1, 1}, PICO_ANCHOR_C, NULL };
-        pico_output_draw_buffer((Pico_Abs_Dim){4,4}, white, &r);
+        pico_output_draw_buffer("tile", (Pico_Abs_Dim){4,4}, white, &r);
         _pico_check("tiles-02");
     }
 
@@ -43,7 +43,7 @@ int main (void) {
         puts("2x2 tiles (1,1) NW anchor");
         pico_output_clear();
         Pico_Rel_Rect r = { '#', {1, 1, 2, 2}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_buffer((Pico_Abs_Dim){4,4}, white, &r);
+        pico_output_draw_buffer("tile", (Pico_Abs_Dim){4,4}, white, &r);
         _pico_check("tiles-03");
     }
 
@@ -52,7 +52,7 @@ int main (void) {
         puts("2x2 tiles (2.5,2.5) C anchor");
         pico_output_clear();
         Pico_Rel_Rect r = { '#', {2.5, 2.5, 2, 2}, PICO_ANCHOR_C, NULL };
-        pico_output_draw_buffer((Pico_Abs_Dim){4,4}, white, &r);
+        pico_output_draw_buffer("tile", (Pico_Abs_Dim){4,4}, white, &r);
         _pico_check("tiles-04");
     }
 

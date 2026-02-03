@@ -148,11 +148,14 @@ int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 void pico_output_clear (void);
 
 /// @brief Draws an RGBA image buffer.
+/// @param name layer name for caching (required)
 /// @param dim image dimensions in pixels
 /// @param buffer the RGBA image data
 /// @param rect drawing rectangle (mode determines coordinate interpretation)
 /// @sa pico_output_draw_image
-void pico_output_draw_buffer (Pico_Abs_Dim dim, const Pico_Color_A buffer[], const Pico_Rel_Rect* rect);
+void pico_output_draw_buffer (const char* name, Pico_Abs_Dim dim,
+                              const Pico_Color_A buffer[],
+                              const Pico_Rel_Rect* rect);
 
 /// @brief Draws an image.
 /// @param path path to the image file

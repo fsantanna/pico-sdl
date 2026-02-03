@@ -920,15 +920,16 @@ static int l_output_clear (lua_State* L) {
 }
 
 static int l_output_draw_buffer (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // buf | rect
+    const char* name = luaL_checkstring(L, 1);  // name | buf | rect
     luaL_checktype(L, 2, LUA_TTABLE);
+    luaL_checktype(L, 3, LUA_TTABLE);
 
-    Pico_Abs_Dim dim = c_buffer_dim(L, 1);
+    Pico_Abs_Dim dim = c_buffer_dim(L, 2);
     Pico_Color_A buf[dim.h][dim.w];
-    c_buffer_fill(L, 1, dim, (Pico_Color_A*)buf);
+    c_buffer_fill(L, 2, dim, (Pico_Color_A*)buf);
 
-    Pico_Rel_Rect* rect = c_rel_rect(L, 2);
-    pico_output_draw_buffer(dim, (Pico_Color_A*)buf, rect);
+    Pico_Rel_Rect* rect = c_rel_rect(L, 3);
+    pico_output_draw_buffer(name, dim, (Pico_Color_A*)buf, rect);
     return 0;
 }
 

@@ -31,7 +31,7 @@ do
     print("centered 3x3 on black - 1dir/1baixo")
     local r = {'!', x=5-1, y=5-1, w=0, h=0, anc='NW'}
     pico.output.clear()
-    pico.output.draw.buffer(buffer, r)
+    pico.output.draw.buffer("buf1", buffer, r)
     pico.check("buffer-01")
 end
 
@@ -54,7 +54,7 @@ do
     pico.set.color.clear(0xFF, 0xFF, 0xFF)
     pico.output.clear()
     local r = {'!', x=1, y=9, w=0, h=0, anc='NW'}
-    pico.output.draw.buffer(buffer, r)
+    pico.output.draw.buffer("buf2", buffer, r)
     pico.check("buffer-02")
 end
 

@@ -27,13 +27,8 @@ int main (void) {
         puts("centered 3x3 on black - 1dir/1baixo");
         Pico_Rel_Rect r = { '%', {0.5,0.5,0,0}, PICO_ANCHOR_C, NULL };
         pico_output_clear();
-        pico_output_draw_buffer((Pico_Abs_Dim){3,3}, buffer, &r);
+        pico_output_draw_buffer("buf1", (Pico_Abs_Dim){3,3}, buffer, &r);
         _pico_check("buffer-01");   // same as raw
-    }
-
-    // expire cached 3x3 layer
-    for (int i=0; i<=PICO_HASH_TTL; i++) {
-        pico_input_delay(0);
     }
 
     {
@@ -41,7 +36,7 @@ int main (void) {
         Pico_Rel_Rect r = { '%', {1,1,0,0}, PICO_ANCHOR_SE, NULL };
         pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF});
         pico_output_clear();
-        pico_output_draw_buffer((Pico_Abs_Dim){9,1}, buffer, &r);
+        pico_output_draw_buffer("buf2", (Pico_Abs_Dim){9,1}, buffer, &r);
         _pico_check("buffer-02");   // same as raw
     }
 
