@@ -21,15 +21,40 @@ Layers feature for pico-sdl.
 | `pico_output_draw_layer(name, rect)` | Composite layer to current layer |
 | Per-layer view settings | `Pico_View` struct, `S.layer->view` |
 | Refactor S/G structs | `S.win`, `S.layer`, `S.grid`, `G.main` |
+| `pico_layer_image(name, path)` | Returns `/image/path` when name=NULL |
+| Unified images as layers | Removed `PICO_KEY_IMAGE`, all images are `PICO_KEY_LAYER` |
+| `pico_output_draw_image` refactor | Uses `pico_layer_image` + `pico_output_draw_layer` |
 
 ### Remaining
 
 | Item | Description |
 |------|-------------|
-| `pico_layer_image(name, path)` | Create layer from image (returns `/image/path`) |
 | `pico_layer_buffer(name, dim, pixels)` | Create layer from buffer |
 | `pico_layer_text(name, text)` | Create layer from text |
-| Refactor draw_image/buffer/text | Make them aliases using layer_* + draw_layer |
+| Refactor draw_buffer/text | Make them aliases using layer_* + draw_layer |
+| Optimize `pico_output_draw_image` | Remove redundant layer lookup (see below) |
+
+### TODO: Optimize `pico_output_draw_image`
+
+Current implementation does two layer lookups:
+1. `pico_get_image` → `_pico_layer_image` (creates/caches)
+2. `pico_layer_image` → looks up same layer again
+
+The `pico_get_image` call exists to update `rect->w`/`rect->h` for caller.
+
+**Proposed fix:** Use `_pico_layer_image` directly, update rect from `layer->view.dim`:
+```c
+void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
+    Pico_Layer* layer = _pico_layer_image(NULL, path);
+    if (rect->w == 0) rect->w = layer->view.dim.w;  // mode-aware?
+    if (rect->h == 0) rect->h = layer->view.dim.h;
+    pico_output_draw_layer(layer->key->key, rect);
+}
+```
+
+**Issue:** rect dimensions are mode-dependent (`!`, `%`, `#`). Need to convert
+`layer->view.dim` (absolute) to rect's mode. Current `pico_get_image` handles
+this via `_sdl_dim`. May need similar logic or accept absolute-only update.
 
 ---
 
@@ -71,7 +96,7 @@ Layers feature for pico-sdl.
 | `pico_set_layer(name)` | void | Switch to existing layer | ✓ |
 | `pico_get_layer()` | name | Get current layer name | ✓ |
 | `pico_layer_empty(name, dim)` | name | Create empty layer | ✓ |
-| `pico_layer_image(name, path)` | name | Create from image | |
+| `pico_layer_image(name, path)` | name | Create from image | ✓ |
 | `pico_layer_buffer(name, dim, pixels)` | name | Create from buffer | |
 | `pico_layer_text(name, text)` | name | Create from text | |
 | `pico_output_draw_layer(name, rect)` | void | Draw layer to current | ✓ |
