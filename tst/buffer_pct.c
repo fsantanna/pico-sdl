@@ -30,6 +30,12 @@ int main (void) {
         pico_output_draw_buffer((Pico_Abs_Dim){3,3}, buffer, &r);
         _pico_check("buffer-01");   // same as raw
     }
+
+    // expire cached 3x3 layer
+    for (int i=0; i<=PICO_HASH_TTL; i++) {
+        pico_input_delay(0);
+    }
+
     {
         puts("bottomright 9x1 on white");
         Pico_Rel_Rect r = { '%', {1,1,0,0}, PICO_ANCHOR_SE, NULL };

@@ -31,6 +31,11 @@ int main (void) {
         _pico_check("buffer-01");       // same as pct
     }
 
+    // expire cached 3x3 layer
+    for (int i=0; i<=PICO_HASH_TTL; i++) {
+        pico_input_delay(0);
+    }
+
     {
         puts("bottomright 9x1 on white");
         pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF});
