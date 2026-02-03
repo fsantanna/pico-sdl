@@ -1291,6 +1291,7 @@ static Pico_Layer* _pico_layer_buffer (
     key->type = PICO_KEY_LAYER;
     if (name == NULL) {
         snprintf(key->key, n - sizeof(Pico_Key), "/buffer/%p", (void*)pixels);
+        n = sizeof(Pico_Key) + strlen(key->key) + 1;
     } else {
         strcpy(key->key, name);
     }
