@@ -1185,7 +1185,6 @@ const char* pico_get_layer (void) {
 
 const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(name!=NULL && "layer name required");
-    assert(name[0]!='/' && "layer name cannot start with '/'");
 
     int n = sizeof(Pico_Key) + strlen(name) + 1;
     Pico_Key* key = alloca(n);
@@ -1219,21 +1218,12 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
 static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     assert(path!=NULL && "image path required");
 
-    int n;
-    if (name == NULL) {
-        n = sizeof(Pico_Key) + strlen("/image/") + strlen(path) + 1;
-    } else {
-        assert(name[0]!='/' && "layer name cannot start with '/'");
-        n = sizeof(Pico_Key) + strlen(name) + 1;
-    }
+    const char* str = (name != NULL) ? name : path;
+    int n = sizeof(Pico_Key) + strlen(str) + 1;
 
     Pico_Key* key = alloca(n);
     key->type = PICO_KEY_LAYER;
-    if (name == NULL) {
-        snprintf(key->key, n - sizeof(Pico_Key), "/image/%s", path);
-    } else {
-        strcpy(key->key, name);
-    }
+    strcpy(key->key, str);
 
     Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
     if (data != NULL) {
@@ -1273,24 +1263,14 @@ static Pico_Layer* _pico_layer_buffer (
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
+    assert(name!=NULL && "layer name required");
     assert(pixels!=NULL && "pixels required");
 
-    int n;
-    if (name == NULL) {
-        n = sizeof(Pico_Key) + strlen("/buffer/") + 20 + 1;  // %p max ~18 chars
-    } else {
-        assert(name[0]!='/' && "layer name cannot start with '/'");
-        n = sizeof(Pico_Key) + strlen(name) + 1;
-    }
+    int n = sizeof(Pico_Key) + strlen(name) + 1;
 
     Pico_Key* key = alloca(n);
     key->type = PICO_KEY_LAYER;
-    if (name == NULL) {
-        snprintf(key->key, n - sizeof(Pico_Key), "/buffer/%p", (void*)pixels);
-        n = sizeof(Pico_Key) + strlen(key->key) + 1;
-    } else {
-        strcpy(key->key, name);
-    }
+    strcpy(key->key, name);
 
     Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
     if (data != NULL) {
@@ -1343,23 +1323,24 @@ static Pico_Layer* _pico_layer_text (
     Pico_Color clr = S.color.draw;
 
     int n;
+    char* key_buf = NULL;
     if (name == NULL) {
         // /text/<font>/<height>/<r>.<g>.<b>/<text>
         const char* font_str = font ? font : "null";
         n = sizeof(Pico_Key) + strlen("/text/") + strlen(font_str) + 1
             + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
+        key_buf = alloca(n - sizeof(Pico_Key));
+        snprintf(key_buf, n - sizeof(Pico_Key), "/text/%s/%d/%d.%d.%d/%s",
+                 font_str, height, clr.r, clr.g, clr.b, text);
+        n = sizeof(Pico_Key) + strlen(key_buf) + 1;
     } else {
-        assert(name[0]!='/' && "layer name cannot start with '/'");
         n = sizeof(Pico_Key) + strlen(name) + 1;
     }
 
     Pico_Key* key = alloca(n);
     key->type = PICO_KEY_LAYER;
     if (name == NULL) {
-        const char* font_str = font ? font : "null";
-        snprintf(key->key, n - sizeof(Pico_Key), "/text/%s/%d/%d.%d.%d/%s",
-                 font_str, height, clr.r, clr.g, clr.b, text);
-        n = sizeof(Pico_Key) + strlen(key->key) + 1;
+        strcpy(key->key, key_buf);
     } else {
         strcpy(key->key, name);
     }

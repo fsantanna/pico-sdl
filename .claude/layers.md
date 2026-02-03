@@ -21,7 +21,7 @@ Layers feature for pico-sdl.
 | `pico_output_draw_layer(name, rect)` | Composite layer to current layer |
 | Per-layer view settings | `Pico_View` struct, `S.layer->view` |
 | Refactor S/G structs | `S.win`, `S.layer`, `S.grid`, `G.main` |
-| `pico_layer_image(name, path)` | Returns `/image/path` when name=NULL |
+| `pico_layer_image(name, path)` | Returns `path` when name=NULL (simplified) |
 | Unified images as layers | Removed `PICO_KEY_IMAGE`, all images are `PICO_KEY_LAYER` |
 | `pico_output_draw_image` refactor | Uses `pico_layer_image` + `pico_output_draw_layer` |
 | `pico_layer_buffer(name, dim, pixels)` | Create layer from buffer, reuses if exists |
@@ -36,6 +36,8 @@ Layers feature for pico-sdl.
 | `pico_layer_text(name, height, text)` | Create layer from text (uses current font/color) |
 | `pico_output_draw_text` refactor | Uses `pico_layer_text` + `pico_output_draw_layer` |
 | Lua `pico.layer.text(name, height, text)` | Lua binding for text layers |
+| Simplified image key | Image uses `path` directly (no `/image/` prefix) |
+| Removed `/` assertions | User can use any name, collision risk accepted |
 
 ### Remaining
 
@@ -76,24 +78,25 @@ this via `_sdl_dim`. May need similar logic or accept absolute-only update.
 - Stored in TTL hash with `PICO_KEY_LAYER` type
 - Manual compositing via `pico_output_draw_layer()`
 
-### Naming Convention: `/` prefix
+### Naming Convention
 
-| Prefix | Source | Dim | Example |
-|--------|--------|-----|---------|
-| `/image/...` | Image file | Fixed (from image) | `/image/hero.png` |
-| `/text/...` | Text render | Fixed (from text) | `/text/null/12/255.255.255/Hello` |
-| No `/` | User layer | Configurable | `background`, `ui`, `buf1` |
+| Source | Key when name=NULL | Example |
+|--------|-------------------|---------|
+| Image file | `path` directly | `hero.png` |
+| Text render | `/text/<font>/<height>/<r>.<g>.<b>/<text>` | `/text/null/12/255.255.255/Hello` |
+| Buffer | N/A (name required) | `buf1` |
+| Empty | N/A (name required) | `background` |
 
-- `/` layers: auto-generated from content, dim fixed
-- User layers: created via `pico_layer_empty()`, `pico_layer_buffer()`, or `pico_layer_text()` with explicit name
-- Text layer auto-name format: `/text/<font>/<height>/<r>.<g>.<b>/<text>`
+- Image keys use path directly for simplicity
+- Text auto-naming uses `/text/...` for caching (font/height/color/text)
+- Buffer and empty layers require explicit name
+- No `/` prefix restrictions (user collision risk accepted)
 
 ### Constraints
 
 - `pico_output_present()` → asserts layer is NULL ✓
 - `pico_set_dim()` → asserts layer is NULL ✓
 - `pico_set_layer(name)` → asserts layer exists in hash ✓
-- `/` layers → cannot change dim
 - Auto-present only when drawing to main layer (NULL) ✓
 
 ### API - New
@@ -124,7 +127,7 @@ this via `_sdl_dim`. May need similar logic or accept absolute-only update.
 
 ### Per-Layer State (future)
 
-- dim (fixed for `/` layers)
+- dim
 - target (where to draw)
 - source (crop)
 - clip, tile
@@ -138,8 +141,8 @@ pico_layer_empty("bg", (Pico_Abs_Dim){64, 64});
 pico_set_layer("bg");
 pico_output_draw_rect(...);
 
-// Content layer (auto-sized) - future
-const char* p = pico_layer_image(NULL, "hero.png");  // returns "/image/hero.png"
+// Content layer (auto-sized)
+const char* p = pico_layer_image(NULL, "hero.png");  // returns "hero.png"
 
 // Compose
 pico_set_layer(NULL);
