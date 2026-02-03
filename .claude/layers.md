@@ -31,6 +31,8 @@ Layers feature for pico-sdl.
 | Lua API rename | `pico.set.view{world=}` → `{dim=}` |
 | Lua test fixes | Split `set.view{title,window}` → `set.window` + `set.view` (12 files) |
 | Lua `set.layer(nil)` fix | Handle nil argument to switch to main layer |
+| `pico_output_draw_buffer(name,...)` | Name now required (was pointer-based, broken in Lua) |
+| Lua `c_buffer_dim`/`c_buffer_fill` | Extracted helpers for buffer parsing |
 
 ### Remaining
 
@@ -79,11 +81,10 @@ this via `_sdl_dim`. May need similar logic or accept absolute-only update.
 |--------|--------|-----|---------|
 | `/image/...` | Image file | Fixed (from image) | `/image/hero.png` |
 | `/text/...` | Text render | Fixed (from text) | `/text/NULL/12/Hello` |
-| `/buffer/...` | Pixel buffer | Fixed (from dim) | `/buffer/0x7f...` |
-| No `/` | Empty layer | Configurable | `background`, `ui` |
+| No `/` | User layer | Configurable | `background`, `ui`, `buf1` |
 
-- `/` layers: auto-generated, dim from content, cannot change dim
-- User layers: created via `pico_layer_empty()`, name must NOT start with `/`
+- `/` layers: auto-generated from content, dim fixed
+- User layers: created via `pico_layer_empty()` or `pico_layer_buffer()`, name must NOT start with `/`
 
 ### Constraints
 
