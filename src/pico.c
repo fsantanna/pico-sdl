@@ -716,35 +716,35 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
     pico_output_draw_layer(name, rect);
 }
 
-void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
-    assert(name!=NULL && "layer name required");
-
-    // get layer data from hash
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-    Pico_Key* res = alloca(n);
-    res->type = PICO_KEY_LAYER;
-    strcpy(res->key, name);
-    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, res);
-    pico_assert(data!=NULL && "layer does not exist");
-
+static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
     SDL_Rect ri;
     if (rect == NULL) {
-        // use layer's preset dst
-        ri = data->view.dst;
-    }
-    else {
-        // get layer dimensions for aspect ratio
+        ri = layer->view.dst;
+    } else {
         Pico_Abs_Dim* dp = NULL;
         if (rect->w == 0 || rect->h == 0) {
-            dp = &data->view.dim;
+            dp = &layer->view.dim;
         }
         SDL_FRect rf = _sdl_rect(rect, NULL, dp);
         ri = _fi_rect(&rf);
     }
 
-    SDL_SetTextureAlphaMod(data->tex, S.alpha);
-    SDL_RenderCopy(G.ren, data->tex, _crop(), &ri);
+    SDL_SetTextureAlphaMod(layer->tex, S.alpha);
+    SDL_RenderCopy(G.ren, layer->tex, _crop(), &ri);
     _pico_output_present(0);
+}
+
+void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
+    assert(name!=NULL && "layer name required");
+
+    int n = sizeof(Pico_Key) + strlen(name) + 1;
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_LAYER;
+    strcpy(key->key, name);
+    Pico_Layer* layer = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    pico_assert(layer!=NULL && "layer does not exist");
+
+    _pico_output_draw_layer(layer, rect);
 }
 
 void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
