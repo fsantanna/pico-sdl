@@ -23,7 +23,6 @@
 #include "anchors.h"
 
 typedef enum {
-    PICO_KEY_IMAGE,
     PICO_KEY_SOUND,
     PICO_KEY_LAYER,
 } PICO_KEY_TYPE;
@@ -106,21 +105,6 @@ static TTF_Font* _font_open (const char* path, int h) {
     return ttf;
 }
 
-static SDL_Texture* _tex_image (const char* path) {
-    int n = sizeof(Pico_Key) + strlen(path) + 1;
-    Pico_Key* res = alloca(n);
-    res->type = PICO_KEY_IMAGE;
-    strcpy(res->key, path);
-
-    SDL_Texture* tex = (SDL_Texture*)ttl_hash_get(G.hash, n, res);
-    if (tex == NULL) {
-        tex = IMG_LoadTexture(G.ren, path);
-        ttl_hash_put(G.hash, n, res, tex);
-    }
-    pico_assert(tex != NULL);
-
-    return tex;
-}
 
 static SDL_Texture* _tex_text (const char* font, int h, const char* text, Pico_Color clr) {
     SDL_Color c = { clr.r, clr.g, clr.b, 0xFF };
@@ -382,9 +366,6 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct) {
 static void _pico_hash_clean (int n, const void* key, void* value) {
     const Pico_Key* res = (const Pico_Key*)key;
     switch (res->type) {
-        case PICO_KEY_IMAGE:  // TODO: join with LAYER?
-            SDL_DestroyTexture((SDL_Texture*)value);
-            break;
         case PICO_KEY_LAYER: {
             Pico_Layer* data = (Pico_Layer*)value;
             SDL_DestroyTexture(data->tex);
@@ -1207,9 +1188,8 @@ Pico_Abs_Rect pico_get_crop (void) {
 }
 
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim) {
-    SDL_Texture* tex = _tex_image(path);
-    Pico_Abs_Dim ratio;
-    SDL_QueryTexture(tex, NULL, NULL, &ratio.w, &ratio.h);
+    Pico_Layer* layer = _pico_layer_image(NULL, path);
+    Pico_Abs_Dim ratio = layer->view.dim;
     if (dim == NULL) {
         return ratio;
     } else {
@@ -1250,7 +1230,7 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     return data->key->key;
 }
 
-const char* pico_layer_image (const char* name, const char* path) {
+static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     assert(path!=NULL && "image path required");
 
     int n;
@@ -1271,17 +1251,18 @@ const char* pico_layer_image (const char* name, const char* path) {
 
     Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
     if (data != NULL) {
-        return data->key->key;
+        return data;
     }
 
-    SDL_Texture* tex = _tex_image(path);
+    SDL_Texture* tex = IMG_LoadTexture(G.ren, path);
+    pico_assert(tex != NULL);
     Pico_Abs_Dim dim;
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
         .key  = ttl_hash_put(G.hash, n, key, data),
-        .tex  = _tex_create(dim),
+        .tex  = tex,
         .view = {
             .dim  = dim,
             .dst  = { 0, 0, dim.w, dim.h },
@@ -1294,7 +1275,11 @@ const char* pico_layer_image (const char* name, const char* path) {
     assert(data->key != NULL);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 
-    return data->key->key;
+    return data;
+}
+
+const char* pico_layer_image (const char* name, const char* path) {
+    return _pico_layer_image(name, path)->key->key;
 }
 
 int pico_get_rotate (void) {
