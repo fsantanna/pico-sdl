@@ -107,6 +107,18 @@ static TTF_Font* _font_open (const char* path, int h) {
     return ttf;
 }
 
+static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
+    SDL_Color c = { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF };
+    TTF_Font* ttf = _font_open(S.font, height);
+    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
+    pico_assert(sfc != NULL);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
+    pico_assert(tex != NULL);
+    *dim = (Pico_Abs_Dim){ sfc->w, sfc->h };
+    SDL_FreeSurface(sfc);
+    TTF_CloseFont(ttf);
+    return tex;
+}
 
 static SDL_FDim _f3 (float w, float h, const Pico_Abs_Dim* ratio) {
     if (ratio!=NULL && (w==0 || h==0)) {
@@ -1350,15 +1362,8 @@ static Pico_Layer* _pico_layer_text (
         return data;
     }
 
-    SDL_Color c = { clr.r, clr.g, clr.b, 0xFF };
-    TTF_Font* ttf = _font_open(font, height);
-    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
-    pico_assert(sfc != NULL);
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
-    pico_assert(tex != NULL);
-    Pico_Abs_Dim dim = { sfc->w, sfc->h };
-    SDL_FreeSurface(sfc);
-    TTF_CloseFont(ttf);
+    Pico_Abs_Dim dim;
+    SDL_Texture* tex = _tex_text(height, text, &dim);
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
@@ -1403,8 +1408,9 @@ Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim) {
         SDL_FDim fd = _sdl_dim(dim, NULL, NULL);
         return (Pico_Abs_Dim){fd.w, fd.h};
     } else {
-        Pico_Layer* layer = _pico_layer_text(NULL, 10, text);
-        Pico_Abs_Dim orig = layer->view.dim;
+        Pico_Abs_Dim orig;
+        SDL_Texture* tex = _tex_text(10, text, &orig);
+        SDL_DestroyTexture(tex);
         SDL_FDim fd = _sdl_dim(dim, NULL, &orig);
         return (Pico_Abs_Dim){fd.w, fd.h};
     }
