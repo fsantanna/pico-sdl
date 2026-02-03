@@ -533,8 +533,13 @@ const char* pico_get_font (void) {
 }
 
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
-    // TODO
-    return TODO;
+    Pico_Abs_Dim* orig = NULL;
+    if (rel->w==0 || rel->h==0) {
+        Pico_Layer* layer = _pico_layer_image(NULL, path);
+        orig = &layer->view.dim;
+    }
+    SDL_FDim fd = _sdl_dim(rel, NULL, orig);
+    return (Pico_Abs_Dim){fd.w, fd.h};
 }
 
 int pico_get_key (PICO_KEY key) {
@@ -605,8 +610,15 @@ PICO_STYLE pico_get_style (void) {
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
     assert(text[0] != '\0');
     assert(rel!=NULL && rel->h!=0);
-    // TODO
-    return TODO;
+    Pico_Abs_Dim orig;
+    Pico_Abs_Dim* p = NULL;
+    if (rel->w == 0) {
+        SDL_Texture* tex = _tex_text(10, text, &orig);
+        SDL_DestroyTexture(tex);
+        p = &orig;
+    }
+    SDL_FDim fd = _sdl_dim(rel, NULL, p);
+    return (Pico_Abs_Dim){fd.w, fd.h};
 }
 
 Uint32 pico_get_ticks (void) {
@@ -1251,9 +1263,10 @@ void pico_output_draw_buffer (
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
+    Pico_Layer* layer = _pico_layer_image(NULL, path);
     Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h}, rect->up };
-    Pico_Layer* layer = TODO
-    // TODO: _sdl_dim for rel
+    Pico_Abs_Dim* orig = (rel.w==0 || rel.h==0) ? &layer->view.dim : NULL;
+    SDL_FDim fd = _sdl_dim(&rel, NULL, orig);
     rect->w = rel.w;
     rect->h = rel.h;
     _pico_output_draw_layer(layer, rect);
@@ -1392,10 +1405,14 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
 void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
     assert(text[0] != '\0');
     assert(rect->h != 0);
-    Pico_Rel_Dim dim = { rect->mode, {rect->w, rect->h}, rect->up };
-    Pico_Layer* layer = TODO;
-    // TODO: _sdl_dim for dim
-    rect->w = dim.w;
+    Pico_Rel_Dim rel_h = { rect->mode, {0, rect->h}, rect->up };
+    SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
+    int height = (int)fd_h.h;
+    Pico_Layer* layer = _pico_layer_text(NULL, height, text);
+    Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h}, rect->up };
+    Pico_Abs_Dim* orig = (rel.w == 0) ? &layer->view.dim : NULL;
+    SDL_FDim fd = _sdl_dim(&rel, NULL, orig);
+    rect->w = rel.w;
     _pico_output_draw_layer(layer, rect);
 }
 
