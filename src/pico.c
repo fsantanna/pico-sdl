@@ -84,6 +84,8 @@ static struct { // exposed global state
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static Pico_Layer* _pico_layer_image (const char* name, const char* path);
+
 static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
     SDL_Texture* tex = SDL_CreateTexture (
         G.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
