@@ -1213,7 +1213,12 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     key->type = PICO_KEY_LAYER;
     strcpy(key->key, name);
 
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
+    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    if (data != NULL) {
+        return data->key->key;
+    }
+
+    data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = _tex_create(dim),

@@ -25,6 +25,9 @@ Layers feature for pico-sdl.
 | Unified images as layers | Removed `PICO_KEY_IMAGE`, all images are `PICO_KEY_LAYER` |
 | `pico_output_draw_image` refactor | Uses `pico_layer_image` + `pico_output_draw_layer` |
 | Lua bindings for layers | `pico.get.layer`, `pico.set.layer`, `pico.layer.empty/image`, `pico.output.draw.layer` |
+| Lua API rename | `pico.set.view{world=}` → `{dim=}` |
+| Lua test fixes | Split `set.view{title,window}` → `set.window` + `set.view` (12 files) |
+| Lua `set.layer(nil)` fix | Handle nil argument to switch to main layer |
 
 ### Remaining
 

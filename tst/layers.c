@@ -75,6 +75,22 @@ int main (void) {
     puts("present works on main");
     pico_output_present();
 
+    // pico_layer_empty reuse (content preserved)
+    puts("layer_empty reuse");
+    const char* e1 = pico_layer_empty("reuse", (Pico_Abs_Dim){32, 32});
+    pico_set_layer(e1);
+    pico_set_color_clear((Pico_Color){0x00, 0x80, 0x00});
+    pico_output_clear();
+    pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0x00});
+    pico_output_draw_rect(&(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL});
+    const char* e2 = pico_layer_empty("reuse", (Pico_Abs_Dim){64, 64});
+    assert(e1 == e2);  // same pointer (reused)
+    pico_set_layer(NULL);
+    pico_set_color_clear((Pico_Color){0x00, 0x00, 0x00});
+    pico_output_clear();
+    pico_output_draw_layer(e2, &(Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL});
+    _pico_check("layers-04");
+
     pico_init(0);
     return 0;
 }
