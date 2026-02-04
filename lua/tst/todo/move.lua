@@ -2,7 +2,7 @@ local pico = require 'pico'
 
 pico.init(true)
 
-pico.set.view { title="Moving Around" }
+pico.set.window { title="Moving Around" }
 
 local pos = pico.pos(50, 50)
 while true do

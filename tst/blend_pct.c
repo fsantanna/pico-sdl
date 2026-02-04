@@ -3,14 +3,8 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_view("Blend", -1, -1,
-        &(Pico_Rel_Dim){'!', {640, 360}, NULL},
-        NULL,
-        &(Pico_Rel_Dim){'!', {64, 36}, NULL},
-        NULL,
-        NULL,
-        NULL
-    );
+    pico_set_window("Blend", -1, &(Pico_Rel_Dim){'!', {640, 360}, NULL});
+    pico_set_view(-1, &(Pico_Rel_Dim){'!', {64, 36}, NULL}, NULL, NULL, NULL, NULL);
 
     {
         puts("image dimming");

@@ -117,7 +117,7 @@ int main (void) {
 
     pico_init(1);
     Pico_Rel_Dim log = { '!', {100, 100}, NULL };
-    pico_set_view(NULL, -1, -1, NULL, NULL, &log, NULL, NULL, NULL);
+    pico_set_view(-1, &log, NULL, NULL, NULL, NULL);
 
     // ABS - POS - with up (0/1) - requires pico_init
     {
@@ -202,7 +202,7 @@ int main (void) {
     {
         Pico_Rel_Dim log  = { '#', {4, 4}, NULL };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_view(NULL, -1, -1, NULL, NULL, &log, NULL, NULL, &tile);
+        pico_set_view(-1, &log, NULL, NULL, NULL, &tile);
     }
 
     // TILE - POS - tile->abs
@@ -219,8 +219,8 @@ int main (void) {
         Pico_Rel_Pos pos = { '#', {2, 2}, PICO_ANCHOR_C, NULL };
         Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
         printf("pos: (%d, %d)\n", abs.x, abs.y);
-        // tile (2,2) C -> pixel ((2-1)*4 - 0.5*4, (2-1)*4 - 0.5*4) = (2, 2)
-        assert(abs.x==2 && abs.y==2);
+        // tile (2,2) C -> pixel (2-1+0.5)*4 = 6
+        assert(abs.x==6 && abs.y==6);
     }
     {
         puts("tile - pos - tile->abs - corners");
@@ -248,8 +248,8 @@ int main (void) {
         Pico_Rel_Rect rect = { '#', {2, 2, 2, 2}, PICO_ANCHOR_C, NULL };
         Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
-        // tile (2,2,2,2) C -> d=(8,8), x=(2-1)*4-0.5*8=0, y=0 -> (0, 0, 8, 8)
-        assert(abs.x==0 && abs.y==0 && abs.w==8 && abs.h==8);
+        // tile (2,2,2,2) C -> d=(8,8), x=(2-1+0.5)*4-0.5*8=2, y=2 -> (2, 2, 8, 8)
+        assert(abs.x==2 && abs.y==2 && abs.w==8 && abs.h==8);
     }
     {
         puts("tile - rect - tile->abs - 2x2 at (2,2) NW");
@@ -264,8 +264,8 @@ int main (void) {
         Pico_Rel_Rect rect = { '#', {2.5, 2.5, 2, 2}, PICO_ANCHOR_C, NULL };
         Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
-        // tile (2.5,2.5,2,2) C -> d=(8,8), x=(2.5-1)*4-0.5*8=6-4=2, y=2
-        assert(abs.x==2 && abs.y==2 && abs.w==8 && abs.h==8);
+        // tile (2.5,2.5,2,2) C -> d=(8,8), x=(2.5-1+0.5)*4-0.5*8=8-4=4, y=4
+        assert(abs.x==4 && abs.y==4 && abs.w==8 && abs.h==8);
     }
 
     pico_init(0);

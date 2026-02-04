@@ -4,10 +4,8 @@ pico.init(true)
 
 local phy = {'!', w=200, h=200}
 local log = {'!', w=20, h=20}
-pico.set.view {
-    window = phy,
-    world  = log,
-}
+pico.set.window { dim=phy }
+pico.set.view { dim=log }
 
 local r = {'!', x=10-2, y=10-2, w=4, h=4, anc='NW'}
 

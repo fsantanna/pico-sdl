@@ -227,6 +227,45 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static Pico_Abs_Dim c_buffer_dim (lua_State* L, int i) {
+    assert(i > 0);
+    luaL_checktype(L, i, LUA_TTABLE);
+
+    lua_len(L, i);                              // T | l
+    int l = lua_tointeger(L, -1);
+    lua_geti(L, i, 1);                          // T | l | T[1]
+    if (lua_type(L, -1) != LUA_TTABLE) {
+        luaL_error(L, "expected row tables");
+    }
+    lua_len(L, -1);                             // T | l | T[1] | c
+    int c = lua_tointeger(L, -1);
+    lua_pop(L, 3);                              // T
+
+    return (Pico_Abs_Dim) { .w=c, .h=l };
+}
+
+static void c_buffer_fill (lua_State* L, int i, Pico_Abs_Dim dim,
+                           Pico_Color_A* buf) {
+    assert(i > 0);
+    for (int row=1; row<=dim.h; row++) {
+        lua_geti(L, i, row);                    // T | T[row]
+        if (lua_type(L, -1) != LUA_TTABLE) {
+            luaL_error(L, "expected table at row %d", row);
+        }
+        for (int col=1; col<=dim.w; col++) {
+            lua_geti(L, -1, col);               // T | T[row] | T[col]
+            if (lua_type(L, -1) != LUA_TTABLE) {
+                luaL_error(L, "expected color at position [%d,%d]", row, col);
+            }
+            buf[(row-1)*dim.w + (col-1)] = c_color_a_t(L, lua_gettop(L));
+            lua_pop(L, 1);                      // T | T[row]
+        }
+        lua_pop(L, 1);                          // T
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 static int l_init (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);
     int on = lua_toboolean(L, 1);
@@ -381,27 +420,6 @@ static void L_image_get_dim (lua_State* L, int i, const char* path) {
     lua_setfield(L, -2, "h");                       // rel | *abs*
 }
 
-static void L_text_get_dim (lua_State* L, int i, const char* text) {
-    assert(i > 0);
-    luaL_checktype(L, i, LUA_TTABLE);               // rel
-    L_dim_default_wh(L, i);
-
-    Pico_Rel_Dim* rel = c_rel_dim(L, i);
-    Pico_Abs_Dim abs = pico_get_text(text, rel);    // rel | ud
-    lua_pop(L, 1);                                  // rel
-
-    lua_pushnumber(L, rel->w);
-    lua_setfield(L, i, "w");
-    lua_pushnumber(L, rel->h);
-    lua_setfield(L, i, "h");
-
-    lua_newtable(L);                                // rel | abs
-    lua_pushnumber(L, abs.w);                       // rel | abs | w
-    lua_setfield(L, -2, "w");                       // rel | abs
-    lua_pushnumber(L, abs.h);                       // rel | abs | h
-    lua_setfield(L, -2, "h");                       // rel | *abs*
-}
-
 static int l_get_image (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);  // path | [dim]
 
@@ -419,11 +437,35 @@ static int l_get_image (lua_State* L) {
     return 1;
 }
 
+static int l_get_layer (lua_State* L) {
+    const char* name = pico_get_layer();
+    if (name == NULL) {
+        lua_pushnil(L);
+    } else {
+        lua_pushstring(L, name);
+    }
+    return 1;
+}
+
 static int l_get_text (lua_State* L) {
-    // pico.get.text(text, dim)
-    const char* text = luaL_checkstring(L, 1);
+    const char* text = luaL_checkstring(L, 1);  // text | dim
     luaL_checktype(L, 2, LUA_TTABLE);
-    L_text_get_dim(L, 2, text);         // *abs*
+    L_dim_default_wh(L, 2);
+
+    Pico_Rel_Dim* dim = c_rel_dim(L, 2);            // text | dim | ud
+    Pico_Abs_Dim abs = pico_get_text(text, dim);
+    lua_pop(L, 1);                                  // text | dim
+
+    lua_pushnumber(L, dim->w);
+    lua_setfield(L, 2, "w");
+    lua_pushnumber(L, dim->h);
+    lua_setfield(L, 2, "h");
+
+    lua_newtable(L);                                // text | dim | abs
+    lua_pushnumber(L, abs.w);
+    lua_setfield(L, -2, "w");
+    lua_pushnumber(L, abs.h);
+    lua_setfield(L, -2, "h");                       // text | dim | *abs*
     return 1;
 }
 
@@ -433,37 +475,46 @@ static int l_get_ticks (lua_State* L) {
     return 1;                       // [ms]
 }
 
-static int l_get_view (lua_State* L) {
+static int l_get_window (lua_State* L) {
     const char* title;
-    int grid;
     int fs;
-    Pico_Abs_Dim  phy;
-    //Pico_Abs_Rect dst;
-    Pico_Abs_Dim  log;
-    //Pico_Abs_Rect src;
-    //Pico_Abs_Rect clip;
-    Pico_Abs_Dim  tile;
+    Pico_Abs_Dim dim;
 
-    // TODO: dst, src, clip
-    pico_get_view(&title, &grid, &fs, &phy, NULL, &log, NULL, NULL, &tile);
+    pico_get_window(&title, &fs, &dim);
 
     lua_newtable(L);                    // T
 
     lua_pushstring(L, title);           // T | title
     lua_setfield(L, -2, "title");       // T
 
-    lua_pushboolean(L, grid);           // T | grid
-    lua_setfield(L, -2, "grid");        // T
-
     lua_pushboolean(L, fs);             // T | fs
     lua_setfield(L, -2, "fullscreen");  // T
 
-    lua_newtable(L);                    // T | phy
-    lua_pushinteger(L, phy.w);
+    lua_newtable(L);                    // T | dim
+    lua_pushinteger(L, dim.w);
     lua_setfield(L, -2, "w");
-    lua_pushinteger(L, phy.h);
+    lua_pushinteger(L, dim.h);
     lua_setfield(L, -2, "h");
-    lua_setfield(L, -2, "window");      // T
+    lua_setfield(L, -2, "dim");         // T
+
+    return 1;
+}
+
+static int l_get_view (lua_State* L) {
+    int grid;
+    //Pico_Abs_Rect dst;
+    Pico_Abs_Dim  log;
+    //Pico_Abs_Rect src;
+    //Pico_Abs_Rect clip;
+    Pico_Abs_Dim  tile;
+
+    // TODO: target, source, clip
+    pico_get_view(&grid, &log, NULL, NULL, NULL, &tile);
+
+    lua_newtable(L);                    // T
+
+    lua_pushboolean(L, grid);           // T | grid
+    lua_setfield(L, -2, "grid");        // T
 
 #if 0
     lua_newtable(L);                    // T | dst
@@ -483,7 +534,7 @@ static int l_get_view (lua_State* L) {
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, log.h);
     lua_setfield(L, -2, "h");
-    lua_setfield(L, -2, "world");       // T
+    lua_setfield(L, -2, "dim");         // T
 
     lua_newtable(L);                    // T | tile
     lua_pushinteger(L, tile.w);
@@ -582,6 +633,15 @@ static int l_set_color_draw (lua_State* L) {
     return 0;
 }
 
+static int l_set_layer (lua_State* L) {
+    const char* name = NULL;
+    if (lua_gettop(L)>=1 && !lua_isnil(L, 1)) {
+        name = luaL_checkstring(L, 1);
+    }
+    pico_set_layer(name);
+    return 0;
+}
+
 static int l_set_style (lua_State* L) {
     const char* s = luaL_checkstring(L, 1);     // s
     lua_pushlightuserdata(L, (void*)&KEY);      // s | K
@@ -600,10 +660,44 @@ static int l_set_style (lua_State* L) {
     return 0;
 }
 
+static int l_set_window (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // T
+
+    const char* title = NULL;
+    lua_getfield(L, 1, "title");            // T | title
+    if (!lua_isnil(L, -1)) {
+        title = lua_tostring(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+
+    int fs = -1;
+    lua_getfield(L, 1, "fullscreen");       // T | fs
+    if (!lua_isnil(L, -1)) {
+        fs = lua_toboolean(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+
+    Pico_Rel_Dim* xdim = NULL;
+    lua_getfield(L, 1, "dim");              // T | dim
+    if (!lua_isnil(L, -1)) {
+        xdim = c_rel_dim(L, lua_gettop(L));
+    }
+    lua_pop(L, 1);                          // T
+
+    pico_set_window(title, fs, xdim);
+    return 0;
+}
+
+static int l_set_dim (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // T
+    Pico_Rel_Dim* xdim = c_rel_dim(L, 1);
+    pico_set_dim(xdim);
+    return 0;
+}
+
 static int l_set_view (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    Pico_Rel_Dim*  xwin  = NULL;
     Pico_Rel_Rect* xdst  = NULL;
     Pico_Rel_Dim*  xwld  = NULL;
     Pico_Rel_Rect* xsrc  = NULL;
@@ -616,47 +710,15 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    int fs = -1;
-    lua_getfield(L, 1, "fullscreen");       // T | fs
-    if (!lua_isnil(L, -1)) {
-        fs = lua_toboolean(L, -1);
-    }
-    lua_pop(L, 1);                          // T
-
-    const char* title = NULL;
-    lua_getfield(L, 1, "title");            // T | title
-    if (!lua_isnil(L, -1)) {
-        title = lua_tostring(L, -1);
-    }
-    lua_pop(L, 1);                          // T
-
-    lua_getfield(L, 1, "window");           // T | win
-    if (!lua_isnil(L, -1)) {
-        xwin = c_rel_dim(L, lua_gettop(L));
-    }
-    lua_pop(L, 1);                          // T
-
     lua_getfield(L, 1, "target");           // T | dst
     if (!lua_isnil(L, -1)) {
         xdst = c_rel_rect(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
 
-    lua_getfield(L, 1, "world");            // T | wld
+    lua_getfield(L, 1, "dim");              // T | dim
     if (!lua_isnil(L, -1)) {
         xwld = c_rel_dim(L, lua_gettop(L));
-    }
-    lua_pop(L, 1);                          // T
-
-    lua_getfield(L, 1, "size");             // T | size
-    if (!lua_isnil(L, -1)) {
-        int n = lua_gettop(L);
-        if (xwin == NULL) {
-            xwin = c_rel_dim(L, n);
-        }
-        if (xwld == NULL) {
-            xwld = c_rel_dim(L, n);
-        }
     }
     lua_pop(L, 1);                          // T
 
@@ -682,8 +744,66 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_view(title, grid, fs, xwin, xdst, xwld, xsrc, xclip, xtile);
+    pico_set_view(grid, xwld, xdst, xsrc, xclip, xtile);
     return 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_layer_empty (lua_State* L) {
+    const char* name = luaL_checkstring(L, 1);      // name | dim
+    luaL_checktype(L, 2, LUA_TTABLE);
+    Pico_Abs_Dim dim = {
+        (int) L_checkfieldnum(L, 2, "w"),
+        (int) L_checkfieldnum(L, 2, "h"),
+    };
+    const char* ret = pico_layer_empty(name, dim);
+    lua_pushstring(L, ret);                         // name | dim | *name*
+    return 1;
+}
+
+static int l_layer_image (lua_State* L) {
+    const char* name = NULL;
+    if (!lua_isnil(L, 1)) {
+        name = luaL_checkstring(L, 1);              // name | path
+    }
+    const char* path = luaL_checkstring(L, 2);
+    const char* ret = pico_layer_image(name, path);
+    lua_pushstring(L, ret);                         // name | path | *name*
+    return 1;
+}
+
+static int l_layer_buffer (lua_State* L) {
+    const char* name = luaL_checkstring(L, 1);      // name | dim | buffer
+    luaL_checktype(L, 2, LUA_TTABLE);
+    luaL_checktype(L, 3, LUA_TTABLE);
+
+    Pico_Abs_Dim dim = {
+        (int) L_checkfieldnum(L, 2, "w"),
+        (int) L_checkfieldnum(L, 2, "h"),
+    };
+
+    Pico_Abs_Dim buf_dim = c_buffer_dim(L, 3);
+    if (buf_dim.w != dim.w || buf_dim.h != dim.h) {
+        return luaL_error(L, "buffer size %dx%d doesn't match dim %dx%d",
+                          buf_dim.w, buf_dim.h, dim.w, dim.h);
+    }
+
+    Pico_Color_A buf[buf_dim.h][buf_dim.w];
+    c_buffer_fill(L, 3, buf_dim, (Pico_Color_A*)buf);
+
+    const char* ret = pico_layer_buffer(name, dim, (Pico_Color_A*)buf);
+    lua_pushstring(L, ret);
+    return 1;
+}
+
+static int l_layer_text (lua_State* L) {
+    const char* name = luaL_checkstring(L, 1);      // name | height | text
+    int height = luaL_checkinteger(L, 2);
+    const char* text = luaL_checkstring(L, 3);
+    const char* ret = pico_layer_text(name, height, text);
+    lua_pushstring(L, ret);
+    return 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -802,39 +922,16 @@ static int l_output_clear (lua_State* L) {
 }
 
 static int l_output_draw_buffer (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // T | rect
+    const char* name = luaL_checkstring(L, 1);  // name | buf | rect
     luaL_checktype(L, 2, LUA_TTABLE);
+    luaL_checktype(L, 3, LUA_TTABLE);
 
-    lua_len(L, 1);                          // T | rect | l
-    int l = lua_tointeger(L, -1);
-    lua_geti(L, 1, 1);                      // T | rect | l | T[1]
-    if (lua_type(L,-1) != LUA_TTABLE) {
-        return luaL_error(L, "expected column tables");
-    }
-    lua_len(L, -1);                         // T | rect | l | T[1] | c
-    int c = lua_tointeger(L, -1);
-    lua_pop(L, 3);                          // T | rect
+    Pico_Abs_Dim dim = c_buffer_dim(L, 2);
+    Pico_Color_A buf[dim.h][dim.w];
+    c_buffer_fill(L, 2, dim, (Pico_Color_A*)buf);
 
-    Pico_Color_A buf[l][c];
-    for (int i=1; i<=l; i++) {
-        lua_geti(L, 1, i);                  // T | rect | T[i]
-        if (lua_type(L,-1) != LUA_TTABLE) {
-            return luaL_error(L, "expected table at column %d", i);
-        }
-        for (int j=1; j<=c; j++) {
-            lua_geti(L, -1, j);             // T | rect | T[i] | T[j]
-            if (lua_type(L,-1) != LUA_TTABLE) {
-                return luaL_error(L, "expected color at position [%d,%d]", i, j);
-            }
-            Pico_Color_A clr = c_color_a_t(L, lua_gettop(L));
-            buf[i-1][j-1] = clr;
-            lua_pop(L, 1);                  // T | rect | T[i]
-        }
-        lua_pop(L, 1);                      // T | rect
-    }
-
-    Pico_Rel_Rect* rect = c_rel_rect(L, 2);
-    pico_output_draw_buffer((Pico_Abs_Dim){c,l}, (Pico_Color_A*)buf, rect);
+    Pico_Rel_Rect* rect = c_rel_rect(L, 3);
+    pico_output_draw_buffer(name, dim, (Pico_Color_A*)buf, rect);
     return 0;
 }
 
@@ -847,6 +944,18 @@ static int l_output_draw_image (lua_State* L) {
 
     Pico_Rel_Rect* rect = c_rel_rect(L, 2);
     pico_output_draw_image(path, rect);
+    return 0;
+}
+
+static int l_output_draw_layer (lua_State* L) {
+    const char* name = luaL_checkstring(L, 1);  // name | [rect]
+
+    Pico_Rel_Rect* rect = NULL;
+    if (lua_istable(L, 2)) {
+        rect = c_rel_rect(L, 2);
+    }
+
+    pico_output_draw_layer(name, rect);
     return 0;
 }
 
@@ -922,9 +1031,7 @@ static int l_output_draw_rect (lua_State* L) {
 static int l_output_draw_text (lua_State* L) {
     const char* text = luaL_checkstring(L, 1);  // text | rect
     luaL_checktype(L, 2, LUA_TTABLE);
-
-    L_text_get_dim(L, 2, text);                 // text | rect | abs
-
+    L_dim_default_wh(L, 2);
     Pico_Rel_Rect* rect = c_rel_rect(L, 2);
     pico_output_draw_text(text, rect);
     return 0;
@@ -1003,11 +1110,13 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
-    { "image", l_get_image },
-    { "mouse", l_get_mouse },
-    { "text",  l_get_text  },
-    { "ticks", l_get_ticks },
-    { "view",  l_get_view  },
+    { "image",  l_get_image  },
+    { "layer",  l_get_layer  },
+    { "mouse",  l_get_mouse  },
+    { "text",   l_get_text   },
+    { "ticks",  l_get_ticks  },
+    { "view",   l_get_view   },
+    { "window", l_get_window },
     { NULL, NULL }
 };
 
@@ -1016,15 +1125,28 @@ static const luaL_Reg ll_get[] = {
 static const luaL_Reg ll_set[] = {
     { "alpha",  l_set_alpha  },
     { "crop",   l_set_crop   },
+    { "dim",    l_set_dim    },
     { "expert", l_set_expert },
+    { "layer",  l_set_layer  },
     { "style",  l_set_style  },
     { "view",   l_set_view   },
+    { "window", l_set_window },
     { NULL, NULL }
 };
 
 static const luaL_Reg ll_set_color[] = {
     { "clear", l_set_color_clear },
     { "draw",  l_set_color_draw  },
+    { NULL, NULL }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+static const luaL_Reg ll_layer[] = {
+    { "buffer", l_layer_buffer },
+    { "empty",  l_layer_empty  },
+    { "image",  l_layer_image  },
+    { "text",   l_layer_text   },
     { NULL, NULL }
 };
 
@@ -1049,6 +1171,7 @@ static const luaL_Reg ll_output[] = {
 static const luaL_Reg ll_output_draw[] = {
     { "buffer", l_output_draw_buffer },
     { "image",  l_output_draw_image  },
+    { "layer",  l_output_draw_layer  },
     { "line",   l_output_draw_line   },
     { "oval",   l_output_draw_oval   },
     { "pixel",  l_output_draw_pixel  },
@@ -1081,6 +1204,9 @@ int luaopen_pico_native (lua_State* L) {
     luaL_newlib(L, ll_set_color);           // pico | set | color
     lua_setfield(L, -2, "color");           // pico | set
     lua_setfield(L, -2, "set");             // pico
+
+    luaL_newlib(L, ll_layer);               // pico | layer
+    lua_setfield(L, -2, "layer");           // pico
 
     luaL_newlib(L, ll_input);               // pico | input
     lua_setfield(L, -2, "input");           // pico

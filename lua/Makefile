@@ -31,6 +31,7 @@ tests:
 	$(TST) tst/font.lua
 	$(TST) tst/image_raw.lua
 	$(TST) tst/image_pct.lua
+	$(TST) tst/layers.lua
 	#$(TST) tst/mouse.lua
 	#$(TST) tst/move.lua
 	#$(TST) tst/navigate.lua

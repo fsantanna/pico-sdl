@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_view("Pct-To-Pos", -1, -1, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_window("Pct-To-Pos", -1, NULL);
 
     {
         puts("white centered rect");

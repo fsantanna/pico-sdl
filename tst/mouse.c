@@ -11,14 +11,8 @@ int main(void) {
 
     puts("phy (500,500) -> log (50,50)");
     {
-        pico_set_view (
-            "Mouse", -1, -1,
-            &(Pico_Rel_Dim){ '!', {500, 500}, NULL }, NULL,
-            &(Pico_Rel_Dim){ '!', {50, 50}, NULL },
-            NULL,
-            NULL,
-            NULL
-        );
+        pico_set_window("Mouse", -1, &(Pico_Rel_Dim){ '!', {500, 500}, NULL });
+        pico_set_view(-1, &(Pico_Rel_Dim){ '!', {50, 50}, NULL }, NULL, NULL, NULL, NULL);
 
         // phy (0,0) -> log (0,0)
         {
@@ -52,7 +46,7 @@ int main(void) {
     // centered 100x100 logical
     puts("zoom out 2x");
     {
-        pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+        pico_set_view(-1, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {-25, -25, 100, 100}, PICO_ANCHOR_NW, NULL },
             NULL, NULL);
 
@@ -88,7 +82,7 @@ int main(void) {
     // centered 10x10 logical
     puts("zoom in 5x");
     {
-        pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+        pico_set_view(-1, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL },
             NULL, NULL);
 
@@ -124,7 +118,7 @@ int main(void) {
     // bottom-right (SE) half
     puts("scroll/zoom SE");
     {
-        pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+        pico_set_view(-1, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {25, 25, 25, 25}, PICO_ANCHOR_NW, NULL },
             NULL, NULL);
 
@@ -149,7 +143,7 @@ int main(void) {
 
     puts("normal PCT");
     {
-        pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+        pico_set_view(-1, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {0, 0, 50, 50}, PICO_ANCHOR_NW, NULL },
             NULL, NULL);
 
@@ -176,7 +170,7 @@ int main(void) {
     {
         // Zoom with src = {20, 20, 10, 10}, but pct should still be 0-1 relative
         // to full logical world
-        pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+        pico_set_view(-1, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL },
             NULL, NULL);
 

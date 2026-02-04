@@ -7,21 +7,32 @@ int main (void) {
 
     // TITLE
     puts("title: set and get");
-    pico_set_view("Test Title", -1, -1, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_window("Test Title", -1, NULL);
     const char* title;
-    pico_get_view(&title, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_get_window(&title, NULL, NULL);
     assert(strcmp(title, "Test Title") == 0);
-    pico_set_view("View Raw", -1, -1, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_window("View Raw", -1, NULL);
 
     Pico_Abs_Dim window, world;
-    pico_get_view(NULL, NULL, NULL, &window, NULL, &world, NULL, NULL, NULL);
+    pico_get_window(NULL, NULL, &window);
+    pico_get_view(NULL, &world, NULL, NULL, NULL, NULL);
     assert(window.w==500 && window.h==500);
     assert(world.w==100 && world.h==100);
 
+    // SIZE (using set_dim for both window and world)
+    puts("set_dim: set both equal");
+    Pico_Rel_Dim dim = { '!', {window.w, window.h}, NULL };
+    pico_set_dim(&dim);
+    Pico_Abs_Dim world2;
+    pico_get_view(NULL, &world2, NULL, NULL, NULL, NULL);
+    assert(world2.w==window.w && world2.h==window.h);
+    pico_set_view(-1, &(Pico_Rel_Dim){ '!', {world.w, world.h}, NULL },
+        NULL, NULL, NULL, NULL);  // fallback
+
     _pico_check("view_raw-0a");
-    pico_set_view(NULL, 0, -1, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_view(0, NULL, NULL, NULL, NULL, NULL);
     _pico_check("view_raw-0b");
-    pico_set_view(NULL, 1, -1, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_view(1, NULL, NULL, NULL, NULL, NULL);
 
     // WORLD - bigger
     puts("shows lower-left X, center rect, center/up-right line");
@@ -29,7 +40,7 @@ int main (void) {
         world.w += 1;
         world.h += 1;
         Pico_Rel_Dim dim = { '!', {world.w, world.h}, NULL };
-        pico_set_view(NULL, -1, -1, NULL, NULL, &dim, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_set_color_draw(PICO_COLOR_WHITE);
         pico_output_draw_rect (
@@ -55,7 +66,7 @@ int main (void) {
     // SCROLL - left/up
     puts("scrolls left/up");
     for (int i=0; i<50; i++) {
-        pico_set_view(NULL, -1, -1, NULL, NULL, NULL,
+        pico_set_view(-1, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {i, i, 100, 100}, PICO_ANCHOR_NW, NULL },
             NULL, NULL);
         pico_output_clear();

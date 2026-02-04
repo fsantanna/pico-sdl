@@ -36,6 +36,7 @@ tests:
 	$(EXE) tst/font.c
 	$(EXE) tst/image_raw.c
 	$(EXE) tst/image_pct.c
+	$(EXE) tst/layers.c
 	$(EXE) tst/mouse.c
 	$(EXE) tst/move.c
 	$(EXE) tst/navigate.c

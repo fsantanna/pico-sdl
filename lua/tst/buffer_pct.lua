@@ -3,11 +3,8 @@ require 'pico.check'
 pico.init(true)
 local phy = {'!', w=100, h=100}
 local log = {'!', w=10, h=10}
-pico.set.view {
-    title  = "Buffer",
-    window = phy,
-    world  = log,
-}
+pico.set.window { title="Buffer", dim=phy }
+pico.set.view { dim=log }
 
 do
     -- .x.
@@ -34,7 +31,7 @@ do
     print("centered 3x3 on black - 1dir/1baixo")
     local r = {'%', x=0.5, y=0.5, w=0, h=0}
     pico.output.clear()
-    pico.output.draw.buffer(buffer, r)
+    pico.output.draw.buffer("buf1", buffer, r)
     pico.check("buffer-01")
 end
 
@@ -57,7 +54,7 @@ do
     pico.set.color.clear(0xFF, 0xFF, 0xFF)
     pico.output.clear()
     local r = {'%', x=1, y=1, w=0, h=0, anc='SE'}
-    pico.output.draw.buffer(buffer, r)
+    pico.output.draw.buffer("buf2", buffer, r)
     pico.check("buffer-02")
 end
 

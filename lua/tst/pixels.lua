@@ -1,11 +1,8 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view {
-    title  = "pixels",
-    window = {'!', w=100, h=100},
-    world  = {'!', w=5, h=5}
-}
+pico.set.window { title="pixels", dim={'!', w=100, h=100} }
+pico.set.view { dim={'!', w=5, h=5} }
 
 do
     local pixels = {

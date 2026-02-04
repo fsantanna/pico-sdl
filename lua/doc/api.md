@@ -39,7 +39,19 @@
         - `pico.color.darker (clr: Color, pct: number) -> Color`
     - **pico.color.lighter**: Makes a color lighter.
         - `pico.color.lighter (clr: Color, pct: number) -> Color`
+- **pico.layer**
+    - **pico.layer.empty**: Creates an empty layer.
+        - `pico.layer.empty (name: string, dim: Dim) -> string`
+    - **pico.layer.image**: Creates a layer from an image file.
+        - `pico.layer.image (name: string?, path: string) -> string`
+        - If `name` is `nil`, uses `"/image/<path>"` as layer name
+    - **pico.layer.buffer**: Creates a layer from a pixel buffer.
+        - `pico.layer.buffer (name: string, dim: Dim, buffer: {{Color}}) -> string`
+        - `name` is required (buffer is copied, so pointer-based caching not possible)
 - **pico.get**
+    - **pico.get.layer**: Gets current layer name.
+        - `pico.get.layer () -> string?`
+        - Returns `nil` for main layer
     - **pico.get.image**: Gets image dimensions.
         - `pico.get.image (path: string [, dim: Dim]) -> Dim`
     - **pico.get.mouse**: Gets mouse position and button state.
@@ -65,6 +77,9 @@
         - `pico.set.view (cfg: { [title: string], [grid: boolean], [fullscreen: boolean], [size: Dim], [window: Dim], [target: Rect], [world: Dim], [source: Rect], [clip: Rect], [tile: Tile] })`
         - `size` sets both `window` and `world` to the same dimensions (1:1 pixel mapping)
         - `tile` sets tile size in pixels (required when `world` mode is `'#'`)
+    - **pico.set.layer**: Switches to a layer.
+        - `pico.set.layer (name: string?)`
+        - `nil` switches to main layer
     - **pico.set.color**
         - **pico.set.color.clear**: Sets clear color.
             - `pico.set.color.clear (clr: Color)`
@@ -95,6 +110,8 @@
             - `pico.output.draw.buffer (buffer: {{Color}}, rect: Rect)`
         - **pico.output.draw.image**: Draws image.
             - `pico.output.draw.image (path: string, rect: Rect)`
+        - **pico.output.draw.layer**: Draws a layer onto the current layer.
+            - `pico.output.draw.layer (name: string, rect: Rect)`
         - **pico.output.draw.line**: Draws line.
             - `pico.output.draw.line (p1: Pos, p2: Pos)`
         - **pico.output.draw.oval**: Draws oval.

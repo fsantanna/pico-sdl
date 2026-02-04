@@ -23,7 +23,7 @@ typedef struct {
 
 ttl_hash* ttl_hash_open  (int n_buk, int n_ttl, cb_clean_t f);
 void      ttl_hash_close (ttl_hash* ht);
-int       ttl_hash_put   (ttl_hash* ht, int n, const void* key, void* value);
+const void* ttl_hash_put (ttl_hash* ht, int n, const void* key, void* value);
 void*     ttl_hash_get   (ttl_hash* ht, int n, const void* key);
 int       ttl_hash_rem   (ttl_hash* ht, int n, const void* key);
 void      ttl_hash_tick  (ttl_hash* ht);
@@ -94,7 +94,7 @@ void ttl_hash_close (ttl_hash* ht) {
     free(ht);
 }
 
-int ttl_hash_put (ttl_hash* ht, int n, const void* key, void* value) {
+const void* ttl_hash_put (ttl_hash* ht, int n, const void* key, void* value) {
     ttl_hash_entry** pp = ttl_hash_find(ht, n, key);
 
     /* Key exists: replace value */
@@ -105,18 +105,18 @@ int ttl_hash_put (ttl_hash* ht, int n, const void* key, void* value) {
         }
         e->value = value;
         e->ttl = ht->n_ttl;
-        return 0;
+        return e->key;
     }
 
     /* Key does not exist: create new entry */
     ttl_hash_entry* e = (ttl_hash_entry*)malloc(sizeof(ttl_hash_entry));
     if (e == NULL) {
-        return -1;
+        return NULL;
     }
     e->key = malloc(n);
     if (e->key == NULL) {
         free(e);
-        return -1;
+        return NULL;
     }
     memcpy(e->key, key, n);
     e->n = n;
@@ -124,7 +124,7 @@ int ttl_hash_put (ttl_hash* ht, int n, const void* key, void* value) {
     e->ttl = ht->n_ttl;
     e->next = NULL;
     *pp = e;
-    return 0;
+    return e->key;
 }
 
 void* ttl_hash_get (ttl_hash* ht, int n, const void* key) {

@@ -148,11 +148,14 @@ int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 void pico_output_clear (void);
 
 /// @brief Draws an RGBA image buffer.
+/// @param name layer name for caching (required)
 /// @param dim image dimensions in pixels
 /// @param buffer the RGBA image data
 /// @param rect drawing rectangle (mode determines coordinate interpretation)
 /// @sa pico_output_draw_image
-void pico_output_draw_buffer (Pico_Abs_Dim dim, const Pico_Color_A buffer[], const Pico_Rel_Rect* rect);
+void pico_output_draw_buffer (const char* name, Pico_Abs_Dim dim,
+                              const Pico_Color_A buffer[],
+                              const Pico_Rel_Rect* rect);
 
 /// @brief Draws an image.
 /// @param path path to the image file
@@ -173,6 +176,11 @@ void pico_output_draw_pixel (Pico_Rel_Pos* pos);
 /// @param n number of positions
 /// @param ps array of positions (mode determines coordinates)
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
+
+/// @brief Draws a layer onto the current layer.
+/// @param name layer name (must exist)
+/// @param rect target position and dimension (mode determines coordinates)
+void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw (mode determines coordinates)
@@ -241,10 +249,6 @@ int pico_get_expert (void);
 /// @return path to the current font file
 const char* pico_get_font (void);
 
-/// @brief Gets the state of fullscreen mode.
-/// @return 1 if enabled, or 0 otherwise
-int pico_get_fullscreen (void);
-
 /// @brief Gets the dimensions of the given image.
 /// @param path image filepath
 /// @param dim optional dim with w/h to complete (NULL returns raw dimensions)
@@ -255,6 +259,41 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 /// @param key key constant
 /// @return 1 if key is pressed, or 0 otherwise
 int pico_get_key (PICO_KEY key);
+
+/// @brief Gets current layer name.
+/// @return layer name (NULL = main layer)
+const char* pico_get_layer (void);
+
+/// @brief Creates an empty layer.
+/// @param name layer name (must not be NULL or start with '/')
+/// @param dim layer dimensions
+/// @return the layer name
+const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim);
+
+/// @brief Creates a layer from an image file.
+/// @param name layer name (NULL uses "/image/<path>", otherwise must not
+///             start with '/')
+/// @param path path to the image file
+/// @return the layer name
+const char* pico_layer_image (const char* name, const char* path);
+
+/// @brief Creates a layer from a pixel buffer.
+/// @param name layer name (NULL uses "/buffer/<pointer>", otherwise must not
+///             start with '/')
+/// @param dim buffer dimensions
+/// @param pixels RGBA pixel data (must remain valid while layer exists)
+/// @return the layer name
+const char* pico_layer_buffer (const char* name, Pico_Abs_Dim dim,
+                               const Pico_Color_A* pixels);
+
+/// @brief Creates a layer from text.
+/// @param name layer name (NULL auto-generates from font/height/color/text,
+///             otherwise must not start with '/')
+/// @param height text height in pixels
+/// @param text the text to render
+/// @return the layer name
+/// @note Uses current font (pico_set_font) and draw color (pico_set_color_draw)
+const char* pico_layer_text (const char* name, int height, const char* text);
 
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
@@ -283,26 +322,26 @@ Uint32 pico_get_ticks (void);
 
 /// @brief Gets the current view configuration. NULL arguments are ignored.
 /// @param grid pointer to retrieve grid state
-/// @param window_fullscreen pointer to retrieve fullscreen state
-/// @param title pointer to retrieve window title (NULL to skip)
-/// @param window pointer to retrieve window dimensions
-/// @param window_target pointer to retrieve window target region
-/// @param world pointer to retrieve world/logical dimensions
-/// @param world_source pointer to retrieve world source region
-/// @param world_clip pointer to retrieve world clipping region
+/// @param dst pointer to retrieve window target region
+/// @param dim pointer to retrieve world/logical dimensions
+/// @param src pointer to retrieve world source region
+/// @param clip pointer to retrieve world clipping region
 /// @param tile pointer to retrieve tile dimensions in pixels
 /// @sa pico_set_view
 void pico_get_view (
-    const char** title,
     int* grid,
-    int* window_fullscreen,
-    Pico_Abs_Dim* window,
-    Pico_Rel_Rect* window_target,
-    Pico_Abs_Dim* world,
-    Pico_Rel_Rect* world_source,
-    Pico_Rel_Rect* world_clip,
+    Pico_Abs_Dim* dim,
+    Pico_Rel_Rect* target,
+    Pico_Rel_Rect* source,
+    Pico_Rel_Rect* clip,
     Pico_Abs_Dim* tile
 );
+
+/// @brief Gets window properties. NULL arguments are ignored.
+/// @param title pointer to retrieve window title
+/// @param fs pointer to retrieve fullscreen state
+/// @param dim pointer to retrieve window dimensions
+void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 
 // SET
 
@@ -331,6 +370,10 @@ void pico_set_expert (int on);
 /// @param path path to font file
 void pico_set_font (const char* path);
 
+/// @brief Switches to a layer.
+/// @param name layer name (NULL = main layer, must exist)
+void pico_set_layer (const char* name);
+
 /// @brief Toggles the application window visibility.
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
@@ -340,27 +383,31 @@ void pico_set_show (int on);
 void pico_set_style (PICO_STYLE style);
 
 /// @brief Sets the view configuration. NULL arguments are ignored.
-/// @param window_grid 1 to show grid, 0 to hide, or -1 to keep unchanged
-/// @param window_fullscreen 1 to enable fullscreen, 0 to disable, or -1 to keep
-/// @param window window dimensions (mode determines interpretation)
-/// @param window_target target region within window
-/// @param title window title (NULL to keep current)
-/// @param world world/logical dimensions (mode '#' = tiles, otherwise pixels)
-/// @param world_source source region within world
-/// @param world_clip clipping region within world
-/// @param tile tile size in pixels (required when world mode is '#')
+/// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
+/// @param dim world/logical dimensions (mode '#' = tiles, otherwise pixels)
+/// @param target target region within window
+/// @param source source region within world
+/// @param clip clipping region within world
+/// @param tile tile size in pixels (required when dim mode is '#')
 /// @sa pico_get_view
 void pico_set_view (
-    const char*    title,
-    int window_grid,
-    int window_fullscreen,
-    Pico_Rel_Dim*  window,
-    Pico_Rel_Rect* window_target,
-    Pico_Rel_Dim*  world,
-    Pico_Rel_Rect* world_source,
-    Pico_Rel_Rect* world_clip,
+    int grid,
+    Pico_Rel_Dim*  dim,
+    Pico_Rel_Rect* target,
+    Pico_Rel_Rect* source,
+    Pico_Rel_Rect* clip,
     Pico_Abs_Dim*  tile
 );
+
+/// @brief Sets window properties. NULL/(-1) arguments are ignored.
+/// @param title window title (NULL to keep current)
+/// @param fs fullscreen: 1=enable, 0=disable, -1=unchanged
+/// @param dim window dimensions (NULL to keep current)
+void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim);
+
+/// @brief Sets both window and world to the same dimensions.
+/// @param dim dimensions for both window and world
+void pico_set_dim (Pico_Rel_Dim* dim);
 
 /// @}
 
