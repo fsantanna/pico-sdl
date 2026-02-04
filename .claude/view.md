@@ -190,6 +190,10 @@ pico_set_view(-1, NULL, NULL,
    - Add validation in `pico_set_window()` and `pico_set_view()` dim param
    - Files: pico.c
 
+2b. **Fix `size_pct` tests** [DONE]
+   - Changed to read-compute-set pattern with multipliers
+   - Files: tst/size_pct.c, lua/tst/size_pct.lua
+
 3. **Independent grid per layer**
    - Render grid for each layer with `view.grid` enabled
    - Files: pico.c (`_pico_output_present()`)
