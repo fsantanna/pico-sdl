@@ -32,17 +32,21 @@ pico.set.color.draw({'%', r=1, g=0, b=0, a=0.5})
 |---------|-------|-------|-----------|
 | `lua/pico.c` | 60-83 | `c_color_t()` | Suporte a `'%'` e `'!'` opcional |
 | `lua/pico.c` | 85-115 | `c_color_a_t()` | Suporte a `'%'` e `'!'` com alpha |
-| `lua/tst/colors.lua` | 82-109 | test "colors-05" | Testes para formato porcentagem |
+| `lua/tst/colors.lua` | 82-109 | test "colors-05" | Testes Lua para formato porcentagem |
+| `tst/colors.c` | 96-138 | test "colors-05" | Testes C (referencia para imagem) |
 
 ## Notas
 
-- Testes em C não são necessários pois a feature está na camada de binding Lua
-- A API C usa `Pico_Color` diretamente, sem parsing de modo
+- O teste C produz a imagem de referencia usando `Pico_Color` direto
+- O teste Lua verifica que o parsing de `'%'` e `'!'` produz o mesmo resultado
+- `0.5 * 255 = 127.5` trunca para `127` (Uint8)
 
 ## Pendente
 
 - [x] Commit e push
 - [x] Criar PR
 - [x] Adicionar testes Lua
+- [x] Adicionar testes C
+- [ ] Gerar imagem de referencia `tst/asr/colors-05.png`
 - [ ] Testar manualmente
 - [ ] Merge
