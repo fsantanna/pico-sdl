@@ -493,6 +493,14 @@ Pico_Color pico_color_darker (Pico_Color clr, float pct);
 /// @sa pico_color_darker
 Pico_Color pico_color_lighter (Pico_Color clr, float pct);
 
+/// @brief Mixes two colors by averaging their RGB components.
+/// @param c1 first color
+/// @param c2 second color
+/// @return the mixed color
+/// @sa pico_color_darker
+/// @sa pico_color_lighter
+Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2);
+
 /// @}
 
 #ifdef __cplusplus
