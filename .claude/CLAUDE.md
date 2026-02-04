@@ -457,3 +457,10 @@ int main(void) {
     return 0;
 }
 ```
+
+### Valgrind
+
+- `valgrind.supp` contains the `sdl-init` suppression that references a
+  specific line in `src/pico.c` (the `SDL_Init` call in `pico_init`).
+- Whenever that line number changes, update the `src:pico.c:<line>` reference
+  in `valgrind.supp` accordingly.
