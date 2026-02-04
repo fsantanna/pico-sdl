@@ -103,46 +103,87 @@ Currently `%` mode means "relative to current value" which is confusing:
 
 ---
 
-## 5. Fix Navigation Aids
+## 5. Store src/dst/clip as Pico_Rel_Rect in Pico_View
 
-Current navigation (pico.c:1093-1145) uses `%` relative to current src:
+**Current:**
 ```c
-// Zoom in - shrink src to 90% of current
-pico_set_view(-1, NULL, NULL,
-    &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.9, 0.9}, PICO_ANCHOR_C, NULL},
-    NULL, NULL);
+typedef struct {
+    Pico_Abs_Dim  dim;
+    Pico_Abs_Rect dst;    // always absolute
+    Pico_Abs_Rect src;    // always absolute
+    Pico_Abs_Rect clip;   // always absolute
+    ...
+} Pico_View;
 ```
 
-**New approach - read, compute, set:**
+**Proposed:**
 ```c
-// Get current src in absolute pixels
-Pico_Abs_Rect cur_src = S.layer->view.src;
-
-// Compute new src (shrink by 10% centered)
-int dw = cur_src.w * 0.1 / 2;
-int dh = cur_src.h * 0.1 / 2;
-Pico_Abs_Rect new_src = {
-    cur_src.x + dw,
-    cur_src.y + dh,
-    cur_src.w - 2*dw,
-    cur_src.h - 2*dh
-};
-
-// Set absolute src
-pico_set_view(-1, NULL, NULL,
-    &(Pico_Rel_Rect){'!', {new_src.x, new_src.y, new_src.w, new_src.h},
-                     PICO_ANCHOR_NW, NULL},
-    NULL, NULL);
+typedef struct {
+    Pico_Abs_Dim  dim;
+    Pico_Rel_Rect dst;    // stores mode + values
+    Pico_Rel_Rect src;    // stores mode + values
+    Pico_Rel_Rect clip;   // stores mode + values
+    ...
+} Pico_View;
 ```
 
-**Navigation operations to fix:**
-- Zoom in: pico.c:1102-1109
-- Zoom out: pico.c:1093-1100
-- Scroll left/right/up/down: pico.c:1111-1145
+**Default:** `{'%', {0, 0, 1, 1}, PICO_ANCHOR_NW, NULL}` (full world/window)
+
+**Rationale:**
+- Preserves how user specified values (%, !, #)
+- Enables clean read-modify-write in same mode
+- Navigation becomes trivial
 
 ---
 
-## 6. API Changes
+## 6. Fix Navigation Aids
+
+With `Pico_View` storing `Pico_Rel_Rect`, navigation becomes simple:
+
+```c
+case SDLK_LEFT: {
+    // Scroll left by 10% of world
+    Pico_Rel_Rect src = S.layer->view.src;
+    src.x -= 0.1;
+    pico_set_view(-1, NULL, NULL, &src, NULL, NULL);
+    break;
+}
+
+case SDLK_MINUS: {
+    // Zoom out - keep center, expand by 10%
+    Pico_Rel_Rect src = S.layer->view.src;
+    float cx = src.x + src.w/2;
+    float cy = src.y + src.h/2;
+    src.w += 0.1;
+    src.h += 0.1;
+    src.x = cx - src.w/2;
+    src.y = cy - src.h/2;
+    pico_set_view(-1, NULL, NULL, &src, NULL, NULL);
+    break;
+}
+```
+
+Or with ANCHOR_C for zoom:
+```c
+case SDLK_MINUS: {
+    Pico_Rel_Rect src = S.layer->view.src;
+    src.anchor = PICO_ANCHOR_C;
+    src.x = src.x + src.w/2;  // convert to center
+    src.y = src.y + src.h/2;
+    src.w += 0.1;
+    src.h += 0.1;
+    pico_set_view(-1, NULL, NULL, &src, NULL, NULL);
+    break;
+}
+```
+
+**Navigation operations:**
+- Zoom in/out: pico.c:1095-1120
+- Scroll left/right/up/down: pico.c:1121-1167
+
+---
+
+## 7. API Changes
 
 ### Remove
 - `pico_set_crop(Pico_Abs_Rect)` - pico.h, pico.c:681-683
@@ -160,7 +201,7 @@ pico_set_view(-1, NULL, NULL,
 
 ---
 
-## 7. Fix `tst/todo_*` Files
+## 8. Fix `tst/todo_*` Files
 
 | File | Main Issues |
 |------|-------------|
@@ -180,7 +221,7 @@ pico_set_view(-1, NULL, NULL,
 
 ---
 
-## 8. Implementation Order
+## 9. Implementation Order
 
 1. **Remove `_crop()` and use `view.src`**
    - Simplest change, establishes pattern
@@ -194,25 +235,35 @@ pico_set_view(-1, NULL, NULL,
    - Changed to read-compute-set pattern with multipliers
    - Files: tst/size_pct.c, lua/tst/size_pct.lua
 
-3. **Independent grid per layer**
+3. **Fix `%` for src to be relative to world** [DONE]
+   - Changed `pico_set_view()` src '%' from `&view.src` to `NULL`
+   - Files: pico.c:760
+
+4. **Store src/dst/clip as Pico_Rel_Rect**
+   - Change Pico_View to use Pico_Rel_Rect instead of Pico_Abs_Rect
+   - Default: `{'%', {0, 0, 1, 1}, PICO_ANCHOR_NW, NULL}`
+   - Files: pico.c, pico.h
+
+5. **Fix navigation aids**
+   - With Pico_Rel_Rect in view, navigation is simple read-modify-write
+   - Use '%' mode, just add/subtract 0.1 for scroll/zoom
+   - Files: pico.c:1095-1167
+
+6. **Independent grid per layer**
    - Render grid for each layer with `view.grid` enabled
    - Files: pico.c (`_pico_output_present()`)
 
-4. **Fix navigation aids**
-   - Change from relative-to-self to read-compute-set pattern
-   - Files: pico.c:1093-1145
-
-5. **Move alpha/rotate/flip to view** (future)
+7. **Move alpha/rotate/flip to view** (future)
    - Larger change, can be done incrementally
    - Start with implementing rotation rendering
 
-6. **Fix todo_* files**
+8. **Fix todo_* files**
    - Update to use modern API
    - Files: tst/todo_*.c
 
 ---
 
-## 9. Testing
+## 10. Testing
 
 After each change:
 ```bash
@@ -226,7 +277,7 @@ make tests
 
 ---
 
-## 10. Key Files
+## 11. Key Files
 
 | File | Lines | Purpose |
 |------|-------|---------|
