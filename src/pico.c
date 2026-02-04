@@ -757,7 +757,7 @@ void pico_set_view (
                 rf = _sdl_rect(src, NULL, NULL);
                 break;
             case '%':
-                rf = _sdl_rect(src, &S.layer->view.src, NULL);
+                rf = _sdl_rect(src, NULL, NULL);
                 break;
             default:
                 assert(0 && "TODO");
@@ -1093,57 +1093,77 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     break;
                 }
                 case SDLK_MINUS: {
-                    // Zoom out
+                    // Zoom out - expand src by 10% of world, centered
                     assert(S.layer == &G.main);
+                    Pico_Abs_Rect src = S.layer->view.src;
+                    int dw = S.layer->view.dim.w * 0.05;
+                    int dh = S.layer->view.dim.h * 0.05;
                     pico_set_view(-1, NULL, NULL,
-                        &(Pico_Rel_Rect){'%', {0.5, 0.5, 1.1, 1.1}, PICO_ANCHOR_C, NULL},
-                        NULL, NULL
-                    );
+                        &(Pico_Rel_Rect){'!',
+                            {src.x - dw, src.y - dh, src.w + 2*dw, src.h + 2*dh},
+                            PICO_ANCHOR_NW, NULL},
+                        NULL, NULL);
                     break;
                 }
                 case SDLK_EQUALS: {
-                    // Zoom in
+                    // Zoom in - shrink src by 10% of world, centered
                     assert(S.layer == &G.main);
+                    Pico_Abs_Rect src = S.layer->view.src;
+                    int dw = S.layer->view.dim.w * 0.05;
+                    int dh = S.layer->view.dim.h * 0.05;
                     pico_set_view(-1, NULL, NULL,
-                        &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.9, 0.9}, PICO_ANCHOR_C, NULL},
-                        NULL, NULL
-                    );
+                        &(Pico_Rel_Rect){'!',
+                            {src.x + dw, src.y + dh, src.w - 2*dw, src.h - 2*dh},
+                            PICO_ANCHOR_NW, NULL},
+                        NULL, NULL);
                     break;
                 }
                 case SDLK_LEFT: {
-                    // Scroll left
+                    // Scroll left by 10% of world
                     assert(S.layer == &G.main);
+                    Pico_Abs_Rect src = S.layer->view.src;
+                    int dx = S.layer->view.dim.w * 0.1;
                     pico_set_view(-1, NULL, NULL,
-                        &(Pico_Rel_Rect){'%', {-0.1, 0, 1, 1}, PICO_ANCHOR_NW, NULL},
-                        NULL, NULL
-                    );
+                        &(Pico_Rel_Rect){'!',
+                            {src.x-dx, src.y, src.w, src.h},
+                            PICO_ANCHOR_NW, NULL},
+                        NULL, NULL);
                     break;
                 }
                 case SDLK_RIGHT: {
-                    // Scroll right
+                    // Scroll right by 10% of world
                     assert(S.layer == &G.main);
+                    Pico_Abs_Rect src = S.layer->view.src;
+                    int dx = S.layer->view.dim.w * 0.1;
                     pico_set_view(-1, NULL, NULL,
-                        &(Pico_Rel_Rect){'%', {0.1, 0, 1, 1}, PICO_ANCHOR_NW, NULL},
-                        NULL, NULL
-                    );
+                        &(Pico_Rel_Rect){'!',
+                            {src.x+dx, src.y, src.w, src.h},
+                            PICO_ANCHOR_NW, NULL},
+                        NULL, NULL);
                     break;
                 }
                 case SDLK_UP: {
-                    // Scroll up
+                    // Scroll up by 10% of world
                     assert(S.layer == &G.main);
+                    Pico_Abs_Rect src = S.layer->view.src;
+                    int dy = S.layer->view.dim.h * 0.1;
                     pico_set_view(-1, NULL, NULL,
-                        &(Pico_Rel_Rect){'%', {0, -0.1, 1, 1}, PICO_ANCHOR_NW, NULL},
-                        NULL, NULL
-                    );
+                        &(Pico_Rel_Rect){'!',
+                            {src.x, src.y-dy, src.w, src.h},
+                            PICO_ANCHOR_NW, NULL},
+                        NULL, NULL);
                     break;
                 }
                 case SDLK_DOWN: {
-                    // Scroll down
+                    // Scroll down by 10% of world
                     assert(S.layer == &G.main);
+                    Pico_Abs_Rect src = S.layer->view.src;
+                    int dy = S.layer->view.dim.h * 0.1;
                     pico_set_view(-1, NULL, NULL,
-                        &(Pico_Rel_Rect){'%', {0, 0.1, 1, 1}, PICO_ANCHOR_NW, NULL},
-                        NULL, NULL
-                    );
+                        &(Pico_Rel_Rect){'!',
+                            {src.x, src.y+dy, src.w, src.h},
+                            PICO_ANCHOR_NW, NULL},
+                        NULL, NULL);
                     break;
                 }
                 case SDLK_g: {
