@@ -9,7 +9,8 @@ local r = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 print("WINDOW")
 do
     print("normal")
-    pico.set.window { dim={'%', w=1, h=1} }
+    local win = pico.get.window()
+    pico.set.window { dim={'!', w=win.dim.w*1, h=win.dim.h*1} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-01")
@@ -17,7 +18,8 @@ end
 
 do
     print("double")
-    pico.set.window { dim={'%', w=2, h=2} }
+    local win = pico.get.window()
+    pico.set.window { dim={'!', w=win.dim.w*2, h=win.dim.h*2} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-02")
@@ -25,7 +27,8 @@ end
 
 do
     print("half")
-    pico.set.window { dim={'%', w=0.25, h=0.25} }
+    local win = pico.get.window()
+    pico.set.window { dim={'!', w=win.dim.w*0.25, h=win.dim.h*0.25} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-03")
@@ -33,7 +36,8 @@ end
 
 do
     print("normal")
-    pico.set.window { dim={'%', w=2, h=2} }
+    local win = pico.get.window()
+    pico.set.window { dim={'!', w=win.dim.w*2, h=win.dim.h*2} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-04")
@@ -60,7 +64,8 @@ end
 print("WORLD")
 do
     print("normal")
-    pico.set.view { dim={'%', w=1, h=1} }
+    local view = pico.get.view()
+    pico.set.view { dim={'!', w=view.dim.w*1, h=view.dim.h*1} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-07")
@@ -68,7 +73,8 @@ end
 
 do
     print("double")
-    pico.set.view { dim={'%', w=2, h=2} }
+    local view = pico.get.view()
+    pico.set.view { dim={'!', w=view.dim.w*2, h=view.dim.h*2} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-08")
@@ -76,7 +82,8 @@ end
 
 do
     print("half")
-    pico.set.view { dim={'%', w=0.25, h=0.25} }
+    local view = pico.get.view()
+    pico.set.view { dim={'!', w=view.dim.w*0.25, h=view.dim.h*0.25} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-09")
@@ -84,7 +91,8 @@ end
 
 do
     print("normal")
-    pico.set.view { dim={'%', w=2, h=2} }
+    local view = pico.get.view()
+    pico.set.view { dim={'!', w=view.dim.w*2, h=view.dim.h*2} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-10")

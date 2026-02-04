@@ -776,6 +776,7 @@ void pico_set_view (
 
     // dim: recreate texture for current layer
     if (dim != NULL) {
+        assert(dim->mode != '%');
         SDL_FDim df = _sdl_dim(dim, NULL, NULL);
         Pico_Abs_Dim di = _fi_dim(&df);
         S.layer->view.dim = di;
@@ -836,6 +837,7 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
     // dim: window dimensions
     if (dim != NULL) {
         assert(fs==-1 && !S.win.fs);
+        assert(dim->mode != '%');
         G.tgt = 0;
         SDL_FDim df = _sdl_dim(dim, NULL, NULL);
         G.tgt = 1;
