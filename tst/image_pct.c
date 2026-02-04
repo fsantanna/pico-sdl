@@ -6,7 +6,7 @@ int main (void) {
     pico_set_window("Image - Size - Crop", -1, NULL);
     pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
 
-    // pico_get_image: pct mode, NULL ref (world 100x100, image 48x48)
+    // pico_get_image: pct mode, NULL base (world 100x100, image 48x48)
     {
         {
             // h=0.24 -> 24px, aspect 1:1 -> w=24px
@@ -27,19 +27,19 @@ int main (void) {
             assert(r.w==48 && r.h==48);
         }
     }
-    // pico_get_image: pct mode with ref (ref 50x50, image 48x48)
+    // pico_get_image: pct mode with base (base 50x50, image 48x48)
     {
-        Pico_Rel_Rect ref = { '%', {0, 0, 0.5, 0.5}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect base = { '%', {0, 0, 0.5, 0.5}, PICO_ANCHOR_NW, NULL };
         {
             // w=0, h=0 -> raw dimensions 48x48
-            Pico_Rel_Dim d = { '%', {0, 0}, &ref };
+            Pico_Rel_Dim d = { '%', {0, 0}, &base };
             Pico_Abs_Dim r = pico_get_image("open.png", &d);
             assert(r.w==48 && r.h==48);
             assert(d.w==0.96f && d.h==0.96f);
         }
         {
             // h=0.48 of 50 = 24px, aspect 1:1 -> w=24px
-            Pico_Rel_Dim d = { '%', {0, 0.48}, &ref };
+            Pico_Rel_Dim d = { '%', {0, 0.48}, &base };
             Pico_Abs_Dim r = pico_get_image("open.png", &d);
             assert(r.w==24 && r.h==24);
             assert(d.w==0.48f && d.h==0.48f);

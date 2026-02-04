@@ -12,14 +12,14 @@ do
     assert(pct.w*100//1==17 and pct.h*100//1==10)
     assert(dim.w==17 and dim.h==10)
 
-    local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
+    local base = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
     local pct = {'%', h=0.2}
-    pico.get.text("ABC", pct, ref)
+    pico.get.text("ABC", pct, base)
     assert(pct.w*100//1==34 and pct.h*100//1==20)
 
-    local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='W'}
+    local base = {'%', x=0, y=0, w=0.5, h=0.5, anc='W'}
     local p = {'%', h=0.2};
-    pico.get.text("ABC", p, ref);
+    pico.get.text("ABC", p, base);
     assert(p.w*100//1==34 and p.h*100//1==20);
 end
 
