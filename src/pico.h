@@ -417,17 +417,17 @@ void pico_set_dim (Pico_Rel_Dim* dim);
 
 /// @brief Converts a relative position to absolute coordinates.
 /// @param pos relative position to convert
-/// @param ref reference rectangle to use as basis (NULL uses world dimensions)
+/// @param base reference rectangle to use as basis (NULL uses world dimensions)
 /// @return absolute position in logical pixels
 /// @sa pico_cv_rect_rel_abs
-Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref);
+Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative rectangle to absolute coordinates.
 /// @param rect relative rectangle to convert
-/// @param ref reference rectangle to use as basis (NULL uses world dimensions)
+/// @param base reference rectangle to use as basis (NULL uses world dimensions)
 /// @return absolute rectangle in logical pixels
 /// @sa pico_cv_pos_rel_abs
-Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref);
+Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base);
 
 /// @brief Checks if a point is inside a rectangle.
 /// @param pos point to test (mode determines coordinates)

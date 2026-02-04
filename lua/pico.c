@@ -281,19 +281,19 @@ static int l_quit (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_cv_pos (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // pos | [ref]
+    luaL_checktype(L, 1, LUA_TTABLE);       // pos | [base]
 
     Pico_Rel_Pos* rel = c_rel_pos(L, 1);
-    Pico_Abs_Rect* ref = NULL;
-    Pico_Abs_Rect ref_rect;
+    Pico_Abs_Rect* base = NULL;
+    Pico_Abs_Rect base_rect;
     if (lua_istable(L, 2)) {
-        ref_rect = c_abs_rect(L, 2);
-        ref = &ref_rect;
+        base_rect = c_abs_rect(L, 2);
+        base = &base_rect;
     }
 
-    Pico_Abs_Pos raw = pico_cv_pos_rel_abs(rel, ref);
+    Pico_Abs_Pos raw = pico_cv_pos_rel_abs(rel, base);
 
-    lua_newtable(L);                        // pos | [ref] | raw
+    lua_newtable(L);                        // pos | [base] | raw
     lua_pushstring(L, "!");
     lua_rawseti(L, -2, 1);
     lua_pushinteger(L, raw.x);
@@ -305,19 +305,19 @@ static int l_cv_pos (lua_State* L) {
 }
 
 static int l_cv_rect (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // rect | [ref]
+    luaL_checktype(L, 1, LUA_TTABLE);       // rect | [base]
 
     Pico_Rel_Rect* rel = c_rel_rect(L, 1);
-    Pico_Abs_Rect* ref = NULL;
-    Pico_Abs_Rect ref_rect;
+    Pico_Abs_Rect* base = NULL;
+    Pico_Abs_Rect base_rect;
     if (lua_istable(L, 2)) {
-        ref_rect = c_abs_rect(L, 2);
-        ref = &ref_rect;
+        base_rect = c_abs_rect(L, 2);
+        base = &base_rect;
     }
 
-    Pico_Abs_Rect raw = pico_cv_rect_rel_abs(rel, ref);
+    Pico_Abs_Rect raw = pico_cv_rect_rel_abs(rel, base);
 
-    lua_newtable(L);                        // rect | [ref] | raw
+    lua_newtable(L);                        // rect | [base] | raw
     lua_pushstring(L, "!");
     lua_rawseti(L, -2, 1);
     lua_pushinteger(L, raw.x);
