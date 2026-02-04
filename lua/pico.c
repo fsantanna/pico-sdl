@@ -383,8 +383,9 @@ static int l_color_lighter (lua_State* L) {
 }
 
 static int l_color_mix (lua_State* L) {
-    Pico_Color c1 = c_color_t(L, 1);
-    Pico_Color c2 = c_color_t(L, 2);
+    Pico_Color c1 = c_color(L);
+    lua_remove(L, 1);
+    Pico_Color c2 = c_color(L);
     Pico_Color ret = pico_color_mix(c1, c2);
     L_push_color(L, ret);
     return 1;
