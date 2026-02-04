@@ -93,6 +93,41 @@ int main (void) {
         _pico_check("colors-04");
     }
 
+    puts("mix function");
+    {
+        pico_output_clear();
+
+        // red + blue = purple
+        Pico_Color c1 = pico_color_mix(PICO_COLOR_RED, PICO_COLOR_BLUE);
+        pico_set_color_draw(c1);
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, PICO_ANCHOR_C, NULL }
+        );
+
+        // red + green = olive
+        Pico_Color c2 = pico_color_mix(PICO_COLOR_RED, PICO_COLOR_GREEN);
+        pico_set_color_draw(c2);
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.35, 0.8, 0.1}, PICO_ANCHOR_C, NULL }
+        );
+
+        // blue + green = teal
+        Pico_Color c3 = pico_color_mix(PICO_COLOR_BLUE, PICO_COLOR_GREEN);
+        pico_set_color_draw(c3);
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.55, 0.8, 0.1}, PICO_ANCHOR_C, NULL }
+        );
+
+        // black + white = gray
+        Pico_Color c4 = pico_color_mix(PICO_COLOR_BLACK, PICO_COLOR_WHITE);
+        pico_set_color_draw(c4);
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, PICO_ANCHOR_C, NULL }
+        );
+
+        _pico_check("colors-05");
+    }
+
     pico_init(0);
     return 0;
 }

@@ -382,6 +382,15 @@ static int l_color_lighter (lua_State* L) {
     return 1;
 }
 
+static int l_color_mix (lua_State* L) {
+    Pico_Color c1 = c_color(L);
+    lua_remove(L, 1);
+    Pico_Color c2 = c_color(L);
+    Pico_Color ret = pico_color_mix(c1, c2);
+    L_push_color(L, ret);
+    return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static void L_dim_default_wh (lua_State* L, int i) {
@@ -1104,6 +1113,7 @@ static const luaL_Reg ll_vs[] = {
 static const luaL_Reg ll_color[] = {
     { "darker",  l_color_darker  },
     { "lighter", l_color_lighter },
+    { "mix",     l_color_mix     },
     { NULL, NULL }
 };
 

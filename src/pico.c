@@ -477,6 +477,14 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct) {
     };
 }
 
+Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2) {
+    return (Pico_Color) {
+        (c1.r + c2.r) / 2,
+        (c1.g + c2.g) / 2,
+        (c1.b + c2.b) / 2
+    };
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
