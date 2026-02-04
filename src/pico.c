@@ -338,6 +338,101 @@ Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ba
     return (Pico_Abs_Rect) _fi_rect(&rf);
 }
 
+void pico_cv_pos_abs_rel (const Pico_Abs_Pos* fr,
+                          Pico_Rel_Pos* to,
+                          Pico_Abs_Rect* base)
+{
+    SDL_FRect r0;
+    if (base == NULL) {
+        r0 = (SDL_FRect) {
+            0, 0,
+            (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
+            (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
+        };
+    } else {
+        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
+    }
+
+    Pico_Rel_Rect* up_rect = (Pico_Rel_Rect*) to->up;
+    SDL_FRect r1 = _f1(up_rect, r0, NULL);
+
+    switch (to->mode) {
+        case '!':
+            to->x = fr->x - r1.x + to->anchor.x;
+            to->y = fr->y - r1.y + to->anchor.y;
+            break;
+        case '%':
+            to->x = (fr->x - r1.x + to->anchor.x) / r1.w;
+            to->y = (fr->y - r1.y + to->anchor.y) / r1.h;
+            break;
+        case '#':
+            to->x = (fr->x - r1.x) / S.layer->view.tile.w + 1 - to->anchor.x;
+            to->y = (fr->y - r1.y) / S.layer->view.tile.h + 1 - to->anchor.y;
+            break;
+        default:
+            assert(0 && "invalid mode");
+    }
+}
+
+void pico_cv_pos_rel_rel (const Pico_Rel_Pos* fr,
+                          Pico_Rel_Pos* to,
+                          Pico_Abs_Rect* base)
+{
+    Pico_Abs_Pos abs = pico_cv_pos_rel_abs(fr, base);
+    pico_cv_pos_abs_rel(&abs, to, base);
+}
+
+void pico_cv_rect_abs_rel (const Pico_Abs_Rect* fr,
+                           Pico_Rel_Rect* to,
+                           Pico_Abs_Rect* base)
+{
+    SDL_FRect r0;
+    if (base == NULL) {
+        r0 = (SDL_FRect) {
+            0, 0,
+            (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
+            (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
+        };
+    } else {
+        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
+    }
+
+    SDL_FRect r1 = _f1(to->up, r0, NULL);
+
+    switch (to->mode) {
+        case '!':
+            to->w = fr->w;
+            to->h = fr->h;
+            to->x = fr->x - r1.x + to->anchor.x * to->w;
+            to->y = fr->y - r1.y + to->anchor.y * to->h;
+            break;
+        case '%':
+            to->w = fr->w / r1.w;
+            to->h = fr->h / r1.h;
+            to->x = (fr->x - r1.x + to->anchor.x * fr->w) / r1.w;
+            to->y = (fr->y - r1.y + to->anchor.y * fr->h) / r1.h;
+            break;
+        case '#':
+            to->w = fr->w / (float)S.layer->view.tile.w;
+            to->h = fr->h / (float)S.layer->view.tile.h;
+            to->x = (fr->x - r1.x) / S.layer->view.tile.w + 1
+                    - to->anchor.x + to->anchor.x * to->w;
+            to->y = (fr->y - r1.y) / S.layer->view.tile.h + 1
+                    - to->anchor.y + to->anchor.y * to->h;
+            break;
+        default:
+            assert(0 && "invalid mode");
+    }
+}
+
+void pico_cv_rect_rel_rel (const Pico_Rel_Rect* fr,
+                           Pico_Rel_Rect* to,
+                           Pico_Abs_Rect* base)
+{
+    Pico_Abs_Rect abs = pico_cv_rect_rel_abs(fr, base);
+    pico_cv_rect_abs_rel(&abs, to, base);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // VS
 ///////////////////////////////////////////////////////////////////////////////

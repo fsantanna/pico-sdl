@@ -1,8 +1,108 @@
 #include "pico.h"
+#include <stdio.h>
+#include <math.h>
 
 // TODO: TGT=0 (phy)
 
+#define EPSILON 1
+
+static int pos_eq (Pico_Abs_Pos a, Pico_Abs_Pos b) {
+    return (abs(a.x - b.x) <= EPSILON) && (abs(a.y - b.y) <= EPSILON);
+}
+
+static int rect_eq (Pico_Abs_Rect a, Pico_Abs_Rect b) {
+    return (abs(a.x - b.x) <= EPSILON) && (abs(a.y - b.y) <= EPSILON) &&
+           (abs(a.w - b.w) <= EPSILON) && (abs(a.h - b.h) <= EPSILON);
+}
+
+static void test_pos_abs_rel (
+    Pico_Abs_Pos abs,
+    char mode,
+    Pico_Anchor anchor,
+    Pico_Rel_Rect* up,
+    Pico_Abs_Rect* base
+) {
+    Pico_Rel_Pos to = { mode, {0, 0}, anchor, up };
+    pico_cv_pos_abs_rel(&abs, &to, base);
+    Pico_Abs_Pos abs2 = pico_cv_pos_rel_abs(&to, base);
+    if (!pos_eq(abs, abs2)) {
+        printf("FAIL pos_abs_rel: mode='%c' anchor=(%.1f,%.1f)\n",
+               mode, anchor.x, anchor.y);
+        printf("  abs=(%d,%d) -> rel=(%.2f,%.2f) -> abs2=(%d,%d)\n",
+               abs.x, abs.y, to.x, to.y, abs2.x, abs2.y);
+        assert(0);
+    }
+}
+
+static void test_pos_rel_rel (
+    Pico_Rel_Pos fr,
+    char mode_to,
+    Pico_Anchor anchor_to,
+    Pico_Rel_Rect* up_to,
+    Pico_Abs_Rect* base
+) {
+    Pico_Abs_Pos abs1 = pico_cv_pos_rel_abs(&fr, base);
+    Pico_Rel_Pos to = { mode_to, {0, 0}, anchor_to, up_to };
+    pico_cv_pos_rel_rel(&fr, &to, base);
+    Pico_Abs_Pos abs2 = pico_cv_pos_rel_abs(&to, base);
+    if (!pos_eq(abs1, abs2)) {
+        printf("FAIL pos_rel_rel: fr.mode='%c' to.mode='%c'\n",
+               fr.mode, mode_to);
+        printf("  abs1=(%d,%d) abs2=(%d,%d)\n",
+               abs1.x, abs1.y, abs2.x, abs2.y);
+        assert(0);
+    }
+}
+
+static void test_rect_abs_rel (
+    Pico_Abs_Rect abs,
+    char mode,
+    Pico_Anchor anchor,
+    Pico_Rel_Rect* up,
+    Pico_Abs_Rect* base
+) {
+    Pico_Rel_Rect to = { mode, {0, 0, 0, 0}, anchor, up };
+    pico_cv_rect_abs_rel(&abs, &to, base);
+    Pico_Abs_Rect abs2 = pico_cv_rect_rel_abs(&to, base);
+    if (!rect_eq(abs, abs2)) {
+        printf("FAIL rect_abs_rel: mode='%c' anchor=(%.1f,%.1f)\n",
+               mode, anchor.x, anchor.y);
+        printf("  abs=(%d,%d,%d,%d) -> rel=(%.2f,%.2f,%.2f,%.2f) "
+               "-> abs2=(%d,%d,%d,%d)\n",
+               abs.x, abs.y, abs.w, abs.h,
+               to.x, to.y, to.w, to.h,
+               abs2.x, abs2.y, abs2.w, abs2.h);
+        assert(0);
+    }
+}
+
+static void test_rect_rel_rel (
+    Pico_Rel_Rect fr,
+    char mode_to,
+    Pico_Anchor anchor_to,
+    Pico_Rel_Rect* up_to,
+    Pico_Abs_Rect* base
+) {
+    Pico_Abs_Rect abs1 = pico_cv_rect_rel_abs(&fr, base);
+    Pico_Rel_Rect to = { mode_to, {0, 0, 0, 0}, anchor_to, up_to };
+    pico_cv_rect_rel_rel(&fr, &to, base);
+    Pico_Abs_Rect abs2 = pico_cv_rect_rel_abs(&to, base);
+    if (!rect_eq(abs1, abs2)) {
+        printf("FAIL rect_rel_rel: fr.mode='%c' to.mode='%c'\n",
+               fr.mode, mode_to);
+        printf("  abs1=(%d,%d,%d,%d) abs2=(%d,%d,%d,%d)\n",
+               abs1.x, abs1.y, abs1.w, abs1.h,
+               abs2.x, abs2.y, abs2.w, abs2.h);
+        assert(0);
+    }
+}
+
 int main (void) {
+
+    ///////////////////////////////////////////////////////////////////////////
+    // EXISTING TESTS: rel_abs
+    ///////////////////////////////////////////////////////////////////////////
+
     // EXT - POS - PCT->RAW
     {
         puts("ext - pos - pct->abs - C");
@@ -80,7 +180,6 @@ int main (void) {
         Pico_Rel_Rect up  = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
         Pico_Rel_Pos  pos = { '!', {5, 5}, PICO_ANCHOR_NW, &up };
         Pico_Abs_Pos  abs = pico_cv_pos_rel_abs(&pos, &base);
-        // up on base(10,10,80,80) -> (30,30,40,40), pos adds (5,5)
         printf("pos: (%d, %d)\n", abs.x, abs.y);
         assert(abs.x==35 && abs.y==35);
     }
@@ -110,7 +209,6 @@ int main (void) {
         Pico_Rel_Rect up   = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
         Pico_Rel_Rect rect = { '!', {5, 5, 10, 10}, PICO_ANCHOR_NW, &up };
         Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, &base);
-        // up on base(10,10,80,80) -> (30,30,40,40), rect adds (5,5)
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
         assert(abs.x==35 && abs.y==35 && abs.w==10 && abs.h==10);
     }
@@ -125,7 +223,6 @@ int main (void) {
         Pico_Rel_Rect up  = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
         Pico_Rel_Pos  pos = { '!', {10, 10}, PICO_ANCHOR_NW, &up };
         Pico_Abs_Pos  abs = pico_cv_pos_rel_abs(&pos, NULL);
-        // up resolves to (25,25,50,50) on 100x100, pos adds (10,10)
         printf("pos: (%d, %d)\n", abs.x, abs.y);
         assert(abs.x==35 && abs.y==35);
     }
@@ -136,7 +233,6 @@ int main (void) {
         Pico_Rel_Rect up   = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
         Pico_Rel_Rect rect = { '!', {5, 5, 10, 10}, PICO_ANCHOR_NW, &up };
         Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
-        // up resolves to (25,25,50,50) on 100x100, rect adds (5,5)
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
         assert(abs.x==30 && abs.y==30 && abs.w==10 && abs.h==10);
     }
@@ -211,7 +307,6 @@ int main (void) {
         Pico_Rel_Pos pos = { '#', {2, 3}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
         printf("pos: (%d, %d)\n", abs.x, abs.y);
-        // tile (2,3) NW -> pixel ((2-1)*4, (3-1)*4) = (4, 8)
         assert(abs.x==4 && abs.y==8);
     }
     {
@@ -219,7 +314,6 @@ int main (void) {
         Pico_Rel_Pos pos = { '#', {2, 2}, PICO_ANCHOR_C, NULL };
         Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
         printf("pos: (%d, %d)\n", abs.x, abs.y);
-        // tile (2,2) C -> pixel (2-1+0.5)*4 = 6
         assert(abs.x==6 && abs.y==6);
     }
     {
@@ -228,8 +322,6 @@ int main (void) {
         Pico_Rel_Pos p4 = { '#', {4, 4}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Pos r1 = pico_cv_pos_rel_abs(&p1, NULL);
         Pico_Abs_Pos r4 = pico_cv_pos_rel_abs(&p4, NULL);
-        // tile (1,1) -> pixel (0, 0)
-        // tile (4,4) -> pixel (12, 12)
         assert(r1.x==0  && r1.y==0);
         assert(r4.x==12 && r4.y==12);
     }
@@ -240,7 +332,6 @@ int main (void) {
         Pico_Rel_Rect rect = { '#', {1, 1, 1, 1}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
-        // tile (1,1,1,1) NW -> pixel (0, 0, 4, 4)
         assert(abs.x==0 && abs.y==0 && abs.w==4 && abs.h==4);
     }
     {
@@ -248,7 +339,6 @@ int main (void) {
         Pico_Rel_Rect rect = { '#', {2, 2, 2, 2}, PICO_ANCHOR_C, NULL };
         Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
-        // tile (2,2,2,2) C -> d=(8,8), x=(2-1+0.5)*4-0.5*8=2, y=2 -> (2, 2, 8, 8)
         assert(abs.x==2 && abs.y==2 && abs.w==8 && abs.h==8);
     }
     {
@@ -256,7 +346,6 @@ int main (void) {
         Pico_Rel_Rect rect = { '#', {2, 2, 2, 2}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
-        // tile (2,2,2,2) NW -> pixel ((2-1)*4, (2-1)*4, 8, 8) = (4, 4, 8, 8)
         assert(abs.x==4 && abs.y==4 && abs.w==8 && abs.h==8);
     }
     {
@@ -264,9 +353,139 @@ int main (void) {
         Pico_Rel_Rect rect = { '#', {2.5, 2.5, 2, 2}, PICO_ANCHOR_C, NULL };
         Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
-        // tile (2.5,2.5,2,2) C -> d=(8,8), x=(2.5-1+0.5)*4-0.5*8=8-4=4, y=4
         assert(abs.x==4 && abs.y==4 && abs.w==8 && abs.h==8);
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // NEW TESTS: abs_rel and rel_rel (canonical form invariant)
+    ///////////////////////////////////////////////////////////////////////////
+
+    // Reset to 100x100 for inverse tests
+    {
+        Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
+    }
+
+    Pico_Anchor anchors[] = {
+        PICO_ANCHOR_NW, PICO_ANCHOR_N, PICO_ANCHOR_NE,
+        PICO_ANCHOR_W,  PICO_ANCHOR_C, PICO_ANCHOR_E,
+        PICO_ANCHOR_SW, PICO_ANCHOR_S, PICO_ANCHOR_SE
+    };
+    int n_anchors = sizeof(anchors) / sizeof(anchors[0]);
+
+    char modes[] = { '!', '%' };
+    int n_modes = sizeof(modes) / sizeof(modes[0]);
+
+    Pico_Abs_Rect base = { 0, 0, 100, 100 };
+
+    printf("\n=== Testing pico_cv_pos_abs_rel ===\n");
+    {
+        Pico_Abs_Pos positions[] = {
+            {0, 0}, {50, 50}, {100, 100}, {25, 75}, {10, 90}
+        };
+        int n_pos = sizeof(positions) / sizeof(positions[0]);
+
+        for (int i = 0; i < n_pos; i++) {
+            for (int m = 0; m < n_modes; m++) {
+                for (int a = 0; a < n_anchors; a++) {
+                    test_pos_abs_rel(positions[i], modes[m],
+                                     anchors[a], NULL, &base);
+                }
+            }
+        }
+        printf("  passed: %d positions x %d modes x %d anchors\n",
+               n_pos, n_modes, n_anchors);
+    }
+
+    printf("=== Testing pico_cv_pos_rel_rel ===\n");
+    {
+        Pico_Rel_Pos from_positions[] = {
+            { '!', {10, 20}, PICO_ANCHOR_NW, NULL },
+            { '!', {50, 50}, PICO_ANCHOR_C, NULL },
+            { '%', {0.5, 0.5}, PICO_ANCHOR_C, NULL },
+            { '%', {0.25, 0.75}, PICO_ANCHOR_NW, NULL },
+        };
+        int n_from = sizeof(from_positions) / sizeof(from_positions[0]);
+
+        for (int i = 0; i < n_from; i++) {
+            for (int m = 0; m < n_modes; m++) {
+                for (int a = 0; a < n_anchors; a++) {
+                    test_pos_rel_rel(from_positions[i], modes[m],
+                                     anchors[a], NULL, &base);
+                }
+            }
+        }
+        printf("  passed: %d from x %d modes x %d anchors\n",
+               n_from, n_modes, n_anchors);
+    }
+
+    printf("=== Testing pico_cv_rect_abs_rel ===\n");
+    {
+        Pico_Abs_Rect rects[] = {
+            {0, 0, 10, 10},
+            {25, 25, 50, 50},
+            {10, 20, 30, 40},
+            {0, 0, 100, 100},
+        };
+        int n_rects = sizeof(rects) / sizeof(rects[0]);
+
+        for (int i = 0; i < n_rects; i++) {
+            for (int m = 0; m < n_modes; m++) {
+                for (int a = 0; a < n_anchors; a++) {
+                    test_rect_abs_rel(rects[i], modes[m],
+                                      anchors[a], NULL, &base);
+                }
+            }
+        }
+        printf("  passed: %d rects x %d modes x %d anchors\n",
+               n_rects, n_modes, n_anchors);
+    }
+
+    printf("=== Testing pico_cv_rect_rel_rel ===\n");
+    {
+        Pico_Rel_Rect from_rects[] = {
+            { '!', {10, 20, 30, 40}, PICO_ANCHOR_NW, NULL },
+            { '!', {50, 50, 20, 20}, PICO_ANCHOR_C, NULL },
+            { '%', {0.5, 0.5, 0.2, 0.2}, PICO_ANCHOR_C, NULL },
+            { '%', {0.25, 0.25, 0.5, 0.5}, PICO_ANCHOR_NW, NULL },
+        };
+        int n_from = sizeof(from_rects) / sizeof(from_rects[0]);
+
+        for (int i = 0; i < n_from; i++) {
+            for (int m = 0; m < n_modes; m++) {
+                for (int a = 0; a < n_anchors; a++) {
+                    test_rect_rel_rel(from_rects[i], modes[m],
+                                      anchors[a], NULL, &base);
+                }
+            }
+        }
+        printf("  passed: %d from x %d modes x %d anchors\n",
+               n_from, n_modes, n_anchors);
+    }
+
+    printf("=== Testing with up hierarchy ===\n");
+    {
+        Pico_Rel_Rect parent = { '!', {20, 20, 60, 60}, PICO_ANCHOR_NW, NULL };
+
+        Pico_Abs_Pos pos = { 50, 50 };
+        test_pos_abs_rel(pos, '!', PICO_ANCHOR_C, &parent, &base);
+        test_pos_abs_rel(pos, '%', PICO_ANCHOR_C, &parent, &base);
+
+        Pico_Rel_Pos rel_pos = { '!', {30, 30}, PICO_ANCHOR_C, &parent };
+        test_pos_rel_rel(rel_pos, '%', PICO_ANCHOR_NW, &parent, &base);
+
+        Pico_Abs_Rect rect = { 30, 30, 20, 20 };
+        test_rect_abs_rel(rect, '!', PICO_ANCHOR_C, &parent, &base);
+        test_rect_abs_rel(rect, '%', PICO_ANCHOR_C, &parent, &base);
+
+        Pico_Rel_Rect rel_rect = { '!', {10, 10, 20, 20}, PICO_ANCHOR_NW,
+                                   &parent };
+        test_rect_rel_rel(rel_rect, '%', PICO_ANCHOR_C, &parent, &base);
+
+        printf("  passed: up hierarchy tests\n");
+    }
+
+    printf("\n=== ALL TESTS PASSED ===\n");
 
     pico_init(0);
     return 0;

@@ -429,6 +429,42 @@ Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
 /// @sa pico_cv_pos_rel_abs
 Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base);
 
+/// @brief Converts an absolute position to relative coordinates.
+/// @param fr absolute position to convert
+/// @param to relative position template (mode, anchor, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @sa pico_cv_pos_rel_abs
+void pico_cv_pos_abs_rel (const Pico_Abs_Pos* fr,
+                          Pico_Rel_Pos* to,
+                          Pico_Abs_Rect* base);
+
+/// @brief Converts a relative position to another relative mode.
+/// @param fr relative position to convert
+/// @param to relative position template (mode, anchor, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @sa pico_cv_pos_abs_rel
+void pico_cv_pos_rel_rel (const Pico_Rel_Pos* fr,
+                          Pico_Rel_Pos* to,
+                          Pico_Abs_Rect* base);
+
+/// @brief Converts an absolute rectangle to relative coordinates.
+/// @param fr absolute rectangle to convert
+/// @param to relative rectangle template (mode, anchor, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @sa pico_cv_rect_rel_abs
+void pico_cv_rect_abs_rel (const Pico_Abs_Rect* fr,
+                           Pico_Rel_Rect* to,
+                           Pico_Abs_Rect* base);
+
+/// @brief Converts a relative rectangle to another relative mode.
+/// @param fr relative rectangle to convert
+/// @param to relative rectangle template (mode, anchor, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @sa pico_cv_rect_abs_rel
+void pico_cv_rect_rel_rel (const Pico_Rel_Rect* fr,
+                           Pico_Rel_Rect* to,
+                           Pico_Abs_Rect* base);
+
 /// @brief Checks if a point is inside a rectangle.
 /// @param pos point to test (mode determines coordinates)
 /// @param rect rectangle to test against (mode determines coordinates)
