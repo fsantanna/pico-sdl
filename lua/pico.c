@@ -59,35 +59,59 @@ static Pico_Anchor c_anchor (lua_State* L, int i) {
 
 static Pico_Color c_color_t (lua_State* L, int i) {
     assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { r,g,b }
-    Pico_Color clr = {
-        L_checkfieldnum(L, i, "r"),
-        L_checkfieldnum(L, i, "g"),
-        L_checkfieldnum(L, i, "b"),
-    };
-    return clr;
+    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { ['!'|'%'], r,g,b }
+
+    char mode = '!';
+    lua_geti(L, i, 1);                      // T | [1]
+    if (lua_isstring(L, -1)) {
+        const char* s = lua_tostring(L, -1);
+        if ((s[0]=='!' || s[0]=='%') && s[1]=='\0') {
+            mode = s[0];
+        }
+    }
+    lua_pop(L, 1);                          // T
+
+    float r = L_checkfieldnum(L, i, "r");
+    float g = L_checkfieldnum(L, i, "g");
+    float b = L_checkfieldnum(L, i, "b");
+
+    if (mode == '%') {
+        return (Pico_Color) { r*255, g*255, b*255 };
+    } else {
+        return (Pico_Color) { r, g, b };
+    }
 }
 
 static Pico_Color_A c_color_a_t (lua_State* L, int i) {
     assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { r,g,b,a }
+    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { ['!'|'%'], r,g,b,a }
 
-    int a = 0xFF;
-    {
-        lua_getfield(L, i, "a");            // clr | a
-        if (!lua_isnil(L,-1)) {
-            a = L_checkfieldnum(L, i, "a");
+    char mode = '!';
+    lua_geti(L, i, 1);                      // T | [1]
+    if (lua_isstring(L, -1)) {
+        const char* s = lua_tostring(L, -1);
+        if ((s[0]=='!' || s[0]=='%') && s[1]=='\0') {
+            mode = s[0];
         }
-        lua_pop(L, 1);
     }
+    lua_pop(L, 1);                          // T
 
-    Pico_Color_A clr = {
-        L_checkfieldnum(L, i, "r"),
-        L_checkfieldnum(L, i, "g"),
-        L_checkfieldnum(L, i, "b"),
-        a
-    };
-    return clr;
+    float a = (mode == '%') ? 1.0 : 0xFF;
+    lua_getfield(L, i, "a");                // T | a
+    if (!lua_isnil(L,-1)) {
+        a = L_checkfieldnum(L, i, "a");
+    }
+    lua_pop(L, 1);                          // T
+
+    float r = L_checkfieldnum(L, i, "r");
+    float g = L_checkfieldnum(L, i, "g");
+    float b = L_checkfieldnum(L, i, "b");
+
+    if (mode == '%') {
+        return (Pico_Color_A) { r*255, g*255, b*255, a*255 };
+    } else {
+        return (Pico_Color_A) { r, g, b, a };
+    }
 }
 
 static Pico_Color c_color (lua_State* L) {
