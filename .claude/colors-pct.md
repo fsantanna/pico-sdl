@@ -32,8 +32,8 @@ pico.set.color.draw({'%', r=1, g=0, b=0, a=0.5})
 |---------|-------|-------|-----------|
 | `lua/pico.c` | 60-83 | `c_color_t()` | Suporte a `'%'` e `'!'` opcional |
 | `lua/pico.c` | 85-115 | `c_color_a_t()` | Suporte a `'%'` e `'!'` com alpha |
-| `lua/tst/colors.lua` | 82-109 | test "colors-05" | Testes Lua para formato porcentagem |
-| `tst/colors.c` | 96-138 | test "colors-05" | Testes C (referencia para imagem) |
+| `lua/tst/colors.lua` | 109-136 | test "colors-06" | Testes Lua para formato porcentagem |
+| `tst/colors.c` | 131-173 | test "colors-06" | Testes C (referencia para imagem) |
 
 ## Notas
 
@@ -47,6 +47,7 @@ pico.set.color.draw({'%', r=1, g=0, b=0, a=0.5})
 - [x] Criar PR
 - [x] Adicionar testes Lua
 - [x] Adicionar testes C
-- [ ] Gerar imagem de referencia `tst/asr/colors-05.png`
+- [x] Resolver conflito com colors-05 (mix) -> renomeado para colors-06
+- [ ] Gerar imagem de referencia `tst/asr/colors-06.png`
 - [ ] Testar manualmente
 - [ ] Merge
