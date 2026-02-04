@@ -79,4 +79,33 @@ do
     pico.check("colors-04")
 end
 
+do
+    print("percentage color format")
+    pico.output.clear()
+
+    -- {'%', r, g, b} format - percentage (0.0-1.0)
+    pico.set.color.draw({'%', r=1, g=0, b=0})
+    pico.output.draw.rect({'%', x=0.5, y=0.15, w=0.8, h=0.1})
+
+    pico.set.color.draw({'%', r=0, g=1, b=0})
+    pico.output.draw.rect({'%', x=0.5, y=0.30, w=0.8, h=0.1})
+
+    pico.set.color.draw({'%', r=0, g=0, b=1})
+    pico.output.draw.rect({'%', x=0.5, y=0.45, w=0.8, h=0.1})
+
+    -- 50% gray
+    pico.set.color.draw({'%', r=0.5, g=0.5, b=0.5})
+    pico.output.draw.rect({'%', x=0.5, y=0.60, w=0.8, h=0.1})
+
+    -- {'!', r, g, b} format - explicit absolute (0-255)
+    pico.set.color.draw({'!', r=255, g=255, b=0})
+    pico.output.draw.rect({'%', x=0.5, y=0.75, w=0.8, h=0.1})
+
+    -- {r, g, b} format - implicit absolute (backward compatible)
+    pico.set.color.draw({r=0, g=255, b=255})
+    pico.output.draw.rect({'%', x=0.5, y=0.90, w=0.8, h=0.1})
+
+    pico.check("colors-05")
+end
+
 pico.init(false)
