@@ -871,6 +871,9 @@ void pico_set_view (
     if (grid != -1) {
         S.layer->view.grid = grid;
     }
+    if (tile != NULL) {
+        S.layer->view.tile = *tile; // (must be set before dim)
+    }
     if (dim != NULL) { // recreates texture
         assert(dim->mode!='%' && dim->up==NULL);
         Pico_Abs_Dim di = pico_cv_dim_rel_abs(dim, NULL);
@@ -901,9 +904,6 @@ void pico_set_view (
     }
     if (clip != NULL) {
         S.layer->view.clip = *clip;
-    }
-    if (tile != NULL) {
-        S.layer->view.tile = *tile; // (must be set before dim)
     }
     _pico_output_present(0);
 }

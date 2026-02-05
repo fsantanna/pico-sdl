@@ -174,12 +174,12 @@ case SDLK_MINUS: {
    - Default: {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL}
    - Files: pico.c
 
-6. **Fix navigation to use '%' read-modify-write** ← NEXT
-   - Depends on step 5
-   - Simple `src.x -= 0.1` pattern
-   - Files: pico.c:1188-1281
+6. **Fix navigation to use '%' read-modify-write** [DONE]
+   - Mode-agnostic: convert to `%`/C, inc/dec, convert back via `pico_cv_rect_rel_rel`
+   - Also: fixed merge errors, replaced remaining `_sdl_dim`+`_fi_dim`, simplified 7 `pico_cv_rect_rel_abs` sites to `NULL` base
+   - Files: pico.c
 
-7. **Independent grid per layer**
+7. **Independent grid per layer** ← NEXT
    - Files: pico.c (`_pico_output_present()`)
 
 8. **Move alpha/rotate/flip to view** (future)
