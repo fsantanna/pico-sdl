@@ -252,25 +252,6 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     return p;                               // T | *ud*
 }
 
-static float L_optfieldnum (lua_State* L, int i,
-                            const char* k, float def) {
-    assert(i > 0);
-    luaL_checktype(L, i, LUA_TTABLE);
-    lua_getfield(L, i, k);
-    if (lua_isnil(L, -1)) {
-        lua_pop(L, 1);
-        return def;
-    }
-    int ok;
-    float v = lua_tonumberx(L, -1, &ok);
-    if (!ok) {
-        lua_pop(L, 1);
-        return def;
-    }
-    lua_pop(L, 1);
-    return v;
-}
-
 static Pico_Rel_Pos* c_rel_pos_tpl (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
@@ -288,8 +269,6 @@ static Pico_Rel_Pos* c_rel_pos_tpl (lua_State* L, int i) {
     Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
     *p = (Pico_Rel_Pos) {
         .mode = mode,
-        .x = L_optfieldnum(L, i, "x", 0),
-        .y = L_optfieldnum(L, i, "y", 0),
         .anchor = anc,
         .up = up,
     };
@@ -313,10 +292,6 @@ static Pico_Rel_Rect* c_rel_rect_tpl (lua_State* L, int i) {
     Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
     *r = (Pico_Rel_Rect) {
         .mode = mode,
-        .x = L_optfieldnum(L, i, "x", 0),
-        .y = L_optfieldnum(L, i, "y", 0),
-        .w = L_optfieldnum(L, i, "w", 0),
-        .h = L_optfieldnum(L, i, "h", 0),
         .anchor = anc,
         .up = up,
     };
