@@ -1,8 +1,8 @@
 # Plano: Duck-typed Lua bindings para conversoes inversas
 
-## Status: Concluido
+## Status: Concluido (revisado)
 
-- Branch: `claude/review-pico-sdl-OAOZ7`
+- Branch: `cv-81`
 
 ## Motivacao
 
@@ -45,9 +45,8 @@ pico.cv.rect(fr, nil, base)    -- rel_abs com base
 | Arquivo | Linha(s) | Local | Descricao |
 |---------|----------|-------|-----------|
 | `lua/pico.c` | 148-155 | `c_abs_pos()` | Novo helper: le {x,y} sem modo |
-| `lua/pico.c` | 237-254 | `L_optfieldnum()` | Novo helper: campo opcional |
-| `lua/pico.c` | 256-279 | `c_rel_pos_tpl()` | Template: x,y default 0 |
-| `lua/pico.c` | 281-306 | `c_rel_rect_tpl()` | Template: x,y,w,h default 0 |
+| `lua/pico.c` | 310-331 | `_c_tpl_pos()` | Template: modo, ancora, up |
+| `lua/pico.c` | 333-354 | `_c_tpl_rect()` | Template: modo, ancora, up |
 | `lua/pico.c` | 363-407 | `l_cv_pos()` | Duck typing pos |
 | `lua/pico.c` | 409-461 | `l_cv_rect()` | Duck typing rect |
 | `lua/tst/cv.lua` | 10,16,22 | rel_abs base | `pos(fr,up)` → `pos(fr,nil,up)` |
@@ -78,3 +77,14 @@ pico.cv.pos({'%', x=0.5, y=0.5, anc='C'}, to)
 
 -- Mesmo padrao para pico.cv.rect com w, h adicionais
 ```
+
+## Revisao (cv-81)
+
+- Renomeado `c_rel_pos_tpl` → `_c_tpl_pos`, `c_rel_rect_tpl` → `_c_tpl_rect`
+- Removido `L_optfieldnum`: templates nao leem x,y,w,h
+- Fix GC dangling pointer no chain `up`: `lua_pop(L,1)` removia o userdata
+  do `c_rel_rect` recursivo em vez da up_table. Corrigido com
+  `lua_replace(L,-2)` que mantem o ud no stack e remove a up_table.
+  Aplicado em 5 funcoes: `c_rel_rect`, `c_rel_dim`, `c_rel_pos`,
+  `_c_tpl_pos`, `_c_tpl_rect`.
+- Stack comments adicionados em `_c_tpl_pos`, `_c_tpl_rect`, `l_cv_pos`

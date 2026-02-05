@@ -345,7 +345,13 @@ Predefined constants are stored in the Lua registry and accessed by name:
 **Memory Management:**
 
 Relative type structs are allocated as Lua userdata via `lua_newuserdata()`,
-ensuring proper lifetime management by the Lua garbage collector.
+which keeps them on the Lua stack. This ensures the data survives until the
+`pico_*` C API call completes; Lua cleans the stack frame on return.
+
+For the `up` chain (`c_rel_rect`, `c_rel_dim`, `c_rel_pos`, `_c_tpl_pos`,
+`_c_tpl_rect`), the recursive userdata from `c_rel_rect` must also stay
+rooted. After the recursive call, `lua_replace(L, -2)` swaps the `up` table
+for the userdata, keeping it on the stack and safe from GC.
 
 ## Dependencies
 
