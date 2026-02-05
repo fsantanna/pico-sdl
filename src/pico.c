@@ -328,6 +328,11 @@ Pico_Abs_Rect* _crop (void) {
 // CV
 ///////////////////////////////////////////////////////////////////////////////
 
+Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
+    SDL_FDim df = _sdl_dim(dim, base, NULL);
+    return _fi_dim(&df);
+}
+
 Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
     SDL_FPoint pf = _sdl_pos(pos, base);
     return (Pico_Abs_Pos) _fi_pos(&pf);

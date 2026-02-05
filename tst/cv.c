@@ -15,6 +15,10 @@ static int rect_eq (Pico_Abs_Rect a, Pico_Abs_Rect b) {
            (abs(a.w - b.w) <= EPSILON) && (abs(a.h - b.h) <= EPSILON);
 }
 
+static int dim_eq (Pico_Abs_Dim a, Pico_Abs_Dim b) {
+    return (abs(a.w - b.w) <= EPSILON) && (abs(a.h - b.h) <= EPSILON);
+}
+
 static void test_pos_abs_rel (
     Pico_Abs_Pos abs,
     char mode,
@@ -354,6 +358,43 @@ int main (void) {
         Pico_Abs_Rect abs  = pico_cv_rect_rel_abs(&rect, NULL);
         printf("rect: (%d, %d, %d, %d)\n", abs.x, abs.y, abs.w, abs.h);
         assert(abs.x==4 && abs.y==4 && abs.w==8 && abs.h==8);
+    }
+
+    // DIM - raw->abs
+    {
+        puts("dim - raw->abs");
+        Pico_Rel_Dim dim = { '!', {50, 30}, NULL };
+        Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&dim, NULL);
+        printf("dim: (%d, %d)\n", abs.w, abs.h);
+        assert(dim_eq(abs, (Pico_Abs_Dim){50, 30}));
+    }
+
+    // DIM - pct->abs (16x16 logical from tile view)
+    {
+        puts("dim - pct->abs");
+        Pico_Rel_Dim dim = { '%', {0.5, 0.75}, NULL };
+        Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&dim, NULL);
+        printf("dim: (%d, %d)\n", abs.w, abs.h);
+        assert(dim_eq(abs, (Pico_Abs_Dim){8, 12}));
+    }
+
+    // DIM - tile->abs (4x4 tiles)
+    {
+        puts("dim - tile->abs");
+        Pico_Rel_Dim dim = { '#', {2, 3}, NULL };
+        Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&dim, NULL);
+        printf("dim: (%d, %d)\n", abs.w, abs.h);
+        assert(dim_eq(abs, (Pico_Abs_Dim){8, 12}));
+    }
+
+    // DIM - pct->abs with base
+    {
+        puts("dim - pct->abs - base");
+        Pico_Abs_Rect base = { 10, 10, 80, 60 };
+        Pico_Rel_Dim dim = { '%', {0.5, 0.5}, NULL };
+        Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&dim, &base);
+        printf("dim: (%d, %d)\n", abs.w, abs.h);
+        assert(dim_eq(abs, (Pico_Abs_Dim){40, 30}));
     }
 
     ///////////////////////////////////////////////////////////////////////////

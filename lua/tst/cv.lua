@@ -100,4 +100,46 @@ do
     assert(raw.x==50 and raw.y==50 and raw.w==30 and raw.h==30)
 end
 
+print "pico.cv.dim [log]: raw->abs"
+do
+    print('', 1)
+    local dim = {'!', w=50, h=30}
+    local raw = pico.cv.dim(dim)
+    assert(raw.w==50 and raw.h==30)
+end
+
+print "pico.cv.dim [log]: pct->abs"
+do
+    print('', 1)
+    local dim = {'%', w=0.5, h=0.3}
+    local raw = pico.cv.dim(dim)
+    assert(raw.w==50 and raw.h==30)
+
+    print('', 2)
+    local up  = {'!', x=10, y=10, w=80, h=60}
+    local dim = {'%', w=0.5, h=0.5, up=up}
+    local raw = pico.cv.dim(dim)
+    assert(raw.w==40 and raw.h==30)
+end
+
+print "pico.cv.dim [log]: tile->abs"
+do
+    local log  = {'#', w=4, h=4}
+    local tile = {w=4, h=4}
+    pico.set.view { dim=log, tile=tile }
+
+    print('', 1)
+    local dim = {'#', w=2, h=3}
+    local raw = pico.cv.dim(dim)
+    assert(raw.w==8 and raw.h==12)
+
+    print('', 2)
+    local dim = {'#', w=1, h=1}
+    local raw = pico.cv.dim(dim)
+    assert(raw.w==4 and raw.h==4)
+
+    local log = {'!', w=100, h=100}
+    pico.set.view { dim=log }
+end
+
 pico.init(false)

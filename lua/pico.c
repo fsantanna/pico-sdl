@@ -298,6 +298,30 @@ static int l_quit (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static int l_cv_dim (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // dim | [base]
+
+    Pico_Rel_Dim* rel = c_rel_dim(L, 1);
+    Pico_Abs_Rect* base = NULL;
+    Pico_Abs_Rect base_rect;
+    if (lua_istable(L, 2)) {
+        base_rect = c_abs_rect(L, 2);
+        base = &base_rect;
+    }
+
+    Pico_Abs_Dim raw = pico_cv_dim_rel_abs(rel, base);
+
+    lua_newtable(L);                        // dim | [base] | raw
+    lua_pushstring(L, "!");
+    lua_rawseti(L, -2, 1);
+    lua_pushinteger(L, raw.w);
+    lua_setfield(L, -2, "w");
+    lua_pushinteger(L, raw.h);
+    lua_setfield(L, -2, "h");
+
+    return 1;
+}
+
 static int l_cv_pos (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // pos | [base]
 
@@ -1116,6 +1140,7 @@ static const luaL_Reg ll_all[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_cv[] = {
+    { "dim",  l_cv_dim  },
     { "pos",  l_cv_pos  },
     { "rect", l_cv_rect },
     { NULL, NULL }
