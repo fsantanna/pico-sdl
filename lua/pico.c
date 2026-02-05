@@ -22,6 +22,27 @@ static float L_checkfieldnum (lua_State* L, int i, const char* k) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static char c_mode (lua_State* L, int i, int asr) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);
+    char mode = '!';
+    lua_geti(L, i, 1);                          // T | [1]
+    if (!lua_isnil(L, -1)) {
+        if (!lua_isstring(L, -1)) {
+            luaL_error(L, "invalid mode at index 1");
+        }
+        const char* s = lua_tostring(L, -1);
+        mode = s[0];
+    } else if (asr) {
+        luaL_error(L, "invalid mode at index 1");
+    }
+    lua_pop(L, 1);                              // T
+    if (mode!='!' && mode!='%' && mode!='#') {
+        luaL_error(L, "invalid mode '%c': expected '!', '%%', or '#'", mode);
+    }
+    return mode;
+}
+
 static Pico_Anchor c_anchor (lua_State* L, int i) {
     assert(i > 0);
     lua_getfield(L, i, "anc");                      // T | anc
@@ -61,15 +82,10 @@ static Pico_Color c_color_t (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);    // clr = { ['!'|'%'], r,g,b }
 
-    char mode = '!';
-    lua_geti(L, i, 1);                      // T | [1]
-    if (lua_isstring(L, -1)) {
-        const char* s = lua_tostring(L, -1);
-        if ((s[0]=='!' || s[0]=='%') && s[1]=='\0') {
-            mode = s[0];
-        }
+    char mode = c_mode(L, i, 0);
+    if (mode!='!' && mode!='%') {
+        luaL_error(L, "invalid mode '%c': expected '!', '%%'", mode);
     }
-    lua_pop(L, 1);                          // T
 
     float r = L_checkfieldnum(L, i, "r");
     float g = L_checkfieldnum(L, i, "g");
@@ -86,15 +102,10 @@ static Pico_Color_A c_color_a_t (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);    // clr = { ['!'|'%'], r,g,b,a }
 
-    char mode = '!';
-    lua_geti(L, i, 1);                      // T | [1]
-    if (lua_isstring(L, -1)) {
-        const char* s = lua_tostring(L, -1);
-        if ((s[0]=='!' || s[0]=='%') && s[1]=='\0') {
-            mode = s[0];
-        }
+    char mode = c_mode(L, i, 0);
+    if (mode!='!' && mode!='%') {
+        luaL_error(L, "invalid mode '%c': expected '!' or '%%'", mode);
     }
-    lua_pop(L, 1);                          // T
 
     float a = (mode == '%') ? 1.0 : 0xFF;
     lua_getfield(L, i, "a");                // T | a
@@ -141,23 +152,6 @@ static Pico_Color c_color (lua_State* L) {
     return clr;
 }
 
-
-static char c_mode (lua_State* L, int i) {
-    assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);
-    lua_geti(L, i, 1);                          // T | [1]
-    if (!lua_isstring(L, -1)) {
-        luaL_error(L, "invalid mode at index 1");
-    }
-    const char* s = lua_tostring(L, -1);
-    char mode = s[0];
-    lua_pop(L, 1);                              // T
-    if (mode!='!' && mode!='%' && mode!='#') {
-        luaL_error(L, "invalid mode '%c', expected '!', '%%', or '#'", mode);
-    }
-    return mode;
-}
-
 static Pico_Abs_Rect c_abs_rect (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
@@ -175,7 +169,7 @@ static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
 
-    char mode = c_mode(L, i);
+    char mode = c_mode(L, i, 1);
     Pico_Anchor anc = c_anchor(L, i);
 
     lua_getfield(L, i, "up");               // T | up
@@ -203,7 +197,7 @@ static Pico_Rel_Dim* c_rel_dim (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
 
-    char mode = c_mode(L, i);
+    char mode = c_mode(L, i, 1);
 
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
@@ -227,7 +221,7 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
 
-    char mode = c_mode(L, i);
+    char mode = c_mode(L, i, 1);
     Pico_Anchor anc = c_anchor(L, i);
 
     lua_getfield(L, i, "up");               // T | up
@@ -608,7 +602,7 @@ static int l_get_view (lua_State* L) {
 static int l_get_mouse (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);           // pos
 
-    char mode = c_mode(L, 1);
+    char mode = c_mode(L, 1, 1);
     Pico_Rel_Pos pos = { .mode = mode };
 
     int button = PICO_MOUSE_BUTTON_NONE;
