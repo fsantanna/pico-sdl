@@ -213,9 +213,9 @@ void pico_output_present (void);
 
 /// @brief Takes a screenshot.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
-/// @param r region to capture (NULL captures full screen)
+/// @param rect region to capture (NULL captures full screen)
 /// @return the filepath of the screenshot
-const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r);
+const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file
