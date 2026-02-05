@@ -166,12 +166,15 @@ case SDLK_MINUS: {
    - Uses `'!'` mode with world-relative delta
    - Files: pico.c:1188-1281
 
-5. **Store src/dst/clip as Pico_Rel_Rect** ← NEXT
-   - Change Pico_View struct
-   - ~34 access points to update
-   - Files: pico.c, pico.h
+5. **Store src/dst/clip as Pico_Rel_Rect** [DONE]
+   - Changed Pico_View struct fields to Pico_Rel_Rect
+   - Read sites use `pico_cv_rect_rel_abs` with explicit base
+   - pico_set_view stores Pico_Rel_Rect directly
+   - pico_get_view now returns dst/src/clip (removed assert)
+   - Default: {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL}
+   - Files: pico.c
 
-6. **Fix navigation to use '%' read-modify-write**
+6. **Fix navigation to use '%' read-modify-write** ← NEXT
    - Depends on step 5
    - Simple `src.x -= 0.1` pattern
    - Files: pico.c:1188-1281

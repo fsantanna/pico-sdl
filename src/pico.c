@@ -38,10 +38,10 @@ typedef struct {
 
 typedef struct {
     Pico_Abs_Dim  dim;
-    Pico_Abs_Rect dst;
+    Pico_Rel_Rect dst;
     int           grid;
-    Pico_Abs_Rect src;
-    Pico_Abs_Rect clip;
+    Pico_Rel_Rect src;
+    Pico_Rel_Rect clip;
     Pico_Abs_Dim  tile;
 } Pico_View;
 
@@ -523,9 +523,9 @@ void pico_init (int on) {
                 .view = {
                     .grid = 1,
                     .dim  = PICO_DIM_LOG,
-                    .dst  = { 0, 0, PICO_DIM_PHY.w, PICO_DIM_PHY.h },
-                    .src  = { 0, 0, PICO_DIM_LOG.w, PICO_DIM_LOG.h },
-                    .clip = { 0, 0, PICO_DIM_LOG.w, PICO_DIM_LOG.h },
+                    .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+                    .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+                    .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
                     .tile = {0, 0},
                 },
             },
@@ -574,7 +574,11 @@ void pico_init (int on) {
             G.main.tex = _tex_create(PICO_DIM_LOG);
             SDL_SetTextureBlendMode(G.main.tex, SDL_BLENDMODE_NONE);
             SDL_SetRenderTarget(G.ren, G.main.tex);
-            SDL_RenderSetClipRect(G.ren, &G.main.view.clip);
+            SDL_Rect r = pico_cv_rect_rel_abs (
+                &G.main.view.clip,
+                &(Pico_Abs_Rect){0, 0, G.main.view.dim.w, G.main.view.dim.h}
+            );
+            SDL_RenderSetClipRect(G.ren, &r);
             pico_output_clear();
         }
 
@@ -659,26 +663,40 @@ const char* pico_get_layer (void) {
 }
 
 int pico_get_mouse (Pico_Rel_Pos* pos, int button) {
-    int phy_x, phy_y;
-    Uint32 masks = SDL_GetMouseState(&phy_x, &phy_y);
+    SDL_Point phy;
+    Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
     if (button == 0) {
         masks = 0;
     }
 
-    // Convert physical position to logical position considering dst and src
+    // rel view.dst/src -> abs dst/src
+    SDL_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst,
+        &(Pico_Abs_Rect){0, 0,
+        S.win.dim.w, S.win.dim.h}
+    );
+    SDL_Rect src = pico_cv_rect_rel_abs (
+        &S.layer->view.src,
+        &(Pico_Abs_Rect){0, 0,
+        S.layer->view.dim.w, S.layer->view.dim.h}
+    );
 
     // 1. Get position relative to dst (normalized 0-1)
-    float rel_x = (phy_x - S.layer->view.dst.x) / (float)S.layer->view.dst.w;
-    float rel_y = (phy_y - S.layer->view.dst.y) / (float)S.layer->view.dst.h;
+    SDL_FPoint rel = {
+        (phy.x - dst.x) / (float)dst.w,
+        (phy.y - dst.y) / (float)dst.h,
+    };
 
     // 2. Convert to logical position within src (zoom/scroll viewport)
-    float log_x = S.layer->view.src.x + rel_x * S.layer->view.src.w;
-    float log_y = S.layer->view.src.y + rel_y * S.layer->view.src.h;
+    SDL_FPoint log = {
+        src.x + rel.x*src.w.
+        src.y + rel.y*src.h.
+    };
 
     switch (pos->mode) {
         case '!':
-            pos->x = log_x;
-            pos->y = log_y;
+            pos->x = log.x;
+            pos->y = log.y;
             break;
         case '%': {
             Pico_Rel_Rect up;
@@ -687,13 +705,13 @@ int pico_get_mouse (Pico_Rel_Pos* pos, int button) {
             } else {
                 assert(0 && "TODO");
             }
-            pos->x = (log_x - up.x) / up.w;
-            pos->y = (log_y - up.y) / up.h;
+            pos->x = (log.x - up.x) / up.w;
+            pos->y = (log.y - up.y) / up.h;
             break;
         }
         case '#':
-            pos->x = (log_x / (float)S.layer->view.tile.w) + (1 - pos->anchor.x);
-            pos->y = (log_y / (float)S.layer->view.tile.h) + (1 - pos->anchor.y);
+            pos->x = (log.x / (float)S.layer->view.tile.w) + (1 - pos->anchor.x);
+            pos->y = (log.y / (float)S.layer->view.tile.h) + (1 - pos->anchor.y);
             break;
         default:
             assert(0 && "invalid mode");
@@ -735,18 +753,26 @@ Uint32 pico_get_ticks (void) {
 
 void pico_get_view (
     int* grid,
-    Pico_Abs_Dim* dim,
+    Pico_Abs_Dim*  dim,
     Pico_Rel_Rect* dst,
     Pico_Rel_Rect* src,
     Pico_Rel_Rect* clip,
-    Pico_Abs_Dim* tile
+    Pico_Abs_Dim*  tile
 ) {
-    assert(dst==NULL && src==NULL && clip==NULL);
     if (grid != NULL) {
         *grid = S.layer->view.grid;
     }
     if (dim != NULL) {
         *dim = S.layer->view.dim;
+    }
+    if (dst != NULL) {
+        *dst = S.layer->view.dst;
+    }
+    if (src != NULL) {
+        *src = S.layer->view.src;
+    }
+    if (clip != NULL) {
+        *clip = S.layer->view.clip;
     }
     if (tile != NULL) {
         *tile = S.layer->view.tile;
@@ -814,7 +840,11 @@ void pico_set_layer (const char* name) {
     }
 
     SDL_SetRenderTarget(G.ren, S.layer->tex);
-    SDL_RenderSetClipRect(G.ren, &S.layer->view.clip);
+    SDL_Rect r = pico_cv_rect_rel_abs (
+        &S.layer->view.clip,
+        &(Pico_Abs_Rect){0, 0, S.layer->view.dim.w, S.layer->view.dim.h}
+    );
+    SDL_RenderSetClipRect(G.ren, &r);
 }
 
 void pico_set_rotate (int angle) {
@@ -842,53 +872,14 @@ void pico_set_view (
     Pico_Rel_Rect* clip,
     Pico_Abs_Dim*  tile
 ) {
-    // grid: toggle grid overlay
     if (grid != -1) {
         S.layer->view.grid = grid;
     }
-
-    // target, source, clip, tile: only assign
-    if (dst != NULL) {
-        SDL_FRect rf = _sdl_rect(dst, NULL, NULL);
-        SDL_Rect  ri = _fi_rect(&rf);
-        S.layer->view.dst = ri;
-    }
-    if (src != NULL) {
-        SDL_FRect rf;
-        switch (src->mode) {
-            case '!':
-                rf = _sdl_rect(src, NULL, NULL);
-                break;
-            case '%':
-                rf = _sdl_rect(src, NULL, NULL);
-                break;
-            default:
-                assert(0 && "TODO");
-        }
-        SDL_Rect  ri = _fi_rect(&rf);
-        S.layer->view.src = ri;
-    }
-    if (clip != NULL) {
-        SDL_FRect rf = _sdl_rect(clip, NULL, NULL);
-        SDL_Rect  ri = _fi_rect(&rf);
-        S.layer->view.clip = ri;
-    }
-    if (tile != NULL) {
-        S.layer->view.tile = *tile; // (must be set before dim)
-    }
-
-    // dim: recreate texture for current layer
-    if (dim != NULL) {
-        assert(dim->mode != '%');
+    if (dim != NULL) { // recreates texture
+        assert(dim->mode!='%' && dim->up==NULL);
         SDL_FDim df = _sdl_dim(dim, NULL, NULL);
         Pico_Abs_Dim di = _fi_dim(&df);
         S.layer->view.dim = di;
-        if (src == NULL) {
-            S.layer->view.src = (SDL_Rect) { 0, 0, di.w, di.h };
-        }
-        if (clip == NULL) {
-            S.layer->view.clip = (SDL_Rect) { 0, 0, di.w, di.h };
-        }
         if (S.layer->tex != NULL) {
             SDL_DestroyTexture(S.layer->tex);
         }
@@ -901,9 +892,25 @@ void pico_set_view (
         SDL_BlendMode mode = (S.layer == &G.main) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
         SDL_SetTextureBlendMode(S.layer->tex, mode);
         SDL_SetRenderTarget(G.ren, S.layer->tex);
-        SDL_RenderSetClipRect(G.ren, &S.layer->view.clip);
+        SDL_Rect r = pico_cv_rect_rel_abs (
+            &S.layer->view.clip,
+            &(Pico_Abs_Rect){0, 0, S.layer->view.dim.w, S.layer->view.dim.h}
+        );
+        SDL_RenderSetClipRect(G.ren, &r);
     }
 
+    if (dst != NULL) {
+        S.layer->view.dst = *dst;
+    }
+    if (src != NULL) {
+        S.layer->view.src = *src;
+    }
+    if (clip != NULL) {
+        S.layer->view.clip = *clip;
+    }
+    if (tile != NULL) {
+        S.layer->view.tile = *tile; // (must be set before dim)
+    }
     _pico_output_present(0);
 }
 
@@ -933,20 +940,18 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
         }
         S.win.fs = fs;
         S.win.dim = new;
-        G.main.view.dst = (SDL_Rect) { 0, 0, new.w, new.h };
         SDL_SetWindowSize(G.win, new.w, new.h);
     }
 
     // dim: window dimensions
     if (dim != NULL) {
         assert(fs==-1 && !S.win.fs);
-        assert(dim->mode != '%');
+        assert(dim->mode!='%' && dim->up==NULL);
         G.tgt = 0;
         SDL_FDim df = _sdl_dim(dim, NULL, NULL);
         G.tgt = 1;
         Pico_Abs_Dim di = _fi_dim(&df);
         S.win.dim = di;
-        G.main.view.dst = (SDL_Rect) { 0, 0, di.w, di.h };
         SDL_SetWindowSize(G.win, di.w, di.h);
     }
 
@@ -991,9 +996,9 @@ static Pico_Layer* _pico_layer_buffer (
         .view = {
             .grid = 0,
             .dim  = dim,
-            .dst  = { 0, 0, dim.w, dim.h },
-            .src  = { 0, 0, dim.w, dim.h },
-            .clip = { 0, 0, dim.w, dim.h },
+            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .tile = {0, 0},
         },
     };
@@ -1031,9 +1036,9 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
         .view = {
             .grid = 0,
             .dim  = dim,
-            .dst  = { 0, 0, dim.w, dim.h },
-            .src  = { 0, 0, dim.w, dim.h },
-            .clip = { 0, 0, dim.w, dim.h },
+            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .tile = {0, 0},
         },
     };
@@ -1070,9 +1075,9 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
         .view = {
             .grid = 0,
             .dim  = dim,
-            .dst  = { 0, 0, dim.w, dim.h },
-            .src  = { 0, 0, dim.w, dim.h },
-            .clip = { 0, 0, dim.w, dim.h },
+            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .tile = {0, 0},
         },
     };
@@ -1134,9 +1139,9 @@ static Pico_Layer* _pico_layer_text (
         .view = {
             .grid = 0,
             .dim  = dim,
-            .dst  = { 0, 0, dim.w, dim.h },
-            .src  = { 0, 0, dim.w, dim.h },
-            .clip = { 0, 0, dim.w, dim.h },
+            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .tile = {0, 0},
         },
     };
@@ -1197,6 +1202,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_MINUS: {
                     // Zoom out - expand src by 10% of world, centered
+                    // TODO: use pico_cv_rel_rel and do simple inc/dec?
                     assert(S.layer == &G.main);
                     Pico_Abs_Rect src = S.layer->view.src;
                     int dw = S.layer->view.dim.w * 0.05;
@@ -1210,6 +1216,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_EQUALS: {
                     // Zoom in - shrink src by 10% of world, centered
+                    // TODO: use pico_cv_rel_rel and do simple inc/dec?
                     assert(S.layer == &G.main);
                     Pico_Abs_Rect src = S.layer->view.src;
                     int dw = S.layer->view.dim.w * 0.05;
@@ -1223,6 +1230,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_LEFT: {
                     // Scroll left by 10% of world
+                    // TODO: use pico_cv_rel_rel and do simple inc/dec?
                     assert(S.layer == &G.main);
                     Pico_Abs_Rect src = S.layer->view.src;
                     int dx = S.layer->view.dim.w * 0.1;
@@ -1235,6 +1243,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_RIGHT: {
                     // Scroll right by 10% of world
+                    // TODO: use pico_cv_rel_rel and do simple inc/dec?
                     assert(S.layer == &G.main);
                     Pico_Abs_Rect src = S.layer->view.src;
                     int dx = S.layer->view.dim.w * 0.1;
@@ -1247,6 +1256,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_UP: {
                     // Scroll up by 10% of world
+                    // TODO: use pico_cv_rel_rel and do simple inc/dec?
                     assert(S.layer == &G.main);
                     Pico_Abs_Rect src = S.layer->view.src;
                     int dy = S.layer->view.dim.h * 0.1;
@@ -1259,6 +1269,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                 }
                 case SDLK_DOWN: {
                     // Scroll down by 10% of world
+                    // TODO: use pico_cv_rel_rel and do simple inc/dec?
                     assert(S.layer == &G.main);
                     Pico_Abs_Rect src = S.layer->view.src;
                     int dy = S.layer->view.dim.h * 0.1;
@@ -1611,10 +1622,14 @@ static void _show_grid (void) {
     {
         pico_set_alpha(0xFF);
         int H = 10;
+        SDL_Rect src = pico_cv_rect_rel_abs (
+                &S.layer->view.src,
+                &(Pico_Abs_Rect){0, 0, S.layer->view.dim.w, S.layer->view.dim.h}
+        );
 
         for (int x=0; x<S.win.dim.w; x+=50) {
             if (x == 0) continue;
-            int v = S.layer->view.src.x + (x * S.layer->view.src.w / S.win.dim.w);
+            int v = src.x + (x * src.w / S.win.dim.w);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Abs_Dim dim = pico_get_text(lbl, &(Pico_Rel_Dim){ '!', {0, H}, NULL });
@@ -1626,7 +1641,7 @@ static void _show_grid (void) {
 
         for (int y=0; y<S.win.dim.h; y+=50) {
             if (y == 0) continue;
-            int v = S.layer->view.src.y + (y * S.layer->view.src.h / S.win.dim.h);
+            int v = src.y + (y * src.h / S.win.dim.h);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Abs_Dim dim = pico_get_text(lbl, &(Pico_Rel_Dim){ '!', {0, H}, NULL });
@@ -1692,8 +1707,14 @@ static void _pico_output_present (int force) {
                 a->h -= d;
             }
         }
-        SDL_Rect src = G.main.view.src;
-        SDL_Rect dst = G.main.view.dst;
+        SDL_Rect src = pico_cv_rect_rel_abs (
+            &G.main.view.src,
+            &(Pico_Abs_Rect){0, 0, G.main.view.dim.w, G.main.view.dim.h}
+        );
+        SDL_Rect dst = pico_cv_rect_rel_abs (
+            &G.main.view.dst,
+            &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+        );
         aux(&dst, &src, S.win.dim.w, S.win.dim.h);
         aux(&src, &dst, G.main.view.dim.w, G.main.view.dim.h);
         SDL_RenderCopy(G.ren, G.main.tex, &src, &dst);
@@ -1704,7 +1725,11 @@ static void _pico_output_present (int force) {
 
     G.tgt = 1;
     SDL_SetRenderTarget(G.ren, G.main.tex);
-    SDL_RenderSetClipRect(G.ren, &G.main.view.clip);
+    SDL_Rect r = pico_cv_rect_rel_abs (
+        &G.main.view.clip,
+        &(Pico_Abs_Rect){0, 0, G.main.view.dim.w, G.main.view.dim.h}
+    );
+    SDL_RenderSetClipRect(G.ren, &r);
 }
 
 void pico_output_present (void) {
@@ -1774,7 +1799,11 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r) {
     SDL_FreeSurface(sfc);
 
     SDL_SetRenderTarget(G.ren, G.main.tex);
-    SDL_RenderSetClipRect(G.ren, &G.main.view.clip);
+    SDL_Rect r = pico_cv_rect_rel_abs (
+        &G.main.view.clip,
+        &(Pico_Abs_Rect){0, 0, G.main.view.dim.w, G.main.view.dim.h}
+    );
+    SDL_RenderSetClipRect(G.ren, &r);
 
     return ret;
 }
