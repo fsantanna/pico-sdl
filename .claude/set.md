@@ -38,12 +38,11 @@ Existing per-field calls remain unchanged.
 
 ### Step 1 -- Lua: `pico.set` all (`lua/pico.c`)
 
-- Implement `l_apply_set(L, t)` helper:
-    - parse table at index `t`
+- Implement `l_set_all(L)` as `__call` handler:
+    - parse table at index 2 (index 1 is `self`)
     - for each recognized field, call the corresponding C setter
     - supported fields: `alpha`, `color` (`clear`/`draw`),
       `style`, `crop`, `font`
-- Implement `l_set_all(L)` as `__call` handler
 - Attach a metatable with `__call = l_set_all` to the
   `pico.set` table so both syntaxes work
 

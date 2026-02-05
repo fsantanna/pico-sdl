@@ -721,50 +721,50 @@ static int l_set_dim (lua_State* L) {
     return 0;
 }
 
-static void l_apply_set (lua_State* L, int t) {
-    assert(t > 0);
-    luaL_checktype(L, t, LUA_TTABLE);          // T
+// __call handler: pico.set { ... }
+static int l_set_all (lua_State* L) {
+    luaL_checktype(L, 2, LUA_TTABLE);          // self | T
 
     // alpha
-    lua_getfield(L, t, "alpha");                // T | alpha
+    lua_getfield(L, 2, "alpha");                // . | alpha
     if (!lua_isnil(L, -1)) {
         pico_set_alpha(lua_tointeger(L, -1));
     }
-    lua_pop(L, 1);                              // T
+    lua_pop(L, 1);                              // .
 
     // color = { clear=..., draw=... }
-    lua_getfield(L, t, "color");                // T | color
+    lua_getfield(L, 2, "color");                // . | color
     if (!lua_isnil(L, -1)) {
         int ci = lua_gettop(L);
         luaL_checktype(L, ci, LUA_TTABLE);
 
-        lua_getfield(L, ci, "clear");           // T | clr | v
+        lua_getfield(L, ci, "clear");           // . | clr | v
         if (!lua_isnil(L, -1)) {
             Pico_Color clr =
                 c_color_st(L, lua_gettop(L));
             pico_set_color_clear(clr);
         }
-        lua_pop(L, 1);                         // T | clr
+        lua_pop(L, 1);                         // . | clr
 
-        lua_getfield(L, ci, "draw");            // T | clr | v
+        lua_getfield(L, ci, "draw");            // . | clr | v
         if (!lua_isnil(L, -1)) {
             Pico_Color clr =
                 c_color_st(L, lua_gettop(L));
             pico_set_color_draw(clr);
         }
-        lua_pop(L, 1);                         // T | clr
+        lua_pop(L, 1);                         // . | clr
     }
-    lua_pop(L, 1);                              // T
+    lua_pop(L, 1);                              // .
 
     // style = "fill" | "stroke"
-    lua_getfield(L, t, "style");                // T | sty
+    lua_getfield(L, 2, "style");                // . | sty
     if (!lua_isnil(L, -1)) {
         const char* s = lua_tostring(L, -1);
-        lua_pushlightuserdata(L, (void*)&KEY);  // T|s|K
-        lua_gettable(L, LUA_REGISTRYINDEX);     // T|s|G
-        lua_getfield(L, -1, "styles");          // T|s|G|stys
-        lua_pushstring(L, s);                   // T|s|G|stys|s
-        lua_gettable(L, -2);                    // T|s|G|stys|v
+        lua_pushlightuserdata(L, (void*)&KEY);  // .|s|K
+        lua_gettable(L, LUA_REGISTRYINDEX);     // .|s|G
+        lua_getfield(L, -1, "styles");          // .|s|G|stys
+        lua_pushstring(L, s);                   // .|s|G|stys|s
+        lua_gettable(L, -2);                    // .|s|G|stys|v
         int ok;
         int ss = lua_tointegerx(L, -1, &ok);
         if (!ok) {
@@ -772,30 +772,26 @@ static void l_apply_set (lua_State* L, int t) {
                 "invalid style \"%s\"", s);
         }
         pico_set_style(ss);
-        lua_pop(L, 3);                         // T | sty
+        lua_pop(L, 3);                         // . | sty
     }
-    lua_pop(L, 1);                              // T
+    lua_pop(L, 1);                              // .
 
     // crop = { x=..., y=..., w=..., h=... }
-    lua_getfield(L, t, "crop");                 // T | crop
+    lua_getfield(L, 2, "crop");                 // . | crop
     if (!lua_isnil(L, -1)) {
         Pico_Abs_Rect r =
             c_abs_rect(L, lua_gettop(L));
         pico_set_crop(r);
     }
-    lua_pop(L, 1);                              // T
+    lua_pop(L, 1);                              // .
 
     // font = "path"
-    lua_getfield(L, t, "font");                 // T | font
+    lua_getfield(L, 2, "font");                 // . | font
     if (!lua_isnil(L, -1)) {
         pico_set_font(lua_tostring(L, -1));
     }
-    lua_pop(L, 1);                              // T
-}
+    lua_pop(L, 1);                              // .
 
-// __call handler: pico.set { ... }
-static int l_set_all (lua_State* L) {
-    l_apply_set(L, 2);                          // self|T
     return 0;
 }
 
