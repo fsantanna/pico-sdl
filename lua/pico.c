@@ -721,6 +721,97 @@ static int l_set_dim (lua_State* L) {
     return 0;
 }
 
+static void l_apply_set (lua_State* L, int t) {
+    assert(t > 0);
+    luaL_checktype(L, t, LUA_TTABLE);          // T
+
+    // alpha
+    lua_getfield(L, t, "alpha");                // T | alpha
+    if (!lua_isnil(L, -1)) {
+        pico_set_alpha(lua_tointeger(L, -1));
+    }
+    lua_pop(L, 1);                              // T
+
+    // color = { clear=..., draw=... }
+    lua_getfield(L, t, "color");                // T | color
+    if (!lua_isnil(L, -1)) {
+        int ci = lua_gettop(L);
+        luaL_checktype(L, ci, LUA_TTABLE);
+
+        lua_getfield(L, ci, "clear");           // T | clr | v
+        if (!lua_isnil(L, -1)) {
+            Pico_Color clr =
+                c_color_st(L, lua_gettop(L));
+            pico_set_color_clear(clr);
+        }
+        lua_pop(L, 1);                         // T | clr
+
+        lua_getfield(L, ci, "draw");            // T | clr | v
+        if (!lua_isnil(L, -1)) {
+            Pico_Color clr =
+                c_color_st(L, lua_gettop(L));
+            pico_set_color_draw(clr);
+        }
+        lua_pop(L, 1);                         // T | clr
+    }
+    lua_pop(L, 1);                              // T
+
+    // style = "fill" | "stroke"
+    lua_getfield(L, t, "style");                // T | sty
+    if (!lua_isnil(L, -1)) {
+        const char* s = lua_tostring(L, -1);
+        lua_pushlightuserdata(L, (void*)&KEY);  // T|s|K
+        lua_gettable(L, LUA_REGISTRYINDEX);     // T|s|G
+        lua_getfield(L, -1, "styles");          // T|s|G|stys
+        lua_pushstring(L, s);                   // T|s|G|stys|s
+        lua_gettable(L, -2);                    // T|s|G|stys|v
+        int ok;
+        int ss = lua_tointegerx(L, -1, &ok);
+        if (!ok) {
+            luaL_error(L,
+                "invalid style \"%s\"", s);
+        }
+        pico_set_style(ss);
+        lua_pop(L, 3);                         // T | sty
+    }
+    lua_pop(L, 1);                              // T
+
+    // crop = { x=..., y=..., w=..., h=... }
+    lua_getfield(L, t, "crop");                 // T | crop
+    if (!lua_isnil(L, -1)) {
+        Pico_Abs_Rect r =
+            c_abs_rect(L, lua_gettop(L));
+        pico_set_crop(r);
+    }
+    lua_pop(L, 1);                              // T
+
+    // font = "path"
+    lua_getfield(L, t, "font");                 // T | font
+    if (!lua_isnil(L, -1)) {
+        pico_set_font(lua_tostring(L, -1));
+    }
+    lua_pop(L, 1);                              // T
+}
+
+// __call handler: pico.set { ... }
+static int l_set_all (lua_State* L) {
+    l_apply_set(L, 2);                          // self|T
+    return 0;
+}
+
+static int l_push (lua_State* L) {
+    pico_push();
+    if (lua_gettop(L)>=1 && lua_istable(L,1)) {
+        l_apply_set(L, 1);
+    }
+    return 0;
+}
+
+static int l_pop (lua_State* L) {
+    pico_pop();
+    return 0;
+}
+
 static int l_set_view (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
@@ -1230,7 +1321,19 @@ int luaopen_pico_native (lua_State* L) {
     luaL_newlib(L, ll_set);                 // pico | set
     luaL_newlib(L, ll_set_color);           // pico | set | color
     lua_setfield(L, -2, "color");           // pico | set
+
+    // make pico.set callable via __call
+    lua_newtable(L);                        // pico | set | mt
+    lua_pushcfunction(L, l_set_all);        // pico | set | mt | fn
+    lua_setfield(L, -2, "__call");          // pico | set | mt
+    lua_setmetatable(L, -2);               // pico | set
+
     lua_setfield(L, -2, "set");             // pico
+
+    lua_pushcfunction(L, l_push);           // pico | push
+    lua_setfield(L, -2, "push");            // pico
+    lua_pushcfunction(L, l_pop);            // pico | pop
+    lua_setfield(L, -2, "pop");             // pico
 
     luaL_newlib(L, ll_layer);               // pico | layer
     lua_setfield(L, -2, "layer");           // pico
