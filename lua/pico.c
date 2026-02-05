@@ -184,12 +184,14 @@ static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
-    lua_pop(L, 1);                          // T
 
     Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
-    *r = (Pico_Rel_Rect) {                  // T | ud
+    *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
         .mode = mode,
         .x = L_checkfieldnum(L, i, "x"),
         .y = L_checkfieldnum(L, i, "y"),
@@ -211,9 +213,11 @@ static Pico_Rel_Dim* c_rel_dim (lua_State* L, int i) {
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
-    lua_pop(L, 1);                          // T
 
     Pico_Rel_Dim* d = lua_newuserdata(L, sizeof(Pico_Rel_Dim));
     *d = (Pico_Rel_Dim) {                   // T | ud
@@ -236,12 +240,14 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
-    lua_pop(L, 1);                          // T
 
     Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
-    *p = (Pico_Rel_Pos) {                   // T | ud
+    *p = (Pico_Rel_Pos) {                   // T | [ud] | ud
         .mode = mode,
         .x = L_checkfieldnum(L, i, "x"),
         .y = L_checkfieldnum(L, i, "y"),
@@ -317,12 +323,14 @@ static Pico_Rel_Pos* _c_tpl_pos (lua_State* L, int i) {
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
-    lua_pop(L, 1);                          // T
 
     Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
-    *p = (Pico_Rel_Pos) {                   // T | ud
+    *p = (Pico_Rel_Pos) {                   // T | [ud] | ud
         .mode = mode,
         .anchor = anc,
         .up = up,
@@ -340,12 +348,14 @@ static Pico_Rel_Rect* _c_tpl_rect (lua_State* L, int i) {
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
-    lua_pop(L, 1);                          // T
 
     Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
-    *r = (Pico_Rel_Rect) {                  // T | ud
+    *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
         .mode = mode,
         .anchor = anc,
         .up = up,
