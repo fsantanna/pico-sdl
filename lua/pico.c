@@ -163,6 +163,15 @@ static Pico_Abs_Rect c_abs_rect (lua_State* L, int i) {
     };
 }
 
+static Pico_Abs_Pos c_abs_pos (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);
+    return (Pico_Abs_Pos) {
+        (int) L_checkfieldnum(L, i, "x"),
+        (int) L_checkfieldnum(L, i, "y"),
+    };
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
@@ -243,6 +252,77 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     return p;                               // T | *ud*
 }
 
+static float L_optfieldnum (lua_State* L, int i,
+                            const char* k, float def) {
+    assert(i > 0);
+    luaL_checktype(L, i, LUA_TTABLE);
+    lua_getfield(L, i, k);
+    if (lua_isnil(L, -1)) {
+        lua_pop(L, 1);
+        return def;
+    }
+    int ok;
+    float v = lua_tonumberx(L, -1, &ok);
+    if (!ok) {
+        lua_pop(L, 1);
+        return def;
+    }
+    lua_pop(L, 1);
+    return v;
+}
+
+static Pico_Rel_Pos* c_rel_pos_tpl (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);
+
+    char mode = c_mode(L, i, 1);
+    Pico_Anchor anc = c_anchor(L, i);
+
+    lua_getfield(L, i, "up");
+    Pico_Rel_Rect* up = NULL;
+    if (!lua_isnil(L, -1)) {
+        up = c_rel_rect(L, lua_gettop(L));
+    }
+    lua_pop(L, 1);
+
+    Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
+    *p = (Pico_Rel_Pos) {
+        .mode = mode,
+        .x = L_optfieldnum(L, i, "x", 0),
+        .y = L_optfieldnum(L, i, "y", 0),
+        .anchor = anc,
+        .up = up,
+    };
+    return p;
+}
+
+static Pico_Rel_Rect* c_rel_rect_tpl (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);
+
+    char mode = c_mode(L, i, 1);
+    Pico_Anchor anc = c_anchor(L, i);
+
+    lua_getfield(L, i, "up");
+    Pico_Rel_Rect* up = NULL;
+    if (!lua_isnil(L, -1)) {
+        up = c_rel_rect(L, lua_gettop(L));
+    }
+    lua_pop(L, 1);
+
+    Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
+    *r = (Pico_Rel_Rect) {
+        .mode = mode,
+        .x = L_optfieldnum(L, i, "x", 0),
+        .y = L_optfieldnum(L, i, "y", 0),
+        .w = L_optfieldnum(L, i, "w", 0),
+        .h = L_optfieldnum(L, i, "h", 0),
+        .anchor = anc,
+        .up = up,
+    };
+    return r;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Abs_Dim c_buffer_dim (lua_State* L, int i) {
@@ -299,55 +379,103 @@ static int l_quit (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_cv_pos (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // pos | [base]
+    luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
 
-    Pico_Rel_Pos* rel = c_rel_pos(L, 1);
+    int has_to = (lua_gettop(L) >= 2
+                  && lua_istable(L, 2));
+
     Pico_Abs_Rect* base = NULL;
     Pico_Abs_Rect base_rect;
-    if (lua_istable(L, 2)) {
-        base_rect = c_abs_rect(L, 2);
+    if (lua_gettop(L) >= 3 && lua_istable(L, 3)) {
+        base_rect = c_abs_rect(L, 3);
         base = &base_rect;
     }
 
-    Pico_Abs_Pos raw = pico_cv_pos_rel_abs(rel, base);
+    if (!has_to) {
+        // rel_abs: fr → abs
+        Pico_Rel_Pos* fr = c_rel_pos(L, 1);
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(fr, base);
+        lua_newtable(L);
+        lua_pushinteger(L, abs.x);
+        lua_setfield(L, -2, "x");
+        lua_pushinteger(L, abs.y);
+        lua_setfield(L, -2, "y");
+        return 1;
+    } else {
+        // to present: duck type fr
+        lua_geti(L, 1, 1);
+        int fr_is_rel = lua_isstring(L, -1);
+        lua_pop(L, 1);
 
-    lua_newtable(L);                        // pos | [base] | raw
-    lua_pushstring(L, "!");
-    lua_rawseti(L, -2, 1);
-    lua_pushinteger(L, raw.x);
-    lua_setfield(L, -2, "x");
-    lua_pushinteger(L, raw.y);
-    lua_setfield(L, -2, "y");
+        Pico_Rel_Pos* to = c_rel_pos_tpl(L, 2);
+        if (fr_is_rel) {
+            Pico_Rel_Pos* fr = c_rel_pos(L, 1);
+            pico_cv_pos_rel_rel(fr, to, base);
+        } else {
+            Pico_Abs_Pos fr = c_abs_pos(L, 1);
+            pico_cv_pos_abs_rel(&fr, to, base);
+        }
 
-    return 1;
+        lua_pushnumber(L, to->x);
+        lua_setfield(L, 2, "x");
+        lua_pushnumber(L, to->y);
+        lua_setfield(L, 2, "y");
+        return 0;
+    }
 }
 
 static int l_cv_rect (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // rect | [base]
+    luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
 
-    Pico_Rel_Rect* rel = c_rel_rect(L, 1);
+    int has_to = (lua_gettop(L) >= 2
+                  && lua_istable(L, 2));
+
     Pico_Abs_Rect* base = NULL;
     Pico_Abs_Rect base_rect;
-    if (lua_istable(L, 2)) {
-        base_rect = c_abs_rect(L, 2);
+    if (lua_gettop(L) >= 3 && lua_istable(L, 3)) {
+        base_rect = c_abs_rect(L, 3);
         base = &base_rect;
     }
 
-    Pico_Abs_Rect raw = pico_cv_rect_rel_abs(rel, base);
+    if (!has_to) {
+        // rel_abs: fr → abs
+        Pico_Rel_Rect* fr = c_rel_rect(L, 1);
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(fr, base);
+        lua_newtable(L);
+        lua_pushinteger(L, abs.x);
+        lua_setfield(L, -2, "x");
+        lua_pushinteger(L, abs.y);
+        lua_setfield(L, -2, "y");
+        lua_pushinteger(L, abs.w);
+        lua_setfield(L, -2, "w");
+        lua_pushinteger(L, abs.h);
+        lua_setfield(L, -2, "h");
+        return 1;
+    } else {
+        // to present: duck type fr
+        lua_geti(L, 1, 1);
+        int fr_is_rel = lua_isstring(L, -1);
+        lua_pop(L, 1);
 
-    lua_newtable(L);                        // rect | [base] | raw
-    lua_pushstring(L, "!");
-    lua_rawseti(L, -2, 1);
-    lua_pushinteger(L, raw.x);
-    lua_setfield(L, -2, "x");
-    lua_pushinteger(L, raw.y);
-    lua_setfield(L, -2, "y");
-    lua_pushinteger(L, raw.w);
-    lua_setfield(L, -2, "w");
-    lua_pushinteger(L, raw.h);
-    lua_setfield(L, -2, "h");
+        Pico_Rel_Rect* to = c_rel_rect_tpl(L, 2);
+        if (fr_is_rel) {
+            Pico_Rel_Rect* fr = c_rel_rect(L, 1);
+            pico_cv_rect_rel_rel(fr, to, base);
+        } else {
+            Pico_Abs_Rect fr = c_abs_rect(L, 1);
+            pico_cv_rect_abs_rel(&fr, to, base);
+        }
 
-    return 1;
+        lua_pushnumber(L, to->x);
+        lua_setfield(L, 2, "x");
+        lua_pushnumber(L, to->y);
+        lua_setfield(L, 2, "y");
+        lua_pushnumber(L, to->w);
+        lua_setfield(L, 2, "w");
+        lua_pushnumber(L, to->h);
+        lua_setfield(L, 2, "h");
+        return 0;
+    }
 }
 
 static int l_vs_pos_rect (lua_State* L) {
