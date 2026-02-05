@@ -128,18 +128,18 @@ static Pico_Color_A c_color_a_t (lua_State* L, int i) {
 static Pico_Color c_color_s (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TSTRING);   // clr = 'red'
-        lua_pushlightuserdata(L, (void*)&KEY);  // clr | . | K
-        lua_gettable(L, LUA_REGISTRYINDEX);     // clr | . | G
-        lua_getfield(L, -1, "colors");          // clr | . | G | clrs
+    lua_pushlightuserdata(L, (void*)&KEY);  // clr | . | K
+    lua_gettable(L, LUA_REGISTRYINDEX);     // clr | . | G
+    lua_getfield(L, -1, "colors");          // clr | . | G | clrs
     lua_pushvalue(L, i);                    // clr | . | G | clrs | clr
-        lua_gettable(L, -2);                    // clr | . | G | clrs | *clr*
-        int ok = lua_islightuserdata(L, -1);
-        if (!ok) {
+    lua_gettable(L, -2);                    // clr | . | G | clrs | *clr*
+    int ok = lua_islightuserdata(L, -1);
+    if (!ok) {
         luaL_error(L, "invalid color \"%s\"", lua_tostring(L,i));
-        }
-        Pico_Color* clr = lua_touserdata(L, -1);
+    }
+    Pico_Color* clr = lua_touserdata(L, -1);
     lua_pop(L, 3);
-        return *clr;
+    return *clr;
 }
 
 static Pico_Color c_color_st (lua_State* L, int i) {
