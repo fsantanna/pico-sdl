@@ -51,7 +51,7 @@ do
     }
 
     print("bottomright 9x1 on white")
-    pico.set.color.clear(0xFF, 0xFF, 0xFF)
+    pico.set.color.clear('white')
     pico.output.clear()
     local r = {'!', x=1, y=9, w=0, h=0, anc='NW'}
     pico.output.draw.buffer("buf2", buffer, r)

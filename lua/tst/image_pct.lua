@@ -6,7 +6,7 @@ end
 
 pico.init(true)
 pico.set.window { title="Image - Size - Crop" }
-pico.set.color.clear(0xFF, 0xFF, 0xFF)
+pico.set.color.clear('white')
 
 -- pico.get.image
 do

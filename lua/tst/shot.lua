@@ -27,7 +27,7 @@ end
 
 do
     print("entire screen - 02")
-    pico.set.color.draw(200, 0, 0)
+    pico.set.color.draw({'!', r=200, g=0, b=0})
     pico.output.draw.rect({'!', x=30, y=30, w=10, h=10, anc='NW'})
     local f = pico.output.screenshot("../../tst/out/shot-02.png")
     assert(f == "../../tst/out/shot-02.png")
@@ -36,7 +36,7 @@ end
 
 do
     print("part of screen (raw)")
-    pico.set.color.draw(0, 200, 0)
+    pico.set.color.draw({'!', r=0, g=200, b=0})
     pico.output.draw.rect({'!', x=40, y=5, w=10, h=10, anc='NW'})
     local f = pico.output.screenshot(nil, {'!', x=0, y=0, w=250, h=150, anc='NW'})
     assert(f ~= nil)
@@ -46,7 +46,7 @@ end
 
 do
     print("part of screen (pct)")
-    pico.set.color.draw(0, 0, 200)
+    pico.set.color.draw({'!', r=0, g=0, b=200})
     pico.output.draw.rect({'!', x=50, y=50, w=10, h=10, anc='NW'})
     local f = pico.output.screenshot(nil, {'%', x=0, y=0, w=0.5, h=0.3, anc='NW'})
     assert(f ~= nil)

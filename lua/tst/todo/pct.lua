@@ -25,7 +25,7 @@ do
     print("red centered under white")
     local pt2  = pico.pos({x=50,y=50}, rct1)
     local rct2 = {x=pt2.x, y=pt2.y, w=16, h=9}
-    pico.set.color.draw(0xFF,0x00,0x00)
+    pico.set.color.draw('red')
     pico.output.draw.rect(rct2)
 
     pico.input.event('key.dn')
@@ -39,14 +39,14 @@ do
     local pt1  = pico.pos(50, 50)
     local rct1 = {x=pt1.x, y=pt1.y, w=32, h=18}
     pico.set.anchor.pos('right', 'bottom')
-    pico.set.color.draw(0xFF,0xFF,0xFF)
+    pico.set.color.draw('white')
     pico.output.draw.rect(rct1)
 
     print("red anchored by top-left under 0% of white")
     local pt2  = pico.pos({x=0,y=0}, rct1)
     local rct2 = {x=pt2.x, y=pt2.y, w=16, h=9}
     pico.set.anchor.pos('left', 'top')
-    pico.set.color.draw(0xFF,0x00,0x00)
+    pico.set.color.draw('red')
     pico.output.draw.rect(rct2)
 
     pico.input.event('key.dn')
@@ -60,7 +60,7 @@ do
     local pt  = pico.pos(-10, -10)
     local rct = {x=pt.x, y=pt.y, w=10, h=10}
     pico.set.anchor.pos('left', 'top')
-    pico.set.color.draw(0xFF,0xFF,0xFF)
+    pico.set.color.draw('white')
     pico.output.draw.rect(rct)
 
     pico.input.event('key.dn')
@@ -74,7 +74,7 @@ do
     local pt  = pico.pos(110, 110)
     local rct = {x=pt.x, y=pt.y, w=10, h=10}
     pico.set.anchor.pos('right', 'bottom')
-    pico.set.color.draw(0xFF,0xFF,0xFF)
+    pico.set.color.draw('white')
     pico.output.draw.rect(rct)
 
     pico.input.event('key.dn')
@@ -88,14 +88,14 @@ do
     local pt1  = pico.pos(50, 50)
     local rct1 = {x=pt1.x, y=pt1.y, w=32, h=18}
     pico.set.anchor.pos('center', 'middle')
-    pico.set.color.draw(0xFF,0xFF,0xFF)
+    pico.set.color.draw('white')
     pico.output.draw.rect(rct1)
 
     print("red anchored by top-left under -10% of white")
     local pt2  = pico.pos({x=-10,y=-10}, rct1)
     local rct2 = {x=pt2.x, y=pt2.y, w=16, h=9}
     pico.set.anchor.pos('left', 'top')
-    pico.set.color.draw(0xFF,0x00,0x00)
+    pico.set.color.draw('red')
     pico.output.draw.rect(rct2)
 
     pico.input.event('key.dn')
@@ -109,14 +109,14 @@ do
     local pt1  = pico.pos(50, 50)
     local rct1 = {x=pt1.x, y=pt1.y, w=32, h=18}
     pico.set.anchor.pos('center', 'middle')
-    pico.set.color.draw(0xFF,0xFF,0xFF)
+    pico.set.color.draw('white')
     pico.output.draw.rect(rct1)
 
     print("red anchored by top-left under 110% of white (symmetric to previous)")
     local pt2  = pico.pos({x=110,y=110}, rct1)
     local rct2 = {x=pt2.x, y=pt2.y, w=16, h=9}
     pico.set.anchor.pos('right', 'bottom')
-    pico.set.color.draw(0xFF,0x00,0x00)
+    pico.set.color.draw('red')
     pico.output.draw.rect(rct2)
 
     pico.input.event('key.dn')

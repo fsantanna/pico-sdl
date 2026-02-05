@@ -31,7 +31,7 @@ for i = 0, 49 do
     world.h = world.h + 1
     pico.set.view { dim = world }
     pico.output.clear()
-    pico.set.color.draw(255, 255, 255)
+    pico.set.color.draw('white')
     pico.output.draw.rect({'!',
         x = world.w//2 - 5,
         y = world.h//2 - 5,
@@ -39,7 +39,7 @@ for i = 0, 49 do
         h = 10,
         anc = 'NW'
     })
-    pico.set.color.draw(255, 0, 0)
+    pico.set.color.draw('red')
     pico.output.draw.line(
         {'%', x=0.5, y=0.5},
         {'%', x=1.0, y=0}

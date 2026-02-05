@@ -13,11 +13,11 @@ print("pos_vs_rect")
 for y = -1, 10 do
     for x = -1, 10 do
         pico.output.clear()
-        pico.set.color.draw(255, 255, 255)
+        pico.set.color.draw('white')
         pico.output.draw.rect(r)
 
         local p = {'%', x=x/10.0, y=y/10.0, up=r}
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.pixel(p)
 
         local on = pico.vs.pos_rect(p, r)
@@ -48,11 +48,11 @@ print("rect_vs_rect - same anchor")
 for y = -25, 125, 10 do
     for x = -25, 125, 10 do
         pico.output.clear()
-        pico.set.color.draw(255, 255, 255)
+        pico.set.color.draw('white')
         pico.output.draw.rect(r)
 
         local r2 = {'%', x=x/100.0, y=y/100.0, w=0.5, h=0.5, up=r}
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.rect(r2)
 
         local overlap = pico.vs.rect_rect(r2, r)
@@ -83,11 +83,11 @@ print("rect_vs_rect - diff anchor")
 for y = -5, 10 do
     for x = -5, 10 do
         pico.output.clear()
-        pico.set.color.draw(255, 255, 255)
+        pico.set.color.draw('white')
         pico.output.draw.rect(r)
 
         local r2 = {'%', x=x/10.0, y=y/10.0, w=0.5, h=0.5, anc='NW', up=r}
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.rect(r2)
 
         local overlap = pico.vs.rect_rect(r2, r)

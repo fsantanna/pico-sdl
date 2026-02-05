@@ -24,7 +24,7 @@ do
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.pixel(p)
         pico.input.delay(10)
         if a == 120 then
@@ -40,7 +40,7 @@ do
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.rect(z);
         pico.output.draw.text("SOME TEXT", r)
         pico.input.delay(10)
@@ -56,7 +56,7 @@ do
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.rect(r)
         pico.input.delay(10)
         if a == 120 then
@@ -71,7 +71,7 @@ do
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.oval(r)
         pico.input.delay(10)
         if a == 120 then
@@ -88,7 +88,7 @@ do
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.tri(p1, p2, p3)
         pico.input.delay(10)
         if a == 120 then
@@ -104,7 +104,7 @@ do
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.line(p1, p2)
         pico.input.delay(10)
         if a == 120 then
@@ -123,7 +123,7 @@ do
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
-        pico.set.color.draw(255, 0, 0)
+        pico.set.color.draw('red')
         pico.output.draw.poly(poly)
         pico.input.delay(10)
         if a == 120 then
