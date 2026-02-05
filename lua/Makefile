@@ -42,6 +42,7 @@ tests:
 	$(TST) tst/shot.lua
 	$(TST) tst/size_raw.lua
 	$(TST) tst/size_pct.lua
+	$(TST) tst/style.lua
 	$(TST) tst/tiles.lua
 	$(TST) tst/view_raw.lua
 
