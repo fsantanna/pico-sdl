@@ -23,12 +23,12 @@ for i = 0, 125, 25 do
     pico.output.clear()
 
     pico.set.alpha(255)
-    pico.set.color.draw(255, 255, 255)
+    pico.set.color.draw('white')
     pico.output.draw.rect(r)
 
     local rr = {'%', x=0.5, y=0.5, w=i/100.0, h=i/100.0, up=r}
     pico.set.alpha(150)
-    pico.set.color.draw(255, 0, 0)
+    pico.set.color.draw('red')
     pico.output.draw.rect(rr)
 
     local fmt = string.format("dim-%02d", N)
