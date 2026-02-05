@@ -75,7 +75,6 @@ static struct { // exposed global state
         Pico_Color clear;
         Pico_Color draw;
     } color;
-    Pico_Abs_Rect crop;
     int expert;
     const char* font;
     Pico_Layer* layer;
@@ -315,15 +314,6 @@ static SDL_Rect _fi_rect (const SDL_FRect* f) {
     return (SDL_Rect) { roundf(f->x), roundf(f->y), roundf(f->w), roundf(f->h) };
 }
 
-Pico_Abs_Rect* _crop (void) {
-    if (S.crop.w==0 || S.crop.h==0) {
-        assert(S.crop.w==0 && S.crop.h==0 && S.crop.x==0 && S.crop.y==0);
-        return NULL;
-    } else {
-        return &S.crop;
-    }
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // CV
 ///////////////////////////////////////////////////////////////////////////////
@@ -547,7 +537,6 @@ void pico_init (int on) {
             .alpha  = 0xFF,
             .angle  = 0,
             .color  = { PICO_COLOR_BLACK, PICO_COLOR_WHITE },
-            .crop   = {},
             .expert = 0,
             .font   = NULL,
             .layer  = &G.main,
@@ -625,10 +614,6 @@ Pico_Color pico_get_color_clear (void) {
 
 Pico_Color pico_get_color_draw (void) {
     return S.color.draw;
-}
-
-Pico_Abs_Rect pico_get_crop (void) {
-    return S.crop;
 }
 
 int pico_get_expert (void) {
@@ -802,10 +787,6 @@ void pico_set_color_clear (Pico_Color color) {
 
 void pico_set_color_draw  (Pico_Color color) {
     S.color.draw = color;
-}
-
-void pico_set_crop (Pico_Abs_Rect crop) {
-    S.crop = crop;
 }
 
 void pico_set_dim (Pico_Rel_Dim* dim) {
@@ -1396,21 +1377,27 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
 }
 
 static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
-    SDL_Rect ri;
+    SDL_Rect dst;
     if (rect == NULL) {
-        ri = pico_cv_rect_rel_abs(&layer->view.dst,
-            &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h});
+        dst = pico_cv_rect_rel_abs (
+            &layer->view.dst,
+            &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+        );
     } else {
         Pico_Abs_Dim* dp = NULL;
         if (rect->w == 0 || rect->h == 0) {
             dp = &layer->view.dim;
         }
         SDL_FRect rf = _sdl_rect(rect, NULL, dp);
-        ri = _fi_rect(&rf);
+        dst = _fi_rect(&rf);
     }
 
     SDL_SetTextureAlphaMod(layer->tex, S.alpha);
-    SDL_RenderCopy(G.ren, layer->tex, _crop(), &ri);
+    SDL_Rect src = pico_cv_rect_rel_abs (
+        &layer->view.src,
+        &(Pico_Abs_Rect){0, 0, layer->view.dim.w, layer->view.dim.h}
+    );
+    SDL_RenderCopy(G.ren, layer->tex, &src, &dst);
     _pico_output_present(0);
 }
 

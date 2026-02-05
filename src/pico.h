@@ -237,10 +237,6 @@ Pico_Color pico_get_color_clear (void);
 /// @return the current draw color
 Pico_Color pico_get_color_draw (void);
 
-/// @brief Gets the cropping applied to objects when drawing them.
-/// @return the current crop rectangle
-Pico_Abs_Rect pico_get_crop (void);
-
 /// @brief Gets the state of expert mode.
 /// @return 1 if enabled, or 0 otherwise
 int pico_get_expert (void);
@@ -356,11 +352,6 @@ void pico_set_color_clear (Pico_Color color);
 /// @brief Changes the color used to draw objects.
 /// @param color new color
 void pico_set_color_draw (Pico_Color color);
-
-/// @brief Changes the cropping that is applied to images, texts and buffers
-///        before drawing them.
-/// @param crop cropping region ({0,0,0,0} to disable)
-void pico_set_crop (Pico_Abs_Rect crop);
 
 /// @brief Toggles the expert mode.
 /// @param on 1 to enable it, or 0 to disable it

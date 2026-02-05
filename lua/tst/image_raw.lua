@@ -73,15 +73,19 @@ end
 -- CROP
 do
     print "show big croped"
-    pico.output.clear();
-    pico.set.crop {'!', x=9, y=9, w=30, h=30, anc='NW'}
+    pico.output.clear()
+    pico.layer.image("crop", "open.png")
+    pico.set.layer("crop")
+    pico.set.view {
+        src = {'!', x=9, y=9, w=30, h=30, anc='NW'}
+    }
+    pico.set.layer()
     local r1 = {'!', x=50-24, y=50-24, w=0, h=0, anc='NW'}
-    pico.output.draw.image("open.png", r1)
+    pico.output.draw.layer("crop", r1)
     pico.check("image_raw-07")
 
     print "show medium normal"
     pico.output.clear()
-    pico.set.crop()
     local r2 = {'!', x=50-10, y=50-10, w=20, h=0, anc='NW'}
     pico.output.draw.image("open.png", r2)
     pico.check("image_raw-08")
