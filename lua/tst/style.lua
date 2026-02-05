@@ -19,7 +19,7 @@ local poly = {
 do
     print("default fill")
     pico.output.clear()
-    pico.set.color.draw(255, 255, 255)
+    pico.set.color.draw 'white'
     pico.output.draw.rect(rect)
     pico.output.draw.oval(oval)
     pico.output.draw.tri(t1, t2, t3)
@@ -31,7 +31,7 @@ do
     print("stroke")
     pico.output.clear()
     pico.set.style('stroke')
-    pico.set.color.draw(255, 255, 255)
+    pico.set.color.draw 'white'
     pico.output.draw.rect(rect)
     pico.output.draw.oval(oval)
     pico.output.draw.tri(t1, t2, t3)
@@ -43,7 +43,7 @@ do
     print("back to fill")
     pico.output.clear()
     pico.set.style('fill')
-    pico.set.color.draw(255, 255, 255)
+    pico.set.color.draw 'white'
     pico.output.draw.rect(rect)
     pico.output.draw.oval(oval)
     pico.output.draw.tri(t1, t2, t3)
