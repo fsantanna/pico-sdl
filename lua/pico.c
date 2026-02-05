@@ -356,8 +356,10 @@ static int l_quit (lua_State* L) {
 static int l_cv_pos (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
 
-    int has_to = (lua_gettop(L) >= 2
-                  && lua_istable(L, 2));
+    int has_to = (lua_gettop(L)>=2 && !lua_isnil(L,2));
+    if (has_to) {
+        luaL_checktype(L, 2, LUA_TTABLE);
+    }
 
     Pico_Abs_Rect* base = NULL;
     Pico_Abs_Rect base_rect;
@@ -402,8 +404,10 @@ static int l_cv_pos (lua_State* L) {
 static int l_cv_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
 
-    int has_to = (lua_gettop(L) >= 2
-                  && lua_istable(L, 2));
+    int has_to = (lua_gettop(L)>=2 && !lua_isnil(L,2));
+    if (has_to) {
+        luaL_checktype(L, 2, LUA_TTABLE);
+    }
 
     Pico_Abs_Rect* base = NULL;
     Pico_Abs_Rect base_rect;
