@@ -116,9 +116,9 @@ do
     assert(raw.w==50 and raw.h==30)
 
     print('', 2)
-    local up  = {'!', x=10, y=10, w=80, h=60}
-    local dim = {'%', w=0.5, h=0.5, up=up}
-    local raw = pico.cv.dim(dim)
+    local base = {x=10, y=10, w=80, h=60}
+    local dim  = {'%', w=0.5, h=0.5}
+    local raw  = pico.cv.dim(dim, base)
     assert(raw.w==40 and raw.h==30)
 end
 
