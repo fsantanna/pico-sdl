@@ -853,12 +853,13 @@ void pico_set_style (PICO_STYLE style) {
 void pico_push (void) {
     assert(_stack_n < PICO_STACK_MAX
         && "state stack overflow");
-    _stack[_stack_n].alpha = S.alpha;
-    _stack[_stack_n].angle = S.angle;
-    _stack[_stack_n].color = S.color;
-    _stack[_stack_n].crop  = S.crop;
-    _stack[_stack_n].style = S.style;
-    _stack[_stack_n].font  = S.font;
+    _stack[_stack_n].alpha       = S.alpha;
+    _stack[_stack_n].angle       = S.angle;
+    _stack[_stack_n].color.clear = S.color.clear;
+    _stack[_stack_n].color.draw  = S.color.draw;
+    _stack[_stack_n].crop        = S.crop;
+    _stack[_stack_n].style       = S.style;
+    _stack[_stack_n].font        = S.font;
     _stack_n++;
 }
 
@@ -866,12 +867,13 @@ void pico_pop (void) {
     assert(_stack_n > 0
         && "state stack underflow");
     _stack_n--;
-    S.alpha = _stack[_stack_n].alpha;
-    S.angle = _stack[_stack_n].angle;
-    S.color = _stack[_stack_n].color;
-    S.crop  = _stack[_stack_n].crop;
-    S.style = _stack[_stack_n].style;
-    S.font  = _stack[_stack_n].font;
+    S.alpha       = _stack[_stack_n].alpha;
+    S.angle       = _stack[_stack_n].angle;
+    S.color.clear = _stack[_stack_n].color.clear;
+    S.color.draw  = _stack[_stack_n].color.draw;
+    S.crop        = _stack[_stack_n].crop;
+    S.style       = _stack[_stack_n].style;
+    S.font        = _stack[_stack_n].font;
 }
 
 void pico_set_view (
