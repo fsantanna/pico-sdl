@@ -48,6 +48,7 @@ tests:
 	$(TST) tst/size_pct.lua
 	$(TST) tst/tiles.lua
 	$(TST) tst/view_raw.lua
+	$(TST) tst/push.lua
 
 install: pico_native.so
 	cp pico-lua /usr/local/bin/
