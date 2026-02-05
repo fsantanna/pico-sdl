@@ -21,9 +21,9 @@ end
 
 do
     print("text dimming")
-    local r = {'!', x=32-13, y=18-5, w=0, h=10, anc='NW'}
-    pico.get.text("SOME TEXT", r)
-    r.x = 32 - r.w//2
+    local d = {'!', w=0, h=10}
+    pico.get.text("SOME TEXT", d)
+    local r = {'!', x=32-d.w//2, y=18-5, w=d.w, h=10, anc='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
