@@ -149,8 +149,16 @@ case SDLK_MINUS: {
 
 ## 8. Implementation Order
 
-1. **Remove `_crop()` and use `view.src`**
-   - Files: pico.c, pico.h
+1. **Remove `_crop()` and use `view.src`** [DONE]
+   - Removed S.crop, _crop(), pico_get/set_crop from pico.c/pico.h
+   - Replaced _crop() in _pico_output_draw_layer with pico_cv_rect_rel_abs(&layer->view.src, ...)
+   - Removed l_set_crop from lua/pico.c and lua/doc/api.md
+   - Rewrote tst/image_raw.c and lua/tst/image_raw.lua crop tests to use named layer + view.src
+   - NOTE: image_raw-07 assertion diverges — old image lacked metric rules because
+     the global _crop() leaked into _show_grid's pico_output_draw_text_raw calls,
+     corrupting the metric labels. New per-layer approach fixes this bug.
+     Update assertion: cp tst/out/image_raw-07.png tst/asr/
+   - Files: pico.c, pico.h, lua/pico.c, lua/doc/api.md, tst/image_raw.c, lua/tst/image_raw.lua
 
 2. **Reject `%` mode for win/log** [DONE]
    - Files: pico.c:882, pico.c:943

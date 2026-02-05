@@ -113,7 +113,6 @@ containing:
 - Alpha blending value
 - Rotation angle
 - Colors (clear and draw)
-- Crop rectangle
 - Expert mode flag (disables automatic present)
 - Flip state
 - Font path
