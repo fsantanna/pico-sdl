@@ -799,19 +799,6 @@ static int l_set_all (lua_State* L) {
     return 0;
 }
 
-static int l_push (lua_State* L) {
-    pico_push();
-    if (lua_gettop(L)>=1 && lua_istable(L,1)) {
-        l_apply_set(L, 1);
-    }
-    return 0;
-}
-
-static int l_pop (lua_State* L) {
-    pico_pop();
-    return 0;
-}
-
 static int l_set_view (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
@@ -1329,11 +1316,6 @@ int luaopen_pico_native (lua_State* L) {
     lua_setmetatable(L, -2);               // pico | set
 
     lua_setfield(L, -2, "set");             // pico
-
-    lua_pushcfunction(L, l_push);           // pico | push
-    lua_setfield(L, -2, "push");            // pico
-    lua_pushcfunction(L, l_pop);            // pico | pop
-    lua_setfield(L, -2, "pop");             // pico
 
     luaL_newlib(L, ll_layer);               // pico | layer
     lua_setfield(L, -2, "layer");           // pico

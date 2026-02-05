@@ -382,15 +382,6 @@ void pico_set_show (int on);
 /// @param style new style
 void pico_set_style (PICO_STYLE style);
 
-/// @brief Saves the current drawing state onto a stack.
-/// Saves alpha, angle, color, crop, style, and font.
-/// @sa pico_pop
-void pico_push (void);
-
-/// @brief Restores the drawing state from the stack.
-/// @sa pico_push
-void pico_pop (void);
-
 /// @brief Sets the view configuration. NULL arguments are ignored.
 /// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
 /// @param dim world/logical dimensions (mode '#' = tiles, otherwise pixels)

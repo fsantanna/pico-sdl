@@ -33,56 +33,6 @@ do
     pico.check("set-02")
 end
 
--- push/pop: draw color and alpha
-do
-    print("push/pop: draw color and alpha")
-    pico.output.clear()
-
-    pico.set.color.draw('white')
-    pico.set.alpha(0xFF)
-    pico.output.draw.rect(
-        {'%', x=0.25, y=0.5, w=0.3, h=0.8})
-
-    pico.push {
-        alpha = 0x80,
-        color = { draw='red' },
-    }
-    pico.output.draw.rect(
-        {'%', x=0.75, y=0.5, w=0.3, h=0.8})
-    pico.pop()
-
-    -- after pop: back to white + 0xFF
-    pico.output.draw.rect(
-        {'%', x=0.5, y=0.5, w=0.1, h=0.1})
-    pico.check("set-03")
-end
-
--- nested push/pop
-do
-    print("nested push/pop")
-    pico.output.clear()
-
-    pico.set.color.draw('white')
-    pico.output.draw.rect(
-        {'%', x=0.25, y=0.25, w=0.3, h=0.3})
-
-    pico.push { color={ draw='red' } }
-    pico.output.draw.rect(
-        {'%', x=0.75, y=0.25, w=0.3, h=0.3})
-
-    pico.push { color={ draw='blue' } }
-    pico.output.draw.rect(
-        {'%', x=0.25, y=0.75, w=0.3, h=0.3})
-    pico.pop()
-
-    -- back to red
-    pico.output.draw.rect(
-        {'%', x=0.75, y=0.75, w=0.3, h=0.3})
-    pico.pop()
-
-    pico.check("set-04")
-end
-
 -- individual setters still work
 do
     print("individual setters unchanged")
@@ -93,7 +43,7 @@ do
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.alpha(0xFF)
     pico.set.color.draw('white')
-    pico.check("set-05")
+    pico.check("set-03")
 end
 
 pico.init(false)

@@ -6,7 +6,6 @@
 
 Make `pico.set` callable as an all-at-once setter while keeping
 the existing `pico.set.<field>()` API intact.
-Add `pico.push`/`pico.pop` for save/restore state semantics.
 
 ## Current State
 
@@ -35,54 +34,25 @@ pico.set {
 
 Existing per-field calls remain unchanged.
 
-### Push / Pop
-
-```lua
-pico.push {
-    alpha = 0x80,
-    color = { draw="red" },
-}
--- draw operations with overridden state
-pico.pop()
-```
-
-`pico.push` saves the current state onto a stack, then applies
-the fields. `pico.pop` restores the previous state.
-
 ## Implementation
 
-### Step 1 -- C: push/pop (`src/pico.c`, `src/pico.h`)
+### Step 1 -- Lua: `pico.set` all (`lua/pico.c`)
 
-- Define a fixed-size stack of `S` snapshots (e.g. 8 deep)
-- `void pico_push(void)` -- copy current `S` onto stack
-- `void pico_pop(void)`  -- restore `S` from stack top
-- Declare both in `pico.h`
-
-### Step 2 -- Lua: `pico.set` all (`lua/pico.c`)
-
-- Implement `l_set_all(L)`:
-    - parse table argument
+- Implement `l_apply_set(L, t)` helper:
+    - parse table at index `t`
     - for each recognized field, call the corresponding C setter
     - supported fields: `alpha`, `color` (`clear`/`draw`),
       `style`, `crop`, `font`
+- Implement `l_set_all(L)` as `__call` handler
 - Attach a metatable with `__call = l_set_all` to the
   `pico.set` table so both syntaxes work
 
-### Step 3 -- Lua: push/pop (`lua/pico.c`)
+### Step 2 -- Tests
 
-- `l_push(L)` -- call `pico_push()`, then delegate to
-  `l_set_all(L)` for the table argument
-- `l_pop(L)` -- call `pico_pop()`
-- Register `pico.push` and `pico.pop` in `luaopen_pico_native`
-
-### Step 4 -- Tests
-
-- Add test for `pico.set` all
-- Add test for `pico.push`/`pico.pop` round-trip
+- Add test for `pico.set` all (alpha, color, style)
+- Verify individual setters still work
 
 ## Status
 
-- [x] Step 1 -- C push/pop
-- [x] Step 2 -- Lua `pico.set` all
-- [x] Step 3 -- Lua push/pop
-- [x] Step 4 -- Tests
+- [x] Step 1 -- Lua `pico.set` all
+- [x] Step 2 -- Tests

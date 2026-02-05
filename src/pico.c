@@ -86,22 +86,6 @@ static struct { // exposed global state
     } win;
 } S;
 
-#define PICO_STACK_MAX 8
-
-static struct {
-    int alpha;
-    int angle;
-    struct {
-        Pico_Color clear;
-        Pico_Color draw;
-    } color;
-    Pico_Abs_Rect crop;
-    PICO_STYLE style;
-    const char* font;
-} _stack[PICO_STACK_MAX];
-
-static int _stack_n = 0;
-
 ///////////////////////////////////////////////////////////////////////////////
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
@@ -848,32 +832,6 @@ void pico_set_show (int on) {
 
 void pico_set_style (PICO_STYLE style) {
     S.style = style;
-}
-
-void pico_push (void) {
-    assert(_stack_n < PICO_STACK_MAX
-        && "state stack overflow");
-    _stack[_stack_n].alpha       = S.alpha;
-    _stack[_stack_n].angle       = S.angle;
-    _stack[_stack_n].color.clear = S.color.clear;
-    _stack[_stack_n].color.draw  = S.color.draw;
-    _stack[_stack_n].crop        = S.crop;
-    _stack[_stack_n].style       = S.style;
-    _stack[_stack_n].font        = S.font;
-    _stack_n++;
-}
-
-void pico_pop (void) {
-    assert(_stack_n > 0
-        && "state stack underflow");
-    _stack_n--;
-    S.alpha       = _stack[_stack_n].alpha;
-    S.angle       = _stack[_stack_n].angle;
-    S.color.clear = _stack[_stack_n].color.clear;
-    S.color.draw  = _stack[_stack_n].color.draw;
-    S.crop        = _stack[_stack_n].crop;
-    S.style       = _stack[_stack_n].style;
-    S.font        = _stack[_stack_n].font;
 }
 
 void pico_set_view (
