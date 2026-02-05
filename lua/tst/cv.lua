@@ -2,7 +2,7 @@
 
 pico.init(true)
 
-print "pico.cv.pos [base]: pct->raw"
+print "pico.cv.pos [up]: pct->raw"
 do
     print('', 1)
     local up  = {'!', x=25, y=25, w=50, h=50}
@@ -24,7 +24,7 @@ do
     assert(raw.x==49 and raw.y==49)
 end
 
-print "pico.cv.rect [base]: pct->raw"
+print "pico.cv.rect [up]: pct->raw"
 do
     print('', 1)
     local pct = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='C'}
