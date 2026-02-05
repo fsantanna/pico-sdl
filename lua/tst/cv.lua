@@ -102,10 +102,10 @@ end
 print "pico.cv.pos [log]: abs->pct (abs_rel)"
 do
     print('', 1)
-    local abs = {x=50, y=70}
+    local abs = {x=50, y=75}
     local to = {'%', anc='NW'}
     pico.cv.pos(abs, to)
-    assert(to.x == 0.5 and to.y == 0.7)
+    assert(to.x == 0.5 and to.y == 0.75)
 
     print('', 2)
     local abs = {x=0, y=0}
@@ -131,11 +131,11 @@ end
 print "pico.cv.rect [log]: abs->pct (abs_rel)"
 do
     print('', 1)
-    local abs = {x=50, y=50, w=30, h=30}
+    local abs = {x=50, y=50, w=25, h=50}
     local to = {'%', anc='NW'}
     pico.cv.rect(abs, to)
     assert(to.x == 0.5 and to.y == 0.5)
-    assert(to.w == 0.3 and to.h == 0.3)
+    assert(to.w == 0.25 and to.h == 0.5)
 
     -- round-trip: abs -> pct -> abs
     print('', 2)
