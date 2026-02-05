@@ -5,21 +5,21 @@ pico.init(true)
 print "pico.cv.pos [up]: pct->raw (rel_abs)"
 do
     print('', 1)
-    local up  = {'!', x=25, y=25, w=50, h=50}
-    local pct = {'%', x=0.5, y=0.5, anc='C'}
-    local raw = pico.cv.pos(pct, nil, up)
+    local base = {x=25, y=25, w=50, h=50}
+    local pct  = {'%', x=0.5, y=0.5, anc='C'}
+    local raw  = pico.cv.pos(pct, nil, base)
     assert(raw.x==50 and raw.y==50)
 
     print('', 2)
-    local up  = {'!', x=25, y=25, w=50, h=50}
-    local pct = {'%', x=0.5, y=0.5, anc='NW'}
-    local raw = pico.cv.pos(pct, nil, up)
+    local base = {x=25, y=25, w=50, h=50}
+    local pct  = {'%', x=0.5, y=0.5, anc='NW'}
+    local raw  = pico.cv.pos(pct, nil, base)
     assert(raw.x==50 and raw.y==50)
 
     print('', 3)
-    local up  = {'!', x=25, y=25, w=50, h=50}
-    local pct = {'%', x=0.5, y=0.5, anc='SE'}
-    local raw = pico.cv.pos(pct, nil, up)
+    local base = {x=25, y=25, w=50, h=50}
+    local pct  = {'%', x=0.5, y=0.5, anc='SE'}
+    local raw  = pico.cv.pos(pct, nil, base)
     assert(raw.x==49 and raw.y==49)
 end
 
@@ -31,21 +31,21 @@ do
     assert(raw.x==25 and raw.y==25 and raw.w==50 and raw.h==50)
 
     print('', 2)
-    local up  = {'!', x=20, y=20, w=60, h=60}
-    local pct = {'%', x=0.25, y=0.25, w=0.5, h=0.25, anc='C'}
-    local raw = pico.cv.rect(pct, nil, up)
+    local base = {x=20, y=20, w=60, h=60}
+    local pct  = {'%', x=0.25, y=0.25, w=0.5, h=0.25, anc='C'}
+    local raw  = pico.cv.rect(pct, nil, base)
     assert(raw.x==20 and raw.y==28 and raw.w==30 and raw.h==15)
 
     print('', 3)
-    local up  = {'!', x=20, y=20, w=60, h=60}
-    local pct = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='NE'}
-    local raw = pico.cv.rect(pct, nil, up)
+    local base = {x=20, y=20, w=60, h=60}
+    local pct  = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='NE'}
+    local raw  = pico.cv.rect(pct, nil, base)
     assert(raw.x==20 and raw.y==50 and raw.w==30 and raw.h==30)
 
     print('', 4)
-    local up  = {'!', x=20, y=20, w=60, h=60}
-    local pct = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='SW'}
-    local raw = pico.cv.rect(pct, nil, up)
+    local base = {x=20, y=20, w=60, h=60}
+    local pct  = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='SW'}
+    local raw  = pico.cv.rect(pct, nil, base)
     assert(raw.x==50 and raw.y==20 and raw.w==30 and raw.h==30)
 end
 
@@ -213,32 +213,32 @@ end
 print "pico.cv.pos [base]: abs->pct (abs_rel with base)"
 do
     print('', 1)
-    local up = {x=25, y=25, w=50, h=50}
-    local abs = {x=50, y=50}
-    local to = {'%', anc='NW'}
-    pico.cv.pos(abs, to, up)
+    local base = {x=25, y=25, w=50, h=50}
+    local abs  = {x=50, y=50}
+    local to   = {'%', anc='NW'}
+    pico.cv.pos(abs, to, base)
     assert(to.x == 0.5 and to.y == 0.5)
 
     -- round-trip with base
     print('', 2)
-    local up = {x=25, y=25, w=50, h=50}
-    local fr = {'%', x=0.5, y=0.5, anc='C'}
-    local abs = pico.cv.pos(fr, nil, up)
-    local to = {'%', anc='C'}
-    pico.cv.pos(abs, to, up)
-    local back = pico.cv.pos(to, nil, up)
+    local base = {x=25, y=25, w=50, h=50}
+    local fr   = {'%', x=0.5, y=0.5, anc='C'}
+    local abs  = pico.cv.pos(fr, nil, base)
+    local to   = {'%', anc='C'}
+    pico.cv.pos(abs, to, base)
+    local back = pico.cv.pos(to, nil, base)
     assert(back.x == abs.x and back.y == abs.y)
 end
 
 print "pico.cv.rect [base]: rel->rel (rel_rel with base)"
 do
     print('', 1)
-    local up = {x=20, y=20, w=60, h=60}
-    local fr = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='C'}
-    local to = {'!', anc='NW'}
-    local abs_fr = pico.cv.rect(fr, nil, up)
-    pico.cv.rect(fr, to, up)
-    local abs_to = pico.cv.rect(to, nil, up)
+    local base = {x=20, y=20, w=60, h=60}
+    local fr   = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anc='C'}
+    local to   = {'!', anc='NW'}
+    local abs_fr = pico.cv.rect(fr, nil, base)
+    pico.cv.rect(fr, to, base)
+    local abs_to = pico.cv.rect(to, nil, base)
     assert(abs_fr.x == abs_to.x and abs_fr.y == abs_to.y)
     assert(abs_fr.w == abs_to.w and abs_fr.h == abs_to.h)
 end
