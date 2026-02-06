@@ -9,13 +9,13 @@ pico_native.so: ../src/pico.c pico.c
 	gcc -Wall -Werror -g -shared -fPIC -DPICO_TESTS -o pico/$@ $^ \
 		-llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
 
-test:
+test: pico_native.so
 	$(TST) tst/$(T).lua
 
-int:
+int: pico_native.so
 	$(INT) tst/$(T).lua
 
-tests:
+tests: pico_native.so
 	$(TST) tst/init.lua
 	$(TST) tst/cv.lua
 	$(TST) tst/vs.lua
