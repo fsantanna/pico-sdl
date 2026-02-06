@@ -426,6 +426,13 @@ void pico_pop (void);
 /// @brief Utilities for users
 /// @{
 
+/// @brief Converts a relative dimension to absolute coordinates.
+/// @param dim relative dimension to convert
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @return absolute dimension in logical pixels
+/// @sa pico_cv_rect_rel_abs
+Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
+
 /// @brief Converts a relative position to absolute coordinates.
 /// @param pos relative position to convert
 /// @param base reference rectangle to use as basis (NULL uses world dimensions)

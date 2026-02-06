@@ -51,6 +51,7 @@ tests:
 	$(EXE) tst/shot.c
 	$(EXE) tst/size_raw.c
 	$(EXE) tst/size_pct.c
+	$(EXE) tst/style.c
 	$(EXE) tst/tiles.c
 	$(EXE) tst/view_raw.c
 	$(EXE) tst/push.c
