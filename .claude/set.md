@@ -36,15 +36,15 @@ Existing per-field calls remain unchanged.
 
 ## Implementation
 
-### Step 1 -- Lua: `pico.set` all (`lua/pico.c`)
+### Step 1 -- Lua: `pico.set` all (`lua/pico/init.lua`)
 
-- Implement `l_set_all(L)` as `__call` handler:
-    - parse table at index 2 (index 1 is `self`)
-    - for each recognized field, call the corresponding C setter
-    - supported fields: `alpha`, `color` (`clear`/`draw`),
-      `style`, `crop`, `font`
-- Attach a metatable with `__call = l_set_all` to the
-  `pico.set` table so both syntaxes work
+- Generic recursive implementation in Lua:
+    - `apply_set(target, values)` traverses the input table
+    - for each key, looks up the corresponding field in `pico.set`
+    - if field is a function, calls it with the value
+    - if field is a table, recurses into it
+- Attach a metatable with `__call = apply_set` to `M.set`
+- Works with any setter without hardcoding field names
 
 ### Step 2 -- Tests
 
