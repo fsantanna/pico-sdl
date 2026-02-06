@@ -7,6 +7,8 @@ local function apply_set (target, values)
             field(v)
         elseif type(field) == "table" then
             apply_set(field, v)
+        else
+            error("pico.set: unknown key '" .. k .. "'")
         end
     end
 end
