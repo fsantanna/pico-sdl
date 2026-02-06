@@ -86,6 +86,28 @@ static struct { // exposed global state
     } win;
 } S;
 
+#define PICO_STACK_MAX 16
+
+typedef struct {
+    int           alpha;
+    int           angle;
+    struct {
+        Pico_Color clear;
+        Pico_Color draw;
+    } color;
+    Pico_Abs_Rect crop;
+    const char*   font;
+    PICO_STYLE    style;
+    Pico_Layer*   layer;
+} Pico_State;
+
+static struct {
+    Pico_State buf[PICO_STACK_MAX];
+    int        n;
+} STACK = {
+    {}, 0
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
@@ -558,6 +580,8 @@ void pico_init (int on) {
             },
         };
 
+        STACK.n = 0;
+
         // create ren after win
         {
 #ifdef PICO_TESTS
@@ -833,6 +857,42 @@ void pico_set_show (int on) {
 
 void pico_set_style (PICO_STYLE style) {
     S.style = style;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// PUSH / POP
+///////////////////////////////////////////////////////////////////////////////
+
+void pico_push (void) {
+    assert(STACK.n<PICO_STACK_MAX && "stack overflow");
+    STACK.buf[STACK.n++] = (Pico_State) {
+        .alpha = S.alpha,
+        .angle = S.angle,
+        .color = { S.color.clear, S.color.draw },
+        .crop  = S.crop,
+        .font  = S.font,
+        .style = S.style,
+        .layer = S.layer,
+    };
+}
+
+void pico_pop (void) {
+    assert(STACK.n>0 && "stack underflow");
+    Pico_State* st = &STACK.buf[--STACK.n];
+    S.alpha = st->alpha;
+    S.angle = st->angle;
+    S.color.clear = st->color.clear;
+    S.color.draw  = st->color.draw;
+    S.crop  = st->crop;
+    S.font  = st->font;
+    S.style = st->style;
+    if (S.layer != st->layer) {
+        S.layer = st->layer;
+        SDL_SetRenderTarget(G.ren, S.layer->tex);
+        SDL_RenderSetClipRect(
+            G.ren, &S.layer->view.clip
+        );
+    }
 }
 
 void pico_set_view (
