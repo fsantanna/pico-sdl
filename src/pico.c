@@ -160,32 +160,32 @@ static SDL_FRect _f2 (
 
 static SDL_FRect _f1 (
     const Pico_Rel_Rect* r,
-    SDL_FRect ref,
+    SDL_FRect base,
     const Pico_Abs_Dim* ratio
 ) {
     if (r == NULL) {
-        return ref;
+        return base;
     } else {
         SDL_FRect abs = { r->x, r->y, r->w, r->h };
-        SDL_FRect tmp = _f1(r->up, ref, NULL);
+        SDL_FRect tmp = _f1(r->up, base, NULL);
         return _f2(abs, r->anchor, tmp, ratio);
     }
 }
 
 static SDL_FDim _sdl_dim (
     Pico_Rel_Dim*        dim,
-    const Pico_Abs_Rect* ref,
+    const Pico_Abs_Rect* base,
     const Pico_Abs_Dim*  ratio
 ) {
     SDL_FRect r0;
-    if (ref == NULL) {
+    if (base == NULL) {
         r0 = (SDL_FRect) {
             0, 0,
             (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
             (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
         };
     } else {
-        r0 = (SDL_FRect) { ref->x, ref->y, ref->w, ref->h };
+        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
     }
     SDL_FRect r1 = _f1(dim->up, r0, NULL);
     SDL_FDim ret;
@@ -213,18 +213,18 @@ static SDL_FDim _sdl_dim (
 
 static SDL_FPoint _sdl_pos (
     const Pico_Rel_Pos*  pos,
-    const Pico_Abs_Rect* ref
+    const Pico_Abs_Rect* base
 ) {
     SDL_FPoint ret;
     SDL_FRect r0;
-    if (ref == NULL) {
+    if (base == NULL) {
         r0 = (SDL_FRect) {
             0, 0,
             (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
             (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
         };
     } else {
-        r0 = (SDL_FRect) { ref->x, ref->y, ref->w, ref->h };
+        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
     }
     SDL_FRect r1 = _f1(pos->up, r0, NULL);
     switch (pos->mode) {
@@ -254,19 +254,19 @@ static SDL_FPoint _sdl_pos (
 
 static SDL_FRect _sdl_rect (
     const Pico_Rel_Rect* rect,
-    const Pico_Abs_Rect* ref,
+    const Pico_Abs_Rect* base,
     const Pico_Abs_Dim* ratio
 ) {
     SDL_FRect ret;
     SDL_FRect r0;
-    if (ref == NULL) {
+    if (base == NULL) {
         r0 = (SDL_FRect) {
             0, 0,
             (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
             (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
         };
     } else {
-        r0 = (SDL_FRect) { ref->x, ref->y, ref->w, ref->h };
+        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
     }
     SDL_FRect r1 = _f1(rect->up, r0, NULL);
     switch (rect->mode) {
@@ -328,14 +328,114 @@ Pico_Abs_Rect* _crop (void) {
 // CV
 ///////////////////////////////////////////////////////////////////////////////
 
-Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref) {
-    SDL_FPoint pf = _sdl_pos(pos, ref);
+Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
+    SDL_FDim df = _sdl_dim(dim, base, NULL);
+    return _fi_dim(&df);
+}
+
+Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
+    SDL_FPoint pf = _sdl_pos(pos, base);
     return (Pico_Abs_Pos) _fi_pos(&pf);
 }
 
-Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref) {
-    SDL_FRect rf = _sdl_rect(rect, ref, NULL);
+Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base) {
+    SDL_FRect rf = _sdl_rect(rect, base, NULL);
     return (Pico_Abs_Rect) _fi_rect(&rf);
+}
+
+void pico_cv_pos_abs_rel (const Pico_Abs_Pos* fr,
+                          Pico_Rel_Pos* to,
+                          Pico_Abs_Rect* base)
+{
+    SDL_FRect r0;
+    if (base == NULL) {
+        r0 = (SDL_FRect) {
+            0, 0,
+            (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
+            (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
+        };
+    } else {
+        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
+    }
+
+    Pico_Rel_Rect* up_rect = (Pico_Rel_Rect*) to->up;
+    SDL_FRect r1 = _f1(up_rect, r0, NULL);
+
+    switch (to->mode) {
+        case '!':
+            to->x = fr->x - r1.x + to->anchor.x;
+            to->y = fr->y - r1.y + to->anchor.y;
+            break;
+        case '%':
+            to->x = (fr->x - r1.x + to->anchor.x) / r1.w;
+            to->y = (fr->y - r1.y + to->anchor.y) / r1.h;
+            break;
+        case '#':
+            to->x = (fr->x - r1.x) / S.layer->view.tile.w + 1 - to->anchor.x;
+            to->y = (fr->y - r1.y) / S.layer->view.tile.h + 1 - to->anchor.y;
+            break;
+        default:
+            assert(0 && "invalid mode");
+    }
+}
+
+void pico_cv_pos_rel_rel (const Pico_Rel_Pos* fr,
+                          Pico_Rel_Pos* to,
+                          Pico_Abs_Rect* base)
+{
+    Pico_Abs_Pos abs = pico_cv_pos_rel_abs(fr, base);
+    pico_cv_pos_abs_rel(&abs, to, base);
+}
+
+void pico_cv_rect_abs_rel (const Pico_Abs_Rect* fr,
+                           Pico_Rel_Rect* to,
+                           Pico_Abs_Rect* base)
+{
+    SDL_FRect r0;
+    if (base == NULL) {
+        r0 = (SDL_FRect) {
+            0, 0,
+            (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
+            (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
+        };
+    } else {
+        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
+    }
+
+    SDL_FRect r1 = _f1(to->up, r0, NULL);
+
+    switch (to->mode) {
+        case '!':
+            to->w = fr->w;
+            to->h = fr->h;
+            to->x = fr->x - r1.x + to->anchor.x * to->w;
+            to->y = fr->y - r1.y + to->anchor.y * to->h;
+            break;
+        case '%':
+            to->w = fr->w / r1.w;
+            to->h = fr->h / r1.h;
+            to->x = (fr->x - r1.x + to->anchor.x * fr->w) / r1.w;
+            to->y = (fr->y - r1.y + to->anchor.y * fr->h) / r1.h;
+            break;
+        case '#':
+            to->w = fr->w / (float)S.layer->view.tile.w;
+            to->h = fr->h / (float)S.layer->view.tile.h;
+            to->x = (fr->x - r1.x) / S.layer->view.tile.w + 1
+                    - to->anchor.x + to->anchor.x * to->w;
+            to->y = (fr->y - r1.y) / S.layer->view.tile.h + 1
+                    - to->anchor.y + to->anchor.y * to->h;
+            break;
+        default:
+            assert(0 && "invalid mode");
+    }
+}
+
+void pico_cv_rect_rel_rel (const Pico_Rel_Rect* fr,
+                           Pico_Rel_Rect* to,
+                           Pico_Abs_Rect* base)
+{
+    Pico_Abs_Rect abs = pico_cv_rect_rel_abs(fr, base);
+    pico_cv_rect_abs_rel(&abs, to, base);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -343,18 +443,14 @@ Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* re
 ///////////////////////////////////////////////////////////////////////////////
 
 int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect) {
-    SDL_FPoint pf = _sdl_pos(pos, NULL);
-    SDL_FRect  rf = _sdl_rect(rect, NULL, NULL);
-    SDL_Point  pi = _fi_pos(&pf);
-    SDL_Rect   ri = _fi_rect(&rf);
+    Pico_Abs_Pos  pi = pico_cv_pos_rel_abs(pos, NULL);
+    Pico_Abs_Rect ri = pico_cv_rect_rel_abs(rect, NULL);
     return SDL_PointInRect(&pi, &ri);
 }
 
 int pico_vs_rect_rect (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2) {
-    SDL_FRect f1 = _sdl_rect(r1, NULL, NULL);
-    SDL_FRect f2 = _sdl_rect(r2, NULL, NULL);
-    SDL_Rect  i1 = _fi_rect(&f1);
-    SDL_Rect  i2 = _fi_rect(&f2);
+    Pico_Abs_Rect i1 = pico_cv_rect_rel_abs(r1, NULL);
+    Pico_Abs_Rect i2 = pico_cv_rect_rel_abs(r2, NULL);
     return SDL_HasIntersection(&i1, &i2);
 }
 
@@ -379,6 +475,14 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct) {
         (clr.r + (255 - clr.r) * pct),
         (clr.g + (255 - clr.g) * pct),
         (clr.b + (255 - clr.b) * pct)
+    };
+}
+
+Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2) {
+    return (Pico_Color) {
+        (c1.r + c2.r) / 2,
+        (c1.g + c2.g) / 2,
+        (c1.b + c2.b) / 2
     };
 }
 
@@ -776,8 +880,7 @@ void pico_set_view (
 
     // dim: recreate texture for current layer
     if (dim != NULL) {
-        SDL_FDim df = _sdl_dim(dim, NULL, NULL);
-        Pico_Abs_Dim di = _fi_dim(&df);
+        Pico_Abs_Dim di = pico_cv_dim_rel_abs(dim, NULL);
         S.layer->view.dim = di;
         if (src == NULL) {
             S.layer->view.src = (SDL_Rect) { 0, 0, di.w, di.h };
@@ -837,9 +940,8 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
     if (dim != NULL) {
         assert(fs==-1 && !S.win.fs);
         G.tgt = 0;
-        SDL_FDim df = _sdl_dim(dim, NULL, NULL);
+        Pico_Abs_Dim di = pico_cv_dim_rel_abs(dim, NULL);
         G.tgt = 1;
-        Pico_Abs_Dim di = _fi_dim(&df);
         S.win.dim = di;
         G.main.view.dst = (SDL_Rect) { 0, 0, di.w, di.h };
         SDL_SetWindowSize(G.win, di.w, di.h);
@@ -1311,17 +1413,14 @@ void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
 void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_FPoint f1 = _sdl_pos(p1, NULL);
-    SDL_FPoint f2 = _sdl_pos(p2, NULL);
-    SDL_Point  i1 = _fi_pos(&f1);
-    SDL_Point  i2 = _fi_pos(&f2);
+    Pico_Abs_Pos i1 = pico_cv_pos_rel_abs(p1, NULL);
+    Pico_Abs_Pos i2 = pico_cv_pos_rel_abs(p2, NULL);
     SDL_RenderDrawLine(G.ren, i1.x,i1.y, i2.x,i2.y);
     _pico_output_present(0);
 }
 
 void pico_output_draw_oval (Pico_Rel_Rect* rect) {
-    SDL_FRect f = _sdl_rect(rect, NULL, NULL);
-    SDL_Rect  i = _fi_rect(&f);
+    Pico_Abs_Rect i = pico_cv_rect_rel_abs(rect, NULL);
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     switch (S.style) {
@@ -1344,8 +1443,7 @@ void pico_output_draw_oval (Pico_Rel_Rect* rect) {
 void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    SDL_FPoint f = _sdl_pos(pos, NULL);
-    SDL_Point  i = _fi_pos(&f);
+    Pico_Abs_Pos i = pico_cv_pos_rel_abs(pos, NULL);
     SDL_RenderDrawPoint(G.ren, i.x, i.y);
         // TODO: could use PointF, but 4.5->4 (not 5 desired)
     _pico_output_present(0);
@@ -1354,8 +1452,7 @@ void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
     SDL_Point vs[n];
     for (int i=0; i<n; i++) {
-        SDL_FPoint f = _sdl_pos(&ps[i], NULL);
-        vs[i] = _fi_pos(&f);
+        vs[i] = pico_cv_pos_rel_abs(&ps[i], NULL);
     }
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -1367,8 +1464,7 @@ void pico_output_draw_rect (Pico_Rel_Rect* rect) {
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
 
-    SDL_FRect f = _sdl_rect(rect, NULL, NULL);
-    SDL_Rect  i = _fi_rect(&f);
+    Pico_Abs_Rect i = pico_cv_rect_rel_abs(rect, NULL);
     switch (S.style) {
         case PICO_STYLE_FILL:
             SDL_RenderFillRect(G.ren, &i);
@@ -1383,8 +1479,7 @@ void pico_output_draw_rect (Pico_Rel_Rect* rect) {
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
     Sint16 xs[n], ys[n];
     for (int i=0; i<n; i++) {
-        SDL_FPoint f = _sdl_pos(&ps[i], NULL);
-        SDL_Point  v = _fi_pos(&f);
+        Pico_Abs_Pos v = pico_cv_pos_rel_abs(&ps[i], NULL);
         xs[i] = v.x;
         ys[i] = v.y;
     }
@@ -1422,12 +1517,9 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
 }
 
 void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3) {
-    SDL_FPoint f1 = _sdl_pos(p1, NULL);
-    SDL_FPoint f2 = _sdl_pos(p2, NULL);
-    SDL_FPoint f3 = _sdl_pos(p3, NULL);
-    SDL_Point  i1 = _fi_pos(&f1);
-    SDL_Point  i2 = _fi_pos(&f2);
-    SDL_Point  i3 = _fi_pos(&f3);
+    Pico_Abs_Pos i1 = pico_cv_pos_rel_abs(p1, NULL);
+    Pico_Abs_Pos i2 = pico_cv_pos_rel_abs(p2, NULL);
+    Pico_Abs_Pos i3 = pico_cv_pos_rel_abs(p3, NULL);
 
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -1616,13 +1708,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r) {
     assert(S.layer == &G.main);
     Pico_Abs_Rect phy = {0, 0, S.win.dim.w, S.win.dim.h};
-    SDL_Rect ri;
-    if (r == NULL) {
-        ri = phy;
-    } else {
-        SDL_FRect rf = _sdl_rect(r, &phy, NULL);
-        ri = _fi_rect(&rf);
-    }
+    SDL_Rect ri = (r == NULL) ? phy :  pico_cv_rect_rel_abs(r, &phy);
 
     const char* ret;
     if (path != NULL) {

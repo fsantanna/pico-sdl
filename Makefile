@@ -1,6 +1,7 @@
 CHECK = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR=1
 XVFB = xvfb-run -a
 EXE = $(CHECK) $(XVFB) ./pico-sdl
+INT = PICO_TESTS=1 PICO_CHECK_INT=1 PICO_CHECK_ASR= ./pico-sdl
 #EXE = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl
 
 .PHONY: ttl tests clean
@@ -13,6 +14,9 @@ ttl:
 
 test:
 	$(EXE) tst/$(T).c
+
+int:
+	$(INT) tst/$(T).c
 
 tests:
 	@echo "Running tests..."
@@ -47,6 +51,7 @@ tests:
 	$(EXE) tst/shot.c
 	$(EXE) tst/size_raw.c
 	$(EXE) tst/size_pct.c
+	$(EXE) tst/style.c
 	$(EXE) tst/tiles.c
 	$(EXE) tst/view_raw.c
 	@echo ""

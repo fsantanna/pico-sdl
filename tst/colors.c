@@ -93,6 +93,85 @@ int main (void) {
         _pico_check("colors-04");
     }
 
+    puts("mix function");
+    {
+        pico_output_clear();
+
+        // red + blue = purple
+        Pico_Color c1 = pico_color_mix(PICO_COLOR_RED, PICO_COLOR_BLUE);
+        pico_set_color_draw(c1);
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, PICO_ANCHOR_C, NULL }
+        );
+
+        // red + green = olive
+        Pico_Color c2 = pico_color_mix(PICO_COLOR_RED, PICO_COLOR_GREEN);
+        pico_set_color_draw(c2);
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.35, 0.8, 0.1}, PICO_ANCHOR_C, NULL }
+        );
+
+        // blue + green = teal
+        Pico_Color c3 = pico_color_mix(PICO_COLOR_BLUE, PICO_COLOR_GREEN);
+        pico_set_color_draw(c3);
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.55, 0.8, 0.1}, PICO_ANCHOR_C, NULL }
+        );
+
+        // black + white = gray
+        Pico_Color c4 = pico_color_mix(PICO_COLOR_BLACK, PICO_COLOR_WHITE);
+        pico_set_color_draw(c4);
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, PICO_ANCHOR_C, NULL }
+        );
+
+        _pico_check("colors-05");
+    }
+
+    // mirrors Lua test for '%' and '!' color table formats
+    {
+        puts("percentage color format");
+        pico_output_clear();
+
+        // {'%', r=1, g=0, b=0} -> (255, 0, 0)
+        pico_set_color_draw((Pico_Color){255, 0, 0});
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, C, NULL }
+        );
+
+        // {'%', r=0, g=1, b=0} -> (0, 255, 0)
+        pico_set_color_draw((Pico_Color){0, 255, 0});
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.30, 0.8, 0.1}, C, NULL }
+        );
+
+        // {'%', r=0, g=0, b=1} -> (0, 0, 255)
+        pico_set_color_draw((Pico_Color){0, 0, 255});
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.45, 0.8, 0.1}, C, NULL }
+        );
+
+        // {'%', r=0.5, g=0.5, b=0.5} -> (127, 127, 127)
+        pico_set_color_draw((Pico_Color){127, 127, 127});
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.60, 0.8, 0.1}, C, NULL }
+        );
+
+        // {'!', r=255, g=255, b=0} -> (255, 255, 0)
+        pico_set_color_draw((Pico_Color){255, 255, 0});
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, C, NULL }
+        );
+
+        // {r=0, g=255, b=255} -> (0, 255, 255)
+        pico_set_color_draw((Pico_Color){0, 255, 255});
+        pico_output_draw_rect(
+            &(Pico_Rel_Rect){ '%', {0.5, 0.90, 0.8, 0.1}, C, NULL }
+        );
+
+        _pico_check("colors-06");
+    }
+
     pico_init(0);
     return 0;
 }

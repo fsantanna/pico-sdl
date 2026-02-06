@@ -415,19 +415,62 @@ void pico_set_dim (Pico_Rel_Dim* dim);
 /// @brief Utilities for users
 /// @{
 
+/// @brief Converts a relative dimension to absolute coordinates.
+/// @param dim relative dimension to convert
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @return absolute dimension in logical pixels
+/// @sa pico_cv_rect_rel_abs
+Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
+
 /// @brief Converts a relative position to absolute coordinates.
 /// @param pos relative position to convert
-/// @param ref reference rectangle to use as basis (NULL uses world dimensions)
+/// @param base reference rectangle to use as basis (NULL uses world dimensions)
 /// @return absolute position in logical pixels
 /// @sa pico_cv_rect_rel_abs
-Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* ref);
+Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative rectangle to absolute coordinates.
 /// @param rect relative rectangle to convert
-/// @param ref reference rectangle to use as basis (NULL uses world dimensions)
+/// @param base reference rectangle to use as basis (NULL uses world dimensions)
 /// @return absolute rectangle in logical pixels
 /// @sa pico_cv_pos_rel_abs
-Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ref);
+Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base);
+
+/// @brief Converts an absolute position to relative coordinates.
+/// @param fr absolute position to convert
+/// @param to relative position template (mode, anchor, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @sa pico_cv_pos_rel_abs
+void pico_cv_pos_abs_rel (const Pico_Abs_Pos* fr,
+                          Pico_Rel_Pos* to,
+                          Pico_Abs_Rect* base);
+
+/// @brief Converts a relative position to another relative mode.
+/// @param fr relative position to convert
+/// @param to relative position template (mode, anchor, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @sa pico_cv_pos_abs_rel
+void pico_cv_pos_rel_rel (const Pico_Rel_Pos* fr,
+                          Pico_Rel_Pos* to,
+                          Pico_Abs_Rect* base);
+
+/// @brief Converts an absolute rectangle to relative coordinates.
+/// @param fr absolute rectangle to convert
+/// @param to relative rectangle template (mode, anchor, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @sa pico_cv_rect_rel_abs
+void pico_cv_rect_abs_rel (const Pico_Abs_Rect* fr,
+                           Pico_Rel_Rect* to,
+                           Pico_Abs_Rect* base);
+
+/// @brief Converts a relative rectangle to another relative mode.
+/// @param fr relative rectangle to convert
+/// @param to relative rectangle template (mode, anchor, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @sa pico_cv_rect_abs_rel
+void pico_cv_rect_rel_rel (const Pico_Rel_Rect* fr,
+                           Pico_Rel_Rect* to,
+                           Pico_Abs_Rect* base);
 
 /// @brief Checks if a point is inside a rectangle.
 /// @param pos point to test (mode determines coordinates)
@@ -456,6 +499,14 @@ Pico_Color pico_color_darker (Pico_Color clr, float pct);
 /// @return the lightened color
 /// @sa pico_color_darker
 Pico_Color pico_color_lighter (Pico_Color clr, float pct);
+
+/// @brief Mixes two colors by averaging their RGB components.
+/// @param c1 first color
+/// @param c2 second color
+/// @return the mixed color
+/// @sa pico_color_darker
+/// @sa pico_color_lighter
+Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2);
 
 /// @}
 

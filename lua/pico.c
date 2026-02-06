@@ -22,6 +22,27 @@ static float L_checkfieldnum (lua_State* L, int i, const char* k) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static char c_mode (lua_State* L, int i, int asr) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);
+    char mode = '!';
+    lua_geti(L, i, 1);                          // T | [1]
+    if (!lua_isnil(L, -1)) {
+        if (!lua_isstring(L, -1)) {
+            luaL_error(L, "invalid mode at index 1");
+        }
+        const char* s = lua_tostring(L, -1);
+        mode = s[0];
+    } else if (asr) {
+        luaL_error(L, "invalid mode at index 1");
+    }
+    lua_pop(L, 1);                              // T
+    if (mode!='!' && mode!='%' && mode!='#') {
+        luaL_error(L, "invalid mode '%c': expected '!', '%%', or '#'", mode);
+    }
+    return mode;
+}
+
 static Pico_Anchor c_anchor (lua_State* L, int i) {
     assert(i > 0);
     lua_getfield(L, i, "anc");                      // T | anc
@@ -59,79 +80,76 @@ static Pico_Anchor c_anchor (lua_State* L, int i) {
 
 static Pico_Color c_color_t (lua_State* L, int i) {
     assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { r,g,b }
-    Pico_Color clr = {
-        L_checkfieldnum(L, i, "r"),
-        L_checkfieldnum(L, i, "g"),
-        L_checkfieldnum(L, i, "b"),
-    };
-    return clr;
+    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { ['!'|'%'], r,g,b }
+
+    char mode = c_mode(L, i, 0);
+    if (mode!='!' && mode!='%') {
+        luaL_error(L, "invalid mode '%c': expected '!', '%%'", mode);
+    }
+
+    float r = L_checkfieldnum(L, i, "r");
+    float g = L_checkfieldnum(L, i, "g");
+    float b = L_checkfieldnum(L, i, "b");
+
+    if (mode == '%') {
+        return (Pico_Color) { r*255, g*255, b*255 };
+    } else {
+        return (Pico_Color) { r, g, b };
+    }
 }
 
 static Pico_Color_A c_color_a_t (lua_State* L, int i) {
     assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { r,g,b,a }
+    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { ['!'|'%'], r,g,b,a }
 
-    int a = 0xFF;
-    {
-        lua_getfield(L, i, "a");            // clr | a
-        if (!lua_isnil(L,-1)) {
-            a = L_checkfieldnum(L, i, "a");
-        }
-        lua_pop(L, 1);
+    char mode = c_mode(L, i, 0);
+    if (mode!='!' && mode!='%') {
+        luaL_error(L, "invalid mode '%c': expected '!' or '%%'", mode);
     }
 
-    Pico_Color_A clr = {
-        L_checkfieldnum(L, i, "r"),
-        L_checkfieldnum(L, i, "g"),
-        L_checkfieldnum(L, i, "b"),
-        a
-    };
-    return clr;
-}
-
-static Pico_Color c_color (lua_State* L) {
-    Pico_Color clr;
-    if (lua_type(L,1) == LUA_TSTRING) {         // clr = 'red'
-        lua_pushlightuserdata(L, (void*)&KEY);  // clr | . | K
-        lua_gettable(L, LUA_REGISTRYINDEX);     // clr | . | G
-        lua_getfield(L, -1, "colors");          // clr | . | G | clrs
-        lua_pushvalue(L, 1);                   // clr | . | G | clrs | clr
-        lua_gettable(L, -2);                    // clr | . | G | clrs | *clr*
-        int ok = lua_islightuserdata(L, -1);
-        if (!ok) {
-            luaL_error(L, "invalid color \"%s\"", lua_tostring(L,1));
-        }
-        Pico_Color* clr = lua_touserdata(L, -1);
-        lua_pop(L, 3);                          // clr
-        return *clr;
-    } else if (lua_type(L,1) == LUA_TTABLE) {  // clr = { r,g,b }
-        clr = c_color_t(L, 1);
-    } else {                            // r | g | b
-        clr = (Pico_Color) {
-            luaL_checknumber(L, 1),
-            luaL_checknumber(L, 2),
-            luaL_checknumber(L, 3),
-        };
+    float a = (mode == '%') ? 1.0 : 0xFF;
+    lua_getfield(L, i, "a");                // T | a
+    if (!lua_isnil(L,-1)) {
+        a = L_checkfieldnum(L, i, "a");
     }
-    return clr;
+    lua_pop(L, 1);                          // T
+
+    float r = L_checkfieldnum(L, i, "r");
+    float g = L_checkfieldnum(L, i, "g");
+    float b = L_checkfieldnum(L, i, "b");
+
+    if (mode == '%') {
+        return (Pico_Color_A) { r*255, g*255, b*255, a*255 };
+    } else {
+        return (Pico_Color_A) { r, g, b, a };
+    }
 }
 
-
-static char c_mode (lua_State* L, int i) {
+static Pico_Color c_color_s (lua_State* L, int i) {
     assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);
-    lua_geti(L, i, 1);                          // T | [1]
-    if (!lua_isstring(L, -1)) {
-        luaL_error(L, "invalid mode at index 1");
+    assert(lua_type(L,i) == LUA_TSTRING);   // clr = 'red'
+    lua_pushlightuserdata(L, (void*)&KEY);  // clr | . | K
+    lua_gettable(L, LUA_REGISTRYINDEX);     // clr | . | G
+    lua_getfield(L, -1, "colors");          // clr | . | G | clrs
+    lua_pushvalue(L, i);                    // clr | . | G | clrs | clr
+    lua_gettable(L, -2);                    // clr | . | G | clrs | *clr*
+    int ok = lua_islightuserdata(L, -1);
+    if (!ok) {
+        luaL_error(L, "invalid color \"%s\"", lua_tostring(L,i));
     }
-    const char* s = lua_tostring(L, -1);
-    char mode = s[0];
-    lua_pop(L, 1);                              // T
-    if (mode!='!' && mode!='%' && mode!='#') {
-        luaL_error(L, "invalid mode '%c', expected '!', '%%', or '#'", mode);
+    Pico_Color* clr = lua_touserdata(L, -1);
+    lua_pop(L, 3);
+    return *clr;
+}
+
+static Pico_Color c_color_st (lua_State* L, int i) {
+    assert(i > 0);
+    if (lua_type(L,i) == LUA_TSTRING) {
+        return c_color_s(L, i);
+    } else {
+        luaL_checktype(L, i, LUA_TTABLE);
+        return c_color_t(L, i);
     }
-    return mode;
 }
 
 static Pico_Abs_Rect c_abs_rect (lua_State* L, int i) {
@@ -145,24 +163,35 @@ static Pico_Abs_Rect c_abs_rect (lua_State* L, int i) {
     };
 }
 
+static Pico_Abs_Pos c_abs_pos (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);
+    return (Pico_Abs_Pos) {
+        (int) L_checkfieldnum(L, i, "x"),
+        (int) L_checkfieldnum(L, i, "y"),
+    };
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
 
-    char mode = c_mode(L, i);
+    char mode = c_mode(L, i, 1);
     Pico_Anchor anc = c_anchor(L, i);
 
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
-    lua_pop(L, 1);                          // T
 
     Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
-    *r = (Pico_Rel_Rect) {                  // T | ud
+    *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
         .mode = mode,
         .x = L_checkfieldnum(L, i, "x"),
         .y = L_checkfieldnum(L, i, "y"),
@@ -179,14 +208,16 @@ static Pico_Rel_Dim* c_rel_dim (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
 
-    char mode = c_mode(L, i);
+    char mode = c_mode(L, i, 1);
 
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
-    lua_pop(L, 1);                          // T
 
     Pico_Rel_Dim* d = lua_newuserdata(L, sizeof(Pico_Rel_Dim));
     *d = (Pico_Rel_Dim) {                   // T | ud
@@ -203,18 +234,20 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
 
-    char mode = c_mode(L, i);
+    char mode = c_mode(L, i, 1);
     Pico_Anchor anc = c_anchor(L, i);
 
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
-    lua_pop(L, 1);                          // T
 
     Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
-    *p = (Pico_Rel_Pos) {                   // T | ud
+    *p = (Pico_Rel_Pos) {                   // T | [ud] | ud
         .mode = mode,
         .x = L_checkfieldnum(L, i, "x"),
         .y = L_checkfieldnum(L, i, "y"),
@@ -280,56 +313,160 @@ static int l_quit (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_cv_pos (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // pos | [ref]
+static Pico_Rel_Pos* _c_tpl_pos (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);    // T
 
-    Pico_Rel_Pos* rel = c_rel_pos(L, 1);
-    Pico_Abs_Rect* ref = NULL;
-    Pico_Abs_Rect ref_rect;
-    if (lua_istable(L, 2)) {
-        ref_rect = c_abs_rect(L, 2);
-        ref = &ref_rect;
+    char mode = c_mode(L, i, 1);
+    Pico_Anchor anc = c_anchor(L, i);
+
+    lua_getfield(L, i, "up");               // T | up
+    Pico_Rel_Rect* up = NULL;
+    if (!lua_isnil(L, -1)) {
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
 
-    Pico_Abs_Pos raw = pico_cv_pos_rel_abs(rel, ref);
+    Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
+    *p = (Pico_Rel_Pos) {                   // T | [ud] | ud
+        .mode = mode,
+        .anchor = anc,
+        .up = up,
+    };
+    return p;                               // T | *ud* (holds mallocs)
+}
 
-    lua_newtable(L);                        // pos | [ref] | raw
-    lua_pushstring(L, "!");
-    lua_rawseti(L, -2, 1);
-    lua_pushinteger(L, raw.x);
-    lua_setfield(L, -2, "x");
-    lua_pushinteger(L, raw.y);
-    lua_setfield(L, -2, "y");
+static Pico_Rel_Rect* _c_tpl_rect (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);    // T
 
-    return 1;
+    char mode = c_mode(L, i, 1);
+    Pico_Anchor anc = c_anchor(L, i);
+
+    lua_getfield(L, i, "up");               // T | up
+    Pico_Rel_Rect* up = NULL;
+    if (!lua_isnil(L, -1)) {
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
+    }
+
+    Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
+    *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
+        .mode = mode,
+        .anchor = anc,
+        .up = up,
+    };
+    return r;                               // T | *ud* (holds mallocs)
+}
+
+static int l_cv_pos (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
+
+    int has_to = (lua_gettop(L)>=2 && !lua_isnil(L,2));
+    if (has_to) {
+        luaL_checktype(L, 2, LUA_TTABLE);
+    }
+
+    Pico_Abs_Rect* base = NULL;
+    Pico_Abs_Rect base_rect;
+    if (lua_gettop(L)>=3 && !lua_isnil(L,3)) {
+        luaL_checktype(L, 3, LUA_TTABLE);
+        base_rect = c_abs_rect(L, 3);
+        base = &base_rect;
+    }
+
+    if (!has_to) {
+        // rel -> abs
+        Pico_Rel_Pos* fr = c_rel_pos(L, 1);
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(fr, base);
+        lua_newtable(L);                    // . | abs: {}
+        lua_pushinteger(L, abs.x);          // . | abs | x
+        lua_setfield(L, -2, "x");           // . | abs
+        lua_pushinteger(L, abs.y);          // . | abs | y
+        lua_setfield(L, -2, "y");           // . | abs: {x,y}
+        return 1;                           // *abs*
+    } else {
+        // rel -> rel
+        lua_geti(L, 1, 1);                      // fr | to | . | '?'
+        int fr_is_rel = lua_isstring(L, -1);
+        lua_pop(L, 1);                          // fr | to | .
+
+        Pico_Rel_Pos* to = _c_tpl_pos(L, 2);    // fr | to | . | *ud* (holds mallocs)
+        if (fr_is_rel) {
+            Pico_Rel_Pos* fr = c_rel_pos(L, 1);
+            pico_cv_pos_rel_rel(fr, to, base);
+        } else {
+            Pico_Abs_Pos fr = c_abs_pos(L, 1);
+            pico_cv_pos_abs_rel(&fr, to, base);
+        }
+
+        lua_pushnumber(L, to->x);           // fr | to | . | ud | x
+        lua_setfield(L, 2, "x");            // fr | to | . | ud
+        lua_pushnumber(L, to->y);           // fr | to | . | ud | y
+        lua_setfield(L, 2, "y");            // fr | to | . | ud
+        return 0;                           // *ud* (releases mallocs)
+    }
 }
 
 static int l_cv_rect (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // rect | [ref]
+    luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
 
-    Pico_Rel_Rect* rel = c_rel_rect(L, 1);
-    Pico_Abs_Rect* ref = NULL;
-    Pico_Abs_Rect ref_rect;
-    if (lua_istable(L, 2)) {
-        ref_rect = c_abs_rect(L, 2);
-        ref = &ref_rect;
+    int has_to = (lua_gettop(L)>=2 && !lua_isnil(L,2));
+    if (has_to) {
+        luaL_checktype(L, 2, LUA_TTABLE);
     }
 
-    Pico_Abs_Rect raw = pico_cv_rect_rel_abs(rel, ref);
+    Pico_Abs_Rect* base = NULL;
+    Pico_Abs_Rect base_rect;
+    if (lua_gettop(L)>=3 && !lua_isnil(L,3)) {
+        luaL_checktype(L, 3, LUA_TTABLE);
+        base_rect = c_abs_rect(L, 3);
+        base = &base_rect;
+    }
 
-    lua_newtable(L);                        // rect | [ref] | raw
-    lua_pushstring(L, "!");
-    lua_rawseti(L, -2, 1);
-    lua_pushinteger(L, raw.x);
-    lua_setfield(L, -2, "x");
-    lua_pushinteger(L, raw.y);
-    lua_setfield(L, -2, "y");
-    lua_pushinteger(L, raw.w);
-    lua_setfield(L, -2, "w");
-    lua_pushinteger(L, raw.h);
-    lua_setfield(L, -2, "h");
+    if (!has_to) {
+        // rel -> abs
+        Pico_Rel_Rect* fr = c_rel_rect(L, 1);
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(fr, base);
+        lua_newtable(L);                    // . | abs: {}
+        lua_pushinteger(L, abs.x);          // . | abs | x
+        lua_setfield(L, -2, "x");           // . | abs
+        lua_pushinteger(L, abs.y);          // . | abs | y
+        lua_setfield(L, -2, "y");           // . | abs
+        lua_pushinteger(L, abs.w);          // . | abs | w
+        lua_setfield(L, -2, "w");           // . | abs
+        lua_pushinteger(L, abs.h);          // . | abs | h
+        lua_setfield(L, -2, "h");           // . | abs: {x,y,w,h}
+        return 1;                           // . | *abs*
+    } else {
+        // rel -> rel
+        lua_geti(L, 1, 1);                          // fr | to | . | '?'
+        int fr_is_rel = lua_isstring(L, -1);
+        lua_pop(L, 1);                              // fr | to | .
 
-    return 1;
+        Pico_Rel_Rect* to = _c_tpl_rect(L, 2);      // fr | to | . | *ud* (holds mallocs)
+        if (fr_is_rel) {
+            Pico_Rel_Rect* fr = c_rel_rect(L, 1);
+            pico_cv_rect_rel_rel(fr, to, base);
+        } else {
+            Pico_Abs_Rect fr = c_abs_rect(L, 1);
+            pico_cv_rect_abs_rel(&fr, to, base);
+        }
+
+        lua_pushnumber(L, to->x);           // fr | to | . | ud | x
+        lua_setfield(L, 2, "x");            // fr | to | . | ud
+        lua_pushnumber(L, to->y);           // fr | to | . | ud | y
+        lua_setfield(L, 2, "y");            // fr | to | . | ud
+        lua_pushnumber(L, to->w);           // fr | to | . | ud | w
+        lua_setfield(L, 2, "w");            // fr | to | . | ud
+        lua_pushnumber(L, to->h);           // fr | to | . | ud | h
+        lua_setfield(L, 2, "h");            // fr | to | . | ud
+        return 0;                           // *ud* (releases mallocs)
+    }
 }
 
 static int l_vs_pos_rect (lua_State* L) {
@@ -367,7 +504,7 @@ static void L_push_color (lua_State* L, Pico_Color clr) {
 }
 
 static int l_color_darker (lua_State* L) {
-    Pico_Color clr = c_color(L);
+    Pico_Color clr = c_color_st(L, 1);
     float pct = luaL_checknumber(L, 2);
     Pico_Color ret = pico_color_darker(clr, pct);
     L_push_color(L, ret);
@@ -375,9 +512,17 @@ static int l_color_darker (lua_State* L) {
 }
 
 static int l_color_lighter (lua_State* L) {
-    Pico_Color clr = c_color(L);
+    Pico_Color clr = c_color_st(L, 1);
     float pct = luaL_checknumber(L, 2);
     Pico_Color ret = pico_color_lighter(clr, pct);
+    L_push_color(L, ret);
+    return 1;
+}
+
+static int l_color_mix (lua_State* L) {
+    Pico_Color c1 = c_color_st(L, 1);
+    Pico_Color c2 = c_color_st(L, 2);
+    Pico_Color ret = pico_color_mix(c1, c2);
     L_push_color(L, ret);
     return 1;
 }
@@ -575,7 +720,7 @@ static int l_get_view (lua_State* L) {
 static int l_get_mouse (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);           // pos
 
-    char mode = c_mode(L, 1);
+    char mode = c_mode(L, 1, 1);
     Pico_Rel_Pos pos = { .mode = mode };
 
     int button = PICO_MOUSE_BUTTON_NONE;
@@ -622,13 +767,13 @@ static int l_set_expert (lua_State* L) {
 }
 
 static int l_set_color_clear (lua_State* L) {
-    Pico_Color clr = c_color(L);
+    Pico_Color clr = c_color_st(L, 1);
     pico_set_color_clear(clr);
     return 0;
 }
 
 static int l_set_color_draw (lua_State* L) {
-    Pico_Color clr = c_color(L);
+    Pico_Color clr = c_color_st(L, 1);
     pico_set_color_draw(clr);
     return 0;
 }
@@ -1104,6 +1249,7 @@ static const luaL_Reg ll_vs[] = {
 static const luaL_Reg ll_color[] = {
     { "darker",  l_color_darker  },
     { "lighter", l_color_lighter },
+    { "mix",     l_color_mix     },
     { NULL, NULL }
 };
 

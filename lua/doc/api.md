@@ -26,9 +26,9 @@
     - `pico.quit ()`
 - **pico.cv**
     - **pico.cv.pos**: Converts relative position to absolute.
-        - `pico.cv.pos (pos: Pos [,ref: Rect]) -> Pos`
+        - `pico.cv.pos (pos: Pos [,base: Rect]) -> Pos`
     - **pico.cv.rect**: Converts relative rectangle to absolute.
-        - `pico.cv.rect (rect: Rect [, ref: Rect]) -> Rect`
+        - `pico.cv.rect (rect: Rect [, base: Rect]) -> Rect`
 - **pico.vs**
     - **pico.vs.pos_rect**: Collision between position and rectangle.
         - `pico.vs.pos_rect (pos: Pos, rect: Rect) -> boolean`

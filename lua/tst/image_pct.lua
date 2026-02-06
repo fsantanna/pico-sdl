@@ -6,7 +6,7 @@ end
 
 pico.init(true)
 pico.set.window { title="Image - Size - Crop" }
-pico.set.color.clear(0xFF, 0xFF, 0xFF)
+pico.set.color.clear('white')
 
 -- pico.get.image
 do
@@ -26,14 +26,14 @@ do
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 
 --[[
-    local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
+    local up = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
     local pct = {'%', w=nil, h=nil}
-    local abs = pico.get.image("open.png", pct, ref)
+    local abs = pico.get.image("open.png", pct, up)
     assert(abs.w==96 and abs.h==96)
     assert(round(pct.w*100)==96 and round(pct.h*100)==96)
 
-    local ref = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
-    local pct = pico.get.image("open.png", {'%', h=0.48}, ref)
+    local up = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
+    local pct = pico.get.image("open.png", {'%', h=0.48}, up)
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 ]]
 end
