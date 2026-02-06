@@ -49,6 +49,7 @@ tests: pico_native.so
 	$(TST) tst/size_pct.lua
 	$(TST) tst/style.lua
 	$(TST) tst/tiles.lua
+	$(TST) tst/set.lua
 	$(TST) tst/view_raw.lua
 
 install: pico_native.so
