@@ -1,5 +1,5 @@
 CHECK = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR=1
-XVFB = xvfb-run -a
+XVFB = SDL_AUDIODRIVER=dummy xvfb-run -a
 EXE = $(CHECK) $(XVFB) ./pico-sdl
 INT = PICO_TESTS=1 PICO_CHECK_INT=1 PICO_CHECK_ASR= ./pico-sdl
 GEN = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl

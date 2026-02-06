@@ -21,7 +21,7 @@ for y = r.y-1, r.y+r.h do
         pico.output.draw.pixel(p)
 
         local on = pico.vs.pos_rect(p, r)
-        print(on and "in" or "out")
+        --print(on and "in" or "out")
         pico.input.delay(10)
 
         if x==7 and y==7 then
@@ -63,7 +63,7 @@ for y = r.y-r.h, r.y+r.h do
         pico.output.draw.rect(r2)
 
         local overlap = pico.vs.rect_rect(r2, r)
-        print(overlap and "overlap" or "naw")
+        --print(overlap and "overlap" or "naw")
         pico.input.delay(10)
 
         print(x .. "/" .. y)
