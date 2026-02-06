@@ -91,8 +91,10 @@ static struct { // exposed global state
 typedef struct {
     int           alpha;
     int           angle;
-    Pico_Color    color_clear;
-    Pico_Color    color_draw;
+    struct {
+        Pico_Color clear;
+        Pico_Color draw;
+    } color;
     Pico_Abs_Rect crop;
     const char*   font;
     PICO_STYLE    style;
@@ -102,7 +104,9 @@ typedef struct {
 static struct {
     Pico_State buf[PICO_STACK_MAX];
     int        n;
-} STACK = { .n = 0 };
+} STACK = {
+    {}, 0
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // AUX
@@ -863,27 +867,26 @@ void pico_push (void) {
     assert(STACK.n < PICO_STACK_MAX
         && "stack overflow");
     STACK.buf[STACK.n++] = (Pico_State) {
-        .alpha       = S.alpha,
-        .angle       = S.angle,
-        .color_clear = S.color.clear,
-        .color_draw  = S.color.draw,
-        .crop        = S.crop,
-        .font        = S.font,
-        .style       = S.style,
-        .layer       = S.layer,
+        .alpha = S.alpha,
+        .angle = S.angle,
+        .color = { S.color.clear, S.color.draw },
+        .crop  = S.crop,
+        .font  = S.font,
+        .style = S.style,
+        .layer = S.layer,
     };
 }
 
 void pico_pop (void) {
     assert(STACK.n > 0 && "stack underflow");
     Pico_State* st = &STACK.buf[--STACK.n];
-    S.alpha       = st->alpha;
-    S.angle       = st->angle;
-    S.color.clear = st->color_clear;
-    S.color.draw  = st->color_draw;
-    S.crop        = st->crop;
-    S.font        = st->font;
-    S.style       = st->style;
+    S.alpha = st->alpha;
+    S.angle = st->angle;
+    S.color.clear = st->color.clear;
+    S.color.draw  = st->color.draw;
+    S.crop  = st->crop;
+    S.font  = st->font;
+    S.style = st->style;
     if (S.layer != st->layer) {
         S.layer = st->layer;
         SDL_SetRenderTarget(G.ren, S.layer->tex);
