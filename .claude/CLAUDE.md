@@ -3,6 +3,13 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
+## Important Instructions
+
+- In `valgrind.supp`, last clause `sdl-init`, line `src:pico.c:N`.
+    - `src:pico.c:N` points to file `src/pico.c` at line `N`
+    - `N` is the line in `pico_init` that calls `SDL_Init`
+    - `N` must be updated automatically whenever `src/pico.c` changes
+
 ## Overview
 
 pico-sdl is a C graphics library for developing 2D games and applications,
