@@ -187,10 +187,20 @@ case SDLK_MINUS: {
    - Also: fixed merge errors, replaced remaining `_sdl_dim`+`_fi_dim`, simplified 7 `pico_cv_rect_rel_abs` sites to `NULL` base
    - Files: pico.c
 
-7. **Independent grid per layer** ← NEXT
+7. **Independent grid per layer**
    - Files: pico.c (`_pico_output_present()`)
 
-8. **Move alpha/rotate/flip to view** (future)
+8. **Move rotate/flip to view** ← NEXT
+   - Add to `Pico_View`: `int angle`, `Pico_Pct rot_anchor`, `int flip`
+   - Default: angle=0, rot_anchor=PICO_ANCHOR_C, flip=SDL_FLIP_NONE
+   - API: `pico_set_rotate(angle, anchor)`, `pico_get_rotate(angle*, anchor*)`
+   - API: `pico_set_flip(flip)`, `pico_get_flip()`
+   - Rendering: Replace `SDL_RenderCopy` with `SDL_RenderCopyEx` at:
+     - Line 1400: `_pico_output_draw_layer()` for named layers
+     - Line 1679: `_pico_output_present()` for main layer (optional)
+   - Remove: `S.angle` from global state
+   - Applies to: images/layers only (not primitives)
+   - Files: pico.c, pico.h
 
 9. **Fix todo_* files**
    - Files: tst/todo_*.c
