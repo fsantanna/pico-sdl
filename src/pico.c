@@ -864,8 +864,7 @@ void pico_set_style (PICO_STYLE style) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void pico_push (void) {
-    assert(STACK.n < PICO_STACK_MAX
-        && "stack overflow");
+    assert(STACK.n<PICO_STACK_MAX && "stack overflow");
     STACK.buf[STACK.n++] = (Pico_State) {
         .alpha = S.alpha,
         .angle = S.angle,
@@ -878,7 +877,7 @@ void pico_push (void) {
 }
 
 void pico_pop (void) {
-    assert(STACK.n > 0 && "stack underflow");
+    assert(STACK.n>0 && "stack underflow");
     Pico_State* st = &STACK.buf[--STACK.n];
     S.alpha = st->alpha;
     S.angle = st->angle;
