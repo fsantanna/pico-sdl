@@ -90,9 +90,44 @@
    obj:*/libGLX_mesa.so*
 }
 {
+   glx
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libGLX.so*
+}
+{
+   gldispatch
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libGLdispatch.so*
+}
+{
+   libxcb
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libxcb.so*
+}
+{
+   sdl2-internal
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libSDL2-2.0.so*
+}
+{
+   harfbuzz
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/libharfbuzz.so*
+}
+{
    sdl-init
    Memcheck:Leak
    match-leak-kinds: all
    ...
-   src:pico.c:512
+   fun:pico_init
 }
