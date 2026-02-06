@@ -313,6 +313,56 @@ static int l_quit (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static Pico_Rel_Pos* _c_tpl_pos (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);    // T
+
+    char mode = c_mode(L, i, 1);
+    Pico_Anchor anc = c_anchor(L, i);
+
+    lua_getfield(L, i, "up");               // T | up
+    Pico_Rel_Rect* up = NULL;
+    if (!lua_isnil(L, -1)) {
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
+    }
+
+    Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
+    *p = (Pico_Rel_Pos) {                   // T | [ud] | ud
+        .mode = mode,
+        .anchor = anc,
+        .up = up,
+    };
+    return p;                               // T | *ud* (holds mallocs)
+}
+
+static Pico_Rel_Rect* _c_tpl_rect (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);    // T
+
+    char mode = c_mode(L, i, 1);
+    Pico_Anchor anc = c_anchor(L, i);
+
+    lua_getfield(L, i, "up");               // T | up
+    Pico_Rel_Rect* up = NULL;
+    if (!lua_isnil(L, -1)) {
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
+    }
+
+    Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
+    *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
+        .mode = mode,
+        .anchor = anc,
+        .up = up,
+    };
+    return r;                               // T | *ud* (holds mallocs)
+}
+
 static int l_cv_pos (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
 
