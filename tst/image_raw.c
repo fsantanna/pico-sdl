@@ -76,15 +76,24 @@ int main (void) {
     {
         puts("show big croped");
         pico_output_clear();
-        pico_set_crop((Pico_Abs_Rect){9,9,30,30});
-        Pico_Rel_Rect r1 = { '!', {50-24,50-24, 0,0}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_image("open.png", &r1);
+        pico_layer_image("crop", "open.png");
+        pico_set_layer("crop");
+        pico_set_view(-1, NULL, NULL,
+            &(Pico_Rel_Rect){'!', {9, 9, 30, 30},
+                PICO_ANCHOR_NW, NULL},
+            NULL, NULL);
+        pico_set_layer(NULL);
+        Pico_Rel_Rect r1 = {
+            '!', {50-24, 50-24, 0, 0}, PICO_ANCHOR_NW, NULL
+        };
+        pico_output_draw_layer("crop", &r1);
         _pico_check("image_raw-07");
 
         puts("show medium normal");
         pico_output_clear();
-        pico_set_crop((Pico_Abs_Rect){0,0,0,0});
-        Pico_Rel_Rect r2 = { '!', {50-10,50-10, 20,0}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect r2 = {
+            '!', {50-10, 50-10, 20, 0}, PICO_ANCHOR_NW, NULL
+        };
         pico_output_draw_image("open.png", &r2);
         _pico_check("image_raw-08");
     }

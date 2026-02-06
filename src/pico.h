@@ -213,9 +213,9 @@ void pico_output_present (void);
 
 /// @brief Takes a screenshot.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
-/// @param r region to capture (NULL captures full screen)
+/// @param rect region to capture (NULL captures full screen)
 /// @return the filepath of the screenshot
-const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* r);
+const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file
@@ -236,10 +236,6 @@ Pico_Color pico_get_color_clear (void);
 /// @brief Gets the color set to draw.
 /// @return the current draw color
 Pico_Color pico_get_color_draw (void);
-
-/// @brief Gets the cropping applied to objects when drawing them.
-/// @return the current crop rectangle
-Pico_Abs_Rect pico_get_crop (void);
 
 /// @brief Gets the state of expert mode.
 /// @return 1 if enabled, or 0 otherwise
@@ -356,11 +352,6 @@ void pico_set_color_clear (Pico_Color color);
 /// @brief Changes the color used to draw objects.
 /// @param color new color
 void pico_set_color_draw (Pico_Color color);
-
-/// @brief Changes the cropping that is applied to images, texts and buffers
-///        before drawing them.
-/// @param crop cropping region ({0,0,0,0} to disable)
-void pico_set_crop (Pico_Abs_Rect crop);
 
 /// @brief Toggles the expert mode.
 /// @param on 1 to enable it, or 0 to disable it

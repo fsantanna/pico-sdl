@@ -11,7 +11,9 @@ int main (void) {
     puts("WINDOW");
     {
         puts("normal");
-        Pico_Rel_Dim dim = { '%', {1, 1}, NULL };
+        Pico_Abs_Dim cur;
+        pico_get_window(NULL, NULL, &cur);
+        Pico_Rel_Dim dim = { '!', {cur.w * 1, cur.h * 1}, NULL };
         pico_set_window(NULL, -1, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -19,7 +21,9 @@ int main (void) {
     }
     {
         puts("double");
-        Pico_Rel_Dim dim = { '%', {2, 2}, NULL };
+        Pico_Abs_Dim cur;
+        pico_get_window(NULL, NULL, &cur);
+        Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
         pico_set_window(NULL, -1, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -27,7 +31,9 @@ int main (void) {
     }
     {
         puts("half");
-        Pico_Rel_Dim dim = { '%', {0.25, 0.25}, NULL };
+        Pico_Abs_Dim cur;
+        pico_get_window(NULL, NULL, &cur);
+        Pico_Rel_Dim dim = { '!', {cur.w * 0.25, cur.h * 0.25}, NULL };
         pico_set_window(NULL, -1, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -35,7 +41,9 @@ int main (void) {
     }
     {
         puts("normal");
-        Pico_Rel_Dim dim = { '%', {2, 2}, NULL };
+        Pico_Abs_Dim cur;
+        pico_get_window(NULL, NULL, &cur);
+        Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
         pico_set_window(NULL, -1, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -62,7 +70,9 @@ int main (void) {
     puts("WORLD");
     {
         puts("normal");
-        Pico_Rel_Dim dim = { '%', {1, 1}, NULL };
+        Pico_Abs_Dim cur;
+        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+        Pico_Rel_Dim dim = { '!', {cur.w * 1, cur.h * 1}, NULL };
         pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -70,7 +80,9 @@ int main (void) {
     }
     {
         puts("double");
-        Pico_Rel_Dim dim = { '%', {2, 2}, NULL };
+        Pico_Abs_Dim cur;
+        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+        Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
         pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -78,7 +90,9 @@ int main (void) {
     }
     {
         puts("half");
-        Pico_Rel_Dim dim = { '%', {0.25, 0.25}, NULL };
+        Pico_Abs_Dim cur;
+        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+        Pico_Rel_Dim dim = { '!', {cur.w * 0.25, cur.h * 0.25}, NULL };
         pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -86,7 +100,9 @@ int main (void) {
     }
     {
         puts("normal");
-        Pico_Rel_Dim dim = { '%', {2, 2}, NULL };
+        Pico_Abs_Dim cur;
+        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+        Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
         pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);

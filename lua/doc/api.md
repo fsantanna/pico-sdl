@@ -67,8 +67,6 @@
 - **pico.set**
     - **pico.set.alpha**: Sets alpha transparency.
         - `pico.set.alpha (a: integer)`
-    - **pico.set.crop**: Sets crop area.
-        - `pico.set.crop ([rect: Rect])`
     - **pico.set.expert**: Toggles expert mode.
         - `pico.set.expert (on: boolean)`
     - **pico.set.style**: Sets drawing style.
