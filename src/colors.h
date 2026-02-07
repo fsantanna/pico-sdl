@@ -36,6 +36,8 @@ extern const Pico_Color PICO_COLOR_NAVY;
 extern const Pico_Color PICO_COLOR_MAROON;
 extern const Pico_Color PICO_COLOR_OLIVE;
 
+extern const Pico_Color_A PICO_COLOR_TRANSPARENT;
+
 #endif // PICO_COLORS_H
 
 #ifdef PICO_COLORS_C
@@ -70,6 +72,9 @@ const Pico_Color PICO_COLOR_TEAL    = {0, 128, 128};
 const Pico_Color PICO_COLOR_NAVY    = {0, 0, 128};
 const Pico_Color PICO_COLOR_MAROON  = {128, 0, 0};
 const Pico_Color PICO_COLOR_OLIVE   = {128, 128, 0};
+
+// Special colors
+const Pico_Color_A PICO_COLOR_TRANSPARENT = {0, 0, 0, 0};
 
 /// @}
 

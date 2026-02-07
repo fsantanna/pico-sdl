@@ -530,6 +530,8 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct);
 /// @sa pico_color_lighter
 Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2);
 
+Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a);
+
 /// @}
 
 #ifdef __cplusplus

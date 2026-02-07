@@ -513,6 +513,20 @@ static void L_push_color (lua_State* L, Pico_Color clr) {
     lua_setfield(L, -2, "b");
 }
 
+static void L_push_color_a (lua_State* L,
+                            Pico_Color_A clr)
+{
+    lua_newtable(L);
+    lua_pushinteger(L, clr.r);
+    lua_setfield(L, -2, "r");
+    lua_pushinteger(L, clr.g);
+    lua_setfield(L, -2, "g");
+    lua_pushinteger(L, clr.b);
+    lua_setfield(L, -2, "b");
+    lua_pushinteger(L, clr.a);
+    lua_setfield(L, -2, "a");
+}
+
 static int l_color_darker (lua_State* L) {
     Pico_Color clr = c_color_st(L, 1);
     float pct = luaL_checknumber(L, 2);
@@ -534,6 +548,14 @@ static int l_color_mix (lua_State* L) {
     Pico_Color c2 = c_color_st(L, 2);
     Pico_Color ret = pico_color_mix(c1, c2);
     L_push_color(L, ret);
+    return 1;
+}
+
+static int l_color_alpha (lua_State* L) {
+    Pico_Color clr = c_color_st(L, 1);
+    int a = luaL_checkinteger(L, 2);
+    Pico_Color_A ret = pico_color_alpha(clr, a);
+    L_push_color_a(L, ret);
     return 1;
 }
 
@@ -1307,6 +1329,7 @@ static const luaL_Reg ll_vs[] = {
 };
 
 static const luaL_Reg ll_color[] = {
+    { "alpha",   l_color_alpha   },
     { "darker",  l_color_darker  },
     { "lighter", l_color_lighter },
     { "mix",     l_color_mix     },
