@@ -1,6 +1,6 @@
 XVFB = xvfb-run -a
 LUA = LUA_CPATH="../pico/?.so;" LUA_PATH="../?/init.lua;../?.lua;"
-TST = $(LUA) $(XVFB) ./pico-lua
+TST = PICO_CHECK_ASR=1 $(LUA) $(XVFB) ./pico-lua
 INT = PICO_CHECK_INT=1 PICO_CHECK_ASR= ./pico-lua
 
 .PHONY: tests install uninstall clean
