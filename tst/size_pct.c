@@ -71,9 +71,9 @@ int main (void) {
     {
         puts("normal");
         Pico_Abs_Dim cur;
-        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL, NULL, NULL);
         Pico_Rel_Dim dim = { '!', {cur.w * 1, cur.h * 1}, NULL };
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-07");
@@ -81,9 +81,9 @@ int main (void) {
     {
         puts("double");
         Pico_Abs_Dim cur;
-        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL, NULL, NULL);
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-08");
@@ -91,9 +91,9 @@ int main (void) {
     {
         puts("half");
         Pico_Abs_Dim cur;
-        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL, NULL, NULL);
         Pico_Rel_Dim dim = { '!', {cur.w * 0.25, cur.h * 0.25}, NULL };
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-09");
@@ -101,9 +101,9 @@ int main (void) {
     {
         puts("normal");
         Pico_Abs_Dim cur;
-        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL);
+        pico_get_view(NULL, &cur, NULL, NULL, NULL, NULL, NULL, NULL);
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-10");

@@ -7,7 +7,7 @@ int main (void) {
         &(Pico_Rel_Dim){ '!', {640, 480}, NULL });
     pico_set_view(-1,
         &(Pico_Rel_Dim){ '!', {64, 48}, NULL },
-        NULL, NULL, NULL, NULL);
+        NULL, NULL, NULL, NULL, NULL, NULL);
 
     // push/pop restores color
     puts("push/pop color");

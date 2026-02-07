@@ -10,7 +10,7 @@ int main (void) {
     pico_set_view(
         -1,
         &(Pico_Rel_Dim){ '!', {64, 48}, NULL },
-        NULL, NULL, NULL, NULL
+        NULL, NULL, NULL, NULL, NULL, NULL
     );
 
     // shapes used across tests

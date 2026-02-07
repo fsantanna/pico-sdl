@@ -81,7 +81,7 @@ int main (void) {
         pico_set_view(-1, NULL, NULL,
             &(Pico_Rel_Rect){'!', {9, 9, 30, 30},
                 PICO_ANCHOR_NW, NULL},
-            NULL, NULL);
+            NULL, NULL, NULL, NULL);
         pico_set_layer(NULL);
         Pico_Rel_Rect r1 = {
             '!', {50-24, 50-24, 0, 0}, PICO_ANCHOR_NW, NULL

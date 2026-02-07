@@ -6,7 +6,7 @@ int main (void) {
     Pico_Rel_Dim phy = { '!', {200,200}, NULL };
     Pico_Rel_Dim log = { '!', { 10, 10}, NULL };
     pico_set_window("Anchoring Pct...", -1, &phy);
-    pico_set_view(-1, &log, NULL, NULL, NULL, NULL);
+    pico_set_view(-1, &log, NULL, NULL, NULL, NULL, NULL, NULL);
 
     // PIXELS
     {

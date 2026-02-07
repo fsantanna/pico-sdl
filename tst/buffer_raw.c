@@ -6,7 +6,7 @@ int main (void) {
     Pico_Rel_Dim phy = { '!', {100,100}, NULL };
     Pico_Rel_Dim log = { '!', { 10, 10}, NULL };
     pico_set_window("Buffer", -1, &phy);
-    pico_set_view(-1, &log, NULL, NULL, NULL, NULL);
+    pico_set_view(-1, &log, NULL, NULL, NULL, NULL, NULL, NULL);
 
     // .x.
     // xxx

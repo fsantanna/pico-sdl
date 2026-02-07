@@ -219,7 +219,7 @@ int main (void) {
 
     pico_init(1);
     Pico_Rel_Dim log = { '!', {100, 100}, NULL };
-    pico_set_view(-1, &log, NULL, NULL, NULL, NULL);
+    pico_set_view(-1, &log, NULL, NULL, NULL, NULL, NULL, NULL);
 
     // ABS - POS - with up (0/1) - requires pico_init
     {
@@ -302,7 +302,7 @@ int main (void) {
     {
         Pico_Rel_Dim log  = { '#', {4, 4}, NULL };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_view(-1, &log, NULL, NULL, NULL, &tile);
+        pico_set_view(-1, &log, NULL, NULL, NULL, &tile, NULL, NULL);
     }
 
     // TILE - POS - tile->abs
@@ -404,7 +404,7 @@ int main (void) {
     // Reset to 100x100 for inverse tests
     {
         Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
     }
 
     Pico_Anchor anchors[] = {

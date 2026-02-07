@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window("Moving Around", -1, &(Pico_Rel_Dim){ '!', {640, 360}, NULL });
-    pico_set_view(-1, &(Pico_Rel_Dim){ '!', {64, 18}, NULL }, NULL, NULL, NULL, NULL);
+    pico_set_view(-1, &(Pico_Rel_Dim){ '!', {64, 18}, NULL }, NULL, NULL, NULL, NULL, NULL, NULL);
     srand(0);
 
     Pico_Rel_Pos pos = { '!', {32, 9}, PICO_ANCHOR_NW, NULL };
