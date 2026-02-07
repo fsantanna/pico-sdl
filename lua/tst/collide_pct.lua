@@ -91,7 +91,7 @@ for y = -5, 10 do
         pico.output.draw.rect(r2)
 
         local overlap = pico.vs.rect_rect(r2, r)
-        print(overlap and "overlap" or "naw")
+        --print(overlap and "overlap" or "naw")
 
         if x==-5 and y==-5 then
             assert(not overlap)
