@@ -318,8 +318,8 @@ The view controls how the logical world maps to the physical window.
 
 By default, `pico-lua` provides key bindings to zoom and scroll the view:
 
-- `+` / `-`: zoom in / out
-- Arrow keys: scroll the view
+- `CTRL` / `+`,`-`: zoom in / out
+- `CTRL` / Arrow keys: scroll the view
 
 ### 6.1. Key Bindings
 
