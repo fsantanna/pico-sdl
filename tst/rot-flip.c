@@ -103,7 +103,7 @@ int main (void) {
         puts("flip both");
         pico_output_clear();
         pico_set_layer("img");
-        PICO_FLIP flip = PICO_FLIP_HORIZONTAL | PICO_FLIP_VERTICAL;
+        PICO_FLIP flip = PICO_FLIP_BOTH;
         pico_set_view(-1, NULL, NULL, NULL, NULL, NULL, NULL, &flip);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
