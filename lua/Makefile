@@ -41,6 +41,7 @@ tests: pico_native.so
 	#$(TST) tst/navigate.lua
 	$(TST) tst/pixels.lua
 	$(TST) tst/pos.lua
+	$(TST) tst/push.lua
 	$(TST) tst/quit.lua
 	$(TST) tst/rect.lua
 	$(TST) tst/shot.lua
@@ -48,6 +49,7 @@ tests: pico_native.so
 	$(TST) tst/size_pct.lua
 	$(TST) tst/style.lua
 	$(TST) tst/tiles.lua
+	$(TST) tst/set.lua
 	$(TST) tst/view_raw.lua
 
 install: pico_native.so

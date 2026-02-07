@@ -21,7 +21,7 @@ for y = -1, 10 do
         pico.output.draw.pixel(p)
 
         local on = pico.vs.pos_rect(p, r)
-        print(on and "in" or "out")
+        --print(on and "in" or "out")
 
         if x==-1 and y==-1 then
             assert(not on)
@@ -56,7 +56,7 @@ for y = -25, 125, 10 do
         pico.output.draw.rect(r2)
 
         local overlap = pico.vs.rect_rect(r2, r)
-        print(overlap and "overlap" or "naw")
+        --print(overlap and "overlap" or "naw")
 
         if x==-25 and y==-25 then
             assert(not overlap)

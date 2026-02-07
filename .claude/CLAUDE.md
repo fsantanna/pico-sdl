@@ -3,6 +3,13 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
+## Important Instructions
+
+- In `valgrind.supp`, last clause `sdl-init`, line `src:pico.c:N`.
+    - `src:pico.c:N` points to file `src/pico.c` at line `N`
+    - `N` is the line in `pico_init` that calls `SDL_Init`
+    - `N` must be updated automatically whenever `src/pico.c` changes
+
 ## Overview
 
 pico-sdl is a C graphics library for developing 2D games and applications,
@@ -29,6 +36,23 @@ allowing real-time visual feedback as operations execute.
   feedback prioritized over performance
 - **SDL2 facade**: Simplifies SDL2 while allowing direct SDL2 fallback when
   needed
+
+## Recent Plans
+
+Feature plans implemented for v0.3 (see `.claude/*.md` for details):
+
+- `colors-lua.md` — Refactored `c_color` → `c_color_s` + `c_color_st`, removed
+  `(r,g,b)` args
+- `colors-pct.md` — Color tables support `'%'` mode for normalized RGB values
+- `cv-lua.md` — Duck-typed Lua bindings for inverse conversions (`abs_rel`,
+  `rel_rel`)
+- `layers.md` — Off-screen textures with independent views for compositing
+- `push-pop.md` — `pico_push`/`pico_pop` to save/restore drawing state
+- `ref-base.md` — Renamed `ref` → `base` parameter in conversion functions
+- `sdl-fi.md` — Replaced `_sdl_*`/`_fi_*` pairs with `pico_cv_*` wrappers
+- `set.md` — `pico.set` callable as all-at-once setter (issue #70)
+- `style.md` — Tests for `pico_set_style`/`pico_get_style` (issue #48)
+- `view.md` — View refactoring: removed crop, src/dst/clip as `Pico_Rel_Rect`
 
 ## Build and Run Commands
 
@@ -113,7 +137,6 @@ containing:
 - Alpha blending value
 - Rotation angle
 - Colors (clear and draw)
-- Crop rectangle
 - Expert mode flag (disables automatic present)
 - Flip state
 - Font path
@@ -300,7 +323,7 @@ Conversion functions in `lua/pico.c`:
 - `c_rel_pos()` - Converts Lua table to `Pico_Rel_Pos*`
 - `c_rel_dim()` - Converts Lua table to `Pico_Rel_Dim*`
 - `c_anchor()` - Extracts anchor from table's `anc` field (string or table)
-- `c_color()` - Parses color as string (`'red'`), table (`{r,g,b}`), or args
+- `c_color_st()` - Parses color as string (`'red'`) or table (`{r,g,b}`)
 
 **API Structure:**
 
@@ -314,6 +337,9 @@ The Lua API mirrors the C API with nested tables:
 - `pico.set.view({...})` - Set view (accepts tile={w,h} for tile mode)
 - `pico.output.draw.rect(rect)` - Draw rectangle
 - `pico.input.event([filter], [timeout])` - Wait for input event
+- `pico.set{...}` - Set multiple state values at once (alpha, color, style, etc.)
+- `pico.push()` - Save current drawing state to stack
+- `pico.pop()` - Restore previous drawing state from stack
 
 **Tile Mode Example:**
 ```lua

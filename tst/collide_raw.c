@@ -23,7 +23,7 @@ int main() {
             pico_output_draw_pixel(&p);
 
             int in = pico_vs_pos_rect(&p, &r);
-            puts(in ? "in" : "out");
+            //puts(in ? "in" : "out");
             pico_input_delay(10);
 
             if (x==7 && y==7) {
@@ -65,7 +65,7 @@ int main() {
             pico_output_draw_rect(&r2);
 
             int in = pico_vs_rect_rect(&r2, &r);
-            puts(in ? "overlap" : "naw");
+            //puts(in ? "overlap" : "naw");
             pico_input_delay(10);
 
             printf("%d/%d\n", x,y);

@@ -23,7 +23,7 @@ int main() {
             pico_output_draw_pixel(&p);
 
             int in = pico_vs_pos_rect(&p, &r);
-            puts(in ? "in" : "out");
+            //puts(in ? "in" : "out");
 
             if (x==-1 && y==-1) {
                 assert(!in);
@@ -58,7 +58,7 @@ int main() {
             pico_output_draw_rect(&r2);
 
             int in = pico_vs_rect_rect(&r2, &r);
-            puts(in ? "overlap" : "naw");
+            //puts(in ? "overlap" : "naw");
 
             if (x==-25 && y==-25) {
                 assert(!in);
@@ -93,7 +93,7 @@ int main() {
             pico_output_draw_rect(&r2);
 
             int in = pico_vs_rect_rect(&r2, &r);
-            puts(in ? "overlap" : "naw");
+            //puts(in ? "overlap" : "naw");
 
             if (x==-5 && y==-5) {
                 assert(!in);

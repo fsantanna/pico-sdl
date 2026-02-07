@@ -311,6 +311,16 @@ static int l_quit (lua_State* L) {
     return 0;
 }
 
+static int l_pop (lua_State* L) {
+    pico_pop();
+    return 0;
+}
+
+static int l_push (lua_State* L) {
+    pico_push();
+    return 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Rel_Pos* _c_tpl_pos (lua_State* L, int i) {
@@ -744,18 +754,6 @@ static int l_get_mouse (lua_State* L) {
 static int l_set_alpha (lua_State* L) {
     int a = luaL_checkinteger(L, 1);
     pico_set_alpha(a);
-    return 0;
-}
-
-static int l_set_crop (lua_State* L) {
-    Pico_Abs_Rect r;
-    if (lua_gettop(L) == 0) {               // -
-        r = (Pico_Abs_Rect) {0,0,0,0};
-    } else {
-        luaL_checktype(L, 1, LUA_TTABLE);   // r = {x,y,w,h}
-        r = c_abs_rect(L, 1);
-    }
-    pico_set_crop(r);
     return 0;
 }
 
@@ -1229,6 +1227,8 @@ static int l_output_sound (lua_State* L) {
 static const luaL_Reg ll_all[] = {
     { "init", l_init },
     { "quit", l_quit },
+    { "pop",  l_pop  },
+    { "push", l_push },
     { NULL, NULL }
 };
 
@@ -1270,7 +1270,6 @@ static const luaL_Reg ll_get[] = {
 
 static const luaL_Reg ll_set[] = {
     { "alpha",  l_set_alpha  },
-    { "crop",   l_set_crop   },
     { "dim",    l_set_dim    },
     { "expert", l_set_expert },
     { "layer",  l_set_layer  },

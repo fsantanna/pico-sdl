@@ -7,7 +7,8 @@
 5. [Positioning: Mode & Anchor](#5-positioning-mode--anchor)
 6. [Advanced View](#6-advanced-view)
 7. [Events](#7-events)
-8. [Expert Mode](#8-expert-mode)
+8. [Layers](#8-layers)
+9. [Expert Mode](#9-expert-mode)
 
 ## 1. Introduction
 
@@ -199,6 +200,13 @@ The text appears in red, centered at the given position.
 Note that `pico-lua` handles the text width automatically, preserving the
 correct aspect ratio.
 
+Colors can also be specified as tables with RGB values:
+
+```lua
+> pico.set.color.draw {r=128, g=0xFF, b=200}       -- absolute (0-255), (0x00-0xFF)
+> pico.set.color.draw {'%', r=0.5, g=0.25, b=0.8}  -- percentage (0.0-1.0)
+```
+
 ### 4.2. Transparency
 
 We may also change the drawing transparency:
@@ -215,6 +223,48 @@ We may also change the drawing transparency:
 
 The oval appears on top of the text, but the transparency keeps the text
 visible.
+
+### 4.3. All-at-Once
+
+We can set multiple state values at once using `pico.set` as a function:
+
+<table>
+<tr><td><pre>
+> pico.set {
+    alpha = 0xFF,
+    color = { draw = 'blue' },
+    style = 'stroke',
+  }
+> pico.output.draw.rect {'!', x=50, y=50, w=30, h=30}
+</pre>
+</td><td>
+<img src="img/guide-04-03-01.png" width="200">
+</td></tr>
+</table>
+
+### 4.4. Push/Pop
+
+To temporarily change state and restore it later, use `pico.push` and
+`pico.pop`:
+
+<table>
+<tr><td><pre>
+> pico.output.clear()
+> pico.set.color.draw 'white'
+> pico.output.draw.rect {'!', x=25, y=50, w=20, h=20}
+> pico.push()
+> pico.set.color.draw 'red'
+> pico.output.draw.rect {'!', x=50, y=50, w=20, h=20}
+> pico.pop()
+> pico.output.draw.rect {'!', x=75, y=50, w=20, h=20}
+</pre>
+</td><td>
+<img src="img/guide-04-04-01.png" width="200">
+</td></tr>
+</table>
+
+The first and third rectangles are white (original color), while the middle one
+is red (temporary color between push/pop).
 
 ## 5. Positioning: Mode & Anchor
 
@@ -436,13 +486,38 @@ The `pico.get.mouse(pos)` function polls the current mouse position:
 > print(pos.x, pos.y)
 ```
 
-## 8. Expert Mode
+## 8. Layers
+
+Layers are off-screen textures for compositing complex scenes.
+
+### 8.1. Creating Layers
+
+```lua
+> pico.init(true)
+> pico.layer.empty("bg", {w=100, h=100})
+> pico.set.layer("bg")
+> pico.set.color.draw 'blue'
+> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.8, h=0.8}
+```
+
+### 8.2. Compositing
+
+```lua
+> pico.set.layer(nil)  -- back to main
+> pico.output.clear()
+> pico.output.draw.layer("bg", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+```
+
+Layers can be created from images (`pico.layer.image`), text
+(`pico.layer.text`), or pixel buffers (`pico.layer.buffer`).
+
+## 9. Expert Mode
 
 By default, `pico-lua` uses immediate mode: every draw operation is visible
 instantly.
 Expert mode disables this, requiring explicit `present()` calls.
 
-### 8.1. Buffered
+### 9.1. Buffered
 
 To enable expert mode, we call `pico.set.expert(true)`:
 
@@ -454,7 +529,7 @@ To enable expert mode, we call `pico.set.expert(true)`:
 > pico.output.draw.rect {'!', x=25, y=25, w=50, h=50}
 </pre>
 </td><td>
-<img src="img/guide-08-01-01.png" width="200">
+<img src="img/guide-09-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -465,13 +540,13 @@ Nothing is visible yet because we haven't called `present()`.
 > pico.output.present()
 </pre>
 </td><td>
-<img src="img/guide-08-01-02.png" width="200">
+<img src="img/guide-09-01-02.png" width="200">
 </td></tr>
 </table>
 
 Now the rectangle is visible.
 
-### 8.2. Animation
+### 9.2. Animation
 
 Expert mode is useful for animation with controlled frame timing:
 
