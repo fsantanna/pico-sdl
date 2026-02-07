@@ -208,7 +208,24 @@ do
 end
 
 -------------------------------------------------------------------------------
--- Section 8: Expert Mode
+-- Section 8: Layers
+-------------------------------------------------------------------------------
+
+do
+    pico.init(true)
+    pico.layer.empty("bg", {w=100, h=100})
+    pico.set.layer("bg")
+    pico.set.color.draw('blue')
+    pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.8, h=0.8})
+    pico.set.layer(nil)
+    pico.output.clear()
+    pico.output.draw.layer("bg", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    shot("guide-08-02-01")
+    pico.init(false)
+end
+
+-------------------------------------------------------------------------------
+-- Section 9: Expert Mode
 -------------------------------------------------------------------------------
 
 do
@@ -216,7 +233,7 @@ do
     pico.set.expert(true)
     pico.output.clear()
     pico.output.draw.rect({'!', x=25, y=25, w=50, h=50})
-    shot("guide-08-01-01")
+    shot("guide-09-01-01")
     pico.init(false)
 end
 
@@ -226,7 +243,7 @@ do
     pico.output.clear()
     pico.output.draw.rect({'!', x=25, y=25, w=50, h=50})
     pico.output.present()
-    shot("guide-08-01-02")
+    shot("guide-09-01-02")
     pico.init(false)
 end
 
