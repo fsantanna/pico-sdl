@@ -14,9 +14,9 @@ Off-screen textures with independent views for compositing.
 - Layer compositing: `pico_output_draw_layer`
 - Lua bindings for all layer functions
 
-### TODO: Per-Layer State
+### Done: Per-Layer State
 
-Currently global state applies to all layers. Future work: per-layer settings.
+Per-layer settings now stored in `Pico_View` struct:
 
 - target (where to draw)
 - source (crop)

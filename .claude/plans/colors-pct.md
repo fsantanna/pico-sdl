@@ -1,6 +1,6 @@
 # Issue #68: Color in %, when first arg
 
-## Status: PR Aberto
+## Status: Done
 
 - Issue: https://github.com/fsantanna/pico-sdl/issues/68
 - PR: https://github.com/fsantanna/pico-sdl/pull/78
@@ -48,6 +48,6 @@ pico.set.color.draw({'%', r=1, g=0, b=0, a=0.5})
 - [x] Adicionar testes Lua
 - [x] Adicionar testes C
 - [x] Resolver conflito com colors-05 (mix) -> renomeado para colors-06
-- [ ] Gerar imagem de referencia `tst/asr/colors-06.png`
-- [ ] Testar manualmente
-- [ ] Merge
+- [x] Gerar imagem de referencia `tst/asr/colors-06.png`
+- [x] Testar manualmente
+- [x] Merge

@@ -23,6 +23,4 @@ interactive examples. Consult `lua/doc/api.md` for the full API.
 
 ## Issues (future)
 
-- **5.1**: state carries red/alpha from section 4 in interactive
-  walkthrough but text doesn't mention it
 - **9.2**: `pico.get.ticks` used but never formally introduced
