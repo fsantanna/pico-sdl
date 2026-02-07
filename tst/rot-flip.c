@@ -139,7 +139,7 @@ int main (void) {
             if (angle == 180) {
                 _pico_check("rot-flip-10");
             }
-            pico_input_delay(20);
+            pico_input_delay(10);
         }
     }
 
@@ -157,7 +157,7 @@ int main (void) {
             if (angle == 180) {
                 _pico_check("rot-flip-11");
             }
-            pico_input_delay(20);
+            pico_input_delay(10);
         }
     }
 
@@ -175,7 +175,7 @@ int main (void) {
             if (angle == 180) {
                 _pico_check("rot-flip-12");
             }
-            pico_input_delay(20);
+            pico_input_delay(10);
         }
     }
 
