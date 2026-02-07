@@ -94,7 +94,6 @@ typedef struct {
         Pico_Color clear;
         Pico_Color draw;
     } color;
-    Pico_Abs_Rect crop;
     const char*   font;
     PICO_STYLE    style;
     Pico_Layer*   layer;
@@ -875,7 +874,6 @@ void pico_push (void) {
         .alpha = S.alpha,
         .angle = S.angle,
         .color = { S.color.clear, S.color.draw },
-        .crop  = S.crop,
         .font  = S.font,
         .style = S.style,
         .layer = S.layer,
@@ -889,15 +887,15 @@ void pico_pop (void) {
     S.angle = st->angle;
     S.color.clear = st->color.clear;
     S.color.draw  = st->color.draw;
-    S.crop  = st->crop;
     S.font  = st->font;
     S.style = st->style;
     if (S.layer != st->layer) {
         S.layer = st->layer;
         SDL_SetRenderTarget(G.ren, S.layer->tex);
-        SDL_RenderSetClipRect(
-            G.ren, &S.layer->view.clip
+        SDL_Rect r = pico_cv_rect_rel_abs (
+            &S.layer->view.clip, NULL
         );
+        SDL_RenderSetClipRect(G.ren, &r);
     }
 }
 
