@@ -87,6 +87,11 @@ typedef enum {
     PICO_STYLE_FILL, PICO_STYLE_STROKE
 } PICO_STYLE;
 
+typedef struct {
+    int         angle;
+    Pico_Anchor anchor;
+} Pico_Rot;
+
 /// @}
 
 /// @defgroup Init
@@ -323,6 +328,8 @@ Uint32 pico_get_ticks (void);
 /// @param src pointer to retrieve world source region
 /// @param clip pointer to retrieve world clipping region
 /// @param tile pointer to retrieve tile dimensions in pixels
+/// @param rot pointer to retrieve rotation settings
+/// @param flip pointer to retrieve flip state
 /// @sa pico_set_view
 void pico_get_view (
     int* grid,
@@ -330,7 +337,9 @@ void pico_get_view (
     Pico_Rel_Rect* target,
     Pico_Rel_Rect* source,
     Pico_Rel_Rect* clip,
-    Pico_Abs_Dim* tile
+    Pico_Abs_Dim* tile,
+    Pico_Rot* rot,
+    int* flip
 );
 
 /// @brief Gets window properties. NULL arguments are ignored.
@@ -380,6 +389,8 @@ void pico_set_style (PICO_STYLE style);
 /// @param source source region within world
 /// @param clip clipping region within world
 /// @param tile tile size in pixels (required when dim mode is '#')
+/// @param rot rotation settings (angle and anchor point)
+/// @param flip flip state (SDL_FLIP_NONE, SDL_FLIP_HORIZONTAL, SDL_FLIP_VERTICAL)
 /// @sa pico_get_view
 void pico_set_view (
     int grid,
@@ -387,7 +398,9 @@ void pico_set_view (
     Pico_Rel_Rect* target,
     Pico_Rel_Rect* source,
     Pico_Rel_Rect* clip,
-    Pico_Abs_Dim*  tile
+    Pico_Abs_Dim*  tile,
+    Pico_Rot* rot,
+    int* flip
 );
 
 /// @brief Sets window properties. NULL/(-1) arguments are ignored.

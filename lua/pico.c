@@ -663,8 +663,8 @@ static int l_get_view (lua_State* L) {
     //Pico_Abs_Rect clip;
     Pico_Abs_Dim  tile;
 
-    // TODO: target, source, clip
-    pico_get_view(&grid, &log, NULL, NULL, NULL, &tile);
+    // TODO: target, source, clip, rot, flip
+    pico_get_view(&grid, &log, NULL, NULL, NULL, &tile, NULL, NULL);
 
     lua_newtable(L);                    // T
 
@@ -887,7 +887,7 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_view(grid, xwld, xdst, xsrc, xclip, xtile);
+    pico_set_view(grid, xwld, xdst, xsrc, xclip, xtile, NULL, NULL);
     return 0;
 }
 
