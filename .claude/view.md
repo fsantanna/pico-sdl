@@ -212,6 +212,16 @@ case SDLK_MINUS: {
 9. **Fix todo_* files**
    - Files: tst/todo_*.c
 
+10. **Reorder pico_get/set_view parameters** [DONE]
+    - Moved `tile` from position 6 to position 3
+    - Old: grid, dim, target, source, clip, tile, rot, flip
+    - New: grid, dim, tile, target, source, clip, rot, flip
+    - Updated declarations (pico.h:341-350, 402-411)
+    - Updated definitions (pico.c:757-766, 902-911)
+    - Updated Lua bindings (lua/pico.c:669, 950)
+    - Updated 31 test file call sites
+    - Files: pico.h, pico.c, lua/pico.c, tst/*.c
+
 ---
 
 ## 9. Testing

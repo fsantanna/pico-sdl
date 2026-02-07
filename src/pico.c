@@ -1255,7 +1255,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     pct.h += 0.1;
                     Pico_Rel_Rect out = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, &out, NULL, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_EQUALS: {
@@ -1267,7 +1267,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     pct.h -= 0.1;
                     Pico_Rel_Rect out = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, &out, NULL, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_LEFT: {
@@ -1278,7 +1278,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     pct.x -= 0.1;
                     Pico_Rel_Rect out = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, &out, NULL, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_RIGHT: {
@@ -1289,7 +1289,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     pct.x += 0.1;
                     Pico_Rel_Rect out = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, &out, NULL, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_UP: {
@@ -1300,7 +1300,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     pct.y -= 0.1;
                     Pico_Rel_Rect out = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, &out, NULL, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_DOWN: {
@@ -1311,7 +1311,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
                     pct.y += 0.1;
                     Pico_Rel_Rect out = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, &out, NULL, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
                     break;
                 }
                 case SDLK_g: {
