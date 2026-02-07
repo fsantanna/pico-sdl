@@ -66,9 +66,9 @@ int main (void) {
     // SCROLL - left/up
     puts("scrolls left/up");
     for (int i=0; i<50; i++) {
-        pico_set_view(-1, NULL, NULL,
+        pico_set_view(-1, NULL, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {i, i, 100, 100}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL);
+            NULL, NULL, NULL);
         pico_output_clear();
         pico_output_draw_text("Uma frase bem grande...",
             &(Pico_Rel_Rect){ '!', {10, 50, 0, 10}, PICO_ANCHOR_NW, NULL });

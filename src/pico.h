@@ -330,21 +330,21 @@ Uint32 pico_get_ticks (void);
 
 /// @brief Gets the current view configuration. NULL arguments are ignored.
 /// @param grid pointer to retrieve grid state
-/// @param dst pointer to retrieve window target region
 /// @param dim pointer to retrieve world/logical dimensions
-/// @param src pointer to retrieve world source region
-/// @param clip pointer to retrieve world clipping region
 /// @param tile pointer to retrieve tile dimensions in pixels
+/// @param target pointer to retrieve window target region
+/// @param source pointer to retrieve world source region
+/// @param clip pointer to retrieve world clipping region
 /// @param rot pointer to retrieve rotation settings
 /// @param flip pointer to retrieve flip state
 /// @sa pico_set_view
 void pico_get_view (
     int* grid,
     Pico_Abs_Dim* dim,
+    Pico_Abs_Dim* tile,
     Pico_Rel_Rect* target,
     Pico_Rel_Rect* source,
     Pico_Rel_Rect* clip,
-    Pico_Abs_Dim* tile,
     Pico_Rot* rot,
     PICO_FLIP* flip
 );
@@ -392,20 +392,20 @@ void pico_set_style (PICO_STYLE style);
 /// @brief Sets the view configuration. NULL arguments are ignored.
 /// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
 /// @param dim world/logical dimensions (mode '#' = tiles, otherwise pixels)
+/// @param tile tile size in pixels (required when dim mode is '#')
 /// @param target target region within window
 /// @param source source region within world
 /// @param clip clipping region within world
-/// @param tile tile size in pixels (required when dim mode is '#')
 /// @param rot rotation settings (angle and anchor point)
 /// @param flip flip state (PICO_FLIP_NONE, PICO_FLIP_HORIZONTAL, PICO_FLIP_VERTICAL)
 /// @sa pico_get_view
 void pico_set_view (
     int grid,
     Pico_Rel_Dim*  dim,
+    Pico_Abs_Dim*  tile,
     Pico_Rel_Rect* target,
     Pico_Rel_Rect* source,
     Pico_Rel_Rect* clip,
-    Pico_Abs_Dim*  tile,
     Pico_Rot* rot,
     PICO_FLIP* flip
 );

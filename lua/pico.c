@@ -666,7 +666,7 @@ static int l_get_view (lua_State* L) {
     PICO_FLIP     flip;
 
     // TODO: target, source, clip
-    pico_get_view(&grid, &log, NULL, NULL, NULL, &tile, &rot, &flip);
+    pico_get_view(&grid, &log, &tile, NULL, NULL, NULL, &rot, &flip);
 
     lua_newtable(L);                    // T
 
@@ -947,7 +947,7 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_view(grid, xwld, xdst, xsrc, xclip, xtile, xrot, xflip);
+    pico_set_view(grid, xwld, xtile, xdst, xsrc, xclip, xrot, xflip);
     return 0;
 }
 

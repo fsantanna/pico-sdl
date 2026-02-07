@@ -757,10 +757,10 @@ Uint32 pico_get_ticks (void) {
 void pico_get_view (
     int* grid,
     Pico_Abs_Dim*  dim,
+    Pico_Abs_Dim*  tile,
     Pico_Rel_Rect* dst,
     Pico_Rel_Rect* src,
     Pico_Rel_Rect* clip,
-    Pico_Abs_Dim*  tile,
     Pico_Rot*      rot,
     PICO_FLIP*     flip
 ) {
@@ -902,10 +902,10 @@ void pico_pop (void) {
 void pico_set_view (
     int            grid,
     Pico_Rel_Dim*  dim,
+    Pico_Abs_Dim*  tile,
     Pico_Rel_Rect* dst,
     Pico_Rel_Rect* src,
     Pico_Rel_Rect* clip,
-    Pico_Abs_Dim*  tile,
     Pico_Rot*      rot,
     PICO_FLIP*     flip
 ) {
