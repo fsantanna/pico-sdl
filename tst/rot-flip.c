@@ -125,6 +125,60 @@ int main (void) {
         _pico_check("rot-flip-09");
     }
 
+    // ANIMATED ROTATION - center anchor (default)
+    {
+        puts("animated rotation - center anchor");
+        Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
+        for (int angle = 0; angle < 360; angle += 5) {
+            pico_output_clear();
+            pico_set_layer("img");
+            Pico_Rot rot = {angle, PICO_ANCHOR_C};
+            pico_set_view(-1, NULL, NULL, NULL, NULL, NULL, &rot, NULL);
+            pico_set_layer(NULL);
+            pico_output_draw_layer("img", &r);
+            if (angle == 180) {
+                _pico_check("rot-flip-10");
+            }
+            pico_input_delay(20);
+        }
+    }
+
+    // ANIMATED ROTATION - anchor outside (1.1, 1.1)
+    {
+        puts("animated rotation - anchor outside (1.1, 1.1)");
+        Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
+        for (int angle = 0; angle < 360; angle += 5) {
+            pico_output_clear();
+            pico_set_layer("img");
+            Pico_Rot rot = {angle, {1.1, 1.1}};
+            pico_set_view(-1, NULL, NULL, NULL, NULL, NULL, &rot, NULL);
+            pico_set_layer(NULL);
+            pico_output_draw_layer("img", &r);
+            if (angle == 180) {
+                _pico_check("rot-flip-11");
+            }
+            pico_input_delay(20);
+        }
+    }
+
+    // ANIMATED ROTATION - anchor negative (-0.1, -0.1)
+    {
+        puts("animated rotation - anchor negative (-0.1, -0.1)");
+        Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
+        for (int angle = 0; angle < 360; angle += 5) {
+            pico_output_clear();
+            pico_set_layer("img");
+            Pico_Rot rot = {angle, {-0.1, -0.1}};
+            pico_set_view(-1, NULL, NULL, NULL, NULL, NULL, &rot, NULL);
+            pico_set_layer(NULL);
+            pico_output_draw_layer("img", &r);
+            if (angle == 180) {
+                _pico_check("rot-flip-12");
+            }
+            pico_input_delay(20);
+        }
+    }
+
     pico_init(0);
     return 0;
 }
