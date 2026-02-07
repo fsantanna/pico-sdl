@@ -135,4 +135,20 @@ do
     pico.check("colors-06")
 end
 
+do
+    print("color alpha function")
+    pico.set.color.clear('white')
+    pico.output.clear()
+    local buffer = {
+        {
+            pico.color.alpha('red', 0xFF),
+            pico.color.alpha('red', 0x80),
+            pico.color.alpha('black', 0),
+        },
+    }
+    local r = {'%', x=0.5, y=0.5, w=0, h=0}
+    pico.output.draw.buffer("alpha", buffer, r)
+    pico.check("colors-07")
+end
+
 pico.init(false)

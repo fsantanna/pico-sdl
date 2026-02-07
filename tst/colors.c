@@ -172,6 +172,24 @@ int main (void) {
         _pico_check("colors-06");
     }
 
+    puts("color alpha function");
+    {
+        pico_set_color_clear(PICO_COLOR_WHITE);
+        pico_output_clear();
+        Pico_Color_A buffer[] = {
+            pico_color_alpha(PICO_COLOR_RED, 0xFF),
+            pico_color_alpha(PICO_COLOR_RED, 0x80),
+            PICO_COLOR_TRANSPARENT,
+        };
+        Pico_Rel_Rect r = {
+            '%', {0.5, 0.5, 0, 0}, PICO_ANCHOR_C, NULL
+        };
+        pico_output_draw_buffer(
+            "alpha", (Pico_Abs_Dim){3,1}, buffer, &r
+        );
+        _pico_check("colors-07");
+    }
+
     pico_init(0);
     return 0;
 }
