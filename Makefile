@@ -24,26 +24,25 @@ gen:
 
 tests:
 	@echo "Running tests..."
-	$(EXE) tst/init.c
-	$(EXE) tst/cv.c
-	$(EXE) tst/vs.c
-	$(EXE) tst/anchor_raw.c
 	$(EXE) tst/anchor_pct.c
-	$(EXE) tst/blend_raw.c
+	$(EXE) tst/anchor_raw.c
 	$(EXE) tst/blend_pct.c
-	$(EXE) tst/buffer_raw.c
+	$(EXE) tst/blend_raw.c
 	$(EXE) tst/buffer_pct.c
-	$(EXE) tst/expert.c
-	$(EXE) tst/clip_raw.c
+	$(EXE) tst/buffer_raw.c
 	$(EXE) tst/clip_pct.c
-	$(EXE) tst/collide_raw.c
+	$(EXE) tst/clip_raw.c
 	$(EXE) tst/collide_pct.c
+	$(EXE) tst/collide_raw.c
 	$(EXE) tst/colors.c
 	$(EXE) tst/cross.c
+	$(EXE) tst/cv.c
 	$(EXE) tst/dim.c
+	$(EXE) tst/expert.c
 	$(EXE) tst/font.c
-	$(EXE) tst/image_raw.c
 	$(EXE) tst/image_pct.c
+	$(EXE) tst/image_raw.c
+	$(EXE) tst/init.c
 	$(EXE) tst/layers.c
 	$(EXE) tst/mouse.c
 	$(EXE) tst/move.c
@@ -54,11 +53,12 @@ tests:
 	$(EXE) tst/quit.c
 	$(EXE) tst/rect.c
 	$(EXE) tst/shot.c
-	$(EXE) tst/size_raw.c
 	$(EXE) tst/size_pct.c
+	$(EXE) tst/size_raw.c
 	$(EXE) tst/style.c
 	$(EXE) tst/tiles.c
 	$(EXE) tst/view_raw.c
+	$(EXE) tst/vs.c
 	@echo ""
 	@echo "All tests passed!"
 
