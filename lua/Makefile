@@ -43,6 +43,7 @@ tests: pico_native.so
 	$(TST) tst/push.lua
 	$(TST) tst/quit.lua
 	$(TST) tst/rect.lua
+	$(TST) tst/rot-flip.lua
 	$(TST) tst/set.lua
 	$(TST) tst/shot.lua
 	$(TST) tst/size_pct.lua

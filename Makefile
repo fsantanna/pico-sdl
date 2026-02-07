@@ -52,6 +52,7 @@ tests:
 	$(EXE) tst/push.c
 	$(EXE) tst/quit.c
 	$(EXE) tst/rect.c
+	$(EXE) tst/rot-flip.c
 	$(EXE) tst/shot.c
 	$(EXE) tst/size_pct.c
 	$(EXE) tst/size_raw.c
