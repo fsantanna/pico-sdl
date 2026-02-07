@@ -190,20 +190,37 @@ case SDLK_MINUS: {
 7. **Independent grid per layer**
    - Files: pico.c (`_pico_output_present()`)
 
-8. **Move rotate/flip to view** ← NEXT
-   - Add to `Pico_View`: `int angle`, `Pico_Pct rot_anchor`, `int flip`
-   - Default: angle=0, rot_anchor=PICO_ANCHOR_C, flip=SDL_FLIP_NONE
-   - API: `pico_set_rotate(angle, anchor)`, `pico_get_rotate(angle*, anchor*)`
-   - API: `pico_set_flip(flip)`, `pico_get_flip()`
-   - Rendering: Replace `SDL_RenderCopy` with `SDL_RenderCopyEx` at:
-     - Line 1400: `_pico_output_draw_layer()` for named layers
-     - Line 1679: `_pico_output_present()` for main layer (optional)
-   - Remove: `S.angle` from global state
-   - Applies to: images/layers only (not primitives)
-   - Files: pico.c, pico.h
+8. **Move rotate/flip to view** [DONE]
+   - Added `Pico_Pct` typedef as alias for `Pico_Anchor` (pico.h)
+   - Added `Pico_Rot` struct with angle and anchor (pico.h:90-93)
+   - Added rot/flip fields to `Pico_View` struct (pico.c:46-47)
+   - Removed `angle` and `crop` from `Pico_State` struct (pico.c:91-100)
+   - Fixed `pico_push()` and `pico_pop()` to not use removed fields (pico.c)
+   - Added rot/flip defaults to layer creation functions:
+     `_pico_layer_buffer()`, `pico_layer_empty()`, `_pico_layer_image()`
+   - Updated `_pico_output_draw_layer()` to use `SDL_RenderCopyEx` with
+     layer's rot/flip settings (pico.c:1470-1475)
+   - Updated `pico_get_view` and `pico_set_view` declarations in pico.h
+   - Updated Lua bindings to pass NULL for rot/flip (lua/pico.c:667, 890)
+   - Deleted deprecated `tst/todo_rotate.c` (uses removed APIs, can't
+     rotate primitives with SDL_RenderCopyEx)
+   - Created `tst/rot-flip.c` testing rotation (0°, 45°, 90°, 180°),
+     anchor points (C, NW), flips (H, V, both), and combined rot+flip
+   - Updated valgrind.supp line number (src:pico.c:524)
+   - Files: pico.c, pico.h, lua/pico.c, valgrind.supp, tst/rot-flip.c
 
 9. **Fix todo_* files**
    - Files: tst/todo_*.c
+
+10. **Reorder pico_get/set_view parameters** [DONE]
+    - Moved `tile` from position 6 to position 3
+    - Old: grid, dim, target, source, clip, tile, rot, flip
+    - New: grid, dim, tile, target, source, clip, rot, flip
+    - Updated declarations (pico.h:341-350, 402-411)
+    - Updated definitions (pico.c:757-766, 902-911)
+    - Updated Lua bindings (lua/pico.c:669, 950)
+    - Updated 31 test file call sites
+    - Files: pico.h, pico.c, lua/pico.c, tst/*.c
 
 ---
 

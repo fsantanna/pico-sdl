@@ -66,7 +66,6 @@ for y = r.y-r.h, r.y+r.h do
         --print(overlap and "overlap" or "naw")
         pico.input.delay(10)
 
-        print(x .. "/" .. y)
         if x==4 and y==4 then
             assert(not overlap)
             pico.check("collide_raw-07")

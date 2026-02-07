@@ -662,9 +662,11 @@ static int l_get_view (lua_State* L) {
     //Pico_Abs_Rect src;
     //Pico_Abs_Rect clip;
     Pico_Abs_Dim  tile;
+    Pico_Rot      rot;
+    PICO_FLIP     flip;
 
     // TODO: target, source, clip
-    pico_get_view(&grid, &log, NULL, NULL, NULL, &tile);
+    pico_get_view(&grid, &log, &tile, NULL, NULL, NULL, &rot, &flip);
 
     lua_newtable(L);                    // T
 
@@ -723,6 +725,28 @@ static int l_get_view (lua_State* L) {
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "clip");        // T
 #endif
+
+    lua_newtable(L);                    // T | rot
+    lua_pushinteger(L, rot.angle);
+    lua_setfield(L, -2, "angle");
+    lua_newtable(L);                    // T | rot | anc
+    lua_pushnumber(L, rot.anchor.x);
+    lua_setfield(L, -2, "x");
+    lua_pushnumber(L, rot.anchor.y);
+    lua_setfield(L, -2, "y");
+    lua_setfield(L, -2, "anc");         // T | rot
+    lua_setfield(L, -2, "rot");         // T
+
+    const char* flip_str;
+    switch (flip) {
+        case PICO_FLIP_NONE:       flip_str = "none";       break;
+        case PICO_FLIP_HORIZONTAL: flip_str = "horizontal"; break;
+        case PICO_FLIP_VERTICAL:   flip_str = "vertical";   break;
+        case PICO_FLIP_BOTH:       flip_str = "both";       break;
+        default:                   flip_str = "none";       break;
+    }
+    lua_pushstring(L, flip_str);        // T | flip
+    lua_setfield(L, -2, "flip");        // T
 
     return 1;
 }
@@ -887,7 +911,43 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_view(grid, xwld, xdst, xsrc, xclip, xtile);
+    Pico_Rot* xrot = NULL;
+    Pico_Rot rot_val;
+    lua_getfield(L, 1, "rot");              // T | rot
+    if (!lua_isnil(L, -1)) {
+        rot_val.angle = L_checkfieldnum(L, lua_gettop(L), "angle");
+        lua_getfield(L, -1, "anc");         // T | rot | anc
+        if (!lua_isnil(L, -1)) {
+            rot_val.anchor = c_anchor(L, lua_gettop(L));
+        } else {
+            rot_val.anchor = PICO_ANCHOR_C;
+        }
+        lua_pop(L, 1);                      // T | rot
+        xrot = &rot_val;
+    }
+    lua_pop(L, 1);                          // T
+
+    PICO_FLIP* xflip = NULL;
+    PICO_FLIP flip_val;
+    lua_getfield(L, 1, "flip");             // T | flip
+    if (!lua_isnil(L, -1)) {
+        const char* s = luaL_checkstring(L, -1);
+        lua_pushlightuserdata(L, (void*)&KEY);
+        lua_gettable(L, LUA_REGISTRYINDEX);     // T | flip | G
+        lua_getfield(L, -1, "flips");           // T | flip | G | flips
+        lua_pushvalue(L, -3);                   // T | flip | G | flips | flip
+        lua_gettable(L, -2);                    // T | flip | G | flips | *val*
+        int ok;
+        flip_val = lua_tointegerx(L, -1, &ok);
+        if (!ok) {
+            luaL_error(L, "invalid flip \"%s\"", s);
+        }
+        lua_pop(L, 3);                          // T | flip
+        xflip = &flip_val;
+    }
+    lua_pop(L, 1);                          // T
+
+    pico_set_view(grid, xwld, xtile, xdst, xsrc, xclip, xrot, xflip);
     return 0;
 }
 
@@ -1488,6 +1548,23 @@ int luaopen_pico_native (lua_State* L) {
         lua_pushinteger(L, PICO_STYLE_STROKE);  // . | G | styles | stroke
         lua_setfield(L, -2, "stroke");          // . | G | styles
         lua_setfield(L, -2, "styles");          // . | G
+        lua_pop(L, 1);                          // .
+    }
+
+    // flip
+    {                                           // pico
+        lua_pushlightuserdata(L, (void*)&KEY);  // . | K
+        lua_gettable(L, LUA_REGISTRYINDEX);     // . | G
+        lua_newtable(L);                        // . | G | flip
+        lua_pushinteger(L, PICO_FLIP_NONE);
+        lua_setfield(L, -2, "none");
+        lua_pushinteger(L, PICO_FLIP_HORIZONTAL);
+        lua_setfield(L, -2, "horizontal");
+        lua_pushinteger(L, PICO_FLIP_VERTICAL);
+        lua_setfield(L, -2, "vertical");
+        lua_pushinteger(L, PICO_FLIP_BOTH);
+        lua_setfield(L, -2, "both");
+        lua_setfield(L, -2, "flips");           // . | G
         lua_pop(L, 1);                          // .
     }
 
