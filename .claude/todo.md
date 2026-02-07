@@ -73,3 +73,7 @@ Several test files use deprecated APIs and need updating:
 | `todo_main.c` | Deprecated types throughout |
 
 See: `.claude/plans/view.md` section 7.
+
+## Lua tests disabled
+
+Lua tests were disabled and need to be re-enabled and tested again.
