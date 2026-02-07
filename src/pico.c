@@ -44,7 +44,7 @@ typedef struct {
     Pico_Rel_Rect clip;
     Pico_Abs_Dim  tile;
     Pico_Rot      rot;
-    int           flip;
+    PICO_FLIP     flip;
 } Pico_View;
 
 typedef struct {
@@ -540,7 +540,7 @@ void pico_init (int on) {
                     .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
                     .tile = {0, 0},
                     .rot  = {0, PICO_ANCHOR_C},
-                    .flip = SDL_FLIP_NONE,
+                    .flip = PICO_FLIP_NONE,
                 },
             },
             .ren = NULL,        // needs G.win
@@ -762,7 +762,7 @@ void pico_get_view (
     Pico_Rel_Rect* clip,
     Pico_Abs_Dim*  tile,
     Pico_Rot*      rot,
-    int*           flip
+    PICO_FLIP*     flip
 ) {
     if (grid != NULL) {
         *grid = S.layer->view.grid;
@@ -907,7 +907,7 @@ void pico_set_view (
     Pico_Rel_Rect* clip,
     Pico_Abs_Dim*  tile,
     Pico_Rot*      rot,
-    int*           flip
+    PICO_FLIP*     flip
 ) {
     if (grid != -1) {
         S.layer->view.grid = grid;
@@ -1041,7 +1041,7 @@ static Pico_Layer* _pico_layer_buffer (
             .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .tile = {0, 0},
             .rot  = {0, PICO_ANCHOR_C},
-            .flip = SDL_FLIP_NONE,
+            .flip = PICO_FLIP_NONE,
         },
     };
     assert(data->key != NULL);
@@ -1083,7 +1083,7 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
             .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .tile = {0, 0},
             .rot  = {0, PICO_ANCHOR_C},
-            .flip = SDL_FLIP_NONE,
+            .flip = PICO_FLIP_NONE,
         },
     };
     assert(data->key != NULL);
@@ -1124,7 +1124,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
             .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .tile = {0, 0},
             .rot  = {0, PICO_ANCHOR_C},
-            .flip = SDL_FLIP_NONE,
+            .flip = PICO_FLIP_NONE,
         },
     };
     assert(data->key != NULL);

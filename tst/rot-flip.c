@@ -81,7 +81,7 @@ int main (void) {
         puts("flip horizontal");
         pico_output_clear();
         pico_set_layer("img");
-        int flip = SDL_FLIP_HORIZONTAL;
+        PICO_FLIP flip = PICO_FLIP_HORIZONTAL;
         pico_set_view(-1, NULL, NULL, NULL, NULL, NULL, NULL, &flip);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
@@ -92,7 +92,7 @@ int main (void) {
         puts("flip vertical");
         pico_output_clear();
         pico_set_layer("img");
-        int flip = SDL_FLIP_VERTICAL;
+        PICO_FLIP flip = PICO_FLIP_VERTICAL;
         pico_set_view(-1, NULL, NULL, NULL, NULL, NULL, NULL, &flip);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
@@ -103,7 +103,7 @@ int main (void) {
         puts("flip both");
         pico_output_clear();
         pico_set_layer("img");
-        int flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
+        PICO_FLIP flip = PICO_FLIP_HORIZONTAL | PICO_FLIP_VERTICAL;
         pico_set_view(-1, NULL, NULL, NULL, NULL, NULL, NULL, &flip);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
@@ -117,7 +117,7 @@ int main (void) {
         pico_output_clear();
         pico_set_layer("img");
         Pico_Rot rot = {45, PICO_ANCHOR_C};
-        int flip = SDL_FLIP_HORIZONTAL;
+        PICO_FLIP flip = PICO_FLIP_HORIZONTAL;
         pico_set_view(-1, NULL, NULL, NULL, NULL, NULL, &rot, &flip);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
