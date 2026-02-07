@@ -9,6 +9,8 @@
 7. [Events](#7-events)
 8. [Layers](#8-layers)
 9. [Expert Mode](#9-expert-mode)
+10. [Auxiliary Functions](#10-auxiliary-functions)
+11. [Extras](#11-extras)
 
 ## 1. Introduction
 
@@ -383,7 +385,7 @@ Let's draw a centered image and use the key bindings to explore it:
     world  = {'!', w=200, h=200},
   }
 > pico.output.clear()
-> pico.output.draw.image('img/logo.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.output.draw.image('img/open.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
 <img src="img/guide-06-01-01.png" width="200">
@@ -427,6 +429,58 @@ The `source` parameter scrolls the view:
 </table>
 
 The view is scrolled by `(50, 50)`, so the image appears offset.
+
+### 6.4. Size
+
+The `size` shorthand sets both `window` and `world` to the same dimensions:
+
+```lua
+> pico.set.view {
+    size = {'!', w=200, h=200},
+  }
+```
+
+This is equivalent to setting `window` and `world` separately:
+
+```lua
+> pico.set.view {
+    window = {'!', w=200, h=200},
+    world  = {'!', w=200, h=200},
+  }
+```
+
+### 6.5. Target
+
+The `target` parameter controls where on the physical window the world is
+rendered:
+
+```lua
+> pico.set.view {
+    target = {'%', x=0.75, y=0.5, w=0.5, h=1.0},
+  }
+```
+
+The logical world is rendered on the right half of the window.
+
+### 6.6. Clip
+
+The `clip` parameter restricts drawing to a sub-region of the world:
+
+```lua
+> pico.set.view {
+    clip = {'%', x=0.5, y=0.5, w=0.5, h=0.5},
+  }
+```
+
+Only drawing operations within the clip region are visible.
+
+### 6.7. Fullscreen
+
+To enter fullscreen mode:
+
+```lua
+> pico.set.view { fullscreen = true }
+```
 
 ## 7. Events
 
@@ -476,14 +530,37 @@ We can also filter events and set timeouts:
 > local e = pico.input.event('key.dn', 1000)  -- wait up to 1000ms
 ```
 
+Mouse events include position and button fields:
+
+```lua
+> local e = pico.input.event('mouse.button.dn')
+> print(e.x, e.y, e.but)   -- position and button
+```
+
+When a timeout expires without an event, `nil` is returned:
+
+```lua
+> local e = pico.input.event('key.dn', 1000)
+> print(e)   -- nil (if no key pressed within 1000ms)
+```
+
 ### 7.3. Mouse
 
 The `pico.get.mouse(pos)` function polls the current mouse position:
 
 ```lua
 > local pos = {'!', x=0, y=0}
-> pico.get.mouse(pos)
-> print(pos.x, pos.y)
+> local pressed = pico.get.mouse(pos, 1)  -- 1=left, 2=mid, 3=right
+> print(pos.x, pos.y, pressed)
+```
+
+### 7.4. Quit
+
+The `pico.quit()` function pushes a quit event, which can be caught by
+`pico.input.event()`:
+
+```lua
+> pico.quit()
 ```
 
 ## 8. Layers
@@ -502,11 +579,16 @@ Layers are off-screen textures for compositing complex scenes.
 
 ### 8.2. Compositing
 
-```lua
+<table>
+<tr><td><pre>
 > pico.set.layer(nil)  -- back to main
 > pico.output.clear()
 > pico.output.draw.layer("bg", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-```
+</pre>
+</td><td>
+<img src="img/guide-08-02-01.png" width="200">
+</td></tr>
+</table>
 
 Layers can be created from images (`pico.layer.image`), text
 (`pico.layer.text`), or pixel buffers (`pico.layer.buffer`).
@@ -561,4 +643,77 @@ Expert mode is useful for animation with controlled frame timing:
         pico.input.delay(16 - elapsed)  -- ~60 FPS
     end
   end
+```
+
+## 10. Auxiliary Functions
+
+`pico-lua` provides utility functions for coordinate conversion and collision
+detection.
+
+### 10.1. Coordinate Conversion
+
+The `pico.cv` functions convert relative coordinates to absolute:
+
+```lua
+> pico.init(true)
+> local pos = pico.cv.pos({'%', x=0.5, y=0.5})
+> print(pos.x, pos.y)
+50   50
+```
+
+```lua
+> local rect = pico.cv.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='C'})
+> print(rect.x, rect.y, rect.w, rect.h)
+35   35   30   30
+```
+
+An optional `base` rectangle can serve as the reference frame:
+
+```lua
+> local base = {'!', x=0, y=0, w=50, h=50}
+> local pos = pico.cv.pos({'%', x=0.5, y=0.5}, base)
+> print(pos.x, pos.y)
+25   25
+```
+
+### 10.2. Collision Detection
+
+The `pico.vs` functions test for collisions:
+
+```lua
+> local r = {'!', x=50, y=50, w=20, h=20}
+> local p = {'!', x=55, y=55}
+> print(pico.vs.pos_rect(p, r))
+true
+```
+
+```lua
+> local r1 = {'!', x=50, y=50, w=20, h=20}
+> local r2 = {'!', x=60, y=60, w=20, h=20}
+> print(pico.vs.rect_rect(r1, r2))
+true
+```
+
+## 11. Extras
+
+### 11.1. Sound
+
+To play a sound file:
+
+```lua
+> pico.output.sound('path/to/sound.wav')
+```
+
+### 11.2. Screenshot
+
+To save a screenshot of the current window:
+
+```lua
+> pico.output.screenshot('my-screenshot.png')
+```
+
+An optional rectangle crops the screenshot:
+
+```lua
+> pico.output.screenshot('crop.png', {'!', x=10, y=10, w=50, h=50})
 ```
