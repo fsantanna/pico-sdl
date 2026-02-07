@@ -73,7 +73,7 @@ do
     print("flip horizontal")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.view { flip = pico.flip.h }
+    pico.set.view { flip = "horizontal" }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anc='C'}
     pico.output.draw.layer("img", r)
@@ -83,7 +83,7 @@ do
     print("flip vertical")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.view { flip = pico.flip.v }
+    pico.set.view { flip = "vertical" }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anc='C'}
     pico.output.draw.layer("img", r)
@@ -93,7 +93,7 @@ do
     print("flip both")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.view { flip = pico.flip.h + pico.flip.v }
+    pico.set.view { flip = "both" }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anc='C'}
     pico.output.draw.layer("img", r)
@@ -105,7 +105,7 @@ do
     print("rotate 45 + flip horizontal")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.view { rot = { angle=45, anc='C' }, flip = pico.flip.h }
+    pico.set.view { rot = { angle=45, anc='C' }, flip = "horizontal" }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anc='C'}
     pico.output.draw.layer("img", r)
