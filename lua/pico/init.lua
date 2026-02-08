@@ -1,12 +1,12 @@
 local M = require "pico_native"
 
-local function apply_set (target, values)
-    for k, v in pairs(values) do
-        local field = target[k]
+local function set (self, t)
+    for k, v in pairs(t) do
+        local field = self[k]
         if type(field) == "function" then
             field(v)
         elseif type(field) == "table" then
-            apply_set(field, v)
+            set(field, v)
         else
             error("pico.set: unknown key '" .. k .. "'")
         end
@@ -15,7 +15,7 @@ end
 
 setmetatable(M.set, {
     __call = function (self, t)
-        apply_set(self, t)
+        set(self, t)
     end
 })
 

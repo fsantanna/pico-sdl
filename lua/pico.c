@@ -938,13 +938,7 @@ static int l_set_view (lua_State* L) {
     lua_getfield(L, 1, "rot");              // T | rot
     if (!lua_isnil(L, -1)) {
         rot_val.angle = L_checkfieldnum(L, lua_gettop(L), "angle");
-        lua_getfield(L, -1, "anc");         // T | rot | anc
-        if (!lua_isnil(L, -1)) {
-            rot_val.anchor = c_anchor(L, lua_gettop(L));
-        } else {
-            rot_val.anchor = PICO_ANCHOR_C;
-        }
-        lua_pop(L, 1);                      // T | rot
+        rot_val.anchor = c_anchor(L, lua_gettop(L));
         xrot = &rot_val;
     }
     lua_pop(L, 1);                          // T

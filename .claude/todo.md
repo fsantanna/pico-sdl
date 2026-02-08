@@ -77,3 +77,7 @@ See: `.claude/plans/view.md` section 7.
 ## Lua tests disabled
 
 Lua tests were disabled and need to be re-enabled and tested again.
+
+## Review and complete guide
+
+Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.

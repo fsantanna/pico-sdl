@@ -77,7 +77,7 @@ do
     pico.layer.image("crop", "open.png")
     pico.set.layer("crop")
     pico.set.view {
-        src = {'!', x=9, y=9, w=30, h=30, anc='NW'}
+        source = {'!', x=9, y=9, w=30, h=30, anc='NW'}
     }
     pico.set.layer()
     local r1 = {'!', x=50-24, y=50-24, w=0, h=0, anc='NW'}
