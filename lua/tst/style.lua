@@ -4,16 +4,16 @@ pico.init(true)
 pico.set.window { title="Style", dim={'!', w=640, h=480} }
 pico.set.view { dim={'!', w=64, h=48} }
 
-local rect = {'!', x=5, y=5, w=25, h=18, anc='NW'}
-local oval = {'!', x=34, y=5, w=25, h=18, anc='NW'}
-local t1   = {'!', x=5,  y=26, anc='NW'}
-local t2   = {'!', x=5,  y=43, anc='NW'}
-local t3   = {'!', x=30, y=43, anc='NW'}
+local rect = {'!', x=5, y=5, w=25, h=18, anchor='NW'}
+local oval = {'!', x=34, y=5, w=25, h=18, anchor='NW'}
+local t1   = {'!', x=5,  y=26, anchor='NW'}
+local t2   = {'!', x=5,  y=43, anchor='NW'}
+local t3   = {'!', x=30, y=43, anchor='NW'}
 local poly = {
-    {'!', x=34, y=26, anc='NW'},
-    {'!', x=59, y=30, anc='NW'},
-    {'!', x=50, y=43, anc='NW'},
-    {'!', x=38, y=43, anc='NW'},
+    {'!', x=34, y=26, anchor='NW'},
+    {'!', x=59, y=30, anchor='NW'},
+    {'!', x=50, y=43, anchor='NW'},
+    {'!', x=38, y=43, anchor='NW'},
 }
 
 do

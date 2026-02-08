@@ -86,7 +86,7 @@ for y = -5, 10 do
         pico.set.color.draw('white')
         pico.output.draw.rect(r)
 
-        local r2 = {'%', x=x/10.0, y=y/10.0, w=0.5, h=0.5, anc='NW', up=r}
+        local r2 = {'%', x=x/10.0, y=y/10.0, w=0.5, h=0.5, anchor='NW', up=r}
         pico.set.color.draw('red')
         pico.output.draw.rect(r2)
 

@@ -13,9 +13,9 @@
     - `{ tag='quit' }`
     - `{ tag='key.dn'|'key.up', key: string }`
     - `{ tag='mouse.motion'|'mouse.button.dn'|'mouse.button.up',
-        '!', x: integer, y: integer, anc: string [, but: string] }`
-- **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anc: Anchor, up: Rect] }`
-- **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anc: Anchor, up: Rect] }`
+        '!', x: integer, y: integer, anchor: string [, but: string] }`
+- **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
+- **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
 - **Tile**: `{ w: integer, h: integer }`
 
 ## Operations

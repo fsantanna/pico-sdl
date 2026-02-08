@@ -53,7 +53,7 @@ do
     print("bottomright 9x1 on white")
     pico.set.color.clear('white')
     pico.output.clear()
-    local r = {'%', x=1, y=1, w=0, h=0, anc='SE'}
+    local r = {'%', x=1, y=1, w=0, h=0, anchor='SE'}
     pico.output.draw.buffer("buf2", buffer, r)
     pico.check("buffer-02")
 end

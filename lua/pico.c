@@ -45,7 +45,7 @@ static char c_mode (lua_State* L, int i, int asr) {
 
 static Pico_Anchor c_anchor (lua_State* L, int i) {
     assert(i > 0);
-    lua_getfield(L, i, "anc");                      // T | anc
+    lua_getfield(L, i, "anchor");                   // T | anchor
     if (lua_isnil(L, -1)) {
         lua_pop(L, 1);                              // T
         return PICO_ANCHOR_C;
@@ -756,8 +756,8 @@ static int l_get_view (lua_State* L) {
     lua_setfield(L, -2, "x");
     lua_pushnumber(L, rot.anchor.y);
     lua_setfield(L, -2, "y");
-    lua_setfield(L, -2, "anc");         // T | rot
-    lua_setfield(L, -2, "rot");         // T
+    lua_setfield(L, -2, "anchor");      // T | rot
+    lua_setfield(L, -2, "rotation");    // T
 
     const char* flip_str;
     switch (flip) {
@@ -935,7 +935,7 @@ static int l_set_view (lua_State* L) {
 
     Pico_Rot* xrot = NULL;
     Pico_Rot rot_val;
-    lua_getfield(L, 1, "rot");              // T | rot
+    lua_getfield(L, 1, "rotation");         // T | rot
     if (!lua_isnil(L, -1)) {
         rot_val.angle = L_checkfieldnum(L, lua_gettop(L), "angle");
         rot_val.anchor = c_anchor(L, lua_gettop(L));
@@ -1096,7 +1096,7 @@ static int l_input_event (lua_State* L) {
             lua_pushinteger(L, e.motion.y);         // . | t | y
             lua_setfield(L, -2, "y");               // . | t
             lua_pushstring(L, "NE");                // . | t | NE
-            lua_setfield(L, -2, "anc");             // . | t
+            lua_setfield(L, -2, "anchor");          // . | t
             break;
         case PICO_MOUSEBUTTONDOWN:
         case PICO_MOUSEBUTTONUP:
@@ -1111,7 +1111,7 @@ static int l_input_event (lua_State* L) {
             lua_pushinteger(L, e.button.y);         // . | t | y
             lua_setfield(L, -2, "y");               // . | t
             lua_pushstring(L, "NE");                // . | t | NE
-            lua_setfield(L, -2, "anc");             // . | t
+            lua_setfield(L, -2, "anchor");          // . | t
             L_mouse_button(L, e.button.button);     // . | t | but
             lua_setfield(L, -2, "but");             // . | t
             break;

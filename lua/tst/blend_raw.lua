@@ -6,7 +6,7 @@ pico.set.view { dim={'!', w=64, h=36} }
 
 do
     print("pixel dimming")
-    local p = {'!', x=32, y=18, anc='NW'}
+    local p = {'!', x=32, y=18, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -23,7 +23,7 @@ do
     print("text dimming")
     local d = {'!', w=0, h=10}
     pico.get.text("SOME TEXT", d)
-    local r = {'!', x=32-d.w//2, y=18-5, w=d.w, h=10, anc='NW'}
+    local r = {'!', x=32-d.w//2, y=18-5, w=d.w, h=10, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -38,7 +38,7 @@ end
 
 do
     print("rect dimming")
-    local r = {'!', x=32-30, y=18-6, w=60, h=12, anc='NW'}
+    local r = {'!', x=32-30, y=18-6, w=60, h=12, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -53,7 +53,7 @@ end
 
 do
     print("oval dimming")
-    local r = {'!', x=32-30, y=18-6, w=60, h=12, anc='NW'}
+    local r = {'!', x=32-30, y=18-6, w=60, h=12, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -68,9 +68,9 @@ end
 
 do
     print("tri dimming")
-    local p1 = {'!', x=2,  y=12, anc='NW'}
-    local p2 = {'!', x=2,  y=24, anc='NW'}
-    local p3 = {'!', x=62, y=24, anc='NW'}
+    local p1 = {'!', x=2,  y=12, anchor='NW'}
+    local p2 = {'!', x=2,  y=24, anchor='NW'}
+    local p3 = {'!', x=62, y=24, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -85,8 +85,8 @@ end
 
 do
     print("line dimming")
-    local p1 = {'!', x=12, y=12, anc='NW'}
-    local p2 = {'!', x=52, y=24, anc='NW'}
+    local p1 = {'!', x=12, y=12, anchor='NW'}
+    local p2 = {'!', x=52, y=24, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.alpha(a)
@@ -102,9 +102,9 @@ end
 do
     print("poly dimming")
     local poly = {
-        {'!', x=5,  y=5, anc='NW'},
-        {'!', x=59, y=10, anc='NW'},
-        {'!', x=20, y=31, anc='NW'},
+        {'!', x=5,  y=5, anchor='NW'},
+        {'!', x=59, y=10, anchor='NW'},
+        {'!', x=20, y=31, anchor='NW'},
     }
     for a = 255, 1, -5 do
         pico.output.clear()

@@ -6,8 +6,8 @@ pico.set.view { dim={'!', w=16, h=16} }
 pico.output.clear()
 
 for i = 0, 15 do
-    pico.output.draw.pixel({'!', x=i, y=i, anc='NW'})
-    pico.output.draw.pixel({'!', x=15-i, y=i, anc='NW'})
+    pico.output.draw.pixel({'!', x=i, y=i, anchor='NW'})
+    pico.output.draw.pixel({'!', x=15-i, y=i, anchor='NW'})
     pico.input.delay(10)
     if i == 0 then
         pico.check("cross-01")

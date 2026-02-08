@@ -23,12 +23,12 @@ end
 
 -- numbers
 --pico.get.text(10,10)
-pico.output.draw.text(10, {'!', x=0, y=0, h=10, anc='NW'})
+pico.output.draw.text(10, {'!', x=0, y=0, h=10, anchor='NW'})
 pico.output.clear()
 
 -- pico.draw.text
 do
-    local r = {'!', x=10, y=10, w=0, h=10, anc='NW'}
+    local r = {'!', x=10, y=10, w=0, h=10, anchor='NW'}
     pico.output.draw.text("hg - gh", r)
     pico.check("font-01")
 

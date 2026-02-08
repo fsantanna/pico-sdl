@@ -307,11 +307,11 @@ determines the reference point within a shape:
 > pico.set.color.draw 'white'
 > pico.output.draw.pixel {'%', x=0.5, y=0.5}
 > pico.set.color.draw 'red'
-> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='NW'}
+> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW'}
 > pico.set.color.draw 'green'
-> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='C'}
+> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C'}
 > pico.set.color.draw 'blue'
-> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='SE'}
+> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE'}
 </pre>
 </td><td>
 <img src="img/guide-05-02-01.png" width="200">
@@ -349,7 +349,7 @@ dimensions:
   }
 > pico.output.clear()
 > pico.output.draw.rect {'#', x=3, y=3, w=1, h=1}
-> pico.output.draw.rect {'#', x=5, y=1, w=2, h=1, anc='NE'}
+> pico.output.draw.rect {'#', x=5, y=1, w=2, h=1, anchor='NE'}
 </pre>
 </td><td>
 <img src="img/guide-05-03-01.png" width="200">
@@ -662,7 +662,7 @@ The `pico.cv` functions convert relative coordinates to absolute:
 ```
 
 ```lua
-> local rect = pico.cv.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anc='C'})
+> local rect = pico.cv.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C'})
 > print(rect.x, rect.y, rect.w, rect.h)
 35   35   30   30
 ```

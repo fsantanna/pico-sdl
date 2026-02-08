@@ -26,13 +26,13 @@ do
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 
 --[[
-    local up = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
+    local up = {'%', x=0, y=0, w=0.5, h=0.5, anchor='NW'}
     local pct = {'%', w=nil, h=nil}
     local abs = pico.get.image("open.png", pct, up)
     assert(abs.w==96 and abs.h==96)
     assert(round(pct.w*100)==96 and round(pct.h*100)==96)
 
-    local up = {'%', x=0, y=0, w=0.5, h=0.5, anc='NW'}
+    local up = {'%', x=0, y=0, w=0.5, h=0.5, anchor='NW'}
     local pct = pico.get.image("open.png", {'%', h=0.48}, up)
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 ]]

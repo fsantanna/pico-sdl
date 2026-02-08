@@ -7,7 +7,7 @@ local log = {'!', w=20, h=20}
 pico.set.window { dim=phy }
 pico.set.view { dim=log }
 
-local r = {'!', x=10-2, y=10-2, w=4, h=4, anc='NW'}
+local r = {'!', x=10-2, y=10-2, w=4, h=4, anchor='NW'}
 
 print("pos_vs_rect")
 for y = r.y-1, r.y+r.h do
@@ -16,7 +16,7 @@ for y = r.y-1, r.y+r.h do
         pico.set.color.draw('white')
         pico.output.draw.rect(r)
 
-        local p = {'!', x=x, y=y, anc='NW'}
+        local p = {'!', x=x, y=y, anchor='NW'}
         pico.set.color.draw('red')
         pico.output.draw.pixel(p)
 
@@ -58,7 +58,7 @@ for y = r.y-r.h, r.y+r.h do
         pico.set.color.draw('white')
         pico.output.draw.rect(r)
 
-        local r2 = {'!', x=x, y=y, w=4, h=4, anc='NW'}
+        local r2 = {'!', x=x, y=y, w=4, h=4, anchor='NW'}
         pico.set.color.draw('red')
         pico.output.draw.rect(r2)
 

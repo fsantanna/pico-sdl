@@ -23,7 +23,7 @@ end
 do
     print("tile (1,1) NW anchor")
     pico.output.clear()
-    local r = {'#', x=1, y=1, w=1, h=1, anc='NW'}
+    local r = {'#', x=1, y=1, w=1, h=1, anchor='NW'}
     pico.output.draw.buffer("buf", white, r)
     pico.check("tiles-01")
 end
@@ -32,7 +32,7 @@ end
 do
     print("tile (2,2) C anchor")
     pico.output.clear()
-    local r = {'#', x=2, y=2, w=1, h=1, anc='C'}
+    local r = {'#', x=2, y=2, w=1, h=1, anchor='C'}
     pico.output.draw.buffer("buf", white, r)
     pico.check("tiles-02")
 end
@@ -41,7 +41,7 @@ end
 do
     print("2x2 tiles (1,1) NW anchor")
     pico.output.clear()
-    local r = {'#', x=1, y=1, w=2, h=2, anc='NW'}
+    local r = {'#', x=1, y=1, w=2, h=2, anchor='NW'}
     pico.output.draw.buffer("buf", white, r)
     pico.check("tiles-03")
 end
@@ -50,7 +50,7 @@ end
 do
     print("2x2 tiles (2.5,2.5) C anchor")
     pico.output.clear()
-    local r = {'#', x=2.5, y=2.5, w=2, h=2, anc='C'}
+    local r = {'#', x=2.5, y=2.5, w=2, h=2, anchor='C'}
     pico.output.draw.buffer("buf", white, r)
     pico.check("tiles-04")
 end

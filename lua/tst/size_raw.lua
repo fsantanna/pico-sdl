@@ -10,7 +10,7 @@ local log = all.dim
 phy[1] = '!'
 log[1] = '!'
 
-local r = {'!', x=50-25, y=50-25, w=50, h=50, anc='NW'}
+local r = {'!', x=50-25, y=50-25, w=50, h=50, anchor='NW'}
 
 
 -- phy: normal -> double -> half -> normal
@@ -81,7 +81,7 @@ do
     local dim = {'!', w=log.w*2, h=log.h*2}
     pico.set.view { dim=dim }
     pico.output.clear()
-    local r = {'!', x=log.w-25, y=log.h-25, w=50, h=50, anc='NW'}
+    local r = {'!', x=log.w-25, y=log.h-25, w=50, h=50, anchor='NW'}
     pico.output.draw.rect(r)
     pico.check("size_raw-08")
 end
@@ -91,7 +91,7 @@ do
     local dim = {'!', w=log.w/2, h=log.h/2}
     pico.set.view { dim=dim }
     pico.output.clear()
-    local r = {'!', x=log.w/4-25, y=log.w/4-25, w=50, h=50, anc='NW'}
+    local r = {'!', x=log.w/4-25, y=log.w/4-25, w=50, h=50, anchor='NW'}
     pico.output.draw.rect(r)
     pico.check("size_raw-09")
 end
