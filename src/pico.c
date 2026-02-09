@@ -29,6 +29,7 @@
 typedef enum {
     PICO_KEY_SOUND,
     PICO_KEY_LAYER,
+    PICO_KEY_FONT,
 } PICO_KEY_TYPE;
 
 typedef struct {
@@ -128,7 +129,9 @@ static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
 static TTF_Font* _font_open (const char* path, int h) {
     TTF_Font* ttf;
     if (path == NULL) {
-        SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
+        SDL_RWops* rw = SDL_RWFromConstMem(
+            pico_tiny_ttf, pico_tiny_ttf_len
+        );
         ttf = TTF_OpenFontRW(rw, 1, h);
     } else {
         ttf = TTF_OpenFont(path, h);
@@ -137,16 +140,48 @@ static TTF_Font* _font_open (const char* path, int h) {
     return ttf;
 }
 
-static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
-    SDL_Color c = { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF };
-    TTF_Font* ttf = _font_open(S.font, height);
-    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
+static TTF_Font* _font_get (const char* path, int h) {
+    const char* path_str = path ? path : "null";
+    char key_buf[256];
+    snprintf(
+        key_buf, sizeof(key_buf),
+        "/font/%s/%d", path_str, h
+    );
+    int n = sizeof(Pico_Key) + strlen(key_buf) + 1;
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_FONT;
+    strcpy(key->key, key_buf);
+
+    TTF_Font* ttf = (TTF_Font*)ttl_hash_get(
+        G.hash, n, key
+    );
+    if (ttf != NULL) {
+        return ttf;
+    }
+
+    ttf = _font_open(path, h);
+    ttl_hash_put(G.hash, n, key, ttf);
+    return ttf;
+}
+
+static SDL_Texture* _tex_text (
+    int height, const char* text, Pico_Abs_Dim* dim
+) {
+    SDL_Color c = {
+        S.color.draw.r, S.color.draw.g,
+        S.color.draw.b, 0xFF
+    };
+    TTF_Font* ttf = _font_get(S.font, height);
+    SDL_Surface* sfc = TTF_RenderText_Solid(
+        ttf, text, c
+    );
     pico_assert(sfc != NULL);
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(
+        G.ren, sfc
+    );
     pico_assert(tex != NULL);
     *dim = (Pico_Abs_Dim){ sfc->w, sfc->h };
     SDL_FreeSurface(sfc);
-    TTF_CloseFont(ttf);
     return tex;
 }
 
@@ -505,7 +540,9 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
 
-static void _pico_hash_clean (int n, const void* key, void* value) {
+static void _pico_hash_clean (
+    int n, const void* key, void* value
+) {
     const Pico_Key* res = (const Pico_Key*)key;
     switch (res->type) {
         case PICO_KEY_LAYER: {
@@ -516,6 +553,9 @@ static void _pico_hash_clean (int n, const void* key, void* value) {
         }
         case PICO_KEY_SOUND:
             Mix_FreeChunk((Mix_Chunk*)value);
+            break;
+        case PICO_KEY_FONT:
+            TTF_CloseFont((TTF_Font*)value);
             break;
         default:
             assert(0 && "invalid resource");
