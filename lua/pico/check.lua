@@ -31,7 +31,16 @@ function pico.check (name)
         local d2 = f2:read("*a")
         f2:close()
 
-        assert(d1 == d2, "FAIL: " .. name)
+        if d1 ~= d2 then
+            -- Base doesn't match, try -CI variant
+            asr = "../../tst/asr/" .. name .. "-CI.png"
+            f2 = io.open(asr, "rb")
+            if f2 then
+                d2 = f2:read("*a")
+                f2:close()
+            end
+            assert(d1 == d2, "FAIL: " .. name)
+        end
     end
 end
 

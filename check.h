@@ -162,7 +162,11 @@ void _pico_check (const char* msg) {
     // Assert if ASR is defined
     char fmt_asr[256];
     sprintf(fmt_asr, "asr/%s.png", msg);
-    assert(_pico_cmp_files(fmt_out, fmt_asr));
+    if (!_pico_cmp_files(fmt_out, fmt_asr)) {
+        // Base doesn't match, try -CI variant
+        sprintf(fmt_asr, "asr/%s-CI.png", msg);
+        assert(_pico_cmp_files(fmt_out, fmt_asr));
+    }
     #endif
 }
 
