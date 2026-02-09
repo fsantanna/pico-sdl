@@ -22,7 +22,7 @@ jobs:
     - name: Run Lua tests
       run: make -C lua tests
     - name: Upload test screenshots on failure
-      #if: failure()
+      if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: test-screenshots
