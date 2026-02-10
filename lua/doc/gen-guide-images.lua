@@ -13,12 +13,14 @@ end
 
 do
     pico.init(true)
+    pico.output.clear()
     shot("guide-02-01-01")
     pico.init(false)
 end
 
 do
     pico.init(true)
+    pico.output.clear()
     pico.set.view {
         title  = "Hello!",
         grid   = false,
@@ -31,6 +33,7 @@ end
 
 do
     pico.init(true)
+    pico.output.clear()
     shot("guide-02-03-01")
     pico.init(false)
 end
