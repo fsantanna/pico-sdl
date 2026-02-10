@@ -24,3 +24,4 @@ interactive examples. Consult `lua/doc/api.md` for the full API.
 ## Issues (future)
 
 - **9.2**: `pico.get.ticks` used but never formally introduced
+- **New section**: Guide for video playback
