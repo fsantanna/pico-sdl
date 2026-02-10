@@ -59,28 +59,7 @@ typedef struct {
     Pico_View       view;
 } Pico_Layer;
 
-typedef struct {
-    Pico_Layer base;
-    FILE*      fp;
-    int        fps;
-    struct {
-        unsigned char* y;
-        unsigned char* u;
-        unsigned char* v;
-    } plane;
-    struct {
-        int y;
-        int uv;
-        int frame;
-    } size;
-    long       data_offset;
-    struct {
-        int total;
-        int cur;
-        int done;
-    } frame;
-    Uint32     t0;
-} Pico_Layer_Video;
+typedef struct Pico_Layer_Video Pico_Layer_Video;
 
 #define SDL_ANY PICO_EVENT_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
