@@ -36,7 +36,7 @@ The following example draws an `X` on screen gradually, pixel by pixel, with
 instant feedback:
 
 <picture>
-<img align="right" src="x.gif">
+<img align="right" src="cross.gif">
 </picture>
 
 ```c

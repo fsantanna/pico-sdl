@@ -1,4 +1,5 @@
 #include "pico.h"
+#include <stdio.h>
 
 int main (void) {
     pico_init(1);
@@ -9,9 +10,10 @@ int main (void) {
         pico_output_draw_pixel (
             &(Pico_Rel_Pos) { '!', {99-i, i}, PICO_ANCHOR_C, NULL }
         );
-        pico_input_delay(30);
+        char path[64];
+        sprintf(path, "out/cross-%03d.png", i);
+        pico_output_screenshot(path, NULL);
     }
-    pico_input_event(NULL, PICO_KEYDOWN);
     pico_init(0);
     return 0;
 }
