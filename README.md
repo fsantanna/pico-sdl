@@ -32,6 +32,8 @@ See also [pico-lua][pico-lua], the official Lua binding for `pico-sdl`.
 - `pico_get_*` and `pico_set_*` for the library state,
     such as modifying the drawing color and style.
 
+-------------------------------------------------------------------------------
+
 The following example draws an `X` on screen gradually, pixel by pixel, with
 instant feedback:
 
@@ -67,6 +69,8 @@ This enables `pico-sdl` to draw a grid of `5x5` pixel size to aid development.
 We use `Pico_Rel_Pos` with raw mode `'!'`, which specifies exact positions.
 `pico-sdl` also supports modes `'%'` and `'#'` for percent- and tile-based
 coordinates.
+
+-------------------------------------------------------------------------------
 
 `pico-sdl` targets educational use, being guided by the following principles:
 
