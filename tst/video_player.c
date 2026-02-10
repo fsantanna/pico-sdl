@@ -136,15 +136,15 @@ int main (void) {
         while (timeout > 0) {
             Uint32 before = pico_get_ticks();
             int has = pico_input_event_timeout(
-                &evt, PICO_ANY, timeout
+                &evt, PICO_EVENT_ANY, timeout
             );
             if (!has) {
                 break;
             }
 
-            if (evt.type == PICO_QUIT) {
+            if (evt.type == PICO_EVENT_QUIT) {
                 goto done;
-            } else if (evt.type == PICO_KEYDOWN) {
+            } else if (evt.type == PICO_EVENT_KEY_DOWN) {
                 SDL_Keycode k = evt.key.keysym.sym;
                 if (k == SDLK_ESCAPE) {
                     goto done;
@@ -170,7 +170,7 @@ int main (void) {
                     }
                     frame = (int)frame_f;
                 }
-            } else if (evt.type == PICO_MOUSEBUTTONDOWN) {
+            } else if (evt.type == PICO_EVENT_MOUSE_BUTTON_DOWN) {
                 int mx = evt.button.x;
                 int my = evt.button.y;
                 /* Click on seek bar area */
