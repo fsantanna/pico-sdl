@@ -30,7 +30,8 @@ pico.set.window {
     dim   = { '!', w=win_w, h=win_h},
 }
 pico.set.view{
-    world = {'!', w=win_w, h=win_h},
+    grid = false,
+    dim  = {'!', w=win_w, h=win_h},
 }
 
 pico.layer.video("vid", VIDEO_PATH)
