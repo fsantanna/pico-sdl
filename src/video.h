@@ -1,7 +1,7 @@
 #ifndef PICO_VIDEO_H
 #define PICO_VIDEO_H
 
-struct Pico_Layer_Video {
+typedef struct {
     Pico_Layer base;
     FILE*      fp;
     int        fps;
@@ -22,7 +22,9 @@ struct Pico_Layer_Video {
         int done;
     } frame;
     Uint32     t0;
-};
+} Pico_Layer_Video;
+
+static void _pico_hash_clean_video (Pico_Layer_Video*);
 
 #endif // PICO_VIDEO_H
 
@@ -36,9 +38,7 @@ struct Pico_Layer_Video {
  * Format: YUV4MPEG2 W<w> H<h> F<num>:<den> ...
  * Returns 1 on success, 0 on failure.
  */
-static int _y4m_parse_header (
-    FILE* fp, int* w, int* h, int* fps
-) {
+static int _y4m_parse_header (FILE* fp, int* w, int* h, int* fps) {
     char line[256];
     if (fgets(line, sizeof(line), fp) == NULL) {
         return 0;
@@ -84,9 +84,7 @@ static void _pico_hash_clean_video (Pico_Layer_Video* vs) {
 }
 
 /* Get or create video layer by name */
-static Pico_Layer_Video* _pico_layer_video (
-    const char* name, const char* path
-) {
+static Pico_Layer_Video* _pico_layer_video (const char* name, const char* path) {
     int n = sizeof(Pico_Key) + strlen(name) + 1;
     Pico_Key* key = alloca(n);
     key->type = PICO_KEY_LAYER;
@@ -170,9 +168,7 @@ static Pico_Layer_Video* _pico_layer_video (
     return vs;
 }
 
-const char* pico_layer_video (
-    const char* name, const char* path
-) {
+const char* pico_layer_video (const char* name, const char* path) {
     assert(name != NULL && "layer name required");
     assert(path != NULL && "video path required");
 
@@ -203,9 +199,7 @@ static int _y4m_read_frame (Pico_Layer_Video* vs) {
 }
 
 /* Update the layer's YUV texture from video planes */
-static void _y4m_update_texture (
-    Pico_Layer_Video* vs
-) {
+static void _y4m_update_texture (Pico_Layer_Video* vs) {
     SDL_UpdateYUVTexture(
         vs->base.tex, NULL,
         vs->plane.y, vs->base.view.dim.w,
@@ -277,9 +271,7 @@ int pico_video_sync (const char* name, int frame) {
     return 1;
 }
 
-int pico_output_draw_video (
-    const char* path, Pico_Rel_Rect* rect
-) {
+int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect) {
     Pico_Layer_Video* vs =
         _pico_layer_video(path, path);
     pico_assert(vs != NULL);
@@ -300,9 +292,7 @@ int pico_output_draw_video (
     return 1;
 }
 
-Pico_Video pico_get_video (
-    const char* path, Pico_Rel_Rect* rect
-) {
+Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
     Pico_Layer_Video* vs =
         _pico_layer_video(path, path);
     pico_assert(vs != NULL);

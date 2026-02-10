@@ -59,7 +59,7 @@ typedef struct {
     Pico_View       view;
 } Pico_Layer;
 
-typedef struct Pico_Layer_Video Pico_Layer_Video;
+#include "video.h"
 
 #define SDL_ANY PICO_EVENT_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
@@ -517,8 +517,6 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 ///////////////////////////////////////////////////////////////////////////////
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
-
-static void _pico_hash_clean_video(Pico_Layer_Video*);
 
 static void _pico_hash_clean (int n, const void* key, void* value) {
     const Pico_Key* res = (const Pico_Key*)key;
