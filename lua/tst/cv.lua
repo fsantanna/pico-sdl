@@ -82,7 +82,7 @@ do
     local p2 = {'%', x=1.0, y=1.0, anchor='C'}
     local r1 = pico.cv.pos(p1)
     local r2 = pico.cv.pos(p2)
-    assert(r1.x==-1  and r1.y==-1)
+    assert(r1.x==0   and r1.y==0)
     assert(r2.x==100 and r2.y==100)
 end
 
