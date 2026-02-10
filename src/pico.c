@@ -629,7 +629,6 @@ void pico_init (int on) {
 
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-        G.init = 1;
     }
     else {
         assert(G.init == 1);
