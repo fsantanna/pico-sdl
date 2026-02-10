@@ -52,18 +52,28 @@ static int _y4m_parse_header (
     return (*w > 0 && *h > 0 && *fps > 0);
 }
 
-/* Get or create video state by file path */
-static Pico_Video_State* _pico_video_open (
-    const char* path
-) {
-    int n = sizeof(Pico_Key) + strlen(path) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_VIDEO;
-    strcpy(key->key, path);
+/* Free video-specific resources (called from hash cleanup) */
+static void _pico_hash_clean_video (Pico_Layer_Video* vs) {
+    free(vs->plane.y);
+    free(vs->plane.u);
+    free(vs->plane.v);
+    fclose(vs->fp);
+}
 
-    Pico_Video_State* vs =
-        (Pico_Video_State*)ttl_hash_get(G.hash, n, key);
+/* Get or create video layer by name */
+static Pico_Layer_Video* _pico_layer_video (
+    const char* name, const char* path
+) {
+    int n = sizeof(Pico_Key) + strlen(name) + 1;
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_LAYER;
+    strcpy(key->key, name);
+
+    Pico_Layer_Video* vs =
+        (Pico_Layer_Video*)ttl_hash_get(
+            G.hash, n, key);
     if (vs != NULL) {
+        assert(vs->base.type == PICO_LAYER_VIDEO);
         return vs;
     }
 
@@ -82,11 +92,36 @@ static Pico_Video_State* _pico_video_open (
         return NULL;
     }
 
-    vs = calloc(1, sizeof(Pico_Video_State));
+    SDL_Texture* tex = SDL_CreateTexture(
+        G.ren, SDL_PIXELFORMAT_YV12,
+        SDL_TEXTUREACCESS_STREAMING,
+        w, h
+    );
+    pico_assert(tex != NULL);
+
+    vs = calloc(1, sizeof(Pico_Layer_Video));
     assert(vs != NULL);
+    vs->base = (Pico_Layer) {
+        .type = PICO_LAYER_VIDEO,
+        .key  = ttl_hash_put(G.hash, n, key, vs),
+        .tex  = tex,
+        .view = {
+            .grid = 0,
+            .dim  = {w, h},
+            .dst  = {'%', {.5,.5,1,1},
+                      PICO_ANCHOR_C, NULL},
+            .src  = {'%', {.5,.5,1,1},
+                      PICO_ANCHOR_C, NULL},
+            .clip = {'%', {.5,.5,1,1},
+                      PICO_ANCHOR_C, NULL},
+            .tile = {0, 0},
+            .rot  = {0, PICO_ANCHOR_C},
+            .flip = PICO_FLIP_NONE,
+        },
+    };
+    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+
     vs->fp = fp;
-    vs->width = w;
-    vs->height = h;
     vs->fps = fps;
     vs->size.y = w * h;
     vs->size.uv = (w / 2) * (h / 2);
@@ -95,7 +130,6 @@ static Pico_Video_State* _pico_video_open (
     vs->frame.cur = -1;
     vs->frame.done = 0;
     vs->t0 = 0;
-    vs->layer = NULL;
 
     vs->plane.y = malloc(vs->size.y);
     vs->plane.u = malloc(vs->size.uv);
@@ -110,12 +144,23 @@ static Pico_Video_State* _pico_video_open (
     vs->frame.total =
         (int)((end - vs->data_offset) / vs->size.frame);
 
-    ttl_hash_put(G.hash, n, key, vs);
     return vs;
 }
 
+const char* pico_layer_video (
+    const char* name, const char* path
+) {
+    assert(name != NULL && "layer name required");
+    assert(path != NULL && "video path required");
+
+    Pico_Layer_Video* vs =
+        _pico_layer_video(name, path);
+    pico_assert(vs != NULL);
+    return vs->base.key->key;
+}
+
 /* Read a single Y4M frame at current file position */
-static int _y4m_read_frame (Pico_Video_State* vs) {
+static int _y4m_read_frame (Pico_Layer_Video* vs) {
     char marker[6];
     if (fread(marker, 1, 6, vs->fp) != 6) {
         return 0;
@@ -134,72 +179,16 @@ static int _y4m_read_frame (Pico_Video_State* vs) {
     return 1;
 }
 
-/* Update the layer's YUV texture from video state */
-static void _y4m_update_texture (Pico_Video_State* vs) {
-    if (vs->layer == NULL) {
-        return;
-    }
-    SDL_UpdateYUVTexture(
-        vs->layer->tex, NULL,
-        vs->plane.y, vs->width,
-        vs->plane.u, vs->width / 2,
-        vs->plane.v, vs->width / 2
-    );
-}
-
-const char* pico_layer_video (
-    const char* name, const char* path
+/* Update the layer's YUV texture from video planes */
+static void _y4m_update_texture (
+    Pico_Layer_Video* vs
 ) {
-    assert(name != NULL && "layer name required");
-    assert(path != NULL && "video path required");
-
-    Pico_Video_State* vs = _pico_video_open(path);
-    pico_assert(vs != NULL);
-
-    /* Reuse existing layer */
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, name);
-
-    Pico_Layer* layer =
-        (Pico_Layer*)ttl_hash_get(G.hash, n, key);
-    if (layer != NULL) {
-        layer->extra = vs;
-        vs->layer = layer;
-        return layer->key->key;
-    }
-
-    SDL_Texture* tex = SDL_CreateTexture(
-        G.ren, SDL_PIXELFORMAT_YV12,
-        SDL_TEXTUREACCESS_STREAMING,
-        vs->width, vs->height
+    SDL_UpdateYUVTexture(
+        vs->base.tex, NULL,
+        vs->plane.y, vs->base.view.dim.w,
+        vs->plane.u, vs->base.view.dim.w / 2,
+        vs->plane.v, vs->base.view.dim.w / 2
     );
-    pico_assert(tex != NULL);
-
-    layer = malloc(sizeof(Pico_Layer));
-    *layer = (Pico_Layer) {
-        .key = ttl_hash_put(G.hash, n, key, layer),
-        .tex = tex,
-        .view = {
-            .grid = 0,
-            .dim  = {vs->width, vs->height},
-            .dst  = {'%', {.5,.5,1,1},
-                      PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1},
-                      PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1},
-                      PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
-        .extra = vs,
-    };
-    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-
-    vs->layer = layer;
-    return layer->key->key;
 }
 
 int pico_video_sync (const char* name, int frame) {
@@ -215,9 +204,9 @@ int pico_video_sync (const char* name, int frame) {
     pico_assert(layer != NULL && "layer does not exist");
 
     /* Get video state from layer */
-    Pico_Video_State* vs =
-        (Pico_Video_State*)layer->extra;
-    assert(vs != NULL && "not a video layer");
+    Pico_Layer_Video* vs = (Pico_Layer_Video*)layer;
+    assert(vs->base.type == PICO_LAYER_VIDEO
+        && "not a video layer");
 
     /* Clamp frame */
     if (frame < 0) {
@@ -268,13 +257,9 @@ int pico_video_sync (const char* name, int frame) {
 int pico_output_draw_video (
     const char* path, Pico_Rel_Rect* rect
 ) {
-    Pico_Video_State* vs = _pico_video_open(path);
+    Pico_Layer_Video* vs =
+        _pico_layer_video(path, path);
     pico_assert(vs != NULL);
-
-    /* Auto-create layer using path as name */
-    const char* name = pico_layer_video(
-        path, path
-    );
 
     /* Auto-sync: calculate frame from elapsed time */
     if (vs->t0 == 0) {
@@ -283,30 +268,33 @@ int pico_output_draw_video (
     int dt = SDL_GetTicks() - vs->t0;
     int frame = dt * vs->fps / 1000;
 
-    if (!pico_video_sync(name, frame)) {
+    if (!pico_video_sync(path, frame)) {
         return 0;
     }
 
     /* Draw */
-    _pico_output_draw_layer(vs->layer, rect);
+    _pico_output_draw_layer(&vs->base, rect);
     return 1;
 }
 
 Pico_Video pico_get_video (
     const char* path, Pico_Rel_Rect* rect
 ) {
-    Pico_Video_State* vs = _pico_video_open(path);
+    Pico_Layer_Video* vs =
+        _pico_layer_video(path, path);
     pico_assert(vs != NULL);
 
     Pico_Video info = {
-        .dim   = {vs->width, vs->height},
+        .dim   = vs->base.view.dim,
         .fps   = vs->fps,
-        .frame = (vs->frame.cur < 0) ? 0 : vs->frame.cur,
+        .frame = (vs->frame.cur < 0) ? 0
+                                      : vs->frame.cur,
         .done  = vs->frame.done,
     };
 
     /* Fill rect dimensions if provided */
-    if (rect != NULL && (rect->w == 0 || rect->h == 0)) {
+    if (rect != NULL
+            && (rect->w == 0 || rect->h == 0)) {
         Pico_Rel_Dim rel = {
             rect->mode, {rect->w, rect->h}, rect->up
         };

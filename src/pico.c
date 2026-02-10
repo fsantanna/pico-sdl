@@ -29,7 +29,6 @@
 typedef enum {
     PICO_KEY_SOUND,
     PICO_KEY_LAYER,
-    PICO_KEY_VIDEO,
 } PICO_KEY_TYPE;
 
 typedef struct {
@@ -48,23 +47,27 @@ typedef struct {
     PICO_FLIP     flip;
 } Pico_View;
 
+typedef enum {
+    PICO_LAYER_PLAIN,
+    PICO_LAYER_VIDEO,
+} PICO_LAYER;
+
 typedef struct {
+    PICO_LAYER      type;
     const Pico_Key* key;   // NULL for main layer
     SDL_Texture*    tex;
     Pico_View       view;
-    void*           extra; // video state (NULL otherwise)
 } Pico_Layer;
 
 typedef struct {
+    Pico_Layer base;
     FILE*      fp;
+    int        fps;
     struct {
         unsigned char* y;
         unsigned char* u;
         unsigned char* v;
     } plane;
-    int        width;
-    int        height;
-    int        fps;
     struct {
         int y;
         int uv;
@@ -77,8 +80,7 @@ typedef struct {
         int done;
     } frame;
     Uint32     t0;
-    Pico_Layer* layer;
-} Pico_Video_State;
+} Pico_Layer_Video;
 
 #define SDL_ANY PICO_EVENT_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
@@ -537,11 +539,16 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
 
+static void _pico_hash_clean_video(Pico_Layer_Video*);
+
 static void _pico_hash_clean (int n, const void* key, void* value) {
     const Pico_Key* res = (const Pico_Key*)key;
     switch (res->type) {
         case PICO_KEY_LAYER: {
             Pico_Layer* data = (Pico_Layer*)value;
+            if (data->type == PICO_LAYER_VIDEO) {
+                _pico_hash_clean_video((Pico_Layer_Video*)data);
+            }
             SDL_DestroyTexture(data->tex);
             free(data);
             break;
@@ -566,6 +573,7 @@ void pico_init (int on) {
             .fsing = 0,
             .hash  = ttl_hash_open(PICO_HASH_BUK, PICO_HASH_TTL, _pico_hash_clean),
             .main  = {
+                .type = PICO_LAYER_PLAIN,
                 .key  = NULL,
                 .tex  = NULL,   // needs G.ren
                 .view = {
@@ -1066,6 +1074,7 @@ static Pico_Layer* _pico_layer_buffer (
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
+        .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = tex,
         .view = {
@@ -1108,6 +1117,7 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
+        .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = _tex_create(dim),
         .view = {
@@ -1149,6 +1159,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
+        .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = tex,
         .view = {
@@ -1215,6 +1226,7 @@ static Pico_Layer* _pico_layer_text (
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
+        .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = tex,
         .view = {
@@ -1877,5 +1889,3 @@ void pico_output_sound (const char* path) {
 
 #define PICO_VIDEO_C
 #include "video.h"
-
-
