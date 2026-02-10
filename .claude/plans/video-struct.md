@@ -1,5 +1,7 @@
 # video-struct.md — Pack similar fields into anonymous structs
 
+**Status: Done**
+
 ## Problem
 
 `Pico_Video_State` (to become `Pico_Layer_Video`) has 16+ flat fields.

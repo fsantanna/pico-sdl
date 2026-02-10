@@ -1,5 +1,7 @@
 # video-files.md — Move video code to video.[hc]
 
+**Status: Done**
+
 ## Problem
 
 All video code lives in `pico.c` (~300 lines), interleaved with the rest of
