@@ -58,6 +58,7 @@ tests:
 	$(EXE) tst/size_raw.c
 	$(EXE) tst/style.c
 	$(EXE) tst/tiles.c
+	$(EXE) tst/video.c
 	$(EXE) tst/view_raw.c
 	$(EXE) tst/vs.c
 	@echo ""

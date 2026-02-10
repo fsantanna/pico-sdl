@@ -4,103 +4,103 @@
 #include <SDL2/SDL_events.h>
 
 typedef enum {
-    PICO_MOUSE_BUTTON_NONE   = 0,
-    PICO_MOUSE_BUTTON_LEFT   = SDL_BUTTON_LEFT,
-    PICO_MOUSE_BUTTON_MIDDLE = SDL_BUTTON_MIDDLE,
-    PICO_MOUSE_BUTTON_RIGHT  = SDL_BUTTON_RIGHT
-} PICO_MOUSE_BUTTON;
+    PICO_EVENT_MOUSE_BUTTON_NONE           = 0,
+    PICO_EVENT_MOUSE_BUTTON_LEFT           = SDL_BUTTON_LEFT,
+    PICO_EVENT_MOUSE_BUTTON_MIDDLE         = SDL_BUTTON_MIDDLE,
+    PICO_EVENT_MOUSE_BUTTON_RIGHT          = SDL_BUTTON_RIGHT
+} PICO_EVENT_MOUSE_BUTTON;
 
 typedef SDL_Event Pico_Event;
 
 typedef enum PICO_EVENT {
-    PICO_ANY = 0, /**< Wait for any event */
+    PICO_EVENT_ANY                         = 0,
 
     /* Application events */
-    PICO_QUIT = SDL_QUIT,                                       /**< User-requested quit */
-    PICO_APP_TERMINATING = SDL_APP_TERMINATING,                 /**< The application is being terminated by the OS */
-    PICO_APP_LOWMEMORY = SDL_APP_LOWMEMORY,                     /**< The application is low on memory, free memory if possible. */
-    PICO_APP_WILLENTERBACKGROUND = SDL_APP_WILLENTERBACKGROUND, /**< The application is about to enter the background */
-    PICO_APP_DIDENTERBACKGROUND = SDL_APP_DIDENTERBACKGROUND,   /**< The application did enter the background and may not get CPU for some time */
-    PICO_APP_WILLENTERFOREGROUND = SDL_APP_WILLENTERFOREGROUND, /**< The application is about to enter the foreground */
-    PICO_APP_DIDENTERFOREGROUND = SDL_APP_DIDENTERFOREGROUND,   /**< The application is now interactive */
+    PICO_EVENT_QUIT                        = SDL_QUIT,
+    PICO_EVENT_APP_TERMINATING             = SDL_APP_TERMINATING,
+    PICO_EVENT_APP_MEMORY_LOW              = SDL_APP_LOWMEMORY,
+    PICO_EVENT_APP_BACKGROUND_WILL         = SDL_APP_WILLENTERBACKGROUND,
+    PICO_EVENT_APP_BACKGROUND_DID          = SDL_APP_DIDENTERBACKGROUND,
+    PICO_EVENT_APP_FOREGROUND_WILL         = SDL_APP_WILLENTERFOREGROUND,
+    PICO_EVENT_APP_FOREGROUND_DID          = SDL_APP_DIDENTERFOREGROUND,
 
-    PICO_LOCALECHANGED = SDL_LOCALECHANGED, /**< The user's locale preferences have changed. */
+    PICO_EVENT_LOCALE_CHANGED              = SDL_LOCALECHANGED,
 
     /* Display events */
-    PICO_DISPLAYEVENT = SDL_DISPLAYEVENT, /**< Display state change */
+    PICO_EVENT_DISPLAY                     = SDL_DISPLAYEVENT,
 
     /* Window events */
-    PICO_WINDOWEVENT = SDL_WINDOWEVENT, /**< Window state change */
-    PICO_SYSWMEVENT = SDL_SYSWMEVENT,   /**< System specific event */
+    PICO_EVENT_WINDOW                      = SDL_WINDOWEVENT,
+    PICO_EVENT_SYSWM                       = SDL_SYSWMEVENT,
 
     /* Keyboard events */
-    PICO_KEYDOWN = SDL_KEYDOWN, /**< Key pressed */
-    PICO_KEYUP = SDL_KEYUP, /**< Key released */
-    PICO_TEXTEDITING = SDL_TEXTEDITING, /**< Keyboard text editing (composition) */
-    PICO_TEXTINPUT = SDL_TEXTINPUT, /**< Keyboard text input */
-    PICO_KEYMAPCHANGED = SDL_KEYMAPCHANGED,  /**< Keymap changed due to input language or keyboard layout. */
-    //PICO_TEXTEDITING_EXT = SDL_TEXTEDITING_EXT, /**< Extended keyboard text editing (composition) */
+    PICO_EVENT_KEY_DOWN                    = SDL_KEYDOWN,
+    PICO_EVENT_KEY_UP                      = SDL_KEYUP,
+    PICO_EVENT_TEXT_EDITING                = SDL_TEXTEDITING,
+    PICO_EVENT_TEXT_INPUT                  = SDL_TEXTINPUT,
+    PICO_EVENT_KEY_MAP_CHANGED            = SDL_KEYMAPCHANGED,
+    //PICO_EVENT_TEXT_EDITING_EXT          = SDL_TEXTEDITING_EXT,
 
     /* Mouse events */
-    PICO_MOUSEMOTION = SDL_MOUSEMOTION,         /**< Mouse moved */
-    PICO_MOUSEBUTTONDOWN = SDL_MOUSEBUTTONDOWN, /**< Mouse button pressed */
-    PICO_MOUSEBUTTONUP = SDL_MOUSEBUTTONUP,     /**< Mouse button released */
-    PICO_MOUSEWHEEL = SDL_MOUSEWHEEL,           /**< Mouse wheel motion */
+    PICO_EVENT_MOUSE_MOTION                = SDL_MOUSEMOTION,
+    PICO_EVENT_MOUSE_BUTTON_DOWN           = SDL_MOUSEBUTTONDOWN,
+    PICO_EVENT_MOUSE_BUTTON_UP             = SDL_MOUSEBUTTONUP,
+    PICO_EVENT_MOUSE_WHEEL                 = SDL_MOUSEWHEEL,
 
     /* Joystick events */
-    PICO_JOYAXISMOTION = SDL_JOYAXISMOTION,         /**< Joystick axis motion */
-    PICO_JOYBALLMOTION = SDL_JOYBALLMOTION,         /**< Joystick trackball motion */
-    PICO_JOYHATMOTION = SDL_JOYHATMOTION,           /**< Joystick hat position change */
-    PICO_JOYBUTTONDOWN = SDL_JOYBUTTONDOWN,         /**< Joystick button pressed */
-    PICO_JOYBUTTONUP = SDL_JOYBUTTONUP,             /**< Joystick button released */
-    PICO_JOYDEVICEADDED = SDL_JOYDEVICEADDED,       /**< A new joystick has been inserted into the system */
-    PICO_JOYDEVICEREMOVED = SDL_JOYDEVICEREMOVED,   /**< An opened joystick has been removed */
-    //PICO_JOYBATTERYUPDATED = SDL_JOYBATTERYUPDATED, /**< Joystick battery level change */
+    PICO_EVENT_JOY_AXIS_MOTION             = SDL_JOYAXISMOTION,
+    PICO_EVENT_JOY_BALL_MOTION             = SDL_JOYBALLMOTION,
+    PICO_EVENT_JOY_HAT_MOTION              = SDL_JOYHATMOTION,
+    PICO_EVENT_JOY_BUTTON_DOWN             = SDL_JOYBUTTONDOWN,
+    PICO_EVENT_JOY_BUTTON_UP               = SDL_JOYBUTTONUP,
+    PICO_EVENT_JOY_DEVICE_ADDED            = SDL_JOYDEVICEADDED,
+    PICO_EVENT_JOY_DEVICE_REMOVED          = SDL_JOYDEVICEREMOVED,
+    //PICO_EVENT_JOY_BATTERY_UPDATED       = SDL_JOYBATTERYUPDATED,
 
     /* Game controller events */
-    PICO_CONTROLLERAXISMOTION = SDL_CONTROLLERAXISMOTION,                 /**< Game controller axis motion */
-    PICO_CONTROLLERBUTTONDOWN = SDL_CONTROLLERBUTTONDOWN,                 /**< Game controller button pressed */
-    PICO_CONTROLLERBUTTONUP = SDL_CONTROLLERBUTTONUP,                     /**< Game controller button released */
-    PICO_CONTROLLERDEVICEADDED = SDL_CONTROLLERDEVICEADDED,               /**< A new Game controller has been inserted into the system */
-    PICO_CONTROLLERDEVICEREMOVED = SDL_CONTROLLERDEVICEREMOVED,           /**< An opened Game controller has been removed */
-    PICO_CONTROLLERDEVICEREMAPPED = SDL_CONTROLLERDEVICEREMAPPED,         /**< The controller mapping was updated */
-    PICO_CONTROLLERTOUCHPADDOWN = SDL_CONTROLLERTOUCHPADDOWN,             /**< Game controller touchpad was touched */
-    PICO_CONTROLLERTOUCHPADMOTION = SDL_CONTROLLERTOUCHPADMOTION,         /**< Game controller touchpad finger was moved */
-    PICO_CONTROLLERTOUCHPADUP = SDL_CONTROLLERTOUCHPADUP,                 /**< Game controller touchpad finger was lifted */
-    PICO_CONTROLLERSENSORUPDATE = SDL_CONTROLLERSENSORUPDATE,             /**< Game controller sensor was updated */
-    //PICO_CONTROLLERSTEAMHANDLEUPDATED = SDL_CONTROLLERSTEAMHANDLEUPDATED, /**< Game controller Steam handle has changed */
+    PICO_EVENT_CONTROLLER_AXIS_MOTION      = SDL_CONTROLLERAXISMOTION,
+    PICO_EVENT_CONTROLLER_BUTTON_DOWN      = SDL_CONTROLLERBUTTONDOWN,
+    PICO_EVENT_CONTROLLER_BUTTON_UP        = SDL_CONTROLLERBUTTONUP,
+    PICO_EVENT_CONTROLLER_DEVICE_ADDED     = SDL_CONTROLLERDEVICEADDED,
+    PICO_EVENT_CONTROLLER_DEVICE_REMOVED   = SDL_CONTROLLERDEVICEREMOVED,
+    PICO_EVENT_CONTROLLER_DEVICE_REMAPPED  = SDL_CONTROLLERDEVICEREMAPPED,
+    PICO_EVENT_CONTROLLER_TOUCHPAD_DOWN    = SDL_CONTROLLERTOUCHPADDOWN,
+    PICO_EVENT_CONTROLLER_TOUCHPAD_MOTION  = SDL_CONTROLLERTOUCHPADMOTION,
+    PICO_EVENT_CONTROLLER_TOUCHPAD_UP      = SDL_CONTROLLERTOUCHPADUP,
+    PICO_EVENT_CONTROLLER_SENSOR_UPDATE    = SDL_CONTROLLERSENSORUPDATE,
+    //PICO_EVENT_CONTROLLER_STEAM_HANDLE_UPDATED = SDL_CONTROLLERSTEAMHANDLEUPDATED,
 
     /* Touch events */
-    PICO_FINGERDOWN = SDL_FINGERDOWN,
-    PICO_FINGERUP = SDL_FINGERUP,
-    PICO_FINGERMOTION = SDL_FINGERMOTION,
+    PICO_EVENT_FINGER_DOWN                 = SDL_FINGERDOWN,
+    PICO_EVENT_FINGER_UP                   = SDL_FINGERUP,
+    PICO_EVENT_FINGER_MOTION               = SDL_FINGERMOTION,
 
     /* Gesture events */
-    PICO_DOLLARGESTURE = SDL_DOLLARGESTURE,
-    PICO_DOLLARRECORD = SDL_DOLLARRECORD,
-    PICO_MULTIGESTURE = SDL_MULTIGESTURE,
+    PICO_EVENT_GESTURE_DOLLAR              = SDL_DOLLARGESTURE,
+    PICO_EVENT_GESTURE_DOLLAR_RECORD       = SDL_DOLLARRECORD,
+    PICO_EVENT_GESTURE_MULTI               = SDL_MULTIGESTURE,
 
     /* Clipboard events */
-    PICO_CLIPBOARDUPDATE = SDL_CLIPBOARDUPDATE, /**< The clipboard or primary selection changed */
+    PICO_EVENT_CLIPBOARD_UPDATE            = SDL_CLIPBOARDUPDATE,
 
     /* Drag and drop events */
-    PICO_DROPFILE = SDL_DROPFILE,         /**< The system requests a file open */
-    PICO_DROPTEXT = SDL_DROPTEXT,         /**< text/plain drag-and-drop event */
-    PICO_DROPBEGIN = SDL_DROPBEGIN,       /**< A new set of drops is beginning (NULL filename) */
-    PICO_DROPCOMPLETE = SDL_DROPCOMPLETE, /**< Current set of drops is now complete (NULL filename) */
+    PICO_EVENT_DROP_FILE                   = SDL_DROPFILE,
+    PICO_EVENT_DROP_TEXT                   = SDL_DROPTEXT,
+    PICO_EVENT_DROP_BEGIN                  = SDL_DROPBEGIN,
+    PICO_EVENT_DROP_COMPLETE               = SDL_DROPCOMPLETE,
 
     /* Audio hotplug events */
-    PICO_AUDIODEVICEADDED = SDL_AUDIODEVICEADDED,     /**< A new audio device is available */
-    PICO_AUDIODEVICEREMOVED = SDL_AUDIODEVICEREMOVED, /**< An audio device has been removed. */
+    PICO_EVENT_AUDIO_DEVICE_ADDED          = SDL_AUDIODEVICEADDED,
+    PICO_EVENT_AUDIO_DEVICE_REMOVED        = SDL_AUDIODEVICEREMOVED,
 
     /* Sensor events */
-    PICO_SENSORUPDATE = SDL_SENSORUPDATE, /**< A sensor was updated */
+    PICO_EVENT_SENSOR_UPDATE               = SDL_SENSORUPDATE,
 
     /* Render events */
-    PICO_RENDER_TARGETS_RESET = SDL_RENDER_TARGETS_RESET, /**< The render targets have been reset and their contents need to be updated */
-    PICO_RENDER_DEVICE_RESET = SDL_RENDER_DEVICE_RESET,   /**< The device has been reset and all textures need to be recreated */
+    PICO_EVENT_RENDER_TARGETS_RESET        = SDL_RENDER_TARGETS_RESET,
+    PICO_EVENT_RENDER_DEVICE_RESET         = SDL_RENDER_DEVICE_RESET,
 
-    PICO_SDL_USEREVENT = SDL_USEREVENT, /**< For expert users. See SDL_EventType::SDL_USEREVENT */
+    PICO_EVENT_SDL_USER                    = SDL_USEREVENT,
 } PICO_EVENT;
 
 #endif // PICO_EVENTS_H

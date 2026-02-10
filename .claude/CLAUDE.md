@@ -344,10 +344,12 @@ The Lua API mirrors the C API with nested tables:
 **Tile Mode Example:**
 ```lua
 -- Setup 4x4 grid with 4x4 pixel tiles
+pico.set.window {
+    dim = {'!', w=160, h=160},
+}
 pico.set.view {
-    window = {'!', w=160, h=160},
-    world  = {'#', w=4, h=4},
-    tile   = {w=4, h=4}
+    dim  = {'#', w=4, h=4},
+    tile = {w=4, h=4}
 }
 
 -- Draw at tile position (2,3)

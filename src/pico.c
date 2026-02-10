@@ -47,13 +47,21 @@ typedef struct {
     PICO_FLIP     flip;
 } Pico_View;
 
+typedef enum {
+    PICO_LAYER_PLAIN,
+    PICO_LAYER_VIDEO,
+} PICO_LAYER;
+
 typedef struct {
+    PICO_LAYER      type;
     const Pico_Key* key;   // NULL for main layer
     SDL_Texture*    tex;
     Pico_View       view;
 } Pico_Layer;
 
-#define SDL_ANY PICO_ANY
+#include "video.h"
+
+#define SDL_ANY PICO_EVENT_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 #ifdef PICO_TESTS
@@ -515,6 +523,9 @@ static void _pico_hash_clean (int n, const void* key, void* value) {
     switch (res->type) {
         case PICO_KEY_LAYER: {
             Pico_Layer* data = (Pico_Layer*)value;
+            if (data->type == PICO_LAYER_VIDEO) {
+                _pico_hash_clean_video((Pico_Layer_Video*)data);
+            }
             SDL_DestroyTexture(data->tex);
             free(data);
             break;
@@ -539,6 +550,7 @@ void pico_init (int on) {
             .fsing = 0,
             .hash  = ttl_hash_open(PICO_HASH_BUK, PICO_HASH_TTL, _pico_hash_clean),
             .main  = {
+                .type = PICO_LAYER_PLAIN,
                 .key  = NULL,
                 .tex  = NULL,   // needs G.ren
                 .view = {
@@ -592,6 +604,8 @@ void pico_init (int on) {
             SDL_SetRenderDrawBlendMode(G.ren, SDL_BLENDMODE_BLEND);
         }
 
+        G.init = 1;
+
         // create tex after ren
         {
             G.main.tex = _tex_create(PICO_DIM_LOG);
@@ -606,12 +620,9 @@ void pico_init (int on) {
 
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-        G.init = 1;
     }
     else {
-        if (!G.init) {
-            return;
-        }
+        assert(G.init == 1);
         G.init = 0;
 
         if (G.hash != NULL) {
@@ -1040,6 +1051,7 @@ static Pico_Layer* _pico_layer_buffer (
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
+        .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = tex,
         .view = {
@@ -1082,6 +1094,7 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
+        .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = _tex_create(dim),
         .view = {
@@ -1123,6 +1136,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
+        .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = tex,
         .view = {
@@ -1189,6 +1203,7 @@ static Pico_Layer* _pico_layer_text (
 
     data = malloc(sizeof(Pico_Layer));
     *data = (Pico_Layer) {
+        .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
         .tex  = tex,
         .view = {
@@ -1364,7 +1379,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:  {
             Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
             e->button.x = pos.x;
             e->button.y = pos.y;
             break;
@@ -1849,4 +1864,5 @@ void pico_output_sound (const char* path) {
     _pico_output_sound_cache(path, 1);
 }
 
-
+#define PICO_VIDEO_C
+#include "video.h"

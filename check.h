@@ -155,7 +155,7 @@ void _pico_check (const char* msg) {
     #ifdef PICO_CHECK_INT
     // Pause for visual inspection if INT is defined
     puts("-=- press any key -=-");
-    pico_input_event(NULL, PICO_KEYDOWN);
+    pico_input_event(NULL, PICO_EVENT_KEY_DOWN);
     #endif
 
     #ifdef PICO_CHECK_ASR

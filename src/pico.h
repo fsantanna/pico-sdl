@@ -87,6 +87,13 @@ typedef enum {
     PICO_STYLE_FILL, PICO_STYLE_STROKE
 } PICO_STYLE;
 
+typedef struct {
+    Pico_Abs_Dim dim;
+    int fps;
+    int frame;
+    int done;
+} Pico_Video;
+
 typedef enum {
     PICO_FLIP_NONE       = SDL_FLIP_NONE,
     PICO_FLIP_HORIZONTAL = SDL_FLIP_HORIZONTAL,
@@ -229,6 +236,13 @@ void pico_output_present (void);
 /// @return the filepath of the screenshot
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect);
 
+/// @brief Draws a video frame (all-in-one).
+/// Auto-syncs to elapsed time internally.
+/// @param path path to the Y4M video file
+/// @param rect target position and dimension
+/// @return 1 if frame drawn, or 0 at EOF
+int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect);
+
 /// @brief Plays a sound.
 /// @param path path to the audio file
 void pico_output_sound (const char* path);
@@ -262,6 +276,12 @@ const char* pico_get_font (void);
 /// @param dim optional dim with w/h to complete (NULL returns raw dimensions)
 /// @return absolute dimensions (missing w or h filled based on aspect ratio)
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
+
+/// @brief Gets video properties.
+/// @param path path to the Y4M video file
+/// @param rect optional rect with w/h to complete (NULL ok)
+/// @return video properties (dim, fps, frame, done)
+Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
 
 /// @brief Gets the state of a key.
 /// @param key key constant
@@ -302,6 +322,12 @@ const char* pico_layer_buffer (const char* name, Pico_Abs_Dim dim,
 /// @return the layer name
 /// @note Uses current font (pico_set_font) and draw color (pico_set_color_draw)
 const char* pico_layer_text (const char* name, int height, const char* text);
+
+/// @brief Creates a video layer from a Y4M file.
+/// @param name layer name (must not be NULL)
+/// @param path path to the Y4M video file
+/// @return the layer name
+const char* pico_layer_video (const char* name, const char* path);
 
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
@@ -388,6 +414,13 @@ void pico_set_show (int on);
 /// @brief Sets the drawing style.
 /// @param style new style
 void pico_set_style (PICO_STYLE style);
+
+/// @brief Syncs a video layer to a target frame.
+/// Supports forward and backward seeking.
+/// @param name layer name (must exist as video layer)
+/// @param frame target frame number
+/// @return 1 if frame is valid, or 0 past EOF
+int pico_set_video (const char* name, int frame);
 
 /// @brief Sets the view configuration. NULL arguments are ignored.
 /// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
