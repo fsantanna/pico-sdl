@@ -84,9 +84,7 @@ int main (void) {
     /* pico_get_video: check state after sync */
     {
         puts("get_video: state after sync");
-        Pico_Video info = pico_get_video(
-            "video.y4m", NULL
-        );
+        Pico_Video info = pico_get_video("vid", NULL);
         assert(info.done == 1);
     }
 
@@ -94,12 +92,8 @@ int main (void) {
     {
         puts("draw_video: first call");
         pico_output_clear();
-        int ok = pico_output_draw_video(
-            "video.y4m",
-            &(Pico_Rel_Rect){
-                '%', {0.5, 0.5, 1, 1},
-                PICO_ANCHOR_C, NULL
-            }
+        int ok = pico_output_draw_video("video.y4m",
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
         );
         assert(ok == 1);
         _pico_check("video-05");

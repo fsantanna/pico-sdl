@@ -272,8 +272,7 @@ int pico_video_sync (const char* name, int frame) {
 }
 
 int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect) {
-    Pico_Layer_Video* vs =
-        _pico_layer_video(path, path);
+    Pico_Layer_Video* vs = _pico_layer_video(path, path);
     pico_assert(vs != NULL);
 
     /* Auto-sync: calculate frame from elapsed time */
