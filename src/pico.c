@@ -592,6 +592,8 @@ void pico_init (int on) {
             SDL_SetRenderDrawBlendMode(G.ren, SDL_BLENDMODE_BLEND);
         }
 
+        G.init = 1;
+
         // create tex after ren
         {
             G.main.tex = _tex_create(PICO_DIM_LOG);
@@ -606,12 +608,9 @@ void pico_init (int on) {
 
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-        G.init = 1;
     }
     else {
-        if (!G.init) {
-            return;
-        }
+        assert(G.init == 1);
         G.init = 0;
 
         if (G.hash != NULL) {
