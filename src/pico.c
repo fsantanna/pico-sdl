@@ -74,7 +74,7 @@ typedef struct {
     Pico_Layer*    layer;
 } Pico_Video_State;
 
-#define SDL_ANY PICO_ANY
+#define SDL_ANY PICO_EVENT_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 #ifdef PICO_TESTS
@@ -349,11 +349,16 @@ static Pico_Abs_Dim _fi_dim (const SDL_FDim* f) {
 }
 
 static SDL_Point _fi_pos (const SDL_FPoint* f) {
-    return (SDL_Point) { roundf(f->x), roundf(f->y) };
+    return (SDL_Point) {
+        floorf(f->x + 0.5f), floorf(f->y + 0.5f)
+    };
 }
 
 static SDL_Rect _fi_rect (const SDL_FRect* f) {
-    return (SDL_Rect) { roundf(f->x), roundf(f->y), roundf(f->w), roundf(f->h) };
+    return (SDL_Rect) {
+        floorf(f->x + 0.5f), floorf(f->y + 0.5f),
+        floorf(f->w + 0.5f), floorf(f->h + 0.5f)
+    };
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -531,28 +536,8 @@ static void _pico_hash_clean (int n, const void* key, void* value) {
     switch (res->type) {
         case PICO_KEY_LAYER: {
             Pico_Layer* data = (Pico_Layer*)value;
-            if (data->extra != NULL) {
-                Pico_Video_State* vs =
-                    (Pico_Video_State*)data->extra;
-                vs->layer = NULL;
-            }
             SDL_DestroyTexture(data->tex);
             free(data);
-            break;
-        }
-        case PICO_KEY_VIDEO: {
-            Pico_Video_State* vs =
-                (Pico_Video_State*)value;
-            if (vs->layer != NULL) {
-                vs->layer->extra = NULL;
-            }
-            if (vs->fp) {
-                fclose(vs->fp);
-            }
-            free(vs->y_plane);
-            free(vs->u_plane);
-            free(vs->v_plane);
-            free(vs);
             break;
         }
         case PICO_KEY_SOUND:
@@ -628,6 +613,8 @@ void pico_init (int on) {
             SDL_SetRenderDrawBlendMode(G.ren, SDL_BLENDMODE_BLEND);
         }
 
+        G.init = 1;
+
         // create tex after ren
         {
             G.main.tex = _tex_create(PICO_DIM_LOG);
@@ -645,9 +632,7 @@ void pico_init (int on) {
         G.init = 1;
     }
     else {
-        if (!G.init) {
-            return;
-        }
+        assert(G.init == 1);
         G.init = 0;
 
         if (G.hash != NULL) {
@@ -1400,7 +1385,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:  {
             Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
             e->button.x = pos.x;
             e->button.y = pos.y;
             break;

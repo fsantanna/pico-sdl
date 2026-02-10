@@ -63,7 +63,7 @@ int main (void) {
         SDL_WarpMouseInWindow(pico_win, 0, 0);
         SDL_PumpEvents();
         Pico_Rel_Pos pos = { '#' };
-        pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+        pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
         assert(pos.x==1 && pos.y==1);
     }
 
@@ -74,7 +74,7 @@ int main (void) {
         SDL_WarpMouseInWindow(pico_win, 40, 40);
         SDL_PumpEvents();
         Pico_Rel_Pos pos = { '#' };
-        pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+        pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
         assert(pos.x==2 && pos.y==2);
     }
 
@@ -84,7 +84,7 @@ int main (void) {
         SDL_WarpMouseInWindow(pico_win, 80, 120);
         SDL_PumpEvents();
         Pico_Rel_Pos pos = { '#' };
-        pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+        pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
         assert(pos.x==3 && pos.y==4);
     }
 

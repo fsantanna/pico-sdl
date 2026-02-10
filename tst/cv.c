@@ -278,7 +278,7 @@ int main (void) {
         Pico_Rel_Pos p2 = { '%', {1.0, 1.0}, PICO_ANCHOR_C, NULL };
         Pico_Abs_Pos r1 = pico_cv_pos_rel_abs(&p1, NULL);
         Pico_Abs_Pos r2 = pico_cv_pos_rel_abs(&p2, NULL);
-        assert(r1.x==-1  && r1.y==-1);
+        assert(r1.x==0   && r1.y==0);
         assert(r2.x==100 && r2.y==100);
     }
 
