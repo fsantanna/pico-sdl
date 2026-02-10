@@ -241,8 +241,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
 /// @param path path to the Y4M video file
 /// @param rect target position and dimension
 /// @return 1 if frame drawn, or 0 at EOF
-int pico_output_draw_video (const char* path,
-                             Pico_Rel_Rect* rect);
+int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file
@@ -282,8 +281,7 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 /// @param path path to the Y4M video file
 /// @param rect optional rect with w/h to complete (NULL ok)
 /// @return video properties (dim, fps, frame, done)
-Pico_Video pico_get_video (const char* path,
-                            Pico_Rel_Rect* rect);
+Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
 
 /// @brief Gets the state of a key.
 /// @param key key constant
@@ -329,8 +327,7 @@ const char* pico_layer_text (const char* name, int height, const char* text);
 /// @param name layer name (must not be NULL)
 /// @param path path to the Y4M video file
 /// @return the layer name
-const char* pico_layer_video (const char* name,
-                               const char* path);
+const char* pico_layer_video (const char* name, const char* path);
 
 /// @brief Syncs a video layer to a target frame.
 /// Supports forward and backward seeking.

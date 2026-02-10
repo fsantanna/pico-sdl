@@ -1,5 +1,7 @@
 # video-lua.md — Lua bindings for video API
 
+Status: **done**
+
 ## Goal
 
 Add Lua bindings for the four public video functions, following existing

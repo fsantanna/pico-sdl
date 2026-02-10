@@ -1,7 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.window("Video", -1)
+pico.set.window { title="Video" }
 pico.set.color.clear({'!', r=0x00, g=0x00, b=0x00})
 
 -- pico_get_video: check Y4M header parsing
@@ -78,7 +78,7 @@ end
 -- pico_get_video: check state after sync
 do
     print("get_video: state after sync")
-    local info = pico.get.video("video.y4m")
+    local info = pico.get.video("vid")
     assert(info.done == true)
 end
 

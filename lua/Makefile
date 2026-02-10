@@ -50,6 +50,7 @@ tests: pico_native.so
 	$(TST) tst/size_raw.lua
 	$(TST) tst/style.lua
 	$(TST) tst/tiles.lua
+	$(TST) tst/video.lua
 	$(TST) tst/view_raw.lua
 	$(TST) tst/vs.lua
 

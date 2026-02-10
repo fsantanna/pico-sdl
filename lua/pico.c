@@ -677,6 +677,36 @@ static int l_get_window (lua_State* L) {
     return 1;
 }
 
+static int l_get_video (lua_State* L) {
+    const char* path = luaL_checkstring(L, 1);  // path | [rect]
+
+    Pico_Rel_Rect* rect = NULL;
+    if (lua_gettop(L)>=2 && !lua_isnil(L,2)) {
+        L_dim_default_wh(L, 2);
+        rect = c_rel_rect(L, 2);
+    }
+
+    Pico_Video vid = pico_get_video(path, rect);
+
+    lua_newtable(L);                        // T
+
+    lua_newtable(L);                        // T | dim
+    lua_pushinteger(L, vid.dim.w);
+    lua_setfield(L, -2, "w");
+    lua_pushinteger(L, vid.dim.h);
+    lua_setfield(L, -2, "h");
+    lua_setfield(L, -2, "dim");             // T
+
+    lua_pushinteger(L, vid.fps);
+    lua_setfield(L, -2, "fps");
+    lua_pushinteger(L, vid.frame);
+    lua_setfield(L, -2, "frame");
+    lua_pushboolean(L, vid.done);
+    lua_setfield(L, -2, "done");
+
+    return 1;
+}
+
 static int l_get_view (lua_State* L) {
     int grid;
     //Pico_Abs_Rect dst;
@@ -1025,6 +1055,14 @@ static int l_layer_text (lua_State* L) {
     return 1;
 }
 
+static int l_layer_video (lua_State* L) {
+    const char* name = luaL_checkstring(L, 1);      // name | path
+    const char* path = luaL_checkstring(L, 2);
+    const char* ret = pico_layer_video(name, path);
+    lua_pushstring(L, ret);                         // name | path | *name*
+    return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_input_delay (lua_State* L) {
@@ -1269,6 +1307,24 @@ static int l_output_draw_tri (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_video (lua_State* L) {
+    const char* path = luaL_checkstring(L, 1);  // path | rect
+    luaL_checktype(L, 2, LUA_TTABLE);
+    L_dim_default_wh(L, 2);
+    Pico_Rel_Rect* rect = c_rel_rect(L, 2);
+    int ok = pico_output_draw_video(path, rect);
+    lua_pushboolean(L, ok);
+    return 1;
+}
+
+static int l_video_sync (lua_State* L) {
+    const char* name = luaL_checkstring(L, 1);  // name | frame
+    int frame = luaL_checkinteger(L, 2);
+    int ok = pico_video_sync(name, frame);
+    lua_pushboolean(L, ok);
+    return 1;
+}
+
 static int l_output_present (lua_State* L) {
     pico_output_present();
     return 0;
@@ -1338,6 +1394,7 @@ static const luaL_Reg ll_get[] = {
     { "mouse",  l_get_mouse  },
     { "text",   l_get_text   },
     { "ticks",  l_get_ticks  },
+    { "video",  l_get_video  },
     { "view",   l_get_view   },
     { "window", l_get_window },
     { NULL, NULL }
@@ -1369,6 +1426,7 @@ static const luaL_Reg ll_layer[] = {
     { "empty",  l_layer_empty  },
     { "image",  l_layer_image  },
     { "text",   l_layer_text   },
+    { "video",  l_layer_video  },
     { NULL, NULL }
 };
 
@@ -1402,6 +1460,12 @@ static const luaL_Reg ll_output_draw[] = {
     { "rect",   l_output_draw_rect   },
     { "text",   l_output_draw_text   },
     { "tri",    l_output_draw_tri    },
+    { "video",  l_output_draw_video  },
+    { NULL, NULL }
+};
+
+static const luaL_Reg ll_video[] = {
+    { "sync", l_video_sync },
     { NULL, NULL }
 };
 
@@ -1429,6 +1493,9 @@ int luaopen_pico_native (lua_State* L) {
 
     luaL_newlib(L, ll_layer);               // pico | layer
     lua_setfield(L, -2, "layer");           // pico
+
+    luaL_newlib(L, ll_video);               // pico | video
+    lua_setfield(L, -2, "video");           // pico
 
     luaL_newlib(L, ll_input);               // pico | input
     lua_setfield(L, -2, "input");           // pico
