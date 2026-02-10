@@ -329,13 +329,6 @@ const char* pico_layer_text (const char* name, int height, const char* text);
 /// @return the layer name
 const char* pico_layer_video (const char* name, const char* path);
 
-/// @brief Syncs a video layer to a target frame.
-/// Supports forward and backward seeking.
-/// @param name layer name (must exist as video layer)
-/// @param frame target frame number
-/// @return 1 if frame is valid, or 0 past EOF
-int pico_video_sync (const char* name, int frame);
-
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
 ///            system: '!' for pixels, '%' for percentage, '#' for tiles)
@@ -421,6 +414,13 @@ void pico_set_show (int on);
 /// @brief Sets the drawing style.
 /// @param style new style
 void pico_set_style (PICO_STYLE style);
+
+/// @brief Syncs a video layer to a target frame.
+/// Supports forward and backward seeking.
+/// @param name layer name (must exist as video layer)
+/// @param frame target frame number
+/// @return 1 if frame is valid, or 0 past EOF
+int pico_set_video (const char* name, int frame);
 
 /// @brief Sets the view configuration. NULL arguments are ignored.
 /// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged

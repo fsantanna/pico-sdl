@@ -65,7 +65,7 @@ int main (void) {
         }
 
         /* Sync video */
-        pico_video_sync("vid", frame);
+        pico_set_video("vid", frame);
 
         /* Draw video */
         pico_set_color_clear(

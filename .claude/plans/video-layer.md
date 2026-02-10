@@ -59,7 +59,7 @@ typedef struct {
   pico_layer_video
   _y4m_read_frame
   _y4m_update_texture
-  pico_video_sync
+  pico_set_video
   pico_output_draw_video
   pico_get_video
 #endif
@@ -97,7 +97,7 @@ This eliminates all forward declarations.
 | `pico_layer_video`        | simplified wrapper returning `->base.key->key` |
 | `_y4m_read_frame`         | param `Pico_Layer_Video*`                 |
 | `_y4m_update_texture`     | uses `vs->base.tex`, `vs->base.view.dim.w` |
-| `pico_video_sync`         | casts `(Pico_Layer_Video*)layer`          |
+| `pico_set_video`         | casts `(Pico_Layer_Video*)layer`          |
 | `pico_output_draw_video`  | uses `_pico_layer_video`, `&vs->base`     |
 | `pico_get_video`          | uses `_pico_layer_video`, `vs->base.view.dim` |
 

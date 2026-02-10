@@ -60,7 +60,7 @@ while true do
     end
 
     -- Sync video
-    pico.video.sync("vid", frame)
+    pico.set.video("vid", frame)
 
     -- Draw video
     pico.set.color.clear({'!', r=0x20, g=0x20, b=0x20})

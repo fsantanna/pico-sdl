@@ -14,13 +14,10 @@ patterns in `lua/pico.c`.
 | `pico_layer_video`      | `pico.layer.video(name, path)`    | name (string)    |
 | `pico_output_draw_video`| `pico.output.draw.video(path, rect)` | ok (boolean)  |
 | `pico_get_video`        | `pico.get.video(path, [rect])`    | info (table)     |
-| `pico_video_sync`       | `pico.video.sync(name, frame)`    | ok (boolean)     |
+| `pico_set_video`       | `pico.set.video(name, frame)`    | ok (boolean)     |
 
-### pico.video subtable
-
-`pico_video_sync` doesn't fit `get`/`set`/`input`/`output`/`layer`. Create a
-new `pico.video` subtable with `sync`. This mirrors the C namespace
-`pico_video_*` and is extensible.
+`pico_set_video` fits naturally in the `pico.set.*` namespace alongside
+`pico.set.layer`, `pico.set.alpha`, etc.
 
 ## Binding functions
 
@@ -90,33 +87,19 @@ static int l_get_video (lua_State* L) {
 
 Add `{ "video", l_get_video }` to `ll_get`.
 
-### 4. l_video_sync — new subtable
+### 4. l_set_video — added to ll_set
 
 ```c
-static int l_video_sync (lua_State* L) {
+static int l_set_video (lua_State* L) {
     const char* name = luaL_checkstring(L, 1);
     int frame = luaL_checkinteger(L, 2);
-    int ok = pico_video_sync(name, frame);
+    int ok = pico_set_video(name, frame);
     lua_pushboolean(L, ok);
     return 1;
 }
 ```
 
-New registration table:
-
-```c
-static const luaL_Reg ll_video[] = {
-    { "sync", l_video_sync },
-    { NULL, NULL }
-};
-```
-
-In `luaopen_pico_native`, after `ll_layer` block:
-
-```c
-luaL_newlib(L, ll_video);               // pico | video
-lua_setfield(L, -2, "video");           // pico
-```
+Add `{ "video", l_set_video }` to `ll_set`.
 
 ## Usage examples
 
@@ -125,7 +108,7 @@ lua_setfield(L, -2, "video");           // pico
 pico.layer.video("vid", "video.y4m")
 local info = pico.get.video("video.y4m")
 print(info.dim.w, info.dim.h, info.fps)
-pico.video.sync("vid", 0)
+pico.set.video("vid", 0)
 pico.output.draw.layer("vid", {'%', x=.5, y=.5, w=1, h=1, anchor='C'})
 
 -- Auto-play (handles timing + drawing)
@@ -143,8 +126,8 @@ local ok = pico.output.draw.video("video.y4m",
 | `lua/pico.c`| `ll_output_draw`  | add `{ "video", l_output_draw_video }` |
 | `lua/pico.c`| after l_get_window | add `l_get_video`                 |
 | `lua/pico.c`| `ll_get`          | add `{ "video", l_get_video }`     |
-| `lua/pico.c`| new section       | add `l_video_sync` + `ll_video`    |
-| `lua/pico.c`| `luaopen_pico_native` | add `ll_video` → `pico.video`  |
+| `lua/pico.c`| after l_set_window | add `l_set_video`                 |
+| `lua/pico.c`| `ll_set`          | add `{ "video", l_set_video }`   |
 
 ## Order
 

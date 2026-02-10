@@ -914,6 +914,14 @@ static int l_set_dim (lua_State* L) {
     return 0;
 }
 
+static int l_set_video (lua_State* L) {
+    const char* name = luaL_checkstring(L, 1);  // name | frame
+    int frame = luaL_checkinteger(L, 2);
+    int ok = pico_set_video(name, frame);
+    lua_pushboolean(L, ok);
+    return 1;
+}
+
 static int l_set_view (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
@@ -1317,14 +1325,6 @@ static int l_output_draw_video (lua_State* L) {
     return 1;
 }
 
-static int l_video_sync (lua_State* L) {
-    const char* name = luaL_checkstring(L, 1);  // name | frame
-    int frame = luaL_checkinteger(L, 2);
-    int ok = pico_video_sync(name, frame);
-    lua_pushboolean(L, ok);
-    return 1;
-}
-
 static int l_output_present (lua_State* L) {
     pico_output_present();
     return 0;
@@ -1408,6 +1408,7 @@ static const luaL_Reg ll_set[] = {
     { "expert", l_set_expert },
     { "layer",  l_set_layer  },
     { "style",  l_set_style  },
+    { "video",  l_set_video  },
     { "view",   l_set_view   },
     { "window", l_set_window },
     { NULL, NULL }
@@ -1464,11 +1465,6 @@ static const luaL_Reg ll_output_draw[] = {
     { NULL, NULL }
 };
 
-static const luaL_Reg ll_video[] = {
-    { "sync", l_video_sync },
-    { NULL, NULL }
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 
 int luaopen_pico_native (lua_State* L) {
@@ -1493,9 +1489,6 @@ int luaopen_pico_native (lua_State* L) {
 
     luaL_newlib(L, ll_layer);               // pico | layer
     lua_setfield(L, -2, "layer");           // pico
-
-    luaL_newlib(L, ll_video);               // pico | video
-    lua_setfield(L, -2, "video");           // pico
 
     luaL_newlib(L, ll_input);               // pico | input
     lua_setfield(L, -2, "input");           // pico

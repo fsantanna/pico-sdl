@@ -25,7 +25,7 @@ Internal header (not user-facing). Contains:
 
 Declarations for public functions (already in `pico.h`):
 - `pico_layer_video`
-- `pico_video_sync`
+- `pico_set_video`
 - `pico_output_draw_video`
 - `pico_get_video`
 
@@ -37,7 +37,7 @@ Contains all video implementation:
 - `_y4m_read_frame` — read single frame
 - `_y4m_update_texture` — upload YUV to SDL texture
 - `pico_layer_video` — create video layer
-- `pico_video_sync` — frame seeking
+- `pico_set_video` — frame seeking
 - `pico_output_draw_video` — all-in-one draw
 - `pico_get_video` — query video properties
 

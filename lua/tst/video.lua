@@ -22,11 +22,11 @@ do
     assert(name == "vid")
 end
 
--- pico_video_sync: first frame (0)
+-- pico_set_video: first frame (0)
 do
-    print("video_sync: frame 0 (top-left)")
+    print("set_video: frame 0 (top-left)")
     pico.set.layer("vid")
-    local ok = pico.video.sync("vid", 0)
+    local ok = pico.set.video("vid", 0)
     assert(ok == true)
     pico.set.layer(nil)
     pico.output.clear()
@@ -35,10 +35,10 @@ do
     pico.check("video-01")
 end
 
--- pico_video_sync: middle frame (25)
+-- pico_set_video: middle frame (25)
 do
-    print("video_sync: frame 25 (bottom-middle)")
-    local ok = pico.video.sync("vid", 25)
+    print("set_video: frame 25 (bottom-middle)")
+    local ok = pico.set.video("vid", 25)
     assert(ok == true)
     pico.output.clear()
     pico.output.draw.layer("vid",
@@ -46,10 +46,10 @@ do
     pico.check("video-02")
 end
 
--- pico_video_sync: last frame (49)
+-- pico_set_video: last frame (49)
 do
-    print("video_sync: frame 49 (top-right)")
-    local ok = pico.video.sync("vid", 49)
+    print("set_video: frame 49 (top-right)")
+    local ok = pico.set.video("vid", 49)
     assert(ok == true)
     pico.output.clear()
     pico.output.draw.layer("vid",
@@ -57,10 +57,10 @@ do
     pico.check("video-03")
 end
 
--- pico_video_sync: backward seek
+-- pico_set_video: backward seek
 do
-    print("video_sync: backward seek to frame 10")
-    local ok = pico.video.sync("vid", 10)
+    print("set_video: backward seek to frame 10")
+    local ok = pico.set.video("vid", 10)
     assert(ok == true)
     pico.output.clear()
     pico.output.draw.layer("vid",
@@ -68,10 +68,10 @@ do
     pico.check("video-04")
 end
 
--- pico_video_sync: past EOF
+-- pico_set_video: past EOF
 do
-    print("video_sync: past EOF returns 0")
-    local ok = pico.video.sync("vid", 100)
+    print("set_video: past EOF returns 0")
+    local ok = pico.set.video("vid", 100)
     assert(ok == false)
 end
 

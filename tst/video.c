@@ -24,11 +24,11 @@ int main (void) {
         assert(strcmp(name, "vid") == 0);
     }
 
-    /* pico_video_sync: first frame (0) */
+    /* pico_set_video: first frame (0) */
     {
-        puts("video_sync: frame 0 (top-left)");
+        puts("set_video: frame 0 (top-left)");
         pico_set_layer("vid");
-        int ok = pico_video_sync("vid", 0);
+        int ok = pico_set_video("vid", 0);
         assert(ok == 1);
         pico_set_layer(NULL);
         pico_output_clear();
@@ -38,10 +38,10 @@ int main (void) {
         _pico_check("video-01");
     }
 
-    /* pico_video_sync: middle frame (25) */
+    /* pico_set_video: middle frame (25) */
     {
-        puts("video_sync: frame 25 (bottom-middle)");
-        int ok = pico_video_sync("vid", 25);
+        puts("set_video: frame 25 (bottom-middle)");
+        int ok = pico_set_video("vid", 25);
         assert(ok == 1);
         pico_output_clear();
         pico_output_draw_layer("vid",
@@ -50,10 +50,10 @@ int main (void) {
         _pico_check("video-02");
     }
 
-    /* pico_video_sync: last frame (49) */
+    /* pico_set_video: last frame (49) */
     {
-        puts("video_sync: frame 49 (top-right)");
-        int ok = pico_video_sync("vid", 49);
+        puts("set_video: frame 49 (top-right)");
+        int ok = pico_set_video("vid", 49);
         assert(ok == 1);
         pico_output_clear();
         pico_output_draw_layer("vid",
@@ -62,10 +62,10 @@ int main (void) {
         _pico_check("video-03");
     }
 
-    /* pico_video_sync: backward seek */
+    /* pico_set_video: backward seek */
     {
-        puts("video_sync: backward seek to frame 10");
-        int ok = pico_video_sync("vid", 10);
+        puts("set_video: backward seek to frame 10");
+        int ok = pico_set_video("vid", 10);
         assert(ok == 1);
         pico_output_clear();
         pico_output_draw_layer("vid",
@@ -74,10 +74,10 @@ int main (void) {
         _pico_check("video-04");
     }
 
-    /* pico_video_sync: past EOF */
+    /* pico_set_video: past EOF */
     {
-        puts("video_sync: past EOF returns 0");
-        int ok = pico_video_sync("vid", 100);
+        puts("set_video: past EOF returns 0");
+        int ok = pico_set_video("vid", 100);
         assert(ok == 0);
     }
 
