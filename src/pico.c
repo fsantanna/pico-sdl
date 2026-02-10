@@ -56,22 +56,28 @@ typedef struct {
 } Pico_Layer;
 
 typedef struct {
-    FILE*          fp;
-    unsigned char* y_plane;
-    unsigned char* u_plane;
-    unsigned char* v_plane;
-    int            width;
-    int            height;
-    int            fps;
-    int            y_size;
-    int            uv_size;
-    int            frame_size;
-    long           data_offset;
-    int            total_frames;
-    int            cur_frame;
-    int            done;
-    Uint32         t0;
-    Pico_Layer*    layer;
+    FILE*      fp;
+    struct {
+        unsigned char* y;
+        unsigned char* u;
+        unsigned char* v;
+    } plane;
+    int        width;
+    int        height;
+    int        fps;
+    struct {
+        int y;
+        int uv;
+        int frame;
+    } size;
+    long       data_offset;
+    struct {
+        int total;
+        int cur;
+        int done;
+    } frame;
+    Uint32     t0;
+    Pico_Layer* layer;
 } Pico_Video_State;
 
 #define SDL_ANY PICO_EVENT_ANY

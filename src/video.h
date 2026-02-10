@@ -88,27 +88,27 @@ static Pico_Video_State* _pico_video_open (
     vs->width = w;
     vs->height = h;
     vs->fps = fps;
-    vs->y_size = w * h;
-    vs->uv_size = (w / 2) * (h / 2);
-    vs->frame_size = 6 + vs->y_size + vs->uv_size * 2;
+    vs->size.y = w * h;
+    vs->size.uv = (w / 2) * (h / 2);
+    vs->size.frame = 6 + vs->size.y + vs->size.uv * 2;
     vs->data_offset = ftell(fp);
-    vs->cur_frame = -1;
-    vs->done = 0;
+    vs->frame.cur = -1;
+    vs->frame.done = 0;
     vs->t0 = 0;
     vs->layer = NULL;
 
-    vs->y_plane = malloc(vs->y_size);
-    vs->u_plane = malloc(vs->uv_size);
-    vs->v_plane = malloc(vs->uv_size);
-    assert(vs->y_plane && vs->u_plane && vs->v_plane);
+    vs->plane.y = malloc(vs->size.y);
+    vs->plane.u = malloc(vs->size.uv);
+    vs->plane.v = malloc(vs->size.uv);
+    assert(vs->plane.y && vs->plane.u && vs->plane.v);
 
     /* Calculate total frames from file size */
     long cur = ftell(fp);
     fseek(fp, 0, SEEK_END);
     long end = ftell(fp);
     fseek(fp, cur, SEEK_SET);
-    vs->total_frames =
-        (int)((end - vs->data_offset) / vs->frame_size);
+    vs->frame.total =
+        (int)((end - vs->data_offset) / vs->size.frame);
 
     ttl_hash_put(G.hash, n, key, vs);
     return vs;
@@ -123,12 +123,12 @@ static int _y4m_read_frame (Pico_Video_State* vs) {
     if (strncmp(marker, "FRAME\n", 6) != 0) {
         return 0;
     }
-    if (fread(vs->y_plane, 1, vs->y_size, vs->fp)
-            != (size_t)vs->y_size ||
-        fread(vs->u_plane, 1, vs->uv_size, vs->fp)
-            != (size_t)vs->uv_size ||
-        fread(vs->v_plane, 1, vs->uv_size, vs->fp)
-            != (size_t)vs->uv_size) {
+    if (fread(vs->plane.y, 1, vs->size.y, vs->fp)
+            != (size_t)vs->size.y ||
+        fread(vs->plane.u, 1, vs->size.uv, vs->fp)
+            != (size_t)vs->size.uv ||
+        fread(vs->plane.v, 1, vs->size.uv, vs->fp)
+            != (size_t)vs->size.uv) {
         return 0;
     }
     return 1;
@@ -141,9 +141,9 @@ static void _y4m_update_texture (Pico_Video_State* vs) {
     }
     SDL_UpdateYUVTexture(
         vs->layer->tex, NULL,
-        vs->y_plane, vs->width,
-        vs->u_plane, vs->width / 2,
-        vs->v_plane, vs->width / 2
+        vs->plane.y, vs->width,
+        vs->plane.u, vs->width / 2,
+        vs->plane.v, vs->width / 2
     );
 }
 
@@ -223,41 +223,41 @@ int pico_video_sync (const char* name, int frame) {
     if (frame < 0) {
         frame = 0;
     }
-    if (frame >= vs->total_frames) {
-        vs->done = 1;
+    if (frame >= vs->frame.total) {
+        vs->frame.done = 1;
         return 0;
     }
 
-    vs->done = 0;
+    vs->frame.done = 0;
 
     /* Already at this frame */
-    if (frame == vs->cur_frame) {
+    if (frame == vs->frame.cur) {
         return 1;
     }
 
     /* Seek to target frame */
-    if (frame < vs->cur_frame || vs->cur_frame < 0) {
+    if (frame < vs->frame.cur || vs->frame.cur < 0) {
         /* Backward or initial: seek from start */
         long offset = vs->data_offset
-            + (long)frame * vs->frame_size;
+            + (long)frame * vs->size.frame;
         fseek(vs->fp, offset, SEEK_SET);
         if (!_y4m_read_frame(vs)) {
-            vs->done = 1;
+            vs->frame.done = 1;
             return 0;
         }
-        vs->cur_frame = frame;
+        vs->frame.cur = frame;
     } else {
         /* Forward: skip intermediate frames */
-        while (vs->cur_frame < frame) {
+        while (vs->frame.cur < frame) {
             long offset = vs->data_offset
-                + (long)(vs->cur_frame + 1)
-                * vs->frame_size;
+                + (long)(vs->frame.cur + 1)
+                * vs->size.frame;
             fseek(vs->fp, offset, SEEK_SET);
             if (!_y4m_read_frame(vs)) {
-                vs->done = 1;
+                vs->frame.done = 1;
                 return 0;
             }
-            vs->cur_frame++;
+            vs->frame.cur++;
         }
     }
 
@@ -301,8 +301,8 @@ Pico_Video pico_get_video (
     Pico_Video info = {
         .dim   = {vs->width, vs->height},
         .fps   = vs->fps,
-        .frame = (vs->cur_frame < 0) ? 0 : vs->cur_frame,
-        .done  = vs->done,
+        .frame = (vs->frame.cur < 0) ? 0 : vs->frame.cur,
+        .done  = vs->frame.done,
     };
 
     /* Fill rect dimensions if provided */
