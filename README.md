@@ -48,9 +48,9 @@ int main (void) {
             &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_C, NULL }
         );
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {100-i, i}, PICO_ANCHOR_C, NULL }
+            &(Pico_Rel_Pos) { '!', {99-i, i}, PICO_ANCHOR_C, NULL }
         );
-        pico_input_delay(100);
+        pico_input_delay(30);
     }
     pico_init(0);
     return 0;
@@ -59,13 +59,14 @@ int main (void) {
 
 We start with `pico_init(1)` to open the library, terminating with
 `pico_init(0)` to close it.
-Then we run `100` loop iterations to draw pixels in opposite directions to form
-the `X` in the animated image on the right.
-We use `Pico_Rel_Pos` with mode `'%'`, which allows us to specify pixel
-coordinates relative to the logical size.
+Then, we run `100` loop iterations to draw pixels in opposite directions to
+form the animated `X` shown on the right.
 By default, `pico-sdl` creates `100x100` logical canvas embedded in a `500x500`
 physical window.
 This enables `pico-sdl` to draw a grid of `5x5` pixel size to aid development.
+We use `Pico_Rel_Pos` with raw mode `'!'`, which specifies exact positions.
+`pico-sdl` also supports modes `'%'` and `'#'` for percent- and tile-based
+coordinates.
 
 `pico-sdl` targets educational use, being guided by the following principles:
 
