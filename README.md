@@ -32,32 +32,23 @@ See also [pico-lua][pico-lua], the official Lua binding for `pico-sdl`.
 - `pico_get_*` and `pico_set_*` for the library state,
     such as modifying the drawing color and style.
 
-The following example draws an `X` on screen gradually with instant feedback:
+The following example draws an `X` on screen gradually, pixel by pixel, with
+instant feedback:
 
 <picture>
 <img align="right" src="x.gif">
 </picture>
 
-```
+```c
 #include "pico.h"
-
 int main (void) {
     pico_init(1);
-    pico_set_view (
-        "Draws an X",                               // window title
-        -1, -1,
-        &(Pico_Rel_Dim){ '!', {160, 160}, NULL },   // physical screen size
-        NULL,
-        &(Pico_Rel_Dim){ '!', {16, 16}, NULL },     // logical screen size (10x10 pixel size)
-        NULL, NULL
-    );
-    pico_output_clear();
-    for (int i=0; i<16; i++) {
-        pico_output_draw_pixel ( // centered pixel at raw position (i,i)
+    for (int i=0; i<100; i++) {
+        pico_output_draw_pixel (
             &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_C, NULL }
         );
-        pico_output_draw_pixel ( // centered pixel at raw position (15-i,i)
-            &(Pico_Rel_Pos) { '!', {15-i, i}, PICO_ANCHOR_C, NULL }
+        pico_output_draw_pixel (
+            &(Pico_Rel_Pos) { '!', {100-i, i}, PICO_ANCHOR_C, NULL }
         );
         pico_input_delay(100);
     }
@@ -65,6 +56,16 @@ int main (void) {
     return 0;
 }
 ```
+
+We start with `pico_init(1)` to open the library, terminating with
+`pico_init(0)` to close it.
+Then we run `100` loop iterations to draw pixels in opposite directions to form
+the `X` in the animated image on the right.
+We use `Pico_Rel_Pos` with mode `'%'`, which allows us to specify pixel
+coordinates relative to the logical size.
+By default, `pico-sdl` creates `100x100` logical canvas embedded in a `500x500`
+physical window.
+This enables `pico-sdl` to draw a grid of `5x5` pixel size to aid development.
 
 `pico-sdl` targets educational use, being guided by the following principles:
 
