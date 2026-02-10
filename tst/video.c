@@ -20,9 +20,7 @@ int main (void) {
     /* pico_layer_video: create layer */
     {
         puts("layer_video: create");
-        const char* name = pico_layer_video(
-            "vid", "video.y4m"
-        );
+        const char* name = pico_layer_video("vid", "video.y4m");
         assert(strcmp(name, "vid") == 0);
     }
 
@@ -34,12 +32,8 @@ int main (void) {
         assert(ok == 1);
         pico_set_layer(NULL);
         pico_output_clear();
-        pico_output_draw_layer(
-            "vid",
-            &(Pico_Rel_Rect){
-                '%', {0.5, 0.5, 1, 1},
-                PICO_ANCHOR_C, NULL
-            }
+        pico_output_draw_layer("vid",
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
         );
         _pico_check("video-01");
     }
@@ -50,12 +44,8 @@ int main (void) {
         int ok = pico_video_sync("vid", 25);
         assert(ok == 1);
         pico_output_clear();
-        pico_output_draw_layer(
-            "vid",
-            &(Pico_Rel_Rect){
-                '%', {0.5, 0.5, 1, 1},
-                PICO_ANCHOR_C, NULL
-            }
+        pico_output_draw_layer("vid",
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
         );
         _pico_check("video-02");
     }
@@ -66,12 +56,8 @@ int main (void) {
         int ok = pico_video_sync("vid", 49);
         assert(ok == 1);
         pico_output_clear();
-        pico_output_draw_layer(
-            "vid",
-            &(Pico_Rel_Rect){
-                '%', {0.5, 0.5, 1, 1},
-                PICO_ANCHOR_C, NULL
-            }
+        pico_output_draw_layer("vid",
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
         );
         _pico_check("video-03");
     }
@@ -82,12 +68,8 @@ int main (void) {
         int ok = pico_video_sync("vid", 10);
         assert(ok == 1);
         pico_output_clear();
-        pico_output_draw_layer(
-            "vid",
-            &(Pico_Rel_Rect){
-                '%', {0.5, 0.5, 1, 1},
-                PICO_ANCHOR_C, NULL
-            }
+        pico_output_draw_layer("vid",
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
         );
         _pico_check("video-04");
     }
