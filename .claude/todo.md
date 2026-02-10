@@ -60,6 +60,10 @@ Create an `extra/` directory to hold auxiliary tools and utilities:
 - `check.h` — visual regression testing header (currently in `tst/`)
 - Video generator (yet to come)
 
+## Guide for video playback
+
+Write a guide section covering video playback functionality.
+
 ## Review and complete guide
 
 Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.
