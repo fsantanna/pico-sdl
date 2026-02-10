@@ -328,11 +328,16 @@ static Pico_Abs_Dim _fi_dim (const SDL_FDim* f) {
 }
 
 static SDL_Point _fi_pos (const SDL_FPoint* f) {
-    return (SDL_Point) { roundf(f->x), roundf(f->y) };
+    return (SDL_Point) {
+        floorf(f->x + 0.5f), floorf(f->y + 0.5f)
+    };
 }
 
 static SDL_Rect _fi_rect (const SDL_FRect* f) {
-    return (SDL_Rect) { roundf(f->x), roundf(f->y), roundf(f->w), roundf(f->h) };
+    return (SDL_Rect) {
+        floorf(f->x + 0.5f), floorf(f->y + 0.5f),
+        floorf(f->w + 0.5f), floorf(f->h + 0.5f)
+    };
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -587,6 +592,8 @@ void pico_init (int on) {
             SDL_SetRenderDrawBlendMode(G.ren, SDL_BLENDMODE_BLEND);
         }
 
+        G.init = 1;
+
         // create tex after ren
         {
             G.main.tex = _tex_create(PICO_DIM_LOG);
@@ -601,12 +608,9 @@ void pico_init (int on) {
 
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-        G.init = 1;
     }
     else {
-        if (!G.init) {
-            return;
-        }
+        assert(G.init == 1);
         G.init = 0;
 
         if (G.hash != NULL) {
