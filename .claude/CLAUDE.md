@@ -107,7 +107,7 @@ sudo luarocks make pico-sdl-0.1-2.rockspec
 Build API documentation (requires Doxygen <= 1.9.4):
 
 ```bash
-cd docs
+cd doc
 ./build.sh
 ```
 
