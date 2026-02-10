@@ -1,48 +1,21 @@
 # video-layer.md — Pico_Layer_Video as subtype of Pico_Layer
 
+Status: **done**
+
 ## Problem
 
-`Pico_Layer` has a `void* extra` field (line 55) solely to hold a pointer to
-`Pico_Video_State`. This creates a bidirectional link (`extra` ↔ `layer`)
+`Pico_Layer` had a `void* extra` field solely to hold a pointer to
+`Pico_Video_State`. This created a bidirectional link (`extra` <-> `layer`)
 between two separate hash entries (`PICO_KEY_LAYER` + `PICO_KEY_VIDEO`),
 requiring complex cross-cleanup in `_pico_hash_clean`.
 
-## Goal
+## Solution
 
-Use C struct-prefix inheritance: `Pico_Layer_Video` embeds `Pico_Layer` as
-its first member. Only the video entry lives in the hash — no separate layer
-entry, no `void* extra`, no bidirectional link.
+C struct-prefix inheritance: `Pico_Layer_Video` embeds `Pico_Layer base` as
+its first member. Only one hash entry (`PICO_KEY_LAYER`) per video layer.
+No `void* extra`, no `PICO_KEY_VIDEO`, no bidirectional link.
 
-## Design
-
-### Type hierarchy
-
-```c
-typedef struct {
-    const Pico_Key* key;
-    SDL_Texture*    tex;
-    Pico_View       view;
-} Pico_Layer;                    // remove void* extra
-
-typedef struct {
-    Pico_Layer      base;        // must be first (C inheritance)
-    FILE*           fp;
-    /* ... video-specific fields ... */
-} Pico_Layer_Video;              // replaces Pico_Video_State
-```
-
-A `Pico_Layer_Video*` can be cast to `Pico_Layer*` and vice-versa.
-
-### Hash storage
-
-- `Pico_Layer_Video` is stored under `PICO_KEY_LAYER` (keyed by **name**),
-  since it IS a layer.
-- `PICO_KEY_VIDEO` is eliminated entirely.
-- `_pico_video_open` is replaced: video state now lives inside the layer.
-
-### Layer type discrimination
-
-Add a type tag to `Pico_Layer` so cleanup knows what to free:
+## Type hierarchy
 
 ```c
 typedef enum {
@@ -51,55 +24,87 @@ typedef enum {
 } PICO_LAYER;
 
 typedef struct {
-    PICO_LAYER      type;        // new field
+    PICO_LAYER      type;
     const Pico_Key* key;
     SDL_Texture*    tex;
     Pico_View       view;
-} Pico_Layer;
+} Pico_Layer;                       // in pico.c
+
+typedef struct {
+    Pico_Layer base;                // must be first (C inheritance)
+    FILE*      fp;
+    int        fps;
+    struct { unsigned char *y, *u, *v; } plane;
+    struct { int y, uv, frame; }         size;
+    long       data_offset;
+    struct { int total, cur, done; }     frame;
+    Uint32     t0;
+} Pico_Layer_Video;                 // in video.h
 ```
 
-Plain layers (image, text, empty, buffer) use `PICO_LAYER_PLAIN`.
-Video layers use `PICO_LAYER_VIDEO`.
+## File organization (two-include pattern)
 
-### Cleanup
+`video.h` has two independent sections:
 
-`_pico_hash_clean(PICO_KEY_LAYER)` checks `layer->type`:
-- `PICO_LAYER_PLAIN`: destroy texture, free layer (as today).
-- `PICO_LAYER_VIDEO`: also close fp, free planes, then free
-  (as `Pico_Layer_Video`).
+```
+#ifndef PICO_VIDEO_H        <- types section
+  Pico_Layer_Video typedef
+  _pico_hash_clean_video declaration
+#endif
 
-The `PICO_KEY_VIDEO` case disappears entirely.
+#ifdef PICO_VIDEO_C          <- implementation section
+  _y4m_parse_header
+  _pico_hash_clean_video definition
+  _pico_layer_video
+  pico_layer_video
+  _y4m_read_frame
+  _y4m_update_texture
+  pico_video_sync
+  pico_output_draw_video
+  pico_get_video
+#endif
+```
 
-## Changes
+`pico.c` includes `video.h` twice:
 
-### pico.c (or video.c after video-files.md)
+1. After `Pico_Layer` definition — gets types + cleanup declaration
+2. At end of file with `#define PICO_VIDEO_C` — gets implementations
+
+This eliminates all forward declarations.
+
+## Changes applied
+
+### pico.c
 
 | location             | change                                         |
 |----------------------|-------------------------------------------------|
-| `Pico_Layer`         | remove `void* extra`, add `PICO_LAYER type`     |
-| `Pico_Video_State`   | rename to `Pico_Layer_Video`, embed `Pico_Layer base` as first field, remove `Pico_Layer* layer` |
-| `PICO_KEY_TYPE`      | remove `PICO_KEY_VIDEO`                         |
-| `_pico_hash_clean`   | remove `PICO_KEY_VIDEO` case; in `PICO_KEY_LAYER`, check `type` for video cleanup |
-| `_pico_video_open`   | remove (video state lives inside the layer)     |
-| `pico_layer_video`   | allocate `Pico_Layer_Video`, parse Y4M, set `base.type = PICO_LAYER_VIDEO`, store under `PICO_KEY_LAYER` |
-| `pico_video_sync`    | look up layer, cast to `Pico_Layer_Video*`      |
-| `pico_output_draw_video` | create layer via `pico_layer_video`, cast to access video fields |
-| `pico_get_video`     | look up layer by name (not by path), cast       |
-| all `pico_layer_*`   | set `type = PICO_LAYER_PLAIN` on allocation     |
-| `pico_layer_empty`, `_pico_layer_image`, etc. | set `.type = PICO_LAYER_PLAIN` |
+| `PICO_KEY_TYPE`      | removed `PICO_KEY_VIDEO`                        |
+| `PICO_LAYER` enum    | new: `PICO_LAYER_PLAIN`, `PICO_LAYER_VIDEO`    |
+| `Pico_Layer`         | removed `void* extra`, added `PICO_LAYER type`  |
+| after `Pico_Layer`   | `#include "video.h"` (first include, types)     |
+| `_pico_hash_clean`   | removed `PICO_KEY_VIDEO` case; `PICO_KEY_LAYER` checks `type` for video cleanup |
+| `G.main`             | `.type = PICO_LAYER_PLAIN`                      |
+| all `pico_layer_*`   | `.type = PICO_LAYER_PLAIN` on allocation        |
+| end of file          | `#define PICO_VIDEO_C` + `#include "video.h"`   |
+
+### video.h
+
+| location                  | change                                    |
+|---------------------------|-------------------------------------------|
+| `#ifndef` section         | `Pico_Layer_Video` typedef + `_pico_hash_clean_video` declaration |
+| `_pico_video_open`        | removed (absorbed into `_pico_layer_video`) |
+| `_pico_layer_video`       | new: looks up or creates `Pico_Layer_Video` under `PICO_KEY_LAYER` |
+| `pico_layer_video`        | simplified wrapper returning `->base.key->key` |
+| `_y4m_read_frame`         | param `Pico_Layer_Video*`                 |
+| `_y4m_update_texture`     | uses `vs->base.tex`, `vs->base.view.dim.w` |
+| `pico_video_sync`         | casts `(Pico_Layer_Video*)layer`          |
+| `pico_output_draw_video`  | uses `_pico_layer_video`, `&vs->base`     |
+| `pico_get_video`          | uses `_pico_layer_video`, `vs->base.view.dim` |
 
 ### pico.h
 
-| location      | change                                           |
-|---------------|--------------------------------------------------|
-| `Pico_Video`  | unchanged (public query struct, not internal)     |
-| `pico_get_video` | unchanged (path IS the layer name — `pico_output_draw_video` uses `pico_layer_video(path, path)`) |
-
-## API impact
-
-No public API changes. `pico_get_video(path)` continues to work because
-`pico_output_draw_video` already uses the path as the layer name.
+No changes. Public API unchanged.
 
 ## Order
 
-Apply **after** video-files.md and video-struct.md.
+Applied **after** video-files.md and video-struct.md.
