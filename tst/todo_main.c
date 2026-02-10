@@ -15,7 +15,7 @@ int main (void) {
     puts("waits any key press");
     {
         Pico_Event e;
-        pico_input_event(&e, PICO_KEYUP);
+        pico_input_event(&e, PICO_EVENT_KEY_UP);
     }
 
     puts("changes window title to \"Testing...\"");
@@ -76,7 +76,7 @@ int main (void) {
     puts("shows pixel over mouse");
     {
         Pico_Event e;
-        pico_input_event(&e, PICO_MOUSEBUTTONDOWN);
+        pico_input_event(&e, PICO_EVENT_MOUSE_BUTTON_DOWN);
         pico_output_draw_pixel_raw((Pico_Pos){e.button.x,e.button.y});
         pico_input_delay(2000);
     }
@@ -84,7 +84,7 @@ int main (void) {
     puts("waits more 2 seconds");
     {
         Pico_Event e;
-        pico_input_event_timeout(&e, PICO_ANY, 2000);
+        pico_input_event_timeout(&e, PICO_EVENT_ANY, 2000);
     }
 
     puts("disables grid");

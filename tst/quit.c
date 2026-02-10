@@ -7,9 +7,9 @@ int main (void) {
     pico_quit();
 
     Pico_Event e;
-    int has = pico_input_event_ask(&e, PICO_QUIT);
+    int has = pico_input_event_ask(&e, PICO_EVENT_QUIT);
     assert(has);
-    assert(e.type == PICO_QUIT);
+    assert(e.type == PICO_EVENT_QUIT);
 
     pico_init(0);
     return 0;

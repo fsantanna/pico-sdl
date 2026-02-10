@@ -39,7 +39,7 @@ int main(void) {
 
     while (1) {
         Pico_Event e;
-        if (pico_input_event_timeout(&e, PICO_QUIT, 16)) {
+        if (pico_input_event_timeout(&e, PICO_EVENT_QUIT, 16)) {
             break;
         }
 

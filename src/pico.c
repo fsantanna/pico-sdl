@@ -53,7 +53,7 @@ typedef struct {
     Pico_View       view;
 } Pico_Layer;
 
-#define SDL_ANY PICO_ANY
+#define SDL_ANY PICO_EVENT_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 #ifdef PICO_TESTS
@@ -1359,7 +1359,7 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:  {
             Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_MOUSE_BUTTON_NONE);
+            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
             e->button.x = pos.x;
             e->button.y = pos.y;
             break;
