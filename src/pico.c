@@ -620,6 +620,16 @@ void pico_init (int on) {
 
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+
+        // sync with WM: window may have been resized (e.g., tiling WM)
+        {
+            int w, h;
+            SDL_GetWindowSize(G.win, &w, &h);
+            if (w!=S.win.dim.w || h!=S.win.dim.h) {
+                Pico_Rel_Dim phy = { '!', {w, h}, NULL };
+                pico_set_window(NULL, -1, &phy);
+            }
+        }
     }
     else {
         assert(G.init == 1);
