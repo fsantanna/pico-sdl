@@ -570,12 +570,11 @@ void pico_init (int on) {
                        PICO_TITLE,
                        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                        PICO_DIM_PHY.w, PICO_DIM_PHY.h,
-                       (SDL_WINDOW_SHOWN /*| SDL_WINDOW_RESIZABLE*/)
+                       SDL_WINDOW_SHOWN
                    ),
         };
         assert(G.hash != NULL);
         pico_assert(G.win != NULL);
-        SDL_SetWindowResizable(G.win, 1);
 
         S = (typeof(S)) {
             .alpha  = 0xFF,
@@ -618,18 +617,10 @@ void pico_init (int on) {
             pico_output_clear();
         }
 
+        // prevents WMs to resize window at start
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-
-        // sync with WM: window may have been resized (e.g., tiling WM)
-        {
-            int w, h;
-            SDL_GetWindowSize(G.win, &w, &h);
-            if (w!=S.win.dim.w || h!=S.win.dim.h) {
-                Pico_Rel_Dim phy = { '!', {w, h}, NULL };
-                pico_set_window(NULL, -1, &phy);
-            }
-        }
+        SDL_SetWindowResizable(G.win, 1);
     }
     else {
         assert(G.init == 1);
@@ -1259,6 +1250,8 @@ static int event_from_sdl (Pico_Event* e, int xp) {
         }
 
         case SDL_WINDOWEVENT: {
+            // SDL_WINDOWEVENT_RESIZED: only external
+            // SDL_WINDOWEVENT_SIZE_CHANGED: also internal (SDL_SetWindowSize)
             if (e->window.event == SDL_WINDOWEVENT_RESIZED) {
                 if (G.fsing) {
                     G.fsing = 0;
