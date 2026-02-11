@@ -60,24 +60,6 @@ Create an `extra/` directory to hold auxiliary tools and utilities:
 - `check.h` — visual regression testing header (currently in `tst/`)
 - Video generator (yet to come)
 
-## Window resize makes all gray
-
-Resizing the window causes the entire display to turn gray.
-
-## Segfault on `pico.set.view` from Lua REPL
-
-```
-$ pico-lua
-Lua 5.4.4  Copyright (C) 1994-2022 Lua.org, PUC-Rio
-> pico.set.view {
-    title  = "Hello!",
-    grid   = false,
-    window = {'!', w=200, h=200},
-    world  = {'!', w=200, h=200},
-  }
-Segmentation fault (core dumped)
-```
-
 ## Review and complete guide
 
 Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.
