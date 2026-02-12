@@ -1442,6 +1442,18 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
     return 0;
 }
 
+void pico_input_loop (void) {
+    while (1) {
+        ttl_hash_tick(G.hash);
+        Pico_Event e;
+        SDL_WaitEvent(&e);
+        event_from_sdl(&e, SDL_ANY, 0);
+        if (e.type == SDL_QUIT) {
+            return;
+        }
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // OUTPUT
 ///////////////////////////////////////////////////////////////////////////////
