@@ -279,6 +279,19 @@ dimensions, and rectangles:
 - `{ '!', w=20, h=30 }`:            a raw dimension
 - `{ '#', x=4, y=4, w=2, h=1 }`:    a rectangle covering 2 tiles horizontally
 
+Let's restart `pico-lua` with some transparency:
+
+<table>
+<tr><td><pre>
+> pico.init(false)
+> pico.init(true)
+> pico.set.alpha(0x88)
+</pre>
+</td><td>
+<img src="img/guide-02-03-01.png" width="200">
+</td></tr>
+</table>
+
 ### 5.1. Percentages
 
 Since we already used the raw mode in previous sections, let's now try
@@ -286,15 +299,14 @@ percentages:
 
 <table>
 <tr><td><pre>
-> pico.output.clear()
-> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.5, h=0.5}
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
 </pre>
 </td><td>
 <img src="img/guide-05-01-01.png" width="200">
 </td></tr>
 </table>
 
-The rectangle is centered at `(0.5,0.5)`, or half, of the screen.
+The rectangle is centered at `(0.5,0.5)`, or half of the screen.
 
 ### 5.2. Anchors
 
@@ -318,11 +330,11 @@ determines the reference point within a shape:
 </td></tr>
 </table>
 
-We draw all three rectangles at the same pixel position, but with different
+We drew all three rectangles at the same pixel position, but with different
 anchors.
 
-The anchor determines a position inside the object, which should be fixed at
-the given drawing point:
+The anchor determines a position inside the object, which becomes fixed at the
+given coordinate:
 
 ```
 +-----------+
@@ -341,13 +353,14 @@ dimensions:
 
 <table>
 <tr><td><pre>
+> pico.init(false)
 > pico.init(true)
-> pico.set.view {
-    dim  = {'#', w=5, h=5},
-    tile = {w=20, h=20},
+> pico.set.view {               -- requires further clear
+    dim  = { '#', w=5, h=5 },
+    tile = { w=20, h=20 },
   }
 > pico.set.window {
-    dim = {'#', w=40, h=40},
+    dim = { '#', w=40, h=40 },
   }
 > pico.output.clear()
 > pico.output.draw.rect {'#', x=3, y=3, w=1, h=1}
@@ -361,10 +374,10 @@ dimensions:
 In the example, we set each tile to `20x20` and create a world of `5x5` tiles.
 Note that the window can also be specified in tiles.
 
-We draw two rectangles also using the tile mode `'#'`:
-The first is centered at `(3,3)` occupying `1x1`.
+We then draw two rectangles also using the tile mode `'#'`:
+The first is centered at `(3,3)` occupying `1x1` tile.
 The second uses anchor `NE`, to properly occupy the top right of the screen
-with `2x1`.
+with `2x1` tiles.
 
 ## 6. Advanced View
 
