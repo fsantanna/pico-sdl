@@ -60,6 +60,17 @@ Create an `extra/` directory to hold auxiliary tools and utilities:
 - `check.h` — visual regression testing header (currently in `tst/`)
 - Video generator (yet to come)
 
+## Support percentage mode for alpha
+
+`pico.set.alpha('%', 0.5)` — allow setting alpha as a normalized value (0.0–1.0)
+instead of only raw 0–255.
+
+## Rename alpha to transparency (invert values)
+
+`pico.set.alpha` uses SDL convention where 255=opaque, 0=transparent.
+Rename to `pico.set.transparency` (or similar) and invert so that
+0=opaque, 255=fully transparent — more intuitive for users.
+
 ## Review and complete guide
 
 Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.

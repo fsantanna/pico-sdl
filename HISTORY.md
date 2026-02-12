@@ -5,12 +5,13 @@ Additions:
     - layers: empty, buffer, image, text
         - independent views for compositing
     - tiles: `#` mode for grid-based positioning
-    - colors: `'%'` mode, `pico.color.mix`
-    - pico.cv.*: all combinations
+    - colors: `'%'` mode, `pico_color_alpha`, `pico.color.mix`
+    - `pico.cv.*`: all combinations
         - pos, rect, dim
         - rel->abs, abs->rel, rel->rel
-    - pico.push/pop: save/restore drawing state
-    - pico.set {...}: all-at-once setter for Lua
+    - `pico.push/pop`: save/restore drawing state
+    - `pico.set {}`: all-at-once setter for Lua
+    - video: step-based playback
 Modifications:
     - view:
         - only handles world, window goes to pico_window_*
