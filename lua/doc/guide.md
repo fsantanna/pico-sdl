@@ -353,8 +353,7 @@ dimensions:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
+> pico.output.clear()
 > pico.set.view {               -- requires further clear
     dim  = { '#', w=5, h=5 },
     tile = { w=20, h=20 },
@@ -383,29 +382,30 @@ with `2x1` tiles.
 
 The view controls how the logical world maps to the physical window.
 
-By default, `pico-lua` provides key bindings to zoom and scroll the view:
+### 6.1. Key Bindings
+
+TODO: not working bc set_view no longer redraws
+
+By default, `pico-lua` provides runtime key bindings to zoom and scroll the
+view:
 
 - `CTRL` / `+`,`-`: zoom in / out
-- `CTRL` / Arrow keys: scroll the view
-
-### 6.1. Key Bindings
+- `CTRL` / Arrow keys: scroll left / right
 
 Let's draw a centered image and use the key bindings to explore it:
 
 <table>
 <tr><td><pre>
-> pico.init(true)
-> pico.set.dim {'!', w=200, h=200}
 > pico.output.clear()
-> pico.output.draw.image('img/open.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.set.dim { '!', w=200, h=200 }
+> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
 <img src="img/guide-06-01-01.png" width="200">
 </td></tr>
 </table>
 
-Now try pressing `+` to zoom in, then use the arrow keys to scroll around.
-Press `-` to zoom back out.
+Now, try pressing `+` to zoom in, then use the arrow keys to scroll around.
 
 ### 6.2. Zoom
 
