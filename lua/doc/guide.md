@@ -55,21 +55,23 @@ To initialize `pico-lua`, we pass `true` to `pico.init`:
 We immediately see a `500x500` window divided in `100x100` small rectangles
 representing logical pixels.
 
-By default, `pico-lua` conventionally exhibit a grid and coordinate labels to
-aid development with visual inspection.
-You may click in the image to zoom in.
+By default, `pico-lua` exhibits a grid and coordinate labels to aid development
+through visual inspection.
 
 ### 2.2. Configure
 
-To change the window title, grid, and size, we call `pico.set.view`:
+To configure the window and the logical view, we use `pico.set.window` and
+`pico.set.view`:
 
 <table>
 <tr><td><pre>
+> pico.set.window {
+    title = "Hello!",
+    dim   = {'!', w=200, h=200},
+  }
 > pico.set.view {
-    title  = "Hello!",            -- changes title
-    grid   = false,               -- disables grid
-    window = {'!', w=200, h=200}, -- physical size
-    world  = {'!', w=200, h=200}, -- logical size
+    grid = false,
+    dim  = {'!', w=200, h=200},
   }
 </pre>
 </td><td>
@@ -77,10 +79,23 @@ To change the window title, grid, and size, we call `pico.set.view`:
 </td></tr>
 </table>
 
-Now the window title is set, the grid is disabled, and the window and world
-sizes are the same.
+Now the window title is set, the grid is disabled, and both the window and view
+are set to the same dimensions.
+
 The character `'!'` indicates a dimension in "raw mode", which we discuss
 further.
+
+You could also use `pico.set.dim` to set the window and view dimensions at the
+same time:
+
+<table>
+<tr><td><pre>
+> pico.set.dim {'!', w=200, h=200}
+</pre>
+</td><td>
+<img src="img/guide-02-02-02.png" width="200">
+</td></tr>
+</table>
 
 ### 2.3. Close
 
@@ -110,8 +125,7 @@ We can see that the title, grid, and sizes are now reset to default.
 
 ## 3. Basic Drawing
 
-In `pico-lua`, drawing operations have immediate effect.
-It simulates single-buffer rendering to ease prototyping.
+To ease prototyping, drawing operations in `pico-lua` take immediate effect.
 
 ### 3.1. Pixel
 
@@ -142,7 +156,7 @@ To clear the screen, we call `pico.output.clear`:
 </td></tr>
 </table>
 
-The pixel is gone.
+Now the pixel is gone.
 
 ### 3.3. Rectangle
 
@@ -158,9 +172,9 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 </table>
 
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
-
-Unlike most graphics libraries, by default `pico-lua` centers the rectangle at
-the given position.
+With the aid of the tick marks, we can see that is centered at the given
+position.
+Unlike most graphics libraries, `pico-lua` centers objects by default.
 We discuss positioning and anchoring further.
 
 ### 3.4. Image
@@ -176,7 +190,10 @@ To draw an image, we call `pico.output.draw.image`:
 </td></tr>
 </table>
 
-Other drawing operations include `draw.line`, `draw.polygon`, and `draw.text`.
+Note that you will need to save the [image](img/open.png) on your machine.
+
+`pico-lua` supports many other drawing operations, such as
+`pico.output.draw.line` and `pico.output.draw.text`.
 
 ## 4. Internal State
 
@@ -343,9 +360,11 @@ dimensions:
 <tr><td><pre>
 > pico.init(true)
 > pico.set.view {
-    window = {'#', w=40, h=40},
-    world  = {'#', w=5, h=5},
-    tile   = {w=20, h=20},
+    dim  = {'#', w=5, h=5},
+    tile = {w=20, h=20},
+  }
+> pico.set.window {
+    dim = {'#', w=40, h=40},
   }
 > pico.output.clear()
 > pico.output.draw.rect {'#', x=3, y=3, w=1, h=1}
@@ -380,10 +399,7 @@ Let's draw a centered image and use the key bindings to explore it:
 <table>
 <tr><td><pre>
 > pico.init(true)
-> pico.set.view {
-    window = {'!', w=200, h=200},
-    world  = {'!', w=200, h=200},
-  }
+> pico.set.dim {'!', w=200, h=200}
 > pico.output.clear()
 > pico.output.draw.image('img/open.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
@@ -402,7 +418,7 @@ The zoom level is controlled by the ratio between `window` and `world` sizes:
 <table>
 <tr><td><pre>
 > pico.set.view {
-    world  = {'!', w=100, h=100},  -- 2x zoom
+    dim    = {'!', w=100, h=100},  -- 2x zoom
   }
 </pre>
 </td><td>
@@ -419,7 +435,7 @@ The `source` parameter scrolls the view:
 <table>
 <tr><td><pre>
 > pico.set.view {
-    world  = {'!', w=200, h=200},
+    dim    = {'!', w=200, h=200},
     source = {'!', x=50, y=50, w=200, h=200},
   }
 </pre>
@@ -430,23 +446,20 @@ The `source` parameter scrolls the view:
 
 The view is scrolled by `(50, 50)`, so the image appears offset.
 
-### 6.4. Size
+### 6.4. Dim
 
-The `size` shorthand sets both `window` and `world` to the same dimensions:
+The `pico.set.dim` shorthand sets both the window and the world to the same
+dimensions:
 
 ```lua
-> pico.set.view {
-    size = {'!', w=200, h=200},
-  }
+> pico.set.dim {'!', w=200, h=200}
 ```
 
 This is equivalent to setting `window` and `world` separately:
 
 ```lua
-> pico.set.view {
-    window = {'!', w=200, h=200},
-    world  = {'!', w=200, h=200},
-  }
+> pico.set.window { dim = {'!', w=200, h=200} }
+> pico.set.view   { dim = {'!', w=200, h=200} }
 ```
 
 ### 6.5. Target
@@ -479,7 +492,7 @@ Only drawing operations within the clip region are visible.
 To enter fullscreen mode:
 
 ```lua
-> pico.set.view { fullscreen = true }
+> pico.set.window { fullscreen = true }
 ```
 
 ## 7. Events
