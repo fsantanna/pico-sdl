@@ -93,6 +93,17 @@ there, issue might be elsewhere.
 
 In guide: why pixels in 5.3 need clear? Why 6.1 doesn't work?
 
+## `pico.input.loop` — simple event loop for navigation
+
+A convenience blocking loop so that built-in navigation (Ctrl+arrows,
+zoom, grid toggle) works without the user writing an event loop.
+Useful for the "draw something, then explore" pattern in educational
+use.
+
+- Non-expert mode only (expert users write their own loop)
+- Returns on QUIT or ESCAPE
+- No callbacks, no configuration — just `pico.input.loop()`
+
 ## Review and complete guide
 
 Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.
