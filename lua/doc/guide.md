@@ -266,14 +266,18 @@ function:
 
 ## 5. Positioning: Mode & Anchor
 
-`pico-lua` supports positioning modes as follows:
+`pico-lua` supports multiple positioning modes as follows:
 
-- `'!'`: Raw: logical pixel coordinates
-- `'%'`: Percentage: coordinates relative to the world size (from `0.0` to `1.0`)
-- `'#'`: Tile: grid coordinates based on a tile dimension
+- `'!'` - Raw: logical pixel coordinates (from `0` to world size)
+- `'%'` - Percentage: coordinates relative to the world size (from `0.0` to `1.0`)
+- `'#'` - Tile: grid coordinates based on a tile and world sizes (from `0` to world/tile sizes)
 
-The mode must be set at index `1` for tables representing positions,
-dimensions, and rectangles.
+Positioning modes appear at index `1` of tables representing positions,
+dimensions, and rectangles:
+
+- `{ '%', x=0.5, y=0.5 }`:          a centered relative position
+- `{ '!', w=20, h=30 }`:            a raw dimension
+- `{ '#', x=4, y=4, w=2, h=1 }`:    a rectangle covering 2 tiles horizontally
 
 ### 5.1. Percentages
 
