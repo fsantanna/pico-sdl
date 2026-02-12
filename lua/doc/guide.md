@@ -351,19 +351,16 @@ By default, `pico-lua` uses the center anchor.
 The tile mode `'#'` uses discrete sized blocks as references for positions and
 dimensions:
 
-TODO: probably no clear in set_view w changes world
-
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.set.view {               -- requires further clear
+> pico.set.view {
     dim  = { '#', w=5, h=5 },
     tile = { w=20, h=20 },
   }
 > pico.set.window {
     dim = { '#', w=40, h=40 },
   }
-> pico.output.clear()
 > pico.output.draw.rect {'#', x=3, y=3, w=1, h=1}
 > pico.output.draw.rect {'#', x=5, y=1, w=2, h=1, anchor='NE'}
 </pre>
@@ -386,7 +383,7 @@ The view controls how the logical world maps to the physical window.
 
 ### 6.1. Key Bindings
 
-TODO: not working bc set_view no longer redraws
+TODO: not working bc no input (pico.input.loop)?
 
 By default, `pico-lua` provides runtime key bindings to zoom and scroll the
 view:
@@ -399,7 +396,6 @@ Let's draw a centered image and use the key bindings to explore it:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.set.dim { '!', w=200, h=200 }
 > pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
