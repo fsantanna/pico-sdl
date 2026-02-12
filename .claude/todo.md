@@ -83,6 +83,16 @@ alpha, font, etc.). Consider: should `pico.push`/`pico.pop` become
 scoped to `pico.set.draw`? E.g., `pico.draw { ... }` as a block that
 auto-pushes/pops.
 
+## `pico_set_view` present in non-expert mode
+
+Already calls `_pico_output_present(0)` (line 976). Pros: navigation
+works without input loop, guide nav would work. Cons: flicker on setup
+(blank texture after dim change), multiple presents per logical setup.
+Investigate if navigation isn't updating visually — the present is
+there, issue might be elsewhere.
+
+In guide: why pixels in 5.3 need clear? Why 6.1 doesn't work?
+
 ## Review and complete guide
 
 Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.
