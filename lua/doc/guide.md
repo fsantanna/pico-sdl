@@ -93,9 +93,11 @@ same time:
 > pico.set.dim {'!', w=200, h=200}
 </pre>
 </td><td>
-<img src="img/guide-02-02-02.png" width="200">
+<img src="img/guide-02-02-01.png" width="200">
 </td></tr>
 </table>
+
+(Note: the image is the same as before.)
 
 ### 2.3. Close
 
@@ -190,7 +192,7 @@ To draw an image, we call `pico.output.draw.image`:
 </td></tr>
 </table>
 
-Note that you will need to save the [image](img/open.png) on your machine.
+(Note: you will need to save the [image](img/open.png) on your machine.)
 
 `pico-lua` supports many other drawing operations, such as
 `pico.output.draw.line` and `pico.output.draw.text`.
@@ -216,19 +218,19 @@ To change the drawing color state, we call `pico.set.color.draw`:
 
 The text appears in red, centered at the given position.
 
-Note that `pico-lua` handles the text width automatically, preserving the
-correct aspect ratio.
+(Note: if the text width is ommited, it preserves the correct aspect ratio.)
 
 Colors can also be specified as tables with RGB values:
 
 ```lua
-> pico.set.color.draw {r=128, g=0xFF, b=200}       -- absolute (0-255), (0x00-0xFF)
-> pico.set.color.draw {'%', r=0.5, g=0.25, b=0.8}  -- percentage (0.0-1.0)
+> pico.set.color.draw {r=128, g=0xFF, b=200}        -- absolute (0-255), (0x00-0xFF)
+> pico.set.color.draw {'%', r=0.5, g=0.25, b=0.8}   -- percentage (0.0-1.0)
+> pico.set.color.draw 'red'                         -- back with red
 ```
 
 ### 4.2. Transparency
 
-We may also change the drawing transparency:
+We may also change the transparency for further drawing operations:
 
 <table>
 <tr><td><pre>
@@ -245,7 +247,8 @@ visible.
 
 ### 4.3. All-at-Once
 
-We can set multiple state values at once using `pico.set` as a function:
+We can set multiple state values at once using `pico.set` as a general
+function:
 
 <table>
 <tr><td><pre>
@@ -254,36 +257,12 @@ We can set multiple state values at once using `pico.set` as a function:
     color = { draw = 'blue' },
     style = 'stroke',
   }
-> pico.output.draw.rect {'!', x=50, y=50, w=30, h=30}
+> pico.output.draw.rect {'!', x=60, y=50, w=30, h=30}
 </pre>
 </td><td>
 <img src="img/guide-04-03-01.png" width="200">
 </td></tr>
 </table>
-
-### 4.4. Push/Pop
-
-To temporarily change state and restore it later, use `pico.push` and
-`pico.pop`:
-
-<table>
-<tr><td><pre>
-> pico.output.clear()
-> pico.set.color.draw 'white'
-> pico.output.draw.rect {'!', x=25, y=50, w=20, h=20}
-> pico.push()
-> pico.set.color.draw 'red'
-> pico.output.draw.rect {'!', x=50, y=50, w=20, h=20}
-> pico.pop()
-> pico.output.draw.rect {'!', x=75, y=50, w=20, h=20}
-</pre>
-</td><td>
-<img src="img/guide-04-04-01.png" width="200">
-</td></tr>
-</table>
-
-The first and third rectangles are white (original color), while the middle one
-is red (temporary color between push/pop).
 
 ## 5. Positioning: Mode & Anchor
 
