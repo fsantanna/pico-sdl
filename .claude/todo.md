@@ -71,6 +71,18 @@ instead of only raw 0–255.
 Rename to `pico.set.transparency` (or similar) and invert so that
 0=opaque, 255=fully transparent — more intuitive for users.
 
+## Add ttl-GC to history and guide
+
+Document the TTL-based garbage collection mechanism (hash table with TTL
+eviction for resources) in the project history and in `lua/doc/guide.md`.
+
+## `pico.set.draw.*` — group all drawing state
+
+Move all drawing-related setters under `pico.set.draw.*` (color, style,
+alpha, font, etc.). Consider: should `pico.push`/`pico.pop` become
+scoped to `pico.set.draw`? E.g., `pico.draw { ... }` as a block that
+auto-pushes/pops.
+
 ## Review and complete guide
 
 Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.
