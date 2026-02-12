@@ -943,11 +943,7 @@ void pico_set_view (
         if (S.layer->tex != NULL) {
             SDL_DestroyTexture(S.layer->tex);
         }
-        S.layer->tex = SDL_CreateTexture (
-            G.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-            di.w, di.h
-        );
-        pico_assert(S.layer->tex != NULL);
+        S.layer->tex = _tex_create(di);
         // main layer uses BLENDMODE_NONE to prevent 2x blend
         SDL_BlendMode mode = (S.layer == &G.main) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
         SDL_SetTextureBlendMode(S.layer->tex, mode);
@@ -956,6 +952,7 @@ void pico_set_view (
             &S.layer->view.clip, NULL
         );
         SDL_RenderSetClipRect(G.ren, &r);
+        pico_output_clear();
     }
 
     if (dst != NULL) {

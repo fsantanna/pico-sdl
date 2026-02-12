@@ -351,6 +351,8 @@ By default, `pico-lua` uses the center anchor.
 The tile mode `'#'` uses discrete sized blocks as references for positions and
 dimensions:
 
+TODO: probably no clear in set_view w changes world
+
 <table>
 <tr><td><pre>
 > pico.output.clear()
