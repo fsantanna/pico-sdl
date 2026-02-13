@@ -36,6 +36,42 @@ int main (void) {
         _pico_check("font-02");
     }
 
+    // non-default font (DejaVuSans)
+    pico_set_font("DejaVuSans.ttf");
+    {
+        pico_output_clear();
+        Pico_Rel_Rect r = {
+            '!', {10,10, 0,10}, PICO_ANCHOR_NW, NULL
+        };
+        pico_output_draw_text("hg - gh", &r);
+        _pico_check("font-03");
+    }
+
+    // switch back to default font
+    pico_set_font(NULL);
+    {
+        pico_output_clear();
+        Pico_Rel_Rect r = {
+            '!', {10,10, 0,10}, PICO_ANCHOR_NW, NULL
+        };
+        pico_output_draw_text("hg - gh", &r);
+        _pico_check("font-04");
+    }
+
+    // push/pop preserves font across switches
+    pico_set_font("DejaVuSans.ttf");
+    pico_push();
+    pico_set_font(NULL);
+    pico_pop();
+    {
+        pico_output_clear();
+        Pico_Rel_Rect r = {
+            '!', {10,10, 0,10}, PICO_ANCHOR_NW, NULL
+        };
+        pico_output_draw_text("hg - gh", &r);
+        _pico_check("font-05");
+    }
+
     pico_init(0);
     return 0;
 }
