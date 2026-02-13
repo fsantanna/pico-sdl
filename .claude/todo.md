@@ -46,11 +46,12 @@ Several test files use deprecated APIs and need updating:
 | File | Main Issues |
 |------|-------------|
 | `todo_rain.c` | Deprecated types, `pico_output_draw_rect_pct()` |
-| `todo_rotate.c` | `pico_set_view_raw()`, old types |
 | `todo_hide.c` | Missing window/view setup |
 | `todo_scale.c` | `pico_set_scale()`, `pico_set_anchor_pos()` |
 | `todo_control.c` | Wrong text drawing API |
-| `todo_main.c` | Deprecated types throughout |
+| `todo_main.c` | Deprecated types throughout, `#if TODO` blocks |
+| `todo_cross.c` | Screenshot generator, review for current API |
+| `todo_video.c` | Video player, review for current API |
 
 See: `.claude/plans/view.md` section 7.
 
@@ -93,16 +94,43 @@ there, issue might be elsewhere.
 
 In guide: why pixels in 5.3 need clear? Why 6.1 doesn't work?
 
-## `pico.input.loop` — simple event loop for navigation
+## ~~`pico.input.loop` — simple event loop for navigation~~ (DONE)
 
-A convenience blocking loop so that built-in navigation (Ctrl+arrows,
-zoom, grid toggle) works without the user writing an event loop.
-Useful for the "draw something, then explore" pattern in educational
-use.
+Implemented in commits 5767832, 3c289bb, 851ffd6. C function
+`pico_input_loop()` and Lua binding `pico.input.loop()` are in place.
+Documented in `lua/doc/api.md`.
 
-- Non-expert mode only (expert users write their own loop)
-- Returns on QUIT or ESCAPE
-- No callbacks, no configuration — just `pico.input.loop()`
+## Reverse conversion with `up` chain (`src/pico.c:733`)
+
+In `_pico_cv_pos_abs_rel`, the `'%'` mode case asserts when `pos->up != NULL`.
+The reverse conversion from absolute to relative percentage coordinates does
+not yet support hierarchical parent references. Implement the `up` chain
+traversal for this code path.
+
+## Fullscreen delay hack (`src/pico.c:996`)
+
+`pico_input_delay(50)` after `SDL_SetWindowFullscreen` — required for
+`SDL_GetWindowSize` to return the correct dimensions. Investigate whether
+an SDL event (e.g., `SDL_WINDOWEVENT_SIZE_CHANGED`) can replace the
+arbitrary delay.
+
+## Ctrl+0 restore initial view (`src/pico.c:1273`)
+
+The built-in Ctrl+0 navigation shortcut is meant to restore the initial
+view (reset zoom/scroll), but the implementation is empty. Need to store
+the initial view state and restore it.
+
+## Input delay bug (`src/pico.c:1857`)
+
+`pico_input_delay(5)` — removing this causes a bug. Investigate root cause
+(likely a race condition with SDL event processing or rendering) and fix
+properly.
+
+## Lua: layer target/source/clip (`lua/pico.c:720`)
+
+The Lua bindings for layer rendering have a `// TODO: target, source, clip`
+comment. Layer compositing with custom source/target/clip rects is not yet
+exposed to Lua.
 
 ## Review and complete guide
 
