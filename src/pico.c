@@ -1240,10 +1240,10 @@ const char* pico_layer_text (const char* name, int height, const char* text) {
 //  - returns
 //      - 1: if e matches xp
 //      - 0: otherwise
-static int event_from_sdl (Pico_Event* e, int xp) {
+static int event_from_sdl (Pico_Event* e, int xp, int do_exit) {
     switch (e->type) {
         case SDL_QUIT: {
-            if (!S.expert) {
+            if (!S.expert && do_exit) {
                 exit(0);
             }
             break;
@@ -1400,7 +1400,7 @@ void pico_input_delay (int ms) {
         Pico_Event e;
         int has = SDL_WaitEventTimeout(&e, ms);
         if (has) {
-            event_from_sdl(&e, SDL_ANY);
+            event_from_sdl(&e, SDL_ANY, 1);
         }
         int dt = SDL_GetTicks() - old;
         ms -= dt;
@@ -1415,7 +1415,7 @@ void pico_input_event (Pico_Event* evt, int type) {
     while (1) {
         Pico_Event x;
         SDL_WaitEvent(&x);
-        if (event_from_sdl(&x, type)) {
+        if (event_from_sdl(&x, type, 1)) {
             if (evt != NULL) {
                 *evt = x;
             }
@@ -1427,7 +1427,7 @@ void pico_input_event (Pico_Event* evt, int type) {
 int pico_input_event_ask (Pico_Event* evt, int type) {
     int has = SDL_PollEvent(evt);
     if (!has) return 0;
-    return event_from_sdl(evt, type);
+    return event_from_sdl(evt, type, 1);
 }
 
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
@@ -1436,10 +1436,22 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
     if (!has) {
         return 0;
     }
-    if (event_from_sdl(evt, type)) {
+    if (event_from_sdl(evt, type, 1)) {
         return 1;
     }
     return 0;
+}
+
+void pico_input_loop (void) {
+    while (1) {
+        ttl_hash_tick(G.hash);
+        Pico_Event e;
+        SDL_WaitEvent(&e);
+        event_from_sdl(&e, SDL_ANY, 0);
+        if (e.type == SDL_QUIT) {
+            return;
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
