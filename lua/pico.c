@@ -614,6 +614,16 @@ static int l_get_image (lua_State* L) {
     return 1;
 }
 
+static int l_get_font (lua_State* L) {
+    const char* font = pico_get_font();
+    if (font == NULL) {
+        lua_pushnil(L);
+    } else {
+        lua_pushstring(L, font);
+    }
+    return 1;
+}
+
 static int l_get_layer (lua_State* L) {
     const char* name = pico_get_layer();
     if (name == NULL) {
@@ -830,6 +840,15 @@ static int l_get_mouse (lua_State* L) {
 static int l_set_alpha (lua_State* L) {
     int a = luaL_checkinteger(L, 1);
     pico_set_alpha(a);
+    return 0;
+}
+
+static int l_set_font (lua_State* L) {
+    const char* path = NULL;
+    if (lua_gettop(L) >= 1 && !lua_isnil(L, 1)) {
+        path = luaL_checkstring(L, 1);
+    }
+    pico_set_font(path);
     return 0;
 }
 
@@ -1394,6 +1413,7 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
+    { "font",   l_get_font   },
     { "image",  l_get_image  },
     { "layer",  l_get_layer  },
     { "mouse",  l_get_mouse  },
@@ -1411,6 +1431,7 @@ static const luaL_Reg ll_set[] = {
     { "alpha",  l_set_alpha  },
     { "dim",    l_set_dim    },
     { "expert", l_set_expert },
+    { "font",   l_set_font   },
     { "layer",  l_set_layer  },
     { "style",  l_set_style  },
     { "video",  l_set_video  },
