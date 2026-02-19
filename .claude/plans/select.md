@@ -1,5 +1,7 @@
 # Plan: select
 
+## Issue: [#93](https://github.com/fsantanna/pico-sdl/issues/93)
+
 ## Description
 
 Make per-frame video I/O non-blocking so that pipe/stream sources
