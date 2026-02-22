@@ -116,6 +116,8 @@
         - `pico.input.event (filter: string) -> Event`
         - `pico.input.event (filter: string, ms: integer) -> Event?`
         - Filters: `'quit'`, `'key.dn'`, `'key.up'`, `'mouse.button.dn'`
+    - **pico.input.loop**: Blocks on event loop until quit.
+        - `pico.input.loop ()`
 - **pico.output**
     - **pico.output.clear**: Clears window.
         - `pico.output.clear ()`
