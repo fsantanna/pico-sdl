@@ -400,23 +400,23 @@ We then draw two rectangles also using the tile mode `'#'`:
 
 ## 6. Advanced View
 
-`pico.set.window` controls the **physical** window (title, dimensions,
-fullscreen), while `pico.set.view` controls the **logical** world
-(dimensions, source, target, clip, grid, tile).
+The view controls how the logical world maps to the physical window:
+    - `pico.set.window` controls the **physical** window
+    - `pico.set.view` controls the **logical** world
 
-Here is a summary of all parameters:
+Here is a summary of some configurable properties:
 
-| Function | Parameter | Description | Section |
-|----------|-----------|-------------|---------|
-| `set.window` | `title` | Window title | 2.2 |
-| `set.window` | `dim` | Physical window size | 2.2 |
-| `set.window` | `fullscreen` | Fullscreen mode | 6.5 |
-| `set.view` | `dim` | Logical world size | 2.2, 5.3 |
-| `set.view` | `grid` | Grid overlay | 2.2 |
-| `set.view` | `tile` | Tile size for `'#'` mode | 5.3 |
-| `set.view` | `source` | Visible region of the world | 6.2 |
-| `set.view` | `target` | Window region for rendering | 6.3 |
-| `set.view` | `clip` | Clipping region | 6.4 |
+| View   | Property     | Description     |
+|--------|--------------|-----------------|
+| Window | `title`      | window title    |
+| Window | `dim`        | window size     |
+| Window | `fullscreen` | fullscreen mode |
+| World  | `dim`        | world size      |
+| World  | `grid`       | grid overlay    |
+| World  | `tile`       | tile size       |
+| World  | `source`     | visible world   |
+| World  | `target`     | world to window |
+| World  | `clip`       | clipping region |
 
 ### 6.1. Key Bindings
 
@@ -445,7 +445,7 @@ Finally, close the window (e.g., `ALT+F4`) to return from the loop.
 
 ### 6.2. Source
 
-The `source` parameter selects which region of the logical world is visible
+The `source` property selects which region of the logical world is visible
 in the window.
 
 When `source` is smaller than the world, it acts as a **zoom**: the selected
@@ -486,7 +486,7 @@ center of the world.
 
 ### 6.3. Target
 
-The `target` parameter controls where on the physical window the world is
+The `target` property controls where on the physical window the world is
 rendered:
 
 <table>
@@ -509,7 +509,7 @@ The logical world is rendered on the right half of the physical window.
 
 ### 6.4. Clip
 
-The `clip` parameter restricts drawing to a sub-region of the world:
+The `clip` property restricts drawing to a sub-region of the world:
 
 <table>
 <tr><td><pre>
