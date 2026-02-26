@@ -405,35 +405,14 @@ The view controls how the logical world maps to the physical window:
 - `pico.set.window` controls the **physical** window
 - `pico.set.view` controls the **logical** world
 
-Here is a summary of some configurable properties:
-
-<table>
-<tr>
-<th>Window</th>
-<th>World</th>
-</tr>
-<tr>
-<td valign="top">
-
-| Property     | Description     |
-|--------------|-----------------|
-| `dim`        | window size     |
-| `fullscreen` | fullscreen mode |
-
-</td>
-<td valign="top">
+Follow some advanced properties for `pico.set.view` that were not discussed:
 
 | Property | Description     |
 |----------|-----------------|
-| `dim`    | world size      |
 | `target` | world to window |
 | `source` | visible world   |
 | `clip`   | clipping region |
 | `tile`   | tile size       |
-
-</td>
-</tr>
-</table>
 
 ### 6.1. Key Bindings
 
@@ -548,14 +527,6 @@ The `clip` property restricts drawing to a sub-region of the world:
 
 Only the center portion of the image is visible, as drawing outside the clip
 region is discarded.
-
-### 6.5. Fullscreen
-
-To enter fullscreen mode:
-
-```lua
-> pico.set.window { fullscreen = true }
-```
 
 ## 7. Events
 
