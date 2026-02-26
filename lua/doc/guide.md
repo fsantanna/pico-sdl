@@ -52,10 +52,11 @@ To initialize `pico-lua`, we pass `true` to `pico.init`:
 </td></tr>
 </table>
 
-We immediately see a `500x500` window divided in `100x100` small rectangles
-representing logical pixels.
+We immediately see a `500x500` window divided in small `5x5` rectangles
+representing `100x100` **logical pixels**, which our application uses as the
+main reference.
 
-By default, `pico-lua` exhibits a grid and coordinate labels to aid development
+By default, `pico-lua` exhibits the grid and coordinate labels to aid development
 through visual inspection.
 
 ### 2.2. Configure
@@ -176,7 +177,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
 With the aid of the tick marks, we can see that is centered at the given
 position.
-Unlike most graphics libraries, `pico-lua` centers objects by default.
+Unlike most graphics libraries, `pico-lua` **centers** objects by default.
 We discuss positioning and anchoring further.
 
 ### 3.4. Image
@@ -192,14 +193,15 @@ To draw an image, we call `pico.output.draw.image`:
 </td></tr>
 </table>
 
-(Note: you will need to save the [image](img/open.png) on your machine.)
+*(You will need to save the [image](img/open.png) on your machine.)*
 
-`pico-lua` supports many other drawing operations, such as
-`pico.output.draw.line` and `pico.output.draw.text`.
+Note that `pico-lua` retains both objects in the screen.
 
-## 4. Internal State
+Other drawing operations include `draw.line`, `draw.polygon`, and `draw.text`.
 
-`pico-lua` keeps an internal state that affects drawing operations, such as
+## 4. Graphics State
+
+`pico-lua` keeps an internal graphics state that affects drawing operations, such as
 the current color, alpha transparency, and drawing style.
 
 ### 4.1. Color
@@ -216,16 +218,19 @@ To change the drawing color state, we call `pico.set.color.draw`:
 </td></tr>
 </table>
 
-The text appears in red, centered at the given position.
+A `set` has no immediate effect on the screen, and only affects further
+operations.
 
-(Note: if the text width is ommited, it preserves the correct aspect ratio.)
+Therefore, the text appears in red, centered at the given position.
+
+Note `pico-lua` preserves the correct aspect ratio if the width `w` is omitted.
 
 Colors can also be specified as tables with RGB values:
 
 ```lua
 > pico.set.color.draw {r=128, g=0xFF, b=200}        -- absolute (0-255), (0x00-0xFF)
-> pico.set.color.draw {'%', r=0.5, g=0.25, b=0.8}   -- percentage (0.0-1.0)
-> pico.set.color.draw 'red'                         -- back with red
+> pico.set.color.draw {'%', r=0.5, g=0.25, b=0.8}   -- percentage mode '%' (0.0-1.0)
+> pico.set.color.draw 'red'                         -- restore red
 ```
 
 ### 4.2. Transparency
