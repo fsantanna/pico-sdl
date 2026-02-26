@@ -21,11 +21,12 @@ It is designed around 3 groups of APIs:
     such as drawing shapes and playing audio.
 - `pico.input.*` for input events,
     such as waiting time and key presses.
-- `pico.get.*` and `pico.set.*` for the library state,
-    such as the drawing color, and window title.
+- `pico.get.*` and `pico.set.*` for the internal library state,
+    such as current drawing color, and window dimensions.
 
 This guide is an interactive walk-through of `pico-lua`.
-It is not meant to be exhaustive: consult the [API](api.md) for completeness.
+It is not meant to be exhaustive.
+Consult the [API](api.md) for completeness.
 
 From the command line, simply execute `pico-lua` with no parameters:
 
@@ -80,14 +81,14 @@ To configure the window and the logical view, we use `pico.set.window` and
 </td></tr>
 </table>
 
-Now the window title is set, the grid is disabled, and both the window and view
-are set to the same dimensions.
+After the two commands, the window title is set, the grid is disabled, and both
+the window and view are set to the same dimensions.
 
 The character `'!'` indicates a dimension in "raw mode", which we discuss
 further.
 
-You could also use `pico.set.dim` to set the window and view dimensions at the
-same time:
+You could also use the simpler `pico.set.dim` to set the window and view
+dimensions at the same time:
 
 <table>
 <tr><td><pre>
@@ -98,7 +99,7 @@ same time:
 </td></tr>
 </table>
 
-(Note: the image is the same as before.)
+*(The image is the same as before.)*
 
 ### 2.3. Close
 
@@ -109,7 +110,7 @@ In the end, we pass `false` to `pico.init` to properly finalize `pico-lua`:
 > pico.init(false)
 </pre>
 </td><td>
-(no image)
+*(no image)*
 </td></tr>
 </table>
 
@@ -175,6 +176,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 </table>
 
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
+
 With the aid of the tick marks, we can see that is centered at the given
 position.
 Unlike most graphics libraries, `pico-lua` **centers** objects by default.
@@ -195,14 +197,14 @@ To draw an image, we call `pico.output.draw.image`:
 
 *(You will need to save the [image](img/open.png) on your machine.)*
 
-Note that `pico-lua` retains both objects in the screen.
+Note that `pico-lua` retains both objects on the screen.
 
 Other drawing operations include `draw.line`, `draw.polygon`, and `draw.text`.
 
 ## 4. Graphics State
 
-`pico-lua` keeps an internal graphics state that affects drawing operations, such as
-the current color, alpha transparency, and drawing style.
+`pico-lua` keeps an internal graphics state that affects drawing operations,
+such as the current color, transparency, and drawing style.
 
 ### 4.1. Color
 
@@ -223,19 +225,20 @@ operations.
 
 Therefore, the text appears in red, centered at the given position.
 
-Note `pico-lua` preserves the correct aspect ratio if the width `w` is omitted.
+Note `pico-lua` preserves the correct text aspect ratio if the width `w` is
+omitted.
 
 Colors can also be specified as tables with RGB values:
 
 ```lua
 > pico.set.color.draw {r=128, g=0xFF, b=200}        -- absolute (0-255), (0x00-0xFF)
 > pico.set.color.draw {'%', r=0.5, g=0.25, b=0.8}   -- percentage mode '%' (0.0-1.0)
-> pico.set.color.draw 'red'                         -- restore red
+> pico.set.color.draw 'red'                         -- restore red (for the tutorial)
 ```
 
 ### 4.2. Transparency
 
-We may also change the transparency for further drawing operations:
+We may also change the alpha transparency for further drawing operations:
 
 <table>
 <tr><td><pre>
@@ -249,6 +252,10 @@ We may also change the transparency for further drawing operations:
 
 The oval appears on top of the text, but the transparency keeps the text
 visible.
+
+Following the general convention for "alpha":
+    0x00 is fully transparent, and
+    0xFF is fully opaque.
 
 ### 4.3. All-at-Once
 
