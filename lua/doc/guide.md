@@ -409,82 +409,37 @@ Next, we discuss some advanced properties for `pico.set.view`:
 
 | Property | Description             |
 |----------|-------------------------|
-| `source` | visible world region    |
 | `target` | world to window mapping |
+| `source` | visible world region    |
 | `clip`   | world clipping region   |
 
-### 6.1. Key Bindings
+### 6.1. Target
 
-By default, `pico-lua` provides key bindings to zoom and scroll the current
-view:
-
-- `CTRL` / `+`,`-`: zoom in / out
-- `CTRL` / Arrow keys: scroll left / right
-
-Let's draw a centered image and use the key bindings to explore it:
+The `target` property controls where on the physical window the world is
+rendered:
 
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-> pico.input.loop()
+> pico.output.draw.image("img/open.png",
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.set.view {
+    target = {'%', x=0.75, y=0.5, w=0.5, h=1.0},
+  }
 </pre>
 </td><td>
 <img src="img/guide-06-01-01.png" width="200">
 </td></tr>
 </table>
 
-The call to `pico.input.loop()` allows `pico-lua` to handle events.
-
-Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
-Finally, close the window (e.g., `ALT+F4`) to return from the loop.
+The logical world is rendered on the right half of the physical window.
 
 ### 6.2. Source
 
-The `source` property selects which region of the logical world is visible
-in the window.
+The `source` property selects which region of the logical world is visible.
 
-When `source` is smaller than the world, it acts as a **zoom**:
-    the selected region is stretched to fill the window.
-
-When the `source` position is offset, it acts as a **scroll**:
-    the visible region moves within the world.
-
-Let's zoom into the top-left quarter of the image:
-
-<table>
-<tr><td><pre>
-> pico.set.view {
-    source = {'!', x=0, y=0, w=50, h=50},
-  }
-</pre>
-</td><td>
-<img src="img/guide-06-02-01.png" width="200">
-</td></tr>
-</table>
-
-The source covers half the world, resulting in a 2x zoom.
-
-Now let's scroll towards the center:
-
-<table>
-<tr><td><pre>
-> pico.set.view {
-    source = {'!', x=25, y=25, w=50, h=50},
-  }
-</pre>
-</td><td>
-<img src="img/guide-06-02-02.png" width="200">
-</td></tr>
-</table>
-
-The source is offset by `(25,25)`, scrolling the zoomed view towards the
-center of the world.
-
-### 6.3. Target
-
-The `target` property controls where on the physical window the world is
-rendered:
+Here, we crop the top-left quadrant of the world by combining `source` with
+a matching `target` size, so the crop maintains the original pixel scale:
 
 <table>
 <tr><td><pre>
@@ -494,17 +449,19 @@ rendered:
 > pico.output.draw.image("img/open.png",
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
-    target = {'%', x=0.75, y=0.5, w=0.5, h=1.0},
+    source = {'!', x=0, y=0, w=50, h=50},
+    target = {'%', x=0.25, y=0.25, w=0.5, h=0.5},
   }
 </pre>
 </td><td>
-<img src="img/guide-06-03-01.png" width="200">
+<img src="img/guide-06-02-01.png" width="200">
 </td></tr>
 </table>
 
-The logical world is rendered on the right half of the physical window.
+The `50x50` source maps to a `250x250` target (half the `500`-pixel window),
+preserving the default `5x` pixel ratio — a pure crop with no stretching.
 
-### 6.4. Clip
+### 6.3. Clip
 
 The `clip` property restricts drawing to a sub-region of the world:
 
@@ -520,12 +477,90 @@ The `clip` property restricts drawing to a sub-region of the world:
   }
 </pre>
 </td><td>
-<img src="img/guide-06-04-01.png" width="200">
+<img src="img/guide-06-03-01.png" width="200">
 </td></tr>
 </table>
 
 Only the center portion of the image is visible, as drawing outside the clip
 region is discarded.
+
+### 6.4. Zoom & Scroll
+
+When `source` is combined with the default full-window target, the selected
+region is **stretched** to fill the entire window.
+
+A **smaller** source creates a zoom effect:
+
+<table>
+<tr><td><pre>
+> pico.init(false)
+> pico.init(true)
+> pico.output.clear()
+> pico.output.draw.image("img/open.png",
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.set.view {
+    source = {'!', x=0, y=0, w=50, h=50},
+  }
+</pre>
+</td><td>
+<img src="img/guide-06-04-01.png" width="200">
+</td></tr>
+</table>
+
+The source covers half the world, resulting in a 2x zoom.
+
+An **offset** source position creates a scroll effect:
+
+<table>
+<tr><td><pre>
+> pico.set.view {
+    source = {'!', x=25, y=25, w=50, h=50},
+  }
+</pre>
+</td><td>
+<img src="img/guide-06-04-02.png" width="200">
+</td></tr>
+</table>
+
+The source is offset by `(25,25)`, scrolling the zoomed view towards the
+center of the world.
+
+### 6.5. Fullscreen
+
+To toggle fullscreen mode:
+
+```lua
+> pico.set.window { fullscreen = true }
+```
+
+### 6.6. Key Bindings
+
+By default, `pico-lua` provides key bindings to zoom and scroll the current
+view:
+
+- `CTRL` / `+`,`-`: zoom in / out
+- `CTRL` / Arrow keys: scroll left / right
+
+Let's draw a centered image and use the key bindings to explore it:
+
+<table>
+<tr><td><pre>
+> pico.init(false)
+> pico.init(true)
+> pico.output.clear()
+> pico.output.draw.image("img/open.png",
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.input.loop()
+</pre>
+</td><td>
+<img src="img/guide-06-06-01.png" width="200">
+</td></tr>
+</table>
+
+The call to `pico.input.loop()` allows `pico-lua` to handle events.
+
+Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
+Finally, close the window (e.g., `ALT+F4`) to return from the loop.
 
 ## 7. Events
 

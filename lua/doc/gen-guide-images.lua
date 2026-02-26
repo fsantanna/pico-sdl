@@ -170,39 +170,7 @@ end
 -- Section 6: Advanced View
 -------------------------------------------------------------------------------
 
-do
-    pico.init(true)
-    pico.output.clear()
-    pico.output.draw.image('img/open.png',
-        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    shot("guide-06-01-01")
-    pico.init(false)
-end
-
-do
-    pico.init(true)
-    pico.output.clear()
-    pico.output.draw.image('img/open.png',
-        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.set.view {
-        source = {'!', x=0, y=0, w=50, h=50},
-    }
-    shot("guide-06-02-01")
-    pico.init(false)
-end
-
-do
-    pico.init(true)
-    pico.output.clear()
-    pico.output.draw.image('img/open.png',
-        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.set.view {
-        source = {'!', x=25, y=25, w=50, h=50},
-    }
-    shot("guide-06-02-02")
-    pico.init(false)
-end
-
+-- 6.1 Target: world on right half of window
 do
     pico.init(true)
     pico.output.clear()
@@ -211,10 +179,25 @@ do
     pico.set.view {
         target = {'%', x=0.75, y=0.5, w=0.5, h=1.0},
     }
-    shot("guide-06-03-01")
+    shot("guide-06-01-01")
     pico.init(false)
 end
 
+-- 6.2 Source crop: sub-region at original scale
+do
+    pico.init(true)
+    pico.output.clear()
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.set.view {
+        source = {'!', x=0, y=0, w=50, h=50},
+        target = {'%', x=0.25, y=0.25, w=0.5, h=0.5},
+    }
+    shot("guide-06-02-01")
+    pico.init(false)
+end
+
+-- 6.3 Clip: drawing restricted to center
 do
     pico.init(true)
     pico.output.clear()
@@ -223,7 +206,43 @@ do
     pico.set.view {
         clip = {'%', x=0.5, y=0.5, w=0.5, h=0.5},
     }
+    shot("guide-06-03-01")
+    pico.init(false)
+end
+
+-- 6.4 Zoom: small source stretched to full window
+do
+    pico.init(true)
+    pico.output.clear()
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.set.view {
+        source = {'!', x=0, y=0, w=50, h=50},
+    }
     shot("guide-06-04-01")
+    pico.init(false)
+end
+
+-- 6.4 Scroll: offset source panning the view
+do
+    pico.init(true)
+    pico.output.clear()
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.set.view {
+        source = {'!', x=25, y=25, w=50, h=50},
+    }
+    shot("guide-06-04-02")
+    pico.init(false)
+end
+
+-- 6.6 Key bindings: centered image with grid
+do
+    pico.init(true)
+    pico.output.clear()
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    shot("guide-06-06-01")
     pico.init(false)
 end
 
