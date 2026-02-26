@@ -522,15 +522,7 @@ An **offset** source position creates a scroll effect:
 The source is offset by `(25,25)`, scrolling the zoomed view towards the
 center of the world.
 
-### 6.5. Fullscreen
-
-To toggle fullscreen mode:
-
-```lua
-> pico.set.window { fullscreen = true }
-```
-
-### 6.6. Key Bindings
+### 6.5. Key Bindings
 
 By default, `pico-lua` provides key bindings to zoom and scroll the current
 view:
