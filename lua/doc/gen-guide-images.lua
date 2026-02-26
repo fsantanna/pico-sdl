@@ -190,8 +190,8 @@ do
     pico.output.draw.image('img/open.png',
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.view {
-        source = {'!', x=0, y=0, w=50, h=50},
-        target = {'%', x=0.25, y=0.25, w=0.5, h=0.5},
+        source = {'%', x=0.5, y=0.6, w=0.3, h=0.3},
+        target = {'%', x=0.5, y=0.5, w=0.3, h=0.3},
     }
     shot("guide-06-02-01")
     pico.init(false)
@@ -201,11 +201,11 @@ end
 do
     pico.init(true)
     pico.output.clear()
+    pico.set.view {
+        clip = {'%', x=0.5, y=0.5, w=0.25, h=0.25},
+    }
     pico.output.draw.image('img/open.png',
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.set.view {
-        clip = {'%', x=0.5, y=0.5, w=0.5, h=0.5},
-    }
     shot("guide-06-03-01")
     pico.init(false)
 end

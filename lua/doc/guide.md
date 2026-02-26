@@ -437,10 +437,7 @@ bottom-right of the screen, with a slight distortion, since `w/h` now mismatch.
 
 ### 6.2. Source
 
-The `source` property selects which region of the logical world is visible.
-
-Here, we crop the top-left quadrant of the world by combining `source` with
-a matching `target` size, so the crop maintains the original pixel scale:
+The `source` property selects which region of the logical world is visible:
 
 <table>
 <tr><td><pre>
@@ -450,8 +447,8 @@ a matching `target` size, so the crop maintains the original pixel scale:
 > pico.output.draw.image("img/open.png",
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
-    source = {'!', x=0, y=0, w=50, h=50},
-    target = {'%', x=0.25, y=0.25, w=0.5, h=0.5},
+    source = {'%', x=0.5, y=0.6, w=0.3, h=0.3},
+    target = {'%', x=0.5, y=0.5, w=0.3, h=0.3},
   }
 </pre>
 </td><td>
@@ -459,8 +456,8 @@ a matching `target` size, so the crop maintains the original pixel scale:
 </td></tr>
 </table>
 
-The `50x50` source maps to a `250x250` target (half the `500`-pixel window),
-preserving the default `5x` pixel ratio — a pure crop with no stretching.
+We crop a small piece (`30%`) of the center-bottom of the world to target the
+center of the window, keeping the same aspect ratio.
 
 ### 6.3. Clip
 
@@ -470,20 +467,19 @@ The `clip` property restricts drawing to a sub-region of the world:
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.output.clear()
+> pico.set.view {
+    clip = {'%', x=0.5, y=0.5, w=0.25, h=0.25},
+  }
 > pico.output.draw.image("img/open.png",
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-> pico.set.view {
-    clip = {'%', x=0.5, y=0.5, w=0.5, h=0.5},
-  }
 </pre>
 </td><td>
 <img src="img/guide-06-03-01.png" width="200">
 </td></tr>
 </table>
 
-Only the center portion of the image is visible, as drawing outside the clip
-region is discarded.
+We restrict drawing to a small region (`25%`) in the center of the world.
+Then, we draw the centered image, which is clipped to fit the specified area.
 
 ### 6.4. Zoom & Scroll
 
