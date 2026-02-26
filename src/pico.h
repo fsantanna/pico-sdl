@@ -157,6 +157,9 @@ int  pico_input_event_ask (Pico_Event* evt, int type);
 /// @sa pico_input_event_ask
 int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 
+/// @brief Blocks in an event loop until the window is closed.
+void pico_input_loop (void);
+
 /// @}
 
 /// @defgroup Output

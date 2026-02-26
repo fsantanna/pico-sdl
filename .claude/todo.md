@@ -83,6 +83,43 @@ alpha, font, etc.). Consider: should `pico.push`/`pico.pop` become
 scoped to `pico.set.draw`? E.g., `pico.draw { ... }` as a block that
 auto-pushes/pops.
 
+## `pico_set_view` present in non-expert mode
+
+Already calls `_pico_output_present(0)` (line 976). Pros: navigation
+works without input loop, guide nav would work. Cons: flicker on setup
+(blank texture after dim change), multiple presents per logical setup.
+Investigate if navigation isn't updating visually — the present is
+there, issue might be elsewhere.
+
+In guide: why pixels in 5.3 need clear? Why 6.1 doesn't work?
+
+## `pico.input.loop` — simple event loop for navigation
+
+A convenience blocking loop so that built-in navigation (Ctrl+arrows,
+zoom, grid toggle) works without the user writing an event loop.
+Useful for the "draw something, then explore" pattern in educational
+use.
+
+- Non-expert mode only (expert users write their own loop)
+- Returns on QUIT or ESCAPE
+- No callbacks, no configuration — just `pico.input.loop()`
+
 ## Review and complete guide
 
 Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.
+
+## ThorVG Integration
+
+Replace SDL2_gfx (and later SDL2_ttf) with ThorVG as the vector
+rendering engine. ThorVG SwCanvas renders to ARGB8888 buffer, uploaded
+to SDL_Texture. Adds SVG support, anti-aliasing, gradients, bezier
+paths, variable stroke, and per-shape transforms.
+
+See `.claude/plans/thorvg.md` for full plan (4 phases).
+
+- [ ] Decide ThorVG build strategy (vendor source vs. static lib)
+- [ ] Decide ThorVG version to target
+- [ ] Phase 1: Foundation + SVG + Replace SDL2_gfx
+- [ ] Phase 2: New capabilities (stroke, rotation, gradients, bezier)
+- [ ] Phase 3: Replace SDL_ttf with ThorVG text
+- [ ] Phase 4: Advanced features (optional)

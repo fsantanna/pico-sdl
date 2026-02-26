@@ -1179,6 +1179,11 @@ static int l_input_event (lua_State* L) {
     return 1;           // . | [t]
 }
 
+static int l_input_loop (lua_State* L) {
+    pico_input_loop();
+    return 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_output_clear (lua_State* L) {
@@ -1436,6 +1441,7 @@ static const luaL_Reg ll_layer[] = {
 static const luaL_Reg ll_input[] = {
     { "delay", l_input_delay },
     { "event", l_input_event },
+    { "loop",  l_input_loop  },
     { NULL, NULL }
 };
 
