@@ -400,7 +400,23 @@ We then draw two rectangles also using the tile mode `'#'`:
 
 ## 6. Advanced View
 
-The view controls how the logical world maps to the physical window.
+`pico.set.window` controls the **physical** window (title, dimensions,
+fullscreen), while `pico.set.view` controls the **logical** world
+(dimensions, source, target, clip, grid, tile).
+
+Here is a summary of all parameters:
+
+| Function | Parameter | Description | Section |
+|----------|-----------|-------------|---------|
+| `set.window` | `title` | Window title | 2.2 |
+| `set.window` | `dim` | Physical window size | 2.2 |
+| `set.window` | `fullscreen` | Fullscreen mode | 6.5 |
+| `set.view` | `dim` | Logical world size | 2.2, 5.3 |
+| `set.view` | `grid` | Grid overlay | 2.2 |
+| `set.view` | `tile` | Tile size for `'#'` mode | 5.3 |
+| `set.view` | `source` | Visible region of the world | 6.2 |
+| `set.view` | `target` | Window region for rendering | 6.3 |
+| `set.view` | `clip` | Clipping region | 6.4 |
 
 ### 6.1. Key Bindings
 
@@ -427,14 +443,22 @@ The call to `pico.input.loop()` allows `pico-lua` to handle events.
 Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
 Finally, close the window (e.g., `ALT+F4`) to return from the loop.
 
-### 6.2. Zoom
+### 6.2. Source
 
-The zoom level is controlled by the ratio between `window` and `world` sizes:
+The `source` parameter selects which region of the logical world is visible
+in the window.
+
+When `source` is smaller than the world, it acts as a **zoom**: the selected
+region is stretched to fill the window.
+When the `source` position is offset, it acts as a **scroll**: the visible
+region pans across the world.
+
+Let's zoom into the top-left quarter of the image:
 
 <table>
 <tr><td><pre>
 > pico.set.view {
-    dim = { '!', w=100, h=100 },    -- 2x zoom
+    source = {'!', x=0, y=0, w=50, h=50},
   }
 </pre>
 </td><td>
@@ -442,17 +466,38 @@ The zoom level is controlled by the ratio between `window` and `world` sizes:
 </td></tr>
 </table>
 
-A smaller world means more zoom: 200x200 window with 100x100 world = 2x zoom.
+The source covers half the world, resulting in a 2x zoom.
 
-### 6.3. Scroll
-
-The `source` parameter scrolls the view:
+Now let's scroll towards the center:
 
 <table>
 <tr><td><pre>
 > pico.set.view {
-    dim    = { '!', w=200, h=200 },
-    source = { '!', x=50, y=50, w=200, h=200 },
+    source = {'!', x=25, y=25, w=50, h=50},
+  }
+</pre>
+</td><td>
+<img src="img/guide-06-02-02.png" width="200">
+</td></tr>
+</table>
+
+The source is offset by `(25,25)`, scrolling the zoomed view towards the
+center of the world.
+
+### 6.3. Target
+
+The `target` parameter controls where on the physical window the world is
+rendered:
+
+<table>
+<tr><td><pre>
+> pico.init(false)
+> pico.init(true)
+> pico.output.clear()
+> pico.output.draw.image("img/open.png",
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.set.view {
+    target = {'%', x=0.75, y=0.5, w=0.5, h=1.0},
   }
 </pre>
 </td><td>
@@ -460,50 +505,32 @@ The `source` parameter scrolls the view:
 </td></tr>
 </table>
 
-The view is scrolled by `(50, 50)`, so the image appears offset.
-
-### 6.4. Dim
-
-The `pico.set.dim` shorthand sets both the window and the world to the same
-dimensions:
-
-```lua
-> pico.set.dim { '!', w=200, h=200 }
-```
-
-This is equivalent to setting `window` and `world` separately:
-
-```lua
-> pico.set.window { dim = {'!', w=200, h=200} }
-> pico.set.view   { dim = {'!', w=200, h=200} }
-```
-
-### 6.5. Target
-
-The `target` parameter controls where on the physical window the world is
-rendered:
-
-```lua
-> pico.set.view {
-    target = { '%', x=0.75, y=0.5, w=0.5, h=1.0 },
-  }
-```
-
 The logical world is rendered on the right half of the physical window.
 
-### 6.6. Clip
+### 6.4. Clip
 
 The `clip` parameter restricts drawing to a sub-region of the world:
 
-```lua
+<table>
+<tr><td><pre>
+> pico.init(false)
+> pico.init(true)
+> pico.output.clear()
+> pico.output.draw.image("img/open.png",
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
-    clip = { '%', x=0.5, y=0.5, w=0.5, h=0.5 },
+    clip = {'%', x=0.5, y=0.5, w=0.5, h=0.5},
   }
-```
+</pre>
+</td><td>
+<img src="img/guide-06-04-01.png" width="200">
+</td></tr>
+</table>
 
-Only drawing operations within the clip region are visible.
+Only the center portion of the image is visible, as drawing outside the clip
+region is discarded.
 
-### 6.7. Fullscreen
+### 6.5. Fullscreen
 
 To enter fullscreen mode:
 

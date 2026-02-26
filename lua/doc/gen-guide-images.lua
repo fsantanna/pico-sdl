@@ -172,13 +172,9 @@ end
 
 do
     pico.init(true)
-    pico.set.view {
-        window = {'!', w=200, h=200},
-        world  = {'!', w=200, h=200},
-        grid   = false,
-    }
     pico.output.clear()
-    pico.output.draw.image('img/open.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     shot("guide-06-01-01")
     pico.init(false)
 end
@@ -191,9 +187,10 @@ do
         grid   = false,
     }
     pico.output.clear()
-    pico.output.draw.image('img/open.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.view {
-        world  = {'!', w=100, h=100},
+        source = {'!', x=0, y=0, w=100, h=100},
     }
     shot("guide-06-02-01")
     pico.init(false)
@@ -207,12 +204,46 @@ do
         grid   = false,
     }
     pico.output.clear()
-    pico.output.draw.image('img/open.png', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.view {
+        source = {'!', x=50, y=50, w=100, h=100},
+    }
+    shot("guide-06-02-02")
+    pico.init(false)
+end
+
+do
+    pico.init(true)
+    pico.set.view {
+        window = {'!', w=200, h=200},
         world  = {'!', w=200, h=200},
-        source = {'!', x=50, y=50, w=200, h=200},
+        grid   = false,
+    }
+    pico.output.clear()
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.set.view {
+        target = {'%', x=0.75, y=0.5, w=0.5, h=1.0},
     }
     shot("guide-06-03-01")
+    pico.init(false)
+end
+
+do
+    pico.init(true)
+    pico.set.view {
+        window = {'!', w=200, h=200},
+        world  = {'!', w=200, h=200},
+        grid   = false,
+    }
+    pico.output.clear()
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.set.view {
+        clip = {'%', x=0.5, y=0.5, w=0.5, h=0.5},
+    }
+    shot("guide-06-04-01")
     pico.init(false)
 end
 
