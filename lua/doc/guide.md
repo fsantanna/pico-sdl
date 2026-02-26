@@ -59,8 +59,8 @@ representing `100x100` logical pixels.
 In the context of `pico-lua`, we use the term **world** to designate the
 logical view, which applications use as the main reference.
 
-By default, `pico-lua` exhibits the grid and coordinate labels to aid development
-through visual inspection.
+By default, `pico-lua` exhibits the grid and coordinate labels to aid
+development through visual inspection.
 
 ### 2.2. Configure
 
@@ -373,8 +373,8 @@ dimensions:
 
 <table>
 <tr><td><pre>
-> pico.init(true)
 > pico.init(false)
+> pico.init(true)
 > pico.set.view {
     dim  = { '#', w=5, h=5 },
     tile = { w=20, h=20 },
@@ -394,9 +394,9 @@ In the example, we set each tile to `20x20` and create a world of `5x5` tiles.
 Note that the window can also be specified in tiles.
 
 We then draw two rectangles also using the tile mode `'#'`:
-The first is centered at `(3,3)` occupying `1x1` tile.
-The second uses anchor `NE`, to properly occupy the top right of the screen
-with `2x1` tiles.
+- The first is centered at `(3,3)` occupying `1x1` tile.
+- The second uses anchor `NE`, to properly occupy the top right of the screen
+  with `2x1` tiles.
 
 ## 6. Advanced View
 
@@ -404,9 +404,7 @@ The view controls how the logical world maps to the physical window.
 
 ### 6.1. Key Bindings
 
-TODO: not working bc no input (pico.input.loop)?
-
-By default, `pico-lua` provides runtime key bindings to zoom and scroll the
+By default, `pico-lua` provides key bindings to zoom and scroll the current
 view:
 
 - `CTRL` / `+`,`-`: zoom in / out
@@ -418,13 +416,16 @@ Let's draw a centered image and use the key bindings to explore it:
 <tr><td><pre>
 > pico.output.clear()
 > pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.input.loop()
 </pre>
 </td><td>
 <img src="img/guide-06-01-01.png" width="200">
 </td></tr>
 </table>
 
-Now, try pressing `+` to zoom in, then use the arrow keys to scroll around.
+The call to `pico.input.loop()` allows `pico-lua` to handle events.
+Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
+Finally, close the window (e.g., `ALT+F4`) to return from the loop.
 
 ### 6.2. Zoom
 
