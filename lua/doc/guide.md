@@ -71,11 +71,11 @@ To configure the window and the world view, we use `pico.set.window` and
 <tr><td><pre>
 > pico.set.window {
     title = "Hello!",
-    dim   = {'!', w=200, h=200},
+    dim   = { '!', w=200, h=200 },
   }
 > pico.set.view {
     grid = false,
-    dim  = {'!', w=200, h=200},
+    dim  = { '!', w=200, h=200 },
   }
 </pre>
 </td><td>
@@ -94,7 +94,7 @@ dimensions at the same time:
 
 <table>
 <tr><td><pre>
-> pico.set.dim {'!', w=200, h=200}
+> pico.set.dim { '!', w=200, h=200 }
 </pre>
 </td><td>
 <img src="img/guide-02-02-01.png" width="200">
@@ -139,7 +139,7 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 
 <table>
 <tr><td><pre>
-> pico.output.draw.pixel {'!', x=50, y=50}
+> pico.output.draw.pixel { '!', x=50, y=50 }
 </pre>
 </td><td>
 <img src="img/guide-03-01-01.png" width="200">
@@ -170,7 +170,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 
 <table>
 <tr><td><pre>
-> pico.output.draw.rect {'!', x=20, y=20, w=30, h=30}
+> pico.output.draw.rect { '!', x=20, y=20, w=30, h=30 }
 </pre>
 </td><td>
 <img src="img/guide-03-03-01.png" width="200">
@@ -233,8 +233,8 @@ omitted.
 Colors can also be specified as tables with RGB values:
 
 ```lua
-> pico.set.color.draw {r=128, g=0xFF, b=200}        -- absolute (0-255), (0x00-0xFF)
-> pico.set.color.draw {'%', r=0.5, g=0.25, b=0.8}   -- percentage mode '%' (0.0-1.0)
+> pico.set.color.draw { r=128, g=0xFF, b=200 }      -- absolute (0-255), (0x00-0xFF)
+> pico.set.color.draw { '%', r=0.5, g=0.25, b=0.8 } -- percentage mode '%' (0.0-1.0)
 > pico.set.color.draw 'red'                         -- restore red (for the tutorial)
 ```
 
@@ -245,7 +245,7 @@ We may also change the alpha transparency for further drawing operations:
 <table>
 <tr><td><pre>
 > pico.set.alpha(0x88)
-> pico.output.draw.oval {'!', x=50, y=80, w=35, h=15}
+> pico.output.draw.oval { '!', x=50, y=80, w=35, h=15 }
 </pre>
 </td><td>
 <img src="img/guide-04-02-01.png" width="200">
@@ -271,7 +271,7 @@ function:
     color = { draw = 'blue' },
     style = 'stroke',
   }
-> pico.output.draw.rect {'!', x=60, y=50, w=30, h=30}
+> pico.output.draw.rect { '!', x=60, y=50, w=30, h=30 }
 </pre>
 </td><td>
 <img src="img/guide-04-03-01.png" width="200">
@@ -284,10 +284,10 @@ function:
 
 - `'!'` - Raw: world pixel coordinates
             (from `0` to world `w/h`)
-- `'%'` - Percentage: coordinates relative to the world size
+- `'%'` - Percentage: coordinates relative to world `w/h`
             (from `0.0` to `1.0`)
-- `'#'` - Tile: grid coordinates based on a tile and world sizes
-            (from `0` to world/tile `w/h`)
+- `'#'` - Tile: grid coordinates based on tile and world `w/h`
+            (from `0` to `w/h`)
 
 Positioning modes appear at index `1` of tables representing positions,
 dimensions, and rectangles:
@@ -303,6 +303,7 @@ Let's restart `pico-lua` with some transparency:
 > pico.init(false)
 > pico.init(true)
 > pico.set.alpha(0x88)
+> pico.set.color.draw 'red'
 </pre>
 </td><td>
 <img src="img/guide-02-03-01.png" width="200">
@@ -311,8 +312,7 @@ Let's restart `pico-lua` with some transparency:
 
 ### 5.1. Percentages
 
-Since we already used the raw mode in previous sections, let's now try
-percentages:
+Percentages is the preferable mode for positioning:
 
 <table>
 <tr><td><pre>
@@ -323,7 +323,7 @@ percentages:
 </td></tr>
 </table>
 
-The rectangle is centered at `(0.5,0.5)`, or half of the screen.
+The rectangle is centered at half of the screen `(0.5,0.5)`.
 
 ### 5.2. Anchors
 
@@ -334,13 +334,13 @@ determines the reference point within a shape:
 <tr><td><pre>
 > pico.output.clear()
 > pico.set.color.draw 'white'
-> pico.output.draw.pixel {'%', x=0.5, y=0.5}
+> pico.output.draw.pixel { '%', x=0.5, y=0.5 }
 > pico.set.color.draw 'red'
-> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW'}
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW' }
 > pico.set.color.draw 'green'
-> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C'}
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
 > pico.set.color.draw 'blue'
-> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE'}
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
 </pre>
 </td><td>
 <img src="img/guide-05-02-01.png" width="200">
@@ -378,8 +378,8 @@ dimensions:
 > pico.set.window {
     dim = { '#', w=40, h=40 },
   }
-> pico.output.draw.rect {'#', x=3, y=3, w=1, h=1}
-> pico.output.draw.rect {'#', x=5, y=1, w=2, h=1, anchor='NE'}
+> pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
+> pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }
 </pre>
 </td><td>
 <img src="img/guide-05-03-01.png" width="200">
@@ -429,7 +429,7 @@ The zoom level is controlled by the ratio between `window` and `world` sizes:
 <table>
 <tr><td><pre>
 > pico.set.view {
-    dim    = {'!', w=100, h=100},  -- 2x zoom
+    dim = { '!', w=100, h=100 },    -- 2x zoom
   }
 </pre>
 </td><td>
@@ -446,8 +446,8 @@ The `source` parameter scrolls the view:
 <table>
 <tr><td><pre>
 > pico.set.view {
-    dim    = {'!', w=200, h=200},
-    source = {'!', x=50, y=50, w=200, h=200},
+    dim    = { '!', w=200, h=200 },
+    source = { '!', x=50, y=50, w=200, h=200 },
   }
 </pre>
 </td><td>
@@ -463,7 +463,7 @@ The `pico.set.dim` shorthand sets both the window and the world to the same
 dimensions:
 
 ```lua
-> pico.set.dim {'!', w=200, h=200}
+> pico.set.dim { '!', w=200, h=200 }
 ```
 
 This is equivalent to setting `window` and `world` separately:
@@ -480,7 +480,7 @@ rendered:
 
 ```lua
 > pico.set.view {
-    target = {'%', x=0.75, y=0.5, w=0.5, h=1.0},
+    target = { '%', x=0.75, y=0.5, w=0.5, h=1.0 },
   }
 ```
 
@@ -492,7 +492,7 @@ The `clip` parameter restricts drawing to a sub-region of the world:
 
 ```lua
 > pico.set.view {
-    clip = {'%', x=0.5, y=0.5, w=0.5, h=0.5},
+    clip = { '%', x=0.5, y=0.5, w=0.5, h=0.5 },
   }
 ```
 
@@ -518,11 +518,11 @@ The `pico.input.delay(ms)` function pauses execution for a given time:
 <tr><td><pre>
 > pico.init(true)
 > pico.output.clear()
-> pico.output.draw.pixel {'!', x=25, y=50}
+> pico.output.draw.pixel { '!', x=25, y=50 }
 > pico.input.delay(500)
-> pico.output.draw.pixel {'!', x=50, y=50}
+> pico.output.draw.pixel { '!', x=50, y=50 }
 > pico.input.delay(500)
-> pico.output.draw.pixel {'!', x=75, y=50}
+> pico.output.draw.pixel { '!', x=75, y=50 }
 </pre>
 </td><td>
 <img src="img/guide-07-01-01.png" width="200">
@@ -573,7 +573,7 @@ When a timeout expires without an event, `nil` is returned:
 The `pico.get.mouse(pos)` function polls the current mouse position:
 
 ```lua
-> local pos = {'!', x=0, y=0}
+> local pos = { '!', x=0, y=0 }
 > local pressed = pico.get.mouse(pos, 1)  -- 1=left, 2=mid, 3=right
 > print(pos.x, pos.y, pressed)
 ```
@@ -598,7 +598,7 @@ Layers are off-screen textures for compositing complex scenes.
 > pico.layer.empty("bg", {w=100, h=100})
 > pico.set.layer("bg")
 > pico.set.color.draw 'blue'
-> pico.output.draw.rect {'%', x=0.5, y=0.5, w=0.8, h=0.8}
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.8, h=0.8 }
 ```
 
 ### 8.2. Compositing
@@ -632,7 +632,7 @@ To enable expert mode, we call `pico.set.expert(true)`:
 > pico.init(true)
 > pico.set.expert(true)
 > pico.output.clear()
-> pico.output.draw.rect {'!', x=25, y=25, w=50, h=50}
+> pico.output.draw.rect { '!', x=25, y=25, w=50, h=50 }
 </pre>
 </td><td>
 <img src="img/guide-09-01-01.png" width="200">
@@ -680,13 +680,13 @@ The `pico.cv` functions convert relative coordinates to absolute:
 
 ```lua
 > pico.init(true)
-> local pos = pico.cv.pos({'%', x=0.5, y=0.5})
+> local pos = pico.cv.pos { '%', x=0.5, y=0.5 }
 > print(pos.x, pos.y)
 50   50
 ```
 
 ```lua
-> local rect = pico.cv.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C'})
+> local rect = pico.cv.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
 > print(rect.x, rect.y, rect.w, rect.h)
 35   35   30   30
 ```
@@ -694,7 +694,7 @@ The `pico.cv` functions convert relative coordinates to absolute:
 An optional `base` rectangle can serve as the reference frame:
 
 ```lua
-> local base = {'!', x=0, y=0, w=50, h=50}
+> local base = { '!', x=0, y=0, w=50, h=50 }
 > local pos = pico.cv.pos({'%', x=0.5, y=0.5}, base)
 > print(pos.x, pos.y)
 25   25
@@ -705,15 +705,15 @@ An optional `base` rectangle can serve as the reference frame:
 The `pico.vs` functions test for collisions:
 
 ```lua
-> local r = {'!', x=50, y=50, w=20, h=20}
-> local p = {'!', x=55, y=55}
+> local r = { '!', x=50, y=50, w=20, h=20 }
+> local p = { '!', x=55, y=55 }
 > print(pico.vs.pos_rect(p, r))
 true
 ```
 
 ```lua
-> local r1 = {'!', x=50, y=50, w=20, h=20}
-> local r2 = {'!', x=60, y=60, w=20, h=20}
+> local r1 = { '!', x=50, y=50, w=20, h=20 }
+> local r2 = { '!', x=60, y=60, w=20, h=20 }
 > print(pico.vs.rect_rect(r1, r2))
 true
 ```
