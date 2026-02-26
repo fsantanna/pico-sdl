@@ -327,8 +327,11 @@ The rectangle is centered at half of the screen `(0.5,0.5)`.
 
 ### 5.2. Anchors
 
-In addition to positioning mode, `pico-lua` also supports anchoring, which
-determines the reference point within a shape:
+`pico-lua` also supports position anchors, which determine drawing references
+**within** shapes.
+
+The `anchor` field determines which point of the shape is placed at a given
+coordinate:
 
 <table>
 <tr><td><pre>
@@ -350,8 +353,8 @@ determines the reference point within a shape:
 We drew all three rectangles at the same pixel position, but with different
 anchors.
 
-The anchor determines a position inside the object, which becomes fixed at the
-given coordinate:
+The following predefined anchors determine the position inside the object that
+is affixed to the drawing coordinates:
 
 ```
 +-----------+
@@ -361,7 +364,7 @@ given coordinate:
 +-----------+
 ```
 
-By default, `pico-lua` uses the center anchor.
+By default, `pico-lua` uses the center anchor `'C'`.
 
 ### 5.3. Tiles
 
@@ -370,7 +373,8 @@ dimensions:
 
 <table>
 <tr><td><pre>
-> pico.output.clear()
+> pico.init(true)
+> pico.init(false)
 > pico.set.view {
     dim  = { '#', w=5, h=5 },
     tile = { w=20, h=20 },
