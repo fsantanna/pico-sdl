@@ -177,7 +177,7 @@ do
     pico.output.draw.image('img/open.png',
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.view {
-        target = {'%', x=0.75, y=0.5, w=0.5, h=1.0},
+        target = {'%', x=0.66, y=0.66, w=0.4, h=0.3},
     }
     shot("guide-06-01-01")
     pico.init(false)

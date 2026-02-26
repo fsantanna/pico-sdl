@@ -424,7 +424,7 @@ rendered:
 > pico.output.draw.image("img/open.png",
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
-    target = {'%', x=0.75, y=0.5, w=0.5, h=1.0},
+    target = {'%', x=0.66, y=0.66, w=0.4, h=0.3},
   }
 </pre>
 </td><td>
@@ -432,7 +432,8 @@ rendered:
 </td></tr>
 </table>
 
-The logical world is rendered on the right half of the physical window.
+The visible effect is to move the world to fit a smaller target window at the
+bottom-right of the screen, with a slight distortion, since `w/h` now mismatch.
 
 ### 6.2. Source
 
