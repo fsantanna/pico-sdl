@@ -443,7 +443,6 @@ The `source` property selects which region of the logical world is visible:
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.output.clear()
 > pico.output.draw.image("img/open.png",
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
@@ -492,7 +491,6 @@ A **smaller** source creates a zoom effect:
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.output.clear()
 > pico.output.draw.image("img/open.png",
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
@@ -532,8 +530,8 @@ The `pico.input.delay(ms)` function pauses execution for a given time:
 
 <table>
 <tr><td><pre>
+> pico.init(false)
 > pico.init(true)
-> pico.output.clear()
 > pico.output.draw.pixel { '!', x=25, y=50 }
 > pico.input.delay(500)
 > pico.output.draw.pixel { '!', x=50, y=50 }
@@ -645,7 +643,6 @@ To enable expert mode, we call `pico.set.expert(true)`:
 
 <table>
 <tr><td><pre>
-> pico.init(true)
 > pico.set.expert(true)
 > pico.output.clear()
 > pico.output.draw.rect { '!', x=25, y=25, w=50, h=50 }
