@@ -405,14 +405,13 @@ The view controls how the logical world maps to the physical window:
 - `pico.set.window` controls the **physical** window
 - `pico.set.view` controls the **logical** world
 
-Follow some advanced properties for `pico.set.view` that were not discussed:
+Next, we discuss some advanced properties for `pico.set.view`:
 
-| Property | Description     |
-|----------|-----------------|
-| `target` | world to window |
-| `source` | visible world   |
-| `clip`   | clipping region |
-| `tile`   | tile size       |
+| Property | Description             |
+|----------|-------------------------|
+| `source` | visible world region    |
+| `target` | world to window mapping |
+| `clip`   | world clipping region   |
 
 ### 6.1. Key Bindings
 
