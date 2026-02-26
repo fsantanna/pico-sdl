@@ -401,22 +401,22 @@ We then draw two rectangles also using the tile mode `'#'`:
 ## 6. Advanced View
 
 The view controls how the logical world maps to the physical window:
-    - `pico.set.window` controls the **physical** window
-    - `pico.set.view` controls the **logical** world
+
+- `pico.set.window` controls the **physical** window
+- `pico.set.view` controls the **logical** world
 
 Here is a summary of some configurable properties:
 
 <table>
 <tr>
-<th>Window (<code>pico.set.window</code>)</th>
-<th>World (<code>pico.set.view</code>)</th>
+<th>Window</th>
+<th>World</th>
 </tr>
 <tr>
 <td valign="top">
 
 | Property     | Description     |
 |--------------|-----------------|
-| `title`      | window title    |
 | `dim`        | window size     |
 | `fullscreen` | fullscreen mode |
 
@@ -426,11 +426,10 @@ Here is a summary of some configurable properties:
 | Property | Description     |
 |----------|-----------------|
 | `dim`    | world size      |
-| `grid`   | grid overlay    |
-| `tile`   | tile size       |
-| `source` | visible world   |
 | `target` | world to window |
+| `source` | visible world   |
 | `clip`   | clipping region |
+| `tile`   | tile size       |
 
 </td>
 </tr>
@@ -458,6 +457,7 @@ Let's draw a centered image and use the key bindings to explore it:
 </table>
 
 The call to `pico.input.loop()` allows `pico-lua` to handle events.
+
 Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
 Finally, close the window (e.g., `ALT+F4`) to return from the loop.
 
@@ -466,10 +466,11 @@ Finally, close the window (e.g., `ALT+F4`) to return from the loop.
 The `source` property selects which region of the logical world is visible
 in the window.
 
-When `source` is smaller than the world, it acts as a **zoom**: the selected
-region is stretched to fill the window.
-When the `source` position is offset, it acts as a **scroll**: the visible
-region pans across the world.
+When `source` is smaller than the world, it acts as a **zoom**:
+    the selected region is stretched to fill the window.
+
+When the `source` position is offset, it acts as a **scroll**:
+    the visible region moves within the world.
 
 Let's zoom into the top-left quarter of the image:
 
