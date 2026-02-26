@@ -54,15 +54,17 @@ To initialize `pico-lua`, we pass `true` to `pico.init`:
 </table>
 
 We immediately see a `500x500` window divided in small `5x5` rectangles
-representing `100x100` **logical pixels**, which our application uses as the
-main reference.
+representing `100x100` logical pixels.
+
+In the context of `pico-lua`, we use the term **world** to designate the
+logical view, which applications use as the main reference.
 
 By default, `pico-lua` exhibits the grid and coordinate labels to aid development
 through visual inspection.
 
 ### 2.2. Configure
 
-To configure the window and the logical view, we use `pico.set.window` and
+To configure the window and the world view, we use `pico.set.window` and
 `pico.set.view`:
 
 <table>
@@ -144,7 +146,7 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 </td></tr>
 </table>
 
-The pixel occupies a physical `5x5` square representing a single logical pixel,
+The pixel occupies a physical `5x5` square representing a single world pixel,
 as expected.
 
 ### 3.2. Clear
@@ -259,7 +261,7 @@ Following the general convention for "alpha":
 
 ### 4.3. All-at-Once
 
-We can set multiple state values at once using `pico.set` as a general
+We can also set multiple state values at once using `pico.set` as a general
 function:
 
 <table>
@@ -280,9 +282,12 @@ function:
 
 `pico-lua` supports multiple positioning modes as follows:
 
-- `'!'` - Raw: logical pixel coordinates (from `0` to world size)
-- `'%'` - Percentage: coordinates relative to the world size (from `0.0` to `1.0`)
-- `'#'` - Tile: grid coordinates based on a tile and world sizes (from `0` to world/tile sizes)
+- `'!'` - Raw: world pixel coordinates
+            (from `0` to world `w/h`)
+- `'%'` - Percentage: coordinates relative to the world size
+            (from `0.0` to `1.0`)
+- `'#'` - Tile: grid coordinates based on a tile and world sizes
+            (from `0` to world/tile `w/h`)
 
 Positioning modes appear at index `1` of tables representing positions,
 dimensions, and rectangles:
@@ -479,7 +484,7 @@ rendered:
   }
 ```
 
-The logical world is rendered on the right half of the window.
+The logical world is rendered on the right half of the physical window.
 
 ### 6.6. Clip
 
