@@ -236,16 +236,6 @@ do
     pico.init(false)
 end
 
--- 6.5 Key bindings: centered image with grid
-do
-    pico.init(true)
-    pico.output.clear()
-    pico.output.draw.image('img/open.png',
-        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    shot("guide-06-05-01")
-    pico.init(false)
-end
-
 -------------------------------------------------------------------------------
 -- Section 7: Events
 -------------------------------------------------------------------------------

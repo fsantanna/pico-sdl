@@ -522,35 +522,6 @@ An **offset** source position creates a scroll effect:
 The source is offset by `(25,25)`, scrolling the zoomed view towards the
 center of the world.
 
-### 6.5. Key Bindings
-
-By default, `pico-lua` provides key bindings to zoom and scroll the current
-view:
-
-- `CTRL` / `+`,`-`: zoom in / out
-- `CTRL` / Arrow keys: scroll left / right
-
-Let's draw a centered image and use the key bindings to explore it:
-
-<table>
-<tr><td><pre>
-> pico.init(false)
-> pico.init(true)
-> pico.output.clear()
-> pico.output.draw.image("img/open.png",
-    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-> pico.input.loop()
-</pre>
-</td><td>
-<img src="img/guide-06-06-01.png" width="200">
-</td></tr>
-</table>
-
-The call to `pico.input.loop()` allows `pico-lua` to handle events.
-
-Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
-Finally, close the window (e.g., `ALT+F4`) to return from the loop.
-
 ## 7. Events
 
 `pico-lua` provides functions to handle time and user input.
