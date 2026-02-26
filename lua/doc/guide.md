@@ -406,17 +406,35 @@ The view controls how the logical world maps to the physical window:
 
 Here is a summary of some configurable properties:
 
-| View   | Property     | Description     |
-|--------|--------------|-----------------|
-| Window | `title`      | window title    |
-| Window | `dim`        | window size     |
-| Window | `fullscreen` | fullscreen mode |
-| World  | `dim`        | world size      |
-| World  | `grid`       | grid overlay    |
-| World  | `tile`       | tile size       |
-| World  | `source`     | visible world   |
-| World  | `target`     | world to window |
-| World  | `clip`       | clipping region |
+<table>
+<tr>
+<th>Window (<code>pico.set.window</code>)</th>
+<th>World (<code>pico.set.view</code>)</th>
+</tr>
+<tr>
+<td valign="top">
+
+| Property     | Description     |
+|--------------|-----------------|
+| `title`      | window title    |
+| `dim`        | window size     |
+| `fullscreen` | fullscreen mode |
+
+</td>
+<td valign="top">
+
+| Property | Description     |
+|----------|-----------------|
+| `dim`    | world size      |
+| `grid`   | grid overlay    |
+| `tile`   | tile size       |
+| `source` | visible world   |
+| `target` | world to window |
+| `clip`   | clipping region |
+
+</td>
+</tr>
+</table>
 
 ### 6.1. Key Bindings
 
