@@ -691,10 +691,9 @@ First, let's rotate the flag 30° and draw it at the top-right:
 <table>
 <tr><td><pre>
 > pico.set.layer("flag")
-> pico.set.view { rotation = {angle=30, anchor='C'} }
+> pico.set.view { rotation={angle=30, anchor='C'} }
 > pico.set.layer()
-> pico.output.draw.layer("flag",
-    {'%', x=0.75, y=0.25, w=0.3})
+> pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 </pre>
 </td><td>
 <img src="img/guide-08-03-01.png" width="200">
@@ -715,8 +714,7 @@ bottom-left:
     flip = "horizontal",
   }
 > pico.set.layer()
-> pico.output.draw.layer("flag",
-    {'%', x=0.25, y=0.75, w=0.3})
+> pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
 </pre>
 </td><td>
 <img src="img/guide-08-03-02.png" width="200">

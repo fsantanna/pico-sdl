@@ -288,28 +288,22 @@ do
     pico.layer.empty("flag", {w=300, h=200})
     pico.set.layer("flag")
     pico.set.color.draw { r=0x00, g=0x2B, b=0x7F }
-    pico.output.draw.rect(
-        {'%', x=0.00, y=0.0, w=0.33, h=1.0, anc='NW'})
+    pico.output.draw.rect {'%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW'}
     pico.set.color.draw { r=0xFC, g=0xD1, b=0x16 }
-    pico.output.draw.rect(
-        {'%', x=0.33, y=0.0, w=0.34, h=1.0, anc='NW'})
+    pico.output.draw.rect {'%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW'}
     pico.set.color.draw { r=0xCE, g=0x11, b=0x26 }
-    pico.output.draw.rect(
-        {'%', x=0.67, y=0.0, w=0.33, h=1.0, anc='NW'})
+    pico.output.draw.rect {'%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW'}
     pico.set.layer()
     pico.output.clear()
-    pico.output.draw.layer(
-        "flag", {'%', x=0.33, y=0.33, w=0.2})
-    pico.output.draw.layer(
-        "flag", {'%', x=0.66, y=0.66, w=0.5})
+    pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
+    pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
     shot("guide-08-02-01")
 
     -- 8.3 step 1: rotate 30°, draw at NE
     pico.set.layer("flag")
     pico.set.view { rotation = {angle=30, anchor='C'} }
     pico.set.layer()
-    pico.output.draw.layer(
-        "flag", {'%', x=0.75, y=0.25, w=0.3})
+    pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
     shot("guide-08-03-01")
 
     -- 8.3 step 2: reset rotation, flip horizontal, draw at SW
@@ -319,8 +313,7 @@ do
         flip = "horizontal",
     }
     pico.set.layer()
-    pico.output.draw.layer(
-        "flag", {'%', x=0.25, y=0.75, w=0.3})
+    pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
     shot("guide-08-03-02")
     pico.init(false)
 end
