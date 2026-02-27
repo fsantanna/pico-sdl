@@ -779,7 +779,7 @@ Expert mode is useful for animation with controlled frame timing:
 `pico-lua` provides utility functions for coordinate conversion and collision
 detection.
 
-### 10.1. Coordinate Conversion
+### 10.1. Coordinate Conversions
 
 The `pico.cv` functions convert relative coordinates to absolute:
 
@@ -825,7 +825,9 @@ true
 
 ## 11. Extras
 
-### 11.1. Sound
+### 11.1. Fullscreen Mode
+
+### 11.2. Playing Sounds
 
 To play a sound file:
 
@@ -833,7 +835,7 @@ To play a sound file:
 > pico.output.sound('path/to/sound.wav')
 ```
 
-### 11.2. Screenshot
+### 11.3. Screenshots
 
 To save a screenshot of the current window:
 
