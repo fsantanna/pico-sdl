@@ -63,8 +63,8 @@ assert(layer == nil)
 print("draw layers onto main")
 pico.set.color.clear('black')
 pico.output.clear()
-pico.output.draw.layer(bg, {'%', x=1.0/3, y=1.0/3, w=1.0/3, h=1.0/3, anchor='C'})
-pico.output.draw.layer(ui, {'%', x=2.0/3, y=2.0/3, w=1.0/3, h=1.0/3, anchor='C'})
+pico.output.draw.layer(bg, {'%', x=1.0/3, y=1.0/3, h=1.0/3, anchor='C'})
+pico.output.draw.layer(ui, {'%', x=2.0/3, y=2.0/3, w=1.0/3, anchor='C'})
 pico.check("layers-03")
 
 -- present works on main
