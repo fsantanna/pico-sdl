@@ -421,10 +421,9 @@ rendered:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.output.draw.image("img/open.png",
-    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
-    target = {'%', x=0.66, y=0.66, w=0.4, h=0.3},
+    target = { '%', x=0.66, y=0.66, w=0.4, h=0.3 },
   }
 </pre>
 </td><td>
@@ -443,11 +442,10 @@ The `source` property selects which region of the logical world is visible:
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.output.draw.image("img/open.png",
-    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
-    source = {'%', x=0.5, y=0.6, w=0.3, h=0.3},
-    target = {'%', x=0.5, y=0.5, w=0.3, h=0.3},
+    source = { '%', x=0.5, y=0.6, w=0.3, h=0.3 },
+    target = { '%', x=0.5, y=0.5, w=0.3, h=0.3 },
   }
 </pre>
 </td><td>
@@ -467,10 +465,9 @@ The `clip` property restricts drawing to a sub-region of the world:
 > pico.init(false)
 > pico.init(true)
 > pico.set.view {
-    clip = {'%', x=0.5, y=0.5, w=0.25, h=0.25},
+    clip = { '%', x=0.5, y=0.5, w=0.25, h=0.25 },
   }
-> pico.output.draw.image("img/open.png",
-    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
 <img src="img/guide-06-03-01.png" width="200">
@@ -491,10 +488,9 @@ A **smaller** source creates a zoom effect:
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.output.draw.image("img/open.png",
-    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
-    source = {'!', x=0, y=0, w=50, h=50},
+    source = { '%', x=0.5, y=0.5, w=0.5, h=0.5 },
   }
 </pre>
 </td><td>
@@ -502,14 +498,14 @@ A **smaller** source creates a zoom effect:
 </td></tr>
 </table>
 
-The source covers half the world, resulting in a 2x zoom.
+Setting `w/h` to half and starting from center resuluts in a 2x zoom.
 
-An **offset** source position creates a scroll effect:
+Now, applying an **offset** to current position creates a scroll effect:
 
 <table>
 <tr><td><pre>
 > pico.set.view {
-    source = {'!', x=25, y=25, w=50, h=50},
+    source = { '%', x=0.6, y=0.5, w=0.5, h=0.5 },
   }
 </pre>
 </td><td>
@@ -517,8 +513,8 @@ An **offset** source position creates a scroll effect:
 </td></tr>
 </table>
 
-The source is offset by `(25,25)`, scrolling the zoomed view towards the
-center of the world.
+A `0.1` offset in `x` crops the source on its right side, which targets the
+whole window, resulting in an opposite scroll to the left.
 
 ## 7. Events
 
@@ -602,6 +598,9 @@ The `pico.quit()` function pushes a quit event, which can be caught by
 ```
 
 ## 8. Layers
+
+- flip, rotate
+- others: video, buffer
 
 Layers are off-screen textures for compositing complex scenes.
 

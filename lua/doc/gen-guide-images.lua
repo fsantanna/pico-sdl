@@ -217,7 +217,7 @@ do
     pico.output.draw.image('img/open.png',
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.view {
-        source = {'!', x=0, y=0, w=50, h=50},
+        source = { '%', x=0.5, y=0.5, w=0.5, h=0.5 },
     }
     shot("guide-06-04-01")
     pico.init(false)
@@ -230,7 +230,7 @@ do
     pico.output.draw.image('img/open.png',
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.view {
-        source = {'!', x=25, y=25, w=50, h=50},
+        source = { '%', x=0.6, y=0.5, w=0.5, h=0.5 },
     }
     shot("guide-06-04-02")
     pico.init(false)
