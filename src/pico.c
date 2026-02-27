@@ -1429,14 +1429,19 @@ int pico_input_event_ask (Pico_Event* evt, int type) {
 
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
     ttl_hash_tick(G.hash);
-    int has = SDL_WaitEventTimeout(evt, timeout);
-    if (!has) {
-        return 0;
+    int old = SDL_GetTicks();
+    while (1) {
+        int has = SDL_WaitEventTimeout(evt, timeout);
+        int now = SDL_GetTicks();
+        if (!has) {
+            return 0;
+        } else if (event_from_sdl(evt, type, 1)) {
+            return 1;
+        } else {
+            timeout = MAX(0, timeout-(now-old));
+            old = now;
+        }
     }
-    if (event_from_sdl(evt, type, 1)) {
-        return 1;
-    }
-    return 0;
 }
 
 void pico_input_loop (void) {
