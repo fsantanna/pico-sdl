@@ -1222,6 +1222,7 @@ static int l_output_draw_layer (lua_State* L) {
 
     Pico_Rel_Rect* rect = NULL;
     if (lua_istable(L, 2)) {
+        L_dim_default_wh(L, 2);
         rect = c_rel_rect(L, 2);
     }
 
