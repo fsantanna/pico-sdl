@@ -574,36 +574,35 @@ Let's create a simple loop to explore the possibilities:
 ```lua
 > while true do
     local e = pico.input.event()
-    if e.tag == 'quit' then
+    print("EVENT", e.tag)
+    for k,v in pairs(e) do
+        print('', k, v)
+    end
+    if e.tag=='key.dn' and e.key=='Escape' then
         break
-    elseif e.tag == 'key.dn' then
-        print("Key pressed: " .. e.key)
     end
   end
 ```
 
-Event types include `'quit'`, `'key.dn'`, `'key.up'`, `'mouse.button.dn'`,
-`'mouse.button.up'`, and `'mouse.motion'`.
+You may interact with the window by pressing keys, using the mouse, resizing
+the window, and so on.
+To escape the loop, press the `Escape` key.
 
-We can also filter events and set timeouts:
+Event types (*tags*) include `'key.dn'`, ``'mouse.button.dn'`,
+`'mouse.motion'`, and many others.
 
-```lua
-> local e = pico.input.event('key.dn')        -- wait for key press only
-> local e = pico.input.event('key.dn', 1000)  -- wait up to 1000ms
-```
-
-Mouse events include position and button fields:
+We can filter events and set timeouts:
 
 ```lua
-> local e = pico.input.event('mouse.button.dn')
-> print(e.x, e.y, e.but)   -- position and button
+> e1 = pico.input.event('key.dn')        -- wait for key press only
+> e2 = pico.input.event('key.dn', 1000)  -- wait up to 1000ms
 ```
 
 When a timeout expires without an event, `nil` is returned:
 
 ```lua
-> local e = pico.input.event('key.dn', 1000)
-> print(e)   -- nil (if no key pressed within 1000ms)
+> e = pico.input.event('key.dn', 1000)
+> print(e) -- nil, after 1000 if no keys pressed
 ```
 
 ### 7.3. Default Key Bindings
