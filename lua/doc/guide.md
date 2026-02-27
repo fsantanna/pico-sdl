@@ -179,8 +179,8 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
 
-With the aid of the tick marks, we can see that is centered at the given
-position.
+With the aid of the tick marks, we can see that the rectangle centered at the
+given position.
 Unlike most graphics libraries, `pico-lua` **centers** objects by default.
 We discuss positioning and anchoring further.
 
@@ -480,9 +480,7 @@ Then, we draw the centered image, which is clipped to fit the specified area.
 ### 6.4. Zoom & Scroll
 
 When `source` is combined with the default full-window target, the selected
-region is **stretched** to fill the entire window.
-
-A **smaller** source creates a zoom effect:
+region is stretched to fill the entire window:
 
 <table>
 <tr><td><pre>
@@ -498,9 +496,10 @@ A **smaller** source creates a zoom effect:
 </td></tr>
 </table>
 
-Setting `w/h` to half and starting from center resuluts in a 2x zoom.
+Cropping the source to half (`w=0.5`,`h=0.5`) and starting from its center
+(`x=0.5`,`y=0.5`) resuluts in a 2x zoom.
 
-Now, applying an **offset** to current position creates a scroll effect:
+Now, applying an offset to current position creates a scroll effect:
 
 <table>
 <tr><td><pre>
@@ -513,8 +512,8 @@ Now, applying an **offset** to current position creates a scroll effect:
 </td></tr>
 </table>
 
-A `0.1` offset in `x` crops the source on its right side, which targets the
-whole window, resulting in an opposite scroll to the left.
+A positive `x=0.1` offset (from `0.5` to `0.6`) crops the left side of the
+source, which still targets the whole window, resulting in a left scroll.
 
 ## 7. Events
 
