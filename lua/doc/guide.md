@@ -683,10 +683,9 @@ Then, we clear it and compose the flag twice, with different arguments.
 
 ### 8.3. Flip & Rotate
 
-We can flip and rotate a layer by setting view properties while
-targeting it.
+To flip and rotate a layers, we can use `pico.set.view` while targeting it.
 
-First, let's rotate the flag 30° and draw it at the top-right:
+First, let's rotate the flag and draw it at the top-right:
 
 <table>
 <tr><td><pre>
@@ -700,10 +699,10 @@ First, let's rotate the flag 30° and draw it at the top-right:
 </td></tr>
 </table>
 
-The `rotation` table takes an `angle` in degrees and an `anchor`
-for the pivot point.
+The `rotation` table takes an `angle` in degrees and an `anchor` for the pivot
+point.
 
-Now, let's reset the rotation, flip horizontally, and draw at the
+Now, let's reset the rotation, flip horizontally, and draw the flag at the
 bottom-left:
 
 <table>
@@ -711,7 +710,7 @@ bottom-left:
 > pico.set.layer("flag")
 > pico.set.view {
     rotation = {angle=0},
-    flip = "horizontal",
+    flip = 'horizontal',
   }
 > pico.set.layer()
 > pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
@@ -721,8 +720,8 @@ bottom-left:
 </td></tr>
 </table>
 
-The horizontal flip reverses the stripe order, making the change
-visually obvious.
+The `flip` field receives `"horizontal"` to reverse the stripe order, which can
+be stated visually.
 
 ## 9. Expert Mode
 
