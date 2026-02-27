@@ -250,6 +250,22 @@ do
     pico.init(false)
 end
 
+do
+    pico.init(true)
+    pico.output.clear()
+    for i=1, 400 do
+        local rad = i * math.pi / 180
+        pico.output.draw.pixel {
+            '!',
+            x = 50 + 30 * math.cos(rad),
+            y = 50 + 30 * math.sin(rad),
+        }
+        --pico.input.delay(10)
+    end
+    shot("guide-07-01-02")
+    pico.init(false)
+end
+
 -------------------------------------------------------------------------------
 -- Section 8: Layers
 -------------------------------------------------------------------------------

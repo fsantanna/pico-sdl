@@ -517,26 +517,53 @@ source, which still targets the whole window, resulting in a left scroll.
 
 ## 7. Events
 
-`pico-lua` provides functions to handle time and user input.
+I addition to output and drawing operations, `pico-lua` also provides functions
+to handle time and user input.
 
 ### 7.1. Delay
 
-The `pico.input.delay(ms)` function pauses execution for a given time:
+A call to `pico.input.delay(ms)` pauses execution for the specified time:
 
 <table>
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.output.draw.pixel { '!', x=25, y=50 }
-> pico.input.delay(500)
-> pico.output.draw.pixel { '!', x=50, y=50 }
-> pico.input.delay(500)
-> pico.output.draw.pixel { '!', x=75, y=50 }
+> pico.output.draw.pixel { '!', x=25, y=50 } -- copy/paste all next lines at once
+  pico.input.delay(1000)
+  pico.output.draw.pixel { '!', x=50, y=50 }
+  pico.input.delay(1000)
+  pico.output.draw.pixel { '!', x=75, y=50 }
 </pre>
 </td><td>
 <img src="img/guide-07-01-01.png" width="200">
 </td></tr>
 </table>
+
+After each drawing, we pause execution for `1s`, also blocking (freezing) the
+Lua prompt.
+
+Combined with loops, delays can create non-interactive animations.
+Here, we draw a circle pixel by pixel:
+
+<table>
+<tr><td><pre>
+> pico.output.clear()
+> for i=1, 400 do
+    local rad = i * math.pi / 180
+    pico.output.draw.pixel {
+      '!',
+      x = 50 + 30*math.cos(rad),
+      y = 50 + 30*math.sin(rad),
+    }
+    pico.input.delay(10)
+  end
+</pre>
+</td><td>
+<img src="img/guide-07-01-02.png" width="200">
+</td></tr>
+</table>
+
+On each step, we draw a single pixel and delay for a short period.
 
 ### 7.2. Event
 
