@@ -725,26 +725,30 @@ be stated visually.
 
 ## 9. Expert Mode
 
-By default, `pico-lua` uses immediate mode: every draw operation is visible
-instantly.
-Expert mode disables this, requiring explicit `present()` calls.
+By default, drawing operations in `pico-lua` are immediatly visible on the
+screen.
 
-### 9.1. Buffered
-
-To enable expert mode, we call `pico.set.expert(true)`:
+Nevertheless, `pico-lua` also supports an "expert mode" through
+`pico.set.expert`.
+In this mode, drawing operations are buffered, until an explicit call to
+`pico.output.present` updates the screen at once:
 
 <table>
 <tr><td><pre>
-> pico.set.expert(true)
 > pico.output.clear()
-> pico.output.draw.rect { '!', x=25, y=25, w=50, h=50 }
+> pico.set.expert(true)
+> pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
+> pico.input.delay(1000)
+> pico.output.draw.rect { '!', x=66, y=66, w=40, h=40 }
+> pico.input.delay(1000)
 </pre>
 </td><td>
 <img src="img/guide-09-01-01.png" width="200">
 </td></tr>
 </table>
 
-Nothing is visible yet because we haven't called `present()`.
+At this point, nothing appears on the screen yet, since we have not called
+`pico.output.present`.
 
 <table>
 <tr><td><pre>
@@ -755,9 +759,9 @@ Nothing is visible yet because we haven't called `present()`.
 </td></tr>
 </table>
 
-Now the rectangle is visible.
+Now, both the rectangles appear at the same time.
 
-### 9.2. Animation
+### 9.2. Animations
 
 Expert mode is useful for animation with controlled frame timing:
 
