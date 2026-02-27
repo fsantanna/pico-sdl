@@ -601,8 +601,7 @@ We can filter events and set timeouts:
 When a timeout expires without an event, `nil` is returned:
 
 ```lua
-> e = pico.input.event('key.dn', 1000)
-> print(e) -- nil, after 1000 if no keys pressed
+> print(e2) -- nil, after 1000 if no keys pressed
 ```
 
 ### 7.3. Default Key Bindings
