@@ -630,57 +630,101 @@ The call to `pico.input.loop()` allows `pico-lua` to handle events.
 Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
 Finally, close the window (e.g., `ALT+F4`) to return from the loop.
 
-### 7.3. Mouse
-
-The `pico.get.mouse(pos)` function polls the current mouse position:
-
-```lua
-> local pos = { '!', x=0, y=0 }
-> local pressed = pico.get.mouse(pos, 1)  -- 1=left, 2=mid, 3=right
-> print(pos.x, pos.y, pressed)
-```
-
-### 7.4. Quit
-
-The `pico.quit()` function pushes a quit event, which can be caught by
-`pico.input.event()`:
-
-```lua
-> pico.quit()
-```
-
 ## 8. Layers
 
-- flip, rotate
-- others: video, buffer
+Layers are independent views, where you can draw shapes in separate, and them
+compose to form complex scenes.
 
-Layers are off-screen textures for compositing complex scenes.
+The main logical world is itself a layer, as well as images, texts, buffers,
+and videos.
+Therefore, all view properties also apply to layers.
 
 ### 8.1. Creating Layers
 
+We use `pico.layer.empty` to create a fresh layer, and `pico.set.layer` to
+redirect further drawing operations to it:
+
 ```lua
-> pico.init(true)
-> pico.layer.empty("bg", {w=100, h=100})
-> pico.set.layer("bg")
-> pico.set.color.draw 'blue'
-> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.8, h=0.8 }
+> pico.output.clear()
+> pico.layer.empty("flag", {w=300, h=200})
+> pico.set.layer("flag")
+> pico.set.color.draw { r=0x00, g=0x2B, b=0x7F }
+  pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
+  pico.set.color.draw { r=0xFC, g=0xD1, b=0x16 }
+  pico.output.draw.rect { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' }
+  pico.set.color.draw { r=0xCE, g=0x11, b=0x26 }
+  pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
 ```
+
+We identify the layer as `"flag"` and then set it as the current drawing layer.
+Then, we paint the layer with the colors.
+
+At this point, nothing appears on the screen yet, since we did not update the
+world view.
 
 ### 8.2. Compositing
 
+To compose layers, we use `pico.output.draw.layer` on a "parent" layer:
+
 <table>
 <tr><td><pre>
-> pico.set.layer(nil)  -- back to main
+> pico.set.layer()      -- back to main world
 > pico.output.clear()
-> pico.output.draw.layer("bg", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
+> pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 </pre>
 </td><td>
 <img src="img/guide-08-02-01.png" width="200">
 </td></tr>
 </table>
 
-Layers can be created from images (`pico.layer.image`), text
-(`pico.layer.text`), or pixel buffers (`pico.layer.buffer`).
+We first use `pico.set.layer()`, with no arguments, to target the world layer.
+Then, we clear it and compose the flag twice, with different arguments.
+
+### 8.3. Flip & Rotate
+
+We can flip and rotate a layer by setting view properties while
+targeting it.
+
+First, let's rotate the flag 30° and draw it at the top-right:
+
+<table>
+<tr><td><pre>
+> pico.set.layer("flag")
+> pico.set.view { rotation = {angle=30, anchor='C'} }
+> pico.set.layer()
+> pico.output.draw.layer("flag",
+    {'%', x=0.75, y=0.25, w=0.3})
+</pre>
+</td><td>
+<img src="img/guide-08-03-01.png" width="200">
+</td></tr>
+</table>
+
+The `rotation` table takes an `angle` in degrees and an `anchor`
+for the pivot point.
+
+Now, let's reset the rotation, flip horizontally, and draw at the
+bottom-left:
+
+<table>
+<tr><td><pre>
+> pico.set.layer("flag")
+> pico.set.view {
+    rotation = {angle=0},
+    flip = "horizontal",
+  }
+> pico.set.layer()
+> pico.output.draw.layer("flag",
+    {'%', x=0.25, y=0.75, w=0.3})
+</pre>
+</td><td>
+<img src="img/guide-08-03-02.png" width="200">
+</td></tr>
+</table>
+
+The horizontal flip reverses the stripe order, making the change
+visually obvious.
 
 ## 9. Expert Mode
 
