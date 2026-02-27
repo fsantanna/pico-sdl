@@ -564,7 +564,7 @@ Here, we draw a circle pixel by pixel:
 
 On each step, we draw a single pixel and delay for a short period.
 
-### 7.2. Events
+### 7.2. Event
 
 To create interactive applications, we use `pico.input.event` to wait for input
 events.
@@ -616,9 +616,6 @@ Let's draw a centered image and use the key bindings to explore it:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
-> pico.output.clear()
 > pico.output.draw.image("img/open.png",
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.input.loop()
