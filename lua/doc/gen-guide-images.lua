@@ -21,11 +21,13 @@ end
 do
     pico.init(true)
     pico.output.clear()
+    pico.set.window {
+        title = "Hello!",
+        dim   = { '!', w=200, h=200 },
+    }
     pico.set.view {
-        title  = "Hello!",
-        grid   = false,
-        window = {'!', w=200, h=200},
-        world  = {'!', w=200, h=200},
+        grid = false,
+        dim  = { '!', w=200, h=200 },
     }
     shot("guide-02-02-01")
     pico.init(false)
@@ -155,9 +157,11 @@ end
 do
     pico.init(true)
     pico.set.view {
-        window = {'#', w=40, h=40},
-        world  = {'#', w=5, h=5},
-        tile   = {w=20, h=20},
+        dim  = { '#', w=5, h=5 },
+        tile = { w=20, h=20 },
+    }
+    pico.set.window {
+        dim = { '#', w=40, h=40 },
     }
     pico.output.clear()
     pico.output.draw.rect {'#', x=3, y=3, w=1, h=1}
@@ -324,18 +328,11 @@ end
 
 do
     pico.init(true)
-    pico.set.expert(true)
     pico.output.clear()
-    pico.output.draw.rect({'!', x=25, y=25, w=50, h=50})
+    pico.set.expert(true)
+    pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
+    pico.output.draw.rect { '!', x=66, y=66, w=40, h=40 }
     shot("guide-09-01-01")
-    pico.init(false)
-end
-
-do
-    pico.init(true)
-    pico.set.expert(true)
-    pico.output.clear()
-    pico.output.draw.rect({'!', x=25, y=25, w=50, h=50})
     pico.output.present()
     shot("guide-09-01-02")
     pico.init(false)
