@@ -550,8 +550,7 @@ Here, we draw a circle pixel by pixel:
 > pico.output.clear()
 > for i=1, 400 do
     local rad = i * math.pi / 180
-    pico.output.draw.pixel {
-      '!',
+    pico.output.draw.pixel { '!',
       x = 50 + 30*math.cos(rad),
       y = 50 + 30*math.sin(rad),
     }
@@ -565,9 +564,12 @@ Here, we draw a circle pixel by pixel:
 
 On each step, we draw a single pixel and delay for a short period.
 
-### 7.2. Event
+### 7.2. Events
 
-The `pico.input.event()` function waits for input events:
+To create interactive applications, we use `pico.input.event` to wait for input
+events.
+
+Let's create a simple loop to explore the possibilities:
 
 ```lua
 > while true do
