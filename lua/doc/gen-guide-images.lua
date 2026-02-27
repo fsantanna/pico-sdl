@@ -240,6 +240,7 @@ end
 -- Section 7: Events
 -------------------------------------------------------------------------------
 
+-- pico.input.delay: 3 pixels
 do
     pico.init(true)
     pico.output.clear()
@@ -250,6 +251,7 @@ do
     pico.init(false)
 end
 
+-- pico.input.delay: circle loop
 do
     pico.init(true)
     pico.output.clear()
@@ -263,6 +265,16 @@ do
         --pico.input.delay(10)
     end
     shot("guide-07-01-02")
+    pico.init(false)
+end
+
+-- pico.input.loop: key bindings
+do
+    pico.init(true)
+    pico.output.clear()
+    pico.output.draw.image('img/open.png',
+        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    shot("guide-07-03-01")
     pico.init(false)
 end
 

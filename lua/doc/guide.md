@@ -606,6 +606,35 @@ When a timeout expires without an event, `nil` is returned:
 > print(e)   -- nil (if no key pressed within 1000ms)
 ```
 
+### 7.3. Default Key Bindings
+
+By default, `pico-lua` provides key bindings to zoom and scroll the current
+view:
+
+- `CTRL` / `+`,`-`: zoom in / out
+- `CTRL` / Arrow keys: scroll left / right
+
+Let's draw a centered image and use the key bindings to explore it:
+
+<table>
+<tr><td><pre>
+> pico.init(false)
+> pico.init(true)
+> pico.output.clear()
+> pico.output.draw.image("img/open.png",
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.input.loop()
+</pre>
+</td><td>
+<img src="img/guide-07-03-01.png" width="200">
+</td></tr>
+</table>
+
+The call to `pico.input.loop()` allows `pico-lua` to handle events.
+
+Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
+Finally, close the window (e.g., `ALT+F4`) to return from the loop.
+
 ### 7.3. Mouse
 
 The `pico.get.mouse(pos)` function polls the current mouse position:
