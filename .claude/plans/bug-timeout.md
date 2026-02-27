@@ -35,7 +35,11 @@ callers with a filter + timeout would still get unfiltered results.
 
 - [x] Analyze the bug
 - [x] Create test `tst/todo_input_timeout.c`
-- [ ] Fix `pico_input_event_timeout` in `src/pico.c`
+- [x] Fix `pico_input_event_timeout` in `src/pico.c` (user did this)
+- [x] Create test `lua/tst/todo/input_timeout.lua`
 - [ ] Fix Lua binding in `lua/pico.c`
+    - line 1121: `PICO_EVENT_ANY` → `evt`
+    - line 1596: add `mouse.motion` → `PICO_EVENT_MOUSE_MOTION`
+    - line 1596: add `mouse.button.up` → `PICO_EVENT_MOUSE_BUTTON_UP`
 - [ ] Manual testing
 - [ ] Commit / push / PR
