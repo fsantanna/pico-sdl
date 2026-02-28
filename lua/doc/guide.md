@@ -725,41 +725,35 @@ be stated visually.
 
 ### 8.4. Sub-Layers
 
-A sub-layer refers to a region within a parent layer, sharing its actual
-pixel contents.
-This is useful for isolating parts of a larger image, such as individual
-sprites from a sprite sheet.
+A sub-layer points to a region within a parent layer, sharing the actual pixel
+contents.
 
-We call `pico.layer.sub` to crop a region a parent layer:
+Sub-layers are useful to isolate individual frames from a sprite sheet in
+games, which we discuss in [#Animations](#animations).
+
+We call `pico.layer.sub` to crop a region of a parent layer:
 
 <table>
 <tr><td><pre>
-> pico.layer.sub("blue",   "flag",
-    {'%', x=0.25, y=0.5, w=0.1, h=0.15, anc='C'})
-> pico.layer.sub("yellow", "flag",
-    {'%', x=0.50, y=0.5, w=0.1, h=0.15, anc='C'})
-> pico.layer.sub("red",    "flag",
-    {'%', x=0.75, y=0.5, w=0.1, h=0.15, anc='C'})
+> pico.layer.sub("blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15, anc='C'})
+> pico.layer.sub("yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15, anc='C'})
+> pico.layer.sub("red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15, anc='C'})
 > pico.output.clear()
-> pico.output.draw.layer("blue",
-    {'%', x=0.30, y=0.30, w=0.25})
-> pico.output.draw.layer("yellow",
-    {'%', x=0.70, y=0.45, w=0.25})
-> pico.output.draw.layer("red",
-    {'%', x=0.45, y=0.75, w=0.25})
+> pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
+> pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
+> pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
 </pre>
 </td><td>
 <img src="img/guide-08-04-01.png" width="200">
 </td></tr>
 </table>
 
-Each sub-layer crops a square from one stripe of the flag (blue, yellow, red)
-and draws them in a swirl arrangement.
+The first parameter identifies the sub-layer for further operations.
 Drawing a sub-layer works exactly like drawing a regular layer with
 `pico.output.draw.layer`.
 
-Sub-layers are commonly used for sprite sheets, where a single image contains
-multiple frames — this is discussed further in the Animations section.
+In the example, each sub-layer crops a square from each stripe of the flag
+(blue, yellow, red), and then draws each on the screen.
 
 ## 9. Expert Mode
 
