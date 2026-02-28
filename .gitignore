@@ -5,7 +5,7 @@
 *.swp
 *.zip
 
-.worktrees/
+.claude/worktrees/
 
 .vscode/
 build/
