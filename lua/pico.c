@@ -1034,19 +1034,21 @@ static int l_layer_empty (lua_State* L) {
         (int) L_checkfieldnum(L, 2, "h"),
     };
     pico_layer_empty(name, dim);
-    lua_pushstring(L, name);                        // name | dim | *name*
-    return 1;
+    return 0;
 }
 
 static int l_layer_image (lua_State* L) {
-    const char* name = NULL;
-    if (!lua_isnil(L, 1)) {
-        name = luaL_checkstring(L, 1);              // name | path
+    const char* name;         // [name] | path
+    const char* path;
+    if (lua_gettop(L) >= 2) {
+        name = luaL_checkstring(L, 1);
+        path = luaL_checkstring(L, 2);
+    } else {
+        name = NULL;
+        path = luaL_checkstring(L, 1);
     }
-    const char* path = luaL_checkstring(L, 2);
     pico_layer_image(name, path);
-    lua_pushstring(L, name ? name : path);          // name | path | *name*
-    return 1;
+    return 0;
 }
 
 static int l_layer_buffer (lua_State* L) {
@@ -1069,8 +1071,7 @@ static int l_layer_buffer (lua_State* L) {
     c_buffer_fill(L, 3, buf_dim, (Pico_Color_A*)buf);
 
     pico_layer_buffer(name, dim, (Pico_Color_A*)buf);
-    lua_pushstring(L, name);
-    return 1;
+    return 0;
 }
 
 static int l_layer_text (lua_State* L) {
@@ -1078,19 +1079,21 @@ static int l_layer_text (lua_State* L) {
     int height = luaL_checkinteger(L, 2);
     const char* text = luaL_checkstring(L, 3);
     pico_layer_text(name, height, text);
-    lua_pushstring(L, name);
-    return 1;
+    return 0;
 }
 
 static int l_layer_video (lua_State* L) {
-    const char* name = NULL;
-    if (!lua_isnil(L, 1)) {
-        name = luaL_checkstring(L, 1);              // name | path
+    const char* name;         // [name] | path
+    const char* path;
+    if (lua_gettop(L) >= 2) {
+        name = luaL_checkstring(L, 1);
+        path = luaL_checkstring(L, 2);
+    } else {
+        name = NULL;
+        path = luaL_checkstring(L, 1);
     }
-    const char* path = luaL_checkstring(L, 2);
     pico_layer_video(name, path);
-    lua_pushstring(L, name ? name : path);          // name | path | *name*
-    return 1;
+    return 0;
 }
 
 static int l_layer_sub (lua_State* L) {
@@ -1099,9 +1102,8 @@ static int l_layer_sub (lua_State* L) {
     luaL_checktype(L, 3, LUA_TTABLE);
     L_dim_default_wh(L, 3);
     Pico_Rel_Rect* crop = c_rel_rect(L, 3);
-    const char* ret = pico_layer_sub(name, parent, crop);
-    lua_pushstring(L, ret);
-    return 1;
+    pico_layer_sub(name, parent, crop);
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1132,7 +1134,7 @@ static int l_input_event (lua_State* L) {
         ms = lua_tointeger(L, -1);
     }
 
-    int evt = PICO_EVENT_ANY;
+    int id = PICO_EVENT_ANY;
     if (lua_type(L,1) == LUA_TSTRING) {
         lua_pushlightuserdata(L, (void*)&KEY);  // "e" | K
         lua_gettable(L, LUA_REGISTRYINDEX);     // "e" | G
@@ -1140,7 +1142,7 @@ static int l_input_event (lua_State* L) {
         lua_pushvalue(L, 1);                    // "e" | G | events | "e"
         lua_gettable(L, -2);                    // "e" | G | events | e
         int ok;
-        evt = lua_tointegerx(L, -1, &ok);
+        id = lua_tointegerx(L, -1, &ok);
         if (!ok) {
             return luaL_error(L, "invalid event \"%s\"", lua_tostring(L,1));
         }
@@ -1149,9 +1151,9 @@ static int l_input_event (lua_State* L) {
     Pico_Event e;
     int ise = 1;
     if (ms == -1) {
-        pico_input_event(&e, evt);
+        pico_input_event(&e, id);
     } else {
-        ise = pico_input_event_timeout(&e, evt, ms);
+        ise = pico_input_event_timeout(&e, id, ms);
     }
 
     if (!ise) {

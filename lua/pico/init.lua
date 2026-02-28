@@ -22,8 +22,12 @@ setmetatable(M.set, {
 function M.layer.images (path, t)
     local parent = M.layer.image(nil, path)
     local names = {}
-    if t.w and t.h then
-        -- Grid form: {w=cols, h=rows, n=count, prefix="..."}
+    local mode = t[1]
+    assert(mode=='#' or mode=='!', "expected '#' or '!' mode")
+
+    -- Grid form: {w=cols, h=rows, n=count, prefix="..."}
+    if mode == '#' then
+        assert(t.w and t.h, "mode '#' requires 'w' and 'h'")
         local prefix = t.prefix or ""
         local cols = t.w
         local rows = t.h
@@ -44,11 +48,14 @@ function M.layer.images (path, t)
             end
             if i >= n then break end
         end
+
+    -- Explicit form: {name=rect, ...}
     else
-        -- Explicit form: {name=rect, ...}
         for name, crop in pairs(t) do
-            M.layer.sub(name, parent, crop)
-            names[#names+1] = name
+            if name ~= 1 then
+                M.layer.sub(name, parent, crop)
+                names[#names+1] = name
+            end
         end
     end
     return names
