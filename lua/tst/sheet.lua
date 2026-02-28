@@ -71,7 +71,7 @@ pico.set.layer(nil)
 
 -- Use grid form: 2 columns, 1 row
 local names = pico.layer.images(sheet2,
-    {w=2, h=1, prefix="cell-"})
+    {'#', w=2, h=1, prefix="cell-"})
 assert(#names == 2)
 assert(names[1] == "cell-1")
 assert(names[2] == "cell-2")
@@ -84,5 +84,26 @@ pico.output.draw.layer("cell-1",
 pico.output.draw.layer("cell-2",
     {'%', x=0.25, y=0.5, w=0.5, h=1, anchor='C'})
 pico.check("sheet-03")
+
+-- Test 4: pico.layer.images (explicit form)
+print("Test 4: explicit form")
+local names2 = pico.layer.images(sheet2, {
+    '!',
+    left  = {'!', x=0, y=0, w=2, h=2, anchor='NW'},
+    right = {'!', x=2, y=0, w=2, h=2, anchor='NW'},
+})
+assert(#names2 == 2)
+table.sort(names2)
+assert(names2[1] == "left")
+assert(names2[2] == "right")
+
+pico.set.color.clear('black')
+pico.output.clear()
+-- Draw left (red) on right, right (green) on left (same as 03)
+pico.output.draw.layer("left",
+    {'%', x=0.75, y=0.5, w=0.5, h=1, anchor='C'})
+pico.output.draw.layer("right",
+    {'%', x=0.25, y=0.5, w=0.5, h=1, anchor='C'})
+pico.check("sheet-04")
 
 pico.init(false)
