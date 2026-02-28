@@ -114,6 +114,12 @@ static struct {
     {}, 0
 };
 
+static void _pico_tick (void) {
+    assert(S.layer==&G.main && "must reset layer before input");
+    assert(STACK.n==0 && "must clear stack before input");
+    ttl_hash_tick(G.hash);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
@@ -1072,15 +1078,15 @@ static Pico_Layer* _pico_layer_buffer (
     return data;
 }
 
-const char* pico_layer_buffer (
+void pico_layer_buffer (
     const char* name,
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
-    return _pico_layer_buffer(name, dim, pixels)->key->key;
+    _pico_layer_buffer(name, dim, pixels);
 }
 
-const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
+void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(name!=NULL && "layer name required");
 
     int n = sizeof(Pico_Key) + strlen(name) + 1;
@@ -1090,7 +1096,7 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
 
     Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
     if (data != NULL) {
-        return data->key->key;
+        return;
     }
 
     data = malloc(sizeof(Pico_Layer));
@@ -1111,8 +1117,6 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     };
     assert(data->key != NULL);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
-
-    return data->key->key;
 }
 
 static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
@@ -1157,8 +1161,8 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     return data;
 }
 
-const char* pico_layer_image (const char* name, const char* path) {
-    return _pico_layer_image(name, path)->key->key;
+void pico_layer_image (const char* name, const char* path) {
+    _pico_layer_image(name, path);
 }
 
 static Pico_Layer* _pico_layer_text (
@@ -1222,8 +1226,9 @@ static Pico_Layer* _pico_layer_text (
     return data;
 }
 
-const char* pico_layer_text (const char* name, int height, const char* text) {
-    return _pico_layer_text(name, height, text)->key->key;
+void pico_layer_text (const char* name, int height, const char* text) {
+    assert(name!=NULL && "layer name required");
+    _pico_layer_text(name, height, text);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1394,7 +1399,7 @@ static int event_from_sdl (Pico_Event* e, int xp, int do_exit) {
 }
 
 void pico_input_delay (int ms) {
-    ttl_hash_tick(G.hash);
+    _pico_tick();
     while (1) {
         int old = SDL_GetTicks();
         Pico_Event e;
@@ -1411,7 +1416,7 @@ void pico_input_delay (int ms) {
 }
 
 void pico_input_event (Pico_Event* evt, int type) {
-    ttl_hash_tick(G.hash);
+    _pico_tick();
     while (1) {
         Pico_Event x;
         SDL_WaitEvent(&x);
@@ -1425,13 +1430,14 @@ void pico_input_event (Pico_Event* evt, int type) {
 }
 
 int pico_input_event_ask (Pico_Event* evt, int type) {
+    _pico_tick();
     int has = SDL_PollEvent(evt);
     if (!has) return 0;
     return event_from_sdl(evt, type, 1);
 }
 
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
-    ttl_hash_tick(G.hash);
+    _pico_tick();
     int old = SDL_GetTicks();
     while (1) {
         int has = SDL_WaitEventTimeout(evt, timeout);
@@ -1449,7 +1455,7 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 void pico_input_loop (void) {
     while (1) {
-        ttl_hash_tick(G.hash);
+        _pico_tick();
         Pico_Event e;
         SDL_WaitEvent(&e);
         event_from_sdl(&e, SDL_ANY, 0);
@@ -1478,8 +1484,8 @@ void pico_output_draw_buffer (
     const Pico_Rel_Rect* rect
 ) {
     assert(name!=NULL && "layer name required");
-    const char* key = pico_layer_buffer(name, dim, buffer);
-    pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
+    pico_layer_buffer(name, dim, buffer);
+    pico_output_draw_layer(name, (Pico_Rel_Rect*)rect);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {

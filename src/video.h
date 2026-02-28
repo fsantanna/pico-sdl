@@ -117,10 +117,11 @@ static void _pico_hash_clean_video (Pico_Layer_Video* vs) {
 
 /* Get or create video layer by name */
 static Pico_Layer_Video* _pico_layer_video (const char* name, const char* path) {
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
+    const char* str = (name != NULL) ? name : path;
+    int n = sizeof(Pico_Key) + strlen(str) + 1;
     Pico_Key* key = alloca(n);
     key->type = PICO_KEY_LAYER;
-    strcpy(key->key, name);
+    strcpy(key->key, str);
 
     Pico_Layer_Video* vs =
         (Pico_Layer_Video*)ttl_hash_get(
@@ -200,14 +201,12 @@ static Pico_Layer_Video* _pico_layer_video (const char* name, const char* path) 
     return vs;
 }
 
-const char* pico_layer_video (const char* name, const char* path) {
-    assert(name != NULL && "layer name required");
+void pico_layer_video (const char* name, const char* path) {
     assert(path != NULL && "video path required");
 
     Pico_Layer_Video* vs =
         _pico_layer_video(name, path);
     pico_assert(vs != NULL);
-    return vs->base.key->key;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
