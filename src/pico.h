@@ -295,6 +295,17 @@ int pico_get_key (PICO_KEY key);
 /// @return layer name (NULL = main layer)
 const char* pico_get_layer (void);
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// @brief Creates a layer from a pixel buffer.
+/// @param name layer name (NULL uses "/buffer/<pointer>", otherwise must not
+///             start with '/')
+/// @param dim buffer dimensions
+/// @param pixels RGBA pixel data (must remain valid while layer exists)
+/// @return the layer name
+const char* pico_layer_buffer (const char* name, Pico_Abs_Dim dim,
+                               const Pico_Color_A* pixels);
+
 /// @brief Creates an empty layer.
 /// @param name layer name (must not be NULL or start with '/')
 /// @param dim layer dimensions
@@ -308,14 +319,14 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim);
 /// @return the layer name
 const char* pico_layer_image (const char* name, const char* path);
 
-/// @brief Creates a layer from a pixel buffer.
-/// @param name layer name (NULL uses "/buffer/<pointer>", otherwise must not
-///             start with '/')
-/// @param dim buffer dimensions
-/// @param pixels RGBA pixel data (must remain valid while layer exists)
-/// @return the layer name
-const char* pico_layer_buffer (const char* name, Pico_Abs_Dim dim,
-                               const Pico_Color_A* pixels);
+/// @brief Creates a sub-layer (crop) from an existing layer.
+/// Shares the parent's texture — no copy.
+/// @param name sub-layer name (must not be NULL)
+/// @param parent parent layer name (must exist, must not be a sub-layer)
+/// @param crop source rectangle within the parent
+/// @return the sub-layer name
+const char* pico_layer_sub (const char* name,
+    const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a layer from text.
 /// @param name layer name (NULL auto-generates from font/height/color/text,
@@ -331,6 +342,8 @@ const char* pico_layer_text (const char* name, int height, const char* text);
 /// @param path path to the Y4M video file
 /// @return the layer name
 const char* pico_layer_video (const char* name, const char* path);
+
+///////////////////////////////////////////////////////////////////////////////
 
 /// @brief Gets the mouse state.
 /// @param pos where to save the mouse position (mode determines coordinate
