@@ -319,6 +319,23 @@ do
     pico.set.layer()
     pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
     shot("guide-08-03-02")
+
+    -- 8.4 sub-layers: 3 squares from the flag in a swirl
+    pico.layer.sub("blue",   "flag",
+        {'%', x=0.25, y=0.5, w=0.1, h=0.15, anc='C'})
+    pico.layer.sub("yellow", "flag",
+        {'%', x=0.50, y=0.5, w=0.1, h=0.15, anc='C'})
+    pico.layer.sub("red",    "flag",
+        {'%', x=0.75, y=0.5, w=0.1, h=0.15, anc='C'})
+    pico.output.clear()
+    pico.output.draw.layer("blue",
+        {'%', x=0.30, y=0.30, w=0.25})
+    pico.output.draw.layer("yellow",
+        {'%', x=0.70, y=0.45, w=0.25})
+    pico.output.draw.layer("red",
+        {'%', x=0.45, y=0.75, w=0.25})
+    shot("guide-08-04-01")
+
     pico.init(false)
 end
 
