@@ -1,0 +1,68 @@
+#include "pico.h"
+#include <assert.h>
+#include <string.h>
+#include "../check.h"
+
+int main (void) {
+    pico_init(1);
+
+    // Create a 4x4 "sprite sheet" with colored quadrants
+    const char* sheet = pico_layer_empty("sheet",
+        (Pico_Abs_Dim){4, 4});
+    pico_set_layer(sheet);
+    pico_set_color_clear(PICO_COLOR_BLACK);
+    pico_output_clear();
+
+    // TL red, TR green, BL blue, BR white
+    pico_set_color_draw(PICO_COLOR_RED);
+    pico_output_draw_rect(&(Pico_Rel_Rect){
+        '!', {0,0,2,2}, PICO_ANCHOR_NW, NULL});
+    pico_set_color_draw(PICO_COLOR_GREEN);
+    pico_output_draw_rect(&(Pico_Rel_Rect){
+        '!', {2,0,2,2}, PICO_ANCHOR_NW, NULL});
+    pico_set_color_draw(PICO_COLOR_BLUE);
+    pico_output_draw_rect(&(Pico_Rel_Rect){
+        '!', {0,2,2,2}, PICO_ANCHOR_NW, NULL});
+    pico_set_color_draw(PICO_COLOR_WHITE);
+    pico_output_draw_rect(&(Pico_Rel_Rect){
+        '!', {2,2,2,2}, PICO_ANCHOR_NW, NULL});
+    pico_set_layer(NULL);
+
+    // Shot 1: draw full layer (normal quadrants)
+    pico_output_clear();
+    pico_output_draw_layer(sheet, &(Pico_Rel_Rect){
+        '%', {0.5,0.5, 1,1}, PICO_ANCHOR_C, NULL});
+    _pico_check("sheet-01");
+
+    // Create sub-layers for each quadrant
+    const char* tl = pico_layer_sub("tl", sheet,
+        &(Pico_Rel_Rect){'!', {0,0,2,2}, PICO_ANCHOR_NW, NULL});
+    const char* tr = pico_layer_sub("tr", sheet,
+        &(Pico_Rel_Rect){'!', {2,0,2,2}, PICO_ANCHOR_NW, NULL});
+    const char* bl = pico_layer_sub("bl", sheet,
+        &(Pico_Rel_Rect){'!', {0,2,2,2}, PICO_ANCHOR_NW, NULL});
+    const char* br = pico_layer_sub("br", sheet,
+        &(Pico_Rel_Rect){'!', {2,2,2,2}, PICO_ANCHOR_NW, NULL});
+    assert(strcmp(tl, "tl") == 0);
+    assert(strcmp(tr, "tr") == 0);
+
+    // Shot 2: draw swapped sub-layers
+    pico_output_clear();
+    pico_output_draw_layer(tl, &(Pico_Rel_Rect){
+        '%', {0.75,0.75, 0.5,0.5}, PICO_ANCHOR_C, NULL});
+    pico_output_draw_layer(tr, &(Pico_Rel_Rect){
+        '%', {0.25,0.75, 0.5,0.5}, PICO_ANCHOR_C, NULL});
+    pico_output_draw_layer(bl, &(Pico_Rel_Rect){
+        '%', {0.75,0.25, 0.5,0.5}, PICO_ANCHOR_C, NULL});
+    pico_output_draw_layer(br, &(Pico_Rel_Rect){
+        '%', {0.25,0.25, 0.5,0.5}, PICO_ANCHOR_C, NULL});
+    _pico_check("sheet-02");
+
+    // Reuse: same name returns same pointer
+    const char* tl2 = pico_layer_sub("tl", sheet,
+        &(Pico_Rel_Rect){'!', {0,0,2,2}, PICO_ANCHOR_NW, NULL});
+    assert(tl == tl2);
+
+    pico_init(0);
+    return 0;
+}

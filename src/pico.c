@@ -53,11 +53,12 @@ typedef enum {
     PICO_LAYER_VIDEO,
 } PICO_LAYER;
 
-typedef struct {
-    PICO_LAYER      type;
-    const Pico_Key* key;   // NULL for main layer
-    SDL_Texture*    tex;
-    Pico_View       view;
+typedef struct Pico_Layer {
+    PICO_LAYER            type;
+    const Pico_Key*       key;      // NULL for main layer
+    SDL_Texture*          tex;
+    Pico_View             view;
+    struct Pico_Layer*    parent;   // NULL = root (owns tex)
 } Pico_Layer;
 
 #include "video.h"
@@ -559,6 +560,15 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
 
+static Pico_Layer* _hash_get_layer (const char* name) {
+    int n = sizeof(Pico_Key) + strlen(name) + 1;
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_LAYER;
+    strcpy(key->key, name);
+    return (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+}
+
+static void _pico_hash_clean (int n, const void* key, void* value) {
 static void _pico_hash_clean (
     int n, const void* key, void* value
 ) {
@@ -569,7 +579,9 @@ static void _pico_hash_clean (
             if (data->type == PICO_LAYER_VIDEO) {
                 _pico_hash_clean_video((Pico_Layer_Video*)data);
             }
-            SDL_DestroyTexture(data->tex);
+            if (data->parent == NULL) {
+                SDL_DestroyTexture(data->tex);
+            }
             free(data);
             break;
         }
@@ -910,6 +922,8 @@ void pico_set_layer (const char* name) {
         strcpy(res->key, name);
         Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, res);
         pico_assert(data!=NULL && "layer does not exist");
+        pico_assert(data->parent==NULL &&
+            "cannot set render target to sub-layer");
         S.layer = data;
     }
 
@@ -1097,6 +1111,7 @@ static Pico_Layer* _pico_layer_buffer (
     SDL_FreeSurface(sfc);
 
     data = malloc(sizeof(Pico_Layer));
+    assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
@@ -1140,6 +1155,7 @@ void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     }
 
     data = malloc(sizeof(Pico_Layer));
+    assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
@@ -1180,6 +1196,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
 
     data = malloc(sizeof(Pico_Layer));
+    assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
@@ -1203,6 +1220,55 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
 
 void pico_layer_image (const char* name, const char* path) {
     _pico_layer_image(name, path);
+}
+
+const char* pico_layer_sub (const char* name,
+    const char* parent, const Pico_Rel_Rect* crop)
+{
+    assert(name!=NULL   && "sub-layer name required");
+    assert(parent!=NULL && "parent name required");
+    assert(crop!=NULL   && "crop rect required");
+
+    Pico_Layer* par = _hash_get_layer(parent);
+    assert(par!=NULL && "parent layer does not exist");
+    assert(par->parent==NULL && "cannot create sub-layer of sub-layer");
+
+    Pico_Abs_Rect abs = pico_cv_rect_rel_abs (
+        crop,
+        &(Pico_Abs_Rect){0, 0, par->view.dim.w, par->view.dim.h}
+    );
+
+    int n = sizeof(Pico_Key) + strlen(name) + 1;
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_LAYER;
+    strcpy(key->key, name);
+
+    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    if (data != NULL) {
+        return data->key->key;
+    }
+
+    data = malloc(sizeof(Pico_Layer));
+    assert(data != NULL);
+    *data = (Pico_Layer) {
+        .type   = PICO_LAYER_PLAIN,
+        .key    = ttl_hash_put(G.hash, n, key, data),
+        .tex    = par->tex,
+        .view   = {
+            .grid = 0,
+            .dim  = {abs.w, abs.h},
+            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .src  = *crop,
+            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .tile = {0, 0},
+            .rot  = {0, PICO_ANCHOR_C},
+            .flip = PICO_FLIP_NONE,
+        },
+        .parent = par,
+    };
+    assert(data->key != NULL);
+
+    return data->key->key;
 }
 
 static Pico_Layer* _pico_layer_text (
@@ -1247,6 +1313,7 @@ static Pico_Layer* _pico_layer_text (
     SDL_Texture* tex = _tex_text(height, text, &dim);
 
     data = malloc(sizeof(Pico_Layer));
+    assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
         .key  = ttl_hash_put(G.hash, n, key, data),
@@ -1538,6 +1605,24 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
     _pico_output_draw_layer(layer, rect);
 }
 
+// Resolves a layer's absolute source rect,
+// walking the parent chain for sub-layers.
+static SDL_Rect _resolve_src (Pico_Layer* layer) {
+    if (layer->parent == NULL) {
+        return pico_cv_rect_rel_abs(
+            &layer->view.src,
+            &(Pico_Abs_Rect){0, 0,
+                layer->view.dim.w, layer->view.dim.h}
+        );
+    } else {
+        SDL_Rect psrc = _resolve_src(layer->parent);
+        return pico_cv_rect_rel_abs(
+            &layer->view.src,
+            &psrc
+        );
+    }
+}
+
 static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
     SDL_Rect dst;
     if (rect == NULL) {
@@ -1554,11 +1639,9 @@ static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
         dst = _fi_rect(&rf);
     }
 
+    SDL_Rect src = _resolve_src(layer);
+
     SDL_SetTextureAlphaMod(layer->tex, S.alpha);
-    SDL_Rect src = pico_cv_rect_rel_abs (
-        &layer->view.src,
-        &(Pico_Abs_Rect){0, 0, layer->view.dim.w, layer->view.dim.h}
-    );
     SDL_Point center = {
         dst.w * layer->view.rot.anchor.x,
         dst.h * layer->view.rot.anchor.y
@@ -1577,6 +1660,11 @@ void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
     strcpy(key->key, name);
     Pico_Layer* layer = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
     pico_assert(layer!=NULL && "layer does not exist");
+
+    if (layer->parent != NULL) {
+        int pn = sizeof(Pico_Key) + strlen(layer->parent->key->key) + 1;
+        ttl_hash_get(G.hash, pn, layer->parent->key);
+    }
 
     _pico_output_draw_layer(layer, rect);
 }
@@ -1909,6 +1997,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
     //SDL_RenderPresent(G.ren);
 
     void* buf = malloc(4 * ri.w * ri.h);
+    assert(buf != NULL);
     SDL_RenderReadPixels(G.ren, &ri, SDL_PIXELFORMAT_RGBA32, buf, 4*ri.w);
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
         buf, ri.w, ri.h, 32, 4*ri.w, SDL_PIXELFORMAT_RGBA32
