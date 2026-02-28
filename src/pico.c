@@ -1078,15 +1078,15 @@ static Pico_Layer* _pico_layer_buffer (
     return data;
 }
 
-const char* pico_layer_buffer (
+void pico_layer_buffer (
     const char* name,
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
-    return _pico_layer_buffer(name, dim, pixels)->key->key;
+    _pico_layer_buffer(name, dim, pixels);
 }
 
-const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
+void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(name!=NULL && "layer name required");
 
     int n = sizeof(Pico_Key) + strlen(name) + 1;
@@ -1096,7 +1096,7 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
 
     Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
     if (data != NULL) {
-        return data->key->key;
+        return;
     }
 
     data = malloc(sizeof(Pico_Layer));
@@ -1117,8 +1117,6 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     };
     assert(data->key != NULL);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
-
-    return data->key->key;
 }
 
 static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
@@ -1163,8 +1161,8 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     return data;
 }
 
-const char* pico_layer_image (const char* name, const char* path) {
-    return _pico_layer_image(name, path)->key->key;
+void pico_layer_image (const char* name, const char* path) {
+    _pico_layer_image(name, path);
 }
 
 static Pico_Layer* _pico_layer_text (
@@ -1228,8 +1226,9 @@ static Pico_Layer* _pico_layer_text (
     return data;
 }
 
-const char* pico_layer_text (const char* name, int height, const char* text) {
-    return _pico_layer_text(name, height, text)->key->key;
+void pico_layer_text (const char* name, int height, const char* text) {
+    assert(name!=NULL && "layer name required");
+    _pico_layer_text(name, height, text);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1485,8 +1484,8 @@ void pico_output_draw_buffer (
     const Pico_Rel_Rect* rect
 ) {
     assert(name!=NULL && "layer name required");
-    const char* key = pico_layer_buffer(name, dim, buffer);
-    pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
+    pico_layer_buffer(name, dim, buffer);
+    pico_output_draw_layer(name, (Pico_Rel_Rect*)rect);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
