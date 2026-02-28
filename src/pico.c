@@ -51,6 +51,7 @@ typedef struct {
 typedef enum {
     PICO_LAYER_PLAIN,
     PICO_LAYER_VIDEO,
+    PICO_LAYER_SUB,
 } PICO_LAYER;
 
 typedef struct Pico_Layer {
@@ -58,7 +59,7 @@ typedef struct Pico_Layer {
     const Pico_Key*       key;      // NULL for main layer
     SDL_Texture*          tex;
     Pico_View             view;
-    struct Pico_Layer*    parent;   // NULL = root (owns tex)
+    struct Pico_Layer*    parent;   // NULL if !PICO_LAYER_SUB
 } Pico_Layer;
 
 #include "video.h"
@@ -130,7 +131,6 @@ static void _tick_and_check (void) {
     assert(STACK.n==0 && "tick: stack must be cleared");
     ttl_hash_tick(G.hash);
 }
-
 
 static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
     SDL_Texture* tex = SDL_CreateTexture (
@@ -572,7 +572,7 @@ static void _pico_hash_clean (int n, const void* key, void* value) {
             if (data->type == PICO_LAYER_VIDEO) {
                 _pico_hash_clean_video((Pico_Layer_Video*)data);
             }
-            if (data->parent == NULL) {
+            if (data->type != PICO_LAYER_SUB) {
                 SDL_DestroyTexture(data->tex);
             }
             free(data);
@@ -911,7 +911,7 @@ void pico_set_layer (const char* name) {
     } else {
         Pico_Layer* data = _ttl_hash_get_layer(name);
         pico_assert(data!=NULL && "layer does not exist");
-        pico_assert(data->parent==NULL &&
+        pico_assert(data->type!=PICO_LAYER_SUB &&
             "cannot set render target to sub-layer");
         S.layer = data;
     }
@@ -1203,7 +1203,7 @@ const char* pico_layer_sub (const char* name,
 
     Pico_Layer* par = _ttl_hash_get_layer(parent);
     assert(par!=NULL && "parent layer does not exist");
-    assert(par->parent==NULL && "cannot create sub-layer of sub-layer");
+    assert(par->type!=PICO_LAYER_SUB && "cannot create sub-layer of sub-layer");
 
     Pico_Abs_Rect abs = pico_cv_rect_rel_abs (
         crop,
@@ -1218,7 +1218,7 @@ const char* pico_layer_sub (const char* name,
     data = malloc(sizeof(Pico_Layer));
     assert(data != NULL);
     *data = (Pico_Layer) {
-        .type   = PICO_LAYER_PLAIN,
+        .type   = PICO_LAYER_SUB,
         .key    = _ttl_hash_put_layer(name, data),
         .tex    = par->tex,
         .view   = {
