@@ -1197,9 +1197,10 @@ void pico_layer_image (const char* name, const char* path) {
 const char* pico_layer_sub (const char* name,
     const char* parent, const Pico_Rel_Rect* crop)
 {
-    assert(name!=NULL   && "sub-layer name required");
-    assert(parent!=NULL && "parent name required");
-    assert(crop!=NULL   && "crop rect required");
+    assert(name!=NULL     && "sub-layer name required");
+    assert(parent!=NULL   && "parent name required");
+    assert(crop!=NULL     && "crop rect required");
+    assert(crop->up==NULL && "crop must not have up chain");
 
     Pico_Layer* par = _ttl_hash_get_layer(parent);
     assert(par!=NULL && "parent layer does not exist");
@@ -1225,7 +1226,7 @@ const char* pico_layer_sub (const char* name,
             .grid = 0,
             .dim  = {abs.w, abs.h},
             .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = *crop,
+            .src  = *crop,  // .up set below
             .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .tile = {0, 0},
             .rot  = {0, PICO_ANCHOR_C},
@@ -1234,6 +1235,7 @@ const char* pico_layer_sub (const char* name,
         .parent = par,
     };
     assert(data->key != NULL);
+    data->view.src.up = &par->view.src;
 
     return data->key->key;
 }
@@ -1564,24 +1566,6 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
     _pico_output_draw_layer(layer, rect);
 }
 
-// Resolves a layer's absolute source rect,
-// walking the parent chain for sub-layers.
-static SDL_Rect _resolve_src (Pico_Layer* layer) {
-    if (layer->parent == NULL) {
-        return pico_cv_rect_rel_abs(
-            &layer->view.src,
-            &(Pico_Abs_Rect){0, 0,
-                layer->view.dim.w, layer->view.dim.h}
-        );
-    } else {
-        SDL_Rect psrc = _resolve_src(layer->parent);
-        return pico_cv_rect_rel_abs(
-            &layer->view.src,
-            &psrc
-        );
-    }
-}
-
 static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
     SDL_Rect dst;
     if (rect == NULL) {
@@ -1598,7 +1582,11 @@ static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
         dst = _fi_rect(&rf);
     }
 
-    SDL_Rect src = _resolve_src(layer);
+    Pico_Layer* root = layer->parent ? layer->parent : layer;
+    SDL_Rect src = pico_cv_rect_rel_abs (
+        &layer->view.src,
+        &(Pico_Abs_Rect){0, 0, root->view.dim.w, root->view.dim.h}
+    );
 
     SDL_SetTextureAlphaMod(layer->tex, S.alpha);
     SDL_Point center = {
