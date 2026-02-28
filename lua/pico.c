@@ -1071,6 +1071,17 @@ static int l_layer_video (lua_State* L) {
     return 1;
 }
 
+static int l_layer_sub (lua_State* L) {
+    const char* name   = luaL_checkstring(L, 1);
+    const char* parent = luaL_checkstring(L, 2);
+    luaL_checktype(L, 3, LUA_TTABLE);
+    L_dim_default_wh(L, 3);
+    Pico_Rel_Rect* crop = c_rel_rect(L, 3);
+    const char* ret = pico_layer_sub(name, parent, crop);
+    lua_pushstring(L, ret);
+    return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_input_delay (lua_State* L) {
@@ -1432,6 +1443,7 @@ static const luaL_Reg ll_layer[] = {
     { "buffer", l_layer_buffer },
     { "empty",  l_layer_empty  },
     { "image",  l_layer_image  },
+    { "sub",    l_layer_sub    },
     { "text",   l_layer_text   },
     { "video",  l_layer_video  },
     { NULL, NULL }
