@@ -116,12 +116,6 @@ static struct {
     {}, 0
 };
 
-static void _pico_tick (void) {
-    assert(S.layer==&G.main && "must reset layer before input");
-    assert(STACK.n==0 && "must clear stack before input");
-    ttl_hash_tick(G.hash);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,6 +124,12 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path);
 static Pico_Layer* _pico_layer_text (const char* name, int height, const char* text);
 static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect);
 static void _pico_output_present (int force);
+
+static void _tick_and_check (void) {
+    assert(S.layer==&G.main && "tick: layer must be the main");
+    assert(STACK.n==0 && "tick: stack must be cleared");
+    ttl_hash_tick(G.hash);
+}
 
 
 static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
@@ -1506,7 +1506,7 @@ static int event_from_sdl (Pico_Event* e, int xp, int do_exit) {
 }
 
 void pico_input_delay (int ms) {
-    _pico_tick();
+    _tick_and_check();
     while (1) {
         int old = SDL_GetTicks();
         Pico_Event e;
@@ -1523,7 +1523,7 @@ void pico_input_delay (int ms) {
 }
 
 void pico_input_event (Pico_Event* evt, int type) {
-    _pico_tick();
+    _tick_and_check();
     while (1) {
         Pico_Event x;
         SDL_WaitEvent(&x);
@@ -1537,14 +1537,14 @@ void pico_input_event (Pico_Event* evt, int type) {
 }
 
 int pico_input_event_ask (Pico_Event* evt, int type) {
-    _pico_tick();
+    _tick_and_check();
     int has = SDL_PollEvent(evt);
     if (!has) return 0;
     return event_from_sdl(evt, type, 1);
 }
 
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
-    _pico_tick();
+    _tick_and_check();
     int old = SDL_GetTicks();
     while (1) {
         int has = SDL_WaitEventTimeout(evt, timeout);
@@ -1562,7 +1562,7 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 void pico_input_loop (void) {
     while (1) {
-        _pico_tick();
+        _tick_and_check();
         Pico_Event e;
         SDL_WaitEvent(&e);
         event_from_sdl(&e, SDL_ANY, 0);
