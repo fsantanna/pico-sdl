@@ -29,6 +29,7 @@
 typedef enum {
     PICO_KEY_SOUND,
     PICO_KEY_LAYER,
+    PICO_KEY_FONT,
 } PICO_KEY_TYPE;
 
 typedef struct {
@@ -114,6 +115,12 @@ static struct {
     {}, 0
 };
 
+static void _pico_tick (void) {
+    assert(S.layer==&G.main && "must reset layer before input");
+    assert(STACK.n==0 && "must clear stack before input");
+    ttl_hash_tick(G.hash);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
@@ -136,7 +143,9 @@ static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
 static TTF_Font* _font_open (const char* path, int h) {
     TTF_Font* ttf;
     if (path == NULL) {
-        SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
+        SDL_RWops* rw = SDL_RWFromConstMem(
+            pico_tiny_ttf, pico_tiny_ttf_len
+        );
         ttf = TTF_OpenFontRW(rw, 1, h);
     } else {
         ttf = TTF_OpenFont(path, h);
@@ -145,16 +154,48 @@ static TTF_Font* _font_open (const char* path, int h) {
     return ttf;
 }
 
-static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
-    SDL_Color c = { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF };
-    TTF_Font* ttf = _font_open(S.font, height);
-    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
+static TTF_Font* _font_get (const char* path, int h) {
+    const char* path_str = path ? path : "null";
+    char key_buf[256];
+    snprintf(
+        key_buf, sizeof(key_buf),
+        "/font/%s/%d", path_str, h
+    );
+    int n = sizeof(Pico_Key) + strlen(key_buf) + 1;
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_FONT;
+    strcpy(key->key, key_buf);
+
+    TTF_Font* ttf = (TTF_Font*)ttl_hash_get(
+        G.hash, n, key
+    );
+    if (ttf != NULL) {
+        return ttf;
+    }
+
+    ttf = _font_open(path, h);
+    ttl_hash_put(G.hash, n, key, ttf);
+    return ttf;
+}
+
+static SDL_Texture* _tex_text (
+    int height, const char* text, Pico_Abs_Dim* dim
+) {
+    SDL_Color c = {
+        S.color.draw.r, S.color.draw.g,
+        S.color.draw.b, 0xFF
+    };
+    TTF_Font* ttf = _font_get(S.font, height);
+    SDL_Surface* sfc = TTF_RenderText_Solid(
+        ttf, text, c
+    );
     pico_assert(sfc != NULL);
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(
+        G.ren, sfc
+    );
     pico_assert(tex != NULL);
     *dim = (Pico_Abs_Dim){ sfc->w, sfc->h };
     SDL_FreeSurface(sfc);
-    TTF_CloseFont(ttf);
     return tex;
 }
 
@@ -518,7 +559,9 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
 
-static void _pico_hash_clean (int n, const void* key, void* value) {
+static void _pico_hash_clean (
+    int n, const void* key, void* value
+) {
     const Pico_Key* res = (const Pico_Key*)key;
     switch (res->type) {
         case PICO_KEY_LAYER: {
@@ -532,6 +575,9 @@ static void _pico_hash_clean (int n, const void* key, void* value) {
         }
         case PICO_KEY_SOUND:
             Mix_FreeChunk((Mix_Chunk*)value);
+            break;
+        case PICO_KEY_FONT:
+            TTF_CloseFont((TTF_Font*)value);
             break;
         default:
             assert(0 && "invalid resource");
@@ -1069,15 +1115,15 @@ static Pico_Layer* _pico_layer_buffer (
     return data;
 }
 
-const char* pico_layer_buffer (
+void pico_layer_buffer (
     const char* name,
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
-    return _pico_layer_buffer(name, dim, pixels)->key->key;
+    _pico_layer_buffer(name, dim, pixels);
 }
 
-const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
+void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(name!=NULL && "layer name required");
 
     int n = sizeof(Pico_Key) + strlen(name) + 1;
@@ -1087,7 +1133,7 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
 
     Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
     if (data != NULL) {
-        return data->key->key;
+        return;
     }
 
     data = malloc(sizeof(Pico_Layer));
@@ -1108,8 +1154,6 @@ const char* pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     };
     assert(data->key != NULL);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
-
-    return data->key->key;
 }
 
 static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
@@ -1154,8 +1198,8 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     return data;
 }
 
-const char* pico_layer_image (const char* name, const char* path) {
-    return _pico_layer_image(name, path)->key->key;
+void pico_layer_image (const char* name, const char* path) {
+    _pico_layer_image(name, path);
 }
 
 static Pico_Layer* _pico_layer_text (
@@ -1219,8 +1263,9 @@ static Pico_Layer* _pico_layer_text (
     return data;
 }
 
-const char* pico_layer_text (const char* name, int height, const char* text) {
-    return _pico_layer_text(name, height, text)->key->key;
+void pico_layer_text (const char* name, int height, const char* text) {
+    assert(name!=NULL && "layer name required");
+    _pico_layer_text(name, height, text);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1391,7 +1436,7 @@ static int event_from_sdl (Pico_Event* e, int xp, int do_exit) {
 }
 
 void pico_input_delay (int ms) {
-    ttl_hash_tick(G.hash);
+    _pico_tick();
     while (1) {
         int old = SDL_GetTicks();
         Pico_Event e;
@@ -1408,7 +1453,7 @@ void pico_input_delay (int ms) {
 }
 
 void pico_input_event (Pico_Event* evt, int type) {
-    ttl_hash_tick(G.hash);
+    _pico_tick();
     while (1) {
         Pico_Event x;
         SDL_WaitEvent(&x);
@@ -1422,13 +1467,14 @@ void pico_input_event (Pico_Event* evt, int type) {
 }
 
 int pico_input_event_ask (Pico_Event* evt, int type) {
+    _pico_tick();
     int has = SDL_PollEvent(evt);
     if (!has) return 0;
     return event_from_sdl(evt, type, 1);
 }
 
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
-    ttl_hash_tick(G.hash);
+    _pico_tick();
     int old = SDL_GetTicks();
     while (1) {
         int has = SDL_WaitEventTimeout(evt, timeout);
@@ -1446,7 +1492,7 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 void pico_input_loop (void) {
     while (1) {
-        ttl_hash_tick(G.hash);
+        _pico_tick();
         Pico_Event e;
         SDL_WaitEvent(&e);
         event_from_sdl(&e, SDL_ANY, 0);
@@ -1475,8 +1521,8 @@ void pico_output_draw_buffer (
     const Pico_Rel_Rect* rect
 ) {
     assert(name!=NULL && "layer name required");
-    const char* key = pico_layer_buffer(name, dim, buffer);
-    pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
+    pico_layer_buffer(name, dim, buffer);
+    pico_output_draw_layer(name, (Pico_Rel_Rect*)rect);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
