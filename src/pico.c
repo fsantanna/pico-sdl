@@ -51,6 +51,7 @@ typedef struct {
 typedef enum {
     PICO_LAYER_PLAIN,
     PICO_LAYER_VIDEO,
+    PICO_LAYER_SUB,
 } PICO_LAYER;
 
 typedef struct Pico_Layer {
@@ -58,7 +59,7 @@ typedef struct Pico_Layer {
     const Pico_Key*       key;      // NULL for main layer
     SDL_Texture*          tex;
     Pico_View             view;
-    struct Pico_Layer*    parent;   // NULL = root (owns tex)
+    struct Pico_Layer*    parent;   // NULL if !PICO_LAYER_SUB
 } Pico_Layer;
 
 #include "video.h"
@@ -569,9 +570,6 @@ static Pico_Layer* _hash_get_layer (const char* name) {
 }
 
 static void _pico_hash_clean (int n, const void* key, void* value) {
-static void _pico_hash_clean (
-    int n, const void* key, void* value
-) {
     const Pico_Key* res = (const Pico_Key*)key;
     switch (res->type) {
         case PICO_KEY_LAYER: {
@@ -579,7 +577,7 @@ static void _pico_hash_clean (
             if (data->type == PICO_LAYER_VIDEO) {
                 _pico_hash_clean_video((Pico_Layer_Video*)data);
             }
-            if (data->parent == NULL) {
+            if (data->type != PICO_LAYER_SUB) {
                 SDL_DestroyTexture(data->tex);
             }
             free(data);
@@ -922,7 +920,7 @@ void pico_set_layer (const char* name) {
         strcpy(res->key, name);
         Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, res);
         pico_assert(data!=NULL && "layer does not exist");
-        pico_assert(data->parent==NULL &&
+        pico_assert(data->type!=PICO_LAYER_SUB &&
             "cannot set render target to sub-layer");
         S.layer = data;
     }
@@ -1231,7 +1229,7 @@ const char* pico_layer_sub (const char* name,
 
     Pico_Layer* par = _hash_get_layer(parent);
     assert(par!=NULL && "parent layer does not exist");
-    assert(par->parent==NULL && "cannot create sub-layer of sub-layer");
+    assert(par->type!=PICO_LAYER_SUB && "cannot create sub-layer of sub-layer");
 
     Pico_Abs_Rect abs = pico_cv_rect_rel_abs (
         crop,
@@ -1251,7 +1249,7 @@ const char* pico_layer_sub (const char* name,
     data = malloc(sizeof(Pico_Layer));
     assert(data != NULL);
     *data = (Pico_Layer) {
-        .type   = PICO_LAYER_PLAIN,
+        .type   = PICO_LAYER_SUB,
         .key    = ttl_hash_put(G.hash, n, key, data),
         .tex    = par->tex,
         .view   = {
@@ -1608,7 +1606,7 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
 // Resolves a layer's absolute source rect,
 // walking the parent chain for sub-layers.
 static SDL_Rect _resolve_src (Pico_Layer* layer) {
-    if (layer->parent == NULL) {
+    if (layer->type != PICO_LAYER_SUB) {
         return pico_cv_rect_rel_abs(
             &layer->view.src,
             &(Pico_Abs_Rect){0, 0,
@@ -1661,7 +1659,7 @@ void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
     Pico_Layer* layer = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
     pico_assert(layer!=NULL && "layer does not exist");
 
-    if (layer->parent != NULL) {
+    if (layer->type == PICO_LAYER_SUB) {
         int pn = sizeof(Pico_Key) + strlen(layer->parent->key->key) + 1;
         ttl_hash_get(G.hash, pn, layer->parent->key);
     }
