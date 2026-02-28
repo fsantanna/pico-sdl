@@ -27,7 +27,7 @@ extern "C" {
 #define PICO_DIM_PHY ((Pico_Abs_Dim) {500,500})
 #define PICO_DIM_LOG ((Pico_Abs_Dim) {100,100})
 #define PICO_HASH_BUK  128
-#define PICO_HASH_TTL  1000
+#define PICO_HASH_TTL  1000     // expire after N pico_input_* calls
 
 /// @brief Asserts condition and shows SDL error on failure.
 /// @param x condition to assert

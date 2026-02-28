@@ -114,6 +114,12 @@ static struct {
     {}, 0
 };
 
+static void _pico_tick (void) {
+    assert(S.layer==&G.main && "must reset layer before input");
+    assert(STACK.n==0 && "must clear stack before input");
+    ttl_hash_tick(G.hash);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
@@ -1394,7 +1400,7 @@ static int event_from_sdl (Pico_Event* e, int xp, int do_exit) {
 }
 
 void pico_input_delay (int ms) {
-    ttl_hash_tick(G.hash);
+    _pico_tick();
     while (1) {
         int old = SDL_GetTicks();
         Pico_Event e;
@@ -1411,7 +1417,7 @@ void pico_input_delay (int ms) {
 }
 
 void pico_input_event (Pico_Event* evt, int type) {
-    ttl_hash_tick(G.hash);
+    _pico_tick();
     while (1) {
         Pico_Event x;
         SDL_WaitEvent(&x);
@@ -1425,13 +1431,14 @@ void pico_input_event (Pico_Event* evt, int type) {
 }
 
 int pico_input_event_ask (Pico_Event* evt, int type) {
+    _pico_tick();
     int has = SDL_PollEvent(evt);
     if (!has) return 0;
     return event_from_sdl(evt, type, 1);
 }
 
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
-    ttl_hash_tick(G.hash);
+    _pico_tick();
     int old = SDL_GetTicks();
     while (1) {
         int has = SDL_WaitEventTimeout(evt, timeout);
@@ -1449,7 +1456,7 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 void pico_input_loop (void) {
     while (1) {
-        ttl_hash_tick(G.hash);
+        _pico_tick();
         Pico_Event e;
         SDL_WaitEvent(&e);
         event_from_sdl(&e, SDL_ANY, 0);
