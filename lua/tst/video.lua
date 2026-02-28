@@ -18,8 +18,7 @@ end
 -- pico_layer_video: create layer
 do
     print("layer_video: create")
-    local name = pico.layer.video("vid", "video.y4m")
-    assert(name == "vid")
+    pico.layer.video("vid", "video.y4m")
 end
 
 -- pico_set_video: first frame (0)

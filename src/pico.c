@@ -1194,7 +1194,7 @@ void pico_layer_image (const char* name, const char* path) {
     _pico_layer_image(name, path);
 }
 
-const char* pico_layer_sub (const char* name,
+void pico_layer_sub (const char* name,
     const char* parent, const Pico_Rel_Rect* crop)
 {
     assert(name!=NULL     && "sub-layer name required");
@@ -1213,7 +1213,7 @@ const char* pico_layer_sub (const char* name,
 
     Pico_Layer* data = _ttl_hash_get_layer(name);
     if (data != NULL) {
-        return data->key->key;
+        return;
     }
 
     data = malloc(sizeof(Pico_Layer));
@@ -1236,8 +1236,6 @@ const char* pico_layer_sub (const char* name,
     };
     assert(data->key != NULL);
     data->view.src.up = &par->view.src;
-
-    return data->key->key;
 }
 
 static Pico_Layer* _pico_layer_text (

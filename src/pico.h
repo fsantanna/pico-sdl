@@ -320,8 +320,7 @@ void pico_layer_image (const char* name, const char* path);
 /// @param name sub-layer name (must not be NULL)
 /// @param parent parent layer name (must exist, must not be a sub-layer)
 /// @param crop source rectangle within the parent
-/// @return the sub-layer name
-const char* pico_layer_sub (const char* name,
+void pico_layer_sub (const char* name,
     const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a layer from text.
