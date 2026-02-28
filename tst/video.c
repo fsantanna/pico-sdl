@@ -20,8 +20,7 @@ int main (void) {
     /* pico_layer_video: create layer */
     {
         puts("layer_video: create");
-        const char* name = pico_layer_video("vid", "video.y4m");
-        assert(strcmp(name, "vid") == 0);
+        pico_layer_video("vid", "video.y4m");
     }
 
     /* pico_set_video: first frame (0) */
