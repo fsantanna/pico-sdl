@@ -23,8 +23,15 @@ pico.output.draw.rect({'!', x=2, y=2, w=2, h=2, anchor='NW'})
 
 pico.set.layer(nil)
 
--- Test 1: Explicit sub-layers
-print("Test 1: explicit sub-layers")
+-- Shot 1: draw full layer (normal quadrants)
+print("Test 1: full layer")
+pico.output.clear()
+pico.output.draw.layer(sheet,
+    {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'})
+pico.check("sheet-01")
+
+-- Create sub-layers for each quadrant
+print("Test 2: explicit sub-layers (swapped)")
 local tl = pico.layer.sub("tl", sheet,
     {'!', x=0, y=0, w=2, h=2, anchor='NW'})
 local tr = pico.layer.sub("tr", sheet,
@@ -48,9 +55,9 @@ pico.output.draw.layer(bl,
     {'%', x=0.75, y=0.25, w=0.5, h=0.5, anchor='C'})
 pico.output.draw.layer(br,
     {'%', x=0.25, y=0.25, w=0.5, h=0.5, anchor='C'})
-pico.check("sheet-01")
+pico.check("sheet-02")
 
--- Test 2: pico.layer.images (grid form)
+-- Test 3: pico.layer.images (grid form)
 print("Test 2: grid form")
 local sheet2 = pico.layer.empty("sheet2", {w=4, h=2})
 pico.set.layer(sheet2)
@@ -76,6 +83,6 @@ pico.output.draw.layer("cell-1",
     {'%', x=0.75, y=0.5, w=0.5, h=1, anchor='C'})
 pico.output.draw.layer("cell-2",
     {'%', x=0.25, y=0.5, w=0.5, h=1, anchor='C'})
-pico.check("sheet-02")
+pico.check("sheet-03")
 
 pico.init(false)
