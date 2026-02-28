@@ -546,12 +546,22 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Layer* _hash_get_layer (const char* name) {
+static Pico_Layer* _ttl_hash_get_layer (const char* name) {
     int n = sizeof(Pico_Key) + strlen(name) + 1;
     Pico_Key* key = alloca(n);
     key->type = PICO_KEY_LAYER;
     strcpy(key->key, name);
     return (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+}
+
+static const Pico_Key* _ttl_hash_put_layer (
+    const char* name, Pico_Layer* data
+) {
+    int n = sizeof(Pico_Key) + strlen(name) + 1;
+    Pico_Key* key = alloca(n);
+    key->type = PICO_KEY_LAYER;
+    strcpy(key->key, name);
+    return ttl_hash_put(G.hash, n, key, data);
 }
 
 static void _pico_hash_clean (int n, const void* key, void* value) {
@@ -899,11 +909,7 @@ void pico_set_layer (const char* name) {
     if (name == NULL) {
         S.layer = &G.main;
     } else {
-        int n = sizeof(Pico_Key) + strlen(name) + 1;
-        Pico_Key* res = alloca(n);
-        res->type = PICO_KEY_LAYER;
-        strcpy(res->key, name);
-        Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, res);
+        Pico_Layer* data = _ttl_hash_get_layer(name);
         pico_assert(data!=NULL && "layer does not exist");
         pico_assert(data->parent==NULL &&
             "cannot set render target to sub-layer");
@@ -1074,13 +1080,7 @@ static Pico_Layer* _pico_layer_buffer (
     assert(name!=NULL && "layer name required");
     assert(pixels!=NULL && "pixels required");
 
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, name);
-
-    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    Pico_Layer* data = _ttl_hash_get_layer(name);
     if (data != NULL) {
         return data;
     }
@@ -1097,7 +1097,7 @@ static Pico_Layer* _pico_layer_buffer (
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
-        .key  = ttl_hash_put(G.hash, n, key, data),
+        .key  = _ttl_hash_put_layer(name, data),
         .tex  = tex,
         .view = {
             .grid = 0,
@@ -1127,12 +1127,7 @@ void pico_layer_buffer (
 void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(name!=NULL && "layer name required");
 
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, name);
-
-    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    Pico_Layer* data = _ttl_hash_get_layer(name);
     if (data != NULL) {
         return;
     }
@@ -1141,7 +1136,7 @@ void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
-        .key  = ttl_hash_put(G.hash, n, key, data),
+        .key  = _ttl_hash_put_layer(name, data),
         .tex  = _tex_create(dim),
         .view = {
             .grid = 0,
@@ -1162,13 +1157,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     assert(path!=NULL && "image path required");
 
     const char* str = (name != NULL) ? name : path;
-    int n = sizeof(Pico_Key) + strlen(str) + 1;
-
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, str);
-
-    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    Pico_Layer* data = _ttl_hash_get_layer(str);
     if (data != NULL) {
         return data;
     }
@@ -1182,7 +1171,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
-        .key  = ttl_hash_put(G.hash, n, key, data),
+        .key  = _ttl_hash_put_layer(str, data),
         .tex  = tex,
         .view = {
             .grid = 0,
@@ -1212,7 +1201,7 @@ const char* pico_layer_sub (const char* name,
     assert(parent!=NULL && "parent name required");
     assert(crop!=NULL   && "crop rect required");
 
-    Pico_Layer* par = _hash_get_layer(parent);
+    Pico_Layer* par = _ttl_hash_get_layer(parent);
     assert(par!=NULL && "parent layer does not exist");
     assert(par->parent==NULL && "cannot create sub-layer of sub-layer");
 
@@ -1221,12 +1210,7 @@ const char* pico_layer_sub (const char* name,
         &(Pico_Abs_Rect){0, 0, par->view.dim.w, par->view.dim.h}
     );
 
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, name);
-
-    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    Pico_Layer* data = _ttl_hash_get_layer(name);
     if (data != NULL) {
         return data->key->key;
     }
@@ -1235,7 +1219,7 @@ const char* pico_layer_sub (const char* name,
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type   = PICO_LAYER_PLAIN,
-        .key    = ttl_hash_put(G.hash, n, key, data),
+        .key    = _ttl_hash_put_layer(name, data),
         .tex    = par->tex,
         .view   = {
             .grid = 0,
@@ -1264,30 +1248,22 @@ static Pico_Layer* _pico_layer_text (
     const char* font = S.font;
     Pico_Color clr = S.color.draw;
 
-    int n;
-    char* key_buf = NULL;
+    const char* str;
+    char* str_buf = NULL;
     if (name == NULL) {
         // /text/<font>/<height>/<r>.<g>.<b>/<text>
         const char* font_str = font ? font : "null";
-        n = sizeof(Pico_Key) + strlen("/text/") + strlen(font_str) + 1
+        int buflen = strlen("/text/") + strlen(font_str) + 1
             + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
-        key_buf = alloca(n - sizeof(Pico_Key));
-        snprintf(key_buf, n - sizeof(Pico_Key), "/text/%s/%d/%d.%d.%d/%s",
+        str_buf = alloca(buflen);
+        snprintf(str_buf, buflen, "/text/%s/%d/%d.%d.%d/%s",
                  font_str, height, clr.r, clr.g, clr.b, text);
-        n = sizeof(Pico_Key) + strlen(key_buf) + 1;
+        str = str_buf;
     } else {
-        n = sizeof(Pico_Key) + strlen(name) + 1;
+        str = name;
     }
 
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    if (name == NULL) {
-        strcpy(key->key, key_buf);
-    } else {
-        strcpy(key->key, name);
-    }
-
-    Pico_Layer* data = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    Pico_Layer* data = _ttl_hash_get_layer(str);
     if (data != NULL) {
         return data;
     }
@@ -1299,7 +1275,7 @@ static Pico_Layer* _pico_layer_text (
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
-        .key  = ttl_hash_put(G.hash, n, key, data),
+        .key  = _ttl_hash_put_layer(str, data),
         .tex  = tex,
         .view = {
             .grid = 0,
@@ -1637,16 +1613,11 @@ static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
 void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
     assert(name!=NULL && "layer name required");
 
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, name);
-    Pico_Layer* layer = (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    Pico_Layer* layer = _ttl_hash_get_layer(name);
     pico_assert(layer!=NULL && "layer does not exist");
 
     if (layer->parent != NULL) {
-        int pn = sizeof(Pico_Key) + strlen(layer->parent->key->key) + 1;
-        ttl_hash_get(G.hash, pn, layer->parent->key);
+        _ttl_hash_get_layer(layer->parent->key->key);
     }
 
     _pico_output_draw_layer(layer, rect);
