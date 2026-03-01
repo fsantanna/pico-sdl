@@ -136,7 +136,9 @@ static TTF_Font* _font_open (const char* path, int h) {
     return ttf;
 }
 
-static void _pico_free_font (int n, const void* key, void* value);
+static void _free_font (int n, const void* key, void* value) {
+    TTF_CloseFont((TTF_Font*)value);
+}
 
 static TTF_Font* _font_get (const char* path, int h) {
     const char* path_str = path ? path : "null";
@@ -150,7 +152,7 @@ static TTF_Font* _font_get (const char* path, int h) {
     }
 
     ttf = _font_open(path, h);
-    realm_put(G.realm, '!', n, key, _pico_free_font, NULL, ttf);
+    realm_put(G.realm, '!', n, key, _free_font, NULL, ttf);
     return ttf;
 }
 
@@ -533,7 +535,7 @@ static Pico_Layer* _realm_get_layer (const char* name) {
     return (Pico_Layer*)realm_get(G.realm, n, name);
 }
 
-static void _pico_free_layer (
+static void _free_layer (
     int n, const void* key, void* value
 ) {
     Pico_Layer* data = (Pico_Layer*)value;
@@ -547,23 +549,9 @@ static void _pico_free_layer (
     free(data);
 }
 
-static void _realm_put_layer (
-    const char* name, Pico_Layer* data
-) {
+static void _realm_put_layer (const char* name, Pico_Layer* data) {
     int n = strlen(name) + 1;
-    realm_put(G.realm, '!', n, name, _pico_free_layer, NULL, data);
-}
-
-static void _pico_free_sound (
-    int n, const void* key, void* value
-) {
-    Mix_FreeChunk((Mix_Chunk*)value);
-}
-
-static void _pico_free_font (
-    int n, const void* key, void* value
-) {
-    TTF_CloseFont((TTF_Font*)value);
+    realm_put(G.realm, '!', n, name, _free_layer, NULL, data);
 }
 
 void pico_init (int on) {
@@ -1864,6 +1852,10 @@ void pico_output_present (void) {
     _pico_output_present(1);
 }
 
+static void _free_sound (int n, const void* key, void* value) {
+    Mix_FreeChunk((Mix_Chunk*)value);
+}
+
 static void _pico_output_sound_cache (const char* path, int cache) {
     Mix_Chunk* mix = NULL;
 
@@ -1872,7 +1864,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
         mix = (Mix_Chunk*)realm_get(G.realm, n, path);
         if (mix == NULL) {
             mix = Mix_LoadWAV(path);
-            realm_put(G.realm, '!', n, path, _pico_free_sound, NULL, mix);
+            realm_put(G.realm, '!', n, path, _free_sound, NULL, mix);
         }
     } else {
         mix = Mix_LoadWAV(path);
