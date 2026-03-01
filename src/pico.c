@@ -530,14 +530,7 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Layer* _realm_get_layer (const char* name) {
-    int n = strlen(name) + 1;
-    return (Pico_Layer*)realm_get(G.realm, n, name);
-}
-
-static void _free_layer (
-    int n, const void* key, void* value
-) {
+static void _free_layer (int n, const void* key, void* value) {
     Pico_Layer* data = (Pico_Layer*)value;
     if (data->type == PICO_LAYER_VIDEO) {
         _pico_hash_clean_video((Pico_Layer_Video*)data);
@@ -627,9 +620,7 @@ void pico_init (int on) {
             G.main.tex = _tex_create(PICO_DIM_LOG);
             SDL_SetTextureBlendMode(G.main.tex, SDL_BLENDMODE_NONE);
             SDL_SetRenderTarget(G.ren, G.main.tex);
-            SDL_Rect r = pico_cv_rect_rel_abs (
-                &G.main.view.clip, NULL
-            );
+            SDL_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
             SDL_RenderSetClipRect(G.ren, &r);
             pico_output_clear();
         }
@@ -875,7 +866,7 @@ void pico_set_layer (const char* name) {
     if (name == NULL) {
         S.layer = &G.main;
     } else {
-        Pico_Layer* data = _realm_get_layer(name);
+        Pico_Layer* data = (Pico_Layer*)realm_get(G.realm, strlen(name)+1, name);
         pico_assert(data!=NULL && "layer does not exist");
         pico_assert(data->type!=PICO_LAYER_SUB &&
             "cannot set render target to sub-layer");
@@ -883,9 +874,7 @@ void pico_set_layer (const char* name) {
     }
 
     SDL_SetRenderTarget(G.ren, S.layer->tex);
-    SDL_Rect r = pico_cv_rect_rel_abs (
-        &S.layer->view.clip, NULL
-    );
+    SDL_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 }
 
@@ -928,9 +917,7 @@ void pico_pop (void) {
     if (S.layer != st->layer) {
         S.layer = st->layer;
         SDL_SetRenderTarget(G.ren, S.layer->tex);
-        SDL_Rect r = pico_cv_rect_rel_abs (
-            &S.layer->view.clip, NULL
-        );
+        SDL_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
         SDL_RenderSetClipRect(G.ren, &r);
     }
 }
@@ -967,9 +954,7 @@ void pico_set_view (
         SDL_BlendMode mode = (S.layer == &G.main) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
         SDL_SetTextureBlendMode(S.layer->tex, mode);
         SDL_SetRenderTarget(G.ren, S.layer->tex);
-        SDL_Rect r = pico_cv_rect_rel_abs (
-            &S.layer->view.clip, NULL
-        );
+        SDL_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
         SDL_RenderSetClipRect(G.ren, &r);
     }
 
@@ -1046,7 +1031,7 @@ static Pico_Layer* _pico_layer_buffer (
     assert(name!=NULL && "layer name required");
     assert(pixels!=NULL && "pixels required");
 
-    Pico_Layer* data = _realm_get_layer(name);
+    Pico_Layer* data = (Pico_Layer*)realm_get(G.realm, strlen(name)+1, name);
     if (data != NULL) {
         return data;
     }
@@ -1094,7 +1079,7 @@ void pico_layer_buffer (
 void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(name!=NULL && "layer name required");
 
-    Pico_Layer* data = _realm_get_layer(name);
+    Pico_Layer* data = (Pico_Layer*)realm_get(G.realm, strlen(name)+1, name);
     if (data != NULL) {
         return;
     }
@@ -1125,7 +1110,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     assert(path!=NULL && "image path required");
 
     const char* str = (name != NULL) ? name : path;
-    Pico_Layer* data = _realm_get_layer(str);
+    Pico_Layer* data = (Pico_Layer*)realm_get(G.realm, strlen(str)+1, str);
     if (data != NULL) {
         return data;
     }
@@ -1171,7 +1156,7 @@ void pico_layer_sub (const char* name,
     assert(crop!=NULL     && "crop rect required");
     assert(crop->up==NULL && "crop must not have up chain");
 
-    Pico_Layer* par = _realm_get_layer(parent);
+    Pico_Layer* par = (Pico_Layer*)realm_get(G.realm, strlen(parent)+1, parent);
     assert(par!=NULL && "parent layer does not exist");
     assert(par->type!=PICO_LAYER_SUB && "cannot create sub-layer of sub-layer");
 
@@ -1180,7 +1165,7 @@ void pico_layer_sub (const char* name,
         &(Pico_Abs_Rect){0, 0, par->view.dim.w, par->view.dim.h}
     );
 
-    Pico_Layer* data = _realm_get_layer(name);
+    Pico_Layer* data = (Pico_Layer*)realm_get(G.realm, strlen(name)+1, name);
     if (data != NULL) {
         return;
     }
@@ -1233,7 +1218,7 @@ static Pico_Layer* _pico_layer_text (
         str = name;
     }
 
-    Pico_Layer* data = _realm_get_layer(str);
+    Pico_Layer* data = (Pico_Layer*)realm_get(G.realm, strlen(str)+1, str);
     if (data != NULL) {
         return data;
     }
@@ -1565,7 +1550,7 @@ static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
 void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
     assert(name!=NULL && "layer name required");
 
-    Pico_Layer* layer = _realm_get_layer(name);
+    Pico_Layer* layer = (Pico_Layer*)realm_get(G.realm, strlen(name)+1, name);
     pico_assert(layer!=NULL && "layer does not exist");
 
     _pico_output_draw_layer(layer, rect);
@@ -1841,9 +1826,7 @@ static void _pico_output_present (int force) {
 
     G.tgt = 1;
     SDL_SetRenderTarget(G.ren, G.main.tex);
-    SDL_Rect r = pico_cv_rect_rel_abs (
-        &G.main.view.clip, NULL
-    );
+    SDL_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 }
 
@@ -1909,9 +1892,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
     SDL_FreeSurface(sfc);
 
     SDL_SetRenderTarget(G.ren, G.main.tex);
-    SDL_Rect r = pico_cv_rect_rel_abs (
-        &G.main.view.clip, NULL
-    );
+    SDL_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 
     return ret;
