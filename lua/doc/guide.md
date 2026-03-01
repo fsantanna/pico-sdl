@@ -763,7 +763,7 @@ screen.
 
 Nevertheless, `pico-lua` also supports an "expert mode" through
 `pico.set.expert`.
-In this mode, drawing operations are buffered, until an explicit call to
+In this mode, drawing operations are buffered until an explicit call to
 `pico.output.present` updates the screen at once:
 
 <table>
@@ -780,8 +780,8 @@ In this mode, drawing operations are buffered, until an explicit call to
 </td></tr>
 </table>
 
-At this point, nothing appears on the screen yet, since we have not called
-`pico.output.present`.
+At this point, nothing appears on the screen yet, since we have not yet called
+`pico.output.present`:
 
 <table>
 <tr><td><pre>
@@ -794,7 +794,7 @@ At this point, nothing appears on the screen yet, since we have not called
 
 Now, both the rectangles appear at the same time.
 
-### 9.2. Animations
+### 9.1. Animations
 
 Expert mode is useful for animation with controlled frame timing.
 As an example, let's animate a character walking around a rectangular
