@@ -169,7 +169,7 @@ static Pico_Layer_Video* _pico_layer_video (const char* name, const char* path) 
         },
     };
     assert(vs->base.name != NULL);
-    realm_put(G.realm, '!', n, key, _pico_free_layer, NULL, vs);
+    realm_put(G.realm, '!', n, key, _free_layer, NULL, vs);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 
     vs->fp = fp;
