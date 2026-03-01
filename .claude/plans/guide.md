@@ -17,11 +17,10 @@ interactive examples. Consult `lua/doc/api.md` for the full API.
 | 6 | Advanced View | OK | added size, target, clip, fullscreen |
 | 7 | Events | OK | added mouse fields, timeout nil, quit |
 | 8 | Layers | OK | added screenshot for 8.2 |
-| 9 | Expert Mode | OK | |
+| 9 | Expert Mode | OK | 9.2: sprite sheet walk animation with layer.images |
 | 10 | Auxiliary Functions | OK | cv.pos, cv.rect, vs.pos_rect, vs.rect_rect |
 | 11 | Extras | OK | output.sound, output.screenshot |
 
 ## Issues (future)
 
-- **9.2**: `pico.get.ticks` used but never formally introduced
 - **New section**: Guide for video playback

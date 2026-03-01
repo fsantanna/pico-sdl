@@ -795,20 +795,75 @@ Now, both the rectangles appear at the same time.
 
 ### 9.2. Animations
 
-Expert mode is useful for animation with controlled frame timing:
+Expert mode is useful for animation with controlled frame timing.
+As an example, let's animate a character walking around a rectangular
+path using a
+[CC0 sprite sheet](https://opengameart.org/content/simple-character-base-16x16).
+
+First, we load the sprite sheet with `pico.layer.images`, which splits
+an image into a grid of sub-layers:
+
+```lua
+> local frames = pico.layer.images("walk",
+    "img/walk.png", {'#', w=4, h=4})
+```
+
+This loads `img/walk.png` as a layer and splits it into a 4x4 grid of
+sub-layers named `"walk-1"` to `"walk-16"`.
+The sprite sheet has 4 rows: walk down (1–4), left (5–8), right (9–12),
+and up (13–16).
+
+Now we set up the animation loop.
+`pico.get.ticks()` returns milliseconds since initialization, which we
+use to control frame timing.
+The character walks continuously around a rectangle
+(right→down→left→up), switching direction at corners:
 
 ```lua
 > pico.set.expert(true)
+> local dirs = {
+    right = { 9, 10, 11, 12},
+    down  = { 1,  2,  3,  4},
+    left  = { 5,  6,  7,  8},
+    up    = {13, 14, 15, 16},
+  }
+> local path = {
+    {x=0.2, y=0.2, dir='right', tx=0.8, ty=0.2},
+    {x=0.8, y=0.2, dir='down',  tx=0.8, ty=0.8},
+    {x=0.8, y=0.8, dir='left',  tx=0.2, ty=0.8},
+    {x=0.2, y=0.8, dir='up',    tx=0.2, ty=0.2},
+  }
+> local steps = 20
 > while true do
-    local start = pico.get.ticks()
-    -- draw frame here
-    pico.output.present()
-    local elapsed = pico.get.ticks() - start
-    if elapsed < 16 then
-        pico.input.delay(16 - elapsed)  -- ~60 FPS
+    for _, leg in ipairs(path) do
+      local f = dirs[leg.dir]
+      for s = 0, steps-1 do
+        local t = s / steps
+        local x = leg.x + (leg.tx - leg.x) * t
+        local y = leg.y + (leg.ty - leg.y) * t
+        local t0 = pico.get.ticks()
+        pico.output.clear()
+        pico.output.draw.layer(
+            frames[f[s%4 + 1]],
+            {'%', x=x, y=y, w=0.15})
+        pico.output.present()
+        local wait = 100 - (pico.get.ticks() - t0)
+        local e = pico.input.event(nil,
+            math.max(0, wait))
+        if e and e.tag=='key.dn'
+           and e.key=='Escape' then
+            goto done
+        end
+      end
     end
   end
+> ::done::
 ```
+
+Each step takes 100ms, with 20 steps per leg and 4 legs, giving ~8
+seconds per full loop. Press Escape to exit.
+
+<img src="img/guide-09-02-01.gif" width="200">
 
 ## 10. Auxiliary Functions
 
