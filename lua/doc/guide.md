@@ -729,7 +729,7 @@ A sub-layer points to a region within a parent layer, sharing the actual pixel
 contents.
 
 Sub-layers are useful to isolate individual frames from a sprite sheet in
-games, which we discuss in [#Animations](#animations).
+games, which we discuss in [#Animations](#92-animations).
 
 We call `pico.layer.sub` to crop a region of a parent layer:
 
