@@ -216,7 +216,7 @@ end
 
 do
     pico.init(true)
-    pico.layer.empty("bg", {w=100, h=100})
+    pico.layer.empty('!', "bg", {w=100, h=100})
     pico.set.layer("bg")
     pico.set.color.draw('blue')
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.8, h=0.8})

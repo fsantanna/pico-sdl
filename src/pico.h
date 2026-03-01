@@ -297,43 +297,54 @@ const char* pico_get_layer (void);
 ///////////////////////////////////////////////////////////////////////////////
 
 /// @brief Creates a layer from a pixel buffer.
+/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param name layer name (must not be NULL or start with '/')
 /// @param dim buffer dimensions
 /// @param pixels RGBA pixel data (must remain valid while layer exists)
-void pico_layer_buffer (const char* name, Pico_Abs_Dim dim,
+void pico_layer_buffer (int mode, const char* name,
+                        Pico_Abs_Dim dim,
                         const Pico_Color_A* pixels);
 
 /// @brief Creates an empty layer.
+/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param name layer name (must not be NULL or start with '/')
 /// @param dim layer dimensions
-void pico_layer_empty (const char* name, Pico_Abs_Dim dim);
+void pico_layer_empty (int mode, const char* name,
+                       Pico_Abs_Dim dim);
 
 /// @brief Creates a layer from an image file.
+/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param name layer name (NULL uses "/image/<path>", otherwise must not
 ///             start with '/')
 /// @param path path to the image file
-void pico_layer_image (const char* name, const char* path);
+void pico_layer_image (int mode, const char* name,
+                       const char* path);
 
 /// @brief Creates a sub-layer (crop) from an existing layer.
 /// Shares the parent's texture — no copy.
+/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param name sub-layer name (must not be NULL)
 /// @param parent parent layer name (must exist, must not be a sub-layer)
 /// @param crop source rectangle within the parent
-void pico_layer_sub (const char* name,
+void pico_layer_sub (int mode, const char* name,
     const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a layer from text.
+/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param name layer name (must not be NULL or start with '/')
 /// @param height text height in pixels
 /// @param text the text to render
 /// @note Uses current font (pico_set_font) and draw color (pico_set_color_draw)
-void pico_layer_text (const char* name, int height, const char* text);
+void pico_layer_text (int mode, const char* name,
+                      int height, const char* text);
 
 /// @brief Creates a video layer from a Y4M file.
+/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param name layer name (NULL uses path, otherwise must not
 ///             start with '/')
 /// @param path path to the Y4M video file
-void pico_layer_video (const char* name, const char* path);
+void pico_layer_video (int mode, const char* name,
+                       const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -34,7 +34,7 @@ pico.set.view{
     dim  = {'!', w=win_w, h=win_h},
 }
 
-pico.layer.video("vid", VIDEO_PATH)
+pico.layer.video('!', "vid", VIDEO_PATH)
 
 local speed = 1.0
 local paused = false

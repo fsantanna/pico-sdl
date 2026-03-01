@@ -1,6 +1,6 @@
 # Plan: Replace ttl-hash with realm-allocator
 
-## Status: Fix two issues, then compile + tests
+## Status: Implementing mode parameter for pico_layer_* APIs
 
 ## Design Summary
 
@@ -38,7 +38,7 @@ scope-based resource management (`realm.h` / `realm_t`).
 | `doc/Doxyfile` | `hash.h` → `realm.h` in EXCLUDE |
 | `valgrind.supp` | SDL_Init line number update |
 
-## Steps
+## Completed Steps
 
 - [x] Read and understand all affected files
 - [x] Copy realm.h into src/
@@ -52,6 +52,24 @@ scope-based resource management (`realm.h` / `realm_t`).
 - [x] Update valgrind.supp
 - [x] Compile and verify (zero warnings)
 - [x] Remove Pico_Key (use plain string keys)
+
+## Done: Add mode parameter to pico_layer_* APIs
+
+Realm modes: `'!'` exclusive, `'='` shared, `'~'` replaceable.
+Add `int mode` as first parameter to all `pico_layer_*` functions.
+
+- [x] Step 1: Update declarations in `src/pico.h` (6 functions)
+- [x] Step 2a: Forward declarations in `src/pico.c` (2 statics)
+- [x] Step 2b: Internal helpers + public wrappers in `src/pico.c`
+- [x] Step 2c: Internal callers of `_pico_layer_image` → pass `'='`
+- [x] Step 2d: Internal callers of `_pico_layer_text` → pass `'='`
+- [x] Step 2e: `pico_output_draw_buffer` → pass `'='`
+- [x] Step 3: Update `src/video.h` (3a/3b/3c)
+- [x] Step 4: Update `lua/pico.c` (6 Lua bindings)
+- [x] Step 5: valgrind.supp — no change (SDL_Init still line 548)
+
+## Remaining
+
 - [ ] Fix valgrind.supp: line 574 → 572 (SDL_Init actual line)
 - [ ] Revert pico-sdl: `VALGRIND=` → `#VALGRIND=` (re-enable)
 - [ ] Re-compile and verify (zero warnings)

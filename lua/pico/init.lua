@@ -20,7 +20,7 @@ setmetatable(M.set, {
 })
 
 function M.layer.images (path, t)
-    local parent = M.layer.image(nil, path)
+    local parent = M.layer.image('=', nil, path)
     local names = {}
     local mode = t[1]
     assert(mode=='#' or mode=='!', "expected '#' or '!' mode")
@@ -41,7 +41,7 @@ function M.layer.images (path, t)
                 i = i + 1
                 if i > n then break end
                 local name = prefix .. i
-                M.layer.sub(name, parent,
+                M.layer.sub('=', name, parent,
                     {'!', x=col*tw, y=row*th,
                           w=tw, h=th, anchor='NW'})
                 names[#names+1] = name
@@ -53,7 +53,7 @@ function M.layer.images (path, t)
     else
         for name, crop in pairs(t) do
             if name ~= 1 then
-                M.layer.sub(name, parent, crop)
+                M.layer.sub('=', name, parent, crop)
                 names[#names+1] = name
             end
         end

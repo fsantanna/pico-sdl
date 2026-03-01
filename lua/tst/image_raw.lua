@@ -74,7 +74,7 @@ end
 do
     print "show big croped"
     pico.output.clear()
-    pico.layer.image("crop", "open.png")
+    pico.layer.image('!', "crop", "open.png")
     pico.set.layer("crop")
     pico.set.view {
         source = {'!', x=9, y=9, w=30, h=30, anchor='NW'}
