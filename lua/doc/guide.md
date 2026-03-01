@@ -86,8 +86,8 @@ To configure the window and the world view, we use `pico.set.window` and
 After the two commands, the window title is set, the grid is disabled, and both
 the window and view are set to the same dimensions.
 
-The character `'!'` indicates a dimension in "raw mode", which we discuss
-further.
+The character `'!'` indicates a dimension in "raw mode", which we will discuss
+in [#Positioning Mode](#5-positioning-mode--anchor).
 
 You could also use the simpler `pico.set.dim` to set the window and view
 dimensions at the same time:
@@ -181,8 +181,8 @@ The table specifies a rectangle at position `(20,20)` with size `30x30`.
 
 With the aid of the tick marks, we can see that the rectangle centered at the
 given position.
-Unlike most graphics libraries, `pico-lua` **centers** objects by default.
-We discuss positioning and anchoring further.
+Unlike most graphics libraries, `pico-lua` **centers** objects by default,
+which we will discuss in [#Anchors](#52-anchors).
 
 ### 3.4. Image
 
@@ -637,7 +637,8 @@ compose to form complex scenes.
 
 The main logical world is itself a layer, as well as images, texts, buffers,
 and videos.
-Therefore, all view properties also apply to layers.
+Therefore, all discussed [#view properties](#6-advanced-view) also apply to
+layers.
 
 ### 8.1. Creating Layers
 
@@ -729,7 +730,7 @@ A sub-layer points to a region within a parent layer, sharing the actual pixel
 contents.
 
 Sub-layers are useful to isolate individual frames from a sprite sheet in
-games, which we discuss in [#Animations](#92-animations).
+games, which we will discuss in [#Animations](#92-animations).
 
 We call `pico.layer.sub` to crop a region of a parent layer:
 
@@ -801,7 +802,7 @@ path using a
 [CC0 sprite sheet](https://opengameart.org/content/simple-character-base-16x16).
 
 First, we load the sprite sheet with `pico.layer.images`, which splits
-an image into a grid of sub-layers:
+an image into a grid of [#sub-layers](#84-sub-layers), as previously discussed.
 
 ```lua
 > local frames = pico.layer.images("walk",
