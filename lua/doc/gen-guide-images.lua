@@ -130,6 +130,15 @@ end
 
 do
     pico.init(true)
+    pico.output.clear()
+    pico.set.alpha(0x88)
+    pico.set.color.draw('red')
+    shot("guide-05-00-01")
+    pico.init(false)
+end
+
+do
+    pico.init(true)
     pico.set.color.draw('red')
     pico.set.alpha(0x88)
     pico.output.clear()
@@ -349,9 +358,9 @@ do
     pico.set.expert(true)
     pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
     pico.output.draw.rect { '!', x=66, y=66, w=40, h=40 }
-    shot("guide-09-01-01")
+    shot("guide-09-00-01")
     pico.output.present()
-    shot("guide-09-01-02")
+    shot("guide-09-00-02")
     pico.init(false)
 end
 

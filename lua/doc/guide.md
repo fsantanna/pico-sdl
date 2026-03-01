@@ -306,7 +306,7 @@ Let's restart `pico-lua` with some transparency:
 > pico.set.color.draw 'red'
 </pre>
 </td><td>
-<img src="img/guide-02-03-01.png" width="200">
+<img src="img/guide-05-00-01.png" width="200">
 </td></tr>
 </table>
 
@@ -730,7 +730,7 @@ A sub-layer points to a region within a parent layer, sharing the actual pixel
 contents.
 
 Sub-layers are useful to isolate individual frames from a sprite sheet in
-games, which we will discuss in [#Animations](#92-animations).
+games, which we will discuss in [#Animations](#91-animations).
 
 We call `pico.layer.sub` to crop a region of a parent layer:
 
@@ -758,13 +758,13 @@ In the example, each sub-layer crops a square from each stripe of the flag
 
 ## 9. Expert Mode
 
-By default, drawing operations in `pico-lua` are immediatly visible on the
-screen.
+By default, each drawing operation in `pico-lua` becomes immediatly visible on
+the screen.
+However, most games and non-trivial graphical applications require to apply
+drawing operations simultaneously on every frame.
 
-Nevertheless, `pico-lua` also supports an "expert mode" through
-`pico.set.expert`.
-In this mode, drawing operations are buffered until an explicit call to
-`pico.output.present` updates the screen at once:
+With `pico.set.expert`, drawing operations are buffered until an explicit
+call to `pico.output.present` updates the screen at once:
 
 <table>
 <tr><td><pre>
@@ -776,7 +776,7 @@ In this mode, drawing operations are buffered until an explicit call to
 > pico.input.delay(1000)
 </pre>
 </td><td>
-<img src="img/guide-09-01-01.png" width="200">
+<img src="img/guide-09-00-01.png" width="200">
 </td></tr>
 </table>
 
@@ -788,7 +788,7 @@ At this point, nothing appears on the screen yet, since we have not yet called
 > pico.output.present()
 </pre>
 </td><td>
-<img src="img/guide-09-01-02.png" width="200">
+<img src="img/guide-09-00-02.png" width="200">
 </td></tr>
 </table>
 
@@ -864,7 +864,7 @@ The character walks continuously around a rectangle
 Each step takes 100ms, with 20 steps per leg and 4 legs, giving ~8
 seconds per full loop. Press Escape to exit.
 
-<img src="img/guide-09-02-01.gif" width="200">
+<img src="img/guide-09-01-01.gif" width="200">
 
 ## 10. Auxiliary Functions
 
