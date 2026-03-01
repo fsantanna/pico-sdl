@@ -124,8 +124,8 @@ static Pico_Layer_Video* _pico_layer_video (const char* name, const char* path) 
     strcpy(key->key, str);
 
     Pico_Layer_Video* vs =
-        (Pico_Layer_Video*)ttl_hash_get(
-            G.hash, n, key);
+        (Pico_Layer_Video*)realm_get(
+            G.realm, n, key);
     if (vs != NULL) {
         assert(vs->base.type == PICO_LAYER_VIDEO);
         return vs;
@@ -157,7 +157,7 @@ static Pico_Layer_Video* _pico_layer_video (const char* name, const char* path) 
     assert(vs != NULL);
     vs->base = (Pico_Layer) {
         .type = PICO_LAYER_VIDEO,
-        .key  = ttl_hash_put(G.hash, n, key, vs),
+        .name = strdup(str),
         .tex  = tex,
         .view = {
             .grid = 0,
@@ -173,6 +173,8 @@ static Pico_Layer_Video* _pico_layer_video (const char* name, const char* path) 
             .flip = PICO_FLIP_NONE,
         },
     };
+    assert(vs->base.name != NULL);
+    realm_put(G.realm, '!', n, key, _pico_free_layer, NULL, vs);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 
     vs->fp = fp;
@@ -246,8 +248,7 @@ int pico_set_video (const char* name, int frame) {
     Pico_Key* key = alloca(n);
     key->type = PICO_KEY_LAYER;
     strcpy(key->key, name);
-    Pico_Layer* layer =
-        (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    Pico_Layer* layer = (Pico_Layer*)realm_get(G.realm, n, key);
     pico_assert(layer != NULL && "layer does not exist");
 
     /* Get video state from layer */

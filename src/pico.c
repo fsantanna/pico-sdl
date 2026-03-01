@@ -11,8 +11,8 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
-#define TTL_HASH_C
-#include "hash.h"
+#define REALM_C
+#include "realm.h"
 #include "tiny_ttf.h"
 #include "pico.h"
 
@@ -56,7 +56,7 @@ typedef enum {
 
 typedef struct Pico_Layer {
     PICO_LAYER            type;
-    const Pico_Key*       key;      // NULL for main layer
+    char*                 name;     // NULL for main layer
     SDL_Texture*          tex;
     Pico_View             view;
     struct Pico_Layer*    parent;   // NULL if !PICO_LAYER_SUB
@@ -74,7 +74,7 @@ SDL_Window* pico_win;
 static struct { // internal global state
     int           init;
     int           fsing;
-    ttl_hash*     hash;
+    realm_t*      realm;
     Pico_Layer    main;
     SDL_Renderer* ren;
     int           tgt;
@@ -126,12 +126,6 @@ static Pico_Layer* _pico_layer_text (const char* name, int height, const char* t
 static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect);
 static void _pico_output_present (int force);
 
-static void _tick_and_check (void) {
-    assert(S.layer==&G.main && "tick: layer must be the main");
-    assert(STACK.n==0 && "tick: stack must be cleared");
-    ttl_hash_tick(G.hash);
-}
-
 static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
     SDL_Texture* tex = SDL_CreateTexture (
         G.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
@@ -153,6 +147,8 @@ static TTF_Font* _font_open (const char* path, int h) {
     return ttf;
 }
 
+static void _pico_free_font (int n, const void* key, void* value);
+
 static TTF_Font* _font_get (const char* path, int h) {
     const char* path_str = path ? path : "null";
     char key_buf[256];
@@ -162,13 +158,13 @@ static TTF_Font* _font_get (const char* path, int h) {
     key->type = PICO_KEY_FONT;
     strcpy(key->key, key_buf);
 
-    TTF_Font* ttf = (TTF_Font*)ttl_hash_get(G.hash, n, key);
+    TTF_Font* ttf = (TTF_Font*)realm_get(G.realm, n, key);
     if (ttf != NULL) {
         return ttf;
     }
 
     ttf = _font_open(path, h);
-    ttl_hash_put(G.hash, n, key, ttf);
+    realm_put(G.realm, '!', n, key, _pico_free_font, NULL, ttf);
     return ttf;
 }
 
@@ -546,47 +542,48 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Layer* _ttl_hash_get_layer (const char* name) {
+static Pico_Layer* _realm_get_layer (const char* name) {
     int n = sizeof(Pico_Key) + strlen(name) + 1;
     Pico_Key* key = alloca(n);
     key->type = PICO_KEY_LAYER;
     strcpy(key->key, name);
-    return (Pico_Layer*)ttl_hash_get(G.hash, n, key);
+    return (Pico_Layer*)realm_get(G.realm, n, key);
 }
 
-static const Pico_Key* _ttl_hash_put_layer (
+static void _pico_free_layer (
+    int n, const void* key, void* value
+) {
+    Pico_Layer* data = (Pico_Layer*)value;
+    if (data->type == PICO_LAYER_VIDEO) {
+        _pico_hash_clean_video((Pico_Layer_Video*)data);
+    }
+    if (data->type != PICO_LAYER_SUB) {
+        SDL_DestroyTexture(data->tex);
+    }
+    free(data->name);
+    free(data);
+}
+
+static void _realm_put_layer (
     const char* name, Pico_Layer* data
 ) {
     int n = sizeof(Pico_Key) + strlen(name) + 1;
     Pico_Key* key = alloca(n);
     key->type = PICO_KEY_LAYER;
     strcpy(key->key, name);
-    return ttl_hash_put(G.hash, n, key, data);
+    realm_put(G.realm, '!', n, key, _pico_free_layer, NULL, data);
 }
 
-static void _pico_hash_clean (int n, const void* key, void* value) {
-    const Pico_Key* res = (const Pico_Key*)key;
-    switch (res->type) {
-        case PICO_KEY_LAYER: {
-            Pico_Layer* data = (Pico_Layer*)value;
-            if (data->type == PICO_LAYER_VIDEO) {
-                _pico_hash_clean_video((Pico_Layer_Video*)data);
-            }
-            if (data->type != PICO_LAYER_SUB) {
-                SDL_DestroyTexture(data->tex);
-            }
-            free(data);
-            break;
-        }
-        case PICO_KEY_SOUND:
-            Mix_FreeChunk((Mix_Chunk*)value);
-            break;
-        case PICO_KEY_FONT:
-            TTF_CloseFont((TTF_Font*)value);
-            break;
-        default:
-            assert(0 && "invalid resource");
-    }
+static void _pico_free_sound (
+    int n, const void* key, void* value
+) {
+    Mix_FreeChunk((Mix_Chunk*)value);
+}
+
+static void _pico_free_font (
+    int n, const void* key, void* value
+) {
+    TTF_CloseFont((TTF_Font*)value);
 }
 
 void pico_init (int on) {
@@ -599,10 +596,10 @@ void pico_init (int on) {
         G = (typeof(G)) {
             .init  = 0,
             .fsing = 0,
-            .hash  = ttl_hash_open(PICO_HASH_BUK, PICO_HASH_TTL, _pico_hash_clean),
+            .realm = realm_open(PICO_HASH_BUK),
             .main  = {
                 .type = PICO_LAYER_PLAIN,
-                .key  = NULL,
+                .name = NULL,
                 .tex  = NULL,   // needs G.ren
                 .view = {
                     .grid = 1,
@@ -624,8 +621,9 @@ void pico_init (int on) {
                        SDL_WINDOW_SHOWN
                    ),
         };
-        assert(G.hash != NULL);
+        assert(G.realm != NULL);
         pico_assert(G.win != NULL);
+        realm_enter(G.realm);
 
         S = (typeof(S)) {
             .alpha  = 0xFF,
@@ -677,9 +675,9 @@ void pico_init (int on) {
         assert(G.init == 1);
         G.init = 0;
 
-        if (G.hash != NULL) {
-            ttl_hash_close(G.hash);
-        }
+        assert(G.realm != NULL);
+        realm_close(G.realm);
+
         Mix_CloseAudio();
         TTF_Quit();
         if (G.main.tex != NULL) {
@@ -740,7 +738,7 @@ int pico_get_key (PICO_KEY key) {
 }
 
 const char* pico_get_layer (void) {
-    return S.layer->key ? S.layer->key->key : NULL;
+    return S.layer->name;
 }
 
 int pico_get_mouse (Pico_Rel_Pos* pos, int button) {
@@ -909,7 +907,7 @@ void pico_set_layer (const char* name) {
     if (name == NULL) {
         S.layer = &G.main;
     } else {
-        Pico_Layer* data = _ttl_hash_get_layer(name);
+        Pico_Layer* data = _realm_get_layer(name);
         pico_assert(data!=NULL && "layer does not exist");
         pico_assert(data->type!=PICO_LAYER_SUB &&
             "cannot set render target to sub-layer");
@@ -1080,7 +1078,7 @@ static Pico_Layer* _pico_layer_buffer (
     assert(name!=NULL && "layer name required");
     assert(pixels!=NULL && "pixels required");
 
-    Pico_Layer* data = _ttl_hash_get_layer(name);
+    Pico_Layer* data = _realm_get_layer(name);
     if (data != NULL) {
         return data;
     }
@@ -1097,7 +1095,7 @@ static Pico_Layer* _pico_layer_buffer (
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
-        .key  = _ttl_hash_put_layer(name, data),
+        .name = strdup(name),
         .tex  = tex,
         .view = {
             .grid = 0,
@@ -1110,7 +1108,8 @@ static Pico_Layer* _pico_layer_buffer (
             .flip = PICO_FLIP_NONE,
         },
     };
-    assert(data->key != NULL);
+    assert(data->name != NULL);
+    _realm_put_layer(name, data);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 
     return data;
@@ -1127,7 +1126,7 @@ void pico_layer_buffer (
 void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(name!=NULL && "layer name required");
 
-    Pico_Layer* data = _ttl_hash_get_layer(name);
+    Pico_Layer* data = _realm_get_layer(name);
     if (data != NULL) {
         return;
     }
@@ -1136,7 +1135,7 @@ void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
-        .key  = _ttl_hash_put_layer(name, data),
+        .name = strdup(name),
         .tex  = _tex_create(dim),
         .view = {
             .grid = 0,
@@ -1149,7 +1148,8 @@ void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
             .flip = PICO_FLIP_NONE,
         },
     };
-    assert(data->key != NULL);
+    assert(data->name != NULL);
+    _realm_put_layer(name, data);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 }
 
@@ -1157,7 +1157,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     assert(path!=NULL && "image path required");
 
     const char* str = (name != NULL) ? name : path;
-    Pico_Layer* data = _ttl_hash_get_layer(str);
+    Pico_Layer* data = _realm_get_layer(str);
     if (data != NULL) {
         return data;
     }
@@ -1171,7 +1171,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
-        .key  = _ttl_hash_put_layer(str, data),
+        .name = strdup(str),
         .tex  = tex,
         .view = {
             .grid = 0,
@@ -1184,7 +1184,8 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
             .flip = PICO_FLIP_NONE,
         },
     };
-    assert(data->key != NULL);
+    assert(data->name != NULL);
+    _realm_put_layer(str, data);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 
     return data;
@@ -1202,7 +1203,7 @@ void pico_layer_sub (const char* name,
     assert(crop!=NULL     && "crop rect required");
     assert(crop->up==NULL && "crop must not have up chain");
 
-    Pico_Layer* par = _ttl_hash_get_layer(parent);
+    Pico_Layer* par = _realm_get_layer(parent);
     assert(par!=NULL && "parent layer does not exist");
     assert(par->type!=PICO_LAYER_SUB && "cannot create sub-layer of sub-layer");
 
@@ -1211,7 +1212,7 @@ void pico_layer_sub (const char* name,
         &(Pico_Abs_Rect){0, 0, par->view.dim.w, par->view.dim.h}
     );
 
-    Pico_Layer* data = _ttl_hash_get_layer(name);
+    Pico_Layer* data = _realm_get_layer(name);
     if (data != NULL) {
         return;
     }
@@ -1220,7 +1221,7 @@ void pico_layer_sub (const char* name,
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type   = PICO_LAYER_SUB,
-        .key    = _ttl_hash_put_layer(name, data),
+        .name   = strdup(name),
         .tex    = par->tex,
         .view   = {
             .grid = 0,
@@ -1234,7 +1235,8 @@ void pico_layer_sub (const char* name,
         },
         .parent = par,
     };
-    assert(data->key != NULL);
+    assert(data->name != NULL);
+    _realm_put_layer(name, data);
     data->view.src.up = &par->view.src;
 }
 
@@ -1263,7 +1265,7 @@ static Pico_Layer* _pico_layer_text (
         str = name;
     }
 
-    Pico_Layer* data = _ttl_hash_get_layer(str);
+    Pico_Layer* data = _realm_get_layer(str);
     if (data != NULL) {
         return data;
     }
@@ -1275,7 +1277,7 @@ static Pico_Layer* _pico_layer_text (
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type = PICO_LAYER_PLAIN,
-        .key  = _ttl_hash_put_layer(str, data),
+        .name = strdup(str),
         .tex  = tex,
         .view = {
             .grid = 0,
@@ -1286,7 +1288,8 @@ static Pico_Layer* _pico_layer_text (
             .tile = {0, 0},
         },
     };
-    assert(data->key != NULL);
+    assert(data->name != NULL);
+    _realm_put_layer(str, data);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 
     return data;
@@ -1465,7 +1468,6 @@ static int event_from_sdl (Pico_Event* e, int xp, int do_exit) {
 }
 
 void pico_input_delay (int ms) {
-    _tick_and_check();
     while (1) {
         int old = SDL_GetTicks();
         Pico_Event e;
@@ -1482,7 +1484,6 @@ void pico_input_delay (int ms) {
 }
 
 void pico_input_event (Pico_Event* evt, int type) {
-    _tick_and_check();
     while (1) {
         Pico_Event x;
         SDL_WaitEvent(&x);
@@ -1496,14 +1497,12 @@ void pico_input_event (Pico_Event* evt, int type) {
 }
 
 int pico_input_event_ask (Pico_Event* evt, int type) {
-    _tick_and_check();
     int has = SDL_PollEvent(evt);
     if (!has) return 0;
     return event_from_sdl(evt, type, 1);
 }
 
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
-    _tick_and_check();
     int old = SDL_GetTicks();
     while (1) {
         int has = SDL_WaitEventTimeout(evt, timeout);
@@ -1521,7 +1520,6 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 void pico_input_loop (void) {
     while (1) {
-        _tick_and_check();
         Pico_Event e;
         SDL_WaitEvent(&e);
         event_from_sdl(&e, SDL_ANY, 0);
@@ -1599,12 +1597,8 @@ static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect) {
 void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
     assert(name!=NULL && "layer name required");
 
-    Pico_Layer* layer = _ttl_hash_get_layer(name);
+    Pico_Layer* layer = _realm_get_layer(name);
     pico_assert(layer!=NULL && "layer does not exist");
-
-    if (layer->parent != NULL) {
-        _ttl_hash_get_layer(layer->parent->key->key);
-    }
 
     _pico_output_draw_layer(layer, rect);
 }
@@ -1899,10 +1893,10 @@ static void _pico_output_sound_cache (const char* path, int cache) {
         res->type = PICO_KEY_SOUND;
         strcpy(res->key, path);
 
-        mix = (Mix_Chunk*)ttl_hash_get(G.hash, n, res);
+        mix = (Mix_Chunk*)realm_get(G.realm, n, res);
         if (mix == NULL) {
             mix = Mix_LoadWAV(path);
-            ttl_hash_put(G.hash, n, res, mix);
+            realm_put(G.realm, '!', n, res, _pico_free_sound, NULL, mix);
         }
     } else {
         mix = Mix_LoadWAV(path);
