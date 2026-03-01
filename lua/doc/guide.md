@@ -810,8 +810,8 @@ an image into a grid of sub-layers:
 
 This loads `img/walk.png` as a layer and splits it into a 4x4 grid of
 sub-layers named `"walk-1"` to `"walk-16"`.
-The sprite sheet has 4 rows: walk down (1–4), left (5–8), right (9–12),
-and up (13–16).
+The sprite sheet has 4 rows: walk down (1–4), up (5–8), right (9–12),
+and left (13–16).
 
 Now we set up the animation loop.
 `pico.get.ticks()` returns milliseconds since initialization, which we
@@ -824,14 +824,14 @@ The character walks continuously around a rectangle
 > local dirs = {
     right = { 9, 10, 11, 12},
     down  = { 1,  2,  3,  4},
-    left  = { 5,  6,  7,  8},
-    up    = {13, 14, 15, 16},
+    left  = {13, 14, 15, 16},
+    up    = { 5,  6,  7,  8},
   }
 > local path = {
-    {x=0.2, y=0.2, dir='right', tx=0.8, ty=0.2},
-    {x=0.8, y=0.2, dir='down',  tx=0.8, ty=0.8},
-    {x=0.8, y=0.8, dir='left',  tx=0.2, ty=0.8},
-    {x=0.2, y=0.8, dir='up',    tx=0.2, ty=0.2},
+    {x=0.3, y=0.3, dir='right', tx=0.7, ty=0.3},
+    {x=0.7, y=0.3, dir='down',  tx=0.7, ty=0.7},
+    {x=0.7, y=0.7, dir='left',  tx=0.3, ty=0.7},
+    {x=0.3, y=0.7, dir='up',    tx=0.3, ty=0.3},
   }
 > local steps = 20
 > while true do
