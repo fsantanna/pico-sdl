@@ -26,17 +26,6 @@
 // DATA
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef enum {
-    PICO_KEY_SOUND,
-    PICO_KEY_LAYER,
-    PICO_KEY_FONT,
-} PICO_KEY_TYPE;
-
-typedef struct {
-    PICO_KEY_TYPE type;
-    char key[];
-} Pico_Key;
-
 typedef struct {
     Pico_Abs_Dim  dim;
     Pico_Rel_Rect dst;
@@ -151,12 +140,9 @@ static void _pico_free_font (int n, const void* key, void* value);
 
 static TTF_Font* _font_get (const char* path, int h) {
     const char* path_str = path ? path : "null";
-    char key_buf[256];
-    snprintf(key_buf, sizeof(key_buf), "/font/%s/%d", path_str, h);
-    int n = sizeof(Pico_Key) + strlen(key_buf) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_FONT;
-    strcpy(key->key, key_buf);
+    char key[256];
+    snprintf(key, sizeof(key), "/font/%s/%d", path_str, h);
+    int n = strlen(key) + 1;
 
     TTF_Font* ttf = (TTF_Font*)realm_get(G.realm, n, key);
     if (ttf != NULL) {
@@ -543,11 +529,8 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Layer* _realm_get_layer (const char* name) {
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, name);
-    return (Pico_Layer*)realm_get(G.realm, n, key);
+    int n = strlen(name) + 1;
+    return (Pico_Layer*)realm_get(G.realm, n, name);
 }
 
 static void _pico_free_layer (
@@ -567,11 +550,8 @@ static void _pico_free_layer (
 static void _realm_put_layer (
     const char* name, Pico_Layer* data
 ) {
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, name);
-    realm_put(G.realm, '!', n, key, _pico_free_layer, NULL, data);
+    int n = strlen(name) + 1;
+    realm_put(G.realm, '!', n, name, _pico_free_layer, NULL, data);
 }
 
 static void _pico_free_sound (
@@ -1888,15 +1868,11 @@ static void _pico_output_sound_cache (const char* path, int cache) {
     Mix_Chunk* mix = NULL;
 
     if (cache) {
-        int n = sizeof(Pico_Key) + strlen(path) + 1;
-        Pico_Key* res = alloca(n);
-        res->type = PICO_KEY_SOUND;
-        strcpy(res->key, path);
-
-        mix = (Mix_Chunk*)realm_get(G.realm, n, res);
+        int n = strlen(path) + 1;
+        mix = (Mix_Chunk*)realm_get(G.realm, n, path);
         if (mix == NULL) {
             mix = Mix_LoadWAV(path);
-            realm_put(G.realm, '!', n, res, _pico_free_sound, NULL, mix);
+            realm_put(G.realm, '!', n, path, _pico_free_sound, NULL, mix);
         }
     } else {
         mix = Mix_LoadWAV(path);

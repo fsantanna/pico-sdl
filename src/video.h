@@ -117,15 +117,10 @@ static void _pico_hash_clean_video (Pico_Layer_Video* vs) {
 
 /* Get or create video layer by name */
 static Pico_Layer_Video* _pico_layer_video (const char* name, const char* path) {
-    const char* str = (name != NULL) ? name : path;
-    int n = sizeof(Pico_Key) + strlen(str) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, str);
+    const char* key = (name != NULL) ? name : path;
+    int n = strlen(key) + 1;
 
-    Pico_Layer_Video* vs =
-        (Pico_Layer_Video*)realm_get(
-            G.realm, n, key);
+    Pico_Layer_Video* vs = (Pico_Layer_Video*)realm_get(G.realm, n, key);
     if (vs != NULL) {
         assert(vs->base.type == PICO_LAYER_VIDEO);
         return vs;
@@ -157,7 +152,7 @@ static Pico_Layer_Video* _pico_layer_video (const char* name, const char* path) 
     assert(vs != NULL);
     vs->base = (Pico_Layer) {
         .type = PICO_LAYER_VIDEO,
-        .name = strdup(str),
+        .name = strdup(key),
         .tex  = tex,
         .view = {
             .grid = 0,
@@ -244,11 +239,8 @@ int pico_set_video (const char* name, int frame) {
     assert(name != NULL && "layer name required");
 
     /* Find layer by name */
-    int n = sizeof(Pico_Key) + strlen(name) + 1;
-    Pico_Key* key = alloca(n);
-    key->type = PICO_KEY_LAYER;
-    strcpy(key->key, name);
-    Pico_Layer* layer = (Pico_Layer*)realm_get(G.realm, n, key);
+    int n = strlen(name) + 1;
+    Pico_Layer* layer = (Pico_Layer*)realm_get(G.realm, n, name);
     pico_assert(layer != NULL && "layer does not exist");
 
     /* Get video state from layer */
