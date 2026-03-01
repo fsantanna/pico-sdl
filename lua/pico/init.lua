@@ -19,19 +19,19 @@ setmetatable(M.set, {
     end
 })
 
-function M.layer.images (path, t)
-    local parent = M.layer.image(nil, path)
+function M.layer.images (name, path, t)
+    assert(name, "layer.images: name required")
+    M.layer.image(name, path)
     local names = {}
     local mode = t[1]
     assert(mode=='#' or mode=='!', "expected '#' or '!' mode")
 
-    -- Grid form: {w=cols, h=rows, n=count, prefix="..."}
+    -- Grid form: {w=cols, h=rows, n=count"}
     if mode == '#' then
         assert(t.w and t.h, "mode '#' requires 'w' and 'h'")
-        local prefix = t.prefix or ""
         local cols = t.w
         local rows = t.h
-        local dim = M.get.image(path)
+        local dim = M.get.image(name)
         local tw = dim.w / cols
         local th = dim.h / rows
         local n = t.n or (cols * rows)
@@ -40,21 +40,22 @@ function M.layer.images (path, t)
             for col = 0, cols - 1 do
                 i = i + 1
                 if i > n then break end
-                local name = prefix .. i
-                M.layer.sub(name, parent,
+                local sub = name .. "-" .. i
+                M.layer.sub(sub, name,
                     {'!', x=col*tw, y=row*th,
                           w=tw, h=th, anchor='NW'})
-                names[#names+1] = name
+                names[#names+1] = sub
             end
             if i >= n then break end
         end
 
     -- Explicit form: {name=rect, ...}
     else
-        for name, crop in pairs(t) do
-            if name ~= 1 then
-                M.layer.sub(name, parent, crop)
-                names[#names+1] = name
+        for key, crop in pairs(t) do
+            if key ~= 1 then
+                local sub = name .. "-" .. key
+                M.layer.sub(sub, name, crop)
+                names[#names+1] = sub
             end
         end
     end
