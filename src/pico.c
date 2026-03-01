@@ -542,11 +542,6 @@ static void _free_layer (int n, const void* key, void* value) {
     free(data);
 }
 
-static void _realm_put_layer (const char* name, Pico_Layer* data) {
-    int n = strlen(name) + 1;
-    realm_put(G.realm, '!', n, name, _free_layer, NULL, data);
-}
-
 void pico_init (int on) {
     if (on) {
         assert(G.init == 0);
@@ -1062,7 +1057,7 @@ static Pico_Layer* _pico_layer_buffer (
         },
     };
     assert(data->name != NULL);
-    _realm_put_layer(name, data);
+    realm_put(G.realm, '!', strlen(name)+1, name, _free_layer, NULL, data);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 
     return data;
@@ -1102,7 +1097,7 @@ void pico_layer_empty (const char* name, Pico_Abs_Dim dim) {
         },
     };
     assert(data->name != NULL);
-    _realm_put_layer(name, data);
+    realm_put(G.realm, '!', strlen(name)+1, name, _free_layer, NULL, data);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 }
 
@@ -1138,7 +1133,7 @@ static Pico_Layer* _pico_layer_image (const char* name, const char* path) {
         },
     };
     assert(data->name != NULL);
-    _realm_put_layer(str, data);
+    realm_put(G.realm, '!', strlen(str)+1, str, _free_layer, NULL, data);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 
     return data;
@@ -1189,7 +1184,7 @@ void pico_layer_sub (const char* name,
         .parent = par,
     };
     assert(data->name != NULL);
-    _realm_put_layer(name, data);
+    realm_put(G.realm, '!', strlen(name)+1, name, _free_layer, NULL, data);
     data->view.src.up = &par->view.src;
 }
 
@@ -1242,7 +1237,7 @@ static Pico_Layer* _pico_layer_text (
         },
     };
     assert(data->name != NULL);
-    _realm_put_layer(str, data);
+    realm_put(G.realm, '!', strlen(str)+1, str, _free_layer, NULL, data);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
 
     return data;
