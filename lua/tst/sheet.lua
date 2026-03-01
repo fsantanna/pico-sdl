@@ -59,9 +59,11 @@ print("Test 3: grid form")
 pico.set.color.clear('black')
 pico.output.clear()
 pico.set.color.draw('red')
-pico.output.draw.rect({'!', x=0, y=0, w=2, h=2, anchor='NW'})
+pico.output.draw.rect(
+    {'%', x=0, y=0, w=0.5, h=1, anchor='NW'})
 pico.set.color.draw('green')
-pico.output.draw.rect({'!', x=2, y=0, w=2, h=2, anchor='NW'})
+pico.output.draw.rect(
+    {'%', x=0.5, y=0, w=0.5, h=1, anchor='NW'})
 pico.output.screenshot("../../tst/out/sheet-grid.png")
 
 local names = pico.layer.images("grid",
@@ -84,9 +86,9 @@ print("Test 4: explicit form")
 local names2 = pico.layer.images("expl",
     "../../tst/out/sheet-grid.png", {
     '!',
-    left  = {'!', x=0, y=0, w=2, h=2,
+    left  = {'%', x=0, y=0, w=0.5, h=1,
              anchor='NW'},
-    right = {'!', x=2, y=0, w=2, h=2,
+    right = {'%', x=0.5, y=0, w=0.5, h=1,
              anchor='NW'},
 })
 assert(#names2 == 2)
@@ -97,9 +99,9 @@ assert(names2[2] == "expl-right")
 pico.set.color.clear('black')
 pico.output.clear()
 pico.output.draw.layer("expl-left",
-    {'%', x=0.75, y=0.5, w=0.5, h=1, anchor='C'})
-pico.output.draw.layer("expl-right",
     {'%', x=0.25, y=0.5, w=0.5, h=1, anchor='C'})
+pico.output.draw.layer("expl-right",
+    {'%', x=0.75, y=0.5, w=0.5, h=1, anchor='C'})
 pico.check("sheet-04")
 
 pico.init(false)
