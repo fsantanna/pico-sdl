@@ -142,15 +142,11 @@ static TTF_Font* _font_get (const char* path, int h) {
     char key[256];
     snprintf(key, sizeof(key), "/font/%s/%d", path_str, h);
     int n = strlen(key) + 1;
-
-    TTF_Font* ttf = (TTF_Font*)realm_get(G.realm, n, key);
-    if (ttf != NULL) {
-        return ttf;
-    }
-
-    ttf = _font_open(path, h);
-    realm_put(G.realm, '!', n, key, _free_font, NULL, ttf);
-    return ttf;
+    _Ctx_Font ctx = { path, h };
+    return (TTF_Font*)realm_put(
+        G.realm, '=', n, key,
+        _free_font, _alloc_font, &ctx
+    );
 }
 
 static SDL_Texture* _tex_text (
@@ -1701,11 +1697,10 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 
     if (cache) {
         int n = strlen(path) + 1;
-        mix = (Mix_Chunk*)realm_get(G.realm, n, path);
-        if (mix == NULL) {
-            mix = Mix_LoadWAV(path);
-            realm_put(G.realm, '!', n, path, _free_sound, NULL, mix);
-        }
+        mix = (Mix_Chunk*)realm_put(
+            G.realm, '=', n, path,
+            _free_sound, _alloc_sound, (void*)path
+        );
     } else {
         mix = Mix_LoadWAV(path);
     }
