@@ -812,13 +812,17 @@ into a grid of [#sub-layers](#84-sub-layers), as previously discussed:
 > local frames = pico.layer.images("walk",
     "img/walk.png", {'#', w=4, h=4})
 </pre>
-</td><td>
+</td><td align="center">
 <img src="img/walk.png" width="200" style="image-rendering:pixelated">
-Credits: [OpenGameArt.org][art]
+<br>
+<small>
+    Credits:
+        <a href="https://opengameart.org/content/simple-character-base-16x16">
+            OpenGameArt.org
+        </a>
+</small>
 </td></tr>
 </table>
-
-[art]: https://opengameart.org/content/simple-character-base-16x16
 
 This splits the 4x4 sprite sheet into sub-layers `"walk-1"` to
 `"walk-16"`: walk down (1-4), up (5-8), right (9-12), left (13-16).
