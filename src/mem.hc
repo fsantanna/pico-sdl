@@ -217,10 +217,67 @@ static void* _alloc_layer_text (int n, const void* key, void* ctx) {
     return data;
 }
 
-/* TODO: implement when refactoring video.hc */
 static void* _alloc_layer_video (int n, const void* key, void* ctx) {
-    assert(0 && "not yet implemented");
-    return NULL;
+    const char* path = (const char*)ctx;
+
+    FILE* fp = fopen(path, "rb");
+    pico_assert(fp != NULL);
+
+    int w, h, fps;
+    if (!_y4m_parse_header(fp, &w, &h, &fps)) {
+        fclose(fp);
+        assert(0 && "invalid Y4M header");
+    }
+
+    SDL_Texture* tex = SDL_CreateTexture(
+        G.ren, SDL_PIXELFORMAT_YV12,
+        SDL_TEXTUREACCESS_STREAMING, w, h
+    );
+    pico_assert(tex != NULL);
+
+    Pico_Layer_Video* vs = calloc(1, sizeof(Pico_Layer_Video));
+    assert(vs != NULL);
+    vs->base = (Pico_Layer) {
+        .type = PICO_LAYER_VIDEO,
+        .name = strdup((const char*)key),
+        .tex  = tex,
+        .view = {
+            .grid = 0,
+            .dim  = {w, h},
+            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .tile = {0, 0},
+            .rot  = {0, PICO_ANCHOR_C},
+            .flip = PICO_FLIP_NONE,
+        },
+    };
+    assert(vs->base.name != NULL);
+    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+
+    vs->fp = fp;
+    vs->fps = fps;
+    vs->size.y = w * h;
+    vs->size.uv = (w / 2) * (h / 2);
+    vs->size.frame = 6 + vs->size.y + vs->size.uv * 2;
+    vs->data_offset = ftell(fp);
+    vs->frame.cur = -1;
+    vs->frame.done = 0;
+    vs->t0 = 0;
+
+    vs->plane.y = malloc(vs->size.y);
+    vs->plane.u = malloc(vs->size.uv);
+    vs->plane.v = malloc(vs->size.uv);
+    assert(vs->plane.y && vs->plane.u && vs->plane.v);
+
+    long cur = ftell(fp);
+    fseek(fp, 0, SEEK_END);
+    long end = ftell(fp);
+    fseek(fp, cur, SEEK_SET);
+    vs->frame.total =
+        (int)((end - vs->data_offset) / vs->size.frame);
+
+    return vs;
 }
 
 static void* _alloc_font (int n, const void* key, void* ctx) {

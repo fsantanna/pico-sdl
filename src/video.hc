@@ -25,6 +25,7 @@ typedef struct {
 } Pico_Layer_Video;
 
 static void _pico_hash_clean_video (Pico_Layer_Video*);
+static int _y4m_parse_header (FILE*, int*, int*, int*);
 
 #endif // PICO_VIDEO_HC
 
@@ -115,91 +116,13 @@ static void _pico_hash_clean_video (Pico_Layer_Video* vs) {
     fclose(vs->fp);
 }
 
-/* Get or create video layer by name */
 static Pico_Layer_Video* _pico_layer_video (int mode, const char* name, const char* path) {
+    assert(path!=NULL && "video path required");
     const char* key = (name != NULL) ? name : path;
-    int n = strlen(key) + 1;
-
-    if (mode == '=') {
-        Pico_Layer_Video* vs =
-            (Pico_Layer_Video*)realm_get(G.realm, n, key);
-        if (vs != NULL) {
-            assert(vs->base.type == PICO_LAYER_VIDEO);
-            return vs;
-        }
-    }
-
-    FILE* fp = fopen(path, "rb");
-    if (fp == NULL) {
-        fprintf(stderr,
-            "Could not open video: %s\n", path);
-        return NULL;
-    }
-
-    int w, h, fps;
-    if (!_y4m_parse_header(fp, &w, &h, &fps)) {
-        fprintf(stderr,
-            "Invalid Y4M header: %s\n", path);
-        fclose(fp);
-        return NULL;
-    }
-
-    SDL_Texture* tex = SDL_CreateTexture(
-        G.ren, SDL_PIXELFORMAT_YV12,
-        SDL_TEXTUREACCESS_STREAMING,
-        w, h
+    return (Pico_Layer_Video*)realm_put(
+        G.realm, mode, strlen(key)+1, key,
+        _free_layer, _alloc_layer_video, (void*)path
     );
-    pico_assert(tex != NULL);
-
-    Pico_Layer_Video* vs = calloc(1, sizeof(Pico_Layer_Video));
-    assert(vs != NULL);
-    vs->base = (Pico_Layer) {
-        .type = PICO_LAYER_VIDEO,
-        .name = strdup(key),
-        .tex  = tex,
-        .view = {
-            .grid = 0,
-            .dim  = {w, h},
-            .dst  = {'%', {.5,.5,1,1},
-                      PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1},
-                      PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1},
-                      PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
-    };
-    assert(vs->base.name != NULL);
-    realm_put(G.realm, (mode=='=') ? '!' : mode,
-              n, key, _free_layer, NULL, vs);
-    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-
-    vs->fp = fp;
-    vs->fps = fps;
-    vs->size.y = w * h;
-    vs->size.uv = (w / 2) * (h / 2);
-    vs->size.frame = 6 + vs->size.y + vs->size.uv * 2;
-    vs->data_offset = ftell(fp);
-    vs->frame.cur = -1;
-    vs->frame.done = 0;
-    vs->t0 = 0;
-
-    vs->plane.y = malloc(vs->size.y);
-    vs->plane.u = malloc(vs->size.uv);
-    vs->plane.v = malloc(vs->size.uv);
-    assert(vs->plane.y && vs->plane.u && vs->plane.v);
-
-    /* Calculate total frames from file size */
-    long cur = ftell(fp);
-    fseek(fp, 0, SEEK_END);
-    long end = ftell(fp);
-    fseek(fp, cur, SEEK_SET);
-    vs->frame.total =
-        (int)((end - vs->data_offset) / vs->size.frame);
-
-    return vs;
 }
 
 void pico_layer_video (int mode, const char* name,
