@@ -796,13 +796,18 @@ Now, both the rectangles appear at the same time.
 
 ### 9.1. Animations
 
-Expert mode is useful for animation with controlled frame timing.
-As an example, let's animate a character walking around a rectangular
-path using a
+Expert mode is essential for animation: without it, each draw call
+updates the screen immediately, causing sprites to appear one at a time.
+With `pico.output.present`, all sprites update together in the same
+frame.
+
+As an example, let's animate two characters walking along overlapping
+rectangular paths using a
 [CC0 sprite sheet](https://opengameart.org/content/simple-character-base-16x16).
 
 First, we load the sprite sheet with `pico.layer.images`, which splits
-an image into a grid of [#sub-layers](#84-sub-layers), as previously discussed.
+an image into a grid of [#sub-layers](#84-sub-layers), as previously
+discussed.
 
 ```lua
 > local frames = pico.layer.images("walk",
@@ -811,14 +816,11 @@ an image into a grid of [#sub-layers](#84-sub-layers), as previously discussed.
 
 This loads `img/walk.png` as a layer and splits it into a 4x4 grid of
 sub-layers named `"walk-1"` to `"walk-16"`.
-The sprite sheet has 4 rows: walk down (1–4), up (5–8), right (9–12),
-and left (13–16).
+The sprite sheet has 4 rows: walk down (1-4), up (5-8), right (9-12),
+and left (13-16).
 
-Now we set up the animation loop.
-`pico.get.ticks()` returns milliseconds since initialization, which we
-use to control frame timing.
-The character walks continuously around a rectangle
-(right→down→left→up), switching direction at corners:
+Now we define a helper that returns the sprite frame and position for a
+given step along a path:
 
 ```lua
 > pico.set.expert(true)
@@ -828,41 +830,63 @@ The character walks continuously around a rectangle
     left  = {13, 14, 15, 16},
     up    = { 5,  6,  7,  8},
   }
-> local path = {
-    {x=0.3, y=0.3, dir='right', tx=0.7, ty=0.3},
-    {x=0.7, y=0.3, dir='down',  tx=0.7, ty=0.7},
-    {x=0.7, y=0.7, dir='left',  tx=0.3, ty=0.7},
-    {x=0.3, y=0.7, dir='up',    tx=0.3, ty=0.3},
-  }
-> local steps = 20
-> while true do
-    for _, leg in ipairs(path) do
-      local f = dirs[leg.dir]
-      for s = 0, steps-1 do
-        local t = s / steps
-        local x = leg.x + (leg.tx - leg.x) * t
-        local y = leg.y + (leg.ty - leg.y) * t
-        local t0 = pico.get.ticks()
-        pico.output.clear()
-        pico.output.draw.layer(
-            frames[f[s%4 + 1]],
-            {'%', x=x, y=y, w=0.15})
-        pico.output.present()
-        local wait = 100 - (pico.get.ticks() - t0)
-        local e = pico.input.event(nil,
-            math.max(0, wait))
-        if e and e.tag=='key.dn'
-           and e.key=='Escape' then
-            goto done
-        end
-      end
-    end
+> local function walk(path, steps, step)
+    local leg = path[(step // steps) % #path + 1]
+    local t = (step % steps) / steps
+    local x = leg.x + (leg.tx - leg.x) * t
+    local y = leg.y + (leg.ty - leg.y) * t
+    local f = dirs[leg.dir]
+    return frames[f[step % 4 + 1]], x, y
   end
-> ::done::
 ```
 
-Each step takes 100ms, with 20 steps per leg and 4 legs, giving ~8
-seconds per full loop. Press Escape to exit.
+Two rectangular paths cross near the center — one clockwise (faster),
+one counter-clockwise (slower):
+
+```lua
+> local cw = {
+    {x=0.15, y=0.15, dir='right', tx=0.65, ty=0.15},
+    {x=0.65, y=0.15, dir='down',  tx=0.65, ty=0.65},
+    {x=0.65, y=0.65, dir='left',  tx=0.15, ty=0.65},
+    {x=0.15, y=0.65, dir='up',    tx=0.15, ty=0.15},
+  }
+> local ccw = {
+    {x=0.35, y=0.35, dir='down',  tx=0.35, ty=0.85},
+    {x=0.35, y=0.85, dir='right', tx=0.85, ty=0.85},
+    {x=0.85, y=0.85, dir='up',    tx=0.85, ty=0.35},
+    {x=0.85, y=0.35, dir='left',  tx=0.35, ty=0.35},
+  }
+> local step = 0
+> while true do
+    local t0 = pico.get.ticks()
+    local f1, x1, y1 = walk(cw,  20, step * 2)
+    local f2, x2, y2 = walk(ccw, 20, step)
+    pico.output.clear()
+    pico.push()
+    pico.set { style='stroke', alpha=0x44 }
+    pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.33, h=0.33 }
+    pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.33, h=0.33 }
+    pico.pop()
+    pico.output.draw.layer(f1,
+        {'%', x=x1, y=y1, w=0.15})
+    pico.output.draw.layer(f2,
+        {'%', x=x2, y=y2, w=0.15})
+    pico.output.present()
+    local wait = 100 - (pico.get.ticks() - t0)
+    local e = pico.input.event(nil,
+        math.max(0, wait))
+    if e and e.tag=='key.dn'
+       and e.key=='Escape' then
+        break
+    end
+    step = step + 1
+  end
+```
+
+Each frame, `clear` + two `draw.layer` calls prepare both sprites
+off-screen, then `present` flips them on-screen together.
+The clockwise character runs at twice the pace (4s per loop vs 8s),
+yet both update in perfect sync. Press Escape to exit.
 
 <img src="img/guide-09-01-01.gif" width="200">
 
