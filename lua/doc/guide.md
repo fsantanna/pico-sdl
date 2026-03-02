@@ -804,10 +804,8 @@ frame.
 As an example, let's animate two characters walking along overlapping
 rectangular paths.
 
-First, we load a
-[CC0 sprite sheet](https://opengameart.org/content/simple-character-base-16x16)
-with `pico.layer.images`, which splits an image into a grid of
-[#sub-layers](#84-sub-layers), as previously discussed:
+First, we load a sprite sheet with `pico.layer.images`, which splits an image
+into a grid of [#sub-layers](#84-sub-layers), as previously discussed:
 
 <table>
 <tr><td><pre>
@@ -816,8 +814,11 @@ with `pico.layer.images`, which splits an image into a grid of
 </pre>
 </td><td>
 <img src="img/walk.png" width="200" style="image-rendering:pixelated">
+Credits: [OpenGameArt.org][art]
 </td></tr>
 </table>
+
+[art]: https://opengameart.org/content/simple-character-base-16x16
 
 This splits the 4x4 sprite sheet into sub-layers `"walk-1"` to
 `"walk-16"`: walk down (1-4), up (5-8), right (9-12), left (13-16).
