@@ -1014,46 +1014,11 @@ static Pico_Layer* _pico_layer_buffer (
 ) {
     assert(name!=NULL && "layer name required");
     assert(pixels!=NULL && "pixels required");
-
-    if (mode == '=') {
-        Pico_Layer* data = (Pico_Layer*)realm_get(
-            G.realm, strlen(name)+1, name);
-        if (data != NULL) {
-            return data;
-        }
-    }
-
-    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom(
-        (void*)pixels, dim.w, dim.h,
-        32, 4 * dim.w, SDL_PIXELFORMAT_RGBA32
+    _Ctx_Buffer ctx = { dim, pixels };
+    return (Pico_Layer*)realm_put(
+        G.realm, mode, strlen(name)+1, name,
+        _free_layer, _alloc_layer_buffer, &ctx
     );
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
-    pico_assert(tex != NULL);
-    SDL_FreeSurface(sfc);
-
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
-    assert(data != NULL);
-    *data = (Pico_Layer) {
-        .type = PICO_LAYER_PLAIN,
-        .name = strdup(name),
-        .tex  = tex,
-        .view = {
-            .grid = 0,
-            .dim  = dim,
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
-    };
-    assert(data->name != NULL);
-    realm_put(G.realm, (mode=='=') ? '!' : mode,
-              strlen(name)+1, name, _free_layer, NULL, data);
-    SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
-
-    return data;
 }
 
 void pico_layer_buffer (
@@ -1069,79 +1034,19 @@ void pico_layer_empty (int mode, const char* name,
                        Pico_Abs_Dim dim)
 {
     assert(name!=NULL && "layer name required");
-
-    if (mode == '=') {
-        Pico_Layer* data = (Pico_Layer*)realm_get(
-            G.realm, strlen(name)+1, name);
-        if (data != NULL) {
-            return;
-        }
-    }
-
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
-    assert(data != NULL);
-    *data = (Pico_Layer) {
-        .type = PICO_LAYER_PLAIN,
-        .name = strdup(name),
-        .tex  = _tex_create(dim),
-        .view = {
-            .grid = 0,
-            .dim  = dim,
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
-    };
-    assert(data->name != NULL);
-    realm_put(G.realm, (mode=='=') ? '!' : mode,
-              strlen(name)+1, name, _free_layer, NULL, data);
-    SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
+    realm_put(
+        G.realm, mode, strlen(name)+1, name,
+        _free_layer, _alloc_layer_empty, &dim
+    );
 }
 
 static Pico_Layer* _pico_layer_image (int mode, const char* name, const char* path) {
     assert(path!=NULL && "image path required");
-
     const char* str = (name != NULL) ? name : path;
-
-    if (mode == '=') {
-        Pico_Layer* data = (Pico_Layer*)realm_get(
-            G.realm, strlen(str)+1, str);
-        if (data != NULL) {
-            return data;
-        }
-    }
-
-    SDL_Texture* tex = IMG_LoadTexture(G.ren, path);
-    pico_assert(tex != NULL);
-    Pico_Abs_Dim dim;
-    SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
-
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
-    assert(data != NULL);
-    *data = (Pico_Layer) {
-        .type = PICO_LAYER_PLAIN,
-        .name = strdup(str),
-        .tex  = tex,
-        .view = {
-            .grid = 0,
-            .dim  = dim,
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
-    };
-    assert(data->name != NULL);
-    realm_put(G.realm, (mode=='=') ? '!' : mode,
-              strlen(str)+1, str, _free_layer, NULL, data);
-    SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
-
-    return data;
+    return (Pico_Layer*)realm_put(
+        G.realm, mode, strlen(str)+1, str,
+        _free_layer, _alloc_layer_image, (void*)path
+    );
 }
 
 void pico_layer_image (int mode, const char* name,
@@ -1164,45 +1069,11 @@ void pico_layer_sub (int mode, const char* name,
     assert(par->type!=PICO_LAYER_SUB
         && "cannot create sub-layer of sub-layer");
 
-    Pico_Abs_Rect abs = pico_cv_rect_rel_abs (
-        crop,
-        &(Pico_Abs_Rect){0, 0,
-            par->view.dim.w, par->view.dim.h}
+    _Ctx_Sub ctx = { par, *crop };
+    realm_put(
+        G.realm, mode, strlen(name)+1, name,
+        _free_layer, _alloc_layer_sub, &ctx
     );
-
-    if (mode == '=') {
-        Pico_Layer* data = (Pico_Layer*)realm_get(
-            G.realm, strlen(name)+1, name);
-        if (data != NULL) {
-            return;
-        }
-    }
-
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
-    assert(data != NULL);
-    *data = (Pico_Layer) {
-        .type   = PICO_LAYER_SUB,
-        .name   = strdup(name),
-        .tex    = par->tex,
-        .view   = {
-            .grid = 0,
-            .dim  = {abs.w, abs.h},
-            .dst  = {'%', {.5,.5,1,1},
-                      PICO_ANCHOR_C, NULL},
-            .src  = *crop,  // .up set below
-            .clip = {'%', {.5,.5,1,1},
-                      PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
-        .parent = par,
-    };
-    assert(data->name != NULL);
-    realm_put(G.realm, (mode=='=') ? '!' : mode,
-              strlen(name)+1, name,
-              _free_layer, NULL, data);
-    data->view.src.up = &par->view.src;
 }
 
 static Pico_Layer* _pico_layer_text (
@@ -1213,13 +1084,11 @@ static Pico_Layer* _pico_layer_text (
 ) {
     assert(text!=NULL && text[0]!='\0' && "text required");
 
-    const char* font = S.font;
-    Pico_Color clr = S.color.draw;
-
     const char* str;
     char* str_buf = NULL;
     if (name == NULL) {
-        // /text/<font>/<height>/<r>.<g>.<b>/<text>
+        const char* font = S.font;
+        Pico_Color clr = S.color.draw;
         const char* font_str = font ? font : "null";
         int buflen = strlen("/text/") + strlen(font_str) + 1
             + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
@@ -1231,38 +1100,11 @@ static Pico_Layer* _pico_layer_text (
         str = name;
     }
 
-    if (mode == '=') {
-        Pico_Layer* data = (Pico_Layer*)realm_get(
-            G.realm, strlen(str)+1, str);
-        if (data != NULL) {
-            return data;
-        }
-    }
-
-    Pico_Abs_Dim dim;
-    SDL_Texture* tex = _tex_text(height, text, &dim);
-
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
-    assert(data != NULL);
-    *data = (Pico_Layer) {
-        .type = PICO_LAYER_PLAIN,
-        .name = strdup(str),
-        .tex  = tex,
-        .view = {
-            .grid = 0,
-            .dim  = dim,
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-        },
-    };
-    assert(data->name != NULL);
-    realm_put(G.realm, (mode=='=') ? '!' : mode,
-              strlen(str)+1, str, _free_layer, NULL, data);
-    SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
-
-    return data;
+    _Ctx_Text ctx = { height, text };
+    return (Pico_Layer*)realm_put(
+        G.realm, mode, strlen(str)+1, str,
+        _free_layer, _alloc_layer_text, &ctx
+    );
 }
 
 void pico_layer_text (int mode, const char* name,
