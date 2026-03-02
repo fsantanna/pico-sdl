@@ -800,17 +800,14 @@ Now, both the rectangles appear at the same time.
 The expert mode is essential to synchronize multiple animations in games.
 With `pico.output.present`, all sprites update together in the same frame.
 
-As an example, let's animate two characters walking along overlapping
-rectangular paths.
-
-First, we load a sprite sheet with `pico.layer.images`, which splits an image
-into a grid of [#sub-layers](#84-sub-layers), as previously discussed:
+Let's now create the animation in the left based on the sprite sheet in the
+right.
+We want the characters to move along the rectangular paths, in opposite
+directions, and at different speeds:
 
 <table>
-<tr><td><pre>
-frames = pico.layer.images("walk",
-    "img/walk.png", {'#', w=4, h=4})
-</pre>
+<tr><td align="center">
+<img src="img/guide-09-01-01.gif" width="200">
 </td><td align="center">
 <img src="img/walk.png" width="200" style="image-rendering:pixelated">
 <br>
@@ -823,21 +820,28 @@ frames = pico.layer.images("walk",
 </td></tr>
 </table>
 
-This splits the 4x4 sprite sheet into sub-layers `"walk-1"` to
-`"walk-16"`: walk down (1-4), up (5-8), right (9-12), left (13-16).
+First, we load a sprite sheet with `pico.layer.images`, which splits an image
+into a grid of [#sub-layers](#84-sub-layers), as previously discussed:
 
-Now we define a helper that returns the sprite frame and position for a
+```lua
+frames = pico.layer.images("walk", "img/walk.png", {'#', w=4, h=4})
+```
+
+This splits the `4x4` sprite sheet into sub-layers `"walk-01"` to `"walk-16"`:
+walk down (`01-04`), up (`05-08`), right (`09-12`), left (`13-16`).
+The ids are also assigned to `frames` as a table (`{"walk-01",...,"walk-16"}`).
+
+Next we define a helper that returns the sprite frame and position for a
 given step along a path:
 
 ```lua
-pico.set.expert(true)
 dirs = {
     right = { 9, 10, 11, 12},
     down  = { 1,  2,  3,  4},
     left  = {13, 14, 15, 16},
     up    = { 5,  6,  7,  8},
 }
-function walk(path, steps, step, fstep)
+function walk (path, steps, step, fstep)
     local leg = path[(step // steps) % #path + 1]
     local t = (step % steps) / steps
     local x = leg.x + (leg.tx - leg.x) * t
@@ -872,8 +876,7 @@ frame, then `present` flips them on-screen together.
 The clockwise character runs at twice the pace (`step*2`), yet both
 update in perfect sync:
 
-<table>
-<tr><td><pre>
+```lua
 pico.set.style 'stroke'
 for step=0, math.huge do
     local f1, x1, y1 = walk(cw,  20, step*2, step)
@@ -886,11 +889,7 @@ for step=0, math.huge do
     pico.output.present()
     pico.input.delay(50)
 end
-</pre>
-</td><td>
-<img src="img/guide-09-01-01.gif" width="200">
-</td></tr>
-</table>
+```
 
 ## 10. Auxiliary Functions
 
