@@ -40,7 +40,7 @@ function M.layer.images (name, path, t)
             for col = 0, cols - 1 do
                 i = i + 1
                 if i > n then break end
-                local sub = name .. "-" .. i
+                local sub = string.format("%s-%02d", name, i)
                 M.layer.sub(sub, name,
                     {'!', x=col*tw, y=row*th,
                           w=tw, h=th, anchor='NW'})

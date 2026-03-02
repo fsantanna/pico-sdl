@@ -6,7 +6,7 @@ pico.init(true)
 pico.output.clear()
 pico.set.expert(true)
 
--- Split 4x4 sprite sheet into sub-layers "walk-1" to "walk-16":
+-- Split 4x4 sprite sheet into sub-layers "walk-01" to "walk-16":
 -- down (1-4), up (5-8), right (9-12), left (13-16)
 local frames = pico.layer.images("walk",
     "img/walk.png", {'#', w=4, h=4})
