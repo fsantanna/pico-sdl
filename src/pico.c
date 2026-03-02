@@ -12,7 +12,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #define REALM_C
-#include "realm.h"
+#include "realm.hc"
 #include "tiny_ttf.h"
 #include "pico.h"
 
@@ -51,7 +51,8 @@ typedef struct Pico_Layer {
     struct Pico_Layer*    parent;   // NULL if !PICO_LAYER_SUB
 } Pico_Layer;
 
-#include "video.h"
+#include "video.hc"
+#include "mem.hc"
 
 #define SDL_ANY PICO_EVENT_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
@@ -134,10 +135,6 @@ static TTF_Font* _font_open (const char* path, int h) {
     }
     pico_assert(ttf != NULL);
     return ttf;
-}
-
-static void _free_font (int n, const void* key, void* value) {
-    TTF_CloseFont((TTF_Font*)value);
 }
 
 static TTF_Font* _font_get (const char* path, int h) {
@@ -529,18 +526,6 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
 ///////////////////////////////////////////////////////////////////////////////
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
-
-static void _free_layer (int n, const void* key, void* value) {
-    Pico_Layer* data = (Pico_Layer*)value;
-    if (data->type == PICO_LAYER_VIDEO) {
-        _pico_hash_clean_video((Pico_Layer_Video*)data);
-    }
-    if (data->type != PICO_LAYER_SUB) {
-        SDL_DestroyTexture(data->tex);
-    }
-    free(data->name);
-    free(data);
-}
 
 void pico_init (int on) {
     if (on) {
@@ -1013,6 +998,9 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
 
     _pico_output_present(0);
 }
+
+#define PICO_MEM_C
+#include "mem.hc"
 
 ///////////////////////////////////////////////////////////////////////////////
 // LAYER
@@ -1866,10 +1854,6 @@ void pico_output_present (void) {
     _pico_output_present(1);
 }
 
-static void _free_sound (int n, const void* key, void* value) {
-    Mix_FreeChunk((Mix_Chunk*)value);
-}
-
 static void _pico_output_sound_cache (const char* path, int cache) {
     Mix_Chunk* mix = NULL;
 
@@ -1934,4 +1918,4 @@ void pico_output_sound (const char* path) {
 }
 
 #define PICO_VIDEO_C
-#include "video.h"
+#include "video.hc"
