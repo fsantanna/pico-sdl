@@ -809,7 +809,7 @@ directions, and at different speeds:
 <tr><td align="center">
 <img src="img/guide-09-01-01.gif" width="200">
 </td><td align="center">
-<img src="img/walk.png" width="200" style="image-rendering:pixelated">
+<img src="img/walk.png" width="100" style="image-rendering:pixelated">
 <br>
 <small>
     Credits:
@@ -820,34 +820,40 @@ directions, and at different speeds:
 </td></tr>
 </table>
 
-First, we load a sprite sheet with `pico.layer.images`, which splits an image
+The complete source code is [here](anim.lua):
+
+```
+$ pico-lua anim.lua
+```
+
+First, we load the sprite sheet with `pico.layer.images`, which splits an image
 into a grid of [#sub-layers](#84-sub-layers), as previously discussed:
 
 ```lua
-frames = pico.layer.images("walk", "img/walk.png", {'#', w=4, h=4})
+local frames = pico.layer.images("walk", "img/walk.png", {'#', w=4, h=4})
 ```
 
 This splits the `4x4` sprite sheet into sub-layers `"walk-01"` to `"walk-16"`:
 walk down (`01-04`), up (`05-08`), right (`09-12`), left (`13-16`).
-The ids are also assigned to `frames` as a table (`{"walk-01",...,"walk-16"}`).
+The ids are also assigned to `frames` as table `{"walk-01",...,"walk-16"}`.
 
 Next we define a helper that returns the sprite frame and position for a
 given step along a path:
 
 ```lua
-dirs = {
+local dirs = {
     right = { 9, 10, 11, 12},
     down  = { 1,  2,  3,  4},
     left  = {13, 14, 15, 16},
     up    = { 5,  6,  7,  8},
 }
-function walk (path, steps, step, fstep)
+local function walk (path, steps, step, fstep)
     local leg = path[(step // steps) % #path + 1]
     local t = (step % steps) / steps
     local x = leg.x + (leg.tx - leg.x) * t
     local y = leg.y + (leg.ty - leg.y) * t
     local f = dirs[leg.dir]
-    return frames[f[fstep % 4 + 1]], x, y
+    return frames[f[(fstep // 4) % 4 + 1]], x, y
 end
 ```
 
@@ -857,13 +863,13 @@ counter-clockwise (slower). Each leg has a start `(x,y)`, direction
 `dir`, and target `(tx,ty)`:
 
 ```lua
-cw = {
+local cw = {
     {x=0.08, y=0.08, dir='right', tx=0.58, ty=0.08},
     {x=0.58, y=0.08, dir='down',  tx=0.58, ty=0.58},
     {x=0.58, y=0.58, dir='left',  tx=0.08, ty=0.58},
     {x=0.08, y=0.58, dir='up',    tx=0.08, ty=0.08},
 }
-ccw = {
+local ccw = {
     {x=0.41, y=0.41, dir='down',  tx=0.41, ty=0.91},
     {x=0.41, y=0.91, dir='right', tx=0.91, ty=0.91},
     {x=0.91, y=0.91, dir='up',    tx=0.91, ty=0.41},

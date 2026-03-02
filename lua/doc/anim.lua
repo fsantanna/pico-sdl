@@ -22,13 +22,13 @@ local dirs = {
 -- Returns the sprite layer name and (x,y) position for a given
 -- step along a path. `fstep` cycles the animation frame
 -- independently from position advancement.
-local function walk(path, steps, step, fstep)
+local function walk (path, steps, step, fstep)
     local leg = path[(step // steps) % #path + 1]
     local t = (step % steps) / steps
     local x = leg.x + (leg.tx - leg.x) * t
     local y = leg.y + (leg.ty - leg.y) * t
     local f = dirs[leg.dir]
-    return frames[f[fstep % 4 + 1]], x, y
+    return frames[f[(fstep // 4) % 4 + 1]], x, y
 end
 
 -- Clockwise path around the first rectangle (faster character)
@@ -53,8 +53,8 @@ local ccw = {
 -- The cw character advances at twice the pace (step*2).
 pico.set.style 'stroke'
 for step=0, math.huge do
-    local f1, x1, y1 = walk(cw,  20, step*2, step)
-    local f2, x2, y2 = walk(ccw, 20, step,   step)
+    local f1, x1, y1 = walk(cw,  40, step*2, step)
+    local f2, x2, y2 = walk(ccw, 40, step,   step)
     pico.output.clear()
     pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.50, h=0.50 }
     pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.50, h=0.50 }

@@ -377,7 +377,7 @@ do
         local x = leg.x + (leg.tx - leg.x) * t
         local y = leg.y + (leg.ty - leg.y) * t
         local f = dirs[leg.dir]
-        return frames[f[fstep % 4 + 1]], x, y
+        return frames[f[(fstep // 4) % 4 + 1]], x, y
     end
     local cw = {
         {x=0.08, y=0.08, dir='right', tx=0.58, ty=0.08},
