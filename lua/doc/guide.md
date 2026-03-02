@@ -802,22 +802,25 @@ With `pico.output.present`, all sprites update together in the same
 frame.
 
 As an example, let's animate two characters walking along overlapping
-rectangular paths using a
-[CC0 sprite sheet](https://opengameart.org/content/simple-character-base-16x16).
+rectangular paths.
 
-First, we load the sprite sheet with `pico.layer.images`, which splits
-an image into a grid of [#sub-layers](#84-sub-layers), as previously
-discussed.
+First, we load a
+[CC0 sprite sheet](https://opengameart.org/content/simple-character-base-16x16)
+with `pico.layer.images`, which splits an image into a grid of
+[#sub-layers](#84-sub-layers), as previously discussed:
 
-```lua
+<table>
+<tr><td><pre>
 > local frames = pico.layer.images("walk",
     "img/walk.png", {'#', w=4, h=4})
-```
+</pre>
+</td><td>
+<img src="img/walk.png" width="200" style="image-rendering:pixelated">
+</td></tr>
+</table>
 
-This loads `img/walk.png` as a layer and splits it into a 4x4 grid of
-sub-layers named `"walk-1"` to `"walk-16"`.
-The sprite sheet has 4 rows: walk down (1-4), up (5-8), right (9-12),
-and left (13-16).
+This splits the 4x4 sprite sheet into sub-layers `"walk-1"` to
+`"walk-16"`: walk down (1-4), up (5-8), right (9-12), left (13-16).
 
 Now we define a helper that returns the sprite frame and position for a
 given step along a path:
@@ -830,13 +833,13 @@ given step along a path:
     left  = {13, 14, 15, 16},
     up    = { 5,  6,  7,  8},
   }
-> local function walk(path, steps, step)
+> local function walk(path, steps, step, fstep)
     local leg = path[(step // steps) % #path + 1]
     local t = (step % steps) / steps
     local x = leg.x + (leg.tx - leg.x) * t
     local y = leg.y + (leg.ty - leg.y) * t
     local f = dirs[leg.dir]
-    return frames[f[step % 4 + 1]], x, y
+    return frames[f[fstep % 4 + 1]], x, y
   end
 ```
 
@@ -845,41 +848,28 @@ one counter-clockwise (slower):
 
 ```lua
 > local cw = {
-    {x=0.15, y=0.15, dir='right', tx=0.65, ty=0.15},
-    {x=0.65, y=0.15, dir='down',  tx=0.65, ty=0.65},
-    {x=0.65, y=0.65, dir='left',  tx=0.15, ty=0.65},
-    {x=0.15, y=0.65, dir='up',    tx=0.15, ty=0.15},
+    {x=0.08, y=0.08, dir='right', tx=0.58, ty=0.08},
+    {x=0.58, y=0.08, dir='down',  tx=0.58, ty=0.58},
+    {x=0.58, y=0.58, dir='left',  tx=0.08, ty=0.58},
+    {x=0.08, y=0.58, dir='up',    tx=0.08, ty=0.08},
   }
 > local ccw = {
-    {x=0.35, y=0.35, dir='down',  tx=0.35, ty=0.85},
-    {x=0.35, y=0.85, dir='right', tx=0.85, ty=0.85},
-    {x=0.85, y=0.85, dir='up',    tx=0.85, ty=0.35},
-    {x=0.85, y=0.35, dir='left',  tx=0.35, ty=0.35},
+    {x=0.41, y=0.41, dir='down',  tx=0.41, ty=0.91},
+    {x=0.41, y=0.91, dir='right', tx=0.91, ty=0.91},
+    {x=0.91, y=0.91, dir='up',    tx=0.91, ty=0.41},
+    {x=0.91, y=0.41, dir='left',  tx=0.41, ty=0.41},
   }
-> local step = 0
-> while true do
-    local t0 = pico.get.ticks()
-    local f1, x1, y1 = walk(cw,  20, step * 2)
-    local f2, x2, y2 = walk(ccw, 20, step)
+> pico.set.style 'stroke'
+> for step=0, math.huge do
+    local f1, x1, y1 = walk(cw,  20, step*2, step)
+    local f2, x2, y2 = walk(ccw, 20, step,   step)
     pico.output.clear()
-    pico.push()
-    pico.set { style='stroke', alpha=0x44 }
-    pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.33, h=0.33 }
-    pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.33, h=0.33 }
-    pico.pop()
-    pico.output.draw.layer(f1,
-        {'%', x=x1, y=y1, w=0.15})
-    pico.output.draw.layer(f2,
-        {'%', x=x2, y=y2, w=0.15})
+    pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.50, h=0.50 }
+    pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.50, h=0.50 }
+    pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
+    pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
     pico.output.present()
-    local wait = 100 - (pico.get.ticks() - t0)
-    local e = pico.input.event(nil,
-        math.max(0, wait))
-    if e and e.tag=='key.dn'
-       and e.key=='Escape' then
-        break
-    end
-    step = step + 1
+    pico.input.delay(50)
   end
 ```
 
