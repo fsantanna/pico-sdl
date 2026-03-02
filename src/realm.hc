@@ -1,5 +1,5 @@
-#ifndef REALM_H
-#define REALM_H
+#ifndef REALM_HC
+#define REALM_HC
 
 #include <stdlib.h>
 #include <string.h>

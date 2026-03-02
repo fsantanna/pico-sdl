@@ -10,7 +10,7 @@ all: tests
 
 realm:
 	curl -sL https://raw.githubusercontent.com/fsantanna/realm-allocator/v0.1/realm.h \
-		-o src/realm.h
+		-o src/realm.hc
 
 test:
 	$(EXE) tst/$(T).c

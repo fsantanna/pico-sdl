@@ -1,5 +1,5 @@
-#ifndef PICO_VIDEO_H
-#define PICO_VIDEO_H
+#ifndef PICO_VIDEO_HC
+#define PICO_VIDEO_HC
 
 typedef struct {
     Pico_Layer base;
@@ -26,7 +26,7 @@ typedef struct {
 
 static void _pico_hash_clean_video (Pico_Layer_Video*);
 
-#endif // PICO_VIDEO_H
+#endif // PICO_VIDEO_HC
 
 #ifdef PICO_VIDEO_C
 
