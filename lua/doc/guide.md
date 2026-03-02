@@ -760,11 +760,12 @@ In the example, each sub-layer crops a square from each stripe of the flag
 
 By default, each drawing operation in `pico-lua` becomes immediatly visible on
 the screen.
-However, most games and non-trivial graphical applications require to apply
-drawing operations simultaneously on every frame.
+
+However, to keep visual objects in sync, most games and non-trivial
+applications require them to draw simultaneously on every frame.
 
 With `pico.set.expert`, drawing operations are buffered until an explicit
-call to `pico.output.present` updates the screen at once:
+call to `pico.output.present`, which updates the screen all at once:
 
 <table>
 <tr><td><pre>
@@ -796,10 +797,8 @@ Now, both the rectangles appear at the same time.
 
 ### 9.1. Animations
 
-Expert mode is essential for animation: without it, each draw call
-updates the screen immediately, causing sprites to appear one at a time.
-With `pico.output.present`, all sprites update together in the same
-frame.
+The expert mode is essential to synchronize multiple animations in games.
+With `pico.output.present`, all sprites update together in the same frame.
 
 As an example, let's animate two characters walking along overlapping
 rectangular paths.
