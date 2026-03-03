@@ -823,8 +823,17 @@ while true do
 end
 ```
 
-We use `pico.set.expert` to batch all `pico.output.*` such that their effect is
-synchronous with `pico.output.present`.
+Two calls deserve a closer look:
+
+- `pico.set.expert(true)` disables the automatic display that normally
+  happens after every draw call.
+  Nothing appears on screen until `pico.output.present()` is called, so
+  all drawing between `clear` and `present` composes a single frame.
+  Even with hundreds of objects, every update appears at once.
+
+- The timeout in `pico.input.event(..., 33)` keeps the loop from running
+  too fast — or blocking forever when no events arrive.
+  A timeout of 33 ms caps the loop at roughly 30 frames per second.
 
 ### 9.2. A Simple Example
 
@@ -871,12 +880,6 @@ exits cleanly.
 
 ### 9.3. Animations
 
-
-- The timeout in `pico.input.event(..., 33)` keeps the loop from running
-  too fast — or blocking forever when no events arrive.
-  A timeout of 33 ms caps the loop at roughly 30 frames per second.
-
-
 In a game, the main loop also governs the passage of time.
 The timeout in `pico.input.event` doubles as a frame pacer: a 50 ms
 timeout gives roughly 20 frames per second, enough for smooth sprite
@@ -889,7 +892,7 @@ directions, and at different speeds:
 
 <table>
 <tr><td align="center">
-<img src="img/guide-09-01-01.gif" width="200">
+<img src="img/2-sprites.gif" width="200">
 </td><td align="center">
 <img src="img/walk.png" width="100" style="image-rendering:pixelated">
 <br>
