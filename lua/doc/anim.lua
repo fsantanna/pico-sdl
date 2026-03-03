@@ -3,7 +3,6 @@
 -- Run with: pico-lua anim.lua
 
 pico.init(true)
-pico.output.clear()
 pico.set.expert(true)
 
 -- Split 4x4 sprite sheet into sub-layers "walk-01" to "walk-16":
@@ -61,5 +60,8 @@ for step=0, math.huge do
     pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
     pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
     pico.output.present()
-    pico.input.delay(50)
+    local e = pico.input.event(nil, 50)
+    if e and e.tag == 'quit' then break end
 end
+
+pico.init(false)

@@ -730,7 +730,7 @@ A sub-layer points to a region within a parent layer, sharing the actual pixel
 contents.
 
 Sub-layers are useful to isolate individual frames from a sprite sheet in
-games, which we will discuss in [#Animations](#91-animations).
+games, which we will discuss in [#Animations](#93-animations).
 
 We call `pico.layer.sub` to crop a region of a parent layer:
 
@@ -772,16 +772,16 @@ call to `pico.output.present`, which updates the screen all at once:
 > pico.output.clear()
 > pico.set.expert(true)
 > pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
-> pico.input.delay(1000)
+> pico.input.delay(1000) -- artificial delay
 > pico.output.draw.rect { '!', x=66, y=66, w=40, h=40 }
-> pico.input.delay(1000)
+> pico.input.delay(1000) -- artificial delay
 </pre>
 </td><td>
 <img src="img/guide-09-00-01.png" width="200">
 </td></tr>
 </table>
 
-At this point, nothing appears on the screen yet, since we have not yet called
+At this point, nothing appears on the screen, since we have not yet called
 `pico.output.present`:
 
 <table>
@@ -795,10 +795,92 @@ At this point, nothing appears on the screen yet, since we have not yet called
 
 Now, both the rectangles appear at the same time.
 
-### 9.1. Animations
+### 9.1. Application Main Loop
 
-The expert mode is essential to synchronize multiple animations in games.
-With `pico.output.present`, all sprites update together in the same frame.
+Typical games and graphical applications need to deal continually with moving
+objects, input from users, and also the passage of time.
+These applications follow the same structure of a continuous "main loop":
+    poll user events,
+    update the state of objects,
+    redraw the whole scene (a frame), and
+    repeat.
+
+This is what a main loop in `pico-lua` looks like:
+
+```
+pico.set.expert(true)
+while true do
+    -- input / timeout
+    pico.input.event(...)
+
+    -- update
+    (normal lua code)
+
+    -- draw
+    pico.output.clear()
+    pico.output.*()
+    pico.output.present()
+end
+```
+
+We use `pico.set.expert` to batch all `pico.output.*` such that their effect is
+synchronous with `pico.output.present`.
+
+### 9.2. A Simple Example
+
+The example below draws two pixels: one tracks the mouse, the other
+moves with the arrow keys.
+Closing the window produces a `'quit'` event and exits the loop:
+
+The complete source code is [here](rects.lua):
+
+```lua
+pico.set.expert(true)
+
+local mx, my = 0.5, 0.5          -- mouse pixel (centered)
+local kx, ky = 0.5, 0.5          -- arrow-key pixel (centered)
+local pos = {'%', x=0, y=0}      -- reusable position for mouse query
+local spd = 0.01                  -- arrow-key speed per frame
+
+while true do
+    local e = pico.input.event(nil, 20)
+    if e then
+        if e.tag == 'quit' then
+            break
+        elseif e.tag == 'key.dn' then
+            if     e.key == 'Up'    then ky = ky - spd
+            elseif e.key == 'Down'  then ky = ky + spd
+            elseif e.key == 'Left'  then kx = kx - spd
+            elseif e.key == 'Right' then kx = kx + spd
+            end
+        end
+    end
+    pico.get.mouse(pos)
+    mx, my = pos.x, pos.y
+
+    pico.output.clear()
+    pico.output.draw.pixel {'%', x=mx, y=my}
+    pico.output.draw.pixel {'%', x=kx, y=ky}
+    pico.output.present()
+end
+```
+
+One pixel follows the mouse; the other moves with the arrow keys.
+The `'quit'` event fires when the user closes the window, so the loop
+exits cleanly.
+
+### 9.3. Animations
+
+
+- The timeout in `pico.input.event(..., 33)` keeps the loop from running
+  too fast — or blocking forever when no events arrive.
+  A timeout of 33 ms caps the loop at roughly 30 frames per second.
+
+
+In a game, the main loop also governs the passage of time.
+The timeout in `pico.input.event` doubles as a frame pacer: a 50 ms
+timeout gives roughly 20 frames per second, enough for smooth sprite
+animation.
 
 Let's now create the animation in the left based on the sprite sheet in the
 right.
@@ -885,6 +967,8 @@ update in perfect sync:
 ```lua
 pico.set.style 'stroke'
 for step=0, math.huge do
+    local e = pico.input.event(nil, 50)
+    if e and e.tag == 'quit' then break end
     local f1, x1, y1 = walk(cw,  20, step*2, step)
     local f2, x2, y2 = walk(ccw, 20, step,   step)
     pico.output.clear()
@@ -893,7 +977,6 @@ for step=0, math.huge do
     pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
     pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
     pico.output.present()
-    pico.input.delay(50)
 end
 ```
 
