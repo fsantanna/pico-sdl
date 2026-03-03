@@ -167,8 +167,7 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
     _Ctx_Sub* c = (_Ctx_Sub*)ctx;
     Pico_Abs_Rect abs = pico_cv_rect_rel_abs(
         &c->crop,
-        &(Pico_Abs_Rect){0, 0,
-            c->par->view.dim.w, c->par->view.dim.h}
+        &(Pico_Abs_Rect){0, 0, c->par->view.dim.w, c->par->view.dim.h}
     );
     Pico_Layer* data = malloc(sizeof(Pico_Layer));
     assert(data != NULL);

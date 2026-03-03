@@ -116,7 +116,9 @@ static void _pico_hash_clean_video (Pico_Layer_Video* vs) {
     fclose(vs->fp);
 }
 
-static Pico_Layer_Video* _pico_layer_video (int mode, const char* name, const char* path) {
+static Pico_Layer_Video* _pico_layer_video (
+    int mode, const char* name, const char* path
+) {
     assert(path!=NULL && "video path required");
     const char* key = (name != NULL) ? name : path;
     return (Pico_Layer_Video*)realm_put(
@@ -125,9 +127,7 @@ static Pico_Layer_Video* _pico_layer_video (int mode, const char* name, const ch
     );
 }
 
-void pico_layer_video (int mode, const char* name,
-                       const char* path)
-{
+void pico_layer_video (int mode, const char* name, const char* path) {
     assert(path != NULL && "video path required");
 
     Pico_Layer_Video* vs =

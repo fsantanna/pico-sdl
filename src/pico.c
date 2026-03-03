@@ -149,9 +149,7 @@ static TTF_Font* _font_get (const char* path, int h) {
     );
 }
 
-static SDL_Texture* _tex_text (
-    int height, const char* text, Pico_Abs_Dim* dim
-) {
+static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
     SDL_Color c = { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF };
     TTF_Font* ttf = _font_get(S.font, height);
     SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
@@ -1026,9 +1024,7 @@ void pico_layer_buffer (
     _pico_layer_buffer(mode, name, dim, pixels);
 }
 
-void pico_layer_empty (int mode, const char* name,
-                       Pico_Abs_Dim dim)
-{
+void pico_layer_empty (int mode, const char* name, Pico_Abs_Dim dim) {
     assert(name!=NULL && "layer name required");
     realm_put(
         G.realm, mode, strlen(name)+1, name,
@@ -1045,9 +1041,7 @@ static Pico_Layer* _pico_layer_image (int mode, const char* name, const char* pa
     );
 }
 
-void pico_layer_image (int mode, const char* name,
-                       const char* path)
-{
+void pico_layer_image (int mode, const char* name, const char* path) {
     _pico_layer_image(mode, name, path);
 }
 
@@ -1103,9 +1097,7 @@ static Pico_Layer* _pico_layer_text (
     );
 }
 
-void pico_layer_text (int mode, const char* name,
-                      int height, const char* text)
-{
+void pico_layer_text (int mode, const char* name, int height, const char* text) {
     assert(name!=NULL && "layer name required");
     _pico_layer_text(mode, name, height, text);
 }
