@@ -4,7 +4,6 @@
 
 #include "../src/pico.h"
 
-
 static const char KEY;
 
 static float L_checkfieldnum (lua_State* L, int i, const char* k) {

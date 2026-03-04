@@ -77,6 +77,23 @@ static void _free_sound (int n, const void* key, void* value) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Alloc helpers
+///////////////////////////////////////////////////////////////////////////////
+
+static Pico_View _layer_new (Pico_Abs_Dim dim) {
+    return (Pico_View) {
+        .grid = 0,
+        .dim  = dim,
+        .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+        .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+        .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+        .tile = {0, 0},
+        .rot  = {0, PICO_ANCHOR_C},
+        .flip = PICO_FLIP_NONE,
+    };
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Alloc callbacks
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -95,16 +112,7 @@ static void* _alloc_layer_buffer (int n, const void* key, void* ctx) {
         .type = PICO_LAYER_PLAIN,
         .name = strdup((const char*)key),
         .tex  = tex,
-        .view = {
-            .grid = 0,
-            .dim  = c->dim,
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
+        .view = _layer_new(c->dim),
     };
     assert(data->name != NULL);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
@@ -119,16 +127,7 @@ static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
         .type = PICO_LAYER_PLAIN,
         .name = strdup((const char*)key),
         .tex  = _tex_create(*dim),
-        .view = {
-            .grid = 0,
-            .dim  = *dim,
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
+        .view = _layer_new(*dim),
     };
     assert(data->name != NULL);
     SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
@@ -147,16 +146,7 @@ static void* _alloc_layer_image (int n, const void* key, void* ctx) {
         .type = PICO_LAYER_PLAIN,
         .name = strdup((const char*)key),
         .tex  = tex,
-        .view = {
-            .grid = 0,
-            .dim  = dim,
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
+        .view = _layer_new(dim),
     };
     assert(data->name != NULL);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
@@ -202,14 +192,7 @@ static void* _alloc_layer_text (int n, const void* key, void* ctx) {
         .type = PICO_LAYER_PLAIN,
         .name = strdup((const char*)key),
         .tex  = tex,
-        .view = {
-            .grid = 0,
-            .dim  = dim,
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-        },
+        .view = _layer_new(dim),
     };
     assert(data->name != NULL);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
@@ -240,16 +223,7 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
         .type = PICO_LAYER_VIDEO,
         .name = strdup((const char*)key),
         .tex  = tex,
-        .view = {
-            .grid = 0,
-            .dim  = {w, h},
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .tile = {0, 0},
-            .rot  = {0, PICO_ANCHOR_C},
-            .flip = PICO_FLIP_NONE,
-        },
+        .view = _layer_new((Pico_Abs_Dim){w, h}),
     };
     assert(vs->base.name != NULL);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
