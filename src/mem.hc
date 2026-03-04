@@ -8,22 +8,22 @@
 typedef struct {
     Pico_Abs_Dim dim;
     const Pico_Color_A* pixels;
-} _Ctx_Buffer;
+} _alloc_buffer_t;
 
 typedef struct {
     Pico_Layer* par;
     Pico_Rel_Rect crop;
-} _Ctx_Sub;
+} _alloc_sub_t;
 
 typedef struct {
     int height;
     const char* text;
-} _Ctx_Text;
+} _alloc_text_t;
 
 typedef struct {
     const char* path;
     int h;
-} _Ctx_Font;
+} _alloc_font_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Free callbacks
@@ -114,7 +114,7 @@ static Pico_Layer* _layer_new (
 ///////////////////////////////////////////////////////////////////////////////
 
 static void* _alloc_layer_buffer (int n, const void* key, void* ctx) {
-    _Ctx_Buffer* c = (_Ctx_Buffer*)ctx;
+    _alloc_buffer_t* c = (_alloc_buffer_t*)ctx;
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom(
         (void*)c->pixels, c->dim.w, c->dim.h,
         32, 4 * c->dim.w, SDL_PIXELFORMAT_RGBA32
@@ -149,7 +149,7 @@ static void* _alloc_layer_image (int n, const void* key, void* ctx) {
 }
 
 static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
-    _Ctx_Sub* c = (_Ctx_Sub*)ctx;
+    _alloc_sub_t* c = (_alloc_sub_t*)ctx;
     Pico_Abs_Rect abs = pico_cv_rect_rel_abs(
         &c->crop,
         &(Pico_Abs_Rect){0, 0, c->par->view.dim.w, c->par->view.dim.h}
@@ -166,7 +166,7 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
 }
 
 static void* _alloc_layer_text (int n, const void* key, void* ctx) {
-    _Ctx_Text* c = (_Ctx_Text*)ctx;
+    _alloc_text_t* c = (_alloc_text_t*)ctx;
     Pico_Abs_Dim dim;
     SDL_Texture* tex = _tex_text(c->height, c->text, &dim);
     return _layer_new (
@@ -224,7 +224,7 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
 }
 
 static void* _alloc_font (int n, const void* key, void* ctx) {
-    _Ctx_Font* c = (_Ctx_Font*)ctx;
+    _alloc_font_t* c = (_alloc_font_t*)ctx;
     TTF_Font* ttf;
     if (c->path == NULL) {
         SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);

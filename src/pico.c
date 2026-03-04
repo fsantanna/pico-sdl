@@ -128,7 +128,7 @@ static TTF_Font* _font_get (const char* path, int h) {
     char key[256];
     snprintf(key, sizeof(key), "/font/%s/%d", path_str, h);
     int n = strlen(key) + 1;
-    _Ctx_Font ctx = { path, h };
+    _alloc_font_t ctx = { path, h };
     return (TTF_Font*)realm_put(
         G.realm, '=', n, key,
         _free_font, _alloc_font, &ctx
@@ -1017,7 +1017,7 @@ void pico_layer_sub (int mode, const char* name,
     assert(par->type!=PICO_LAYER_SUB
         && "cannot create sub-layer of sub-layer");
 
-    _Ctx_Sub ctx = { par, *crop };
+    _alloc_sub_t ctx = { par, *crop };
     realm_put(
         G.realm, mode, strlen(name)+1, name,
         _free_layer, _alloc_layer_sub, &ctx

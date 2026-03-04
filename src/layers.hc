@@ -31,7 +31,7 @@ static Pico_Layer* _pico_layer_buffer (
 ) {
     assert(name!=NULL && "layer name required");
     assert(pixels!=NULL && "pixels required");
-    _Ctx_Buffer ctx = { dim, pixels };
+    _alloc_buffer_t ctx = { dim, pixels };
     return (Pico_Layer*)realm_put(
         G.realm, mode, strlen(name)+1, name,
         _free_layer, _alloc_layer_buffer, &ctx
@@ -70,7 +70,7 @@ static Pico_Layer* _pico_layer_text (
         str = name;
     }
 
-    _Ctx_Text ctx = { height, text };
+    _alloc_text_t ctx = { height, text };
     return (Pico_Layer*)realm_put(
         G.realm, mode, strlen(str)+1, str,
         _free_layer, _alloc_layer_text, &ctx
