@@ -222,13 +222,22 @@ void pico_output_draw_oval (Pico_Rel_Rect* rect);
 /// @param ps array of vertex positions (mode determines coordinates)
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps);
 
-/// @brief Draws text.
-/// @param key layer key for caching (replaces previous text
-///            with same key)
+/// @brief Draws text (shared caching by text content).
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
-void pico_output_draw_text (const char* key,
-    const char* text, Pico_Rel_Rect* rect);
+void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect);
+
+/// @brief Draws text with explicit realm mode and layer key.
+/// @param mode realm mode ('!' exclusive, '=' shared,
+///             '~' replace)
+/// @param key layer key
+/// @param text text to draw
+/// @param rect drawing rectangle (mode determines coordinates)
+void pico_output_draw_text_mode (
+    int mode,
+    const char* key, const char* text,
+    Pico_Rel_Rect* rect
+);
 
 /// @brief Shows what has been drawn onto the screen.
 /// Only does anything on expert mode.
@@ -412,14 +421,27 @@ int pico_get_show (void);
 /// @return PICO_STYLE_FILL or PICO_STYLE_STROKE
 PICO_STYLE pico_get_style (void);
 
-/// @brief Gets the dimensions of the given text.
-/// @param key layer key for caching (replaces previous text
-///            with same key)
+/// @brief Gets the dimensions of the given text (shared caching).
 /// @param text text to measure
-/// @param dim dim with h for font size (mode '!' or '%'), w filled in
+/// @param dim dim with h for font size (mode '!' or '%'),
+///            w filled in
 /// @return absolute dimensions
-Pico_Abs_Dim pico_get_text (const char* key,
-    const char* text, Pico_Rel_Dim* dim);
+Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
+
+/// @brief Gets text dimensions with explicit realm mode and
+///        layer key.
+/// @param mode realm mode ('!' exclusive, '=' shared,
+///             '~' replace)
+/// @param key layer key
+/// @param text text to measure
+/// @param dim dim with h for font size (mode '!' or '%'),
+///            w filled in
+/// @return absolute dimensions
+Pico_Abs_Dim pico_get_text_mode (
+    int mode,
+    const char* key, const char* text,
+    Pico_Rel_Dim* dim
+);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds

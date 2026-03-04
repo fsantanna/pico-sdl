@@ -708,17 +708,21 @@ PICO_STYLE pico_get_style (void) {
     return S.style;
 }
 
-Pico_Abs_Dim pico_get_text (
-    const char* key, const char* text, Pico_Rel_Dim* rel
+Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
+    return pico_get_text_mode('=', NULL, text, rel);
+}
+
+Pico_Abs_Dim pico_get_text_mode (
+    int mode, const char* key,
+    const char* text, Pico_Rel_Dim* rel
 ) {
-    assert(key!=NULL && key[0]!='\0' && "key required");
     assert(text[0] != '\0');
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
         Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h}, rel->up };
         SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
         int height = (int)fd_h.h;
-        Pico_Layer* layer = _pico_layer_text('~', key, height, text);
+        Pico_Layer* layer = _pico_layer_text(mode, key, height, text);
         SDL_FDim fd = _sdl_dim(rel, NULL, &layer->view.dim);
         return (Pico_Abs_Dim){fd.w, fd.h};
     } else {
@@ -1421,16 +1425,20 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_text (
-    const char* key, const char* text, Pico_Rel_Rect* rect
+void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
+    pico_output_draw_text_mode('=', NULL, text, rect);
+}
+
+void pico_output_draw_text_mode (
+    int mode, const char* key,
+    const char* text, Pico_Rel_Rect* rect
 ) {
-    assert(key!=NULL && key[0]!='\0' && "key required");
     assert(text[0] != '\0');
     assert(rect->h != 0);
     Pico_Rel_Dim rel_h = { rect->mode, {0, rect->h}, rect->up };
     SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
     int height = (int)fd_h.h;
-    Pico_Layer* layer = _pico_layer_text('~', key, height, text);
+    Pico_Layer* layer = _pico_layer_text(mode, key, height, text);
     Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h}, rect->up };
     Pico_Abs_Dim* orig = (rel.w == 0) ? &layer->view.dim : NULL;
     _sdl_dim(&rel, NULL, orig);
@@ -1512,11 +1520,12 @@ static void _show_grid (void) {
             int v = src.x + (x * src.w / S.win.dim.w);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            Pico_Abs_Dim dim = pico_get_text(
-                "/grid/x", lbl,
-                &(Pico_Rel_Dim){ '!', {0, H}, NULL });
+            Pico_Abs_Dim dim = pico_get_text (
+                lbl,
+                &(Pico_Rel_Dim){ '!', {0, H}, NULL }
+            );
             pico_output_draw_text (
-                "/grid/x", lbl,
+                lbl,
                 &(Pico_Rel_Rect){ '!', {x-dim.w/2, 10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW, NULL }
             );
         }
@@ -1527,10 +1536,10 @@ static void _show_grid (void) {
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Abs_Dim dim = pico_get_text(
-                "/grid/y", lbl,
+                lbl,
                 &(Pico_Rel_Dim){ '!', {0, H}, NULL });
             pico_output_draw_text (
-                "/grid/y", lbl,
+                lbl,
                 &(Pico_Rel_Rect){ '!', {10-dim.w/2, y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW, NULL }
             );
         }
