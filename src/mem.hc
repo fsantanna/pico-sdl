@@ -281,7 +281,15 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
 
 static void* _alloc_font (int n, const void* key, void* ctx) {
     _Ctx_Font* c = (_Ctx_Font*)ctx;
-    return _font_open(c->path, c->h);
+    TTF_Font* ttf;
+    if (c->path == NULL) {
+        SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
+        ttf = TTF_OpenFontRW(rw, 1, c->h);
+    } else {
+        ttf = TTF_OpenFont(c->path, c->h);
+    }
+    pico_assert(ttf != NULL);
+    return ttf;
 }
 
 static void* _alloc_sound (int n, const void* key, void* ctx) {

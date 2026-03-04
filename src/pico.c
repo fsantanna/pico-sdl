@@ -129,18 +129,6 @@ static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
     return tex;
 }
 
-static TTF_Font* _font_open (const char* path, int h) {
-    TTF_Font* ttf;
-    if (path == NULL) {
-        SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
-        ttf = TTF_OpenFontRW(rw, 1, h);
-    } else {
-        ttf = TTF_OpenFont(path, h);
-    }
-    pico_assert(ttf != NULL);
-    return ttf;
-}
-
 static TTF_Font* _font_get (const char* path, int h) {
     const char* path_str = path ? path : "null";
     char key[256];
