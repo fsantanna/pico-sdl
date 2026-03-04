@@ -80,7 +80,7 @@ static void _free_sound (int n, const void* key, void* value) {
 // Alloc helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_View _layer_new (Pico_Abs_Dim dim) {
+static Pico_View _view_new (Pico_Abs_Dim dim) {
     return (Pico_View) {
         .grid = 0,
         .dim  = dim,
@@ -91,6 +91,22 @@ static Pico_View _layer_new (Pico_Abs_Dim dim) {
         .rot  = {0, PICO_ANCHOR_C},
         .flip = PICO_FLIP_NONE,
     };
+}
+
+static Pico_Layer* _layer_new (
+    const char* key, SDL_Texture* tex, Pico_Abs_Dim dim)
+{
+    Pico_Layer* data = malloc(sizeof(Pico_Layer));
+    assert(data != NULL);
+    *data = (Pico_Layer) {
+        .type = PICO_LAYER_PLAIN,
+        .name = strdup(key),
+        .tex  = tex,
+        .view = _view_new(dim),
+    };
+    assert(data->name != NULL);
+    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+    return data;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,32 +122,14 @@ static void* _alloc_layer_buffer (int n, const void* key, void* ctx) {
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
     pico_assert(tex != NULL);
     SDL_FreeSurface(sfc);
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
-    assert(data != NULL);
-    *data = (Pico_Layer) {
-        .type = PICO_LAYER_PLAIN,
-        .name = strdup((const char*)key),
-        .tex  = tex,
-        .view = _layer_new(c->dim),
-    };
-    assert(data->name != NULL);
-    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-    return data;
+    return _layer_new((const char*)key, tex, c->dim);
 }
 
 static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
     Pico_Abs_Dim* dim = (Pico_Abs_Dim*)ctx;
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
-    assert(data != NULL);
-    *data = (Pico_Layer) {
-        .type = PICO_LAYER_PLAIN,
-        .name = strdup((const char*)key),
-        .tex  = _tex_create(*dim),
-        .view = _layer_new(*dim),
-    };
-    assert(data->name != NULL);
-    SDL_SetTextureBlendMode(data->tex, SDL_BLENDMODE_BLEND);
-    return data;
+    return _layer_new(
+        (const char*)key, _tex_create(*dim), *dim
+    );
 }
 
 static void* _alloc_layer_image (int n, const void* key, void* ctx) {
@@ -140,17 +138,7 @@ static void* _alloc_layer_image (int n, const void* key, void* ctx) {
     pico_assert(tex != NULL);
     Pico_Abs_Dim dim;
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
-    assert(data != NULL);
-    *data = (Pico_Layer) {
-        .type = PICO_LAYER_PLAIN,
-        .name = strdup((const char*)key),
-        .tex  = tex,
-        .view = _layer_new(dim),
-    };
-    assert(data->name != NULL);
-    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-    return data;
+    return _layer_new((const char*)key, tex, dim);
 }
 
 static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
@@ -186,17 +174,7 @@ static void* _alloc_layer_text (int n, const void* key, void* ctx) {
     _Ctx_Text* c = (_Ctx_Text*)ctx;
     Pico_Abs_Dim dim;
     SDL_Texture* tex = _tex_text(c->height, c->text, &dim);
-    Pico_Layer* data = malloc(sizeof(Pico_Layer));
-    assert(data != NULL);
-    *data = (Pico_Layer) {
-        .type = PICO_LAYER_PLAIN,
-        .name = strdup((const char*)key),
-        .tex  = tex,
-        .view = _layer_new(dim),
-    };
-    assert(data->name != NULL);
-    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-    return data;
+    return _layer_new((const char*)key, tex, dim);
 }
 
 static void* _alloc_layer_video (int n, const void* key, void* ctx) {
@@ -223,7 +201,7 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
         .type = PICO_LAYER_VIDEO,
         .name = strdup((const char*)key),
         .tex  = tex,
-        .view = _layer_new((Pico_Abs_Dim){w, h}),
+        .view = _view_new((Pico_Abs_Dim){w, h}),
     };
     assert(vs->base.name != NULL);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);

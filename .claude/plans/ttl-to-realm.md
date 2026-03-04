@@ -1,6 +1,6 @@
 # Plan: Replace ttl-hash with realm-allocator
 
-## Status: Use realm alloc callbacks (pass mode as-is)
+## Status: Refactor layer alloc helpers in mem.hc
 
 ## Design Summary
 
@@ -167,3 +167,45 @@ alloc runs synchronously).
 - [ ] Step 6: Update valgrind.supp if SDL_Init line changed
 - [ ] Step 7: Run tests (user)
 - [ ] Step 8: Commit / push / PR (user)
+
+## Phase: Refactor layer alloc helpers in mem.hc
+
+### Problem
+
+The 5 plain-layer `_alloc_layer_*` callbacks share identical boilerplate:
+malloc `Pico_Layer`, strdup name, set type=PLAIN, init view, assert,
+blend mode.
+
+### Approach (Option B)
+
+1. Rename current `_layer_new` → `_view_new` (returns `Pico_Layer_View`)
+2. New `_layer_new(key, tex, dim)` → returns `Pico_Layer*`:
+   - malloc + assert
+   - type=PLAIN, name=strdup(key), tex, view=_view_new(dim)
+   - assert name
+   - SDL_SetTextureBlendMode BLEND
+3. Each plain-layer callback creates its own tex/dim, then calls
+   `_layer_new`
+4. `_alloc_layer_video` deferred (uses calloc for `Pico_Layer_Video`)
+5. `_alloc_layer_sub` unchanged (type=SUB, custom .src, .parent)
+
+### Per-function result
+
+| Callback              | Body after refactor                     |
+| --------------------- | --------------------------------------- |
+| `_alloc_layer_buffer` | create sfc/tex → `_layer_new(key,tex,dim)` |
+| `_alloc_layer_empty`  | `_tex_create` → `_layer_new(key,tex,dim)`  |
+| `_alloc_layer_image`  | `IMG_LoadTexture` → `_layer_new(key,tex,dim)` |
+| `_alloc_layer_text`   | `_tex_text` → `_layer_new(key,tex,dim)` |
+| `_alloc_layer_video`  | **deferred** — stays as-is              |
+| `_alloc_layer_sub`    | **unchanged** — different struct layout  |
+
+### Steps
+
+- [x] Step 1: Extract `_view_new` (was `_layer_new` for view only)
+- [x] Step 2: Rename `_layer_new` → `_view_new`
+- [x] Step 3: New `_layer_new(key, tex, dim)` → `Pico_Layer*`
+- [x] Step 4: Refactor 4 callbacks (buffer, empty, image, text)
+- [x] Step 5: Compile and verify
+- [x] Step 6: Run tests (user) — PASS
+- [ ] Step 7: Commit / push / PR (user)
