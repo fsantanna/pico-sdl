@@ -309,16 +309,14 @@ void pico_layer_buffer (int mode, const char* name,
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param name layer name (must not be NULL or start with '/')
 /// @param dim layer dimensions
-void pico_layer_empty (int mode, const char* name,
-                       Pico_Abs_Dim dim);
+void pico_layer_empty (int mode, const char* name, Pico_Abs_Dim dim);
 
 /// @brief Creates a layer from an image file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param name layer name (NULL uses "/image/<path>", otherwise must not
 ///             start with '/')
 /// @param path path to the image file
-void pico_layer_image (int mode, const char* name,
-                       const char* path);
+void pico_layer_image (int mode, const char* name, const char* path);
 
 /// @brief Creates a sub-layer (crop) from an existing layer.
 /// Shares the parent's texture — no copy.
@@ -335,16 +333,14 @@ void pico_layer_sub (int mode, const char* name,
 /// @param height text height in pixels
 /// @param text the text to render
 /// @note Uses current font (pico_set_font) and draw color (pico_set_color_draw)
-void pico_layer_text (int mode, const char* name,
-                      int height, const char* text);
+void pico_layer_text (int mode, const char* name, int height, const char* text);
 
 /// @brief Creates a video layer from a Y4M file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param name layer name (NULL uses path, otherwise must not
 ///             start with '/')
 /// @param path path to the Y4M video file
-void pico_layer_video (int mode, const char* name,
-                       const char* path);
+void pico_layer_video (int mode, const char* name, const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -515,36 +511,36 @@ Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ba
 /// @param to relative position template (mode, anchor, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @sa pico_cv_pos_rel_abs
-void pico_cv_pos_abs_rel (const Pico_Abs_Pos* fr,
-                          Pico_Rel_Pos* to,
-                          Pico_Abs_Rect* base);
+void pico_cv_pos_abs_rel (
+    const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
+);
 
 /// @brief Converts a relative position to another relative mode.
 /// @param fr relative position to convert
 /// @param to relative position template (mode, anchor, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @sa pico_cv_pos_abs_rel
-void pico_cv_pos_rel_rel (const Pico_Rel_Pos* fr,
-                          Pico_Rel_Pos* to,
-                          Pico_Abs_Rect* base);
+void pico_cv_pos_rel_rel (
+    const Pico_Rel_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
+);
 
 /// @brief Converts an absolute rectangle to relative coordinates.
 /// @param fr absolute rectangle to convert
 /// @param to relative rectangle template (mode, anchor, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @sa pico_cv_rect_rel_abs
-void pico_cv_rect_abs_rel (const Pico_Abs_Rect* fr,
-                           Pico_Rel_Rect* to,
-                           Pico_Abs_Rect* base);
+void pico_cv_rect_abs_rel (
+    const Pico_Abs_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
+);
 
 /// @brief Converts a relative rectangle to another relative mode.
 /// @param fr relative rectangle to convert
 /// @param to relative rectangle template (mode, anchor, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @sa pico_cv_rect_abs_rel
-void pico_cv_rect_rel_rel (const Pico_Rel_Rect* fr,
-                           Pico_Rel_Rect* to,
-                           Pico_Abs_Rect* base);
+void pico_cv_rect_rel_rel (
+    const Pico_Rel_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
+);
 
 /// @brief Checks if a point is inside a rectangle.
 /// @param pos point to test (mode determines coordinates)

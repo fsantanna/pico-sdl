@@ -111,8 +111,12 @@ static struct {
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Layer* _pico_layer_image (int mode, const char* name, const char* path);
-static Pico_Layer* _pico_layer_text (int mode, const char* name, int height, const char* text);
+static Pico_Layer* _pico_layer_image (
+    int mode, const char* name, const char* path
+);
+static Pico_Layer* _pico_layer_text (
+    int mode, const char* name, int height, const char* text
+);
 static void _pico_output_draw_layer (Pico_Layer* layer, Pico_Rel_Rect* rect);
 static void _pico_output_present (int force);
 
@@ -370,10 +374,9 @@ Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ba
     return (Pico_Abs_Rect) _fi_rect(&rf);
 }
 
-void pico_cv_pos_abs_rel (const Pico_Abs_Pos* fr,
-                          Pico_Rel_Pos* to,
-                          Pico_Abs_Rect* base)
-{
+void pico_cv_pos_abs_rel (
+    const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
+) {
     SDL_FRect r0;
     if (base == NULL) {
         r0 = (SDL_FRect) {
@@ -406,18 +409,16 @@ void pico_cv_pos_abs_rel (const Pico_Abs_Pos* fr,
     }
 }
 
-void pico_cv_pos_rel_rel (const Pico_Rel_Pos* fr,
-                          Pico_Rel_Pos* to,
-                          Pico_Abs_Rect* base)
-{
+void pico_cv_pos_rel_rel (
+    const Pico_Rel_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
+) {
     Pico_Abs_Pos abs = pico_cv_pos_rel_abs(fr, base);
     pico_cv_pos_abs_rel(&abs, to, base);
 }
 
-void pico_cv_rect_abs_rel (const Pico_Abs_Rect* fr,
-                           Pico_Rel_Rect* to,
-                           Pico_Abs_Rect* base)
-{
+void pico_cv_rect_abs_rel (
+    const Pico_Abs_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
+) {
     SDL_FRect r0;
     if (base == NULL) {
         r0 = (SDL_FRect) {
@@ -457,10 +458,9 @@ void pico_cv_rect_abs_rel (const Pico_Abs_Rect* fr,
     }
 }
 
-void pico_cv_rect_rel_rel (const Pico_Rel_Rect* fr,
-                           Pico_Rel_Rect* to,
-                           Pico_Abs_Rect* base)
-{
+void pico_cv_rect_rel_rel (
+    const Pico_Rel_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
+) {
     Pico_Abs_Rect abs = pico_cv_rect_rel_abs(fr, base);
     pico_cv_rect_abs_rel(&abs, to, base);
 }
@@ -1032,7 +1032,9 @@ void pico_layer_empty (int mode, const char* name, Pico_Abs_Dim dim) {
     );
 }
 
-static Pico_Layer* _pico_layer_image (int mode, const char* name, const char* path) {
+static Pico_Layer* _pico_layer_image (
+    int mode, const char* name, const char* path
+) {
     assert(path!=NULL && "image path required");
     const char* str = (name != NULL) ? name : path;
     return (Pico_Layer*)realm_put(
@@ -1067,10 +1069,7 @@ void pico_layer_sub (int mode, const char* name,
 }
 
 static Pico_Layer* _pico_layer_text (
-    int mode,
-    const char* name,
-    int height,
-    const char* text
+    int mode, const char* name, int height, const char* text
 ) {
     assert(text!=NULL && text[0]!='\0' && "text required");
 
@@ -1511,7 +1510,9 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
     _pico_output_draw_layer(layer, rect);
 }
 
-void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3) {
+void pico_output_draw_tri (
+    Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3
+) {
     Pico_Abs_Pos i1 = pico_cv_pos_rel_abs(p1, NULL);
     Pico_Abs_Pos i2 = pico_cv_pos_rel_abs(p2, NULL);
     Pico_Abs_Pos i3 = pico_cv_pos_rel_abs(p3, NULL);
