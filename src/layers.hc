@@ -32,10 +32,12 @@ static Pico_Layer* _pico_layer_buffer (
     assert(name!=NULL && "layer name required");
     assert(pixels!=NULL && "pixels required");
     _alloc_buffer_t ctx = { dim, pixels };
-    return (Pico_Layer*)realm_put(
+    Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(name)+1, name,
         _free_layer, _alloc_layer_buffer, &ctx
     );
+    assert(ret != NULL);
+    return ret;
 }
 
 static Pico_Layer* _pico_layer_image (
@@ -43,10 +45,12 @@ static Pico_Layer* _pico_layer_image (
 ) {
     assert(path!=NULL && "image path required");
     const char* str = (name != NULL) ? name : path;
-    return (Pico_Layer*)realm_put(
+    Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(str)+1, str,
         _free_layer, _alloc_layer_image, (void*)path
     );
+    assert(ret != NULL);
+    return ret;
 }
 
 static Pico_Layer* _pico_layer_text (
@@ -71,10 +75,12 @@ static Pico_Layer* _pico_layer_text (
     }
 
     _alloc_text_t ctx = { height, text };
-    return (Pico_Layer*)realm_put(
+    Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(str)+1, str,
         _free_layer, _alloc_layer_text, &ctx
     );
+    assert(ret != NULL);
+    return ret;
 }
 
 static void _pico_output_draw_layer (

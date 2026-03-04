@@ -121,10 +121,12 @@ static Pico_Layer_Video* _pico_layer_video (
 ) {
     assert(path!=NULL && "video path required");
     const char* key = (name != NULL) ? name : path;
-    return (Pico_Layer_Video*)realm_put(
+    Pico_Layer_Video* ret = (Pico_Layer_Video*) realm_put(
         G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_video, (void*)path
     );
+    assert(ret != NULL);
+    return ret;
 }
 
 void pico_layer_video (int mode, const char* name, const char* path) {

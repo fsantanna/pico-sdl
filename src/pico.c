@@ -129,10 +129,12 @@ static TTF_Font* _font_get (const char* path, int h) {
     snprintf(key, sizeof(key), "/font/%s/%d", path_str, h);
     int n = strlen(key) + 1;
     _alloc_font_t ctx = { path, h };
-    return (TTF_Font*)realm_put(
+    TTF_Font* ret = realm_put(
         G.realm, '=', n, key,
         _free_font, _alloc_font, &ctx
     );
+    assert(ret != NULL);
+    return ret;
 }
 
 static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
@@ -993,10 +995,11 @@ void pico_layer_buffer (
 
 void pico_layer_empty (int mode, const char* name, Pico_Abs_Dim dim) {
     assert(name!=NULL && "layer name required");
-    realm_put(
+    void* ret = realm_put (
         G.realm, mode, strlen(name)+1, name,
         _free_layer, _alloc_layer_empty, &dim
     );
+    assert(ret != NULL);
 }
 
 void pico_layer_image (int mode, const char* name, const char* path) {
@@ -1018,10 +1021,11 @@ void pico_layer_sub (int mode, const char* name,
         && "cannot create sub-layer of sub-layer");
 
     _alloc_sub_t ctx = { par, *crop };
-    realm_put(
+    void* ret = realm_put (
         G.realm, mode, strlen(name)+1, name,
         _free_layer, _alloc_layer_sub, &ctx
     );
+    assert(ret != NULL);
 }
 
 void pico_layer_text (int mode, const char* name, int height, const char* text) {
@@ -1581,27 +1585,6 @@ void pico_output_present (void) {
     _pico_output_present(1);
 }
 
-static void _pico_output_sound_cache (const char* path, int cache) {
-    Mix_Chunk* mix = NULL;
-
-    if (cache) {
-        int n = strlen(path) + 1;
-        mix = (Mix_Chunk*)realm_put(
-            G.realm, '=', n, path,
-            _free_sound, _alloc_sound, (void*)path
-        );
-    } else {
-        mix = Mix_LoadWAV(path);
-    }
-    pico_assert(mix != NULL);
-
-    Mix_PlayChannel(-1, mix, 0);
-
-    if (!cache) {
-        Mix_FreeChunk(mix);
-    }
-}
-
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect) {
     assert(S.layer == &G.main);
     Pico_Abs_Rect phy = {0, 0, S.win.dim.w, S.win.dim.h};
@@ -1640,7 +1623,12 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
 }
 
 void pico_output_sound (const char* path) {
-    _pico_output_sound_cache(path, 1);
+    Mix_Chunk* mix = (Mix_Chunk*) realm_put (
+        G.realm, '=', strlen(path)+1, path,
+        _free_sound, _alloc_sound, (void*)path
+    );
+    pico_assert(mix != NULL);
+    Mix_PlayChannel(-1, mix, 0);
 }
 
 #define PICO_VIDEO_C
