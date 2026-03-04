@@ -24,7 +24,7 @@ typedef struct {
     Uint32     t0;
 } Pico_Layer_Video;
 
-static void _pico_hash_clean_video (Pico_Layer_Video*);
+static void _free_layer_video (Pico_Layer_Video*);
 static int _y4m_parse_header (FILE*, int*, int*, int*);
 
 #endif // PICO_VIDEO_HC
@@ -108,8 +108,8 @@ static void _y4m_update_texture (Pico_Layer_Video* vs) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/* Free video-specific resources (called from hash cleanup) */
-static void _pico_hash_clean_video (Pico_Layer_Video* vs) {
+/* Free video-specific resources (called from _free_layer) */
+static void _free_layer_video (Pico_Layer_Video* vs) {
     free(vs->plane.y);
     free(vs->plane.u);
     free(vs->plane.v);

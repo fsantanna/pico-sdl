@@ -63,7 +63,7 @@ static void _free_font (int n, const void* key, void* value) {
 static void _free_layer (int n, const void* key, void* value) {
     Pico_Layer* data = (Pico_Layer*)value;
     if (data->type == PICO_LAYER_VIDEO) {
-        _pico_hash_clean_video((Pico_Layer_Video*)data);
+        _free_layer_video((Pico_Layer_Video*)data);
     }
     if (data->type != PICO_LAYER_SUB) {
         SDL_DestroyTexture(data->tex);
@@ -94,8 +94,8 @@ static Pico_View _view_new (Pico_Abs_Dim dim) {
 }
 
 static Pico_Layer* _layer_new (
-    const char* key, SDL_Texture* tex, Pico_Abs_Dim dim)
-{
+    const char* key, SDL_Texture* tex, Pico_Abs_Dim dim
+) {
     Pico_Layer* data = malloc(sizeof(Pico_Layer));
     assert(data != NULL);
     *data = (Pico_Layer) {
@@ -127,9 +127,7 @@ static void* _alloc_layer_buffer (int n, const void* key, void* ctx) {
 
 static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
     Pico_Abs_Dim* dim = (Pico_Abs_Dim*)ctx;
-    return _layer_new(
-        (const char*)key, _tex_create(*dim), *dim
-    );
+    return _layer_new((const char*)key, _tex_create(*dim), *dim);
 }
 
 static void* _alloc_layer_image (int n, const void* key, void* ctx) {
