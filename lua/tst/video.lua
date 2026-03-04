@@ -18,7 +18,7 @@ end
 -- pico_layer_video: create layer
 do
     print("layer_video: create")
-    pico.layer.video("vid", "video.y4m")
+    pico.layer.video('!', "vid", "video.y4m")
 end
 
 -- pico_set_video: first frame (0)

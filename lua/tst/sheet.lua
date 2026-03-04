@@ -3,7 +3,7 @@ require 'pico.check'
 pico.init(true)
 
 -- Create a 4x4 "sprite sheet" layer with colored quadrants
-pico.layer.empty("sheet", {w=4, h=4})
+pico.layer.empty('!', "sheet", {w=4, h=4})
 pico.set.layer("sheet")
 pico.set.color.clear('black')
 pico.output.clear()
@@ -32,13 +32,13 @@ pico.check("sheet-01")
 
 -- Create sub-layers for each quadrant
 print("Test 2: explicit sub-layers (swapped)")
-pico.layer.sub("tl", "sheet",
+pico.layer.sub('!', "tl", "sheet",
     {'!', x=0, y=0, w=2, h=2, anchor='NW'})
-pico.layer.sub("tr", "sheet",
+pico.layer.sub('!', "tr", "sheet",
     {'!', x=2, y=0, w=2, h=2, anchor='NW'})
-pico.layer.sub("bl", "sheet",
+pico.layer.sub('!', "bl", "sheet",
     {'!', x=0, y=2, w=2, h=2, anchor='NW'})
-pico.layer.sub("br", "sheet",
+pico.layer.sub('!', "br", "sheet",
     {'!', x=2, y=2, w=2, h=2, anchor='NW'})
 
 -- Draw sub-layers swapped: TL->BR, TR->BL, BL->TR, BR->TL

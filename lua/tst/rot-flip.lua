@@ -5,7 +5,7 @@ pico.set.window { title="Rotate / Flip" }
 pico.set.color.clear('white')
 
 -- Create a layer from image for rotation/flip tests
-pico.layer.image("img", "open.png")
+pico.layer.image('!', "img", "open.png")
 
 -- ROTATION - center anchor
 do
