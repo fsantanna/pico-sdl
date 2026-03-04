@@ -818,11 +818,13 @@ void pico_set_font (const char* path) {
     S.font = path;
 }
 
-void pico_set_layer (const char* name) {
-    if (name == NULL) {
+void pico_set_layer (const char* key) {
+    if (key == NULL) {
         S.layer = &G.main;
     } else {
-        Pico_Layer* data = (Pico_Layer*)realm_get(G.realm, strlen(name)+1, name);
+        Pico_Layer* data = (Pico_Layer*)realm_get (
+            G.realm, strlen(key)+1, key
+        );
         pico_assert(data!=NULL && "layer does not exist");
         pico_assert(data->type!=PICO_LAYER_SUB &&
             "cannot set render target to sub-layer");
@@ -983,31 +985,57 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void pico_layer_buffer (
-    int mode,
-    const char* name,
+    const char* key,
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
-    _pico_layer_buffer(mode, name, dim, pixels);
+    pico_layer_buffer_mode('!', key, dim, pixels);
 }
 
-void pico_layer_empty (int mode, const char* name, Pico_Abs_Dim dim) {
-    assert(name!=NULL && "layer name required");
+void pico_layer_buffer_mode (
+    int mode,
+    const char* key,
+    Pico_Abs_Dim dim,
+    const Pico_Color_A* pixels
+) {
+    _pico_layer_buffer(mode, key, dim, pixels);
+}
+
+void pico_layer_empty (const char* key, Pico_Abs_Dim dim) {
+    pico_layer_empty_mode('!', key, dim);
+}
+
+void pico_layer_empty_mode (
+    int mode, const char* key, Pico_Abs_Dim dim
+) {
+    assert(key!=NULL && "layer key required");
     realm_put(
-        G.realm, mode, strlen(name)+1, name,
+        G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_empty, &dim
     );
 }
 
-void pico_layer_image (int mode, const char* name, const char* path) {
-    _pico_layer_image(mode, name, path);
+void pico_layer_image (const char* key, const char* path) {
+    pico_layer_image_mode('!', key, path);
 }
 
-void pico_layer_sub (int mode, const char* name,
+void pico_layer_image_mode (
+    int mode, const char* key, const char* path
+) {
+    _pico_layer_image(mode, key, path);
+}
+
+void pico_layer_sub (const char* key,
     const char* parent, const Pico_Rel_Rect* crop)
 {
-    assert(name!=NULL     && "sub-layer name required");
-    assert(parent!=NULL   && "parent name required");
+    pico_layer_sub_mode('!', key, parent, crop);
+}
+
+void pico_layer_sub_mode (int mode, const char* key,
+    const char* parent, const Pico_Rel_Rect* crop)
+{
+    assert(key!=NULL      && "sub-layer key required");
+    assert(parent!=NULL   && "parent key required");
     assert(crop!=NULL     && "crop rect required");
     assert(crop->up==NULL && "crop must not have up chain");
 
@@ -1019,14 +1047,22 @@ void pico_layer_sub (int mode, const char* name,
 
     _Ctx_Sub ctx = { par, *crop };
     realm_put(
-        G.realm, mode, strlen(name)+1, name,
+        G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_sub, &ctx
     );
 }
 
-void pico_layer_text (int mode, const char* name, int height, const char* text) {
-    assert(name!=NULL && "layer name required");
-    _pico_layer_text(mode, name, height, text);
+void pico_layer_text (
+    const char* key, int height, const char* text
+) {
+    pico_layer_text_mode('!', key, height, text);
+}
+
+void pico_layer_text_mode (
+    int mode, const char* key, int height, const char* text
+) {
+    assert(key!=NULL && "layer key required");
+    _pico_layer_text(mode, key, height, text);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1271,14 +1307,14 @@ void pico_output_clear (void) {
 }
 
 void pico_output_draw_buffer (
-    const char* name,
+    const char* key,
     Pico_Abs_Dim dim,
     const Pico_Color_A buffer[],
     const Pico_Rel_Rect* rect
 ) {
-    assert(name!=NULL && "layer name required");
-    pico_layer_buffer('=', name, dim, buffer);
-    pico_output_draw_layer(name, (Pico_Rel_Rect*)rect);
+    assert(key!=NULL && "layer key required");
+    pico_layer_buffer_mode('=', key, dim, buffer);
+    pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
@@ -1291,10 +1327,11 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
     _pico_output_draw_layer(layer, rect);
 }
 
-void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect) {
-    assert(name!=NULL && "layer name required");
+void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect) {
+    assert(key!=NULL && "layer key required");
 
-    Pico_Layer* layer = (Pico_Layer*)realm_get(G.realm, strlen(name)+1, name);
+    Pico_Layer* layer = (Pico_Layer*)realm_get(
+        G.realm, strlen(key)+1, key);
     pico_assert(layer!=NULL && "layer does not exist");
 
     _pico_output_draw_layer(layer, rect);
@@ -1392,13 +1429,16 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
+void pico_output_draw_text (
+    const char* key, const char* text, Pico_Rel_Rect* rect
+) {
+    assert(key!=NULL && key[0]!='\0' && "key required");
     assert(text[0] != '\0');
     assert(rect->h != 0);
     Pico_Rel_Dim rel_h = { rect->mode, {0, rect->h}, rect->up };
     SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
     int height = (int)fd_h.h;
-    Pico_Layer* layer = _pico_layer_text('=', NULL, height, text);
+    Pico_Layer* layer = _pico_layer_text('~', key, height, text);
     Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h}, rect->up };
     Pico_Abs_Dim* orig = (rel.w == 0) ? &layer->view.dim : NULL;
     _sdl_dim(&rel, NULL, orig);
@@ -1480,9 +1520,11 @@ static void _show_grid (void) {
             int v = src.x + (x * src.w / S.win.dim.w);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            Pico_Abs_Dim dim = pico_get_text(lbl, &(Pico_Rel_Dim){ '!', {0, H}, NULL });
+            Pico_Abs_Dim dim = pico_get_text(
+                "/grid/x", lbl,
+                &(Pico_Rel_Dim){ '!', {0, H}, NULL });
             pico_output_draw_text (
-                lbl,
+                "/grid/x", lbl,
                 &(Pico_Rel_Rect){ '!', {x-dim.w/2, 10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW, NULL }
             );
         }
@@ -1492,9 +1534,11 @@ static void _show_grid (void) {
             int v = src.y + (y * src.h / S.win.dim.h);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            Pico_Abs_Dim dim = pico_get_text(lbl, &(Pico_Rel_Dim){ '!', {0, H}, NULL });
+            Pico_Abs_Dim dim = pico_get_text(
+                "/grid/y", lbl,
+                &(Pico_Rel_Dim){ '!', {0, H}, NULL });
             pico_output_draw_text (
-                lbl,
+                "/grid/y", lbl,
                 &(Pico_Rel_Rect){ '!', {10-dim.w/2, y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW, NULL }
             );
         }
