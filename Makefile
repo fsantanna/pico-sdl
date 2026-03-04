@@ -4,13 +4,13 @@ EXE = $(CHECK) $(XVFB) ./pico-sdl
 INT = PICO_TESTS=1 PICO_CHECK_INT=1 PICO_CHECK_ASR= ./pico-sdl
 GEN = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl
 
-.PHONY: ttl tests clean
+.PHONY: realm tests clean
 
 all: tests
 
-ttl:
-	curl -sL https://raw.githubusercontent.com/fsantanna/ttl-hash/v0.1/ttl_hash.h \
-		-o src/hash.h
+realm:
+	curl -sL https://raw.githubusercontent.com/fsantanna/realm-allocator/v0.1/realm.h \
+		-o src/realm.hc
 
 test:
 	$(EXE) tst/$(T).c

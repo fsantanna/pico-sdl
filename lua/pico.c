@@ -4,7 +4,6 @@
 
 #include "../src/pico.h"
 
-
 static const char KEY;
 
 static float L_checkfieldnum (lua_State* L, int i, const char* k) {
@@ -1027,82 +1026,95 @@ static int l_set_view (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_layer_empty (lua_State* L) {
-    const char* name = luaL_checkstring(L, 1);      // name | dim
-    luaL_checktype(L, 2, LUA_TTABLE);
+    const char* ms = luaL_checkstring(L, 1);        // mode | name | dim
+    int mode = ms[0];
+    const char* name = luaL_checkstring(L, 2);
+    luaL_checktype(L, 3, LUA_TTABLE);
     Pico_Abs_Dim dim = {
-        (int) L_checkfieldnum(L, 2, "w"),
-        (int) L_checkfieldnum(L, 2, "h"),
+        (int) L_checkfieldnum(L, 3, "w"),
+        (int) L_checkfieldnum(L, 3, "h"),
     };
-    pico_layer_empty(name, dim);
+    pico_layer_empty(mode, name, dim);
     return 0;
 }
 
 static int l_layer_image (lua_State* L) {
-    const char* name;         // [name] | path
+    const char* ms = luaL_checkstring(L, 1);        // mode | [name] | path
+    int mode = ms[0];
+    const char* name;
     const char* path;
-    if (lua_gettop(L) >= 2) {
-        name = luaL_checkstring(L, 1);
-        path = luaL_checkstring(L, 2);
+    if (lua_gettop(L) >= 3) {
+        name = luaL_checkstring(L, 2);
+        path = luaL_checkstring(L, 3);
     } else {
         name = NULL;
-        path = luaL_checkstring(L, 1);
+        path = luaL_checkstring(L, 2);
     }
-    pico_layer_image(name, path);
+    pico_layer_image(mode, name, path);
     return 0;
 }
 
 static int l_layer_buffer (lua_State* L) {
-    const char* name = luaL_checkstring(L, 1);      // name | dim | buffer
-    luaL_checktype(L, 2, LUA_TTABLE);
+    const char* ms = luaL_checkstring(L, 1);        // mode | name | dim | buffer
+    int mode = ms[0];
+    const char* name = luaL_checkstring(L, 2);
     luaL_checktype(L, 3, LUA_TTABLE);
+    luaL_checktype(L, 4, LUA_TTABLE);
 
     Pico_Abs_Dim dim = {
-        (int) L_checkfieldnum(L, 2, "w"),
-        (int) L_checkfieldnum(L, 2, "h"),
+        (int) L_checkfieldnum(L, 3, "w"),
+        (int) L_checkfieldnum(L, 3, "h"),
     };
 
-    Pico_Abs_Dim buf_dim = c_buffer_dim(L, 3);
+    Pico_Abs_Dim buf_dim = c_buffer_dim(L, 4);
     if (buf_dim.w != dim.w || buf_dim.h != dim.h) {
-        return luaL_error(L, "buffer size %dx%d doesn't match dim %dx%d",
-                          buf_dim.w, buf_dim.h, dim.w, dim.h);
+        return luaL_error(L,
+            "buffer size %dx%d doesn't match dim %dx%d",
+            buf_dim.w, buf_dim.h, dim.w, dim.h);
     }
 
     Pico_Color_A buf[buf_dim.h][buf_dim.w];
-    c_buffer_fill(L, 3, buf_dim, (Pico_Color_A*)buf);
+    c_buffer_fill(L, 4, buf_dim, (Pico_Color_A*)buf);
 
-    pico_layer_buffer(name, dim, (Pico_Color_A*)buf);
+    pico_layer_buffer(mode, name, dim, (Pico_Color_A*)buf);
     return 0;
 }
 
 static int l_layer_text (lua_State* L) {
-    const char* name = luaL_checkstring(L, 1);      // name | height | text
-    int height = luaL_checkinteger(L, 2);
-    const char* text = luaL_checkstring(L, 3);
-    pico_layer_text(name, height, text);
+    const char* ms = luaL_checkstring(L, 1);        // mode | name | height | text
+    int mode = ms[0];
+    const char* name = luaL_checkstring(L, 2);
+    int height = luaL_checkinteger(L, 3);
+    const char* text = luaL_checkstring(L, 4);
+    pico_layer_text(mode, name, height, text);
     return 0;
 }
 
 static int l_layer_video (lua_State* L) {
-    const char* name;         // [name] | path
+    const char* ms = luaL_checkstring(L, 1);        // mode | [name] | path
+    int mode = ms[0];
+    const char* name;
     const char* path;
-    if (lua_gettop(L) >= 2) {
-        name = luaL_checkstring(L, 1);
-        path = luaL_checkstring(L, 2);
+    if (lua_gettop(L) >= 3) {
+        name = luaL_checkstring(L, 2);
+        path = luaL_checkstring(L, 3);
     } else {
         name = NULL;
-        path = luaL_checkstring(L, 1);
+        path = luaL_checkstring(L, 2);
     }
-    pico_layer_video(name, path);
+    pico_layer_video(mode, name, path);
     return 0;
 }
 
 static int l_layer_sub (lua_State* L) {
-    const char* name   = luaL_checkstring(L, 1);
-    const char* parent = luaL_checkstring(L, 2);
-    luaL_checktype(L, 3, LUA_TTABLE);
-    L_dim_default_wh(L, 3);
-    Pico_Rel_Rect* crop = c_rel_rect(L, 3);
-    pico_layer_sub(name, parent, crop);
+    const char* ms = luaL_checkstring(L, 1);        // mode | name | parent | crop
+    int mode = ms[0];
+    const char* name   = luaL_checkstring(L, 2);
+    const char* parent = luaL_checkstring(L, 3);
+    luaL_checktype(L, 4, LUA_TTABLE);
+    L_dim_default_wh(L, 4);
+    Pico_Rel_Rect* crop = c_rel_rect(L, 4);
+    pico_layer_sub(mode, name, parent, crop);
     return 0;
 }
 
