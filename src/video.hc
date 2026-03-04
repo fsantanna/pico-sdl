@@ -117,21 +117,27 @@ static void _free_layer_video (Pico_Layer_Video* vs) {
 }
 
 static Pico_Layer_Video* _pico_layer_video (
-    int mode, const char* name, const char* path
+    int mode, const char* key, const char* path
 ) {
     assert(path!=NULL && "video path required");
-    const char* key = (name != NULL) ? name : path;
+    const char* str = (key != NULL) ? key : path;
     return (Pico_Layer_Video*)realm_put(
-        G.realm, mode, strlen(key)+1, key,
+        G.realm, mode, strlen(str)+1, str,
         _free_layer, _alloc_layer_video, (void*)path
     );
 }
 
-void pico_layer_video (int mode, const char* name, const char* path) {
+void pico_layer_video (const char* key, const char* path) {
+    pico_layer_video_mode('!', key, path);
+}
+
+void pico_layer_video_mode (
+    int mode, const char* key, const char* path
+) {
     assert(path != NULL && "video path required");
 
     Pico_Layer_Video* vs =
-        _pico_layer_video(mode, name, path);
+        _pico_layer_video(mode, key, path);
     pico_assert(vs != NULL);
 }
 
@@ -164,12 +170,13 @@ Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
     return info;
 }
 
-int pico_set_video (const char* name, int frame) {
-    assert(name != NULL && "layer name required");
+int pico_set_video (const char* key, int frame) {
+    assert(key != NULL && "layer key required");
 
-    /* Find layer by name */
-    int n = strlen(name) + 1;
-    Pico_Layer* layer = (Pico_Layer*)realm_get(G.realm, n, name);
+    /* Find layer by key */
+    int n = strlen(key) + 1;
+    Pico_Layer* layer = (Pico_Layer*)realm_get(
+        G.realm, n, key);
     pico_assert(layer != NULL && "layer does not exist");
 
     /* Get video state from layer */

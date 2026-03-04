@@ -2,14 +2,14 @@
 #define PICO_LAYERS_HC
 
 static Pico_Layer* _pico_layer_buffer (
-    int mode, const char* name, Pico_Abs_Dim dim,
+    int mode, const char* key, Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 );
 static Pico_Layer* _pico_layer_image (
-    int mode, const char* name, const char* path
+    int mode, const char* key, const char* path
 );
 static Pico_Layer* _pico_layer_text (
-    int mode, const char* name, int height, const char* text
+    int mode, const char* key, int height, const char* text
 );
 static void _pico_output_draw_layer (
     Pico_Layer* layer, Pico_Rel_Rect* rect
@@ -25,24 +25,24 @@ static void _pico_output_draw_layer (
 
 static Pico_Layer* _pico_layer_buffer (
     int mode,
-    const char* name,
+    const char* key,
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
-    assert(name!=NULL && "layer name required");
+    assert(key!=NULL && "layer key required");
     assert(pixels!=NULL && "pixels required");
     _Ctx_Buffer ctx = { dim, pixels };
     return (Pico_Layer*)realm_put(
-        G.realm, mode, strlen(name)+1, name,
+        G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_buffer, &ctx
     );
 }
 
 static Pico_Layer* _pico_layer_image (
-    int mode, const char* name, const char* path
+    int mode, const char* key, const char* path
 ) {
     assert(path!=NULL && "image path required");
-    const char* str = (name != NULL) ? name : path;
+    const char* str = (key != NULL) ? key : path;
     return (Pico_Layer*)realm_put(
         G.realm, mode, strlen(str)+1, str,
         _free_layer, _alloc_layer_image, (void*)path
@@ -50,13 +50,13 @@ static Pico_Layer* _pico_layer_image (
 }
 
 static Pico_Layer* _pico_layer_text (
-    int mode, const char* name, int height, const char* text
+    int mode, const char* key, int height, const char* text
 ) {
     assert(text!=NULL && text[0]!='\0' && "text required");
 
     const char* str;
     char* str_buf = NULL;
-    if (name == NULL) {
+    if (key == NULL) {
         const char* font = S.font;
         Pico_Color clr = S.color.draw;
         const char* font_str = font ? font : "null";
@@ -67,7 +67,7 @@ static Pico_Layer* _pico_layer_text (
                  font_str, height, clr.r, clr.g, clr.b, text);
         str = str_buf;
     } else {
-        str = name;
+        str = key;
     }
 
     _Ctx_Text ctx = { height, text };
