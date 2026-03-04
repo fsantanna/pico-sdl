@@ -135,18 +135,6 @@ static TTF_Font* _font_get (const char* path, int h) {
     );
 }
 
-static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
-    SDL_Color c = { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF };
-    TTF_Font* ttf = _font_get(S.font, height);
-    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
-    pico_assert(sfc != NULL);
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
-    pico_assert(tex != NULL);
-    *dim = (Pico_Abs_Dim){ sfc->w, sfc->h };
-    SDL_FreeSurface(sfc);
-    return tex;
-}
-
 static SDL_FDim _f3 (float w, float h, const Pico_Abs_Dim* ratio) {
     if (ratio!=NULL && (w==0 || h==0)) {
         if (w == 0 && h == 0) {
@@ -720,14 +708,18 @@ PICO_STYLE pico_get_style (void) {
     return S.style;
 }
 
-Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
+Pico_Abs_Dim pico_get_text (
+    const char* key, const char* text, Pico_Rel_Dim* rel
+) {
+    assert(key!=NULL && key[0]!='\0' && "key required");
     assert(text[0] != '\0');
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
-        Pico_Abs_Dim orig;
-        SDL_Texture* tex = _tex_text(10, text, &orig);
-        SDL_DestroyTexture(tex);
-        SDL_FDim fd = _sdl_dim(rel, NULL, &orig);
+        Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h}, rel->up };
+        SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
+        int height = (int)fd_h.h;
+        Pico_Layer* layer = _pico_layer_text('~', key, height, text);
+        SDL_FDim fd = _sdl_dim(rel, NULL, &layer->view.dim);
         return (Pico_Abs_Dim){fd.w, fd.h};
     } else {
         SDL_FDim fd = _sdl_dim(rel, NULL, NULL);

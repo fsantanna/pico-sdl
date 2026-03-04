@@ -165,6 +165,18 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
     return data;
 }
 
+static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
+    SDL_Color c = { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF };
+    TTF_Font* ttf = _font_get(S.font, height);
+    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
+    pico_assert(sfc != NULL);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
+    pico_assert(tex != NULL);
+    *dim = (Pico_Abs_Dim){ sfc->w, sfc->h };
+    SDL_FreeSurface(sfc);
+    return tex;
+}
+
 static void* _alloc_layer_text (int n, const void* key, void* ctx) {
     _Ctx_Text* c = (_Ctx_Text*)ctx;
     Pico_Abs_Dim dim;
