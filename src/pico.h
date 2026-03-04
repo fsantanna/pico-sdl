@@ -169,12 +169,12 @@ void pico_input_loop (void);
 void pico_output_clear (void);
 
 /// @brief Draws an RGBA image buffer.
-/// @param name layer name for caching (required)
+/// @param key layer key for caching (required)
 /// @param dim image dimensions in pixels
 /// @param buffer the RGBA image data
 /// @param rect drawing rectangle (mode determines coordinate interpretation)
 /// @sa pico_output_draw_image
-void pico_output_draw_buffer (const char* name, Pico_Abs_Dim dim,
+void pico_output_draw_buffer (const char* key, Pico_Abs_Dim dim,
                               const Pico_Color_A buffer[],
                               const Pico_Rel_Rect* rect);
 
@@ -199,9 +199,9 @@ void pico_output_draw_pixel (Pico_Rel_Pos* pos);
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws a layer onto the current layer.
-/// @param name layer name (must exist)
+/// @param key layer key (must exist)
 /// @param rect target position and dimension (mode determines coordinates)
-void pico_output_draw_layer (const char* name, Pico_Rel_Rect* rect);
+void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw (mode determines coordinates)
@@ -223,7 +223,7 @@ void pico_output_draw_oval (Pico_Rel_Rect* rect);
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws text.
-/// @param key realm key for caching (replaces previous text
+/// @param key layer key for caching (replaces previous text
 ///            with same key)
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
@@ -293,105 +293,107 @@ Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
 /// @return 1 if key is pressed, or 0 otherwise
 int pico_get_key (PICO_KEY key);
 
-/// @brief Gets current layer name.
-/// @return layer name (NULL = main layer)
+/// @brief Gets current layer key.
+/// @return layer key (NULL = main layer)
 const char* pico_get_layer (void);
 
 ///////////////////////////////////////////////////////////////////////////////
 
 /// @brief Creates a layer from a pixel buffer (exclusive mode).
-/// @param name layer name (must not be NULL or start with '/')
+/// @param key layer key (must not be NULL or start with '/')
 /// @param dim buffer dimensions
-/// @param pixels RGBA pixel data (must remain valid while layer exists)
-void pico_layer_buffer (const char* name,
+/// @param pixels RGBA pixel data (must remain valid while layer
+///               exists)
+void pico_layer_buffer (const char* key,
                         Pico_Abs_Dim dim,
                         const Pico_Color_A* pixels);
 
 /// @brief Creates a layer from a pixel buffer.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param name layer name (must not be NULL or start with '/')
+/// @param key layer key (must not be NULL or start with '/')
 /// @param dim buffer dimensions
-/// @param pixels RGBA pixel data (must remain valid while layer exists)
-void pico_layer_buffer_mode (int mode, const char* name,
+/// @param pixels RGBA pixel data (must remain valid while layer
+///               exists)
+void pico_layer_buffer_mode (int mode, const char* key,
                              Pico_Abs_Dim dim,
                              const Pico_Color_A* pixels);
 
 /// @brief Creates an empty layer (exclusive mode).
-/// @param name layer name (must not be NULL or start with '/')
+/// @param key layer key (must not be NULL or start with '/')
 /// @param dim layer dimensions
-void pico_layer_empty (const char* name, Pico_Abs_Dim dim);
+void pico_layer_empty (const char* key, Pico_Abs_Dim dim);
 
 /// @brief Creates an empty layer.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param name layer name (must not be NULL or start with '/')
+/// @param key layer key (must not be NULL or start with '/')
 /// @param dim layer dimensions
 void pico_layer_empty_mode (int mode,
-    const char* name, Pico_Abs_Dim dim);
+    const char* key, Pico_Abs_Dim dim);
 
 /// @brief Creates a layer from an image file (exclusive mode).
-/// @param name layer name (NULL uses "/image/<path>", otherwise
-///             must not start with '/')
+/// @param key layer key (NULL uses "/image/<path>", otherwise
+///            must not start with '/')
 /// @param path path to the image file
-void pico_layer_image (const char* name, const char* path);
+void pico_layer_image (const char* key, const char* path);
 
 /// @brief Creates a layer from an image file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param name layer name (NULL uses "/image/<path>", otherwise
-///             must not start with '/')
+/// @param key layer key (NULL uses "/image/<path>", otherwise
+///            must not start with '/')
 /// @param path path to the image file
 void pico_layer_image_mode (int mode,
-    const char* name, const char* path);
+    const char* key, const char* path);
 
 /// @brief Creates a sub-layer (crop) from an existing layer
 ///        (exclusive mode).
 /// Shares the parent's texture — no copy.
-/// @param name sub-layer name (must not be NULL)
-/// @param parent parent layer name (must exist, must not be a
+/// @param key layer key (must not be NULL)
+/// @param parent parent layer key (must exist, must not be a
 ///               sub-layer)
 /// @param crop source rectangle within the parent
-void pico_layer_sub (const char* name,
+void pico_layer_sub (const char* key,
     const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a sub-layer (crop) from an existing layer.
 /// Shares the parent's texture — no copy.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param name sub-layer name (must not be NULL)
-/// @param parent parent layer name (must exist, must not be a
+/// @param key layer key (must not be NULL)
+/// @param parent parent layer key (must exist, must not be a
 ///               sub-layer)
 /// @param crop source rectangle within the parent
-void pico_layer_sub_mode (int mode, const char* name,
+void pico_layer_sub_mode (int mode, const char* key,
     const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a layer from text (exclusive mode).
-/// @param name layer name (must not be NULL or start with '/')
+/// @param key layer key (must not be NULL or start with '/')
 /// @param height text height in pixels
 /// @param text the text to render
 /// @note Uses current font and draw color
-void pico_layer_text (const char* name,
+void pico_layer_text (const char* key,
     int height, const char* text);
 
 /// @brief Creates a layer from text.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param name layer name (must not be NULL or start with '/')
+/// @param key layer key (must not be NULL or start with '/')
 /// @param height text height in pixels
 /// @param text the text to render
 /// @note Uses current font and draw color
-void pico_layer_text_mode (int mode, const char* name,
+void pico_layer_text_mode (int mode, const char* key,
     int height, const char* text);
 
 /// @brief Creates a video layer from a Y4M file (exclusive mode).
-/// @param name layer name (NULL uses path, otherwise must not
-///             start with '/')
+/// @param key layer key (NULL uses path, otherwise must not
+///            start with '/')
 /// @param path path to the Y4M video file
-void pico_layer_video (const char* name, const char* path);
+void pico_layer_video (const char* key, const char* path);
 
 /// @brief Creates a video layer from a Y4M file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param name layer name (NULL uses path, otherwise must not
-///             start with '/')
+/// @param key layer key (NULL uses path, otherwise must not
+///            start with '/')
 /// @param path path to the Y4M video file
 void pico_layer_video_mode (int mode,
-    const char* name, const char* path);
+    const char* key, const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -411,7 +413,7 @@ int pico_get_show (void);
 PICO_STYLE pico_get_style (void);
 
 /// @brief Gets the dimensions of the given text.
-/// @param key realm key for caching (replaces previous text
+/// @param key layer key for caching (replaces previous text
 ///            with same key)
 /// @param text text to measure
 /// @param dim dim with h for font size (mode '!' or '%'), w filled in
@@ -473,8 +475,8 @@ void pico_set_expert (int on);
 void pico_set_font (const char* path);
 
 /// @brief Switches to a layer.
-/// @param name layer name (NULL = main layer, must exist)
-void pico_set_layer (const char* name);
+/// @param key layer key (NULL = main layer, must exist)
+void pico_set_layer (const char* key);
 
 /// @brief Toggles the application window visibility.
 /// @param on 1 to show, or 0 to hide
@@ -486,10 +488,10 @@ void pico_set_style (PICO_STYLE style);
 
 /// @brief Syncs a video layer to a target frame.
 /// Supports forward and backward seeking.
-/// @param name layer name (must exist as video layer)
+/// @param key layer key (must exist as video layer)
 /// @param frame target frame number
 /// @return 1 if frame is valid, or 0 past EOF
-int pico_set_video (const char* name, int frame);
+int pico_set_video (const char* key, int frame);
 
 /// @brief Sets the view configuration. NULL arguments are ignored.
 /// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
