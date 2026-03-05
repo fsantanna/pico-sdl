@@ -246,5 +246,6 @@ end
 ## Status
 
 - [x] Requirements clarified
-- [ ] Implementation
-- [ ] Testing
+- [x] Implementation
+- [x] `valgrind.supp` line 97: `src:pico.c:509` → `src:pico.c:497`
+- [ ] Testing (`make tests`, Lua tests, valgrind verification)
