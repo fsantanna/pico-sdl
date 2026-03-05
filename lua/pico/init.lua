@@ -20,12 +20,12 @@ setmetatable(M.set, {
 })
 
 function M.layer.images (m, key, path, t)
-    if not m then
-        m = '!'
+    if not t then
         key, path, t = m, key, path
+        m = '!'
     end
     assert(key, "layer.images: key required")
-    M.layer.image('!', key, path)
+    M.layer.image(m, key, path)
     local names = {}
     local mode = t[1]
     assert(mode=='#' or mode=='!', "expected '#' or '!' mode")
@@ -45,7 +45,7 @@ function M.layer.images (m, key, path, t)
                 i = i + 1
                 if i > n then break end
                 local sub = (t.key or key) .. "-" .. i
-                M.layer.sub('!', sub, key,
+                M.layer.sub(sub, key,
                     {'!', x=col*tw, y=row*th,
                           w=tw, h=th, anchor='NW'})
                 names[#names+1] = sub
@@ -55,10 +55,10 @@ function M.layer.images (m, key, path, t)
 
     -- Explicit form: {key=rect, ...}
     else
-        for key, crop in pairs(t) do
-            if key ~= 1 then
-                local sub = key .. "-" .. key
-                M.layer.sub('!', sub, key, crop)
+        for k, crop in pairs(t) do
+            if k ~= 1 then
+                local sub = key .. "-" .. k
+                M.layer.sub(sub, key, crop)
                 names[#names+1] = sub
             end
         end
