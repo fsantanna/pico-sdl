@@ -19,9 +19,13 @@ setmetatable(M.set, {
     end
 })
 
-function M.layer.images (name, path, t)
-    assert(name, "layer.images: name required")
-    M.layer.image('!', name, path)
+function M.layer.images (m, key, path, t)
+    if not t then
+        key, path, t = m, key, path
+        m = '!'
+    end
+    assert(key, "layer.images: key required")
+    M.layer.image(m, key, path)
     local names = {}
     local mode = t[1]
     assert(mode=='#' or mode=='!', "expected '#' or '!' mode")
@@ -31,7 +35,7 @@ function M.layer.images (name, path, t)
         assert(t.w and t.h, "mode '#' requires 'w' and 'h'")
         local cols = t.w
         local rows = t.h
-        local dim = M.get.image(name)
+        local dim = M.get.image(key)
         local tw = dim.w / cols
         local th = dim.h / rows
         local n = t.n or (cols * rows)
@@ -40,8 +44,8 @@ function M.layer.images (name, path, t)
             for col = 0, cols - 1 do
                 i = i + 1
                 if i > n then break end
-                local sub = string.format("%s-%02d", name, i)
-                M.layer.sub('!', sub, name,
+                local sub = string.format("%s-%02d", (t.key or key), i)
+                M.layer.sub(sub, key,
                     {'!', x=col*tw, y=row*th,
                           w=tw, h=th, anchor='NW'})
                 names[#names+1] = sub
@@ -49,12 +53,12 @@ function M.layer.images (name, path, t)
             if i >= n then break end
         end
 
-    -- Explicit form: {name=rect, ...}
+    -- Explicit form: {key=rect, ...}
     else
-        for key, crop in pairs(t) do
-            if key ~= 1 then
-                local sub = name .. "-" .. key
-                M.layer.sub('!', sub, name, crop)
+        for k, crop in pairs(t) do
+            if k ~= 1 then
+                local sub = key .. "-" .. k
+                M.layer.sub(sub, key, crop)
                 names[#names+1] = sub
             end
         end
