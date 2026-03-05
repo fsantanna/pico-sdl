@@ -33,7 +33,7 @@ static Pico_Layer* _pico_layer_buffer (
     assert(pixels!=NULL && "pixels required");
     _alloc_buffer_t ctx = { dim, pixels };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
-        G.realm, mode, strlen(name)+1, name,
+        G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_buffer, &ctx
     );
     assert(ret != NULL);

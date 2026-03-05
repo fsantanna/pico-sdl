@@ -1046,7 +1046,7 @@ void pico_layer_sub_mode (int mode, const char* key,
 
     _alloc_sub_t ctx = { par, *crop };
     void* ret = realm_put (
-        G.realm, mode, strlen(name)+1, name,
+        G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_sub, &ctx
     );
     assert(ret != NULL);
