@@ -1036,7 +1036,7 @@ static int c_opt_mode (lua_State* L) {
         return '\0';
     }
     char m = ms[0];
-    if (m!='!' || m!='=' || m!='~') {
+    if (m!='!' && m!='=' && m!='~') {
         return '\0';
     }
     return ms[0];
