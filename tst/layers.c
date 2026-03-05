@@ -19,14 +19,14 @@ int main (void) {
 
     // create bg layer (32x32)
     puts("create and switch to layer");
-    pico_layer_empty('!', "background", (Pico_Abs_Dim){32, 32});
+    pico_layer_empty("background", (Pico_Abs_Dim){32, 32});
     pico_set_layer("background");
     layer = pico_get_layer();
     assert(strcmp(layer, "background") == 0);
 
     // create ui layer (48x48)
     puts("switch to another layer");
-    pico_layer_empty('!', "ui", (Pico_Abs_Dim){48, 48});
+    pico_layer_empty("ui", (Pico_Abs_Dim){48, 48});
     pico_set_layer("ui");
     layer = pico_get_layer();
     assert(strcmp(layer, "ui") == 0);
@@ -74,13 +74,13 @@ int main (void) {
 
     // pico_layer_empty reuse (content preserved)
     puts("layer_empty reuse");
-    pico_layer_empty('=', "reuse", (Pico_Abs_Dim){32, 32});
+    pico_layer_empty_mode('=', "reuse", (Pico_Abs_Dim){32, 32});
     pico_set_layer("reuse");
     pico_set_color_clear((Pico_Color){0x00, 0x80, 0x00});
     pico_output_clear();
     pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0x00});
     pico_output_draw_rect(&(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL});
-    pico_layer_empty('=', "reuse", (Pico_Abs_Dim){64, 64});
+    pico_layer_empty_mode('=', "reuse", (Pico_Abs_Dim){64, 64});
     pico_set_layer(NULL);
     pico_set_color_clear((Pico_Color){0x00, 0x00, 0x00});
     pico_output_clear();
@@ -93,13 +93,13 @@ int main (void) {
         {255, 0, 0, 255}, {0, 255, 0, 255},
         {0, 0, 255, 255}, {255, 255, 0, 255}
     };
-    pico_layer_buffer('=', "mybuf", (Pico_Abs_Dim){2, 2}, buf1);
-    pico_layer_buffer('=', "mybuf", (Pico_Abs_Dim){2, 2}, buf1);
+    pico_layer_buffer_mode('=', "mybuf", (Pico_Abs_Dim){2, 2}, buf1);
+    pico_layer_buffer_mode('=', "mybuf", (Pico_Abs_Dim){2, 2}, buf1);
 
     // pico_layer_buffer with different name
     puts("layer_buffer different name");
-    pico_layer_buffer('=', "xxx", (Pico_Abs_Dim){2, 2}, buf1);
-    pico_layer_buffer('=', "xxx", (Pico_Abs_Dim){2, 2}, buf1);
+    pico_layer_buffer_mode('=', "xxx", (Pico_Abs_Dim){2, 2}, buf1);
+    pico_layer_buffer_mode('=', "xxx", (Pico_Abs_Dim){2, 2}, buf1);
 
     // draw buffer layer
     puts("draw buffer layer");

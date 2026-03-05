@@ -1025,48 +1025,69 @@ static int l_set_view (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// Detect optional realm mode as first arg.
+// Returns mode char or '\0' when no mode is set.
+static int c_opt_mode (lua_State* L) {
+    if (!lua_isstring(L, 1)) {
+        return '\0';
+    }
+    const char* ms = lua_tostring(L, 1);
+    if (strlen(ms) > 1) {
+        return '\0';
+    }
+    char m = ms[0];
+    if (m!='!' && m!='=' && m!='~') {
+        return '\0';
+    }
+    return ms[0];
+}
+
 static int l_layer_empty (lua_State* L) {
-    const char* ms = luaL_checkstring(L, 1);        // mode | name | dim
-    int mode = ms[0];
-    const char* name = luaL_checkstring(L, 2);
-    luaL_checktype(L, 3, LUA_TTABLE);
+    int m = c_opt_mode(L);
+    int i = m ? 2 : 1;
+    if (!m) m = '!';
+    const char* key = luaL_checkstring(L, i);
+    luaL_checktype(L, i+1, LUA_TTABLE);
     Pico_Abs_Dim dim = {
-        (int) L_checkfieldnum(L, 3, "w"),
-        (int) L_checkfieldnum(L, 3, "h"),
+        (int) L_checkfieldnum(L, i+1, "w"),
+        (int) L_checkfieldnum(L, i+1, "h"),
     };
-    pico_layer_empty(mode, name, dim);
+    pico_layer_empty_mode(m, key, dim);
     return 0;
 }
 
 static int l_layer_image (lua_State* L) {
-    const char* ms = luaL_checkstring(L, 1);        // mode | [name] | path
-    int mode = ms[0];
-    const char* name;
+    int m = c_opt_mode(L);
+    int i = m ? 2 : 1;
+    const char* key;
     const char* path;
-    if (lua_gettop(L) >= 3) {
-        name = luaL_checkstring(L, 2);
-        path = luaL_checkstring(L, 3);
+    if (lua_gettop(L) >= i+1) {
+        key  = luaL_checkstring(L, i);
+        path = luaL_checkstring(L, i+1);
+        if (!m) m = '!';
     } else {
-        name = NULL;
-        path = luaL_checkstring(L, 2);
+        key  = NULL;
+        path = luaL_checkstring(L, i);
+        if (!m) m = '=';
     }
-    pico_layer_image(mode, name, path);
+    pico_layer_image_mode(m, key, path);
     return 0;
 }
 
 static int l_layer_buffer (lua_State* L) {
-    const char* ms = luaL_checkstring(L, 1);        // mode | name | dim | buffer
-    int mode = ms[0];
-    const char* name = luaL_checkstring(L, 2);
-    luaL_checktype(L, 3, LUA_TTABLE);
-    luaL_checktype(L, 4, LUA_TTABLE);
+    int m = c_opt_mode(L);
+    int i = m ? 2 : 1;
+    if (!m) m = '!';
+    const char* key = luaL_checkstring(L, i);
+    luaL_checktype(L, i+1, LUA_TTABLE);
+    luaL_checktype(L, i+2, LUA_TTABLE);
 
     Pico_Abs_Dim dim = {
-        (int) L_checkfieldnum(L, 3, "w"),
-        (int) L_checkfieldnum(L, 3, "h"),
+        (int) L_checkfieldnum(L, i+1, "w"),
+        (int) L_checkfieldnum(L, i+1, "h"),
     };
 
-    Pico_Abs_Dim buf_dim = c_buffer_dim(L, 4);
+    Pico_Abs_Dim buf_dim = c_buffer_dim(L, i+2);
     if (buf_dim.w != dim.w || buf_dim.h != dim.h) {
         return luaL_error(L,
             "buffer size %dx%d doesn't match dim %dx%d",
@@ -1074,47 +1095,51 @@ static int l_layer_buffer (lua_State* L) {
     }
 
     Pico_Color_A buf[buf_dim.h][buf_dim.w];
-    c_buffer_fill(L, 4, buf_dim, (Pico_Color_A*)buf);
+    c_buffer_fill(L, i+2, buf_dim, (Pico_Color_A*)buf);
 
-    pico_layer_buffer(mode, name, dim, (Pico_Color_A*)buf);
+    pico_layer_buffer_mode(m, key, dim, (Pico_Color_A*)buf);
     return 0;
 }
 
 static int l_layer_text (lua_State* L) {
-    const char* ms = luaL_checkstring(L, 1);        // mode | name | height | text
-    int mode = ms[0];
-    const char* name = luaL_checkstring(L, 2);
-    int height = luaL_checkinteger(L, 3);
-    const char* text = luaL_checkstring(L, 4);
-    pico_layer_text(mode, name, height, text);
+    int m = c_opt_mode(L);
+    int i = m ? 2 : 1;
+    if (!m) m = '!';
+    const char* key = luaL_checkstring(L, i);
+    int height = luaL_checkinteger(L, i+1);
+    const char* text = luaL_checkstring(L, i+2);
+    pico_layer_text_mode(m, key, height, text);
     return 0;
 }
 
 static int l_layer_video (lua_State* L) {
-    const char* ms = luaL_checkstring(L, 1);        // mode | [name] | path
-    int mode = ms[0];
-    const char* name;
+    int m = c_opt_mode(L);
+    int i = m ? 2 : 1;
+    const char* key;
     const char* path;
-    if (lua_gettop(L) >= 3) {
-        name = luaL_checkstring(L, 2);
-        path = luaL_checkstring(L, 3);
+    if (lua_gettop(L) >= i+1) {
+        key  = luaL_checkstring(L, i);
+        path = luaL_checkstring(L, i+1);
+        if (!m) m = '!';
     } else {
-        name = NULL;
-        path = luaL_checkstring(L, 2);
+        key  = NULL;
+        path = luaL_checkstring(L, i);
+        if (!m) m = '=';
     }
-    pico_layer_video(mode, name, path);
+    pico_layer_video_mode(m, key, path);
     return 0;
 }
 
 static int l_layer_sub (lua_State* L) {
-    const char* ms = luaL_checkstring(L, 1);        // mode | name | parent | crop
-    int mode = ms[0];
-    const char* name   = luaL_checkstring(L, 2);
-    const char* parent = luaL_checkstring(L, 3);
-    luaL_checktype(L, 4, LUA_TTABLE);
-    L_dim_default_wh(L, 4);
-    Pico_Rel_Rect* crop = c_rel_rect(L, 4);
-    pico_layer_sub(mode, name, parent, crop);
+    int m = c_opt_mode(L);
+    int i = m ? 2 : 1;
+    if (!m) m = '!';
+    const char* key    = luaL_checkstring(L, i);
+    const char* parent = luaL_checkstring(L, i+1);
+    luaL_checktype(L, i+2, LUA_TTABLE);
+    L_dim_default_wh(L, i+2);
+    Pico_Rel_Rect* crop = c_rel_rect(L, i+2);
+    pico_layer_sub_mode(m, key, parent, crop);
     return 0;
 }
 

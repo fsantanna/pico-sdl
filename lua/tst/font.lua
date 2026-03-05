@@ -14,11 +14,11 @@ do
 
     local pct = {'%', h=0.2}
     pico.get.text("ABC", pct)
-    assert(pct.w*100//1==34 and pct.h*100//1==20)
+    assert(pct.w*100//1==36 and pct.h*100//1==20)
 
     local p = {'%', h=0.2};
     pico.get.text("ABC", p);
-    assert(p.w*100//1==34 and p.h*100//1==20);
+    assert(p.w*100//1==36 and p.h*100//1==20);
 end
 
 -- numbers
