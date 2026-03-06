@@ -634,6 +634,11 @@ int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
 /// @sa pico_vs_pos_rect
 int pico_vs_rect_rect (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2);
 
+/// @brief Creates a color from a hexadecimal integer (0xRRGGBB).
+/// @param hex the hexadecimal value of the color
+/// @return the created color
+Pico_Color pico_color_hex (uint32_t hex);
+
 /// @brief Makes a color darker by the specified percentage.
 /// @param clr the original color
 /// @param pct percentage to darken (0.0-1.0); negative values lighten

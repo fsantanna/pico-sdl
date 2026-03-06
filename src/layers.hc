@@ -114,7 +114,7 @@ static void _pico_output_draw_layer (
     };
     SDL_RenderCopyEx(G.ren, layer->tex, &src, &dst,
                      layer->view.rot.angle, &center,
-                     layer->view.flip);
+                     (SDL_RendererFlip)layer->view.flip);
     _pico_output_present(0);
 }
 
