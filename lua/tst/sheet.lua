@@ -70,14 +70,14 @@ local names = pico.layer.images("grid",
     "../../tst/out/sheet-grid.png",
     {'#', w=2, h=1})
 assert(#names == 2)
-assert(names[1] == "grid-1")
-assert(names[2] == "grid-2")
+assert(names[1] == "grid-01")
+assert(names[2] == "grid-02")
 
 pico.set.color.clear('black')
 pico.output.clear()
-pico.output.draw.layer("grid-1",
+pico.output.draw.layer("grid-01",
     {'%', x=0.75, y=0.5, w=0.5, h=1, anchor='C'})
-pico.output.draw.layer("grid-2",
+pico.output.draw.layer("grid-02",
     {'%', x=0.25, y=0.5, w=0.5, h=1, anchor='C'})
 pico.check("sheet-03")
 
