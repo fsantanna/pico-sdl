@@ -308,7 +308,7 @@ Let's restart `pico-lua` with some transparency:
 > pico.set.color.draw 'red'
 </pre>
 </td><td>
-<img src="img/guide-02-03-01.png" width="200">
+<img src="img/guide-05-00-01.png" width="200">
 </td></tr>
 </table>
 
@@ -639,7 +639,8 @@ compose to form complex scenes.
 
 The main logical world is itself a layer, as well as images, texts, buffers,
 and videos.
-Therefore, all view properties also apply to layers.
+Therefore, all discussed [#view properties](#6-advanced-view) also apply to
+layers.
 
 ### 8.1. Creating Layers
 
@@ -731,7 +732,7 @@ A sub-layer points to a region within a parent layer, sharing the actual pixel
 contents.
 
 Sub-layers are useful to isolate individual frames from a sprite sheet in
-games, which we discuss in [#Animations](#animations).
+games, which we will discuss in [#Animations](#93-animations).
 
 We call `pico.layer.sub` to crop a region of a parent layer:
 
@@ -759,57 +760,229 @@ In the example, each sub-layer crops a square from each stripe of the flag
 
 ## 9. Expert Mode
 
-By default, drawing operations in `pico-lua` are immediatly visible on the
-screen.
+By default, each drawing operation in `pico-lua` becomes immediatly visible on
+the screen.
 
-Nevertheless, `pico-lua` also supports an "expert mode" through
-`pico.set.expert`.
-In this mode, drawing operations are buffered, until an explicit call to
-`pico.output.present` updates the screen at once:
+However, to keep visual objects in sync, most games and non-trivial
+applications require them to draw simultaneously on every frame.
+
+With `pico.set.expert`, drawing operations are buffered until an explicit
+call to `pico.output.present`, which updates the screen all at once:
 
 <table>
 <tr><td><pre>
 > pico.output.clear()
 > pico.set.expert(true)
 > pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
-> pico.input.delay(1000)
+> pico.input.delay(1000) -- artificial delay
 > pico.output.draw.rect { '!', x=66, y=66, w=40, h=40 }
-> pico.input.delay(1000)
+> pico.input.delay(1000) -- artificial delay
 </pre>
 </td><td>
-<img src="img/guide-09-01-01.png" width="200">
+<img src="img/guide-09-00-01.png" width="200">
 </td></tr>
 </table>
 
-At this point, nothing appears on the screen yet, since we have not called
-`pico.output.present`.
+At this point, nothing appears on the screen, since we have not yet called
+`pico.output.present`:
 
 <table>
 <tr><td><pre>
 > pico.output.present()
 </pre>
 </td><td>
-<img src="img/guide-09-01-02.png" width="200">
+<img src="img/guide-09-00-02.png" width="200">
 </td></tr>
 </table>
 
 Now, both the rectangles appear at the same time.
 
-### 9.2. Animations
+### 9.1. Application Main Loop
 
-Expert mode is useful for animation with controlled frame timing:
+Typical games and graphical applications need to deal continually with moving
+objects, input from users, and also the passage of time.
+These applications follow the same structure of a continuous "main loop":
+    poll user events,
+    update the state of objects,
+    redraw the whole scene (a frame), and
+    repeat.
+
+This is what a main loop in `pico-lua` looks like:
+
+```
+pico.set.expert(true)
+while true do
+    -- input / timeout
+    pico.input.event(...)
+
+    -- update
+    (normal lua code)
+
+    -- draw
+    pico.output.clear()
+    pico.output.*()
+    pico.output.present()
+end
+```
+
+Two calls deserve a closer look:
+
+- `pico.set.expert(true)` disables the automatic display that normally
+  happens after every draw call.
+  Nothing appears on screen until `pico.output.present()` is called, so
+  all drawing between `clear` and `present` composes a single frame.
+  Even with hundreds of objects, every update appears at once.
+
+- The timeout in `pico.input.event(..., 33)` keeps the loop from running
+  too fast — or blocking forever when no events arrive.
+  A timeout of 33 ms caps the loop at roughly 30 frames per second.
+
+### 9.2. A Simple Example
+
+The example below draws two pixels: one tracks the mouse, the other
+moves with the arrow keys.
+Closing the window produces a `'quit'` event and exits the loop:
+
+The complete source code is [here](rects.lua):
 
 ```lua
-> pico.set.expert(true)
-> while true do
-    local start = pico.get.ticks()
-    -- draw frame here
-    pico.output.present()
-    local elapsed = pico.get.ticks() - start
-    if elapsed < 16 then
-        pico.input.delay(16 - elapsed)  -- ~60 FPS
+pico.set.expert(true)
+
+local mx, my = 0.5, 0.5          -- mouse pixel (centered)
+local kx, ky = 0.5, 0.5          -- arrow-key pixel (centered)
+local pos = {'%', x=0, y=0}      -- reusable position for mouse query
+local spd = 0.01                  -- arrow-key speed per frame
+
+while true do
+    local e = pico.input.event(nil, 20)
+    if e then
+        if e.tag == 'quit' then
+            break
+        elseif e.tag == 'key.dn' then
+            if     e.key == 'Up'    then ky = ky - spd
+            elseif e.key == 'Down'  then ky = ky + spd
+            elseif e.key == 'Left'  then kx = kx - spd
+            elseif e.key == 'Right' then kx = kx + spd
+            end
+        end
     end
-  end
+    pico.get.mouse(pos)
+    mx, my = pos.x, pos.y
+
+    pico.output.clear()
+    pico.output.draw.pixel {'%', x=mx, y=my}
+    pico.output.draw.pixel {'%', x=kx, y=ky}
+    pico.output.present()
+end
+```
+
+One pixel follows the mouse; the other moves with the arrow keys.
+The `'quit'` event fires when the user closes the window, so the loop
+exits cleanly.
+
+### 9.3. Animations
+
+In a game, the main loop also governs the passage of time.
+The timeout in `pico.input.event` doubles as a frame pacer: a 50 ms
+timeout gives roughly 20 frames per second, enough for smooth sprite
+animation.
+
+Let's now create the animation in the left based on the sprite sheet in the
+right.
+We want the characters to move along the rectangular paths, in opposite
+directions, and at different speeds:
+
+<table>
+<tr><td align="center">
+<img src="img/2-sprites.gif" width="200">
+</td><td align="center">
+<img src="img/walk.png" width="100" style="image-rendering:pixelated">
+<br>
+<small>
+    Credits:
+        <a href="https://opengameart.org/content/simple-character-base-16x16">
+            OpenGameArt.org
+        </a>
+</small>
+</td></tr>
+</table>
+
+The complete source code is [here](anim.lua):
+
+```
+$ pico-lua anim.lua
+```
+
+First, we load the sprite sheet with `pico.layer.images`, which splits an image
+into a grid of [#sub-layers](#84-sub-layers), as previously discussed:
+
+```lua
+local frames = pico.layer.images("walk", "img/walk.png", {'#', w=4, h=4})
+```
+
+This splits the `4x4` sprite sheet into sub-layers `"walk-01"` to `"walk-16"`:
+walk down (`01-04`), up (`05-08`), right (`09-12`), left (`13-16`).
+The ids are also assigned to `frames` as table `{"walk-01",...,"walk-16"}`.
+
+Next we define a helper that returns the sprite frame and position for a
+given step along a path:
+
+```lua
+local dirs = {
+    right = { 9, 10, 11, 12},
+    down  = { 1,  2,  3,  4},
+    left  = {13, 14, 15, 16},
+    up    = { 5,  6,  7,  8},
+}
+local function walk (path, steps, step, fstep)
+    local leg = path[(step // steps) % #path + 1]
+    local t = (step % steps) / steps
+    local x = leg.x + (leg.tx - leg.x) * t
+    local y = leg.y + (leg.ty - leg.y) * t
+    local f = dirs[leg.dir]
+    return frames[f[(fstep // 4) % 4 + 1]], x, y
+end
+```
+
+Two rectangular paths define each character's route — `cw` traces the
+first rectangle clockwise (faster), `ccw` traces the second
+counter-clockwise (slower). Each leg has a start `(x,y)`, direction
+`dir`, and target `(tx,ty)`:
+
+```lua
+local cw = {
+    {x=0.08, y=0.08, dir='right', tx=0.58, ty=0.08},
+    {x=0.58, y=0.08, dir='down',  tx=0.58, ty=0.58},
+    {x=0.58, y=0.58, dir='left',  tx=0.08, ty=0.58},
+    {x=0.08, y=0.58, dir='up',    tx=0.08, ty=0.08},
+}
+local ccw = {
+    {x=0.41, y=0.41, dir='down',  tx=0.41, ty=0.91},
+    {x=0.41, y=0.91, dir='right', tx=0.91, ty=0.91},
+    {x=0.91, y=0.91, dir='up',    tx=0.91, ty=0.41},
+    {x=0.91, y=0.41, dir='left',  tx=0.41, ty=0.41},
+}
+```
+
+The animation loop draws both sprites and two stroke rectangles each
+frame, then `present` flips them on-screen together.
+The clockwise character runs at twice the pace (`step*2`), yet both
+update in perfect sync:
+
+```lua
+pico.set.style 'stroke'
+for step=0, math.huge do
+    local e = pico.input.event(nil, 50)
+    if e and e.tag == 'quit' then break end
+    local f1, x1, y1 = walk(cw,  20, step*2, step)
+    local f2, x2, y2 = walk(ccw, 20, step,   step)
+    pico.output.clear()
+    pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.50, h=0.50 }
+    pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.50, h=0.50 }
+    pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
+    pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
+    pico.output.present()
+end
 ```
 
 ## 10. Auxiliary Functions
