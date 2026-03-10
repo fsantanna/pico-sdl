@@ -31,6 +31,7 @@ Consult the [API](api.md) for completeness.
 From the command line, simply execute `pico-lua` with no parameters:
 
 ```bash
+$ cd <...>/pico-sdl/lua/doc/    # pico-lua "doc" folder
 $ pico-lua
 Lua 5.4.4  Copyright (C) 1994-2022 Lua.org, PUC-Rio
 >
@@ -54,14 +55,13 @@ To initialize `pico-lua`, we pass `true` to `pico.init`:
 </table>
 
 We immediately see a `500x500` window divided in small `5x5` rectangles
-representing `100x100` **logical pixels**, which our application uses as the
-main reference.
+representing `100x100` **logical pixels**.
 
 In the context of `pico-lua`, we use the term **world** to designate the
 logical view, which applications use as the main reference.
 
-By default, `pico-lua` conventionally exhibit the grid and coordinate labels to
-aid development with visual inspection.
+By default, note that `pico-lua` conventionally exhibit the grid and coordinate
+labels to aid development with visual inspection.
 You may click the image to zoom in.
 
 ### 2.2. Configure
@@ -107,7 +107,8 @@ dimensions at the same time:
 
 ### 2.3. Close
 
-In the end, we pass `false` to `pico.init` to properly finalize `pico-lua`:
+In the end of the session, we should pass `false` to `pico.init` to properly
+finalize `pico-lua`:
 
 <table>
 <tr><td><pre>
@@ -181,10 +182,10 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
 
-With the aid of the tick marks, we can see that the rectangle centered at the
-given position.
 Unlike most graphics libraries, `pico-lua` **centers** objects by default,
 which we will discuss in [#Anchors](#52-anchors).
+With the aid of the tick marks, we can see that the rectangle is actually
+centered at the given position.
 
 ### 3.4. Image
 
@@ -199,7 +200,7 @@ To draw an [image](img/open.png), we call `pico.output.draw.image`:
 </td></tr>
 </table>
 
-*(You will need to save the [image](img/open.png) on your machine.)*
+*(You may need to save the [image](img/open.png) on your machine.)*
 
 Note that `pico-lua` retains both objects on the screen.
 
@@ -229,8 +230,8 @@ operations.
 
 Therefore, the text appears in red, centered at the given position.
 
-Note `pico-lua` preserves the correct text aspect ratio if the width `w` is
-omitted.
+Note that `pico-lua` preserves the correct text aspect ratio if the width `w`
+is omitted.
 
 Colors can also be specified as tables with RGB values:
 
@@ -257,9 +258,9 @@ We may also change the alpha transparency for further drawing operations:
 The oval appears on top of the text, but the transparency keeps the text
 visible.
 
-Following the general convention for "alpha":
-    0x00 is fully transparent, and
-    0xFF is fully opaque.
+Following the general conventions for "alpha",
+    `0x00` is fully transparent, while
+    `0xFF` is fully opaque.
 
 ### 4.3. All-at-Once
 
