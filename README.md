@@ -17,6 +17,17 @@ Please, switch to stable [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.
 <!--
 -->
 
+[
+    [About](#about)                 |
+    [Hello World!](#hello-world)    |
+    [Design](#design)               |
+    [Install & Run](#install--run)  |
+    [Documentation](#documentation) |
+    [Testing](#testing)
+]
+
+# About
+
 `pico-sdl` is a C graphics library for 2D games and applications.
 
 See also [pico-lua][pico-lua], the official Lua binding for `pico-sdl`.
@@ -32,10 +43,9 @@ See also [pico-lua][pico-lua], the official Lua binding for `pico-sdl`.
 - `pico_get_*` and `pico_set_*` for the library state,
     such as modifying the drawing color and style.
 
--------------------------------------------------------------------------------
+# Hello World!
 
-The following example draws an `X` on screen gradually, pixel by pixel, with
-instant feedback:
+The following example draws an `X` on screen gradually, pixel by pixel:
 
 <picture>
 <img align="right" src="cross.gif">
@@ -64,15 +74,17 @@ We start with `pico_init(1)` to open the library, terminating with
 Then, we run `100` loop iterations to draw pixels in opposite directions to
 form the animated `X` shown on the right.
 
-By default, `pico-sdl` creates `100x100` logical canvas embedded in a `500x500`
-physical window.
-This enables `pico-sdl` to draw a grid of `5x5` pixel size to aid development.
+By default, `pico-sdl` creates a `100x100` logical canvas embedded in a
+`500x500` physical window.
+This enables `pico-sdl` to draw a grid of `5x5` pixel size to ease
+visualization and aid development.
 
-We use `Pico_Rel_Pos` with raw mode `'!'`, which specifies exact positions.
+In the example, we use `Pico_Rel_Pos` with raw mode `'!'` to specify absolute,
+exact positions.
 `pico-sdl` also supports modes `'%'` and `'#'` for percent- and tile-based
-coordinates.
+coordinates, respectively.
 
--------------------------------------------------------------------------------
+# Design
 
 `pico-sdl` targets educational use, being guided by the following principles:
 
@@ -80,34 +92,20 @@ coordinates.
 - Immediate display through single-buffer rendering
 - Sensible default settings, such as initial colors and a built-in font
 - Runtime visual aids, such as a grid for logical pixels and zoom & scroll support
-- Prioritizing simplicity over flexibility
+- Simplicity over flexibility
 
 In particular, as the example above illustrates, immediate display allows that
 students view the result of their operations at any point, in real time.
 
-`pico-sdl` is implemented as a [facade][1] over [SDL][2], which is a flexible
-and lower level API.
+`pico-sdl` is implemented built over [SDL][sdl], which is a flexible and lower
+level API.
 This allows programmers to fallback to SDL whenever required.
 
-`pico-sdl` is inspired by a number of graphics programming environments:
+[sdl]:    https://en.wikipedia.org/wiki/Simple_DirectMedia_Layer
 
-- [BASIC][3]: immediate display
-- [Logo][4]: simplicity, immediate display
-- [PICO-8][5]: simplicity, self containment
+# Install & Run
 
-[1]: https://en.wikipedia.org/wiki/Facade_pattern
-[2]: https://en.wikipedia.org/wiki/Simple_DirectMedia_Layer
-[3]: https://en.wikipedia.org/wiki/BASIC
-[4]: https://en.wikipedia.org/wiki/Logo_(programming_language)
-[5]: https://en.wikipedia.org/wiki/PICO-8
-
-# Install & Execute
-
-## Install
-
-### Linux
-
-Install SDL:
+We assume a Linux machine:
 
 ```
 sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl2-gfx-dev
@@ -117,73 +115,31 @@ Clone `pico-sdl`:
 
 ```
 git clone https://github.com/fsantanna/pico-sdl
-cd pico-sdl/
+cd pico-sdl/    # executable is here
 ```
 
-### Windows
+Run:
 
-Download [pico-sdl-win64.zip]() from the releases page and extract it.
-
-Run pico-sdl-ide.ps1 with powershell.
-
-## Execute
-
-### Linux
 ```
 ./pico-sdl tst/main.c
 ```
 
-### Windows
+# Documentation
 
-You can hit F5 to compile and run the active file.
+- [API Doxygen][api]
 
-You can also open vscode terminal to use pico-sdl-cmd:
-```
-pico-sdl-cmd {path to your program}
-```
+[api]: https://pgvalle.github.io/pico-sdl/html/index.html
 
 # Testing
 
-## Running Tests
+## Automatic Tests
 
 ```bash
 make tests
 ```
 
-For headless environments (CI/CD, servers without displays), use Xvfb:
+## Interactive Test
 
 ```bash
-xvfb-run make tests
+make int T=colors   # set T= to any test in `tst/`
 ```
-
-### Visual Regression Testing
-
-Tests use `check.h` for pixel-perfect screenshot comparison.
-
-**Modes** (controlled by environment variables):
-- `PICO_CHECK_INT` - Interactive mode (pause for visual inspection, default: enabled)
-- `PICO_CHECK_ASR` - Assert mode (compare against expected images, default: disabled)
-
-**Examples:**
-
-```bash
-# Interactive mode (default) - pause for visual inspection
-./pico-sdl tst/anchor_pct.c
-
-# Generate mode - write to out/ without pause or assertion
-PICO_CHECK_INT= ./pico-sdl tst/anchor_pct.c
-# Then manually copy verified images: cp tst/out/*.png tst/asr/
-
-# Assert mode - compare against expected images (for CI/CD)
-PICO_CHECK_INT= PICO_CHECK_ASR=1 ./pico-sdl tst/anchor_pct.c
-
-# Interactive with assertion - pause AND assert
-PICO_CHECK_ASR=1 ./pico-sdl tst/anchor_pct.c
-
-# Headless testing (for CI/CD)
-PICO_CHECK_INT= PICO_CHECK_ASR=1 xvfb-run ./pico-sdl tst/anchor_pct.c
-```
-
-# Documentation
-
-You can read the documentation [here](https://pgvalle.github.io/pico-sdl/html/index.html)
