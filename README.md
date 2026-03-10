@@ -186,4 +186,4 @@ PICO_CHECK_INT= PICO_CHECK_ASR=1 xvfb-run ./pico-sdl tst/anchor_pct.c
 
 # Documentation
 
-You can read the documentation [here](https://pgvalle.github.io/pico-sdl/html/index.html)
+You can read the documentation [here](https://fsantanna.github.io/pico-sdl/)

@@ -9,4 +9,4 @@ command_exists() {
 
 command_exists doxygen
 
-DOXYGEN_LAYOUT_FILE="layout-1.13.xml" doxygen Doxyfile
+DOXYGEN_LAYOUT_FILE="layout-1.9.xml" doxygen Doxyfile

@@ -10,5 +10,7 @@
 .vscode/
 build/
 
+doc/html/
+
 tst/out/*
 !tst/out/.gitkeep
