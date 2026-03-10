@@ -1,4 +1,4 @@
-# Plan: Doxygen CI/CD & Cleanup
+# Plan: Doxygen CI/CD & Cleanup ✓
 
 Deploy API docs to GitHub Pages via GitHub Actions, remove
 build artifacts from git.
@@ -22,6 +22,8 @@ build artifacts from git.
     - updated `build.sh` to use `layout-1.9.xml`
 - [x] 6. Update README.md docs link
     - `fsantanna.github.io/pico-sdl/`
+- [x] 7. Commit and push to main
+- [x] 8. Verify workflow + docs live
 
 ## Decisions
 
@@ -29,7 +31,3 @@ build artifacts from git.
   >= 1.9, ubuntu-latest ships 1.9.8)
 - PRs build docs but don't deploy (catches breakage early)
 - `EXTRACT_ALL = YES` kept as-is (out of scope)
-
-## Pending
-
-- [ ] Commit and push to test the workflow
