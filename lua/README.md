@@ -1,21 +1,36 @@
-# pico-sdl-lua
+# pico-lua
 
-A Lua binding for [pico-sdl](../).
+[![Tests][badge]][tests]
+
+[badge]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml/badge.svg
+[tests]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml
+
+***Lua binding for [pico-sdl](../)***
 
 [
-    [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1)
+    [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.2/lua/) |
+    [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1/lua/)
 ]
 
 This is the unstable `main` branch.
-Please, switch to stable [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1).
+Please, switch to stable [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.2/lua/).
 <!--
 -->
 
 [
+    [About](#about)                 |
     [Hello World!](#hello-world)    |
     [Install & Run](#install--run)  |
-    [Documentation](#documentation)
+    [Documentation](#documentation) |
+    [Testing](#testing)
 ]
+
+# About
+
+`pico-lua` is the Lua binding for [pico-sdl][pico-sdl], a graphics library for
+2D games and applications.
+
+[pico-lua]: https://github.com/fsantanna/pico-sdl/
 
 <img src="pico-logo.png" width="250" align="right">
 
@@ -65,3 +80,17 @@ pico-lua /lua/tst/cross.lua
 
 - [Guide](doc/guide.md)
 - [API](doc/api.md)
+
+# Testing
+
+## Automatic Tests
+
+```bash
+make tests
+```
+
+## Interactive Test
+
+```bash
+make int T=colors   # set T= to any test in `tst/`
+```
