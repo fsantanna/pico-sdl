@@ -8,8 +8,8 @@
 ***A 2D graphics library for C and Lua***
 
 [
-    [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.2) |
-    [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1)
+    [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.2/) |
+    [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1/)
 ]
 
 This is the unstable `main` branch.
@@ -32,7 +32,9 @@ Please, switch to stable [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.
 
 See also [pico-lua][pico-lua], the official Lua binding for `pico-sdl`.
 
-[pico-lua]: https://github.com/fsantanna/pico-sdl/tree/main/lua
+[pico-lua]: https://github.com/fsantanna/pico-sdl/tree/main/lua/
+
+<img src="pico-logo.png" width="250" align="right">
 
 `pico-sdl` is designed around 3 groups of APIs:
 
