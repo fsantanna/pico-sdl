@@ -407,11 +407,9 @@ void pico_layer_video_mode (int mode,
 ///////////////////////////////////////////////////////////////////////////////
 
 /// @brief Gets the mouse state.
-/// @param pos where to save the mouse position (mode determines coordinate
-///            system: '!' for pixels, '%' for percentage, '#' for tiles)
-/// @param button mouse button to check (1=left, 2=middle, 3=right), or 0 for any
-/// @return 1 if the specified button is pressed, or 0 otherwise
-int pico_get_mouse (Pico_Rel_Pos* pos, int button);
+/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window, 0 uses default)
+/// @return mouse state with position and button flags
+Pico_Mouse pico_get_mouse (char mode);
 
 /// @brief Gets the visibility state of the window.
 /// @return 1 if visible, or 0 otherwise
@@ -503,6 +501,10 @@ void pico_set_layer (const char* key);
 /// @brief Toggles the application window visibility.
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
+
+/// @brief Sets the default mouse coordinate mode.
+/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window)
+void pico_set_mouse (char mode);
 
 /// @brief Sets the drawing style.
 /// @param style new style

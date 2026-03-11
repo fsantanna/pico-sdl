@@ -18,8 +18,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 0, 3);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==0 && pos.y==0.3f);
         }
 
@@ -27,8 +26,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 250, 251);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse('!');
             assert(pos.x==25 && pos.y==25.099998f);
         }
 
@@ -36,8 +34,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 499, 490);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==49.900002f && pos.y==49);
         }
     }
@@ -54,8 +51,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 250, 253);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==25 && pos.y==25.599998f);
         }
 
@@ -63,8 +59,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 0, 0);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==-25 && pos.y==-25);
         }
 
@@ -72,8 +67,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 495, 499);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==74 && pos.y==74.800003f);
         }
     }
@@ -90,8 +84,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 1, 2);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==20.02f && pos.y==20.040001f);
         }
 
@@ -99,8 +92,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 254, 251);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==25.08f && pos.y==25.02f);
         }
 
@@ -108,8 +100,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 497, 498);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==29.940001f && pos.y==29.959999f);
         }
     }
@@ -126,8 +117,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 2, 1);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==25.1f && pos.y==25.049999f);
         }
 
@@ -135,8 +125,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 253, 250);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x==37.650002f && pos.y==37.5f);
         }
     }
@@ -151,8 +140,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 250, 250);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '%', {0, 0}, PICO_ANCHOR_NW, NULL };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse('%');
             assert(pos.x==0.5 && pos.y==0.5);
         }
 
@@ -160,13 +148,13 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 0, 0);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '%', {0, 0}, PICO_ANCHOR_C, NULL };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse('%');
             assert(pos.x==0.0 && pos.y==0.0);
         }
     }
 
     puts("zoom PCT");
+    pico_set_mouse('%');
     {
         // Zoom with src = {20, 20, 10, 10}, but pct should still be 0-1 relative
         // to full logical world
@@ -178,8 +166,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 0, 0);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '%', {0, 0}, PICO_ANCHOR_NW, NULL };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x>0.39 && pos.x<0.41);
             assert(pos.y>0.39 && pos.y<0.41);
         }
@@ -188,8 +175,7 @@ int main(void) {
         {
             SDL_WarpMouseInWindow(pico_win, 250, 250);
             SDL_PumpEvents();
-            Pico_Rel_Pos pos = { '%', {0, 0}, PICO_ANCHOR_C, NULL };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+            Pico_Mouse pos = pico_get_mouse(0);
             assert(pos.x>0.49 && pos.x<0.51);
             assert(pos.y>0.49 && pos.y<0.51);
         }

@@ -76,8 +76,8 @@ int main (void) {
     puts("shows pixel over mouse");
     {
         Pico_Event e;
-        pico_input_event(&e, PICO_EVENT_MOUSE_BUTTON_DOWN);
-        pico_output_draw_pixel_raw((Pico_Pos){e.button.x,e.button.y});
+        pico_input_event(&e, PICO_EVENT_MOUSE_BUTTON_DN);
+        pico_output_draw_pixel_raw((Pico_Pos){e.mouse.x,e.mouse.y});
         pico_input_delay(2000);
     }
 

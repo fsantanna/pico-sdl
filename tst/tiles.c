@@ -6,6 +6,7 @@ extern SDL_Window* pico_win;
 
 int main (void) {
     pico_init(1);
+    pico_set_mouse('#');
 
     // 4x4 grid of 4x4 pixel tiles = 16x16 logical world
     Pico_Rel_Dim phy  = { '!', {160, 160}, NULL };
@@ -62,8 +63,7 @@ int main (void) {
         puts("mouse tile (1,1)");
         SDL_WarpMouseInWindow(pico_win, 0, 0);
         SDL_PumpEvents();
-        Pico_Rel_Pos pos = { '#' };
-        pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+        Pico_Mouse pos = pico_get_mouse(0);
         assert(pos.x==1 && pos.y==1);
     }
 
@@ -73,8 +73,7 @@ int main (void) {
         puts("mouse tile (2,2)");
         SDL_WarpMouseInWindow(pico_win, 40, 40);
         SDL_PumpEvents();
-        Pico_Rel_Pos pos = { '#' };
-        pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+        Pico_Mouse pos = pico_get_mouse(0);
         assert(pos.x==2 && pos.y==2);
     }
 
@@ -83,8 +82,7 @@ int main (void) {
         puts("mouse tile (3,4)");
         SDL_WarpMouseInWindow(pico_win, 80, 120);
         SDL_PumpEvents();
-        Pico_Rel_Pos pos = { '#' };
-        pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
+        Pico_Mouse pos = pico_get_mouse(0);
         assert(pos.x==3 && pos.y==4);
     }
 

@@ -144,8 +144,8 @@ int main (void) {
 
             if (evt.type == PICO_EVENT_QUIT) {
                 goto done;
-            } else if (evt.type == PICO_EVENT_KEY_DOWN) {
-                SDL_Keycode k = evt.key.keysym.sym;
+            } else if (evt.type == PICO_EVENT_KEY_DN) {
+                SDL_Keycode k = evt.keyboard.key;
                 if (k == SDLK_ESCAPE) {
                     goto done;
                 } else if (k == SDLK_PLUS
@@ -170,9 +170,9 @@ int main (void) {
                     }
                     frame = (int)frame_f;
                 }
-            } else if (evt.type == PICO_EVENT_MOUSE_BUTTON_DOWN) {
-                int mx = evt.button.x;
-                int my = evt.button.y;
+            } else if (evt.type == PICO_EVENT_MOUSE_BUTTON_DN) {
+                int mx = evt.mouse.x;
+                int my = evt.mouse.y;
                 /* Click on seek bar area */
                 if (my >= win_h - BAR_H * 2) {
                     float click_pct =

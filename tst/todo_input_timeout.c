@@ -27,7 +27,7 @@ int main (void) {
     {
         Pico_Event e;
         int ok = pico_input_event_timeout(
-            &e, PICO_EVENT_KEY_DOWN, 3000
+            &e, PICO_EVENT_KEY_DN, 3000
         );
         if (ok) {
             printf("  FAIL: should have timed out\n");
@@ -44,7 +44,7 @@ int main (void) {
     {
         Pico_Event e;
         int ok = pico_input_event_timeout(
-            &e, PICO_EVENT_KEY_DOWN, 5000
+            &e, PICO_EVENT_KEY_DN, 5000
         );
         if (ok) {
             printf("  OK: got key down\n");

@@ -3,104 +3,44 @@
 
 #include <SDL2/SDL_events.h>
 
-typedef enum {
-    PICO_EVENT_MOUSE_BUTTON_NONE           = 0,
-    PICO_EVENT_MOUSE_BUTTON_LEFT           = SDL_BUTTON_LEFT,
-    PICO_EVENT_MOUSE_BUTTON_MIDDLE         = SDL_BUTTON_MIDDLE,
-    PICO_EVENT_MOUSE_BUTTON_RIGHT          = SDL_BUTTON_RIGHT
-} PICO_EVENT_MOUSE_BUTTON;
-
-typedef SDL_Event Pico_Event;
-
 typedef enum PICO_EVENT {
-    PICO_EVENT_ANY                         = 0,
-
-    /* Application events */
-    PICO_EVENT_QUIT                        = SDL_QUIT,
-    PICO_EVENT_APP_TERMINATING             = SDL_APP_TERMINATING,
-    PICO_EVENT_APP_MEMORY_LOW              = SDL_APP_LOWMEMORY,
-    PICO_EVENT_APP_BACKGROUND_WILL         = SDL_APP_WILLENTERBACKGROUND,
-    PICO_EVENT_APP_BACKGROUND_DID          = SDL_APP_DIDENTERBACKGROUND,
-    PICO_EVENT_APP_FOREGROUND_WILL         = SDL_APP_WILLENTERFOREGROUND,
-    PICO_EVENT_APP_FOREGROUND_DID          = SDL_APP_DIDENTERFOREGROUND,
-
-    PICO_EVENT_LOCALE_CHANGED              = SDL_LOCALECHANGED,
-
-    /* Display events */
-    PICO_EVENT_DISPLAY                     = SDL_DISPLAYEVENT,
-
-    /* Window events */
-    PICO_EVENT_WINDOW                      = SDL_WINDOWEVENT,
-    PICO_EVENT_SYSWM                       = SDL_SYSWMEVENT,
-
-    /* Keyboard events */
-    PICO_EVENT_KEY_DOWN                    = SDL_KEYDOWN,
-    PICO_EVENT_KEY_UP                      = SDL_KEYUP,
-    PICO_EVENT_TEXT_EDITING                = SDL_TEXTEDITING,
-    PICO_EVENT_TEXT_INPUT                  = SDL_TEXTINPUT,
-    PICO_EVENT_KEY_MAP_CHANGED            = SDL_KEYMAPCHANGED,
-    //PICO_EVENT_TEXT_EDITING_EXT          = SDL_TEXTEDITING_EXT,
-
-    /* Mouse events */
-    PICO_EVENT_MOUSE_MOTION                = SDL_MOUSEMOTION,
-    PICO_EVENT_MOUSE_BUTTON_DOWN           = SDL_MOUSEBUTTONDOWN,
-    PICO_EVENT_MOUSE_BUTTON_UP             = SDL_MOUSEBUTTONUP,
-    PICO_EVENT_MOUSE_WHEEL                 = SDL_MOUSEWHEEL,
-
-    /* Joystick events */
-    PICO_EVENT_JOY_AXIS_MOTION             = SDL_JOYAXISMOTION,
-    PICO_EVENT_JOY_BALL_MOTION             = SDL_JOYBALLMOTION,
-    PICO_EVENT_JOY_HAT_MOTION              = SDL_JOYHATMOTION,
-    PICO_EVENT_JOY_BUTTON_DOWN             = SDL_JOYBUTTONDOWN,
-    PICO_EVENT_JOY_BUTTON_UP               = SDL_JOYBUTTONUP,
-    PICO_EVENT_JOY_DEVICE_ADDED            = SDL_JOYDEVICEADDED,
-    PICO_EVENT_JOY_DEVICE_REMOVED          = SDL_JOYDEVICEREMOVED,
-    //PICO_EVENT_JOY_BATTERY_UPDATED       = SDL_JOYBATTERYUPDATED,
-
-    /* Game controller events */
-    PICO_EVENT_CONTROLLER_AXIS_MOTION      = SDL_CONTROLLERAXISMOTION,
-    PICO_EVENT_CONTROLLER_BUTTON_DOWN      = SDL_CONTROLLERBUTTONDOWN,
-    PICO_EVENT_CONTROLLER_BUTTON_UP        = SDL_CONTROLLERBUTTONUP,
-    PICO_EVENT_CONTROLLER_DEVICE_ADDED     = SDL_CONTROLLERDEVICEADDED,
-    PICO_EVENT_CONTROLLER_DEVICE_REMOVED   = SDL_CONTROLLERDEVICEREMOVED,
-    PICO_EVENT_CONTROLLER_DEVICE_REMAPPED  = SDL_CONTROLLERDEVICEREMAPPED,
-    PICO_EVENT_CONTROLLER_TOUCHPAD_DOWN    = SDL_CONTROLLERTOUCHPADDOWN,
-    PICO_EVENT_CONTROLLER_TOUCHPAD_MOTION  = SDL_CONTROLLERTOUCHPADMOTION,
-    PICO_EVENT_CONTROLLER_TOUCHPAD_UP      = SDL_CONTROLLERTOUCHPADUP,
-    PICO_EVENT_CONTROLLER_SENSOR_UPDATE    = SDL_CONTROLLERSENSORUPDATE,
-    //PICO_EVENT_CONTROLLER_STEAM_HANDLE_UPDATED = SDL_CONTROLLERSTEAMHANDLEUPDATED,
-
-    /* Touch events */
-    PICO_EVENT_FINGER_DOWN                 = SDL_FINGERDOWN,
-    PICO_EVENT_FINGER_UP                   = SDL_FINGERUP,
-    PICO_EVENT_FINGER_MOTION               = SDL_FINGERMOTION,
-
-    /* Gesture events */
-    PICO_EVENT_GESTURE_DOLLAR              = SDL_DOLLARGESTURE,
-    PICO_EVENT_GESTURE_DOLLAR_RECORD       = SDL_DOLLARRECORD,
-    PICO_EVENT_GESTURE_MULTI               = SDL_MULTIGESTURE,
-
-    /* Clipboard events */
-    PICO_EVENT_CLIPBOARD_UPDATE            = SDL_CLIPBOARDUPDATE,
-
-    /* Drag and drop events */
-    PICO_EVENT_DROP_FILE                   = SDL_DROPFILE,
-    PICO_EVENT_DROP_TEXT                   = SDL_DROPTEXT,
-    PICO_EVENT_DROP_BEGIN                  = SDL_DROPBEGIN,
-    PICO_EVENT_DROP_COMPLETE               = SDL_DROPCOMPLETE,
-
-    /* Audio hotplug events */
-    PICO_EVENT_AUDIO_DEVICE_ADDED          = SDL_AUDIODEVICEADDED,
-    PICO_EVENT_AUDIO_DEVICE_REMOVED        = SDL_AUDIODEVICEREMOVED,
-
-    /* Sensor events */
-    PICO_EVENT_SENSOR_UPDATE               = SDL_SENSORUPDATE,
-
-    /* Render events */
-    PICO_EVENT_RENDER_TARGETS_RESET        = SDL_RENDER_TARGETS_RESET,
-    PICO_EVENT_RENDER_DEVICE_RESET         = SDL_RENDER_DEVICE_RESET,
-
-    PICO_EVENT_SDL_USER                    = SDL_USEREVENT,
+    PICO_EVENT_NONE              = -1,
+    PICO_EVENT_ANY               =  0,
+    PICO_EVENT_QUIT,
+    PICO_EVENT_WINDOW,
+    PICO_EVENT_KEY_DN,
+    PICO_EVENT_KEY_UP,
+    PICO_EVENT_MOUSE_MOTION,
+    PICO_EVENT_MOUSE_BUTTON_DN,
+    PICO_EVENT_MOUSE_BUTTON_UP,
 } PICO_EVENT;
+
+typedef struct {
+    int w, h;
+} Pico_Window;
+
+typedef struct {
+    int key;
+    unsigned ctrl  : 1;
+    unsigned shift : 1;
+    unsigned alt   : 1;
+} Pico_Keyboard;
+
+typedef struct {
+    char mode;              // 'w', '!', '%', '#'
+    float x, y;
+    unsigned left   : 1;
+    unsigned right  : 1;
+    unsigned middle : 1;
+} Pico_Mouse;
+
+typedef struct {
+    PICO_EVENT type;
+    union {
+        Pico_Window   window;
+        Pico_Keyboard keyboard;
+        Pico_Mouse    mouse;
+    };
+} Pico_Event;
 
 #endif // PICO_EVENTS_H
