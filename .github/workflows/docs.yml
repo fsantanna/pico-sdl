@@ -23,14 +23,15 @@ jobs:
       run: cd doc && ./build.sh
     - name: Deploy to gh-pages
       run: |
+        cp -r doc/html /tmp/docs-html
         git fetch origin gh-pages:gh-pages || git checkout --orphan gh-pages
         git checkout gh-pages
         rm -rf main
-        cp -r doc/html main
+        cp -r /tmp/docs-html main
         if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             tag="${GITHUB_REF#refs/tags/}"
             rm -rf "$tag"
-            cp -r main "$tag"
+            cp -r /tmp/docs-html "$tag"
         fi
         git add main
         if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
