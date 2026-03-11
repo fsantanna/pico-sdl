@@ -3,14 +3,9 @@ name: Docs
 on:
   push:
     branches: [main]
-    tags: ['v*']
 
 permissions:
   contents: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -27,12 +22,8 @@ jobs:
         git fetch origin gh-pages
         git checkout gh-pages
         cp -r /tmp/docs-html main
-        if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
-            tag="${GITHUB_REF#refs/tags/}"
-            cp -r /tmp/docs-html "$tag"
-        fi
         git add .
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git commit -m "docs: update from $GITHUB_REF" || true
+        git commit -m "docs: update main" || true
         git push origin gh-pages

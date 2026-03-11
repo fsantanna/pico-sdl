@@ -1,0 +1,25 @@
+name: Docs Tag
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+    - name: Copy main to tag
+      run: |
+        tag="${GITHUB_REF#refs/tags/}"
+        cp -r main "$tag"
+        git add .
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git commit -m "docs: add $tag"
+        git push origin gh-pages
