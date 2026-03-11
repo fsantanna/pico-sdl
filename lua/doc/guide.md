@@ -774,18 +774,20 @@ Drawing a sub-layer works exactly like drawing a regular layer with
 
 ## 9. Expert Mode
 
-By default, each drawing operation in `pico-lua` becomes immediatly visible on
+By default, each drawing operation in `pico-lua` becomes immediately visible on
 the screen.
 
-However, to keep visual objects in sync, most games and non-trivial
-applications require them to draw simultaneously on every frame.
+However, to keep visual objects in perfect sync, most games and non-trivial
+applications require to draw them simultaneously on every frame.
 
 With `pico.set.expert`, drawing operations are buffered until an explicit
-call to `pico.output.present`, which updates the screen all at once:
+call to `pico.output.present`, which updates the screen with all objects at
+once:
 
 <table>
 <tr><td><pre>
-> pico.output.clear()
+> pico.init(false)
+> pico.init(true)
 > pico.set.expert(true)
 > pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
 > pico.input.delay(1000) -- artificial delay
@@ -797,7 +799,8 @@ call to `pico.output.present`, which updates the screen all at once:
 </td></tr>
 </table>
 
-At this point, nothing appears on the screen, since we have not yet called
+Even though, the code above takes at least `2s` to complete, at this point,
+nothing appears on the screen, since we have not yet called
 `pico.output.present`:
 
 <table>
@@ -824,10 +827,11 @@ These applications follow the same structure of a continuous "main loop":
 This is what a main loop in `pico-lua` looks like:
 
 ```
+-- (just a sketch, do not execute it)
 pico.set.expert(true)
 while true do
     -- input / timeout
-    pico.input.event(...)
+    pico.input.event(..., 25)
 
     -- update
     (normal lua code)
@@ -843,13 +847,13 @@ Two calls deserve a closer look:
 
 - `pico.set.expert(true)` disables the automatic display that normally
   happens after every draw call.
-  Nothing appears on screen until `pico.output.present()` is called, so
-  all drawing between `clear` and `present` composes a single frame.
-  Even with hundreds of objects, every update appears at once.
+  Screen only updates on `pico.output.present()`, so all drawing between
+  `clear` and `present` represents a single frame.
+  Therefore, even with hundreds of objects, each frame synchronizes at once.
 
-- The timeout in `pico.input.event(..., 33)` keeps the loop from running
-  too fast — or blocking forever when no events arrive.
-  A timeout of 33 ms caps the loop at roughly 30 frames per second.
+- The timeout in `pico.input.event(...,25)` prevents that the loop runs too
+  fast, but at the same time, enforces at least an iteration every `25ms`
+  (yielding `40` frames per second).
 
 ### 9.2. A Simple Example
 
