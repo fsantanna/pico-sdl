@@ -31,6 +31,7 @@ Consult the [API](api.md) for completeness.
 From the command line, simply execute `pico-lua` with no parameters:
 
 ```bash
+$ cd <...>/pico-sdl/lua/doc/    # pico-lua "doc" folder
 $ pico-lua
 Lua 5.4.4  Copyright (C) 1994-2022 Lua.org, PUC-Rio
 >
@@ -54,14 +55,13 @@ To initialize `pico-lua`, we pass `true` to `pico.init`:
 </table>
 
 We immediately see a `500x500` window divided in small `5x5` rectangles
-representing `100x100` **logical pixels**, which our application uses as the
-main reference.
+representing `100x100` **logical pixels**.
 
 In the context of `pico-lua`, we use the term **world** to designate the
 logical view, which applications use as the main reference.
 
-By default, `pico-lua` conventionally exhibit the grid and coordinate labels to
-aid development with visual inspection.
+By default, note that `pico-lua` conventionally exhibit the grid and coordinate
+labels to aid development with visual inspection.
 You may click the image to zoom in.
 
 ### 2.2. Configure
@@ -107,7 +107,8 @@ dimensions at the same time:
 
 ### 2.3. Close
 
-In the end, we pass `false` to `pico.init` to properly finalize `pico-lua`:
+In the end of the session, we should pass `false` to `pico.init` to properly
+finalize `pico-lua`:
 
 <table>
 <tr><td><pre>
@@ -181,10 +182,10 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
 
-With the aid of the tick marks, we can see that the rectangle centered at the
-given position.
 Unlike most graphics libraries, `pico-lua` **centers** objects by default,
 which we will discuss in [#Anchors](#52-anchors).
+With the aid of the tick marks, we can see that the rectangle is actually
+centered at the given position.
 
 ### 3.4. Image
 
@@ -199,7 +200,7 @@ To draw an [image](img/open.png), we call `pico.output.draw.image`:
 </td></tr>
 </table>
 
-*(You will need to save the [image](img/open.png) on your machine.)*
+*(You may need to save the [image](img/open.png) on your machine.)*
 
 Note that `pico-lua` retains both objects on the screen.
 
@@ -229,8 +230,8 @@ operations.
 
 Therefore, the text appears in red, centered at the given position.
 
-Note `pico-lua` preserves the correct text aspect ratio if the width `w` is
-omitted.
+Note that `pico-lua` preserves the correct text aspect ratio if the width `w`
+is omitted.
 
 Colors can also be specified as tables with RGB values:
 
@@ -257,9 +258,9 @@ We may also change the alpha transparency for further drawing operations:
 The oval appears on top of the text, but the transparency keeps the text
 visible.
 
-Following the general convention for "alpha":
-    0x00 is fully transparent, and
-    0xFF is fully opaque.
+Following the general conventions for "alpha",
+    `0x00` is fully transparent, while
+    `0xFF` is fully opaque.
 
 ### 4.3. All-at-Once
 
@@ -291,7 +292,7 @@ function:
 - `'#'` - Tile: grid coordinates based on tile and world `w/h`
             (from `0` to `w/h`)
 
-Positioning modes appear at index `1` of tables representing positions,
+Positioning modes should be set at index `1` of tables representing positions,
 dimensions, and rectangles:
 
 - `{ '%', x=0.5, y=0.5 }`:          a centered relative position
@@ -352,7 +353,9 @@ coordinate:
 </td></tr>
 </table>
 
-We drew all three rectangles at the same pixel position, but with different
+The pixel represents the reference position `%(0.5,0.5)` used by the three
+rectangles.
+We drew them all at the same pixel position, but using different internal
 anchors.
 
 The following predefined anchors determine the position inside the object that
@@ -366,7 +369,8 @@ is affixed to the drawing coordinates:
 +-----------+
 ```
 
-By default, `pico-lua` uses the center anchor `'C'`.
+As shown in the previous examples. by default, `pico-lua` uses the center
+anchor `'C'`.
 
 ### 5.3. Tiles
 
@@ -395,10 +399,10 @@ dimensions:
 In the example, we set each tile to `20x20` and create a world of `5x5` tiles.
 Note that the window can also be specified in tiles.
 
-We then draw two rectangles also using the tile mode `'#'`:
-- The first is centered at `(3,3)` occupying `1x1` tile.
+We then draw two rectangles using the tile mode `'#'`:
+- The first is centered at `(3,3)` occupying `1x1` tile (`20x20` pixels).
 - The second uses anchor `NE`, to properly occupy the top right of the screen
-  with `2x1` tiles.
+  with `2x1` tiles (`40x20` pixels).
 
 ## 6. Advanced View
 
@@ -434,7 +438,8 @@ rendered:
 </table>
 
 The visible effect is to move the world to fit a smaller target window at the
-bottom-right of the screen, with a slight distortion, since `w/h` now mismatch.
+bottom-right of the screen, with a slight distortion, since the new `w/h`
+changed the aspect ratio.
 
 ### 6.2. Source
 
@@ -460,7 +465,8 @@ center of the window, keeping the same aspect ratio.
 
 ### 6.3. Clip
 
-The `clip` property restricts drawing to a sub-region of the world:
+The `clip` property restricts the effect of drawing operations to a sub-region
+of the world:
 
 <table>
 <tr><td><pre>
@@ -476,8 +482,8 @@ The `clip` property restricts drawing to a sub-region of the world:
 </td></tr>
 </table>
 
-We restrict drawing to a small region (`25%`) in the center of the world.
-Then, we draw the centered image, which is clipped to fit the specified area.
+We restrict to a small region (`25%`) in the center of the world.
+Then, we draw the image centered, which is clipped to fit the specified area.
 
 ### 6.4. Zoom & Scroll
 
@@ -501,7 +507,7 @@ region is stretched to fill the entire window:
 Cropping the source to half (`w=0.5`,`h=0.5`) and starting from its center
 (`x=0.5`,`y=0.5`) resuluts in a 2x zoom.
 
-Now, applying an offset to current position creates a scroll effect:
+Now, applying an offset to current position creates a scrolling effect:
 
 <table>
 <tr><td><pre>
@@ -519,8 +525,8 @@ source, which still targets the whole window, resulting in a left scroll.
 
 ## 7. Events
 
-I addition to output and drawing operations, `pico-lua` also provides functions
-to handle time and user input.
+In addition to output and drawing operations, `pico-lua` also provides
+functions to handle time and user input.
 
 ### 7.1. Delay
 
@@ -530,7 +536,7 @@ A call to `pico.input.delay(ms)` pauses execution for the specified time:
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.output.draw.pixel { '!', x=25, y=50 } -- copy/paste all next lines at once
+> pico.output.draw.pixel { '!', x=25, y=50 } -- copy/paste next lines all at once
   pico.input.delay(1000)
   pico.output.draw.pixel { '!', x=50, y=50 }
   pico.input.delay(1000)
@@ -545,6 +551,7 @@ After each drawing, we pause execution for `1s`, also blocking (freezing) the
 Lua prompt.
 
 Combined with loops, delays can create non-interactive animations.
+
 Here, we draw a circle pixel by pixel:
 
 <table>
@@ -564,7 +571,7 @@ Here, we draw a circle pixel by pixel:
 </td></tr>
 </table>
 
-On each step, we draw a single pixel and delay for a short period.
+On each step, we draw a single pixel and delay execution for a short period.
 
 ### 7.2. Event
 
@@ -588,22 +595,23 @@ Let's create a simple loop to explore the possibilities:
 
 You may interact with the window by pressing keys, using the mouse, resizing
 the window, and so on.
+
 To escape the loop, press the `Escape` key.
 
-Event types (*tags*) include `'key.dn'`, ``'mouse.button.dn'`,
+Event types (*tags*) include `'key.dn'`, `'mouse.button.dn'`,
 `'mouse.motion'`, and many others.
 
 We can filter events and set timeouts:
 
 ```lua
 > e1 = pico.input.event('key.dn')        -- wait for key press only
-> e2 = pico.input.event('key.dn', 1000)  -- wait up to 1000ms
+> e2 = pico.input.event('key.dn', 5000)  -- wait key up to 5000ms
 ```
 
 When a timeout expires without an event, `nil` is returned:
 
 ```lua
-> print(e2) -- nil, after 1000 if no keys pressed
+> print(e2) -- nil, after 5000 if no keys pressed
 ```
 
 ### 7.3. Default Key Bindings
@@ -618,6 +626,8 @@ Let's draw a centered image and use the key bindings to explore it:
 
 <table>
 <tr><td><pre>
+> pico.init(false)
+> pico.init(true)
 > pico.output.draw.image("img/open.png",
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.input.loop()
@@ -627,15 +637,16 @@ Let's draw a centered image and use the key bindings to explore it:
 </td></tr>
 </table>
 
-The call to `pico.input.loop()` allows `pico-lua` to handle events.
+The call to `pico.input.loop()` passes full control to `pico-lua` to handle
+events internally.
 
 Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
-Finally, close the window (e.g., `ALT+F4`) to return from the loop.
+Finally, close the window (e.g., `ALT+F4`) to escape from the loop.
 
 ## 8. Layers
 
-Layers are independent views, where you can draw shapes in separate, and them
-compose to form complex scenes.
+Layers are independent views, in which you can draw shapes in separate, and
+then compose them to form complex scenes.
 
 The main logical world is itself a layer, as well as images, texts, buffers,
 and videos.
@@ -648,7 +659,8 @@ We use `pico.layer.empty` to create a fresh layer, and `pico.set.layer` to
 redirect further drawing operations to it:
 
 ```lua
-> pico.output.clear()
+> pico.init(false)
+> pico.init(true)
 > pico.layer.empty("flag", {w=300, h=200})
 > pico.set.layer("flag")
 > pico.set.color.draw { r=0x00, g=0x2B, b=0x7F }
@@ -663,16 +675,15 @@ We identify the layer as `"flag"` and then set it as the current drawing layer.
 Then, we paint the layer with the colors.
 
 At this point, nothing appears on the screen yet, since we did not update the
-world view.
+main world view.
 
 ### 8.2. Compositing
 
-To compose layers, we use `pico.output.draw.layer` on a "parent" layer:
+To composite layers, we use `pico.output.draw.layer` on a "parent" layer:
 
 <table>
 <tr><td><pre>
 > pico.set.layer()      -- back to main world
-> pico.output.clear()
 > pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
 > pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 </pre>
@@ -728,13 +739,15 @@ be stated visually.
 
 ### 8.4. Sub-Layers
 
-A sub-layer points to a region within a parent layer, sharing the actual pixel
-contents.
+A sub-layer points to a region within a parent layer, with both sharing the
+actual pixel contents.
 
-Sub-layers are useful to isolate individual frames from a sprite sheet in
-games, which we will discuss in [#Animations](#93-animations).
+Sub-layers are useful to isolate individual frames from sprite sheets in games,
+which we will discuss in [#Animations](#93-animations).
 
-We call `pico.layer.sub` to crop a region of a parent layer:
+We call `pico.layer.sub` to crop a region of a parent layer.
+
+In the next example, we want to isolate each stripe of the flag as a sub layer:
 
 <table>
 <tr><td><pre>
@@ -751,27 +764,30 @@ We call `pico.layer.sub` to crop a region of a parent layer:
 </td></tr>
 </table>
 
-The first parameter identifies the sub-layer for further operations.
+Each sub-layer crops a square from each stripe of the flag (blue, yellow, red),
+and then draws each on the screen.
+
+The first parameter to `pico.layer.sub` identifies the sub-layer for further
+operations.
 Drawing a sub-layer works exactly like drawing a regular layer with
 `pico.output.draw.layer`.
 
-In the example, each sub-layer crops a square from each stripe of the flag
-(blue, yellow, red), and then draws each on the screen.
-
 ## 9. Expert Mode
 
-By default, each drawing operation in `pico-lua` becomes immediatly visible on
+By default, each drawing operation in `pico-lua` becomes immediately visible on
 the screen.
 
-However, to keep visual objects in sync, most games and non-trivial
-applications require them to draw simultaneously on every frame.
+However, to keep visual objects in perfect sync, most games and non-trivial
+applications require to draw them simultaneously on every frame.
 
 With `pico.set.expert`, drawing operations are buffered until an explicit
-call to `pico.output.present`, which updates the screen all at once:
+call to `pico.output.present`, which updates the screen with all objects at
+once:
 
 <table>
 <tr><td><pre>
-> pico.output.clear()
+> pico.init(false)
+> pico.init(true)
 > pico.set.expert(true)
 > pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
 > pico.input.delay(1000) -- artificial delay
@@ -783,7 +799,8 @@ call to `pico.output.present`, which updates the screen all at once:
 </td></tr>
 </table>
 
-At this point, nothing appears on the screen, since we have not yet called
+Even though, the code above takes at least `2s` to complete, at this point,
+nothing appears on the screen, since we have not yet called
 `pico.output.present`:
 
 <table>
@@ -810,10 +827,11 @@ These applications follow the same structure of a continuous "main loop":
 This is what a main loop in `pico-lua` looks like:
 
 ```
+-- (just a sketch, do not execute it)
 pico.set.expert(true)
 while true do
     -- input / timeout
-    pico.input.event(...)
+    pico.input.event(..., 25)
 
     -- update
     (normal lua code)
@@ -829,32 +847,33 @@ Two calls deserve a closer look:
 
 - `pico.set.expert(true)` disables the automatic display that normally
   happens after every draw call.
-  Nothing appears on screen until `pico.output.present()` is called, so
-  all drawing between `clear` and `present` composes a single frame.
-  Even with hundreds of objects, every update appears at once.
+  Screen only updates on `pico.output.present()`, so all drawing between
+  `clear` and `present` represents a single frame.
+  Therefore, even with hundreds of objects, each frame synchronizes at once.
 
-- The timeout in `pico.input.event(..., 33)` keeps the loop from running
-  too fast — or blocking forever when no events arrive.
-  A timeout of 33 ms caps the loop at roughly 30 frames per second.
+- The timeout in `pico.input.event(...,25)` prevents that the loop runs too
+  fast, but at the same time, enforces at least an iteration every `25ms`
+  (yielding `40` frames per second).
 
 ### 9.2. A Simple Example
 
-The example below draws two pixels: one tracks the mouse, the other
-moves with the arrow keys.
-Closing the window produces a `'quit'` event and exits the loop:
+The next example tracks the position of two pixels on the screen:
+
+- on follows the mouse, wherever it moves to,
+- the other responds to the arrow keys.
 
 The complete source code is [here](rects.lua):
 
 ```lua
 pico.set.expert(true)
 
-local mx, my = 0.5, 0.5          -- mouse pixel (centered)
-local kx, ky = 0.5, 0.5          -- arrow-key pixel (centered)
-local pos = {'%', x=0, y=0}      -- reusable position for mouse query
-local spd = 0.01                  -- arrow-key speed per frame
+local mx, my = 0.5, 0.5             -- mouse pixel (centered)
+local kx, ky = 0.5, 0.5             -- arrow-key pixel (centered)
+local pos = {'%', x=0, y=0}         -- reusable position for mouse query
+local spd = 0.01                    -- arrow-key speed per frame
 
 while true do
-    local e = pico.input.event(nil, 20)
+    local e = pico.input.event()    -- no time-based animation
     if e then
         if e.tag == 'quit' then
             break
@@ -875,6 +894,8 @@ while true do
     pico.output.present()
 end
 ```
+
+Closing the window produces a `'quit'` event and exits the loop:
 
 One pixel follows the mouse; the other moves with the arrow keys.
 The `'quit'` event fires when the user closes the window, so the loop
