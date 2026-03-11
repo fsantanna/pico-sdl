@@ -9,4 +9,4 @@ command_exists() {
 
 command_exists doxygen
 
-DOXYGEN_LAYOUT_FILE="layout-1.9.xml" doxygen Doxyfile
+PICO_DOC_OUTPUT="${PICO_DOC_OUTPUT:-.}" PICO_DOC_VERSION="${PICO_DOC_VERSION:-}" DOXYGEN_LAYOUT_FILE="layout-1.9.xml" doxygen Doxyfile

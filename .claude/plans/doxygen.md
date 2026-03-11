@@ -1,33 +1,35 @@
-# Plan: Doxygen CI/CD & Cleanup ✓
+# Plan: Multi-Version Doxygen Docs
 
-Deploy API docs to GitHub Pages via GitHub Actions, remove
-build artifacts from git.
+Build isolated docs for each git tag + main, deploy all to
+GitHub Pages as `site/<version>/`.
+
+## Context
+
+- Strategy A: build all versions in single CI run
+- No version selector, no root index, completely isolated
+- Current tags (`v0.2`, `v0.1-win`) have no `doc/` directory
+    - only future tags (v0.3+) will produce docs
+    - workflow skips tags that lack `doc/`
+- Trigger: push to `main` or push of `v*` tag
+- PRs: no build, no deploy
+- Dir naming: `v0.2/`, `main/`
 
 ## Done
 
-- [x] 1. Enable GitHub Pages on `fsantanna/pico-sdl` with
-         "GitHub Actions" as source
-- [x] 2. Create `.github/workflows/docs.yml`
-    - triggers on push (build+deploy) and PRs (build-only)
-    - paths: `doc/**`, `src/*.h`
-    - installs doxygen, runs `doc/build.sh`
-    - deploys via `actions/deploy-pages@v4`
-- [x] 3. Add `doc/html/` to `.gitignore`
-- [x] 4. Remove tracked `doc/html/` from git
-    - `git rm -r --cached doc/html/`
-- [x] 5. Remove dead `footer.html` + `layout-1.13.xml`
-    - deleted `footer.html` (was entirely commented out)
-    - deleted `layout-1.13.xml` (standardized on 1.9)
-    - cleared `HTML_FOOTER` in Doxyfile
-    - updated `build.sh` to use `layout-1.9.xml`
-- [x] 6. Update README.md docs link
-    - `fsantanna.github.io/pico-sdl/`
-- [x] 7. Commit and push to main
-- [x] 8. Verify workflow + docs live
+- [x] 1. `doc/Doxyfile`: `PROJECT_NUMBER=$(PICO_DOC_VERSION)`,
+         `OUTPUT_DIRECTORY=$(PICO_DOC_OUTPUT)`
+- [x] 2. `doc/build.sh`: forward env vars, default output `.`
+- [x] 3. `.github/workflows/docs.yml`: multi-version build
+    - fetch full history (`fetch-depth: 0`)
+    - trigger on push to `main` AND on `v*` tags
+    - loop over `git tag -l 'v*'`, skip without `doc/`
+    - build main as `site/main/`
+    - upload + deploy `site/`
+    - no PR trigger
 
 ## Decisions
 
-- Standardized on `layout-1.9.xml` (works with any doxygen
-  >= 1.9, ubuntu-latest ships 1.9.8)
-- PRs build docs but don't deploy (catches breakage early)
-- `EXTRACT_ALL = YES` kept as-is (out of scope)
+- No root `index.html`
+- Tags without `doc/` silently skipped
+- `main` always built from HEAD
+- Previous CI/DI plan (single-version) superseded
