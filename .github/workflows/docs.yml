@@ -3,18 +3,17 @@ name: Docs
 on:
   push:
     branches: [main]
+    tags: ['v*']
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -22,20 +21,22 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y doxygen
     - name: Build docs
       run: cd doc && ./build.sh
-    - name: Prepare site
-      run: mkdir -p site/main && mv doc/html/* site/main/
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: site
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-    - name: Deploy to GitHub Pages
-      id: deploy
-      uses: actions/deploy-pages@v4
+    - name: Deploy to gh-pages
+      run: |
+        git fetch origin gh-pages:gh-pages || git checkout --orphan gh-pages
+        git checkout gh-pages
+        rm -rf main
+        cp -r doc/html main
+        if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            tag="${GITHUB_REF#refs/tags/}"
+            rm -rf "$tag"
+            cp -r main "$tag"
+        fi
+        git add main
+        if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            git add "$tag"
+        fi
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git commit -m "docs: update from $GITHUB_REF" || true
+        git push origin gh-pages
