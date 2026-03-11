@@ -292,7 +292,7 @@ function:
 - `'#'` - Tile: grid coordinates based on tile and world `w/h`
             (from `0` to `w/h`)
 
-Positioning modes appear at index `1` of tables representing positions,
+Positioning modes should be set at index `1` of tables representing positions,
 dimensions, and rectangles:
 
 - `{ '%', x=0.5, y=0.5 }`:          a centered relative position
@@ -353,7 +353,9 @@ coordinate:
 </td></tr>
 </table>
 
-We drew all three rectangles at the same pixel position, but with different
+The pixel represents the reference position `%(0.5,0.5)` used by the three
+rectangles.
+We drew them all at the same pixel position, but using different internal
 anchors.
 
 The following predefined anchors determine the position inside the object that
@@ -367,7 +369,8 @@ is affixed to the drawing coordinates:
 +-----------+
 ```
 
-By default, `pico-lua` uses the center anchor `'C'`.
+As shown in the previous examples. by default, `pico-lua` uses the center
+anchor `'C'`.
 
 ### 5.3. Tiles
 
@@ -396,10 +399,10 @@ dimensions:
 In the example, we set each tile to `20x20` and create a world of `5x5` tiles.
 Note that the window can also be specified in tiles.
 
-We then draw two rectangles also using the tile mode `'#'`:
-- The first is centered at `(3,3)` occupying `1x1` tile.
+We then draw two rectangles using the tile mode `'#'`:
+- The first is centered at `(3,3)` occupying `1x1` tile (`20x20` pixels).
 - The second uses anchor `NE`, to properly occupy the top right of the screen
-  with `2x1` tiles.
+  with `2x1` tiles (`40x20` pixels).
 
 ## 6. Advanced View
 
@@ -435,7 +438,8 @@ rendered:
 </table>
 
 The visible effect is to move the world to fit a smaller target window at the
-bottom-right of the screen, with a slight distortion, since `w/h` now mismatch.
+bottom-right of the screen, with a slight distortion, since the new `w/h`
+changed the aspect ratio.
 
 ### 6.2. Source
 
@@ -461,7 +465,8 @@ center of the window, keeping the same aspect ratio.
 
 ### 6.3. Clip
 
-The `clip` property restricts drawing to a sub-region of the world:
+The `clip` property restricts the effect of drawing operations to a sub-region
+of the world:
 
 <table>
 <tr><td><pre>
@@ -477,8 +482,8 @@ The `clip` property restricts drawing to a sub-region of the world:
 </td></tr>
 </table>
 
-We restrict drawing to a small region (`25%`) in the center of the world.
-Then, we draw the centered image, which is clipped to fit the specified area.
+We restrict to a small region (`25%`) in the center of the world.
+Then, we draw the image centered, which is clipped to fit the specified area.
 
 ### 6.4. Zoom & Scroll
 
@@ -502,7 +507,7 @@ region is stretched to fill the entire window:
 Cropping the source to half (`w=0.5`,`h=0.5`) and starting from its center
 (`x=0.5`,`y=0.5`) resuluts in a 2x zoom.
 
-Now, applying an offset to current position creates a scroll effect:
+Now, applying an offset to current position creates a scrolling effect:
 
 <table>
 <tr><td><pre>
@@ -520,8 +525,8 @@ source, which still targets the whole window, resulting in a left scroll.
 
 ## 7. Events
 
-I addition to output and drawing operations, `pico-lua` also provides functions
-to handle time and user input.
+In addition to output and drawing operations, `pico-lua` also provides
+functions to handle time and user input.
 
 ### 7.1. Delay
 
@@ -531,7 +536,7 @@ A call to `pico.input.delay(ms)` pauses execution for the specified time:
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.output.draw.pixel { '!', x=25, y=50 } -- copy/paste all next lines at once
+> pico.output.draw.pixel { '!', x=25, y=50 } -- copy/paste next lines all at once
   pico.input.delay(1000)
   pico.output.draw.pixel { '!', x=50, y=50 }
   pico.input.delay(1000)
@@ -546,6 +551,7 @@ After each drawing, we pause execution for `1s`, also blocking (freezing) the
 Lua prompt.
 
 Combined with loops, delays can create non-interactive animations.
+
 Here, we draw a circle pixel by pixel:
 
 <table>
@@ -565,7 +571,7 @@ Here, we draw a circle pixel by pixel:
 </td></tr>
 </table>
 
-On each step, we draw a single pixel and delay for a short period.
+On each step, we draw a single pixel and delay execution for a short period.
 
 ### 7.2. Event
 
@@ -589,22 +595,23 @@ Let's create a simple loop to explore the possibilities:
 
 You may interact with the window by pressing keys, using the mouse, resizing
 the window, and so on.
+
 To escape the loop, press the `Escape` key.
 
-Event types (*tags*) include `'key.dn'`, ``'mouse.button.dn'`,
+Event types (*tags*) include `'key.dn'`, `'mouse.button.dn'`,
 `'mouse.motion'`, and many others.
 
 We can filter events and set timeouts:
 
 ```lua
 > e1 = pico.input.event('key.dn')        -- wait for key press only
-> e2 = pico.input.event('key.dn', 1000)  -- wait up to 1000ms
+> e2 = pico.input.event('key.dn', 5000)  -- wait key up to 5000ms
 ```
 
 When a timeout expires without an event, `nil` is returned:
 
 ```lua
-> print(e2) -- nil, after 1000 if no keys pressed
+> print(e2) -- nil, after 5000 if no keys pressed
 ```
 
 ### 7.3. Default Key Bindings
@@ -619,6 +626,8 @@ Let's draw a centered image and use the key bindings to explore it:
 
 <table>
 <tr><td><pre>
+> pico.init(false)
+> pico.init(true)
 > pico.output.draw.image("img/open.png",
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.input.loop()
@@ -628,15 +637,16 @@ Let's draw a centered image and use the key bindings to explore it:
 </td></tr>
 </table>
 
-The call to `pico.input.loop()` allows `pico-lua` to handle events.
+The call to `pico.input.loop()` passes full control to `pico-lua` to handle
+events internally.
 
 Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
-Finally, close the window (e.g., `ALT+F4`) to return from the loop.
+Finally, close the window (e.g., `ALT+F4`) to escape from the loop.
 
 ## 8. Layers
 
-Layers are independent views, where you can draw shapes in separate, and them
-compose to form complex scenes.
+Layers are independent views, in which you can draw shapes in separate, and
+then compose them to form complex scenes.
 
 The main logical world is itself a layer, as well as images, texts, buffers,
 and videos.
@@ -649,7 +659,8 @@ We use `pico.layer.empty` to create a fresh layer, and `pico.set.layer` to
 redirect further drawing operations to it:
 
 ```lua
-> pico.output.clear()
+> pico.init(false)
+> pico.init(true)
 > pico.layer.empty("flag", {w=300, h=200})
 > pico.set.layer("flag")
 > pico.set.color.draw { r=0x00, g=0x2B, b=0x7F }
@@ -664,16 +675,15 @@ We identify the layer as `"flag"` and then set it as the current drawing layer.
 Then, we paint the layer with the colors.
 
 At this point, nothing appears on the screen yet, since we did not update the
-world view.
+main world view.
 
 ### 8.2. Compositing
 
-To compose layers, we use `pico.output.draw.layer` on a "parent" layer:
+To composite layers, we use `pico.output.draw.layer` on a "parent" layer:
 
 <table>
 <tr><td><pre>
 > pico.set.layer()      -- back to main world
-> pico.output.clear()
 > pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
 > pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 </pre>
@@ -729,13 +739,15 @@ be stated visually.
 
 ### 8.4. Sub-Layers
 
-A sub-layer points to a region within a parent layer, sharing the actual pixel
-contents.
+A sub-layer points to a region within a parent layer, with both sharing the
+actual pixel contents.
 
-Sub-layers are useful to isolate individual frames from a sprite sheet in
-games, which we will discuss in [#Animations](#93-animations).
+Sub-layers are useful to isolate individual frames from sprite sheets in games,
+which we will discuss in [#Animations](#93-animations).
 
-We call `pico.layer.sub` to crop a region of a parent layer:
+We call `pico.layer.sub` to crop a region of a parent layer.
+
+In the next example, we want to isolate each stripe of the flag as a sub layer:
 
 <table>
 <tr><td><pre>
@@ -752,12 +764,13 @@ We call `pico.layer.sub` to crop a region of a parent layer:
 </td></tr>
 </table>
 
-The first parameter identifies the sub-layer for further operations.
+Each sub-layer crops a square from each stripe of the flag (blue, yellow, red),
+and then draws each on the screen.
+
+The first parameter to `pico.layer.sub` identifies the sub-layer for further
+operations.
 Drawing a sub-layer works exactly like drawing a regular layer with
 `pico.output.draw.layer`.
-
-In the example, each sub-layer crops a square from each stripe of the flag
-(blue, yellow, red), and then draws each on the screen.
 
 ## 9. Expert Mode
 
