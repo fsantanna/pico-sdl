@@ -3,10 +3,6 @@ name: Docs
 on:
   push:
     branches: [main]
-    paths: [doc/**, src/*.h]
-  pull_request:
-    branches: [main]
-    paths: [doc/**, src/*.h]
 
 permissions:
   contents: read
@@ -26,14 +22,14 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y doxygen
     - name: Build docs
       run: cd doc && ./build.sh
+    - name: Prepare site
+      run: mkdir -p site/main && mv doc/html/* site/main/
     - name: Upload artifact
-      if: github.event_name == 'push'
       uses: actions/upload-pages-artifact@v3
       with:
-        path: doc/html
+        path: site
 
   deploy:
-    if: github.event_name == 'push'
     needs: build
     runs-on: ubuntu-latest
     environment:
