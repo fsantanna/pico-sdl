@@ -1249,12 +1249,12 @@ static int l_input_event (lua_State* L) {
         case PICO_EVENT_KEY_DN:
             lua_pushstring(L, "key.dn");            // . | t | tag
             lua_setfield(L, T, "tag");              // . | t
-            L_set_keyboard(L, -1, &e.keyboard);     // . | t
+            L_set_keyboard(L, T, &e.keyboard);      // . | t
             break;
         case PICO_EVENT_KEY_UP:
             lua_pushstring(L, "key.up");            // . | t | tag
             lua_setfield(L, T, "tag");              // . | t
-            L_set_keyboard(L, -1, &e.keyboard);     // . | t
+            L_set_keyboard(L, T, &e.keyboard);      // . | t
             break;
 
         case PICO_EVENT_WIN_RESIZE:
