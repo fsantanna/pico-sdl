@@ -812,46 +812,37 @@ static int l_get_view (lua_State* L) {
     return 1;
 }
 
-static void L_set_mouse_fields (lua_State* L, int idx, Pico_Mouse* m) {
-    lua_pushstring(L, (char[]){m->mode, 0});        // T | mode
-    lua_seti(L, idx - 1, 1);                        // T
-    lua_pushnumber(L, m->x);                        // T | x
-    lua_setfield(L, idx - 1, "x");                  // T
-    lua_pushnumber(L, m->y);                        // T | y
-    lua_setfield(L, idx - 1, "y");                  // T
-    lua_pushboolean(L, m->left);                    // T | left
-    lua_setfield(L, idx - 1, "left");               // T
-    lua_pushboolean(L, m->right);                   // T | right
-    lua_setfield(L, idx - 1, "right");              // T
-    lua_pushboolean(L, m->middle);                  // T | middle
-    lua_setfield(L, idx - 1, "middle");             // T
+static void L_set_mouse (lua_State* L, int idx, Pico_Mouse* m) {
+    lua_pushstring(L, (char[]){m->mode, 0});    // T | mode
+    lua_seti(L, idx, 1);                        // T
+    lua_pushnumber(L, m->x);                    // T | x
+    lua_setfield(L, idx, "x");                  // T
+    lua_pushnumber(L, m->y);                    // T | y
+    lua_setfield(L, idx, "y");                  // T
+    lua_pushboolean(L, m->left);                // T | left
+    lua_setfield(L, idx, "left");               // T
+    lua_pushboolean(L, m->right);               // T | right
+    lua_setfield(L, idx, "right");              // T
+    lua_pushboolean(L, m->middle);              // T | middle
+    lua_setfield(L, idx, "middle");             // T
 }
 
-static void L_push_mouse (lua_State* L, Pico_Mouse* m) {
-    lua_newtable(L);                                // t
-    L_set_mouse_fields(L, -1, m);
-}
-
-static void L_set_keyboard_fields (lua_State* L, int idx, Pico_Keyboard* k) {
+static void L_set_keyboard (lua_State* L, int idx, Pico_Keyboard* k) {
     const char* name = SDL_GetKeyName(k->key);
-    lua_pushstring(L, name);                        // T | key
-    lua_setfield(L, idx - 1, "key");                // T
-    lua_pushboolean(L, k->ctrl);                    // T | ctrl
-    lua_setfield(L, idx - 1, "ctrl");               // T
-    lua_pushboolean(L, k->shift);                   // T | shift
-    lua_setfield(L, idx - 1, "shift");              // T
-    lua_pushboolean(L, k->alt);                     // T | alt
-    lua_setfield(L, idx - 1, "alt");                // T
-}
-
-static void L_push_keyboard (lua_State* L, Pico_Keyboard* k) {
-    lua_newtable(L);                                // t
-    L_set_keyboard_fields(L, -1, k);
+    lua_pushstring(L, name);                    // T | key
+    lua_setfield(L, idx, "key");                // T
+    lua_pushboolean(L, k->ctrl);                // T | ctrl
+    lua_setfield(L, idx, "ctrl");               // T
+    lua_pushboolean(L, k->shift);               // T | shift
+    lua_setfield(L, idx, "shift");              // T
+    lua_pushboolean(L, k->alt);                 // T | alt
+    lua_setfield(L, idx, "alt");                // T
 }
 
 static int l_get_keyboard (lua_State* L) {
     Pico_Keyboard k = pico_get_keyboard();
-    L_push_keyboard(L, &k);
+    lua_newtable(L);                            // t
+    L_set_keyboard(L, lua_gettop(L), &k);
     return 1;
 }
 
@@ -862,7 +853,8 @@ static int l_get_mouse (lua_State* L) {
         mode = s[0];
     }
     Pico_Mouse m = pico_get_mouse(mode);
-    L_push_mouse(L, &m);
+    lua_newtable(L);                            // t
+    L_set_mouse(L, lua_gettop(L), &m);
     return 1;
 }
 
@@ -1222,49 +1214,50 @@ static int l_input_event (lua_State* L) {
     }
     assert(id == e.type);
 
-    lua_newtable(L);    // . | t
+    lua_newtable(L);                                // . | t
+    int T = lua_gettop(L);
 
     switch (e.type)
     {
         case PICO_EVENT_QUIT:
             lua_pushstring(L, "quit");              // . | t | tag
-            lua_setfield(L, -2, "tag");             // . | t
+            lua_setfield(L, T, "tag");              // . | t
             break;
 
         case PICO_EVENT_MOUSE_MOTION:
             lua_pushstring(L, "mouse.motion");      // . | t | tag
-            lua_setfield(L, -2, "tag");             // . | t
-            L_set_mouse_fields(L, -1, &e.mouse);   // . | t
+            lua_setfield(L, T, "tag");              // . | t
+            L_set_mouse(L, T, &e.mouse);            // . | t
             break;
         case PICO_EVENT_MOUSE_BUTTON_DN:
             lua_pushstring(L, "mouse.button.dn");   // . | t | tag
-            lua_setfield(L, -2, "tag");             // . | t
-            L_set_mouse_fields(L, -1, &e.mouse);   // . | t
+            lua_setfield(L, T, "tag");              // . | t
+            L_set_mouse(L, T, &e.mouse);            // . | t
             break;
         case PICO_EVENT_MOUSE_BUTTON_UP:
             lua_pushstring(L, "mouse.button.up");   // . | t | tag
-            lua_setfield(L, -2, "tag");             // . | t
-            L_set_mouse_fields(L, -1, &e.mouse);   // . | t
+            lua_setfield(L, T, "tag");              // . | t
+            L_set_mouse(L, T, &e.mouse);            // . | t
             break;
 
         case PICO_EVENT_KEY_DN:
             lua_pushstring(L, "key.dn");            // . | t | tag
-            lua_setfield(L, -2, "tag");             // . | t
-            L_set_keyboard_fields(L, -1, &e.keyboard); // . | t
+            lua_setfield(L, T, "tag");              // . | t
+            L_set_keyboard(L, -1, &e.keyboard);     // . | t
             break;
         case PICO_EVENT_KEY_UP:
             lua_pushstring(L, "key.up");            // . | t | tag
-            lua_setfield(L, -2, "tag");             // . | t
-            L_set_keyboard_fields(L, -1, &e.keyboard); // . | t
+            lua_setfield(L, T, "tag");              // . | t
+            L_set_keyboard(L, -1, &e.keyboard);     // . | t
             break;
 
         case PICO_EVENT_WIN_RESIZE:
             lua_pushstring(L, "window");            // . | t | tag
-            lua_setfield(L, -2, "tag");             // . | t
+            lua_setfield(L, T, "tag");              // . | t
             lua_pushinteger(L, e.window.w);         // . | t | w
-            lua_setfield(L, -2, "w");               // . | t
+            lua_setfield(L, T, "w");                // . | t
             lua_pushinteger(L, e.window.h);         // . | t | h
-            lua_setfield(L, -2, "h");               // . | t
+            lua_setfield(L, T, "h");                // . | t
             break;
 
         default:
