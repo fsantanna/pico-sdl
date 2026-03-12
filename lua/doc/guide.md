@@ -60,8 +60,8 @@ representing `100x100` **logical pixels**.
 In the context of `pico-lua`, we use the term **world** to designate the
 logical view, which applications use as the main reference.
 
-By default, note that `pico-lua` conventionally exhibits the grid and coordinate
-labels to aid development with visual inspection.
+By default, note that `pico-lua` conventionally exhibits the grid and
+coordinate labels to aid development with visual inspection.
 You may click the image to zoom in.
 
 ### 2.2. Configure
@@ -751,9 +751,9 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 
 <table>
 <tr><td><pre>
-> pico.layer.sub("blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15, anchor='C'})
-> pico.layer.sub("yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15, anchor='C'})
-> pico.layer.sub("red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15, anchor='C'})
+> pico.layer.sub("blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15})
+> pico.layer.sub("yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15})
+> pico.layer.sub("red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15})
 > pico.output.clear()
 > pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
 > pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
