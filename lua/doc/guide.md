@@ -822,38 +822,44 @@ These applications follow the same structure of a continuous "main loop":
     poll user events,
     update the state of objects,
     redraw the whole scene (a frame), and
-    repeat.
+    repeat at a given *FPS rate* (frames per second).
 
 This is what a main loop in `pico-lua` looks like:
 
 ```
 -- (just a sketch, do not execute it)
-pico.set.expert(true)
+
+pico.set.expert(true, 40)       -- 40 FPS
+
 while true do
-    -- input / timeout
-    pico.input.event(..., 25)
+    -- input event / timeout
+    local e = pico.input.event()
 
-    -- update
-    (normal lua code)
+    if e then
+        -- event handler
+        (normal lua code)       -- process events
+    else
+        -- timeout handler
+        (normal lua code)       -- process time
+    end
 
-    -- draw
+    -- draw scene
     pico.output.clear()
     pico.output.*()
     pico.output.present()
 end
 ```
 
-Two calls deserve a closer look:
+The call to `pico.set.expert` serves two purposes:
 
-- `pico.set.expert(true)` disables the automatic display that normally
-  happens after every draw call.
-  Screen only updates on `pico.output.present()`, so all drawing between
-  `clear` and `present` represents a single frame.
-  Therefore, even with hundreds of objects, each frame synchronizes at once.
+1. Disables automatic redraws that would happen after every draw call.
+    The screen only updates on `pico.output.present`, so all drawing between
+    `clear` and `present` appears as a single frame.
+    Even with hundreds of objects, the update is instantaneous.
 
-- The timeout in `pico.input.event(...,25)` prevents that the loop runs too
-  fast, but at the same time, enforces at least an iteration every `25ms`
-  (yielding `40` frames per second).
+2. Sets the FPS rate to `40`, making `pico.input.event` awake every `25ms`.
+    If an event occurs in the meantime, say after `10ms`, then `e` is set and
+    the next call to `pico.input.event` resumes after only `15ms`.
 
 ### 9.2. A Simple Example
 
