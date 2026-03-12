@@ -1207,16 +1207,12 @@ static int l_input_event (lua_State* L) {
     }
 
     Pico_Event e;
-    int ise = 1;
-    if (ms == -1) {
-        pico_input_event(&e, id);
-    } else {
-        ise = pico_input_event_timeout(&e, id, ms);
-    }
+    id = pico_input_event_timeout(&e, id, ms);
 
-    if (!ise) {
+    if (id == PICO_EVENT_NONE) {
         return 0;
     }
+    assert(id == e.type);
 
     lua_newtable(L);    // . | t
 

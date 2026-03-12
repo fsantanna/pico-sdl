@@ -1098,229 +1098,216 @@ void pico_layer_text_mode (
 // INPUT
 ///////////////////////////////////////////////////////////////////////////////
 
-// Pre-handles input from environment:
-//  - SDL_QUIT: quit
-//  - CTRL_-/=: zoom
-//  - CTRL_L/R/U/D: scroll
-//  - receives:
-//      - e:  actual input
-//      - xp: input I was expecting
-//  - returns
-//      - 1: if e matches xp
-//      - 0: otherwise
-static int event_from_sdl (Pico_Event* e, int xp, int do_exit) {
-    switch (e->type) {
-        case SDL_QUIT: {
+// Handles auto aids: quit/exit, window resize, ctrl+zoom/scroll/grid.
+//
+
+static int pico_event_handler (Pico_Event* pico, int do_exit) {
+    switch (pico->type) {
+        case PICO_EVENT_QUIT: {
             if (!S.expert && do_exit) {
                 exit(0);
             }
             break;
         }
 
-        case SDL_WINDOWEVENT: {
-            // SDL_WINDOWEVENT_RESIZED: only external
-            // SDL_WINDOWEVENT_SIZE_CHANGED: also internal (SDL_SetWindowSize)
-            if (e->window.event == SDL_WINDOWEVENT_RESIZED) {
-                if (G.fsing) {
-                    G.fsing = 0;
-                } else {
-                    Pico_Rel_Dim phy = { '!', {e->window.data1, e->window.data2}, NULL };
-                    pico_set_window(NULL, -1, &phy);
-                }
+        case PICO_EVENT_WIN_RESIZE: {
+            if (G.fsing) {
+                G.fsing = 0;
+            } else {
+                Pico_Rel_Dim phy = { '!', {pico->window.w, pico->window.h}, NULL };
+                pico_set_window(NULL, -1, &phy);
             }
             break;
         }
 
-        case SDL_KEYDOWN: {
-            int ctrl = (e->key.keysym.mod & KMOD_CTRL);
-            if (!ctrl) {
+        case PICO_EVENT_KEY_DN: {
+            if (!pico->keyboard.ctrl) {
                 break;
             }
-            switch (e->key.keysym.sym) {
+            switch (pico->keyboard.key) {
                 case SDLK_0: {
-                    // TODO: how to restore initial view?
-                    break;
+                    return 1;
                 }
                 case SDLK_MINUS: {
-                    // Zoom out - expand src by 10%
                     assert(S.layer == &G.main);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.w += 0.1;
                     pct.h += 0.1;
-                    Pico_Rel_Rect out = S.layer->view.src;
-                    pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
-                    break;
+                    Pico_Rel_Rect r = S.layer->view.src;
+                    pico_cv_rect_rel_rel(&pct, &r, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    return 1;
                 }
                 case SDLK_EQUALS: {
-                    // Zoom in - shrink src by 10%
                     assert(S.layer == &G.main);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.w -= 0.1;
                     pct.h -= 0.1;
-                    Pico_Rel_Rect out = S.layer->view.src;
-                    pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
-                    break;
+                    Pico_Rel_Rect r = S.layer->view.src;
+                    pico_cv_rect_rel_rel(&pct, &r, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    return 1;
                 }
                 case SDLK_LEFT: {
-                    // Scroll left by 10%
                     assert(S.layer == &G.main);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.x -= 0.1;
-                    Pico_Rel_Rect out = S.layer->view.src;
-                    pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
-                    break;
+                    Pico_Rel_Rect r = S.layer->view.src;
+                    pico_cv_rect_rel_rel(&pct, &r, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    return 1;
                 }
                 case SDLK_RIGHT: {
-                    // Scroll right by 10%
                     assert(S.layer == &G.main);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.x += 0.1;
-                    Pico_Rel_Rect out = S.layer->view.src;
-                    pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
-                    break;
+                    Pico_Rel_Rect r = S.layer->view.src;
+                    pico_cv_rect_rel_rel(&pct, &r, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    return 1;
                 }
                 case SDLK_UP: {
-                    // Scroll up by 10%
                     assert(S.layer == &G.main);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.y -= 0.1;
-                    Pico_Rel_Rect out = S.layer->view.src;
-                    pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
-                    break;
+                    Pico_Rel_Rect r = S.layer->view.src;
+                    pico_cv_rect_rel_rel(&pct, &r, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    return 1;
                 }
                 case SDLK_DOWN: {
-                    // Scroll down by 10%
                     assert(S.layer == &G.main);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.y += 0.1;
-                    Pico_Rel_Rect out = S.layer->view.src;
-                    pico_cv_rect_rel_rel(&pct, &out, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &out, NULL, NULL, NULL);
-                    break;
+                    Pico_Rel_Rect r = S.layer->view.src;
+                    pico_cv_rect_rel_rel(&pct, &r, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    return 1;
                 }
                 case SDLK_g: {
                     assert(S.layer == &G.main);
                     pico_set_view(!G.main.view.grid, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-                    break;
+                    return 1;
                 }
                 case SDLK_s: {
                     pico_output_screenshot(NULL, NULL);
-                    break;
+                    return 1;
                 }
             }
-        }
-        default:
-            // others are not handled automatically
-            break;
-    }
-
-    if (xp == (int)e->type) {
-        // OK
-    } else if (xp == SDL_ANY) {
-        // MAYBE
-        int ok1 = (e->type==SDL_KEYDOWN || e->type==SDL_KEYUP);
-        int ok2 = ok1 || e->type==SDL_MOUSEBUTTONDOWN || e->type==SDL_MOUSEBUTTONUP || e->type==SDL_MOUSEMOTION;
-        int ok3 = ok2 || e->type==SDL_QUIT;
-        int ok4 = ok3 || (e->type==SDL_WINDOWEVENT && e->window.event==SDL_WINDOWEVENT_RESIZED);
-        if (ok4) {
-            // OK
-        } else {
-            // NO
-            return 0;   // not the one I was expecting
-        }
-    } else {
-        // NO
-        return 0;   // not the one I was expecting
-    }
-
-    // adjusts SDL -> logical positions
-    switch (e->type) {
-        case SDL_MOUSEBUTTONDOWN:
-        case SDL_MOUSEBUTTONUP:
-        case SDL_MOUSEMOTION:  {
-            Pico_Rel_Pos pos = { '!' };
-            pico_get_mouse(&pos, PICO_EVENT_MOUSE_BUTTON_NONE);
-            e->button.x = pos.x;
-            e->button.y = pos.y;
             break;
         }
         default:
             break;
     }
-    return 1;
+    return 0;
 }
 
-void pico_input_delay (int ms) {
-    while (1) {
-        int old = SDL_GetTicks();
-        Pico_Event e;
-        int has = SDL_WaitEventTimeout(&e, ms);
-        if (has) {
-            event_from_sdl(&e, SDL_ANY, 1);
+static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
+    assert(sdl!=NULL && pico!=NULL && "bug found");
+
+    PICO_EVENT _enum (SDL_Event* sdl) {
+        switch (sdl->type) {
+            case SDL_QUIT:
+                return PICO_EVENT_QUIT;
+            case SDL_KEYDOWN:
+                return PICO_EVENT_KEY_DN;
+            case SDL_KEYUP:
+                return PICO_EVENT_KEY_UP;
+            case SDL_MOUSEMOTION:
+                return PICO_EVENT_MOUSE_MOTION;
+            case SDL_MOUSEBUTTONDOWN:
+                return PICO_EVENT_MOUSE_BUTTON_DN;
+            case SDL_MOUSEBUTTONUP:
+                return PICO_EVENT_MOUSE_BUTTON_UP;
+            case SDL_WINDOWEVENT:
+                if (sdl->window.event == SDL_WINDOWEVENT_RESIZED) {
+                    return PICO_EVENT_WIN_RESIZE;
+                } else {
+                    return PICO_EVENT_NONE;
+                }
+            default:
+                return PICO_EVENT_NONE;
         }
-        int dt = SDL_GetTicks() - old;
-        ms -= dt;
-        if (ms <= 0) {
-            return;
-        }
+    }
+
+    pico->type = _enum(sdl);
+    switch (pico->type) {
+        case PICO_EVENT_NONE:
+            break;              // TODO: complete with all possible events
+
+        case PICO_EVENT_QUIT:
+            break;
+        case PICO_EVENT_WIN_RESIZE:
+            pico->window = (typeof(pico->window)) { sdl->window.data1, sdl->window.data2 };
+            break;
+
+        case PICO_EVENT_KEY_DN:
+        case PICO_EVENT_KEY_UP:
+            pico->keyboard = pico_get_keyboard();
+            pico->keyboard.key = sdl->key.keysym.sym;
+            break;
+
+        case PICO_EVENT_MOUSE_MOTION:
+        case PICO_EVENT_MOUSE_BUTTON_DN:
+        case PICO_EVENT_MOUSE_BUTTON_UP:
+            pico->mouse = pico_get_mouse(0);
+            break;
+
+        default:
+            printf(">>> %d\n", pico->type);
+            assert(0 && "bug found");
+            break;
     }
 }
 
-void pico_input_event (Pico_Event* evt, int type) {
-    while (1) {
-        Pico_Event x;
-        SDL_WaitEvent(&x);
-        if (event_from_sdl(&x, type, 1)) {
-            if (evt != NULL) {
-                *evt = x;
-            }
-            return;
-        }
-    }
-}
-
-int pico_input_event_ask (Pico_Event* evt, int type) {
-    int has = SDL_PollEvent(evt);
-    if (!has) return 0;
-    return event_from_sdl(evt, type, 1);
-}
-
-int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
+PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
     int old = SDL_GetTicks();
     while (1) {
-        int has = SDL_WaitEventTimeout(evt, timeout);
-        int now = SDL_GetTicks();
+        Pico_Event out;
+        SDL_Event sdl;
+        int has = SDL_WaitEventTimeout(&sdl, timeout);
         if (!has) {
-            return 0;
-        } else if (event_from_sdl(evt, type, 1)) {
-            return 1;
+            return PICO_EVENT_NONE;
+        }
+        int now = (timeout == -1) ? 0 : SDL_GetTicks();
+
+        sdl_to_pico(&sdl, &out);
+        if (pico_event_handler(&out, 1)) {
+            // continue
+        } else if (out.type == PICO_EVENT_NONE) {
+            // continue
+        } else if (type==PICO_EVENT_ANY || out.type==type) {
+            if (evt != NULL) {
+                *evt = out;
+            }
+            return out.type;
         } else {
+            // continue
+        }
+
+        if (timeout != -1) {
             timeout = MAX(0, timeout-(now-old));
             old = now;
         }
     }
 }
 
+PICO_EVENT pico_input_event (Pico_Event* evt, int type) {
+    return pico_input_event_timeout(evt, type, -1);
+}
+
+void pico_input_delay (int ms) {
+    pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms);
+}
+
 void pico_input_loop (void) {
-    while (1) {
-        Pico_Event e;
-        SDL_WaitEvent(&e);
-        event_from_sdl(&e, SDL_ANY, 0);
-        if (e.type == SDL_QUIT) {
-            return;
-        }
-    }
+    pico_input_event(NULL, PICO_EVENT_QUIT);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

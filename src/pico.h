@@ -126,37 +126,34 @@ void pico_quit (void);
 /// @{
 
 /// @brief Stops the program until the given number of milliseconds have passed.
+/// Equivalent to `pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms)`.
 /// @include delay.c
 /// @param ms milliseconds to wait
 void pico_input_delay (int ms);
 
-/// @brief Stops the program until an event occurs.
+/// @brief Stops the program until a matching event occurs.
+/// Equivalent to `pico_input_event_timeout(evt, type, -1)`.
 /// @include event.c
 /// @param evt where to save the event data, or NULL to ignore
-/// @param type type of event to wait for (Pico_EventType)
-/// @sa pico_input_event_ask
+/// @param type type of event to wait for (PICO_EVENT_ANY for any)
+/// @return the matched PICO_EVENT type
 /// @sa pico_input_event_timeout
-void pico_input_event (Pico_Event* evt, int type);
+PICO_EVENT pico_input_event (Pico_Event* evt, int type);
 
-/// @brief Checks if an event has occured.
-/// @param evt where to save the event data, or NULL to ignore
-/// @param type type of event to check the occurence (Pico_EventType)
-/// @return 1 if the given type of event has occurred, or 0 otherwise
-/// @sa pico_input_event
-/// @sa pico_input_event_timeout
-int  pico_input_event_ask (Pico_Event* evt, int type);
-
-/// @brief Stops the program until an event occurs or a timeout is reached.
+/// @brief Stops the program until a matching event occurs or a timeout is reached.
+/// All input functions delegate to this one.
+/// Internal events (quit/exit, window resize, ctrl+zoom/scroll/grid) are
+/// handled automatically and never forwarded.
 /// @include event_timeout.c
 /// @param evt where to save the event data, or NULL to ignore
-/// @param type type of event to wait for (Pico_EventType)
-/// @param timeout time limit to wait for (milliseconds)
-/// @return 1 if the given type of event has occurred, or 0 otherwise
+/// @param type type of event to wait for (PICO_EVENT_ANY for any)
+/// @param timeout time limit in milliseconds, or -1 to wait forever
+/// @return the matched PICO_EVENT type, or PICO_EVENT_NONE on timeout
 /// @sa pico_input_event
-/// @sa pico_input_event_ask
-int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
+PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 
 /// @brief Blocks in an event loop until the window is closed.
+/// Equivalent to `pico_input_event(NULL, PICO_EVENT_QUIT)`.
 void pico_input_loop (void);
 
 /// @}

@@ -4,8 +4,8 @@
 #include <SDL2/SDL_events.h>
 
 typedef enum PICO_EVENT {
-    PICO_EVENT_NONE              = -1,
-    PICO_EVENT_ANY               =  0,
+    PICO_EVENT_ANY               = -1,
+    PICO_EVENT_NONE              =  0,
     PICO_EVENT_QUIT,
     PICO_EVENT_WIN_RESIZE,
     PICO_EVENT_KEY_DN,
