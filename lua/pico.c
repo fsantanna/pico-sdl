@@ -1259,7 +1259,7 @@ static int l_input_event (lua_State* L) {
             lua_setfield(L, -2, "keyboard");        // . | t
             break;
 
-        case PICO_EVENT_WINDOW:
+        case PICO_EVENT_WIN_RESIZE:
             lua_pushstring(L, "window");            // . | t | tag
             lua_setfield(L, -2, "tag");             // . | t
             lua_pushinteger(L, e.window.w);         // . | t | w
@@ -1691,15 +1691,15 @@ int luaopen_pico_native (lua_State* L) {
         lua_newtable(L);                                    // . | G | events
         lua_pushinteger(L, PICO_EVENT_QUIT);                // . | G | events | QT
         lua_setfield(L, -2, "quit");                        // . | G | events
-        lua_pushinteger(L, PICO_EVENT_WINDOW);              // . | G | events | WN
-        lua_setfield(L, -2, "window");                      // . | G | events
-        lua_pushinteger(L, PICO_EVENT_KEY_DN);            // . | G | events | DN
+        lua_pushinteger(L, PICO_EVENT_WIN_RESIZE);          // . | G | events | WN
+        lua_setfield(L, -2, "win.resize");                  // . | G | events
+        lua_pushinteger(L, PICO_EVENT_KEY_DN);              // . | G | events | DN
         lua_setfield(L, -2, "key.dn");                      // . | G | events
         lua_pushinteger(L, PICO_EVENT_KEY_UP);              // . | G | events | UP
         lua_setfield(L, -2, "key.up");                      // . | G | events
         lua_pushinteger(L, PICO_EVENT_MOUSE_MOTION);        // . | G | events | MO
         lua_setfield(L, -2, "mouse.motion");                // . | G | events
-        lua_pushinteger(L, PICO_EVENT_MOUSE_BUTTON_DN);   // . | G | events | DN
+        lua_pushinteger(L, PICO_EVENT_MOUSE_BUTTON_DN);     // . | G | events | DN
         lua_setfield(L, -2, "mouse.button.dn");             // . | G | events
         lua_pushinteger(L, PICO_EVENT_MOUSE_BUTTON_UP);     // . | G | events | UP
         lua_setfield(L, -2, "mouse.button.up");             // . | G | events

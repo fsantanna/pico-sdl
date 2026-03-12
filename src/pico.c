@@ -653,15 +653,15 @@ Pico_Mouse pico_get_mouse (char mode) {
         mode = S.mouse;
     }
 
+    SDL_Point phy;
+    Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
+
     Pico_Mouse m = {
         .mode   = mode,
         .left   = !!(masks & SDL_BUTTON(SDL_BUTTON_LEFT)),
         .right  = !!(masks & SDL_BUTTON(SDL_BUTTON_RIGHT)),
         .middle = !!(masks & SDL_BUTTON(SDL_BUTTON_MIDDLE)),
     };
-
-    SDL_Point phy;
-    Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
 
     if (mode == 'w') {
         m.x = phy.x;
