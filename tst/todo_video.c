@@ -19,7 +19,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_expert(1);
+    int ms = pico_set_expert(1, 60);
 
     Pico_Video info = pico_get_video(VIDEO_PATH, NULL);
     int total = info.fps * 5;
@@ -44,17 +44,11 @@ int main (void) {
     int paused = 0;
     float frame_f = 0.0;
     int frame = 0;
-    Uint32 last_tick = pico_get_ticks();
 
     while (1) {
-        /* Timing */
-        Uint32 now = pico_get_ticks();
-        int dt = now - last_tick;
-        last_tick = now;
-
         /* Advance frame by speed */
         if (!paused) {
-            frame_f += speed * info.fps * dt / 1000.0;
+            frame_f += speed * info.fps * ms / 1000.0;
             /* Clamp */
             if (frame_f < 0) {
                 frame_f = 0;
@@ -132,16 +126,7 @@ int main (void) {
 
         /* Events */
         Pico_Event evt;
-        int timeout = 16;
-        while (timeout > 0) {
-            Uint32 before = pico_get_ticks();
-            int has = pico_input_event_timeout(
-                &evt, PICO_EVENT_ANY, timeout
-            );
-            if (!has) {
-                break;
-            }
-
+        while (pico_input_event(&evt, PICO_EVENT_ANY)) {
             if (evt.type == PICO_EVENT_QUIT) {
                 goto done;
             } else if (evt.type == PICO_EVENT_KEY_DN) {
@@ -175,8 +160,7 @@ int main (void) {
                 int my = evt.mouse.y;
                 /* Click on seek bar area */
                 if (my >= win_h - BAR_H * 2) {
-                    float click_pct =
-                        (float)mx / win_w;
+                    float click_pct = (float)mx / win_w;
                     if (click_pct < 0) {
                         click_pct = 0;
                     } else if (click_pct > 1) {
@@ -186,8 +170,6 @@ int main (void) {
                     frame = (int)frame_f;
                 }
             }
-
-            timeout -= (pico_get_ticks() - before);
         }
     }
 

@@ -878,8 +878,10 @@ static int l_set_font (lua_State* L) {
 static int l_set_expert (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);
     int on = lua_toboolean(L, 1);
-    pico_set_expert(on);
-    return 0;
+    int fps = luaL_optinteger(L, 2, 0);
+    int ms = pico_set_expert(on, fps);
+    lua_pushinteger(L, ms);
+    return 1;
 }
 
 static int l_set_color_clear (lua_State* L) {
@@ -1207,7 +1209,11 @@ static int l_input_event (lua_State* L) {
     }
 
     Pico_Event e;
-    id = pico_input_event_timeout(&e, id, ms);
+    if (ms == -1) {
+        id = pico_input_event(&e, id);
+    } else {
+        id = pico_input_event_timeout(&e, id, ms);
+    }
 
     if (id == PICO_EVENT_NONE) {
         return 0;
@@ -1243,12 +1249,12 @@ static int l_input_event (lua_State* L) {
         case PICO_EVENT_KEY_DN:
             lua_pushstring(L, "key.dn");            // . | t | tag
             lua_setfield(L, T, "tag");              // . | t
-            L_set_keyboard(L, -1, &e.keyboard);     // . | t
+            L_set_keyboard(L, T, &e.keyboard);      // . | t
             break;
         case PICO_EVENT_KEY_UP:
             lua_pushstring(L, "key.up");            // . | t | tag
             lua_setfield(L, T, "tag");              // . | t
-            L_set_keyboard(L, -1, &e.keyboard);     // . | t
+            L_set_keyboard(L, T, &e.keyboard);      // . | t
             break;
 
         case PICO_EVENT_WIN_RESIZE:

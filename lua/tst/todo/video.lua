@@ -12,11 +12,11 @@
 
 require 'pico'
 
-local VIDEO_PATH = "video.y4m"
+local VIDEO_PATH = "../video.y4m"
 local BAR_H = 10
 
 pico.init(true)
-pico.set.expert(true)
+local ms = pico.set.expert(true, 60)
 
 local info = pico.get.video(VIDEO_PATH)
 local total = info.fps * 5
@@ -40,17 +40,11 @@ local speed = 1.0
 local paused = false
 local frame_f = 0.0
 local frame = 0
-local last_tick = pico.get.ticks()
 
 while true do
-    -- Timing
-    local now = pico.get.ticks()
-    local dt = now - last_tick
-    last_tick = now
-
     -- Advance frame by speed
     if not paused then
-        frame_f = frame_f + speed * info.fps * dt / 1000.0
+        frame_f = frame_f + speed * info.fps * ms / 1000.0
         -- Clamp
         if frame_f < 0 then
             frame_f = 0
@@ -96,10 +90,8 @@ while true do
     pico.output.present()
 
     -- Events
-    local timeout = 16
-    while timeout > 0 do
-        local before = pico.get.ticks()
-        local e = pico.input.event(timeout)
+    while true do
+        local e = pico.input.event()
         if not e then
             break
         end
@@ -144,8 +136,6 @@ while true do
                 frame = math.floor(frame_f)
             end
         end
-
-        timeout = timeout - (pico.get.ticks() - before)
     end
 end
 

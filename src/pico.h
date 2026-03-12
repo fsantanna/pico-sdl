@@ -275,8 +275,9 @@ Pico_Color pico_get_color_clear (void);
 Pico_Color pico_get_color_draw (void);
 
 /// @brief Gets the state of expert mode.
+/// @param fps optional pointer to receive fps value (NULL to ignore)
 /// @return 1 if enabled, or 0 otherwise
-int pico_get_expert (void);
+int pico_get_expert (int* fps);
 
 /// @brief Gets the font used to draw texts.
 /// @return path to the current font file
@@ -482,9 +483,11 @@ void pico_set_color_clear (Pico_Color color);
 /// @param color new color
 void pico_set_color_draw (Pico_Color color);
 
-/// @brief Toggles the expert mode.
+/// @brief Toggles the expert mode with optional FPS timing.
 /// @param on 1 to enable it, or 0 to disable it
-void pico_set_expert (int on);
+/// @param fps target frames per second (0 = wait forever)
+/// @return frame period in ms
+int pico_set_expert (int on, int fps);
 
 /// @brief Changes the font used to draw texts.
 /// @param path path to font file

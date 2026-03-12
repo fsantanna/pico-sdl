@@ -273,7 +273,7 @@ TTL-based eviction to avoid reloading. The hash implementation uses:
 
 1. Operations draw to a logical texture (`TEX`) when in logical mode
 2. In immediate mode (default), display updates instantly after each operation
-3. In expert mode (`pico_set_expert(1)`), rendering is buffered until
+3. In expert mode (`pico_set_expert(1, 0)`), rendering is buffered until
    `pico_output_present()` is called
 4. Grid overlay (enabled by default) shows logical pixel boundaries for
    debugging
