@@ -4,7 +4,7 @@
 
 typedef struct {
     int delay;
-    Pico_Rect_Pct r;
+    Pico_Rel_Rect r;
 } Drop;
 
 #define DROP_COUNT 100
@@ -13,14 +13,9 @@ typedef struct {
 #define DROP_SPEED 0.01
 #define MAX_DELAY 50
 
-void init_drop(Drop* drop) {
+void init_drop (Drop* drop) {
     drop->delay = rand() % MAX_DELAY;
-    drop->r.x = (float)rand() / RAND_MAX;
-    drop->r.y = -DROP_HEIGHT;
-    drop->r.w = DROP_WIDTH;
-    drop->r.h = DROP_HEIGHT;
-    drop->r.anchor = (Pico_Pct){PICO_ANCHOR_CENTER, PICO_ANCHOR_BOTTOM};
-    drop->r.up = NULL;
+    drop->r = (Pico_Rel_Rect){ '%', {(float)rand() / RAND_MAX, -DROP_HEIGHT, DROP_WIDTH, DROP_HEIGHT}, PICO_ANCHOR_S, NULL };
 }
 
 int main(void) {
@@ -56,7 +51,7 @@ int main(void) {
                 if (drop->r.y >= 1.0) {
                     init_drop(drop);
                 } else {
-                    pico_output_draw_rect_pct(&drop->r);
+                    pico_output_draw_rect(&drop->r);
                 }
             }
         }
