@@ -5,12 +5,11 @@ pico.set.expert(true)
 
 local mx, my = 5, 5              -- mouse pixel (centered)
 local kx, ky = 4, 4              -- arrow-key pixel
-local pos = {'!', x=0, y=0}      -- reusable position for mouse query
 local spd = 1                     -- arrow-key speed per frame
 
 while true do
-    pico.get.mouse(pos)
-    mx, my = pos.x, pos.y
+    local m = pico.get.mouse('!')
+    mx, my = m.x, m.y
 
     pico.output.clear()
     pico.set.color.draw 'red'

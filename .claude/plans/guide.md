@@ -21,6 +21,16 @@ interactive examples. Consult `lua/doc/api.md` for the full API.
 | 10 | Auxiliary Functions | OK | cv.pos, cv.rect, vs.pos_rect, vs.rect_rect |
 | 11 | Extras | OK | output.sound, output.screenshot |
 
+## Done
+
+- **Flatten events**: `lua/pico.c` — `L_set_mouse_fields` /
+  `L_set_keyboard_fields` helpers; event switch uses flat fields
+  (`e.key`, `e.x`) instead of nested sub-tables
+- **Fix rects.lua**: return-value `pico.get.mouse('!')` API
+- **Fix guide §9.2**: inline example matches rects.lua (raw mode)
+- **Fix guide §8.4**: `anc='C'` → `anchor='C'` (3 occurrences)
+- **Typos**: "exhibit" → "exhibits" (§2.1), "resuluts" → "results" (§6.4)
+
 ## Issues (future)
 
 - **New section**: Guide for video playback
