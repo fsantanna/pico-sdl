@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['r_0',['r',['../structPico__Color.html#a2d9912026d4f4ec0c11920f21f97861a',1,'Pico_Color::r'],['../structPico__Color__A.html#ae8902b4f0c0686a324aa6ad252fb313b',1,'Pico_Color_A::r']]]
+  ['key_0',['key',['../structPico__Keyboard.html#adc26ade25117d4335de47933b5d13ccb',1,'Pico_Keyboard']]],
+  ['keyboard_1',['keyboard',['../structPico__Event.html#a40d842ecdabb31694cd9210fe716069c',1,'Pico_Event']]]
 ];

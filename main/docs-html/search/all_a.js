@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['r_0',['r',['../structPico__Color.html#a2d9912026d4f4ec0c11920f21f97861a',1,'Pico_Color::r'],['../structPico__Color__A.html#ae8902b4f0c0686a324aa6ad252fb313b',1,'Pico_Color_A::r']]]
+  ['middle_0',['middle',['../structPico__Mouse.html#a6d1ac814d26e3f09dfb6bcb4fc590c29',1,'Pico_Mouse']]],
+  ['mode_1',['mode',['../structPico__Mouse.html#abdc3d64cf4ef73f7a4125cc45089773f',1,'Pico_Mouse::mode'],['../structPico__Rel__Rect.html#a297989582eaaa626be2a15b559ca04ba',1,'Pico_Rel_Rect::mode'],['../structPico__Rel__Dim.html#ac499c0a9f0888f8dd423e0d8111bd628',1,'Pico_Rel_Dim::mode'],['../structPico__Rel__Pos.html#af1059bd1a3a1d5503deff84dff6b77e5',1,'Pico_Rel_Pos::mode']]],
+  ['mouse_2',['mouse',['../structPico__Event.html#aecaffe3678049e0d687dd73293e7cf5f',1,'Pico_Event']]]
 ];

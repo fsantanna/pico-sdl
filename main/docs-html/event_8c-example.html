@@ -82,14 +82,14 @@ $(function() {
 <div class="line">    SDL_Event event;</div>
 <div class="line"> </div>
 <div class="line">    printf(<span class="stringliteral">&quot;Waiting for an event...\n&quot;</span>);</div>
-<div class="line">    <a id="a1" name="a1"></a><a class="code hl_function" href="group__Input.html#gaf9a82ea8ee8e64c64e79760926c375fd">pico_input_event</a>(&amp;event, 0);</div>
+<div class="line">    <a id="a1" name="a1"></a><a class="code hl_function" href="group__Input.html#gaf5961bc1e107f7a74ef980b5adf103eb">pico_input_event</a>(&amp;event, 0);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;Event detected! Type: %d\n&quot;</span>, event.type);</div>
 <div class="line"> </div>
 <div class="line">    <a class="code hl_function" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>(0);</div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="ttc" id="agroup__Init_html_gab655caa50f1f8060182dc24f2d11e589"><div class="ttname"><a href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a></div><div class="ttdeci">void pico_init(int on)</div><div class="ttdoc">Initializes and terminates pico.</div></div>
-<div class="ttc" id="agroup__Input_html_gaf9a82ea8ee8e64c64e79760926c375fd"><div class="ttname"><a href="group__Input.html#gaf9a82ea8ee8e64c64e79760926c375fd">pico_input_event</a></div><div class="ttdeci">void pico_input_event(Pico_Event *evt, int type)</div><div class="ttdoc">Stops the program until an event occurs.</div></div>
+<div class="ttc" id="agroup__Input_html_gaf5961bc1e107f7a74ef980b5adf103eb"><div class="ttname"><a href="group__Input.html#gaf5961bc1e107f7a74ef980b5adf103eb">pico_input_event</a></div><div class="ttdeci">PICO_EVENT pico_input_event(Pico_Event *evt, int type)</div><div class="ttdoc">Stops the program until a matching event occurs. Equivalent to pico_input_event_timeout(evt,...</div></div>
 </div><!-- fragment --> </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

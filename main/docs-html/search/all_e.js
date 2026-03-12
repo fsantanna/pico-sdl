@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['w_0',['w',['../structSDL__FDim.html#a8b8fc5fc69f0de8cbcceafc56c7679eb',1,'SDL_FDim::w'],['../structPico__Abs__Dim.html#a4a1e771eaaba377fe837ab6324ad9d7a',1,'Pico_Abs_Dim::w'],['../structPico__Rel__Rect.html#a776e125126bcce50c2b11d9ec1494a55',1,'Pico_Rel_Rect::w'],['../structPico__Rel__Dim.html#a61607c1141f0d3b31faf78dc7718c993',1,'Pico_Rel_Dim::w']]],
-  ['what_20is_20pico_20sdl_1',['What is pico-sdl?',['../index.html#autotoc_md1',1,'']]]
+  ['sdl_0',['sdl',['../index.html#autotoc_md3',1,'Building pico-sdl'],['../index.html#autotoc_md1',1,'What is pico-sdl?']]],
+  ['sdl_20documentation_1',['pico-sdl documentation',['../index.html',1,'']]],
+  ['sdl_5ffdim_2',['SDL_FDim',['../structSDL__FDim.html',1,'']]],
+  ['shift_3',['shift',['../structPico__Keyboard.html#aeb5dc86b4afaeba9b1ac88bbe8faf5d5',1,'Pico_Keyboard']]],
+  ['state_4',['State',['../group__State.html',1,'']]]
 ];
