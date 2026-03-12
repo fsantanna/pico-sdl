@@ -27,7 +27,7 @@ int main(void) {
     srand(time(NULL));
     pico_init(1);
     pico_set_window("Rain Simulation", -1, NULL);
-    pico_set_expert(1);
+    pico_set_expert(1, 0);
 
     Drop drops[DROP_COUNT];
     for (int i = 0; i < DROP_COUNT; i++) {

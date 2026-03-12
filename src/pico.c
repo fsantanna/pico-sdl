@@ -77,7 +77,12 @@ static struct { // exposed global state
         Pico_Color clear;
         Pico_Color draw;
     } color;
-    int expert;
+    struct {
+        int on;
+        int fps;
+        int ms;
+        int t0;
+    } expert;
     const char* font;
     Pico_Layer* layer;
     char mouse;
@@ -551,7 +556,7 @@ void pico_init (int on) {
         S = (typeof(S)) {
             .alpha  = 0xFF,
             .color  = { PICO_COLOR_BLACK, PICO_COLOR_WHITE },
-            .expert = 0,
+            .expert = {0, 0, 0, 0},
             .font   = NULL,
             .layer  = &G.main,
             .mouse  = '!',
@@ -632,8 +637,11 @@ Pico_Color pico_get_color_draw (void) {
     return S.color.draw;
 }
 
-int pico_get_expert (void) {
-    return S.expert;
+int pico_get_expert (int* fps) {
+    if (fps != NULL) {
+        *fps = S.expert.fps;
+    }
+    return S.expert.on;
 }
 
 const char* pico_get_font (void) {
@@ -805,9 +813,16 @@ void pico_set_dim (Pico_Rel_Dim* dim) {
     pico_set_view(-1, dim, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
-void pico_set_expert (int on) {
-    S.expert = on;
+int pico_set_expert (int on, int fps) {
+    assert(fps >= 0);
+    S.expert.on  = on;
+    S.expert.fps = fps;
+    if (on && fps!=0) {
+        S.expert.ms = 1000 / fps;
+        S.expert.t0 = SDL_GetTicks();
+    }
     G.main.view.grid = 0;
+    return S.expert.ms;
 }
 
 void pico_set_font (const char* path) {
@@ -1080,7 +1095,7 @@ void pico_layer_text_mode (
 static int pico_event_handler (Pico_Event* pico, int do_exit) {
     switch (pico->type) {
         case PICO_EVENT_QUIT: {
-            if (!S.expert && do_exit) {
+            if (!S.expert.on && do_exit) {
                 exit(0);
             }
             break;
@@ -1274,7 +1289,23 @@ PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 }
 
 PICO_EVENT pico_input_event (Pico_Event* evt, int type) {
-    return pico_input_event_timeout(evt, type, -1);
+    if (S.expert.fps <= 0) {
+        return pico_input_event_timeout(evt, type, -1);
+    }
+
+    int now = SDL_GetTicks();
+    int cur = (S.expert.t0 + S.expert.ms) - now;
+    if (cur <= 0) {
+        while (S.expert.t0+S.expert.ms <= now) {
+            S.expert.t0 += S.expert.ms;
+        }
+        cur = 0;
+    }
+    PICO_EVENT ret = pico_input_event_timeout(evt, type, cur);
+    if (ret == PICO_EVENT_NONE) {
+        S.expert.t0 += S.expert.ms;
+    }
+    return ret;
 }
 
 void pico_input_delay (int ms) {
@@ -1549,7 +1580,7 @@ static void _pico_output_present (int force) {
         return;
     } else if (force) {
         // ok
-    } else if (S.expert) {
+    } else if (S.expert.on) {
         return;
     } else if (S.layer != &G.main) {
         return;  // auto-present only on main layer

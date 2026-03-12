@@ -2,7 +2,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_expert(1);
+    pico_set_expert(1, 0);
 
     pico_quit();
 

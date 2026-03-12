@@ -19,7 +19,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_expert(1);
+    pico_set_expert(1, 0);
 
     Pico_Video info = pico_get_video(VIDEO_PATH, NULL);
     int total = info.fps * 5;

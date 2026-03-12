@@ -9,7 +9,7 @@ int main (void) {
     pico_output_draw_rect(&r);
     _pico_check("expert-01");
 
-    pico_set_expert(1);
+    pico_set_expert(1, 0);
     pico_output_clear();
     _pico_check("expert-02");
 
