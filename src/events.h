@@ -7,7 +7,7 @@ typedef enum PICO_EVENT {
     PICO_EVENT_NONE              = -1,
     PICO_EVENT_ANY               =  0,
     PICO_EVENT_QUIT,
-    PICO_EVENT_WINDOW,
+    PICO_EVENT_WIN_RESIZE,
     PICO_EVENT_KEY_DN,
     PICO_EVENT_KEY_UP,
     PICO_EVENT_MOUSE_MOTION,

@@ -55,7 +55,6 @@ typedef struct Pico_Layer {
 #include "layers.hc"
 #include "video.hc"
 
-#define SDL_ANY PICO_EVENT_ANY
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 #ifdef PICO_TESTS
@@ -81,6 +80,7 @@ static struct { // exposed global state
     int expert;
     const char* font;
     Pico_Layer* layer;
+    char mouse;
     PICO_STYLE style;
     struct {
         Pico_Abs_Dim dim;
@@ -97,6 +97,7 @@ typedef struct {
         Pico_Color draw;
     } color;
     const char*   font;
+    char          mouse;
     PICO_STYLE    style;
     Pico_Layer*   layer;
 } Pico_State;
@@ -538,6 +539,7 @@ void pico_init (int on) {
             .expert = 0,
             .font   = NULL,
             .layer  = &G.main,
+            .mouse  = '!',
             .style  = PICO_STYLE_FILL,
             .win    = {
                 .dim = PICO_DIM_PHY,
@@ -646,12 +648,28 @@ const char* pico_get_layer (void) {
     return S.layer->name;
 }
 
-int pico_get_mouse (Pico_Rel_Pos* pos, int button) {
+Pico_Mouse pico_get_mouse (char mode) {
+    if (mode == 0) {
+        mode = S.mouse;
+    }
+
+    Pico_Mouse m = {
+        .mode   = mode,
+        .left   = !!(masks & SDL_BUTTON(SDL_BUTTON_LEFT)),
+        .right  = !!(masks & SDL_BUTTON(SDL_BUTTON_RIGHT)),
+        .middle = !!(masks & SDL_BUTTON(SDL_BUTTON_MIDDLE)),
+    };
+
     SDL_Point phy;
     Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
-    if (button == 0) {
-        masks = 0;
+
+    if (mode == 'w') {
+        m.x = phy.x;
+        m.y = phy.y;
+        return m;
     }
+
+    // window -> logical
 
     // rel view.dst/src -> abs dst/src
     SDL_Rect dst = pico_cv_rect_rel_abs (
@@ -674,33 +692,37 @@ int pico_get_mouse (Pico_Rel_Pos* pos, int button) {
         src.y + rel.y*src.h,
     };
 
-    switch (pos->mode) {
+    switch (mode) {
         case '!':
-            pos->x = log.x;
-            pos->y = log.y;
+            m.x = log.x;
+            m.y = log.y;
             break;
-        case '%': {
-            Pico_Rel_Rect up;
-            if (pos->up == NULL) {
-                up = (Pico_Rel_Rect){ '!', {0, 0, S.layer->view.dim.w, S.layer->view.dim.h}, PICO_ANCHOR_NW, NULL };
-            } else {
-                assert(0 && "TODO");
-            }
-            pos->x = (log.x - up.x) / up.w;
-            pos->y = (log.y - up.y) / up.h;
+        case '%':
+            m.x = log.x / S.layer->view.dim.w;
+            m.y = log.y / S.layer->view.dim.h;
+            break;
+        case '#': {
+            Pico_Anchor anc = S.layer->view.src.anchor;
+            m.x = (log.x / (float)S.layer->view.tile.w) + (1 - anc.x);
+            m.y = (log.y / (float)S.layer->view.tile.h) + (1 - anc.y);
             break;
         }
-        case '#':
-            pos->x = (log.x / (float)S.layer->view.tile.w) + (1 - pos->anchor.x);
-            pos->y = (log.y / (float)S.layer->view.tile.h) + (1 - pos->anchor.y);
-            break;
         default:
-            assert(0 && "invalid mode");
+            assert(0 && "invalid mouse mode");
     }
 
-    return masks & SDL_BUTTON(button);
+    return m;
 }
 
+Pico_Keyboard pico_get_keyboard (void) {
+    SDL_Keymod mod = SDL_GetModState();
+    return (Pico_Keyboard) {
+        .key   = 0,
+        .ctrl  = !!(mod & KMOD_CTRL),
+        .shift = !!(mod & KMOD_SHIFT),
+        .alt   = !!(mod & KMOD_ALT),
+    };
+}
 
 int pico_get_show (void) {
     return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
@@ -843,6 +865,11 @@ void pico_set_show (int on) {
     }
 }
 
+void pico_set_mouse (char mode) {
+    assert((mode=='w' || mode=='!' || mode=='%' || mode=='#') && "invalid mouse mode");
+    S.mouse = mode;
+}
+
 void pico_set_style (PICO_STYLE style) {
     S.style = style;
 }
@@ -857,6 +884,7 @@ void pico_push (void) {
         .alpha = S.alpha,
         .color = { S.color.clear, S.color.draw },
         .font  = S.font,
+        .mouse = S.mouse,
         .style = S.style,
         .layer = S.layer,
     };
@@ -868,8 +896,9 @@ void pico_pop (void) {
     S.alpha = st->alpha;
     S.color.clear = st->color.clear;
     S.color.draw  = st->color.draw;
-    S.font  = st->font;
-    S.style = st->style;
+    S.font        = st->font;
+    S.mouse       = st->mouse;
+    S.style       = st->style;
     if (S.layer != st->layer) {
         S.layer = st->layer;
         SDL_SetRenderTarget(G.ren, S.layer->tex);

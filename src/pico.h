@@ -406,6 +406,10 @@ void pico_layer_video_mode (int mode,
 
 ///////////////////////////////////////////////////////////////////////////////
 
+/// @brief Gets the keyboard state (current modifier flags).
+/// @return keyboard state with modifier flags (key is 0 when polling)
+Pico_Keyboard pico_get_keyboard (void);
+
 /// @brief Gets the mouse state.
 /// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window, 0 uses default)
 /// @return mouse state with position and button flags
@@ -551,7 +555,7 @@ void pico_set_dim (Pico_Rel_Dim* dim);
 // PUSH / POP
 
 /// @brief Saves the current drawing state onto a stack.
-/// Saves: alpha, angle, colors, crop, font, style, layer.
+/// Saves: alpha, colors, font, mouse, style, layer.
 /// @sa pico_pop
 void pico_push (void);
 
