@@ -60,7 +60,7 @@ representing `100x100` **logical pixels**.
 In the context of `pico-lua`, we use the term **world** to designate the
 logical view, which applications use as the main reference.
 
-By default, note that `pico-lua` conventionally exhibit the grid and coordinate
+By default, note that `pico-lua` conventionally exhibits the grid and coordinate
 labels to aid development with visual inspection.
 You may click the image to zoom in.
 
@@ -505,7 +505,7 @@ region is stretched to fill the entire window:
 </table>
 
 Cropping the source to half (`w=0.5`,`h=0.5`) and starting from its center
-(`x=0.5`,`y=0.5`) resuluts in a 2x zoom.
+(`x=0.5`,`y=0.5`) results in a 2x zoom.
 
 Now, applying an offset to current position creates a scrolling effect:
 
@@ -751,9 +751,9 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 
 <table>
 <tr><td><pre>
-> pico.layer.sub("blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15, anc='C'})
-> pico.layer.sub("yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15, anc='C'})
-> pico.layer.sub("red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15, anc='C'})
+> pico.layer.sub("blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15, anchor='C'})
+> pico.layer.sub("yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15, anchor='C'})
+> pico.layer.sub("red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15, anchor='C'})
 > pico.output.clear()
 > pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
 > pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
@@ -866,14 +866,25 @@ The complete source code is [here](rects.lua):
 
 ```lua
 pico.set.expert(true)
+pico.set.window { dim={'!', w=200, h=200}, title="2x Rects" }
+pico.set.view   { dim={'!', w=10,  h=10}  }
 
-local mx, my = 0.5, 0.5             -- mouse pixel (centered)
-local kx, ky = 0.5, 0.5             -- arrow-key pixel (centered)
-local pos = {'%', x=0, y=0}         -- reusable position for mouse query
-local spd = 0.01                    -- arrow-key speed per frame
+local mx, my = 5, 5              -- mouse pixel (centered)
+local kx, ky = 4, 4              -- arrow-key pixel
+local spd = 1                     -- arrow-key speed per frame
 
 while true do
-    local e = pico.input.event()    -- no time-based animation
+    local m = pico.get.mouse('!')
+    mx, my = m.x, m.y
+
+    pico.output.clear()
+    pico.set.color.draw 'red'
+    pico.output.draw.pixel {'!', x=mx, y=my}
+    pico.set.color.draw 'blue'
+    pico.output.draw.pixel {'!', x=kx, y=ky}
+    pico.output.present()
+
+    local e = pico.input.event()
     if e then
         if e.tag == 'quit' then
             break
@@ -885,13 +896,6 @@ while true do
             end
         end
     end
-    pico.get.mouse(pos)
-    mx, my = pos.x, pos.y
-
-    pico.output.clear()
-    pico.output.draw.pixel {'%', x=mx, y=my}
-    pico.output.draw.pixel {'%', x=kx, y=ky}
-    pico.output.present()
 end
 ```
 
