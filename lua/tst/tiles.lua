@@ -59,8 +59,7 @@ end
 -- Note: cannot warp mouse from Lua, but verify get_mouse accepts '#' mode
 do
     print("mouse tile mode check")
-    local pos = {'#', x=0, y=0}
-    pico.get.mouse(pos)
+    local pos = pico.get.mouse('#')
     assert(type(pos.x) == 'number' and type(pos.y) == 'number')
 end
 

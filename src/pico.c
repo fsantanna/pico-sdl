@@ -332,6 +332,17 @@ static SDL_Rect _fi_rect (const SDL_FRect* f) {
 // CV
 ///////////////////////////////////////////////////////////////////////////////
 
+static Pico_Abs_Pos _cv_phy_log (Pico_Abs_Pos phy) {
+    SDL_Rect dst = pico_cv_rect_rel_abs(&S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h});
+    SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    float rx = (phy.x - dst.x) / (float)dst.w;
+    float ry = (phy.y - dst.y) / (float)dst.h;
+    return (Pico_Abs_Pos) {
+        src.x + rx*src.w,
+        src.y + ry*src.h,
+    };
+}
+
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
     SDL_FDim df = _sdl_dim(dim, base, NULL);
     return _fi_dim(&df);
@@ -648,7 +659,7 @@ Pico_Mouse pico_get_mouse (char mode) {
         mode = S.mouse;
     }
 
-    SDL_Point phy;
+    Pico_Abs_Pos phy;
     Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
 
     Pico_Mouse m = {
@@ -661,49 +672,12 @@ Pico_Mouse pico_get_mouse (char mode) {
     if (mode == 'w') {
         m.x = phy.x;
         m.y = phy.y;
-        return m;
-    }
-
-    // window -> logical
-
-    // rel view.dst/src -> abs dst/src
-    SDL_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->view.dst,
-        &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-    );
-    SDL_Rect src = pico_cv_rect_rel_abs (
-        &S.layer->view.src, NULL
-    );
-
-    // 1. Get position relative to dst (normalized 0-1)
-    SDL_FPoint rel = {
-        (phy.x - dst.x) / (float)dst.w,
-        (phy.y - dst.y) / (float)dst.h,
-    };
-
-    // 2. Convert to logical position within src (zoom/scroll viewport)
-    SDL_FPoint log = {
-        src.x + rel.x*src.w,
-        src.y + rel.y*src.h,
-    };
-
-    switch (mode) {
-        case '!':
-            m.x = log.x;
-            m.y = log.y;
-            break;
-        case '%':
-            m.x = log.x / S.layer->view.dim.w;
-            m.y = log.y / S.layer->view.dim.h;
-            break;
-        case '#': {
-            Pico_Anchor anc = S.layer->view.src.anchor;
-            m.x = (log.x / (float)S.layer->view.tile.w) + (1 - anc.x);
-            m.y = (log.y / (float)S.layer->view.tile.h) + (1 - anc.y);
-            break;
-        }
-        default:
-            assert(0 && "invalid mouse mode");
+    } else {
+        Pico_Abs_Pos log = _cv_phy_log(phy);
+        Pico_Rel_Pos rel = { .mode = mode, .anchor = PICO_ANCHOR_NW, .up = NULL };
+        pico_cv_pos_abs_rel(&log, &rel, NULL);
+        m.x = rel.x;
+        m.y = rel.y;
     }
 
     return m;
