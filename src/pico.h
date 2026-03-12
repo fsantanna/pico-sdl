@@ -294,11 +294,6 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 /// @return video properties (dim, fps, frame, done)
 Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
 
-/// @brief Gets the state of a key.
-/// @param key key constant
-/// @return 1 if key is pressed, or 0 otherwise
-int pico_get_key (PICO_KEY key);
-
 /// @brief Gets current layer key.
 /// @return layer key (NULL = main layer)
 const char* pico_get_layer (void);

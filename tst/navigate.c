@@ -40,37 +40,37 @@ int main() {
 
     for (int i=0; i<3; i++) {
         push_key(SDLK_UP);
-        pico_input_event(NULL, PICO_EVENT_ANY);
+        pico_input_event_timeout(NULL, PICO_EVENT_ANY, 0);
     }
     _pico_check("navigate-02");
 
     for (int i=0; i<3; i++) {
         push_key(SDLK_LEFT);
-        pico_input_event(NULL, PICO_EVENT_ANY);
+        pico_input_event_timeout(NULL, PICO_EVENT_ANY, 0);
     }
     _pico_check("navigate-03");
 
     for (int i=0; i<3; i++) {
         push_key(SDLK_MINUS);
-        pico_input_event(NULL, PICO_EVENT_ANY);
+        pico_input_event_timeout(NULL, PICO_EVENT_ANY, 0);
     }
     _pico_check("navigate-04");
 
     for (int i=0; i<2; i++) {
         push_key(SDLK_RIGHT);
-        pico_input_event(NULL, PICO_EVENT_ANY);
+        pico_input_event_timeout(NULL, PICO_EVENT_ANY, 0);
     }
     _pico_check("navigate-05");
 
     for (int i=0; i<4; i++) {
         push_key(SDLK_DOWN);
-        pico_input_event(NULL, PICO_EVENT_ANY);
+        pico_input_event_timeout(NULL, PICO_EVENT_ANY, 0);
     }
     _pico_check("navigate-06");
 
     for (int i=0; i<2; i++) {
         push_key(SDLK_EQUALS);
-        pico_input_event(NULL, PICO_EVENT_ANY);
+        pico_input_event_timeout(NULL, PICO_EVENT_ANY, 0);
     }
     _pico_check("navigate-07");
 

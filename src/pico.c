@@ -639,11 +639,6 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
     }
 }
 
-int pico_get_key (PICO_KEY key) {
-    const Uint8* keys = SDL_GetKeyboardState(NULL);
-    return keys[key];
-}
-
 const char* pico_get_layer (void) {
     return S.layer->name;
 }
@@ -714,14 +709,17 @@ Pico_Mouse pico_get_mouse (char mode) {
     return m;
 }
 
-Pico_Keyboard pico_get_keyboard (void) {
-    SDL_Keymod mod = SDL_GetModState();
+static Pico_Keyboard _pico_keyboard (int key, SDL_Keymod mod) {
     return (Pico_Keyboard) {
-        .key   = 0,
+        .key   = key,
         .ctrl  = !!(mod & KMOD_CTRL),
         .shift = !!(mod & KMOD_SHIFT),
         .alt   = !!(mod & KMOD_ALT),
     };
+}
+
+Pico_Keyboard pico_get_keyboard (void) {
+    return _pico_keyboard(0, SDL_GetModState());
 }
 
 int pico_get_show (void) {
@@ -1249,8 +1247,7 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
 
         case PICO_EVENT_KEY_DN:
         case PICO_EVENT_KEY_UP:
-            pico->keyboard = pico_get_keyboard();
-            pico->keyboard.key = sdl->key.keysym.sym;
+            pico->keyboard = _pico_keyboard(sdl->key.keysym.sym, sdl->key.keysym.mod);
             break;
 
         case PICO_EVENT_MOUSE_MOTION:
