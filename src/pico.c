@@ -332,12 +332,12 @@ static SDL_Rect _fi_rect (const SDL_FRect* f) {
 // CV
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Abs_Pos _cv_phy_log (Pico_Abs_Pos phy) {
+static SDL_FPoint _cv_phy_log (SDL_Point phy) {
     SDL_Rect dst = pico_cv_rect_rel_abs(&S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h});
     SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
     float rx = (phy.x - dst.x) / (float)dst.w;
     float ry = (phy.y - dst.y) / (float)dst.h;
-    return (Pico_Abs_Pos) {
+    return (SDL_FPoint) {
         src.x + rx*src.w,
         src.y + ry*src.h,
     };
@@ -358,9 +358,7 @@ Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ba
     return (Pico_Abs_Rect) _fi_rect(&rf);
 }
 
-void pico_cv_pos_abs_rel (
-    const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
-) {
+static void _cv_pos_flt_rel (SDL_FPoint fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base) {
     SDL_FRect r0;
     if (base == NULL) {
         r0 = (SDL_FRect) {
@@ -377,20 +375,26 @@ void pico_cv_pos_abs_rel (
 
     switch (to->mode) {
         case '!':
-            to->x = fr->x - r1.x + to->anchor.x;
-            to->y = fr->y - r1.y + to->anchor.y;
+            to->x = fr.x - r1.x + to->anchor.x;
+            to->y = fr.y - r1.y + to->anchor.y;
             break;
         case '%':
-            to->x = (fr->x - r1.x + to->anchor.x) / r1.w;
-            to->y = (fr->y - r1.y + to->anchor.y) / r1.h;
+            to->x = (fr.x - r1.x + to->anchor.x) / r1.w;
+            to->y = (fr.y - r1.y + to->anchor.y) / r1.h;
             break;
         case '#':
-            to->x = (fr->x - r1.x) / S.layer->view.tile.w + 1 - to->anchor.x;
-            to->y = (fr->y - r1.y) / S.layer->view.tile.h + 1 - to->anchor.y;
+            to->x = (fr.x - r1.x) / S.layer->view.tile.w + 1 - to->anchor.x;
+            to->y = (fr.y - r1.y) / S.layer->view.tile.h + 1 - to->anchor.y;
             break;
         default:
             assert(0 && "invalid mode");
     }
+}
+
+void pico_cv_pos_abs_rel (
+    const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
+) {
+    _cv_pos_flt_rel((SDL_FPoint){fr->x, fr->y}, to, base);
 }
 
 void pico_cv_pos_rel_rel (
@@ -659,7 +663,7 @@ Pico_Mouse pico_get_mouse (char mode) {
         mode = S.mouse;
     }
 
-    Pico_Abs_Pos phy;
+    SDL_Point phy;
     Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
 
     Pico_Mouse m = {
@@ -673,9 +677,9 @@ Pico_Mouse pico_get_mouse (char mode) {
         m.x = phy.x;
         m.y = phy.y;
     } else {
-        Pico_Abs_Pos log = _cv_phy_log(phy);
+        SDL_FPoint log = _cv_phy_log(phy);
         Pico_Rel_Pos rel = { .mode = mode, .anchor = PICO_ANCHOR_NW, .up = NULL };
-        pico_cv_pos_abs_rel(&log, &rel, NULL);
+        _cv_pos_flt_rel(log, &rel, NULL);
         m.x = rel.x;
         m.y = rel.y;
     }
