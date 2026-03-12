@@ -126,37 +126,34 @@ void pico_quit (void);
 /// @{
 
 /// @brief Stops the program until the given number of milliseconds have passed.
+/// Equivalent to `pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms)`.
 /// @include delay.c
 /// @param ms milliseconds to wait
 void pico_input_delay (int ms);
 
-/// @brief Stops the program until an event occurs.
+/// @brief Stops the program until a matching event occurs.
+/// Equivalent to `pico_input_event_timeout(evt, type, -1)`.
 /// @include event.c
 /// @param evt where to save the event data, or NULL to ignore
-/// @param type type of event to wait for (Pico_EventType)
-/// @sa pico_input_event_ask
+/// @param type type of event to wait for (PICO_EVENT_ANY for any)
+/// @return the matched PICO_EVENT type
 /// @sa pico_input_event_timeout
-void pico_input_event (Pico_Event* evt, int type);
+PICO_EVENT pico_input_event (Pico_Event* evt, int type);
 
-/// @brief Checks if an event has occured.
-/// @param evt where to save the event data, or NULL to ignore
-/// @param type type of event to check the occurence (Pico_EventType)
-/// @return 1 if the given type of event has occurred, or 0 otherwise
-/// @sa pico_input_event
-/// @sa pico_input_event_timeout
-int  pico_input_event_ask (Pico_Event* evt, int type);
-
-/// @brief Stops the program until an event occurs or a timeout is reached.
+/// @brief Stops the program until a matching event occurs or a timeout is reached.
+/// All input functions delegate to this one.
+/// Internal events (quit/exit, window resize, ctrl+zoom/scroll/grid) are
+/// handled automatically and never forwarded.
 /// @include event_timeout.c
 /// @param evt where to save the event data, or NULL to ignore
-/// @param type type of event to wait for (Pico_EventType)
-/// @param timeout time limit to wait for (milliseconds)
-/// @return 1 if the given type of event has occurred, or 0 otherwise
+/// @param type type of event to wait for (PICO_EVENT_ANY for any)
+/// @param timeout time limit in milliseconds, or -1 to wait forever
+/// @return the matched PICO_EVENT type, or PICO_EVENT_NONE on timeout
 /// @sa pico_input_event
-/// @sa pico_input_event_ask
-int  pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
+PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 
 /// @brief Blocks in an event loop until the window is closed.
+/// Equivalent to `pico_input_event(NULL, PICO_EVENT_QUIT)`.
 void pico_input_loop (void);
 
 /// @}
@@ -297,11 +294,6 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 /// @return video properties (dim, fps, frame, done)
 Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
 
-/// @brief Gets the state of a key.
-/// @param key key constant
-/// @return 1 if key is pressed, or 0 otherwise
-int pico_get_key (PICO_KEY key);
-
 /// @brief Gets current layer key.
 /// @return layer key (NULL = main layer)
 const char* pico_get_layer (void);
@@ -406,12 +398,14 @@ void pico_layer_video_mode (int mode,
 
 ///////////////////////////////////////////////////////////////////////////////
 
+/// @brief Gets the keyboard state (current modifier flags).
+/// @return keyboard state with modifier flags (key is 0 when polling)
+Pico_Keyboard pico_get_keyboard (void);
+
 /// @brief Gets the mouse state.
-/// @param pos where to save the mouse position (mode determines coordinate
-///            system: '!' for pixels, '%' for percentage, '#' for tiles)
-/// @param button mouse button to check (1=left, 2=middle, 3=right), or 0 for any
-/// @return 1 if the specified button is pressed, or 0 otherwise
-int pico_get_mouse (Pico_Rel_Pos* pos, int button);
+/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window, 0 uses default)
+/// @return mouse state with position and button flags
+Pico_Mouse pico_get_mouse (char mode);
 
 /// @brief Gets the visibility state of the window.
 /// @return 1 if visible, or 0 otherwise
@@ -504,6 +498,10 @@ void pico_set_layer (const char* key);
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
 
+/// @brief Sets the default mouse coordinate mode.
+/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window)
+void pico_set_mouse (char mode);
+
 /// @brief Sets the drawing style.
 /// @param style new style
 void pico_set_style (PICO_STYLE style);
@@ -549,7 +547,7 @@ void pico_set_dim (Pico_Rel_Dim* dim);
 // PUSH / POP
 
 /// @brief Saves the current drawing state onto a stack.
-/// Saves: alpha, angle, colors, crop, font, style, layer.
+/// Saves: alpha, colors, font, mouse, style, layer.
 /// @sa pico_pop
 void pico_push (void);
 

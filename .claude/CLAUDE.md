@@ -123,7 +123,8 @@ The library is implemented in `src/`:
 - `hash.h` - Hash table for resource management (uses ttl-hash library)
 - `tiny_ttf.h` - Embedded font for default text rendering
 - `keys.h` - Keyboard key constants (`PICO_KEY_*`)
-- `events.h` - Event type constants (PICO_KEYUP, PICO_MOUSEBUTTONDOWN, etc.)
+- `events.h` - Event types (`Pico_Event`, `Pico_Mouse`, `Pico_Keyboard`,
+  `Pico_Window`) and `PICO_EVENT_*` constants
 - `colors.h` - Color types (`Pico_Color`, `Pico_Color_A`) and predefined color
   constants (`PICO_COLOR_RED`, `PICO_COLOR_BLUE`, etc.)
 - `anchors.h` - Anchor constants for positioning (`PICO_ANCHOR_C`,
@@ -141,6 +142,7 @@ containing:
 - Flip state
 - Font path
 - Grid display flag
+- Mouse coordinate mode (`'!'`, `'%'`, `'#'`, `'w'`)
 - Drawing style (`PICO_STYLE_FILL` or `PICO_STYLE_STROKE`)
 - View configuration (physical/logical dimensions, fullscreen, clipping)
 
@@ -329,11 +331,12 @@ Conversion functions in `lua/pico.c`:
 
 The Lua API mirrors the C API with nested tables:
 - `pico.get.image(path, [dim])` - Get image dimensions
-- `pico.get.mouse(pos)` - Get mouse position (updates pos.x, pos.y based on
-  pos mode: `'!'`, `'%'`, or `'#'`)
+- `pico.get.keyboard()` - Get keyboard state (returns `{key, ctrl, shift, alt}`)
+- `pico.get.mouse([mode])` - Get mouse state (returns `{mode, x, y, left, right, middle}`)
 - `pico.get.text(text, dim)` - Get text dimensions
 - `pico.get.view()` - Get view settings (returns table with tile field)
 - `pico.set.color.draw(color)` - Set drawing color
+- `pico.set.mouse(mode)` - Set default mouse coordinate mode
 - `pico.set.view({...})` - Set view (accepts tile={w,h} for tile mode)
 - `pico.output.draw.rect(rect)` - Draw rectangle
 - `pico.input.event([filter], [timeout])` - Wait for input event
@@ -357,9 +360,9 @@ local r = {'#', x=2, y=3, w=1, h=1, anc='NW'}
 pico.output.draw.rect(r)
 
 -- Get mouse in tile coordinates
-local pos = {'#', x=0, y=0}
-pico.get.mouse(pos)
-print(pos.x, pos.y)  -- 1-indexed tile position
+pico.set.mouse('#')
+local m = pico.get.mouse()
+print(m.x, m.y)  -- 1-indexed tile position
 ```
 
 **Constants:**
@@ -368,7 +371,8 @@ Predefined constants are stored in the Lua registry and accessed by name:
 - Anchors: `'C'`, `'NW'`, `'N'`, `'NE'`, `'E'`, `'SE'`, `'S'`, `'SW'`, `'W'`
 - Colors: `'red'`, `'green'`, `'blue'`, `'white'`, `'black'`, etc.
 - Styles: `'fill'`, `'stroke'`
-- Events: `'quit'`, `'key.dn'`, `'key.up'`, `'mouse.button.dn'`
+- Events: `'quit'`, `'key.dn'`, `'key.up'`, `'mouse.button.dn'`,
+  `'mouse.button.up'`, `'mouse.motion'`, `'window'`
 
 **Memory Management:**
 
