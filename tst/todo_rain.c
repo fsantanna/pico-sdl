@@ -22,7 +22,7 @@ int main(void) {
     srand(time(NULL));
     pico_init(1);
     pico_set_window("Rain Simulation", -1, NULL);
-    pico_set_expert(1, 0);
+    pico_set_expert(1, 60);
 
     Drop drops[DROP_COUNT];
     for (int i = 0; i < DROP_COUNT; i++) {
@@ -34,7 +34,7 @@ int main(void) {
 
     while (1) {
         Pico_Event e;
-        if (pico_input_event_timeout(&e, PICO_EVENT_QUIT, 16)) {
+        if (pico_input_event(&e, PICO_EVENT_QUIT)) {
             break;
         }
 
