@@ -870,7 +870,11 @@ The next example tracks the position of two pixels on a `10x10` screen:
 - one follows the mouse, wherever it moves to;
 - the other responds to the arrow keys.
 
-The complete source code is [here](rects.lua):
+The complete source code is [here](rects.lua).
+
+```
+$ pico-lua rects.lua
+```
 
 ```lua
 -- (omitted initialization)
@@ -889,7 +893,7 @@ while true do
     pico.output.present()
 
     local e = pico.input.event()    -- handle events
-    assert(e)
+    assert(e, "no FPS set here")
     if e.tag == 'mouse.motion' then
         m.x, m.y = e.x, e.y
     elseif e.tag == 'key.dn' then
@@ -907,18 +911,16 @@ making `pico.input.event` to await until an event occurs.
 
 ### 9.3. Animations
 
-In a game, the main loop also governs the passage of time.
-The FPS rate in `pico.set.expert` sets the frame pace: 20 frames per
-second is enough for smooth sprite animation.
+The next example creates two time-based animations that require to set
+`pico.set.expert` with FPS.
 
-Let's now create the animation in the left based on the sprite sheet in the
-right.
 We want the characters to move along the rectangular paths, in opposite
-directions, and at different speeds:
+directions, and at different speeds.
+The animation in the left is based on the sprite sheet in the right:
 
 <table>
 <tr><td align="center">
-<img src="img/2-sprites.gif" width="200">
+<img src="img/2-anims.gif" width="200">
 </td><td align="center">
 <img src="img/walk.png" width="100" style="image-rendering:pixelated">
 <br>
@@ -931,10 +933,10 @@ directions, and at different speeds:
 </td></tr>
 </table>
 
-The complete source code is [here](anim.lua):
+The complete source code is [here](anims.lua):
 
 ```
-$ pico-lua anim.lua
+$ pico-lua anims.lua
 ```
 
 First, we load the sprite sheet with `pico.layer.images`, which splits an image
