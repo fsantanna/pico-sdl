@@ -1080,7 +1080,35 @@ true
 
 ## 11. Extras
 
-### 11.1. Fullscreen Mode
+### 11.1. Screenshots
+
+To save a screenshot of the current window, we call
+`pico.output.screenshot`:
+
+<table>
+<tr><td><pre>
+> pico.init(false)
+> pico.init(true)
+> pico.set.color.draw 'red'
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
+> pico.output.screenshot('my-screenshot.png')
+</pre>
+</td><td>
+<img src="img/guide-11-01-01.png" width="200">
+</td></tr>
+</table>
+
+An optional rectangle crops the screenshot:
+
+<table>
+<tr><td><pre>
+> pico.output.screenshot('crop.png',
+    {'%', x=0.5, y=0.5, w=0.25, h=0.25})
+</pre>
+</td><td>
+<img src="img/guide-11-01-02.png" width="200">
+</td></tr>
+</table>
 
 ### 11.2. Playing Sounds
 
@@ -1090,16 +1118,24 @@ To play a sound file:
 > pico.output.sound('path/to/sound.wav')
 ```
 
-### 11.3. Screenshots
+### 11.3. Fullscreen Mode
 
-To save a screenshot of the current window:
+To enter fullscreen mode:
 
 ```lua
-> pico.output.screenshot('my-screenshot.png')
+> pico.set.window { fullscreen=true }
 ```
 
-An optional rectangle crops the screenshot:
+To leave fullscreen mode:
 
 ```lua
-> pico.output.screenshot('crop.png', {'!', x=10, y=10, w=50, h=50})
+> pico.set.window { fullscreen=false }
+```
+
+The current fullscreen state can be queried with `pico.get.window()`:
+
+```lua
+> local w = pico.get.window()
+> print(w.fullscreen)
+false
 ```

@@ -369,4 +369,30 @@ do
     pico.init(false)
 end
 
+-------------------------------------------------------------------------------
+-- Section 11: Extras
+-------------------------------------------------------------------------------
+
+-- 11.1 Screenshot: full window
+do
+    pico.init(true)
+    pico.output.clear()
+    pico.set.color.draw 'red'
+    pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
+    shot("guide-11-01-01")
+    pico.init(false)
+end
+
+-- 11.1 Screenshot: cropped
+do
+    pico.init(true)
+    pico.output.clear()
+    pico.set.color.draw 'red'
+    pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
+    pico.output.screenshot("img/guide-11-01-02.png",
+        {'%', x=0.5, y=0.5, w=0.25, h=0.25})
+    print("guide-11-01-02")
+    pico.init(false)
+end
+
 print("Done!")
