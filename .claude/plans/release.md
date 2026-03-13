@@ -24,11 +24,15 @@ cd lua && make tests
 
 ### 3. ~~Create rockspec `lua/pico-sdl-0.3-1.rockspec`~~ DONE
 
-Copy from `lua/pico-sdl-0.2-1.rockspec`, change:
-- `version = "0.3-1"`
-- `tag = "v0.3"`
+Copy from previous rockspec, change:
+- `version` to new version
+- `tag` to new tag
 
-### 4. Update `Makefile` rockspec reference
+Move previous rockspec to `lua/old/`.
+
+### 3b. ~~Move old rockspec to `lua/old/`~~ DONE
+
+### 4. ~~Update `Makefile` rockspec reference~~ DONE
 
 ```makefile
 lua:
