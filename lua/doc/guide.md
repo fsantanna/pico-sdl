@@ -966,109 +966,68 @@ The overall structure is always the same:
 
 pico.set.expert(true, 20)
 
-local f1, x1, y1 = walk(cw,  40, 0, 0)
-local f2, x2, y2 = walk(ccw, 40, 0, 0)
+local f1, x1, y1 = walk('clock',   0, 0)    -- clockwise (faster)
+local f2, x2, y2 = walk('counter', 0, 0)    -- counter clockwise
 
 local step = 0
 
-while true do
-    pico.output.clear()
-    pico.output.draw.rect { '%', x=0.3, y=0.3, w=0.4, h=0.4 }
-    pico.output.draw.rect { '%', x=0.6, y=0.6, w=0.4, h=0.4 }
-    pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
-    pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
+while true do                               -- main loop
+    pico.output.clear()                     -- redraw the scene
+    pico.output.draw.rect {
+        '%', x=0.3, y=0.3, w=0.4, h=0.4     -- rect path (top-left)
+    }
+    pico.output.draw.rect {
+        '%', x=0.6, y=0.6, w=0.4, h=0.4     -- rect path (bottom-right)
+    }
+    pico.output.draw.layer (
+        f1, {'%', x=x1, y=y1, w=0.15}       -- clockwise sprite
+    )
+    pico.output.draw.layer (
+        f2, {'%', x=x2, y=y2, w=0.15}       -- counter sprite
+    )
     pico.output.present()
 
-    local e = pico.input.event('quit')
+    local e = pico.input.event('quit')      -- handle events
     if e then
         break
     end
 
-    step = step + 1
-    f1, x1, y1 = walk(cw,  40, step*2, step)
-    f2, x2, y2 = walk(ccw, 40, step,   step)
+    step = step + 1                         -- handle animations
+    f1, x1, y1 = walk('clock',   step*2, step)
+    f2, x2, y2 = walk('counter', step,   step)
 end
-
 ```
 
-First, we load the sprite sheet with `pico.layer.images`, which splits an image
-into a grid of [#sub-layers](#84-sub-layers), as previously discussed:
+Now, we set FPS to `20` to animate the sprites every `50ms`.
+
+The function `walk` (see the full source) receives a clock direction and the
+current step, returning the sprite and positions to apply.
+
+The main loop redraws the whole scene (rectangle paths and sprites) and awaits
+the next clock tick.
+In this example, `pico.input.event` either awakes from a `'quit'` event, which
+escapes the main loop, or after `50ms`, which applies the next animation step.
+
+In the omitted initialization, we use [#sub-layers](#84-sub-layers) to crop the
+`4x4` sprite sheet above:
 
 ```lua
-local frames = pico.layer.images("walk", "img/walk.png", {'#', w=4, h=4})
-```
+local frames = pico.layer.images (
+    "walk", "img/walk.png", {'#', w=4, h=4})
 
-This splits the `4x4` sprite sheet into sub-layers `"walk-01"` to `"walk-16"`:
-walk down (`01-04`), up (`05-08`), right (`09-12`), left (`13-16`).
-The ids are also assigned to `frames` as table `{"walk-01",...,"walk-16"}`.
-
-Next we define a helper that returns the sprite frame and position for a
-given step along a path:
-
-```lua
 local dirs = {
-    down  = { 1,  2,  3,  4},
+    down  = { 1,  2,  3,  4},   -- walk-01 -> walk-04
     up    = { 5,  6,  7,  8},
     right = { 9, 10, 11, 12},
     left  = {13, 14, 15, 16},
 }
-local function walk (path, steps, step, fstep)
-    local leg = path[(step // steps) % #path + 1]
-    local t = (step % steps) / steps
-    local x = leg.x + (leg.tx - leg.x) * t
-    local y = leg.y + (leg.ty - leg.y) * t
-    local f = dirs[leg.dir]
-    return frames[f[(fstep // 4) % 4 + 1]], x, y
-end
 ```
 
-Two rectangular paths define each character's route — `cw` traces the
-first rectangle clockwise (faster), `ccw` traces the second
-counter-clockwise (slower). Each leg has a start `(x,y)`, direction
-`dir`, and target `(tx,ty)`:
+This splits the sprite sheet into layers `"walk-01"` to `"walk-16"`:
+walk down (`01-04`), up (`05-08`), right (`09-12`), left (`13-16`).
 
-```lua
-local cw = {
-    {x=0.1, y=0.1, dir='right', tx=0.5, ty=0.1},
-    {x=0.5, y=0.1, dir='down',  tx=0.5, ty=0.5},
-    {x=0.5, y=0.5, dir='left',  tx=0.1, ty=0.5},
-    {x=0.1, y=0.5, dir='up',    tx=0.1, ty=0.1},
-}
-local ccw = {
-    {x=0.4, y=0.4, dir='down',  tx=0.4, ty=0.8},
-    {x=0.4, y=0.8, dir='right', tx=0.8, ty=0.8},
-    {x=0.8, y=0.8, dir='up',    tx=0.8, ty=0.4},
-    {x=0.8, y=0.4, dir='left',  tx=0.4, ty=0.4},
-}
-```
-
-The animation loop draws both sprites and two stroke rectangles each
-frame, then `present` flips them on-screen together.
-The clockwise character runs at twice the pace (`step*2`), yet both
-update in perfect sync:
-
-```lua
-pico.set.style 'stroke'
-local f1, x1, y1 = walk(cw,  40, 0, 0)
-local f2, x2, y2 = walk(ccw, 40, 0, 0)
-local step = 0
-
-while true do
-    pico.output.clear()
-    pico.output.draw.rect { '%', x=0.3, y=0.3, w=0.4, h=0.4 }
-    pico.output.draw.rect { '%', x=0.6, y=0.6, w=0.4, h=0.4 }
-    pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
-    pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
-    pico.output.present()
-
-    local e = pico.input.event('quit')
-    if e then break end
-
-    step = step + 1
-    f1, x1, y1 = walk(cw,  40, step*2, step)
-    f2, x2, y2 = walk(ccw, 40, step,   step)
-end
-```
+Then, at each loop step, the call to `walk` decodes the current state and
+returns the appropriate `'walk-XX'` layer.
 
 ## 10. Auxiliary Functions
 
