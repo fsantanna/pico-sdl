@@ -22,7 +22,7 @@ make tests
 cd lua && make tests
 ```
 
-### 2b. Run non-automated tests (manual) — SKIPPED
+### 2b. Run non-automated tests (manual) — PENDING
 
 Interactive C tests:
 
@@ -91,7 +91,7 @@ This triggers:
 - `docs.yml` — deploys docs to gh-pages `main/`
 - `docs-tag.yml` — copies docs to `v0.3/` on gh-pages
 
-### 9. Publish to LuaRocks (manual) — SKIPPED
+### 9. Publish to LuaRocks (manual) — PENDING
 
 ```bash
 luarocks upload lua/pico-sdl-0.3-1.rockspec
@@ -108,7 +108,7 @@ pico-lua lua/doc/anims.lua
 
 Also read through `lua/doc/guide.md` for correctness.
 
-### 10. Announce (manual) — SKIPPED
+### 10. Announce (manual) — PENDING
 
 - Twitter
 - Students
