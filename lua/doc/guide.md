@@ -305,8 +305,12 @@ Let's restart `pico-lua` with some transparency:
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.set.alpha(0x88)
-> pico.set.color.draw 'red'
+> pico.set {
+    alpha = 0x88,
+    color = {
+        draw = 'red',
+    },
+  }
 </pre>
 </td><td>
 <img src="img/guide-05-00-01.png" width="200">
@@ -381,12 +385,14 @@ dimensions:
 <tr><td><pre>
 > pico.init(false)
 > pico.init(true)
-> pico.set.view {
-    dim  = { '#', w=5, h=5 },
-    tile = { w=20, h=20 },
-  }
-> pico.set.window {
-    dim = { '#', w=40, h=40 },
+> pico.set {
+    view = {
+        dim  = { '#', w=5, h=5 },
+        tile = { w=20, h=20 },
+    },
+    window {
+        dim = { '#', w=40, h=40 },
+    },
   }
 > pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
 > pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }
@@ -827,62 +833,53 @@ These applications follow the same structure of a continuous "main loop":
 This is what a main loop in `pico-lua` looks like:
 
 ```
--- (just a sketch, do not execute it)
+-- (this is just a sketch, do not execute)
 
-pico.set.expert(true, 40)       -- 40 FPS
+pico.set.expert(true, 40)           -- 40 FPS
 
-while true do
-    -- input event / timeout
-    local e = pico.input.event()
+while true do                       -- main loop
+    local e = pico.input.event()    -- await event / timeout
 
     if e then
-        -- event handler
-        (normal lua code)       -- process events
+        (normal lua code)           -- event handler (keys, mouse)
     else
-        -- timeout handler
-        (normal lua code)       -- process time
+        (normal lua code)           -- timeout handler (animations, collisions)
     end
 
-    -- draw scene
     pico.output.clear()
-    pico.output.*()
+    pico.output.*()                 -- scene redrawing
     pico.output.present()
 end
 ```
 
 The call to `pico.set.expert` serves two purposes:
 
-1. Disables automatic redraws that would happen after every draw call.
-    The screen only updates on `pico.output.present`, so all drawing between
-    `clear` and `present` appears as a single frame.
-    Even with hundreds of objects, the update is instantaneous.
+1. Disables automatic screen update that would happen after every single draw
+   call.
+    Now, all redrawing between `clear` and `present` appears as a single frame.
+    Even with hundreds of objects, the screen update is instantaneous.
 
 2. Sets the FPS rate to `40`, making `pico.input.event` awake every `25ms`.
     If an event occurs in the meantime, say after `10ms`, then `e` is set and
-    the next call to `pico.input.event` resumes after only `15ms`.
+    the next call to `pico.input.event` resumes after only `15ms` (`25-10`).
 
 ### 9.2. A Simple Example
 
-The next example tracks the position of two pixels on the screen:
+The next example tracks the position of two pixels on a `10x10` screen:
 
-- on follows the mouse, wherever it moves to,
+- one follows the mouse, wherever it moves to;
 - the other responds to the arrow keys.
 
 The complete source code is [here](rects.lua):
 
 ```lua
-pico.set.expert(true)
-pico.set.window { dim={'!', w=200, h=200}, title="2x Rects" }
-pico.set.view   { dim={'!', w=10,  h=10}  }
+-- (this is just a sketch, do not execute)
 
 local mx, my = 5, 5              -- mouse pixel (centered)
-local kx, ky = 4, 4              -- arrow-key pixel
-local spd = 1                     -- arrow-key speed per frame
+local kx, ky = 4, 4              -- key pixel
+local spd = 1                    -- key speed per frame
 
 while true do
-    local m = pico.get.mouse('!')
-    mx, my = m.x, m.y
-
     pico.output.clear()
     pico.set.color.draw 'red'
     pico.output.draw.pixel {'!', x=mx, y=my}
@@ -900,6 +897,10 @@ while true do
             elseif e.key == 'Left'  then kx = kx - spd
             elseif e.key == 'Right' then kx = kx + spd
             end
+        elseif e.tag == 'mouse.motion' then
+            local m = pico.get.mouse('!')
+            mx, my = m.x, m.y
+
         end
     end
 end

@@ -1,7 +1,11 @@
 pico.init(true)
-pico.set.window { dim={'!', w=200, h=200}, title="2x Rects" }
-pico.set.view   { dim={'!', w=10,  h=10}  }
-pico.set.expert(true)
+
+pico.set {
+    expert = true,
+    window = { dim={'!', w=200, h=200}, title="2x Rects" },
+    view   = { dim={'!', w=10,  h=10}  },
+    alpha  = 0xCC,
+}
 
 local mx, my = 5, 5              -- mouse pixel (centered)
 local kx, ky = 4, 4              -- arrow-key pixel

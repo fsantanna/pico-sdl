@@ -4,13 +4,16 @@ EXE = $(CHECK) $(XVFB) ./pico-sdl
 INT = PICO_TESTS=1 PICO_CHECK_INT=1 PICO_CHECK_ASR= ./pico-sdl
 GEN = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl
 
-.PHONY: realm tests clean
+.PHONY: realm tests lua clean
 
 all: tests
 
 realm:
 	curl -sL https://raw.githubusercontent.com/fsantanna/realm-allocator/v0.1/realm.h \
 		-o src/realm.hc
+
+lua:
+	sudo luarocks make lua/pico-sdl-0.2-1.rockspec --lua-version=5.4
 
 test:
 	$(EXE) tst/$(T).c
