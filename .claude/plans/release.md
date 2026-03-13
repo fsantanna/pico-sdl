@@ -44,7 +44,6 @@ lua:
 - Add version to version list + point stable link
 - **Also update** (missed in original plan):
     - `lua/README.md` — version list, stable link, install examples
-    - `doc/Doxyfile` — `PROJECT_NUMBER`
     - `HISTORY.md` — release date, verify completeness
     - `lua/doc/api.md` — add any new API entries
 
@@ -85,7 +84,6 @@ luarocks upload lua/pico-sdl-0.3-1.rockspec
 | `README.md`                   | Version list + stable link   |
 | `lua/README.md`               | Version list, stable, install|
 | `.claude/CLAUDE.md`           | Rockspec example             |
-| `doc/Doxyfile`                | `PROJECT_NUMBER`             |
 | `HISTORY.md`                  | Date + verify completeness   |
 | `lua/doc/api.md`              | New API entries              |
 
