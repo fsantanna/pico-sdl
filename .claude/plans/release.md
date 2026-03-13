@@ -39,14 +39,14 @@ lua:
     sudo luarocks make lua/pico-sdl-0.3-1.rockspec --lua-version=5.4
 ```
 
-### 5. Update `README.md`
+### 5. ~~Update `README.md`~~ DONE
 
 - Add `v0.3` to version list:
   `[v0.3](...)  | [v0.2](...) | [v0.1](...)`
 - Point stable link to `v0.3`:
   "Please, switch to stable [`v0.3`](...)"
 
-### 6. Update `CLAUDE.md` rockspec reference
+### 6. ~~Update `CLAUDE.md` rockspec reference~~ DONE
 
 In Build section, the `luarocks make` example references `0.1-2`.
 Update to `0.3-1`.

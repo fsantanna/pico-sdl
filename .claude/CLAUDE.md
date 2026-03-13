@@ -99,7 +99,7 @@ gcc -shared -o pico_native.so -fPIC src/pico.c lua/pico.c \
 Install via luarocks:
 
 ```bash
-sudo luarocks make pico-sdl-0.1-2.rockspec
+sudo luarocks make pico-sdl-0.3-1.rockspec
 ```
 
 ### Documentation
