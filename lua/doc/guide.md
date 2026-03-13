@@ -873,40 +873,37 @@ The next example tracks the position of two pixels on a `10x10` screen:
 The complete source code is [here](rects.lua):
 
 ```lua
--- (this is just a sketch, do not execute)
+-- (omitted initialization)
 
-local mx, my = 5, 5              -- mouse pixel (centered)
-local kx, ky = 4, 4              -- key pixel
-local spd = 1                    -- key speed per frame
+local m = {'!', x=5, y=5}       -- mouse pixel
+local k = {'!', x=4, y=4}       -- key pixel
 
 while true do
     pico.output.clear()
     pico.set.color.draw 'red'
-    pico.output.draw.pixel {'!', x=mx, y=my}
+    pico.output.draw.pixel(m)
     pico.set.color.draw 'blue'
-    pico.output.draw.pixel {'!', x=kx, y=ky}
+    pico.output.draw.pixel(k)
     pico.output.present()
 
     local e = pico.input.event()
     if e then
         if e.tag == 'quit' then
             break
-        elseif e.tag == 'key.dn' then
-            if     e.key == 'Up'    then ky = ky - spd
-            elseif e.key == 'Down'  then ky = ky + spd
-            elseif e.key == 'Left'  then kx = kx - spd
-            elseif e.key == 'Right' then kx = kx + spd
-            end
         elseif e.tag == 'mouse.motion' then
-            local m = pico.get.mouse('!')
-            mx, my = m.x, m.y
-
+            m.x, m.y = e.x, e.y
+        elseif e.tag == 'key.dn' then
+            if     e.key == 'Up'    then k.y = k.y - 1
+            elseif e.key == 'Down'  then k.y = k.y + 1
+            elseif e.key == 'Left'  then k.x = k.x - 1
+            elseif e.key == 'Right' then k.x = k.x + 1
+            end
         end
     end
 end
 ```
 
-Closing the window produces a `'quit'` event and exits the loop:
+Closing the window produces a `'quit'` event and exits the loop.
 
 One pixel follows the mouse; the other moves with the arrow keys.
 The `'quit'` event fires when the user closes the window, so the loop
