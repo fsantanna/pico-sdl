@@ -79,7 +79,7 @@ Update to `0.3-1`.
 
 Single commit: `release: v0.3`
 
-### 8. ~~Tag and push~~ DONE
+### 8. ~~Tag and push~~ DONE (re-tagged after Doxygen link fix)
 
 ```bash
 git tag v0.3
@@ -96,6 +96,17 @@ This triggers:
 ```bash
 luarocks upload lua/pico-sdl-0.3-1.rockspec
 ```
+
+### 9b. Verify LuaRocks install (manual)
+
+```bash
+sudo luarocks remove pico-sdl
+sudo luarocks install pico-sdl 0.3
+pico-lua lua/doc/rects.lua
+pico-lua lua/doc/anims.lua
+```
+
+Also read through `lua/doc/guide.md` for correctness.
 
 ### 10. Announce (manual) — SKIPPED
 
