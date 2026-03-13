@@ -336,11 +336,11 @@ do
 
     -- 8.4 sub-layers: 3 squares from the flag in a swirl
     pico.layer.sub("blue",   "flag",
-        {'%', x=0.25, y=0.5, w=0.1, h=0.15, anc='C'})
+        {'%', x=0.25, y=0.5, w=0.1, h=0.15})
     pico.layer.sub("yellow", "flag",
-        {'%', x=0.50, y=0.5, w=0.1, h=0.15, anc='C'})
+        {'%', x=0.50, y=0.5, w=0.1, h=0.15})
     pico.layer.sub("red",    "flag",
-        {'%', x=0.75, y=0.5, w=0.1, h=0.15, anc='C'})
+        {'%', x=0.75, y=0.5, w=0.1, h=0.15})
     pico.output.clear()
     pico.output.draw.layer("blue",
         {'%', x=0.30, y=0.30, w=0.25})

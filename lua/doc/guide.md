@@ -3,7 +3,7 @@
 1. [Introduction](#1-introduction)
 2. [Initialization](#2-initialization)
 3. [Basic Drawing](#3-basic-drawing)
-4. [Internal State](#4-internal-state)
+4. [Graphics State](#4-graphics-state)
 5. [Positioning: Mode & Anchor](#5-positioning-mode--anchor)
 6. [Advanced View](#6-advanced-view)
 7. [Events](#7-events)
@@ -390,7 +390,7 @@ dimensions:
         dim  = { '#', w=5, h=5 },
         tile = { w=20, h=20 },
     },
-    window {
+    window = {
         dim = { '#', w=40, h=40 },
     },
   }
@@ -869,6 +869,8 @@ The next example tracks the position of two pixels on a `10x10` screen:
 
 - one follows the mouse, wherever it moves to;
 - the other responds to the arrow keys.
+
+<img src="img/2-rects.gif" align="right" width="200">
 
 The complete source code is [here](rects.lua) (`~40` lines of code).
 
