@@ -5,6 +5,7 @@
 *.swp
 *.zip
 
+.claude/ok
 .claude/worktrees/
 
 .vscode/

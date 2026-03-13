@@ -1,0 +1,88 @@
+# Plan: Release v0.3
+
+## Context
+
+pico-sdl is 528 commits ahead of the v0.2 tag.
+All v0.3 features listed in CLAUDE.md are implemented (colors, layers,
+push/pop, view refactoring, expert FPS, etc.).
+Guide documentation and animation support are the most recent work.
+This plan follows the same release pattern as v0.2.
+
+## Steps
+
+### 1. ~~Run C tests~~ DONE
+
+```bash
+make tests
+```
+
+### 2. ~~Build Lua native module and run Lua tests~~ DONE
+
+```bash
+cd lua && make tests
+```
+
+### 3. ~~Create rockspec `lua/pico-sdl-0.3-1.rockspec`~~ DONE
+
+Copy from `lua/pico-sdl-0.2-1.rockspec`, change:
+- `version = "0.3-1"`
+- `tag = "v0.3"`
+
+### 4. Update `Makefile` rockspec reference
+
+```makefile
+lua:
+    sudo luarocks make lua/pico-sdl-0.3-1.rockspec --lua-version=5.4
+```
+
+### 5. Update `README.md`
+
+- Add `v0.3` to version list:
+  `[v0.3](...)  | [v0.2](...) | [v0.1](...)`
+- Point stable link to `v0.3`:
+  "Please, switch to stable [`v0.3`](...)"
+
+### 6. Update `CLAUDE.md` rockspec reference
+
+In Build section, the `luarocks make` example references `0.1-2`.
+Update to `0.3-1`.
+
+### 7. Commit all changes
+
+Single commit: `release: v0.3`
+
+### 8. Tag and push
+
+```bash
+git tag v0.3
+git push origin main --tags
+```
+
+This triggers:
+- `tests.yml` — CI validates
+- `docs.yml` — deploys docs to gh-pages `main/`
+- `docs-tag.yml` — copies docs to `v0.3/` on gh-pages
+
+### 9. Publish to LuaRocks (manual)
+
+```bash
+luarocks upload lua/pico-sdl-0.3-1.rockspec
+```
+
+## Files to modify
+
+| File                           | Change                      |
+|--------------------------------|-----------------------------|
+| `lua/pico-sdl-0.3-1.rockspec` | New file (copy from 0.2-1)  |
+| `Makefile:16`                  | Rockspec version → 0.3-1    |
+| `README.md:11-16`             | Version list + stable link   |
+| `.claude/CLAUDE.md`           | Rockspec example → 0.3-1    |
+
+## Verification
+
+1. C tests (`make tests`) and Lua tests (`cd lua && make tests`)
+   pass before and after changes
+2. `git diff` shows only version bumps + README update
+3. After push, check GitHub Actions for green CI
+4. After tag push, verify `docs-tag` workflow creates `v0.3/`
+   on gh-pages
