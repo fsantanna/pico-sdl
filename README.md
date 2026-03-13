@@ -131,7 +131,7 @@ Run:
 
 - [Doxygen API][api]
 
-[api]: https://fsantanna.github.io/pico-sdl/main/
+[api]: https://fsantanna.github.io/pico-sdl/v0.3/
 
 # Testing
 

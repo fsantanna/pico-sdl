@@ -65,6 +65,7 @@ lua:
 
 - Add version to version list + point stable link
 - **Also update** (missed in original plan):
+    - `README.md` — Doxygen API link to release version
     - `lua/README.md` — version list, stable link, install examples
     - `HISTORY.md` — release date, verify completeness
     - `lua/doc/api.md` — add any new API entries
@@ -74,11 +75,11 @@ lua:
 In Build section, the `luarocks make` example references `0.1-2`.
 Update to `0.3-1`.
 
-### 7. Commit all changes
+### 7. ~~Commit all changes~~ DONE
 
 Single commit: `release: v0.3`
 
-### 8. Tag and push
+### 8. ~~Tag and push~~ DONE
 
 ```bash
 git tag v0.3
@@ -90,13 +91,13 @@ This triggers:
 - `docs.yml` — deploys docs to gh-pages `main/`
 - `docs-tag.yml` — copies docs to `v0.3/` on gh-pages
 
-### 9. Publish to LuaRocks (manual)
+### 9. Publish to LuaRocks (manual) — SKIPPED
 
 ```bash
 luarocks upload lua/pico-sdl-0.3-1.rockspec
 ```
 
-### 10. Announce (manual)
+### 10. Announce (manual) — SKIPPED
 
 - Twitter
 - Students
