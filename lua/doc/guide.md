@@ -872,9 +872,13 @@ The next example tracks the position of two pixels on a `10x10` screen:
 
 The complete source code is [here](rects.lua).
 
+Run the program:
+
 ```
 $ pico-lua rects.lua
 ```
+
+Now, let's discuss the implementation:
 
 ```lua
 -- (omitted initialization)
@@ -933,11 +937,15 @@ The animation in the left is based on the sprite sheet in the right:
 </td></tr>
 </table>
 
-The complete source code is [here](anims.lua):
+The complete source code is [here](anims.lua).
+
+Run the program:
 
 ```
 $ pico-lua anims.lua
 ```
+
+Now, let's discuss the implementation.
 
 First, we load the sprite sheet with `pico.layer.images`, which splits an image
 into a grid of [#sub-layers](#84-sub-layers), as previously discussed:
