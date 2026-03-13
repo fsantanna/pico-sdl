@@ -1,7 +1,3 @@
--- anims.lua
--- Two characters walking along overlapping rectangular paths.
--- Run with: pico-lua anims.lua
-
 pico.init(true)
 
 pico.set.expert(true, 20)

@@ -870,7 +870,7 @@ The next example tracks the position of two pixels on a `10x10` screen:
 - one follows the mouse, wherever it moves to;
 - the other responds to the arrow keys.
 
-The complete source code is [here](rects.lua).
+The complete source code is [here](rects.lua) (`~40` lines of code).
 
 Run the program:
 
@@ -950,7 +950,7 @@ The animation in the left is based on the sprite sheet in the right:
 </td></tr>
 </table>
 
-The complete source code is [here](anims.lua).
+The complete source code is [here](anims.lua) (`~75` lines of code).
 
 Run the program:
 
@@ -959,6 +959,37 @@ $ pico-lua anims.lua
 ```
 
 Now, let's discuss the implementation.
+The overall structure is always the same:
+
+```lua
+-- (omitted initialization - do not execute)
+
+pico.set.expert(true, 20)
+
+local f1, x1, y1 = walk(cw,  40, 0, 0)
+local f2, x2, y2 = walk(ccw, 40, 0, 0)
+
+local step = 0
+
+while true do
+    pico.output.clear()
+    pico.output.draw.rect { '%', x=0.3, y=0.3, w=0.4, h=0.4 }
+    pico.output.draw.rect { '%', x=0.6, y=0.6, w=0.4, h=0.4 }
+    pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
+    pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
+    pico.output.present()
+
+    local e = pico.input.event('quit')
+    if e then
+        break
+    end
+
+    step = step + 1
+    f1, x1, y1 = walk(cw,  40, step*2, step)
+    f2, x2, y2 = walk(ccw, 40, step,   step)
+end
+
+```
 
 First, we load the sprite sheet with `pico.layer.images`, which splits an image
 into a grid of [#sub-layers](#84-sub-layers), as previously discussed:
