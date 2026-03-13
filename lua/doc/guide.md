@@ -875,39 +875,35 @@ The complete source code is [here](rects.lua):
 ```lua
 -- (omitted initialization)
 
-local m = {'!', x=5, y=5}       -- mouse pixel
-local k = {'!', x=4, y=4}       -- key pixel
+pico.set.expert(true)
+
+local m = {'!', x=5, y=5}           -- mouse pixel
+local k = {'!', x=4, y=4}           -- key pixel
 
 while true do
-    pico.output.clear()
+    pico.output.clear()             -- redraw scene
     pico.set.color.draw 'red'
     pico.output.draw.pixel(m)
     pico.set.color.draw 'blue'
     pico.output.draw.pixel(k)
     pico.output.present()
 
-    local e = pico.input.event()
-    if e then
-        if e.tag == 'quit' then
-            break
-        elseif e.tag == 'mouse.motion' then
-            m.x, m.y = e.x, e.y
-        elseif e.tag == 'key.dn' then
-            if     e.key == 'Up'    then k.y = k.y - 1
-            elseif e.key == 'Down'  then k.y = k.y + 1
-            elseif e.key == 'Left'  then k.x = k.x - 1
-            elseif e.key == 'Right' then k.x = k.x + 1
-            end
+    local e = pico.input.event()    -- handle events
+    assert(e)
+    if e.tag == 'mouse.motion' then
+        m.x, m.y = e.x, e.y
+    elseif e.tag == 'key.dn' then
+        if     e.key == 'Up'    then k.y = k.y - 1
+        elseif e.key == 'Down'  then k.y = k.y + 1
+        elseif e.key == 'Left'  then k.x = k.x - 1
+        elseif e.key == 'Right' then k.x = k.x + 1
         end
     end
 end
 ```
 
-Closing the window produces a `'quit'` event and exits the loop.
-
-One pixel follows the mouse; the other moves with the arrow keys.
-The `'quit'` event fires when the user closes the window, so the loop
-exits cleanly.
+Since this example does not contain time-based animations, we do not set FPS,
+making `pico.input.event` to await until an event occurs.
 
 ### 9.3. Animations
 
