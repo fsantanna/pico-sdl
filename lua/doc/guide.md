@@ -838,17 +838,17 @@ This is what a main loop in `pico-lua` looks like:
 pico.set.expert(true, 40)           -- 40 FPS
 
 while true do                       -- main loop
-    local e = pico.input.event()    -- await event / timeout
+    pico.output.clear()
+    pico.output.*()                 -- scene redrawing
+    pico.output.present()
+
+    local e = pico.input.event()    -- event / timeout awaiting
 
     if e then
         (normal lua code)           -- event handler (keys, mouse)
     else
         (normal lua code)           -- timeout handler (animations, collisions)
     end
-
-    pico.output.clear()
-    pico.output.*()                 -- scene redrawing
-    pico.output.present()
 end
 ```
 
@@ -908,9 +908,8 @@ making `pico.input.event` to await until an event occurs.
 ### 9.3. Animations
 
 In a game, the main loop also governs the passage of time.
-The timeout in `pico.input.event` doubles as a frame pacer: a 50 ms
-timeout gives roughly 20 frames per second, enough for smooth sprite
-animation.
+The FPS rate in `pico.set.expert` sets the frame pace: 20 frames per
+second is enough for smooth sprite animation.
 
 Let's now create the animation in the left based on the sprite sheet in the
 right.
@@ -954,10 +953,10 @@ given step along a path:
 
 ```lua
 local dirs = {
-    right = { 9, 10, 11, 12},
     down  = { 1,  2,  3,  4},
-    left  = {13, 14, 15, 16},
     up    = { 5,  6,  7,  8},
+    right = { 9, 10, 11, 12},
+    left  = {13, 14, 15, 16},
 }
 local function walk (path, steps, step, fstep)
     local leg = path[(step // steps) % #path + 1]
@@ -996,17 +995,24 @@ update in perfect sync:
 
 ```lua
 pico.set.style 'stroke'
-for step=0, math.huge do
-    local f1, x1, y1 = walk(cw,  40, step*2, step)
-    local f2, x2, y2 = walk(ccw, 40, step,   step)
+local f1, x1, y1 = walk(cw,  40, 0, 0)
+local f2, x2, y2 = walk(ccw, 40, 0, 0)
+local step = 0
+
+while true do
     pico.output.clear()
     pico.output.draw.rect { '%', x=0.3, y=0.3, w=0.4, h=0.4 }
     pico.output.draw.rect { '%', x=0.6, y=0.6, w=0.4, h=0.4 }
     pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
     pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
     pico.output.present()
-    local e = pico.input.event(nil, 50)
-    if e and e.tag == 'quit' then break end
+
+    local e = pico.input.event('quit')
+    if e then break end
+
+    step = step + 1
+    f1, x1, y1 = walk(cw,  40, step*2, step)
+    f2, x2, y2 = walk(ccw, 40, step,   step)
 end
 ```
 

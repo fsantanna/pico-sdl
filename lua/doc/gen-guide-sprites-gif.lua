@@ -4,15 +4,15 @@
 
 pico.init(true)
 pico.output.clear()
-pico.set.expert(true)
+pico.set.expert(true, 20)
 
 local frames = pico.layer.images("walk",
     "img/walk.png", {'#', w=4, h=4})
 local dirs = {
-    right = { 9, 10, 11, 12},
     down  = { 1,  2,  3,  4},
-    left  = {13, 14, 15, 16},
     up    = { 5,  6,  7,  8},
+    right = { 9, 10, 11, 12},
+    left  = {13, 14, 15, 16},
 }
 local function walk(path, steps, step, fstep)
     local leg = path[(step // steps) % #path + 1]
@@ -36,18 +36,19 @@ local ccw = {
 }
 os.execute("mkdir -p img/anim")
 pico.set.style 'stroke'
+local f1, x1, y1 = walk(cw,  40, 0, 0)
+local f2, x2, y2 = walk(ccw, 40, 0, 0)
 for step=0, 79 do
-    local f1, x1, y1 = walk(cw,  40, step*2, step)
-    local f2, x2, y2 = walk(ccw, 40, step,   step)
     pico.output.clear()
     pico.output.draw.rect { '%', x=0.3, y=0.3, w=0.4, h=0.4 }
     pico.output.draw.rect { '%', x=0.6, y=0.6, w=0.4, h=0.4 }
     pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
     pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
     pico.output.present()
-    --pico.input.delay(50)
     pico.output.screenshot(string.format(
         "img/anim/frame-%03d.png", step))
+    f1, x1, y1 = walk(cw,  40, (step+1)*2, step+1)
+    f2, x2, y2 = walk(ccw, 40, step+1,     step+1)
 end
 os.execute("convert -delay 10 -loop 0 "
     .. "img/anim/frame-*.png img/2-sprites.gif")

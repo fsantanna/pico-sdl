@@ -3,7 +3,9 @@
 -- Run with: pico-lua anim.lua
 
 pico.init(true)
-pico.set.expert(true)
+
+pico.set.expert(true, 20)
+pico.set.style 'stroke'
 
 -- Split 4x4 sprite sheet into sub-layers "walk-01" to "walk-16":
 -- down (1-4), up (5-8), right (9-12), left (13-16)
@@ -50,18 +52,27 @@ local ccw = {
 -- Animation loop: draw both sprites and their path rectangles,
 -- then present everything at once (expert mode).
 -- The cw character advances at twice the pace (step*2).
-pico.set.style 'stroke'
-for step=0, math.huge do
-    local f1, x1, y1 = walk(cw,  40, step*2, step)
-    local f2, x2, y2 = walk(ccw, 40, step,   step)
+
+local f1, x1, y1 = walk(cw,  40, 0, 0)
+local f2, x2, y2 = walk(ccw, 40, 0, 0)
+local step = 0
+
+while true do
     pico.output.clear()
     pico.output.draw.rect { '%', x=0.3, y=0.3, w=0.4, h=0.4 }
     pico.output.draw.rect { '%', x=0.6, y=0.6, w=0.4, h=0.4 }
     pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
     pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
     pico.output.present()
-    local e = pico.input.event(nil, 50)
-    if e and e.tag == 'quit' then break end
+
+    local e = pico.input.event('quit')
+    if e then
+        break
+    end
+
+    step = step + 1
+    f1, x1, y1 = walk(cw,  40, step*2, step)
+    f2, x2, y2 = walk(ccw, 40, step,   step)
 end
 
 pico.init(false)
