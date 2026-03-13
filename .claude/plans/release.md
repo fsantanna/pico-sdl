@@ -22,6 +22,28 @@ make tests
 cd lua && make tests
 ```
 
+### 2b. Run non-automated tests (manual)
+
+Interactive C tests:
+
+```bash
+./pico-sdl tst/todo_main.c
+./pico-sdl tst/todo_cross.c
+./pico-sdl tst/todo_scale.c
+./pico-sdl tst/todo_control.c
+./pico-sdl tst/todo_rain.c
+./pico-sdl tst/todo_hide.c
+./pico-sdl tst/todo_video.c
+./pico-sdl tst/todo_input_timeout.c
+```
+
+Guide examples:
+
+```bash
+pico-lua lua/doc/rects.lua
+pico-lua lua/doc/anims.lua
+```
+
 ### 3. ~~Create rockspec `lua/pico-sdl-0.3-1.rockspec`~~ DONE
 
 Copy from previous rockspec, change:
