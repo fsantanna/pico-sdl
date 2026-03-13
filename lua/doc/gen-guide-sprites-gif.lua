@@ -23,25 +23,25 @@ local function walk(path, steps, step, fstep)
     return frames[f[(fstep // 4) % 4 + 1]], x, y
 end
 local cw = {
-    {x=0.08, y=0.08, dir='right', tx=0.58, ty=0.08},
-    {x=0.58, y=0.08, dir='down',  tx=0.58, ty=0.58},
-    {x=0.58, y=0.58, dir='left',  tx=0.08, ty=0.58},
-    {x=0.08, y=0.58, dir='up',    tx=0.08, ty=0.08},
+    {x=0.1, y=0.1, dir='right', tx=0.5, ty=0.1},
+    {x=0.5, y=0.1, dir='down',  tx=0.5, ty=0.5},
+    {x=0.5, y=0.5, dir='left',  tx=0.1, ty=0.5},
+    {x=0.1, y=0.5, dir='up',    tx=0.1, ty=0.1},
 }
 local ccw = {
-    {x=0.41, y=0.41, dir='down',  tx=0.41, ty=0.91},
-    {x=0.41, y=0.91, dir='right', tx=0.91, ty=0.91},
-    {x=0.91, y=0.91, dir='up',    tx=0.91, ty=0.41},
-    {x=0.91, y=0.41, dir='left',  tx=0.41, ty=0.41},
+    {x=0.4, y=0.4, dir='down',  tx=0.4, ty=0.8},
+    {x=0.4, y=0.8, dir='right', tx=0.8, ty=0.8},
+    {x=0.8, y=0.8, dir='up',    tx=0.8, ty=0.4},
+    {x=0.8, y=0.4, dir='left',  tx=0.4, ty=0.4},
 }
 os.execute("mkdir -p img/anim")
 pico.set.style 'stroke'
 for step=0, 79 do
-    local f1, x1, y1 = walk(cw,  20, step*2, step)
-    local f2, x2, y2 = walk(ccw, 20, step,   step)
+    local f1, x1, y1 = walk(cw,  40, step*2, step)
+    local f2, x2, y2 = walk(ccw, 40, step,   step)
     pico.output.clear()
-    pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.50, h=0.50 }
-    pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.50, h=0.50 }
+    pico.output.draw.rect { '%', x=0.3, y=0.3, w=0.4, h=0.4 }
+    pico.output.draw.rect { '%', x=0.6, y=0.6, w=0.4, h=0.4 }
     pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
     pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
     pico.output.present()
