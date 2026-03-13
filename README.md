@@ -8,12 +8,13 @@
 ***A 2D graphics library for C and Lua***
 
 [
+    [`v0.3`](https://github.com/fsantanna/pico-sdl/tree/v0.3/) |
     [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.2/) |
     [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1/)
 ]
 
 This is the unstable `main` branch.
-Please, switch to stable [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.2).
+Please, switch to stable [`v0.3`](https://github.com/fsantanna/pico-sdl/tree/v0.3).
 <!--
 -->
 

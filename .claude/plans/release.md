@@ -22,7 +22,7 @@ make tests
 cd lua && make tests
 ```
 
-### 2b. Run non-automated tests (manual)
+### 2b. Run non-automated tests (manual) — SKIPPED
 
 Interactive C tests:
 
@@ -95,6 +95,13 @@ This triggers:
 ```bash
 luarocks upload lua/pico-sdl-0.3-1.rockspec
 ```
+
+### 10. Announce (manual)
+
+- Twitter
+- Students
+- SDL lists
+- Lua lists
 
 ## Files to modify
 
