@@ -41,10 +41,12 @@ lua:
 
 ### 5. ~~Update `README.md`~~ DONE
 
-- Add `v0.3` to version list:
-  `[v0.3](...)  | [v0.2](...) | [v0.1](...)`
-- Point stable link to `v0.3`:
-  "Please, switch to stable [`v0.3`](...)"
+- Add version to version list + point stable link
+- **Also update** (missed in original plan):
+    - `lua/README.md` — version list, stable link, install examples
+    - `doc/Doxyfile` — `PROJECT_NUMBER`
+    - `HISTORY.md` — release date, verify completeness
+    - `lua/doc/api.md` — add any new API entries
 
 ### 6. ~~Update `CLAUDE.md` rockspec reference~~ DONE
 
@@ -77,10 +79,15 @@ luarocks upload lua/pico-sdl-0.3-1.rockspec
 
 | File                           | Change                      |
 |--------------------------------|-----------------------------|
-| `lua/pico-sdl-0.3-1.rockspec` | New file (copy from 0.2-1)  |
-| `Makefile:16`                  | Rockspec version → 0.3-1    |
-| `README.md:11-16`             | Version list + stable link   |
-| `.claude/CLAUDE.md`           | Rockspec example → 0.3-1    |
+| `lua/pico-sdl-0.3-1.rockspec` | New file (copy from prev)   |
+| `lua/old/`                     | Move previous rockspec here |
+| `Makefile:16`                  | Rockspec version            |
+| `README.md`                   | Version list + stable link   |
+| `lua/README.md`               | Version list, stable, install|
+| `.claude/CLAUDE.md`           | Rockspec example             |
+| `doc/Doxyfile`                | `PROJECT_NUMBER`             |
+| `HISTORY.md`                  | Date + verify completeness   |
+| `lua/doc/api.md`              | New API entries              |
 
 ## Verification
 

@@ -63,6 +63,13 @@
         - `pico.layer.text (name: string, height: integer, text: string) -> string`
     - **pico.layer.video**: Creates a layer from a video file.
         - `pico.layer.video (name: string, path: string) -> string`
+    - **pico.layer.sub**: Creates a sub-layer from a crop region of a parent layer.
+        - `pico.layer.sub (key: string, parent: string, crop: Rect) -> string`
+        - Parent must exist and cannot be a sub-layer itself
+    - **pico.layer.images**: Creates multiple sub-layers from a single image.
+        - `pico.layer.images (key: string, path: string, t: table) -> {string}`
+        - Grid form: `t = {'#', w=cols, h=rows [, n=count, key=prefix]}`
+        - Explicit form: `t = {'!', name1={crop}, name2={crop}, ...}`
 - **pico.get**
     - **pico.get.image**: Gets image dimensions.
         - `pico.get.image (path: string [, dim: Dim]) -> Dim`
