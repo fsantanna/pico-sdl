@@ -7,8 +7,8 @@ pico.set {
     alpha  = 0xCC,
 }
 
-local m = {'!', x=5, y=5}        -- mouse pixel (centered)
-local k = {'!', x=4, y=4}        -- arrow-key pixel
+local k = {'!', x=4, y=4}        -- arrow-key pixel (centered)
+local m = {'!', x=5, y=5}        -- mouse pixel
 
 while true do
     pico.output.clear()

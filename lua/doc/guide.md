@@ -833,7 +833,7 @@ These applications follow the same structure of a continuous "main loop":
 This is what a main loop in `pico-lua` looks like:
 
 ```
--- (this is just a sketch, do not execute)
+-- (this is just a sketch - do not execute)
 
 pico.set.expert(true, 40)           -- 40 FPS
 
@@ -881,14 +881,14 @@ $ pico-lua rects.lua
 Now, let's discuss the implementation:
 
 ```lua
--- (omitted initialization)
+-- (omitted initialization - do not execute)
 
 pico.set.expert(true)
 
-local m = {'!', x=5, y=5}           -- mouse pixel
 local k = {'!', x=4, y=4}           -- key pixel
+local m = {'!', x=5, y=5}           -- mouse pixel
 
-while true do
+while true do                       -- main loop
     pico.output.clear()             -- redraw scene
     pico.set.color.draw 'red'
     pico.output.draw.pixel(m)
@@ -910,8 +910,21 @@ while true do
 end
 ```
 
-Since this example does not contain time-based animations, we do not set FPS,
-making `pico.input.event` to await until an event occurs.
+Since this example does not contain time-based animations, we do not set FPS in
+`pico.set.expert`, making `pico.input.event` to await until an event occurs.
+
+The tables `m` and `k` represent the pixels controlled by the mouse and
+keyboard, respectively.
+They use the raw mode `'!'` and start centered at `(4,4)` and `(5,5)`.
+
+The main loop first draws their initial positions and awaits
+`pico.input.event`.
+In this example, we only handle `'mouse.motion'` and `key.dn` events:
+
+- for the mouse, we update `m.x` and `m.y` based on the received event `e`;
+- for the keyboard, we update `k.x` or `k.y` depending on `e.key`.
+
+Then, the loop iterates to redraw the scene and wait for the next event.
 
 ### 9.3. Animations
 
