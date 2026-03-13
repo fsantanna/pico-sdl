@@ -14,7 +14,12 @@ local dirs = {
     right = { 9, 10, 11, 12},
     left  = {13, 14, 15, 16},
 }
-local steps = 40
+
+-- TODO: must be 20
+-- * not 40 like anims.lua
+-- * two turns to complete the animation
+local steps = 20
+
 local paths = {
     clock = {
         {x=0.1, y=0.1, dir='right', tx=0.5, ty=0.1},
