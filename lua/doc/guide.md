@@ -303,8 +303,7 @@ Let's restart `pico-lua` with some transparency:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
+> pico.init(false) ; pico.init(true)
 > pico.set {
     alpha = 0x88,
     color = {
@@ -383,8 +382,7 @@ dimensions:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
+> pico.init(false) ; pico.init(true)
 > pico.set {
     view = {
         dim  = { '#', w=5, h=5 },
@@ -453,8 +451,7 @@ The `source` property selects which region of the logical world is visible:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
+> pico.init(false) ; pico.init(true)
 > pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
     source = { '%', x=0.5, y=0.6, w=0.3, h=0.3 },
@@ -476,8 +473,7 @@ of the world:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
+> pico.init(false) ; pico.init(true)
 > pico.set.view {
     clip = { '%', x=0.5, y=0.5, w=0.25, h=0.25 },
   }
@@ -498,8 +494,7 @@ region is stretched to fill the entire window:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
+> pico.init(false) ; pico.init(true)
 > pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
     source = { '%', x=0.5, y=0.5, w=0.5, h=0.5 },
@@ -540,8 +535,7 @@ A call to `pico.input.delay(ms)` pauses execution for the specified time:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
+> pico.init(false) ; pico.init(true)
 > pico.output.draw.pixel { '!', x=25, y=50 } -- copy/paste next lines all at once
   pico.input.delay(1000)
   pico.output.draw.pixel { '!', x=50, y=50 }
@@ -632,10 +626,11 @@ Let's draw a centered image and use the key bindings to explore it:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
-> pico.output.draw.image("img/open.png",
-    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.init(false) ; pico.init(true)
+> pico.output.draw.image (
+    "img/open.png",
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5}
+  )
 > pico.input.loop()
 </pre>
 </td><td>
@@ -665,8 +660,7 @@ We use `pico.layer.empty` to create a fresh layer, and `pico.set.layer` to
 redirect further drawing operations to it:
 
 ```lua
-> pico.init(false)
-> pico.init(true)
+> pico.init(false) ; pico.init(true)
 > pico.layer.empty("flag", {w=300, h=200})
 > pico.set.layer("flag")
 > pico.set.color.draw { r=0x00, g=0x2B, b=0x7F }
@@ -792,8 +786,7 @@ once:
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
+> pico.init(false) ; pico.init(true)
 > pico.set.expert(true)
 > pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
 > pico.input.delay(1000) -- artificial delay
@@ -1042,13 +1035,13 @@ The `pico.cv` functions convert relative coordinates to absolute:
 
 ```lua
 > pico.init(true)
-> local pos = pico.cv.pos { '%', x=0.5, y=0.5 }
+> pos = pico.cv.pos { '%', x=0.5, y=0.5 }
 > print(pos.x, pos.y)
 50   50
 ```
 
 ```lua
-> local rect = pico.cv.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
+> rect = pico.cv.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
 > print(rect.x, rect.y, rect.w, rect.h)
 35   35   30   30
 ```
@@ -1056,8 +1049,8 @@ The `pico.cv` functions convert relative coordinates to absolute:
 An optional `base` rectangle can serve as the reference frame:
 
 ```lua
-> local base = { '!', x=0, y=0, w=50, h=50 }
-> local pos = pico.cv.pos({'%', x=0.5, y=0.5}, base)
+> base = { '!', x=0, y=0, w=50, h=50 }
+> pos = pico.cv.pos({'%', x=0.5, y=0.5}, base)
 > print(pos.x, pos.y)
 25   25
 ```
@@ -1067,15 +1060,15 @@ An optional `base` rectangle can serve as the reference frame:
 The `pico.vs` functions test for collisions:
 
 ```lua
-> local r = { '!', x=50, y=50, w=20, h=20 }
-> local p = { '!', x=55, y=55 }
+> r = { '!', x=50, y=50, w=20, h=20 }
+> p = { '!', x=55, y=55 }
 > print(pico.vs.pos_rect(p, r))
 true
 ```
 
 ```lua
-> local r1 = { '!', x=50, y=50, w=20, h=20 }
-> local r2 = { '!', x=60, y=60, w=20, h=20 }
+> r1 = { '!', x=50, y=50, w=20, h=20 }
+> r2 = { '!', x=60, y=60, w=20, h=20 }
 > print(pico.vs.rect_rect(r1, r2))
 true
 ```
@@ -1089,8 +1082,7 @@ To save a screenshot of the current window, we call
 
 <table>
 <tr><td><pre>
-> pico.init(false)
-> pico.init(true)
+> pico.init(false) ; pico.init(true)
 > pico.set.color.draw 'red'
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
 > pico.output.screenshot('my-screenshot.png')
@@ -1104,8 +1096,10 @@ An optional rectangle crops the screenshot:
 
 <table>
 <tr><td><pre>
-> pico.output.screenshot('crop.png',
-    {'%', x=0.5, y=0.5, w=0.25, h=0.25})
+> pico.output.screenshot (
+    'crop.png',
+    {'%', x=0.5, y=0.5, w=0.25, h=0.25},
+  )
 </pre>
 </td><td>
 <img src="img/guide-11-01-02.png" width="200">
@@ -1137,7 +1131,7 @@ To leave fullscreen mode:
 The current fullscreen state can be queried with `pico.get.window()`:
 
 ```lua
-> local w = pico.get.window()
+> w = pico.get.window()
 > print(w.fullscreen)
 false
 ```
