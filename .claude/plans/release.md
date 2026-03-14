@@ -89,36 +89,21 @@ This triggers:
 - `tests.yml` — CI validates
 - `docs.yml` — deploys docs to gh-pages `main/`
 
-### 8b. Create release branch and push — PENDING
+### 8b. ~~Create release branch and push~~ DONE
 
 1. Create branch `v0.3` from `main`
-2. On `v0.3`: change README links `main` → `v0.3`, commit
+2. On `v0.3`: change README links `main` → relative, commit
 3. Push branch `v0.3`
 
-```bash
-git branch v0.3
-git checkout v0.3
-# edit README links
-git commit -am "release: v0.3 branch links"
-git push origin v0.3
-```
+### 8c. ~~Update `docs-tag.yml` to trigger on branches~~ DONE
 
-This triggers:
-- `docs-tag.yml` — copies docs to `v0.3/` on gh-pages
-  (workflow must be updated: `tags: ['v*']` → `branches: ['v*']`)
+Changed `tags: ['v*']` → `branches: ['v*']` and
+`refs/tags/` → `refs/heads/` in ref extraction.
+Not yet committed.
 
-### 8c. Update `docs-tag.yml` to trigger on branches — PENDING
+### 8d. ~~Delete existing `v0.3` tag~~ DONE
 
-Change trigger from `tags: ['v*']` to `branches: ['v*']`.
-Workflow logic stays the same (copies `main/` docs to `v0.3/`
-on gh-pages).
-
-### 8d. Delete existing `v0.3` tag — LATER
-
-```bash
-git tag -d v0.3
-git push origin :refs/tags/v0.3
-```
+Removed locally and from remote.
 
 ### 9. Publish to LuaRocks (manual) — PENDING
 
