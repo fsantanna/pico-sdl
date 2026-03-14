@@ -2,7 +2,7 @@ name: Docs Tag
 
 on:
   push:
-    tags: ['v*']
+    branches: ['v*']
 
 permissions:
   contents: write
@@ -16,7 +16,7 @@ jobs:
         ref: gh-pages
     - name: Copy main to tag
       run: |
-        tag="${GITHUB_REF#refs/tags/}"
+        tag="${GITHUB_REF#refs/heads/}"
         cp -r main "$tag"
         git add .
         if git diff --cached --quiet; then
