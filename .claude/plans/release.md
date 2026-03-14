@@ -2,11 +2,11 @@
 
 ## Context
 
-pico-sdl is 528 commits ahead of the v0.2 tag.
+pico-sdl is 528 commits ahead of the v0.2 branch.
 All v0.3 features listed in CLAUDE.md are implemented (colors, layers,
 push/pop, view refactoring, expert FPS, etc.).
 Guide documentation and animation support are the most recent work.
-This plan follows the same release pattern as v0.2.
+This plan uses release branches (not tags) for versioning.
 
 ## Steps
 
@@ -48,7 +48,7 @@ pico-lua lua/doc/anims.lua
 
 Copy from previous rockspec, change:
 - `version` to new version
-- `tag` to new tag
+- `tag` → `branch` pointing to release branch
 
 Move previous rockspec to `lua/old/`.
 
@@ -79,17 +79,46 @@ Update to `0.3-1`.
 
 Single commit: `release: v0.3`
 
-### 8. ~~Tag and push~~ DONE (re-tagged after Doxygen link fix)
+### 8. ~~Push main~~ DONE
 
 ```bash
-git tag v0.3
-git push origin main --tags
+git push origin main
 ```
 
 This triggers:
 - `tests.yml` — CI validates
 - `docs.yml` — deploys docs to gh-pages `main/`
+
+### 8b. Create release branch and push — PENDING
+
+1. Create branch `v0.3` from `main`
+2. On `v0.3`: change README links `main` → `v0.3`, commit
+3. Push branch `v0.3`
+
+```bash
+git branch v0.3
+git checkout v0.3
+# edit README links
+git commit -am "release: v0.3 branch links"
+git push origin v0.3
+```
+
+This triggers:
 - `docs-tag.yml` — copies docs to `v0.3/` on gh-pages
+  (workflow must be updated: `tags: ['v*']` → `branches: ['v*']`)
+
+### 8c. Update `docs-tag.yml` to trigger on branches — PENDING
+
+Change trigger from `tags: ['v*']` to `branches: ['v*']`.
+Workflow logic stays the same (copies `main/` docs to `v0.3/`
+on gh-pages).
+
+### 8d. Delete existing `v0.3` tag — LATER
+
+```bash
+git tag -d v0.3
+git push origin :refs/tags/v0.3
+```
 
 ### 9. Publish to LuaRocks (manual) — PENDING
 
@@ -117,16 +146,19 @@ Also read through `lua/doc/guide.md` for correctness.
 
 ## Files to modify
 
-| File                           | Change                      |
-|--------------------------------|-----------------------------|
-| `lua/pico-sdl-0.3-1.rockspec` | New file (copy from prev)   |
-| `lua/old/`                     | Move previous rockspec here |
-| `Makefile:16`                  | Rockspec version            |
-| `README.md`                   | Version list + stable link   |
-| `lua/README.md`               | Version list, stable, install|
-| `.claude/CLAUDE.md`           | Rockspec example             |
-| `HISTORY.md`                  | Date + verify completeness   |
-| `lua/doc/api.md`              | New API entries              |
+| File                                | Change                             |
+|-------------------------------------|------------------------------------|
+| `lua/pico-sdl-0.3-1.rockspec`      | `tag` → `branch`                  |
+| `lua/old/`                          | Move previous rockspec here        |
+| `Makefile:16`                       | Rockspec version                   |
+| `README.md`                         | Version list + stable link         |
+| `lua/README.md`                     | Version list, stable, install      |
+| `.claude/CLAUDE.md`                 | Rockspec example                   |
+| `HISTORY.md`                        | Date + verify completeness         |
+| `lua/doc/api.md`                    | New API entries                    |
+| `.github/workflows/docs-tag.yml`   | Trigger: `tags` → `branches`      |
+| `README.md` (on v0.3 branch)       | Links `main` → `v0.3`             |
+| `lua/README.md` (on v0.3 branch)   | Links `main` → `v0.3`             |
 
 ## Verification
 
@@ -134,5 +166,5 @@ Also read through `lua/doc/guide.md` for correctness.
    pass before and after changes
 2. `git diff` shows only version bumps + README update
 3. After push, check GitHub Actions for green CI
-4. After tag push, verify `docs-tag` workflow creates `v0.3/`
+4. After branch push, verify `docs-tag` workflow creates `v0.3/`
    on gh-pages
