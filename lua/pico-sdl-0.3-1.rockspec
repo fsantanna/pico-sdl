@@ -3,7 +3,7 @@ version = "0.3-1"
 
 source = {
    url = "git://github.com/fsantanna/pico-sdl",
-   tag = "v0.3"
+   branch = "v0.3"
 }
 
 description = {
