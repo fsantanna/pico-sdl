@@ -40,15 +40,19 @@ Please, switch to stable [`v0.3`](https://github.com/fsantanna/pico-sdl/tree/v0.
 The following example draws an `X` on screen gradually with instant feedback:
 
 <picture>
-<img align="right" src="../x.gif">
+<img align="right" src="../cross.gif">
 </picture>
 
-```
+```lua
 pico.init(true)
-pico.set.view {
-    title  = "Draws an X",        -- window title
-    window = {'!', w=160, h=160}, -- physical screen size
-    world  = {'!', w=16,  h=16},  -- logical screen size (10x10 pixel size)
+pico.set {
+    window = {
+        title = "Draws an X",        -- window title
+        dim   = {'!', w=160, h=160}, -- physical screen size
+    },
+    view = {
+        dim = {'!', w=16,  h=16},    -- logical screen size (10x10 pixel size)
+    }
 }
 pico.output.clear()
 for i = 0, 15 do
