@@ -21,11 +21,6 @@ colors as strings in buffer and other calls" above). Without that, `'transparent
 has no RGBA consumer — `set.color.draw` and `set.color.clear` use `Pico_Color`
 (RGB only).
 
-## Fonts should be resources
-
-Fonts are always opened and closed (or remain open forever?). They should become
-resources with keys like `"/font/tiny/10"` to be GC'ed via the hash table TTL.
-
 ## Guide: `pico.get.ticks` never introduced
 
 In `lua/doc/guide.md` section 9.2, `pico.get.ticks` is used but never formally
@@ -43,14 +38,14 @@ See: `.claude/plans/view.md` section 2.
 
 Several test files use deprecated APIs and need updating:
 
-| File | Main Issues |
-|------|-------------|
-| `todo_rain.c` | Deprecated types, `pico_output_draw_rect_pct()` |
-| `todo_rotate.c` | `pico_set_view_raw()`, old types |
-| `todo_hide.c` | Missing window/view setup |
-| `todo_scale.c` | `pico_set_scale()`, `pico_set_anchor_pos()` |
-| `todo_control.c` | Wrong text drawing API |
-| `todo_main.c` | Deprecated types throughout |
+| File             | Main Issues                                    |
+|------------------|------------------------------------------------|
+| `todo_rain.c`    | Deprecated types, `pico_output_draw_rect_pct()`|
+| `todo_rotate.c`  | `pico_set_view_raw()`, old types               |
+| `todo_hide.c`    | Missing window/view setup                      |
+| `todo_scale.c`   | `pico_set_scale()`, `pico_set_anchor_pos()`    |
+| `todo_control.c` | Wrong text drawing API                         |
+| `todo_main.c`    | Deprecated types throughout                    |
 
 See: `.claude/plans/view.md` section 7.
 
@@ -93,20 +88,78 @@ there, issue might be elsewhere.
 
 In guide: why pixels in 5.3 need clear? Why 6.1 doesn't work?
 
-## `pico.input.loop` — simple event loop for navigation
-
-A convenience blocking loop so that built-in navigation (Ctrl+arrows,
-zoom, grid toggle) works without the user writing an event loop.
-Useful for the "draw something, then explore" pattern in educational
-use.
-
-- Non-expert mode only (expert users write their own loop)
-- Returns on QUIT or ESCAPE
-- No callbacks, no configuration — just `pico.input.loop()`
-
 ## Review and complete guide
 
 Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.
+
+Issue: [#103](https://github.com/fsantanna/pico-sdl/issues/103)
+
+## `pico.set` vs multi-arg setters
+
+The `set` dispatch calls `field(v)` with a single argument.
+Setters that take multiple positional args (`expert`, `video`) lose
+their extra arguments.
+
+See `.claude/plans/set.md` for alternatives.
+
+Issue: [#102](https://github.com/fsantanna/pico-sdl/issues/102)
+
+## README pico-lua cross image
+
+Issue: [#101](https://github.com/fsantanna/pico-sdl/issues/101)
+
+## Command-line options
+
+Issue: [#100](https://github.com/fsantanna/pico-sdl/issues/100)
+
+## Support screenshots of layers
+
+Issue: [#98](https://github.com/fsantanna/pico-sdl/issues/98)
+
+## Support hex integer colors (`0xRRGGBB`)
+
+Issue: [#95](https://github.com/fsantanna/pico-sdl/issues/95)
+
+## Non-blocking video I/O
+
+See `.claude/plans/select.md` for full plan.
+
+Issue: [#93](https://github.com/fsantanna/pico-sdl/issues/93)
+
+## "Help" aid
+
+Issue: [#72](https://github.com/fsantanna/pico-sdl/issues/72)
+
+## Expert mode should disable all aids
+
+Issue: [#71](https://github.com/fsantanna/pico-sdl/issues/71)
+
+## Fullscreen tests
+
+Issue: [#65](https://github.com/fsantanna/pico-sdl/issues/65)
+
+## Thickness for drawing primitives
+
+Overlaps with ThorVG Phase 2 (stroke width).
+
+Issue: [#62](https://github.com/fsantanna/pico-sdl/issues/62)
+
+## Create a logo for the project
+
+Issue: [#46](https://github.com/fsantanna/pico-sdl/issues/46)
+
+## Run manual tests for v0.3
+
+Interactive C tests (`todo_*.c`) and guide examples (`rects.lua`,
+`anims.lua`).
+
+See `.claude/plans/release.md` step 2b.
+
+## Announce v0.3
+
+Twitter, students, SDL lists, Lua lists.
+
+See `.claude/plans/release.md` step 10.
 
 ## ThorVG Integration
 
