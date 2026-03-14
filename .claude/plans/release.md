@@ -89,44 +89,29 @@ This triggers:
 - `tests.yml` — CI validates
 - `docs.yml` — deploys docs to gh-pages `main/`
 
-### 8b. Create release branch and push — PENDING
+### 8b. ~~Create release branch and push~~ DONE
 
-1. Create branch `v0.3` from `main`
-2. On `v0.3`: change README links `main` → `v0.3`, commit
-3. Push branch `v0.3`
+Branch `v0.3` created from `main`, README links updated, pushed.
+Workflow `docs-version.yml` triggers on `branches: ['v*']`.
 
-```bash
-git branch v0.3
-git checkout v0.3
-# edit README links
-git commit -am "release: v0.3 branch links"
-git push origin v0.3
-```
+### 8c. ~~Update docs workflow to trigger on branches~~ N/A
 
-This triggers:
-- `docs-tag.yml` — copies docs to `v0.3/` on gh-pages
-  (workflow must be updated: `tags: ['v*']` → `branches: ['v*']`)
+Already uses `branches: ['v*']` in `docs-version.yml`
+(renamed from `docs-tag.yml`).
 
-### 8c. Update `docs-tag.yml` to trigger on branches — PENDING
+### 8d. ~~Delete existing `v0.3` tag~~ N/A
 
-Change trigger from `tags: ['v*']` to `branches: ['v*']`.
-Workflow logic stays the same (copies `main/` docs to `v0.3/`
-on gh-pages).
+Tag never existed — using branch model instead.
 
-### 8d. Delete existing `v0.3` tag — LATER
-
-```bash
-git tag -d v0.3
-git push origin :refs/tags/v0.3
-```
-
-### 9. Publish to LuaRocks (manual) — PENDING
+### 9. ~~Publish to LuaRocks~~ DONE
 
 ```bash
 luarocks upload lua/pico-sdl-0.3-1.rockspec
 ```
 
-### 9b. Verify LuaRocks install (manual)
+Rockspec updated: `tag` → `branch = "v0.3"` before upload.
+
+### 9b. ~~Verify LuaRocks install~~ DONE
 
 ```bash
 sudo luarocks remove pico-sdl
@@ -134,8 +119,6 @@ sudo luarocks install pico-sdl 0.3
 pico-lua lua/doc/rects.lua
 pico-lua lua/doc/anims.lua
 ```
-
-Also read through `lua/doc/guide.md` for correctness.
 
 ### 10. Announce (manual) — PENDING
 
@@ -156,7 +139,7 @@ Also read through `lua/doc/guide.md` for correctness.
 | `.claude/CLAUDE.md`                 | Rockspec example                   |
 | `HISTORY.md`                        | Date + verify completeness         |
 | `lua/doc/api.md`                    | New API entries                    |
-| `.github/workflows/docs-tag.yml`   | Trigger: `tags` → `branches`      |
+| `.github/workflows/docs-version.yml`| N/A — already `branches: ['v*']` |
 | `README.md` (on v0.3 branch)       | Links `main` → `v0.3`             |
 | `lua/README.md` (on v0.3 branch)   | Links `main` → `v0.3`             |
 
@@ -166,5 +149,5 @@ Also read through `lua/doc/guide.md` for correctness.
    pass before and after changes
 2. `git diff` shows only version bumps + README update
 3. After push, check GitHub Actions for green CI
-4. After branch push, verify `docs-tag` workflow creates `v0.3/`
+4. After branch push, verify `docs-version` workflow creates `v0.3/`
    on gh-pages
