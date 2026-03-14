@@ -1034,7 +1034,6 @@ detection.
 The `pico.cv` functions convert relative coordinates to absolute:
 
 ```lua
-> pico.init(false) ; pico.init(true)
 > pos = pico.cv.pos { '%', x=0.5, y=0.5 }
 > print(pos.x, pos.y)
 50   50
