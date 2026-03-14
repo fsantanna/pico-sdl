@@ -13,11 +13,6 @@
     [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1/)
 ]
 
-This is the unstable `main` branch.
-Please, switch to stable [`v0.3`](https://github.com/fsantanna/pico-sdl/tree/v0.3).
-<!--
--->
-
 [
     [About](#about)                 |
     [Hello World!](#hello-world)    |
@@ -31,9 +26,7 @@ Please, switch to stable [`v0.3`](https://github.com/fsantanna/pico-sdl/tree/v0.
 
 `pico-sdl` is a C graphics library for 2D games and applications.
 
-See also [pico-lua][pico-lua], the official Lua binding for `pico-sdl`.
-
-[pico-lua]: https://github.com/fsantanna/pico-sdl/tree/main/lua/
+See also [pico-lua](lua/), the official Lua binding for `pico-sdl`.
 
 <img src="pico-logo.png" width="250" align="right">
 

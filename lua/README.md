@@ -13,11 +13,6 @@
     [`v0.1`](https://github.com/fsantanna/pico-sdl/tree/v0.1/lua/)
 ]
 
-This is the unstable `main` branch.
-Please, switch to stable [`v0.3`](https://github.com/fsantanna/pico-sdl/tree/v0.3/lua/).
-<!--
--->
-
 [
     [About](#about)                 |
     [Hello World!](#hello-world)    |
