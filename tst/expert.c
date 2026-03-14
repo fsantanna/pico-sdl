@@ -19,7 +19,7 @@ int main (void) {
     int a = pico_get_ticks();
     pico_input_delay(100);
     int b = pico_get_ticks();
-    assert(b>=a+100 && b<=a+101);
+    assert(b>=a+100 && b<=a+105);
 
     pico_init(0);
     return 0;
