@@ -1459,7 +1459,8 @@ void pico_output_draw_text_mode (
     int mode, const char* key,
     const char* text, Pico_Rel_Rect* rect
 ) {
-    assert(text[0] != '\0');
+    if (text[0] == '\0') return;
+
     assert(rect->h != 0);
     Pico_Rel_Dim rel_h = { rect->mode, {0, rect->h}, rect->up };
     SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
