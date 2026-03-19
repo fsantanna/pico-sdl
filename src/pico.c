@@ -724,7 +724,8 @@ Pico_Abs_Dim pico_get_text_mode (
     int mode, const char* key,
     const char* text, Pico_Rel_Dim* rel
 ) {
-    assert(text[0] != '\0');
+    if (text[0] == '\0') return (Pico_Abs_Dim){0, 0};
+
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
         Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h}, rel->up };
