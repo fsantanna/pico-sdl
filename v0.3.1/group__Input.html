@@ -81,33 +81,30 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga373d3d67580b89b060e1a1d147a2d920" id="r_ga373d3d67580b89b060e1a1d147a2d920"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Input.html#ga373d3d67580b89b060e1a1d147a2d920">pico_input_delay</a> (int ms)</td></tr>
-<tr class="memdesc:ga373d3d67580b89b060e1a1d147a2d920"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the program until the given number of milliseconds have passed.  <br /></td></tr>
-<tr class="separator:ga373d3d67580b89b060e1a1d147a2d920"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf9a82ea8ee8e64c64e79760926c375fd" id="r_gaf9a82ea8ee8e64c64e79760926c375fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Input.html#gaf9a82ea8ee8e64c64e79760926c375fd">pico_input_event</a> (Pico_Event *evt, int type)</td></tr>
-<tr class="memdesc:gaf9a82ea8ee8e64c64e79760926c375fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the program until an event occurs.  <br /></td></tr>
-<tr class="separator:gaf9a82ea8ee8e64c64e79760926c375fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6c3bbc88dab85ac2c16b88f02c5930d8" id="r_ga6c3bbc88dab85ac2c16b88f02c5930d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Input.html#ga6c3bbc88dab85ac2c16b88f02c5930d8">pico_input_event_ask</a> (Pico_Event *evt, int type)</td></tr>
-<tr class="memdesc:ga6c3bbc88dab85ac2c16b88f02c5930d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if an event has occured.  <br /></td></tr>
-<tr class="separator:ga6c3bbc88dab85ac2c16b88f02c5930d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad5d55e2e4aed69260a035694a0d3e271" id="r_gad5d55e2e4aed69260a035694a0d3e271"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271">pico_input_event_timeout</a> (Pico_Event *evt, int type, int timeout)</td></tr>
-<tr class="memdesc:gad5d55e2e4aed69260a035694a0d3e271"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the program until an event occurs or a timeout is reached.  <br /></td></tr>
+<tr class="memitem:gadfd5e9fbd20f60330ea0357280389036" id="r_gadfd5e9fbd20f60330ea0357280389036"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Input.html#gadfd5e9fbd20f60330ea0357280389036">pico_input_delay</a> (int ms)</td></tr>
+<tr class="memdesc:gadfd5e9fbd20f60330ea0357280389036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the program until the given number of milliseconds have passed. Equivalent to <code>pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms)</code>.  <br /></td></tr>
+<tr class="separator:gadfd5e9fbd20f60330ea0357280389036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac231b0236c8a4639380555561d023616" id="r_gac231b0236c8a4639380555561d023616"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Input.html#gac231b0236c8a4639380555561d023616">pico_input_event</a> (<a class="el" href="structPico__Event.html">Pico_Event</a> *evt, int type)</td></tr>
+<tr class="memdesc:gac231b0236c8a4639380555561d023616"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the program until a matching event occurs. Equivalent to <code>pico_input_event_timeout(evt, type, -1)</code>.  <br /></td></tr>
+<tr class="separator:gac231b0236c8a4639380555561d023616"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad5d55e2e4aed69260a035694a0d3e271" id="r_gad5d55e2e4aed69260a035694a0d3e271"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271">pico_input_event_timeout</a> (<a class="el" href="structPico__Event.html">Pico_Event</a> *evt, int type, int timeout)</td></tr>
+<tr class="memdesc:gad5d55e2e4aed69260a035694a0d3e271"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the program until a matching event occurs or a timeout is reached. All input functions delegate to this one. Internal events (quit/exit, window resize, ctrl+zoom/scroll/grid) are handled automatically and never forwarded. On timeout, evt-&gt;type is set to PICO_EVENT_NONE.  <br /></td></tr>
 <tr class="separator:gad5d55e2e4aed69260a035694a0d3e271"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaac73f67a4c321eda57b199bf53495979" id="r_gaac73f67a4c321eda57b199bf53495979"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Input.html#gaac73f67a4c321eda57b199bf53495979">pico_input_loop</a> (void)</td></tr>
-<tr class="memdesc:gaac73f67a4c321eda57b199bf53495979"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blocks in an event loop until the window is closed.  <br /></td></tr>
+<tr class="memdesc:gaac73f67a4c321eda57b199bf53495979"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blocks in an event loop until the window is closed. Equivalent to <code>pico_input_event(NULL, PICO_EVENT_QUIT)</code>.  <br /></td></tr>
 <tr class="separator:gaac73f67a4c321eda57b199bf53495979"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Event handling. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga373d3d67580b89b060e1a1d147a2d920" name="ga373d3d67580b89b060e1a1d147a2d920"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga373d3d67580b89b060e1a1d147a2d920">&#9670;&#160;</a></span>pico_input_delay()</h2>
+<a id="gadfd5e9fbd20f60330ea0357280389036" name="gadfd5e9fbd20f60330ea0357280389036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadfd5e9fbd20f60330ea0357280389036">&#9670;&#160;</a></span>pico_input_delay()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void pico_input_delay </td>
+          <td class="memname">int pico_input_delay </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>ms</em></td><td>)</td>
@@ -116,7 +113,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stops the program until the given number of milliseconds have passed. </p>
+<p>Stops the program until the given number of milliseconds have passed. Equivalent to <code>pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms)</code>. </p>
 <div class="fragment"><div class="line"><span class="comment">// file: delay.c</span></div>
 <div class="line"><span class="preprocessor">#include &lt;pico.h&gt;</span></div>
 <div class="line"> </div>
@@ -124,35 +121,36 @@ Functions</h2></td></tr>
 <div class="line">    <a class="code hl_function" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>(1);</div>
 <div class="line"> </div>
 <div class="line">    printf(<span class="stringliteral">&quot;Waiting for 2 seconds...\n&quot;</span>);</div>
-<div class="line">    <a class="code hl_function" href="group__Input.html#ga373d3d67580b89b060e1a1d147a2d920">pico_input_delay</a>(5000);</div>
+<div class="line">    <a class="code hl_function" href="group__Input.html#gadfd5e9fbd20f60330ea0357280389036">pico_input_delay</a>(5000);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;Done waiting. Exitting...\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">    <a class="code hl_function" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>(0);</div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="ttc" id="agroup__Init_html_gab655caa50f1f8060182dc24f2d11e589"><div class="ttname"><a href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a></div><div class="ttdeci">void pico_init(int on)</div><div class="ttdoc">Initializes and terminates pico.</div></div>
-<div class="ttc" id="agroup__Input_html_ga373d3d67580b89b060e1a1d147a2d920"><div class="ttname"><a href="group__Input.html#ga373d3d67580b89b060e1a1d147a2d920">pico_input_delay</a></div><div class="ttdeci">void pico_input_delay(int ms)</div><div class="ttdoc">Stops the program until the given number of milliseconds have passed.</div></div>
+<div class="ttc" id="agroup__Input_html_gadfd5e9fbd20f60330ea0357280389036"><div class="ttname"><a href="group__Input.html#gadfd5e9fbd20f60330ea0357280389036">pico_input_delay</a></div><div class="ttdeci">int pico_input_delay(int ms)</div><div class="ttdoc">Stops the program until the given number of milliseconds have passed. Equivalent to pico_input_event_...</div></div>
 </div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ms</td><td>milliseconds to wait </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>elapsed time in milliseconds (delta time) </dd></dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="delay_8c-example.html#a1">delay.c</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="gaf9a82ea8ee8e64c64e79760926c375fd" name="gaf9a82ea8ee8e64c64e79760926c375fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf9a82ea8ee8e64c64e79760926c375fd">&#9670;&#160;</a></span>pico_input_event()</h2>
+<a id="gac231b0236c8a4639380555561d023616" name="gac231b0236c8a4639380555561d023616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac231b0236c8a4639380555561d023616">&#9670;&#160;</a></span>pico_input_event()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void pico_input_event </td>
+          <td class="memname">int pico_input_event </td>
           <td>(</td>
-          <td class="paramtype">Pico_Event *&#160;</td>
+          <td class="paramtype"><a class="el" href="structPico__Event.html">Pico_Event</a> *&#160;</td>
           <td class="paramname"><em>evt</em>, </td>
         </tr>
         <tr>
@@ -169,7 +167,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stops the program until an event occurs. </p>
+<p>Stops the program until a matching event occurs. Equivalent to <code>pico_input_event_timeout(evt, type, -1)</code>. </p>
 <div class="fragment"><div class="line"><span class="comment">// file: event.c</span></div>
 <div class="line"><span class="preprocessor">#include &lt;pico.h&gt;</span></div>
 <div class="line"> </div>
@@ -179,66 +177,24 @@ Functions</h2></td></tr>
 <div class="line">    SDL_Event event;</div>
 <div class="line"> </div>
 <div class="line">    printf(<span class="stringliteral">&quot;Waiting for an event...\n&quot;</span>);</div>
-<div class="line">    <a class="code hl_function" href="group__Input.html#gaf9a82ea8ee8e64c64e79760926c375fd">pico_input_event</a>(&amp;event, 0);</div>
+<div class="line">    <a class="code hl_function" href="group__Input.html#gac231b0236c8a4639380555561d023616">pico_input_event</a>(&amp;event, 0);</div>
 <div class="line">    printf(<span class="stringliteral">&quot;Event detected! Type: %d\n&quot;</span>, event.type);</div>
 <div class="line"> </div>
 <div class="line">    <a class="code hl_function" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>(0);</div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__Input_html_gaf9a82ea8ee8e64c64e79760926c375fd"><div class="ttname"><a href="group__Input.html#gaf9a82ea8ee8e64c64e79760926c375fd">pico_input_event</a></div><div class="ttdeci">void pico_input_event(Pico_Event *evt, int type)</div><div class="ttdoc">Stops the program until an event occurs.</div></div>
+<div class="ttc" id="agroup__Input_html_gac231b0236c8a4639380555561d023616"><div class="ttname"><a href="group__Input.html#gac231b0236c8a4639380555561d023616">pico_input_event</a></div><div class="ttdeci">int pico_input_event(Pico_Event *evt, int type)</div><div class="ttdoc">Stops the program until a matching event occurs. Equivalent to pico_input_event_timeout(evt,...</div></div>
 </div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">evt</td><td>where to save the event data, or NULL to ignore </td></tr>
-    <tr><td class="paramname">type</td><td>type of event to wait for (Pico_EventType) </td></tr>
+    <tr><td class="paramname">type</td><td>type of event to wait for (PICO_EVENT_ANY for any) </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Input.html#ga6c3bbc88dab85ac2c16b88f02c5930d8" title="Checks if an event has occured.">pico_input_event_ask</a> </dd>
-<dd>
-<a class="el" href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271" title="Stops the program until an event occurs or a timeout is reached.">pico_input_event_timeout</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>elapsed time in milliseconds (delta time) </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271" title="Stops the program until a matching event occurs or a timeout is reached. All input functions delegate...">pico_input_event_timeout</a> </dd></dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_8c-example.html#a1">event.c</a>.</dd>
 </dl>
-
-</div>
-</div>
-<a id="ga6c3bbc88dab85ac2c16b88f02c5930d8" name="ga6c3bbc88dab85ac2c16b88f02c5930d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga6c3bbc88dab85ac2c16b88f02c5930d8">&#9670;&#160;</a></span>pico_input_event_ask()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int pico_input_event_ask </td>
-          <td>(</td>
-          <td class="paramtype">Pico_Event *&#160;</td>
-          <td class="paramname"><em>evt</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>type</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Checks if an event has occured. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">evt</td><td>where to save the event data, or NULL to ignore </td></tr>
-    <tr><td class="paramname">type</td><td>type of event to check the occurence (Pico_EventType) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>1 if the given type of event has occurred, or 0 otherwise </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Input.html#gaf9a82ea8ee8e64c64e79760926c375fd" title="Stops the program until an event occurs.">pico_input_event</a> </dd>
-<dd>
-<a class="el" href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271" title="Stops the program until an event occurs or a timeout is reached.">pico_input_event_timeout</a> </dd></dl>
 
 </div>
 </div>
@@ -251,7 +207,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">int pico_input_event_timeout </td>
           <td>(</td>
-          <td class="paramtype">Pico_Event *&#160;</td>
+          <td class="paramtype"><a class="el" href="structPico__Event.html">Pico_Event</a> *&#160;</td>
           <td class="paramname"><em>evt</em>, </td>
         </tr>
         <tr>
@@ -274,41 +230,40 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stops the program until an event occurs or a timeout is reached. </p>
+<p>Stops the program until a matching event occurs or a timeout is reached. All input functions delegate to this one. Internal events (quit/exit, window resize, ctrl+zoom/scroll/grid) are handled automatically and never forwarded. On timeout, evt-&gt;type is set to PICO_EVENT_NONE. </p>
 <div class="fragment"><div class="line"><span class="comment">// file: event_timeout.c</span></div>
 <div class="line"><span class="preprocessor">#include &lt;pico.h&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main() {</div>
 <div class="line">    <a class="code hl_function" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>(1);</div>
 <div class="line"> </div>
-<div class="line">    SDL_Event event;</div>
+<div class="line">    <a class="code hl_struct" href="structPico__Event.html">Pico_Event</a> event;</div>
 <div class="line"> </div>
 <div class="line">    printf(<span class="stringliteral">&quot;Waiting for an event for the next 2 seconds...\n&quot;</span>);</div>
-<div class="line">    <span class="keywordtype">int</span> happened = <a class="code hl_function" href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271">pico_input_event_timeout</a>(&amp;event, 0, 5000);</div>
-<div class="line">    <span class="keywordflow">if</span> (happened) {</div>
-<div class="line">        printf(<span class="stringliteral">&quot;Event detected! Type: %d\n&quot;</span>, event.type);</div>
-<div class="line">    }</div>
-<div class="line">    <span class="keywordflow">else</span> {</div>
+<div class="line">    <a class="code hl_function" href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271">pico_input_event_timeout</a>(&amp;event, 0, 5000);</div>
+<div class="line">    <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structPico__Event.html#af303ecd1849dfbae8e3587c65ab1799c">type</a> != PICO_EVENT_NONE) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;Event detected! Type: %d\n&quot;</span>, event.<a class="code hl_variable" href="structPico__Event.html#af303ecd1849dfbae8e3587c65ab1799c">type</a>);</div>
+<div class="line">    } <span class="keywordflow">else</span> {</div>
 <div class="line">        printf(<span class="stringliteral">&quot;No event detected in those 2 seconds\n&quot;</span>);</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <a class="code hl_function" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>(0);</div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__Input_html_gad5d55e2e4aed69260a035694a0d3e271"><div class="ttname"><a href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271">pico_input_event_timeout</a></div><div class="ttdeci">int pico_input_event_timeout(Pico_Event *evt, int type, int timeout)</div><div class="ttdoc">Stops the program until an event occurs or a timeout is reached.</div></div>
+<div class="ttc" id="agroup__Input_html_gad5d55e2e4aed69260a035694a0d3e271"><div class="ttname"><a href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271">pico_input_event_timeout</a></div><div class="ttdeci">int pico_input_event_timeout(Pico_Event *evt, int type, int timeout)</div><div class="ttdoc">Stops the program until a matching event occurs or a timeout is reached. All input functions delegate...</div></div>
+<div class="ttc" id="astructPico__Event_html"><div class="ttname"><a href="structPico__Event.html">Pico_Event</a></div><div class="ttdef"><b>Definition</b> events.h:37</div></div>
+<div class="ttc" id="astructPico__Event_html_af303ecd1849dfbae8e3587c65ab1799c"><div class="ttname"><a href="structPico__Event.html#af303ecd1849dfbae8e3587c65ab1799c">Pico_Event::type</a></div><div class="ttdeci">PICO_EVENT type</div><div class="ttdef"><b>Definition</b> events.h:38</div></div>
 </div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">evt</td><td>where to save the event data, or NULL to ignore </td></tr>
-    <tr><td class="paramname">type</td><td>type of event to wait for (Pico_EventType) </td></tr>
-    <tr><td class="paramname">timeout</td><td>time limit to wait for (milliseconds) </td></tr>
+    <tr><td class="paramname">type</td><td>type of event to wait for (PICO_EVENT_ANY for any) </td></tr>
+    <tr><td class="paramname">timeout</td><td>time limit in milliseconds, or -1 to wait forever </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>1 if the given type of event has occurred, or 0 otherwise </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Input.html#gaf9a82ea8ee8e64c64e79760926c375fd" title="Stops the program until an event occurs.">pico_input_event</a> </dd>
-<dd>
-<a class="el" href="group__Input.html#ga6c3bbc88dab85ac2c16b88f02c5930d8" title="Checks if an event has occured.">pico_input_event_ask</a> </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_loop_8c-example.html#a2">event_loop.c</a>, and <a class="el" href="event_timeout_8c-example.html#a1">event_timeout.c</a>.</dd>
+<dl class="section return"><dt>Returns</dt><dd>elapsed time in milliseconds (delta time) </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Input.html#gac231b0236c8a4639380555561d023616" title="Stops the program until a matching event occurs. Equivalent to pico_input_event_timeout(evt,...">pico_input_event</a> </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_loop_8c-example.html#a2">event_loop.c</a>, and <a class="el" href="event_timeout_8c-example.html#a2">event_timeout.c</a>.</dd>
 </dl>
 
 </div>
@@ -329,7 +284,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Blocks in an event loop until the window is closed. </p>
+<p>Blocks in an event loop until the window is closed. Equivalent to <code>pico_input_event(NULL, PICO_EVENT_QUIT)</code>. </p>
 
 </div>
 </div>

@@ -87,9 +87,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga180b40402f19e0de5d667f4400d9874b" id="r_ga180b40402f19e0de5d667f4400d9874b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color.html">Pico_Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga180b40402f19e0de5d667f4400d9874b">pico_get_color_draw</a> (void)</td></tr>
 <tr class="memdesc:ga180b40402f19e0de5d667f4400d9874b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the color set to draw.  <br /></td></tr>
 <tr class="separator:ga180b40402f19e0de5d667f4400d9874b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabb2554bb47ad848cb9c8ac1a36924ba9" id="r_gabb2554bb47ad848cb9c8ac1a36924ba9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gabb2554bb47ad848cb9c8ac1a36924ba9">pico_get_expert</a> (void)</td></tr>
-<tr class="memdesc:gabb2554bb47ad848cb9c8ac1a36924ba9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the state of expert mode.  <br /></td></tr>
-<tr class="separator:gabb2554bb47ad848cb9c8ac1a36924ba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4dda2e24535e4c296525f55bfcdf5e09" id="r_ga4dda2e24535e4c296525f55bfcdf5e09"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga4dda2e24535e4c296525f55bfcdf5e09">pico_get_expert</a> (int *fps)</td></tr>
+<tr class="memdesc:ga4dda2e24535e4c296525f55bfcdf5e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the state of expert mode.  <br /></td></tr>
+<tr class="separator:ga4dda2e24535e4c296525f55bfcdf5e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaff62e569b8cdb4dd771805ce1991fd31" id="r_gaff62e569b8cdb4dd771805ce1991fd31"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gaff62e569b8cdb4dd771805ce1991fd31">pico_get_font</a> (void)</td></tr>
 <tr class="memdesc:gaff62e569b8cdb4dd771805ce1991fd31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the font used to draw texts.  <br /></td></tr>
 <tr class="separator:gaff62e569b8cdb4dd771805ce1991fd31"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -99,9 +99,6 @@ Functions</h2></td></tr>
 <tr class="memitem:gaafee2bc88cb981afbc4e330469221016" id="r_gaafee2bc88cb981afbc4e330469221016"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Video.html">Pico_Video</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gaafee2bc88cb981afbc4e330469221016">pico_get_video</a> (const char *path, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
 <tr class="memdesc:gaafee2bc88cb981afbc4e330469221016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets video properties.  <br /></td></tr>
 <tr class="separator:gaafee2bc88cb981afbc4e330469221016"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac6a067ac6eaf116e25bc1e9ff9789275" id="r_gac6a067ac6eaf116e25bc1e9ff9789275"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gac6a067ac6eaf116e25bc1e9ff9789275">pico_get_key</a> (PICO_KEY key)</td></tr>
-<tr class="memdesc:gac6a067ac6eaf116e25bc1e9ff9789275"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the state of a key.  <br /></td></tr>
-<tr class="separator:gac6a067ac6eaf116e25bc1e9ff9789275"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7203c69b639b6d299213926b2bffd713" id="r_ga7203c69b639b6d299213926b2bffd713"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga7203c69b639b6d299213926b2bffd713">pico_get_layer</a> (void)</td></tr>
 <tr class="memdesc:ga7203c69b639b6d299213926b2bffd713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets current layer key.  <br /></td></tr>
 <tr class="separator:ga7203c69b639b6d299213926b2bffd713"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,9 +138,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga3ca16858151a70808797904efa4d3262" id="r_ga3ca16858151a70808797904efa4d3262"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga3ca16858151a70808797904efa4d3262">pico_layer_video_mode</a> (int mode, const char *key, const char *path)</td></tr>
 <tr class="memdesc:ga3ca16858151a70808797904efa4d3262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a video layer from a Y4M file.  <br /></td></tr>
 <tr class="separator:ga3ca16858151a70808797904efa4d3262"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga50d329ffd8d7bd26c241ecf5905b3b76" id="r_ga50d329ffd8d7bd26c241ecf5905b3b76"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga50d329ffd8d7bd26c241ecf5905b3b76">pico_get_mouse</a> (<a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *pos, int button)</td></tr>
-<tr class="memdesc:ga50d329ffd8d7bd26c241ecf5905b3b76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mouse state.  <br /></td></tr>
-<tr class="separator:ga50d329ffd8d7bd26c241ecf5905b3b76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8b57db112b8ec986958d5c15b2c854b2" id="r_ga8b57db112b8ec986958d5c15b2c854b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Keyboard.html">Pico_Keyboard</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga8b57db112b8ec986958d5c15b2c854b2">pico_get_keyboard</a> (void)</td></tr>
+<tr class="memdesc:ga8b57db112b8ec986958d5c15b2c854b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the keyboard state (current modifier flags).  <br /></td></tr>
+<tr class="separator:ga8b57db112b8ec986958d5c15b2c854b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga68539917cdd485f021786510f57bc1bc" id="r_ga68539917cdd485f021786510f57bc1bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Mouse.html">Pico_Mouse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga68539917cdd485f021786510f57bc1bc">pico_get_mouse</a> (char mode)</td></tr>
+<tr class="memdesc:ga68539917cdd485f021786510f57bc1bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mouse state.  <br /></td></tr>
+<tr class="separator:ga68539917cdd485f021786510f57bc1bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga20838f46d25a4201f8e9c20f800c244c" id="r_ga20838f46d25a4201f8e9c20f800c244c"><td class="memItemLeft" align="right" valign="top">Uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga20838f46d25a4201f8e9c20f800c244c">pico_get_now</a> (void)</td></tr>
+<tr class="memdesc:ga20838f46d25a4201f8e9c20f800c244c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the amount of ticks that passed since pico was initialized.  <br /></td></tr>
+<tr class="separator:ga20838f46d25a4201f8e9c20f800c244c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3a6c89dfc0874a5f97d8e34359874cd5" id="r_ga3a6c89dfc0874a5f97d8e34359874cd5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga3a6c89dfc0874a5f97d8e34359874cd5">pico_get_show</a> (void)</td></tr>
 <tr class="memdesc:ga3a6c89dfc0874a5f97d8e34359874cd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the visibility state of the window.  <br /></td></tr>
 <tr class="separator:ga3a6c89dfc0874a5f97d8e34359874cd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,9 +159,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga956316675a154a8988b17d47252b5fc0" id="r_ga956316675a154a8988b17d47252b5fc0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Abs__Dim.html">Pico_Abs_Dim</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga956316675a154a8988b17d47252b5fc0">pico_get_text_mode</a> (int mode, const char *key, const char *text, <a class="el" href="structPico__Rel__Dim.html">Pico_Rel_Dim</a> *dim)</td></tr>
 <tr class="memdesc:ga956316675a154a8988b17d47252b5fc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets text dimensions with explicit realm mode and layer key.  <br /></td></tr>
 <tr class="separator:ga956316675a154a8988b17d47252b5fc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga174b869dab168ee4f53ac5c9319d21ba" id="r_ga174b869dab168ee4f53ac5c9319d21ba"><td class="memItemLeft" align="right" valign="top">Uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga174b869dab168ee4f53ac5c9319d21ba">pico_get_ticks</a> (void)</td></tr>
-<tr class="memdesc:ga174b869dab168ee4f53ac5c9319d21ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the amount of ticks that passed since pico was initialized.  <br /></td></tr>
-<tr class="separator:ga174b869dab168ee4f53ac5c9319d21ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4eac792fba44219dc735c5490ff286cc" id="r_ga4eac792fba44219dc735c5490ff286cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga4eac792fba44219dc735c5490ff286cc">pico_get_view</a> (int *grid, <a class="el" href="structPico__Abs__Dim.html">Pico_Abs_Dim</a> *dim, <a class="el" href="structPico__Abs__Dim.html">Pico_Abs_Dim</a> *tile, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *target, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *source, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *clip, <a class="el" href="structPico__Rot.html">Pico_Rot</a> *rot, <a class="el" href="group__Types.html#gad9d5480e902592c236cf924531048dc9">PICO_FLIP</a> *flip)</td></tr>
 <tr class="memdesc:ga4eac792fba44219dc735c5490ff286cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current view configuration. NULL arguments are ignored.  <br /></td></tr>
 <tr class="separator:ga4eac792fba44219dc735c5490ff286cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,9 +174,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga1169c13cea92841444a00c149e69a233" id="r_ga1169c13cea92841444a00c149e69a233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga1169c13cea92841444a00c149e69a233">pico_set_color_draw</a> (<a class="el" href="structPico__Color.html">Pico_Color</a> color)</td></tr>
 <tr class="memdesc:ga1169c13cea92841444a00c149e69a233"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the color used to draw objects.  <br /></td></tr>
 <tr class="separator:ga1169c13cea92841444a00c149e69a233"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga404ab92a2cc11129ddad0772d95e5100" id="r_ga404ab92a2cc11129ddad0772d95e5100"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga404ab92a2cc11129ddad0772d95e5100">pico_set_expert</a> (int on)</td></tr>
-<tr class="memdesc:ga404ab92a2cc11129ddad0772d95e5100"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the expert mode.  <br /></td></tr>
-<tr class="separator:ga404ab92a2cc11129ddad0772d95e5100"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab4fae47a6d4d354593eed0461d9391f2" id="r_gab4fae47a6d4d354593eed0461d9391f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gab4fae47a6d4d354593eed0461d9391f2">pico_set_expert</a> (int on, int fps)</td></tr>
+<tr class="memdesc:gab4fae47a6d4d354593eed0461d9391f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the expert mode with optional FPS timing.  <br /></td></tr>
+<tr class="separator:gab4fae47a6d4d354593eed0461d9391f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga39e28540050653cf3385aeb95aae17b2" id="r_ga39e28540050653cf3385aeb95aae17b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga39e28540050653cf3385aeb95aae17b2">pico_set_font</a> (const char *path)</td></tr>
 <tr class="memdesc:ga39e28540050653cf3385aeb95aae17b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the font used to draw texts.  <br /></td></tr>
 <tr class="separator:ga39e28540050653cf3385aeb95aae17b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -186,6 +186,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gafd408cfe0b3afd13b8548261aafa7573" id="r_gafd408cfe0b3afd13b8548261aafa7573"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gafd408cfe0b3afd13b8548261aafa7573">pico_set_show</a> (int on)</td></tr>
 <tr class="memdesc:gafd408cfe0b3afd13b8548261aafa7573"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the application window visibility.  <br /></td></tr>
 <tr class="separator:gafd408cfe0b3afd13b8548261aafa7573"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab39c99f5a8a9a0ceda1123d2043d2104" id="r_gab39c99f5a8a9a0ceda1123d2043d2104"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gab39c99f5a8a9a0ceda1123d2043d2104">pico_set_mouse</a> (char mode)</td></tr>
+<tr class="memdesc:gab39c99f5a8a9a0ceda1123d2043d2104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the default mouse coordinate mode.  <br /></td></tr>
+<tr class="separator:gab39c99f5a8a9a0ceda1123d2043d2104"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga19739a6858568110a6ce75bd7df7cd96" id="r_ga19739a6858568110a6ce75bd7df7cd96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga19739a6858568110a6ce75bd7df7cd96">pico_set_style</a> (<a class="el" href="group__Types.html#ga467575c070b6218d5e653c4a44501900">PICO_STYLE</a> style)</td></tr>
 <tr class="memdesc:ga19739a6858568110a6ce75bd7df7cd96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the drawing style.  <br /></td></tr>
 <tr class="separator:ga19739a6858568110a6ce75bd7df7cd96"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,7 +205,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga3e4c6ee9c241d3fa73ff8087cbbc122a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets both window and world to the same dimensions.  <br /></td></tr>
 <tr class="separator:ga3e4c6ee9c241d3fa73ff8087cbbc122a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3b274b50e36add4292173a1ff391c42e" id="r_ga3b274b50e36add4292173a1ff391c42e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga3b274b50e36add4292173a1ff391c42e">pico_push</a> (void)</td></tr>
-<tr class="memdesc:ga3b274b50e36add4292173a1ff391c42e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the current drawing state onto a stack. Saves: alpha, angle, colors, crop, font, style, layer.  <br /></td></tr>
+<tr class="memdesc:ga3b274b50e36add4292173a1ff391c42e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the current drawing state onto a stack. Saves: alpha, colors, font, mouse, style, layer.  <br /></td></tr>
 <tr class="separator:ga3b274b50e36add4292173a1ff391c42e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadbbca45015566b40f25f9a9116db170f" id="r_gadbbca45015566b40f25f9a9116db170f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gadbbca45015566b40f25f9a9116db170f">pico_pop</a> (void)</td></tr>
 <tr class="memdesc:gadbbca45015566b40f25f9a9116db170f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores the drawing state from the stack.  <br /></td></tr>
@@ -253,8 +256,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gabb2554bb47ad848cb9c8ac1a36924ba9" name="gabb2554bb47ad848cb9c8ac1a36924ba9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabb2554bb47ad848cb9c8ac1a36924ba9">&#9670;&#160;</a></span>pico_get_expert()</h2>
+<a id="ga4dda2e24535e4c296525f55bfcdf5e09" name="ga4dda2e24535e4c296525f55bfcdf5e09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4dda2e24535e4c296525f55bfcdf5e09">&#9670;&#160;</a></span>pico_get_expert()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -262,14 +265,20 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">int pico_get_expert </td>
           <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>fps</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Gets the state of expert mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fps</td><td>optional pointer to receive fps value (NULL to ignore) </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>1 if enabled, or 0 otherwise </dd></dl>
 
 </div>
@@ -333,30 +342,24 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gac6a067ac6eaf116e25bc1e9ff9789275" name="gac6a067ac6eaf116e25bc1e9ff9789275"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac6a067ac6eaf116e25bc1e9ff9789275">&#9670;&#160;</a></span>pico_get_key()</h2>
+<a id="ga8b57db112b8ec986958d5c15b2c854b2" name="ga8b57db112b8ec986958d5c15b2c854b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8b57db112b8ec986958d5c15b2c854b2">&#9670;&#160;</a></span>pico_get_keyboard()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int pico_get_key </td>
+          <td class="memname"><a class="el" href="structPico__Keyboard.html">Pico_Keyboard</a> pico_get_keyboard </td>
           <td>(</td>
-          <td class="paramtype">PICO_KEY&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the state of a key. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>key constant </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>1 if key is pressed, or 0 otherwise </dd></dl>
+<p>Gets the keyboard state (current modifier flags). </p>
+<dl class="section return"><dt>Returns</dt><dd>keyboard state with modifier flags (key is 0 when polling) </dd></dl>
 
 </div>
 </div>
@@ -381,28 +384,18 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga50d329ffd8d7bd26c241ecf5905b3b76" name="ga50d329ffd8d7bd26c241ecf5905b3b76"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga50d329ffd8d7bd26c241ecf5905b3b76">&#9670;&#160;</a></span>pico_get_mouse()</h2>
+<a id="ga68539917cdd485f021786510f57bc1bc" name="ga68539917cdd485f021786510f57bc1bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga68539917cdd485f021786510f57bc1bc">&#9670;&#160;</a></span>pico_get_mouse()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int pico_get_mouse </td>
+          <td class="memname"><a class="el" href="structPico__Mouse.html">Pico_Mouse</a> pico_get_mouse </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *&#160;</td>
-          <td class="paramname"><em>pos</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>button</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -410,12 +403,34 @@ Functions</h2></td></tr>
 <p>Gets the mouse state. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">pos</td><td>where to save the mouse position (mode determines coordinate system: '!' for pixels, '' for percentage, '#' for tiles) </td></tr>
-    <tr><td class="paramname">button</td><td>mouse button to check (1=left, 2=middle, 3=right), or 0 for any </td></tr>
+    <tr><td class="paramname">mode</td><td>coordinate mode ('!' pixels, '' percentage, '#' tiles, 'w' window, 0 uses default) </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>1 if the specified button is pressed, or 0 otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>mouse state with position and button flags </dd></dl>
+
+</div>
+</div>
+<a id="ga20838f46d25a4201f8e9c20f800c244c" name="ga20838f46d25a4201f8e9c20f800c244c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga20838f46d25a4201f8e9c20f800c244c">&#9670;&#160;</a></span>pico_get_now()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Uint32 pico_get_now </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the amount of ticks that passed since pico was initialized. </p>
+<dl class="section return"><dt>Returns</dt><dd>elapsed time in milliseconds </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_loop_8c-example.html#a1">event_loop.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -548,29 +563,6 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>absolute dimensions </dd></dl>
-
-</div>
-</div>
-<a id="ga174b869dab168ee4f53ac5c9319d21ba" name="ga174b869dab168ee4f53ac5c9319d21ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga174b869dab168ee4f53ac5c9319d21ba">&#9670;&#160;</a></span>pico_get_ticks()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Uint32 pico_get_ticks </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets the amount of ticks that passed since pico was initialized. </p>
-<dl class="section return"><dt>Returns</dt><dd>elapsed time in milliseconds </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_loop_8c-example.html#a1">event_loop.c</a>.</dd>
-</dl>
 
 </div>
 </div>
@@ -1283,7 +1275,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Restores the drawing state from the stack. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__State.html#ga3b274b50e36add4292173a1ff391c42e" title="Saves the current drawing state onto a stack. Saves: alpha, angle, colors, crop, font,...">pico_push</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__State.html#ga3b274b50e36add4292173a1ff391c42e" title="Saves the current drawing state onto a stack. Saves: alpha, colors, font, mouse, style,...">pico_push</a> </dd></dl>
 
 </div>
 </div>
@@ -1303,7 +1295,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Saves the current drawing state onto a stack. Saves: alpha, angle, colors, crop, font, style, layer. </p>
+<p>Saves the current drawing state onto a stack. Saves: alpha, colors, font, mouse, style, layer. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__State.html#gadbbca45015566b40f25f9a9116db170f" title="Restores the drawing state from the stack.">pico_pop</a> </dd></dl>
 
 </div>
@@ -1412,29 +1404,41 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga404ab92a2cc11129ddad0772d95e5100" name="ga404ab92a2cc11129ddad0772d95e5100"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga404ab92a2cc11129ddad0772d95e5100">&#9670;&#160;</a></span>pico_set_expert()</h2>
+<a id="gab4fae47a6d4d354593eed0461d9391f2" name="gab4fae47a6d4d354593eed0461d9391f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab4fae47a6d4d354593eed0461d9391f2">&#9670;&#160;</a></span>pico_set_expert()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void pico_set_expert </td>
+          <td class="memname">int pico_set_expert </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>on</em></td><td>)</td>
+          <td class="paramname"><em>on</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Toggles the expert mode. </p>
+<p>Toggles the expert mode with optional FPS timing. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">on</td><td>1 to enable it, or 0 to disable it </td></tr>
+    <tr><td class="paramname">fps</td><td>target frames per second (0 = wait forever, -1 = as fast as possible, N&gt;0 = fixed FPS) </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>frame period in ms </dd></dl>
 
 </div>
 </div>
@@ -1484,6 +1488,32 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>layer key (NULL = main layer, must exist) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gab39c99f5a8a9a0ceda1123d2043d2104" name="gab39c99f5a8a9a0ceda1123d2043d2104"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab39c99f5a8a9a0ceda1123d2043d2104">&#9670;&#160;</a></span>pico_set_mouse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pico_set_mouse </td>
+          <td>(</td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the default mouse coordinate mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td>coordinate mode ('!' pixels, '' percentage, '#' tiles, 'w' window) </td></tr>
   </table>
   </dd>
 </dl>
