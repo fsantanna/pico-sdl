@@ -740,7 +740,7 @@ Pico_Abs_Dim pico_get_text_mode (
     }
 }
 
-Uint32 pico_get_ticks (void) {
+Uint32 pico_get_now (void) {
     return SDL_GetTicks();
 }
 

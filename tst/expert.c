@@ -16,9 +16,9 @@ int main (void) {
     pico_output_present();
     _pico_check("expert-03");
 
-    int a = pico_get_ticks();
+    int a = pico_get_now();
     pico_input_delay(100);
-    int b = pico_get_ticks();
+    int b = pico_get_now();
     assert(b>=a+100 && b<=a+105);
 
     pico_init(0);

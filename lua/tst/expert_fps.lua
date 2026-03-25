@@ -13,11 +13,11 @@ assert(ms0 == 0)
 
 -- test 3: frame timing
 pico.set.expert(true, 40)
-local t0 = pico.get.ticks()
+local t0 = pico.get.now()
 for i = 1, 4 do
     pico.input.event()
 end
-local elapsed = pico.get.ticks() - t0
+local elapsed = pico.get.now() - t0
 assert(elapsed>=100 and elapsed<=110)
 
 -- test 4: backward compat (no fps arg)

@@ -15,12 +15,12 @@ int main (void) {
 
     // test 3: frame timing with compensation
     pico_set_expert(1, 40);
-    int t0 = pico_get_ticks();
+    int t0 = pico_get_now();
     Pico_Event e;
     for (int i=0; i<4; i++) {
         pico_input_event(&e, PICO_EVENT_ANY);
     }
-    int elapsed = pico_get_ticks() - t0;
+    int elapsed = pico_get_now() - t0;
     assert(elapsed>=100 && elapsed<=110);
 
     // test 4: getter returns fps via pointer

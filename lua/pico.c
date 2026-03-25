@@ -655,8 +655,8 @@ static int l_get_text (lua_State* L) {
     return 1;
 }
 
-static int l_get_ticks (lua_State* L) {
-    Uint32 ms = pico_get_ticks();
+static int l_get_now (lua_State* L) {
+    Uint32 ms = pico_get_now();
     lua_pushinteger(L, ms);         // ms
     return 1;                       // [ms]
 }
@@ -1495,7 +1495,7 @@ static const luaL_Reg ll_get[] = {
     { "layer",    l_get_layer  },
     { "mouse",    l_get_mouse  },
     { "text",     l_get_text   },
-    { "ticks",    l_get_ticks  },
+    { "now",      l_get_now    },
     { "video",    l_get_video  },
     { "view",     l_get_view   },
     { "window",   l_get_window },

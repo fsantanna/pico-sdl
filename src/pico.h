@@ -440,7 +440,7 @@ Pico_Abs_Dim pico_get_text_mode (
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds
-Uint32 pico_get_ticks (void);
+Uint32 pico_get_now (void);
 
 /// @brief Gets the current view configuration. NULL arguments are ignored.
 /// @param grid pointer to retrieve grid state

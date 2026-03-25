@@ -7,14 +7,14 @@ int main() {
     while (1) {
         int timeout = 16, accum = 0; // timeout is 1000 / FRAMERATE
         while (timeout > 0) {
-            int before = pico_get_ticks();
+            int before = pico_get_now();
             SDL_Event event;
             pico_input_event_timeout(&event, 0, timeout);
             if (event.type == SDL_QUIT) {
                 break;
             }
             // process events ...
-            int delta = pico_get_ticks() - before;
+            int delta = pico_get_now() - before;
             timeout -= delta;
             accum += delta;
         }
