@@ -38,6 +38,28 @@ int main (void) {
     pico_set_expert(1, 60);
     assert(pico_get_expert(NULL) == 1);
 
+    // test 7: fps=-1 returns ms=0
+    int ms1 = pico_set_expert(1, -1);
+    assert(ms1 == 0);
+
+    // test 8: getter returns fps=-1
+    pico_set_expert(1, -1);
+    assert(pico_get_expert(&fps) == 1);
+    assert(fps == -1);
+
+    // test 9: fps=-1 returns immediately (dt ~0)
+    pico_set_expert(1, -1);
+    Pico_Event e2;
+    int dt = pico_input_event(&e2, PICO_EVENT_ANY);
+    assert(dt <= 5);
+    assert(e2.type == PICO_EVENT_NONE);
+
+    // test 10: event returns dt with fps timing
+    pico_set_expert(1, 40);
+    Pico_Event e3;
+    int dt2 = pico_input_event(&e3, PICO_EVENT_ANY);
+    assert(dt2>=25 && dt2<=30);
+
     pico_init(0);
     return 0;
 }
