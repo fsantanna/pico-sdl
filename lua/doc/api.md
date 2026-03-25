@@ -96,7 +96,9 @@
     - **pico.set.dim**: Sets both window and world to the same dimensions.
         - `pico.set.dim (dim: Dim)`
     - **pico.set.expert**: Toggles expert mode.
-        - `pico.set.expert (on: boolean)`
+        - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
+        - fps: `nil`/`false` = wait forever, `true` = as fast as possible, `N>0` = fixed FPS
+        - Returns frame period in ms
     - **pico.set.style**: Sets drawing style.
         - `pico.set.style (style: 'fill'|'stroke')`
     - **pico.set.video**: Sets video frame.

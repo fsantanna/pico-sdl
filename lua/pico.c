@@ -878,7 +878,12 @@ static int l_set_font (lua_State* L) {
 static int l_set_expert (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);
     int on = lua_toboolean(L, 1);
-    int fps = luaL_optinteger(L, 2, 0);
+    int fps = 0;
+    if (lua_isboolean(L, 2)) {
+        fps = lua_toboolean(L,2) ? -1 : 0;
+    } else {
+        fps = luaL_checkinteger(L, 2);
+    }
     int ms = pico_set_expert(on, fps);
     lua_pushinteger(L, ms);
     return 1;

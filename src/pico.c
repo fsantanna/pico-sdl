@@ -815,11 +815,11 @@ void pico_set_dim (Pico_Rel_Dim* dim) {
 }
 
 int pico_set_expert (int on, int fps) {
-    assert(fps >= 0);
+    assert(fps >= -1);
     S.expert.on  = on;
     S.expert.fps = fps;
     if (on && fps!=0) {
-        S.expert.ms = 1000 / fps;
+        S.expert.ms = (fps == -1) ? 0 : 1000/fps;
         S.expert.t0 = SDL_GetTicks();
     }
     G.main.view.grid = 0;
@@ -1294,8 +1294,10 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 }
 
 int pico_input_event (Pico_Event* evt, int type) {
-    if (S.expert.fps <= 0) {
+    if (S.expert.fps == 0) {
         return pico_input_event_timeout(evt, type, -1);
+    } else if (S.expert.fps == -1) {
+        return pico_input_event_timeout(evt, type, 0);
     }
 
     int now = SDL_GetTicks();

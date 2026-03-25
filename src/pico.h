@@ -487,7 +487,7 @@ void pico_set_color_draw (Pico_Color color);
 
 /// @brief Toggles the expert mode with optional FPS timing.
 /// @param on 1 to enable it, or 0 to disable it
-/// @param fps target frames per second (0 = wait forever)
+/// @param fps target frames per second (0 = wait forever, -1 = as fast as possible, N>0 = fixed FPS)
 /// @return frame period in ms
 int pico_set_expert (int on, int fps);
 
