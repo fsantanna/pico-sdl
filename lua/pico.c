@@ -876,12 +876,14 @@ static int l_set_font (lua_State* L) {
 }
 
 static int l_set_expert (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TBOOLEAN);
+    luaL_checktype(L, 1, LUA_TBOOLEAN);     // ok | [fps]
     int on = lua_toboolean(L, 1);
     int fps = 0;
-    if (lua_isboolean(L, 2)) {
+    if (lua_gettop(L) == 1) {               // ok
+        fps = 0;
+    } else if (lua_isboolean(L, 2)) {       // ok | bool
         fps = lua_toboolean(L,2) ? -1 : 0;
-    } else {
+    } else {                                // ok | N
         fps = luaL_checkinteger(L, 2);
     }
     int ms = pico_set_expert(on, fps);
