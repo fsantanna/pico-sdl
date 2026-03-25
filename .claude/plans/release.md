@@ -58,7 +58,7 @@ pico-lua lua/doc/anims.lua
 | `HISTORY.md`         | added v0.3.1 section           |
 | `.claude/CLAUDE.md`  | rockspec → 0.3.1-1             |
 
-### 6. Commit and push main
+### 6. ~~Commit and push main~~ DONE
 
 ```bash
 git add -A
@@ -70,7 +70,7 @@ Triggers:
 - `tests.yml` — CI validates
 - `docs.yml` — deploys docs to gh-pages `main/`
 
-### 7. Create release branch and push
+### 7. ~~Create release branch and push~~ DONE
 
 ```bash
 git branch v0.3.1
@@ -78,6 +78,12 @@ git push origin v0.3.1
 ```
 
 Triggers `docs-version.yml` for `v0.3.1/` on gh-pages.
+
+**Post-release fix:** docs were stale because `cp -r` nested
+dirs when target already existed. Fixed `docs.yml` and
+`docs-version.yml` to `rm -rf` before `cp -r`. Verified both
+`main/` and `v0.3.1/` docs now render correctly (return types,
+`pico_set_expert` signature, etc.).
 
 ### 8. Publish to LuaRocks
 
