@@ -80,10 +80,10 @@
         - `pico.get.mouse (pos: Pos [, button: integer]) -> boolean`
         - Updates `pos.x` and `pos.y` based on mode (`'!'`, `'%'`, or `'#'`)
         - Returns true if specified button is pressed (1=left, 2=mid, 3=right)
-    - **pico.get.text**: Gets text dimensions.
-        - `pico.get.text (text: string, dim: Dim) -> Dim`
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
+    - **pico.get.text**: Gets text dimensions.
+        - `pico.get.text (text: string, dim: Dim) -> Dim`
     - **pico.get.video**: Gets video information.
         - `pico.get.video (path: string [, rect: Rect]) -> Video`
     - **pico.get.view**: Gets view configuration.

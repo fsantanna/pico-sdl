@@ -408,6 +408,10 @@ Pico_Keyboard pico_get_keyboard (void);
 /// @return mouse state with position and button flags
 Pico_Mouse pico_get_mouse (char mode);
 
+/// @brief Gets the amount of ticks that passed since pico was initialized.
+/// @return elapsed time in milliseconds
+Uint32 pico_get_now (void);
+
 /// @brief Gets the visibility state of the window.
 /// @return 1 if visible, or 0 otherwise
 int pico_get_show (void);
@@ -437,10 +441,6 @@ Pico_Abs_Dim pico_get_text_mode (
     const char* key, const char* text,
     Pico_Rel_Dim* dim
 );
-
-/// @brief Gets the amount of ticks that passed since pico was initialized.
-/// @return elapsed time in milliseconds
-Uint32 pico_get_now (void);
 
 /// @brief Gets the current view configuration. NULL arguments are ignored.
 /// @param grid pointer to retrieve grid state

@@ -633,6 +633,12 @@ static int l_get_layer (lua_State* L) {
     return 1;
 }
 
+static int l_get_now (lua_State* L) {
+    Uint32 ms = pico_get_now();
+    lua_pushinteger(L, ms);         // ms
+    return 1;                       // [ms]
+}
+
 static int l_get_text (lua_State* L) {
     const char* text = luaL_checkstring(L, 1);  // text | dim
     luaL_checktype(L, 2, LUA_TTABLE);
@@ -653,12 +659,6 @@ static int l_get_text (lua_State* L) {
     lua_pushnumber(L, abs.h);
     lua_setfield(L, -2, "h");                       // text | dim | *abs*
     return 1;
-}
-
-static int l_get_now (lua_State* L) {
-    Uint32 ms = pico_get_now();
-    lua_pushinteger(L, ms);         // ms
-    return 1;                       // [ms]
 }
 
 static int l_get_window (lua_State* L) {
@@ -1494,8 +1494,8 @@ static const luaL_Reg ll_get[] = {
     { "keyboard", l_get_keyboard },
     { "layer",    l_get_layer  },
     { "mouse",    l_get_mouse  },
-    { "text",     l_get_text   },
     { "now",      l_get_now    },
+    { "text",     l_get_text   },
     { "video",    l_get_video  },
     { "view",     l_get_view   },
     { "window",   l_get_window },

@@ -708,6 +708,10 @@ Pico_Keyboard pico_get_keyboard (void) {
     return _pico_keyboard(0, SDL_GetModState());
 }
 
+Uint32 pico_get_now (void) {
+    return SDL_GetTicks();
+}
+
 int pico_get_show (void) {
     return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
 }
@@ -738,10 +742,6 @@ Pico_Abs_Dim pico_get_text_mode (
         SDL_FDim fd = _sdl_dim(rel, NULL, NULL);
         return (Pico_Abs_Dim){fd.w, fd.h};
     }
-}
-
-Uint32 pico_get_now (void) {
-    return SDL_GetTicks();
 }
 
 void pico_get_view (
