@@ -13,7 +13,7 @@ realm:
 		-o src/realm.hc
 
 lua:
-	sudo luarocks make lua/pico-sdl-0.3-1.rockspec --lua-version=5.4
+	sudo luarocks make lua/pico-sdl-0.3.1-1.rockspec --lua-version=5.4
 
 test:
 	$(EXE) tst/$(T).c
