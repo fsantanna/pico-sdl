@@ -85,15 +85,19 @@ dirs when target already existed. Fixed `docs.yml` and
 `main/` and `v0.3.1/` docs now render correctly (return types,
 `pico_set_expert` signature, etc.).
 
-### 8. Publish to LuaRocks
+### 8. ~~Verify local install with luarocks make~~ DONE
+
+```bash
+cd lua
+sudo luarocks make pico-sdl-0.3.1-1.rockspec
+pico-lua lua/doc/rects.lua
+pico-lua lua/doc/anims.lua
+```
+
+### 9. ~~Publish and verify LuaRocks~~ DONE
 
 ```bash
 luarocks upload lua/pico-sdl-0.3.1-1.rockspec
-```
-
-### 9. Verify LuaRocks install
-
-```bash
 sudo luarocks remove pico-sdl
 sudo luarocks install pico-sdl 0.3.1
 pico-lua lua/doc/rects.lua
