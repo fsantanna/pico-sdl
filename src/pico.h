@@ -19,7 +19,7 @@ extern "C" {
 /// @example event_timeout.c
 /// @example event_loop.c
 
-/// @defgroup Types Types
+/// @defgroup Types
 /// @brief Types, Enums, and Defines.
 /// @{
 ///
@@ -107,7 +107,7 @@ typedef struct {
 
 /// @}
 
-/// @defgroup Init Init
+/// @defgroup Init
 /// @brief Functions and values used in initialization.
 /// @{
 
@@ -121,7 +121,7 @@ void pico_quit (void);
 
 /// @}
 
-/// @defgroup Input Input
+/// @defgroup Input
 /// @brief Event handling.
 /// @{
 
@@ -160,7 +160,7 @@ void pico_input_loop (void);
 
 /// @}
 
-/// @defgroup Output Output
+/// @defgroup Output
 /// @brief Draw primitives, play sounds, etc.
 /// @{
 
@@ -262,7 +262,7 @@ void pico_output_sound (const char* path);
 
 /// @}
 
-/// @defgroup State State
+/// @defgroup State
 /// @brief All getters and setters.
 /// @{
 
@@ -562,7 +562,7 @@ void pico_pop (void);
 
 /// @}
 
-/// @defgroup Utils Utils
+/// @defgroup Utils
 /// @brief Utilities for users
 /// @{
 

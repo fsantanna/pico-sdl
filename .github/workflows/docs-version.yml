@@ -17,6 +17,7 @@ jobs:
     - name: Copy main to version
       run: |
         ver="${GITHUB_REF#refs/heads/}"
+        rm -rf "$ver"
         cp -r main "$ver"
         git add .
         if git diff --cached --quiet; then
