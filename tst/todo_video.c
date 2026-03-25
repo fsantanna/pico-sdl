@@ -126,7 +126,7 @@ int main (void) {
 
         /* Events */
         Pico_Event evt;
-        while (pico_input_event(&evt, PICO_EVENT_ANY)) {
+        while (pico_input_event_timeout(&evt, PICO_EVENT_ANY, 0), evt.type!=PICO_EVENT_NONE) {
             if (evt.type == PICO_EVENT_QUIT) {
                 goto done;
             } else if (evt.type == PICO_EVENT_KEY_DN) {

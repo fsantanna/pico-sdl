@@ -34,7 +34,8 @@ int main(void) {
 
     while (1) {
         Pico_Event e;
-        if (pico_input_event(&e, PICO_EVENT_QUIT)) {
+        pico_input_event(&e, PICO_EVENT_QUIT);
+        if (e.type == PICO_EVENT_QUIT) {
             break;
         }
 

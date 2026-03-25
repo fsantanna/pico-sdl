@@ -129,28 +129,30 @@ void pico_quit (void);
 /// Equivalent to `pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms)`.
 /// @include delay.c
 /// @param ms milliseconds to wait
-void pico_input_delay (int ms);
+/// @return elapsed time in milliseconds (delta time)
+int pico_input_delay (int ms);
 
 /// @brief Stops the program until a matching event occurs.
 /// Equivalent to `pico_input_event_timeout(evt, type, -1)`.
 /// @include event.c
 /// @param evt where to save the event data, or NULL to ignore
 /// @param type type of event to wait for (PICO_EVENT_ANY for any)
-/// @return the matched PICO_EVENT type
+/// @return elapsed time in milliseconds (delta time)
 /// @sa pico_input_event_timeout
-PICO_EVENT pico_input_event (Pico_Event* evt, int type);
+int pico_input_event (Pico_Event* evt, int type);
 
 /// @brief Stops the program until a matching event occurs or a timeout is reached.
 /// All input functions delegate to this one.
 /// Internal events (quit/exit, window resize, ctrl+zoom/scroll/grid) are
 /// handled automatically and never forwarded.
+/// On timeout, evt->type is set to PICO_EVENT_NONE.
 /// @include event_timeout.c
 /// @param evt where to save the event data, or NULL to ignore
 /// @param type type of event to wait for (PICO_EVENT_ANY for any)
 /// @param timeout time limit in milliseconds, or -1 to wait forever
-/// @return the matched PICO_EVENT type, or PICO_EVENT_NONE on timeout
+/// @return elapsed time in milliseconds (delta time)
 /// @sa pico_input_event
-PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
+int pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 
 /// @brief Blocks in an event loop until the window is closed.
 /// Equivalent to `pico_input_event(NULL, PICO_EVENT_QUIT)`.

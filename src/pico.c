@@ -1257,16 +1257,20 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
     }
 }
 
-PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
-    int old = SDL_GetTicks();
+int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
+    int t0 = SDL_GetTicks();
     while (1) {
         Pico_Event out;
         SDL_Event sdl;
         int has = SDL_WaitEventTimeout(&sdl, timeout);
+        int t1 = SDL_GetTicks();
+        int dt = t1 - t0;
         if (!has) {
-            return PICO_EVENT_NONE;
+            if (evt != NULL) {
+                evt->type = PICO_EVENT_NONE;
+            }
+            return dt;
         }
-        int now = (timeout == -1) ? 0 : SDL_GetTicks();
 
         sdl_to_pico(&sdl, &out);
         if (pico_event_handler(&out, 1)) {
@@ -1277,19 +1281,19 @@ PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
             if (evt != NULL) {
                 *evt = out;
             }
-            return out.type;
+            return dt;
         } else {
             // continue
         }
 
         if (timeout != -1) {
-            timeout = MAX(0, timeout-(now-old));
-            old = now;
+            timeout = MAX(0, timeout-dt);
+            t0 = t1;
         }
     }
 }
 
-PICO_EVENT pico_input_event (Pico_Event* evt, int type) {
+int pico_input_event (Pico_Event* evt, int type) {
     if (S.expert.fps <= 0) {
         return pico_input_event_timeout(evt, type, -1);
     }
@@ -1302,15 +1306,19 @@ PICO_EVENT pico_input_event (Pico_Event* evt, int type) {
         }
         cur = 0;
     }
-    PICO_EVENT ret = pico_input_event_timeout(evt, type, cur);
-    if (ret == PICO_EVENT_NONE) {
+    Pico_Event xevt;
+    if (evt == NULL) {
+        evt = &xevt;
+    }
+    int dt = pico_input_event_timeout(evt, type, cur);
+    if (evt->type == PICO_EVENT_NONE) {
         S.expert.t0 += S.expert.ms;
     }
-    return ret;
+    return dt;
 }
 
-void pico_input_delay (int ms) {
-    pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms);
+int pico_input_delay (int ms) {
+    return pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms);
 }
 
 void pico_input_loop (void) {
