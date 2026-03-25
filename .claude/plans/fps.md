@@ -1,40 +1,58 @@
 # Plan: Expert FPS Modes + Delta Time
 
+## Prereqs
+
+- [x] rename `pico_get_ticks` → `pico_get_now` (C/Lua/docs/tests)
+
 ## FPS Modes
 
 Change `pico_set_expert` FPS parameter to support three modes:
 
-| C value | Lua value       | Meaning               |
+| C value | Lua value       | Meaning                |
 |---------|-----------------|------------------------|
 | `0`     | `nil` / `false` | disable (wait forever) |
 | `-1`    | `true`          | as fast as possible    |
 | `N>0`   | `N>0`           | fixed FPS              |
 
-## Delta Time
+## Delta Time (decided: C5a)
 
-Add `pico_get_dt()` to get ms elapsed since last `pico_input_event`
-call.
+All input functions return `int dt` (ms elapsed).
+Event info is obtained from the out-parameter / second return value.
 
-**Open question**: return `dt` from `pico_input_event` instead?
-- Option C2: positive = event occurred, negative = no event
-  (timeout), `abs(dt)` = elapsed ms
-- Option C3: keep current return (`PICO_EVENT`), add separate
-  `pico_get_dt()` / `pico.get.dt()`
-- Decision pending
+### C side
+
+- `int pico_input_event(Pico_Event* e, int filter)` → returns dt
+- `int pico_input_delay(int ms)` → returns dt
+- Timeout / no event: `e->type == PICO_EVENT_NONE`
+
+### Lua side
+
+- `local evt, dt = pico.input.event([filter], [timeout])`
+    - evt is nil on timeout
+- `local dt = pico.input.delay(ms)`
 
 ## Tasks
 
-- [ ] `src/pico.c` | `pico_set_expert` | accept fps=-1, set ms=0
-- [ ] `src/pico.c` | `pico_input_event` | fps==-1 → timeout=0
-- [ ] `src/pico.h` | doxygen | update @param fps docs
-- [ ] `src/pico.c` | add dt tracking (store ticks at each
-      `pico_input_event` exit)
-- [ ] `src/pico.h` | declare `pico_get_dt` (or change return type
-      of `pico_input_event` — pending decision)
-- [ ] `lua/pico.c` | `l_set_expert` | accept nil/false/true/number
+### FPS modes
+- [x] `src/pico.c` | `pico_set_expert` | accept fps=-1, set ms=0
+- [x] `src/pico.c` | `pico_input_event` | fps==-1 → timeout=0
+- [x] `src/pico.h` | doxygen | update @param fps docs
+- [x] `lua/pico.c` | `l_set_expert` | accept nil/false/true/number
       for fps arg
-- [ ] `lua/pico.c` | expose `pico.get.dt()` (or adapt event return)
-- [ ] `lua/doc/api.md` | update signature and docs
-- [ ] `lua/doc/guide.md` | update Section 9 examples
-- [ ] Verify existing tests: `tst/expert.c`, `tst/expert_fps.c`,
-      `lua/tst/expert.lua`, `lua/tst/expert_fps.lua`
+- [x] `lua/doc/api.md` | update pico.set.expert signature
+
+### Delta time
+- [x] `src/pico.c` | `pico_input_event_timeout` | return `int` dt
+- [x] `src/pico.c` | `pico_input_event` | return `int` dt
+- [x] `src/pico.c` | `pico_input_delay` | return `int` dt
+- [x] `src/pico.h` | update declarations for new return types
+- [x] `lua/pico.c` | `l_input_event` | return `evt, dt` (nil+dt
+      on timeout)
+- [x] `lua/pico.c` | `l_input_delay` | return dt
+
+### Docs & tests
+- [x] `lua/doc/api.md` | update input signatures and docs
+- [x] `lua/doc/guide.md` | update Section 7 and 9 examples
+- [x] Update callers of old return type across `tst/`, `doc/exs/`
+- [x] Update tests: `tst/expert.c`, `tst/expert_fps.c`
+- [x] Update tests: `lua/tst/expert.lua`, `lua/tst/expert_fps.lua`

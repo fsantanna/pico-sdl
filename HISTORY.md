@@ -8,6 +8,8 @@ Additions:
         - `pico.layer.images`: batch sub-layer creation from image
     - tiles: `#` mode for grid-based positioning
     - colors: `'%'` mode, `pico_color_alpha`, `pico.color.mix`
+    - `pico.set.expert`: accepts FPS (0, -1/true, N>0)
+    - delta time: all input functions return `dt` (ms elapsed)
     - `pico.cv.*`: all combinations
         - pos, rect, dim
         - rel->abs, abs->rel, rel->rel
@@ -21,6 +23,7 @@ Modifications:
         - target, source, clip stored as relative
     - rotation and flip: moved from global state to per-layer view
     - renamed `ref` -> `base` parameter in conversion functions
+    - renamed `pico.get.ticks` -> `pico.get.now`
 Removals:
     - colors: (r,g,b) three-argument form in Lua
 Documentation:
