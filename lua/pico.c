@@ -1217,63 +1217,64 @@ static int l_input_event (lua_State* L) {
         dt = pico_input_event_timeout(&e, id, ms);
     }
 
-    lua_pushinteger(L, dt);                         // . | dt
-
     if (e.type == PICO_EVENT_NONE) {
-        return 1;
+        lua_pushnil(L);                             // nil
+        lua_pushinteger(L, dt);                     // nil | dt
+        return 2;
     }
 
-    lua_newtable(L);                                // . | dt | t
+    lua_newtable(L);                                // t
     int T = lua_gettop(L);
 
     switch (e.type)
     {
         case PICO_EVENT_QUIT:
-            lua_pushstring(L, "quit");              // . | dt | t | tag
-            lua_setfield(L, T, "tag");              // . | dt | t
+            lua_pushstring(L, "quit");              // t | tag
+            lua_setfield(L, T, "tag");              // t
             break;
 
         case PICO_EVENT_MOUSE_MOTION:
-            lua_pushstring(L, "mouse.motion");      // . | dt | t | tag
-            lua_setfield(L, T, "tag");              // . | dt | t
-            L_set_mouse(L, T, &e.mouse);            // . | dt | t
+            lua_pushstring(L, "mouse.motion");      // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_mouse(L, T, &e.mouse);            // t
             break;
         case PICO_EVENT_MOUSE_BUTTON_DN:
-            lua_pushstring(L, "mouse.button.dn");   // . | dt | t | tag
-            lua_setfield(L, T, "tag");              // . | dt | t
-            L_set_mouse(L, T, &e.mouse);            // . | dt | t
+            lua_pushstring(L, "mouse.button.dn");   // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_mouse(L, T, &e.mouse);            // t
             break;
         case PICO_EVENT_MOUSE_BUTTON_UP:
-            lua_pushstring(L, "mouse.button.up");   // . | dt | t | tag
-            lua_setfield(L, T, "tag");              // . | dt | t
-            L_set_mouse(L, T, &e.mouse);            // . | dt | t
+            lua_pushstring(L, "mouse.button.up");   // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_mouse(L, T, &e.mouse);            // t
             break;
 
         case PICO_EVENT_KEY_DN:
-            lua_pushstring(L, "key.dn");            // . | dt | t | tag
-            lua_setfield(L, T, "tag");              // . | dt | t
-            L_set_keyboard(L, T, &e.keyboard);      // . | dt | t
+            lua_pushstring(L, "key.dn");            // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_keyboard(L, T, &e.keyboard);      // t
             break;
         case PICO_EVENT_KEY_UP:
-            lua_pushstring(L, "key.up");            // . | dt | t | tag
-            lua_setfield(L, T, "tag");              // . | dt | t
-            L_set_keyboard(L, T, &e.keyboard);      // . | dt | t
+            lua_pushstring(L, "key.up");            // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_keyboard(L, T, &e.keyboard);      // t
             break;
 
         case PICO_EVENT_WIN_RESIZE:
-            lua_pushstring(L, "window");            // . | dt | t | tag
-            lua_setfield(L, T, "tag");              // . | dt | t
-            lua_pushinteger(L, e.window.w);         // . | dt | t | w
-            lua_setfield(L, T, "w");                // . | dt | t
-            lua_pushinteger(L, e.window.h);         // . | dt | t | h
-            lua_setfield(L, T, "h");                // . | dt | t
+            lua_pushstring(L, "window");            // t | tag
+            lua_setfield(L, T, "tag");              // t
+            lua_pushinteger(L, e.window.w);         // t | w
+            lua_setfield(L, T, "w");                // t
+            lua_pushinteger(L, e.window.h);         // t | h
+            lua_setfield(L, T, "h");                // t
             break;
 
         default:
             assert(0 && "unhandled event type");
     }
 
-    return 2;           // . | *dt | t*
+    lua_pushinteger(L, dt);                         // t | dt
+    return 2;                                       // *t | dt*
 }
 
 static int l_input_loop (lua_State* L) {
