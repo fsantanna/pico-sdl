@@ -582,8 +582,8 @@ Let's create a simple loop to explore the possibilities:
 
 ```lua
 > while true do
-    local e = pico.input.event()
-    print("EVENT", e.tag)
+    local e,ms = pico.input.event()
+    print("EVENT", ms, e.tag)
     for k,v in pairs(e) do
         print('', k, v)
     end
@@ -592,6 +592,10 @@ Let's create a simple loop to explore the possibilities:
     end
   end
 ```
+
+The first returned value `e` is a table with a `tag` field that identifies the
+event type.
+The second value `ms` is the time elapsed between two event occurrences.
 
 You may interact with the window by pressing keys, using the mouse, resizing
 the window, and so on.
@@ -835,7 +839,7 @@ while true do                       -- main loop
     pico.output.*()                 -- scene redrawing
     pico.output.present()
 
-    local e = pico.input.event()    -- event / timeout awaiting
+    local e,dt = pico.input.event() -- event / timeout awaiting
 
     if e then
         (normal lua code)           -- event handler (keys, mouse)

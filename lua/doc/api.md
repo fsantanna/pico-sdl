@@ -116,12 +116,14 @@
             - `pico.set.color.draw (clr: Color)`
 - **pico.input**
     - **pico.input.delay**: Freezes execution for milliseconds.
-        - `pico.input.delay (ms: integer)`
+        - `pico.input.delay (ms: integer) -> integer`
+        - Returns elapsed time in milliseconds (delta time)
     - **pico.input.event**: Waits for an event.
-        - `pico.input.event () -> Event`
-        - `pico.input.event (ms: integer) -> Event?`
-        - `pico.input.event (filter: string) -> Event`
-        - `pico.input.event (filter: string, ms: integer) -> Event?`
+        - `pico.input.event () -> Event, integer`
+        - `pico.input.event (ms: integer) -> Event?, integer`
+        - `pico.input.event (filter: string) -> Event, integer`
+        - `pico.input.event (filter: string, ms: integer) -> Event?, integer`
+        - Returns event (or nil on timeout) and elapsed time in ms (delta time)
         - Filters: `'quit'`, `'key.dn'`, `'key.up'`, `'mouse.button.dn'`
     - **pico.input.loop**: Blocks on event loop until quit.
         - `pico.input.loop ()`
