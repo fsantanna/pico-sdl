@@ -129,28 +129,30 @@ void pico_quit (void);
 /// Equivalent to `pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms)`.
 /// @include delay.c
 /// @param ms milliseconds to wait
-void pico_input_delay (int ms);
+/// @return elapsed time in milliseconds (delta time)
+int pico_input_delay (int ms);
 
 /// @brief Stops the program until a matching event occurs.
 /// Equivalent to `pico_input_event_timeout(evt, type, -1)`.
 /// @include event.c
 /// @param evt where to save the event data, or NULL to ignore
 /// @param type type of event to wait for (PICO_EVENT_ANY for any)
-/// @return the matched PICO_EVENT type
+/// @return elapsed time in milliseconds (delta time)
 /// @sa pico_input_event_timeout
-PICO_EVENT pico_input_event (Pico_Event* evt, int type);
+int pico_input_event (Pico_Event* evt, int type);
 
 /// @brief Stops the program until a matching event occurs or a timeout is reached.
 /// All input functions delegate to this one.
 /// Internal events (quit/exit, window resize, ctrl+zoom/scroll/grid) are
 /// handled automatically and never forwarded.
+/// On timeout, evt->type is set to PICO_EVENT_NONE.
 /// @include event_timeout.c
 /// @param evt where to save the event data, or NULL to ignore
 /// @param type type of event to wait for (PICO_EVENT_ANY for any)
 /// @param timeout time limit in milliseconds, or -1 to wait forever
-/// @return the matched PICO_EVENT type, or PICO_EVENT_NONE on timeout
+/// @return elapsed time in milliseconds (delta time)
 /// @sa pico_input_event
-PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
+int pico_input_event_timeout (Pico_Event* evt, int type, int timeout);
 
 /// @brief Blocks in an event loop until the window is closed.
 /// Equivalent to `pico_input_event(NULL, PICO_EVENT_QUIT)`.
@@ -408,6 +410,10 @@ Pico_Keyboard pico_get_keyboard (void);
 /// @return mouse state with position and button flags
 Pico_Mouse pico_get_mouse (char mode);
 
+/// @brief Gets the amount of ticks that passed since pico was initialized.
+/// @return elapsed time in milliseconds
+Uint32 pico_get_now (void);
+
 /// @brief Gets the visibility state of the window.
 /// @return 1 if visible, or 0 otherwise
 int pico_get_show (void);
@@ -437,10 +443,6 @@ Pico_Abs_Dim pico_get_text_mode (
     const char* key, const char* text,
     Pico_Rel_Dim* dim
 );
-
-/// @brief Gets the amount of ticks that passed since pico was initialized.
-/// @return elapsed time in milliseconds
-Uint32 pico_get_ticks (void);
 
 /// @brief Gets the current view configuration. NULL arguments are ignored.
 /// @param grid pointer to retrieve grid state
@@ -485,7 +487,7 @@ void pico_set_color_draw (Pico_Color color);
 
 /// @brief Toggles the expert mode with optional FPS timing.
 /// @param on 1 to enable it, or 0 to disable it
-/// @param fps target frames per second (0 = wait forever)
+/// @param fps target frames per second (0 = wait forever, -1 = as fast as possible, N>0 = fixed FPS)
 /// @return frame period in ms
 int pico_set_expert (int on, int fps);
 

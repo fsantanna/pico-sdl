@@ -708,6 +708,10 @@ Pico_Keyboard pico_get_keyboard (void) {
     return _pico_keyboard(0, SDL_GetModState());
 }
 
+Uint32 pico_get_now (void) {
+    return SDL_GetTicks();
+}
+
 int pico_get_show (void) {
     return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
 }
@@ -724,7 +728,8 @@ Pico_Abs_Dim pico_get_text_mode (
     int mode, const char* key,
     const char* text, Pico_Rel_Dim* rel
 ) {
-    assert(text[0] != '\0');
+    if (text[0] == '\0') return (Pico_Abs_Dim){0, 0};
+
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
         Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h}, rel->up };
@@ -737,10 +742,6 @@ Pico_Abs_Dim pico_get_text_mode (
         SDL_FDim fd = _sdl_dim(rel, NULL, NULL);
         return (Pico_Abs_Dim){fd.w, fd.h};
     }
-}
-
-Uint32 pico_get_ticks (void) {
-    return SDL_GetTicks();
 }
 
 void pico_get_view (
@@ -814,11 +815,11 @@ void pico_set_dim (Pico_Rel_Dim* dim) {
 }
 
 int pico_set_expert (int on, int fps) {
-    assert(fps >= 0);
+    assert(fps >= -1);
     S.expert.on  = on;
     S.expert.fps = fps;
     if (on && fps!=0) {
-        S.expert.ms = 1000 / fps;
+        S.expert.ms = (fps == -1) ? 0 : 1000/fps;
         S.expert.t0 = SDL_GetTicks();
     }
     G.main.view.grid = 0;
@@ -1256,16 +1257,20 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
     }
 }
 
-PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
-    int old = SDL_GetTicks();
+int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
+    int t0 = SDL_GetTicks();
     while (1) {
         Pico_Event out;
         SDL_Event sdl;
         int has = SDL_WaitEventTimeout(&sdl, timeout);
+        int t1 = SDL_GetTicks();
+        int dt = t1 - t0;
         if (!has) {
-            return PICO_EVENT_NONE;
+            if (evt != NULL) {
+                evt->type = PICO_EVENT_NONE;
+            }
+            return dt;
         }
-        int now = (timeout == -1) ? 0 : SDL_GetTicks();
 
         sdl_to_pico(&sdl, &out);
         if (pico_event_handler(&out, 1)) {
@@ -1276,21 +1281,23 @@ PICO_EVENT pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
             if (evt != NULL) {
                 *evt = out;
             }
-            return out.type;
+            return dt;
         } else {
             // continue
         }
 
         if (timeout != -1) {
-            timeout = MAX(0, timeout-(now-old));
-            old = now;
+            timeout = MAX(0, timeout-dt);
+            t0 = t1;
         }
     }
 }
 
-PICO_EVENT pico_input_event (Pico_Event* evt, int type) {
-    if (S.expert.fps <= 0) {
+int pico_input_event (Pico_Event* evt, int type) {
+    if (S.expert.fps == 0) {
         return pico_input_event_timeout(evt, type, -1);
+    } else if (S.expert.fps == -1) {
+        return pico_input_event_timeout(evt, type, 0);
     }
 
     int now = SDL_GetTicks();
@@ -1301,15 +1308,19 @@ PICO_EVENT pico_input_event (Pico_Event* evt, int type) {
         }
         cur = 0;
     }
-    PICO_EVENT ret = pico_input_event_timeout(evt, type, cur);
-    if (ret == PICO_EVENT_NONE) {
+    Pico_Event xevt;
+    if (evt == NULL) {
+        evt = &xevt;
+    }
+    int dt = pico_input_event_timeout(evt, type, cur);
+    if (evt->type == PICO_EVENT_NONE) {
         S.expert.t0 += S.expert.ms;
     }
-    return ret;
+    return dt;
 }
 
-void pico_input_delay (int ms) {
-    pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms);
+int pico_input_delay (int ms) {
+    return pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms);
 }
 
 void pico_input_loop (void) {
@@ -1459,7 +1470,8 @@ void pico_output_draw_text_mode (
     int mode, const char* key,
     const char* text, Pico_Rel_Rect* rect
 ) {
-    assert(text[0] != '\0');
+    if (text[0] == '\0') return;
+
     assert(rect->h != 0);
     Pico_Rel_Dim rel_h = { rect->mode, {0, rect->h}, rect->up };
     SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);

@@ -13,7 +13,7 @@ realm:
 		-o src/realm.hc
 
 lua:
-	sudo luarocks make lua/pico-sdl-0.3-1.rockspec --lua-version=5.4
+	sudo luarocks make lua/pico-sdl-0.3.1-1.rockspec --lua-version=5.4
 
 test:
 	$(EXE) tst/$(T).c
@@ -60,6 +60,7 @@ tests:
 	$(EXE) tst/size_pct.c
 	$(EXE) tst/size_raw.c
 	$(EXE) tst/style.c
+	$(EXE) tst/text_empty.c
 	$(EXE) tst/tiles.c
 	$(EXE) tst/video.c
 	$(EXE) tst/view_raw.c

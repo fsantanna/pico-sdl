@@ -81,10 +81,10 @@
         - Returns `{mode, x=N, y=N, left=bool, right=bool, middle=bool}`
         - Mode: `'!'` pixels, `'%'` percentage, `'#'` tiles, `'w'` window
           (default from `pico.set.mouse`)
+    - **pico.get.now**: Gets milliseconds since initialization.
+        - `pico.get.now () -> integer`
     - **pico.get.text**: Gets text dimensions.
         - `pico.get.text (text: string, dim: Dim) -> Dim`
-    - **pico.get.ticks**: Gets milliseconds since initialization.
-        - `pico.get.ticks () -> integer`
     - **pico.get.video**: Gets video information.
         - `pico.get.video (path: string [, rect: Rect]) -> Video`
     - **pico.get.view**: Gets view configuration.
@@ -97,7 +97,9 @@
     - **pico.set.dim**: Sets both window and world to the same dimensions.
         - `pico.set.dim (dim: Dim)`
     - **pico.set.expert**: Toggles expert mode.
-        - `pico.set.expert (on: boolean)`
+        - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
+        - fps: `nil`/`false` = wait forever, `true` = as fast as possible, `N>0` = fixed FPS
+        - Returns frame period in ms
     - **pico.set.style**: Sets drawing style.
         - `pico.set.style (style: 'fill'|'stroke')`
     - **pico.set.video**: Sets video frame.
@@ -117,12 +119,14 @@
             - `pico.set.color.draw (clr: Color)`
 - **pico.input**
     - **pico.input.delay**: Freezes execution for milliseconds.
-        - `pico.input.delay (ms: integer)`
+        - `pico.input.delay (ms: integer) -> integer`
+        - Returns elapsed time in milliseconds (delta time)
     - **pico.input.event**: Waits for an event.
-        - `pico.input.event () -> Event`
-        - `pico.input.event (ms: integer) -> Event?`
-        - `pico.input.event (filter: string) -> Event`
-        - `pico.input.event (filter: string, ms: integer) -> Event?`
+        - `pico.input.event () -> Event, integer`
+        - `pico.input.event (ms: integer) -> Event?, integer`
+        - `pico.input.event (filter: string) -> Event, integer`
+        - `pico.input.event (filter: string, ms: integer) -> Event?, integer`
+        - Returns event (or nil on timeout) and elapsed time in ms (delta time)
         - Filters: `'quit'`, `'key.dn'`, `'key.up'`, `'mouse.button.dn'`
     - **pico.input.loop**: Blocks on event loop until quit.
         - `pico.input.loop ()`

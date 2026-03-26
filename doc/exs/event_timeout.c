@@ -4,14 +4,13 @@
 int main() {
     pico_init(1);
 
-    SDL_Event event;
+    Pico_Event event;
 
     printf("Waiting for an event for the next 2 seconds...\n");
-    int happened = pico_input_event_timeout(&event, 0, 5000);
-    if (happened) {
+    pico_input_event_timeout(&event, 0, 5000);
+    if (event.type != PICO_EVENT_NONE) {
         printf("Event detected! Type: %d\n", event.type);
-    }
-    else {
+    } else {
         printf("No event detected in those 2 seconds\n");
     }
 

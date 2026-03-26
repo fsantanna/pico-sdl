@@ -1,12 +1,11 @@
-# Plan: Release v0.3
+# Plan: Release v0.3.1
 
 ## Context
 
-pico-sdl is 528 commits ahead of the v0.2 branch.
-All v0.3 features listed in CLAUDE.md are implemented (colors, layers,
-push/pop, view refactoring, expert FPS, etc.).
-Guide documentation and animation support are the most recent work.
-This plan uses release branches (not tags) for versioning.
+Patch release adding FPS modes (-1/0/N), delta time from input
+functions, and `pico_get_ticks` → `pico_get_now` rename.
+Uses release branches (not tags) for versioning.
+v0.3.1 replaces v0.3 in version lists (not side by side).
 
 ## Steps
 
@@ -22,7 +21,7 @@ make tests
 cd lua && make tests
 ```
 
-### 2b. Run non-automated tests (manual) — PENDING
+### 3. ~~Run non-automated tests (manual)~~ DONE
 
 Interactive C tests:
 
@@ -44,110 +43,70 @@ pico-lua lua/doc/rects.lua
 pico-lua lua/doc/anims.lua
 ```
 
-### 3. ~~Create rockspec `lua/pico-sdl-0.3-1.rockspec`~~ DONE
+### 4. ~~Create rockspec~~ DONE
 
-Copy from previous rockspec, change:
-- `version` to new version
-- `tag` → `branch` pointing to release branch
+- Created `lua/pico-sdl-0.3.1-1.rockspec` (branch = `"v0.3.1"`)
+- Moved `lua/pico-sdl-0.3-1.rockspec` to `lua/old/`
 
-Move previous rockspec to `lua/old/`.
+### 5. ~~Update files~~ DONE
 
-### 3b. ~~Move old rockspec to `lua/old/`~~ DONE
+| File                 | Change                         |
+|----------------------|--------------------------------|
+| `Makefile`           | rockspec version → 0.3.1-1    |
+| `README.md`          | v0.3 → v0.3.1 (3 places)      |
+| `lua/README.md`      | v0.3 → v0.3.1 (4 places)      |
+| `HISTORY.md`         | added v0.3.1 section           |
+| `.claude/CLAUDE.md`  | rockspec → 0.3.1-1             |
 
-### 4. ~~Update `Makefile` rockspec reference~~ DONE
-
-```makefile
-lua:
-    sudo luarocks make lua/pico-sdl-0.3-1.rockspec --lua-version=5.4
-```
-
-### 5. ~~Update `README.md`~~ DONE
-
-- Add version to version list + point stable link
-- **Also update** (missed in original plan):
-    - `README.md` — Doxygen API link to release version
-    - `lua/README.md` — version list, stable link, install examples
-    - `HISTORY.md` — release date, verify completeness
-    - `lua/doc/api.md` — add any new API entries
-
-### 6. ~~Update `CLAUDE.md` rockspec reference~~ DONE
-
-In Build section, the `luarocks make` example references `0.1-2`.
-Update to `0.3-1`.
-
-### 7. ~~Commit all changes~~ DONE
-
-Single commit: `release: v0.3`
-
-### 8. ~~Push main~~ DONE
+### 6. ~~Commit and push main~~ DONE
 
 ```bash
+git add -A
+git commit -m "release: v0.3.1"
 git push origin main
 ```
 
-This triggers:
+Triggers:
 - `tests.yml` — CI validates
 - `docs.yml` — deploys docs to gh-pages `main/`
 
-### 8b. ~~Create release branch and push~~ DONE
-
-Branch `v0.3` created from `main`, README links updated, pushed.
-Workflow `docs-version.yml` triggers on `branches: ['v*']`.
-
-### 8c. ~~Update docs workflow to trigger on branches~~ N/A
-
-Already uses `branches: ['v*']` in `docs-version.yml`
-(renamed from `docs-tag.yml`).
-
-### 8d. ~~Delete existing `v0.3` tag~~ N/A
-
-Tag never existed — using branch model instead.
-
-### 9. ~~Publish to LuaRocks~~ DONE
+### 7. ~~Create release branch and push~~ DONE
 
 ```bash
-luarocks upload lua/pico-sdl-0.3-1.rockspec
+git branch v0.3.1
+git push origin v0.3.1
 ```
 
-Rockspec updated: `tag` → `branch = "v0.3"` before upload.
+Triggers `docs-version.yml` for `v0.3.1/` on gh-pages.
 
-### 9b. ~~Verify LuaRocks install~~ DONE
+**Post-release fix:** docs were stale because `cp -r` nested
+dirs when target already existed. Fixed `docs.yml` and
+`docs-version.yml` to `rm -rf` before `cp -r`. Verified both
+`main/` and `v0.3.1/` docs now render correctly (return types,
+`pico_set_expert` signature, etc.).
+
+### 8. ~~Verify local install with luarocks make~~ DONE
 
 ```bash
-sudo luarocks remove pico-sdl
-sudo luarocks install pico-sdl 0.3
+cd lua
+sudo luarocks make pico-sdl-0.3.1-1.rockspec
 pico-lua lua/doc/rects.lua
 pico-lua lua/doc/anims.lua
 ```
 
-### 10. Announce (manual) — PENDING
+### 9. ~~Publish and verify LuaRocks~~ DONE
+
+```bash
+luarocks upload lua/pico-sdl-0.3.1-1.rockspec
+sudo luarocks remove pico-sdl
+sudo luarocks install pico-sdl 0.3.1
+pico-lua lua/doc/rects.lua
+pico-lua lua/doc/anims.lua
+```
+
+### 10. Announce (manual)
 
 - Twitter
 - Students
 - SDL lists
 - Lua lists
-
-## Files to modify
-
-| File                                | Change                             |
-|-------------------------------------|------------------------------------|
-| `lua/pico-sdl-0.3-1.rockspec`      | `tag` → `branch`                  |
-| `lua/old/`                          | Move previous rockspec here        |
-| `Makefile:16`                       | Rockspec version                   |
-| `README.md`                         | Version list + stable link         |
-| `lua/README.md`                     | Version list, stable, install      |
-| `.claude/CLAUDE.md`                 | Rockspec example                   |
-| `HISTORY.md`                        | Date + verify completeness         |
-| `lua/doc/api.md`                    | New API entries                    |
-| `.github/workflows/docs-version.yml`| N/A — already `branches: ['v*']` |
-| `README.md` (on v0.3 branch)       | Links `main` → `v0.3`             |
-| `lua/README.md` (on v0.3 branch)   | Links `main` → `v0.3`             |
-
-## Verification
-
-1. C tests (`make tests`) and Lua tests (`cd lua && make tests`)
-   pass before and after changes
-2. `git diff` shows only version bumps + README update
-3. After push, check GitHub Actions for green CI
-4. After branch push, verify `docs-version` workflow creates `v0.3/`
-   on gh-pages

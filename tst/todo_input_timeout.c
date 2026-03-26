@@ -9,10 +9,10 @@ int main (void) {
     puts("  filter=MOUSE_MOTION, timeout=5000");
     {
         Pico_Event e;
-        int ok = pico_input_event_timeout(
+        pico_input_event_timeout(
             &e, PICO_EVENT_MOUSE_MOTION, 5000
         );
-        if (ok) {
+        if (e.type != PICO_EVENT_NONE) {
             printf("  OK: got mouse motion\n");
         } else {
             printf("  FAIL: timed out\n");
@@ -26,10 +26,10 @@ int main (void) {
     puts("  (move mouse to trigger non-matching events)");
     {
         Pico_Event e;
-        int ok = pico_input_event_timeout(
+        pico_input_event_timeout(
             &e, PICO_EVENT_KEY_DN, 3000
         );
-        if (ok) {
+        if (e.type != PICO_EVENT_NONE) {
             printf("  FAIL: should have timed out\n");
         } else {
             printf("  OK: timed out correctly\n");
@@ -43,10 +43,10 @@ int main (void) {
     puts("  (this is the actual bug scenario)");
     {
         Pico_Event e;
-        int ok = pico_input_event_timeout(
+        pico_input_event_timeout(
             &e, PICO_EVENT_KEY_DN, 5000
         );
-        if (ok) {
+        if (e.type != PICO_EVENT_NONE) {
             printf("  OK: got key down\n");
         } else {
             printf("  FAIL: timed out (bug!)\n");

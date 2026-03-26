@@ -633,6 +633,12 @@ static int l_get_layer (lua_State* L) {
     return 1;
 }
 
+static int l_get_now (lua_State* L) {
+    Uint32 ms = pico_get_now();
+    lua_pushinteger(L, ms);         // ms
+    return 1;                       // [ms]
+}
+
 static int l_get_text (lua_State* L) {
     const char* text = luaL_checkstring(L, 1);  // text | dim
     luaL_checktype(L, 2, LUA_TTABLE);
@@ -653,12 +659,6 @@ static int l_get_text (lua_State* L) {
     lua_pushnumber(L, abs.h);
     lua_setfield(L, -2, "h");                       // text | dim | *abs*
     return 1;
-}
-
-static int l_get_ticks (lua_State* L) {
-    Uint32 ms = pico_get_ticks();
-    lua_pushinteger(L, ms);         // ms
-    return 1;                       // [ms]
 }
 
 static int l_get_window (lua_State* L) {
@@ -876,9 +876,16 @@ static int l_set_font (lua_State* L) {
 }
 
 static int l_set_expert (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TBOOLEAN);
+    luaL_checktype(L, 1, LUA_TBOOLEAN);     // ok | [fps]
     int on = lua_toboolean(L, 1);
-    int fps = luaL_optinteger(L, 2, 0);
+    int fps = 0;
+    if (lua_gettop(L) == 1) {               // ok
+        fps = 0;
+    } else if (lua_isboolean(L, 2)) {       // ok | bool
+        fps = lua_toboolean(L,2) ? -1 : 0;
+    } else {                                // ok | N
+        fps = luaL_checkinteger(L, 2);
+    }
     int ms = pico_set_expert(on, fps);
     lua_pushinteger(L, ms);
     return 1;
@@ -1179,8 +1186,9 @@ static int l_layer_sub (lua_State* L) {
 
 static int l_input_delay (lua_State* L) {
     int ms = luaL_checknumber(L, 1);       // ms
-    pico_input_delay(ms);
-    return 0;
+    int dt = pico_input_delay(ms);
+    lua_pushinteger(L, dt);                // ms | dt
+    return 1;
 }
 
 static int l_input_event (lua_State* L) {
@@ -1209,68 +1217,71 @@ static int l_input_event (lua_State* L) {
     }
 
     Pico_Event e;
+    int dt;
     if (ms == -1) {
-        id = pico_input_event(&e, id);
+        dt = pico_input_event(&e, id);
     } else {
-        id = pico_input_event_timeout(&e, id, ms);
+        dt = pico_input_event_timeout(&e, id, ms);
     }
 
-    if (id == PICO_EVENT_NONE) {
-        return 0;
+    if (e.type == PICO_EVENT_NONE) {
+        lua_pushnil(L);                             // nil
+        lua_pushinteger(L, dt);                     // nil | dt
+        return 2;
     }
-    assert(id == e.type);
 
-    lua_newtable(L);                                // . | t
+    lua_newtable(L);                                // t
     int T = lua_gettop(L);
 
     switch (e.type)
     {
         case PICO_EVENT_QUIT:
-            lua_pushstring(L, "quit");              // . | t | tag
-            lua_setfield(L, T, "tag");              // . | t
+            lua_pushstring(L, "quit");              // t | tag
+            lua_setfield(L, T, "tag");              // t
             break;
 
         case PICO_EVENT_MOUSE_MOTION:
-            lua_pushstring(L, "mouse.motion");      // . | t | tag
-            lua_setfield(L, T, "tag");              // . | t
-            L_set_mouse(L, T, &e.mouse);            // . | t
+            lua_pushstring(L, "mouse.motion");      // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_mouse(L, T, &e.mouse);            // t
             break;
         case PICO_EVENT_MOUSE_BUTTON_DN:
-            lua_pushstring(L, "mouse.button.dn");   // . | t | tag
-            lua_setfield(L, T, "tag");              // . | t
-            L_set_mouse(L, T, &e.mouse);            // . | t
+            lua_pushstring(L, "mouse.button.dn");   // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_mouse(L, T, &e.mouse);            // t
             break;
         case PICO_EVENT_MOUSE_BUTTON_UP:
-            lua_pushstring(L, "mouse.button.up");   // . | t | tag
-            lua_setfield(L, T, "tag");              // . | t
-            L_set_mouse(L, T, &e.mouse);            // . | t
+            lua_pushstring(L, "mouse.button.up");   // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_mouse(L, T, &e.mouse);            // t
             break;
 
         case PICO_EVENT_KEY_DN:
-            lua_pushstring(L, "key.dn");            // . | t | tag
-            lua_setfield(L, T, "tag");              // . | t
-            L_set_keyboard(L, T, &e.keyboard);      // . | t
+            lua_pushstring(L, "key.dn");            // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_keyboard(L, T, &e.keyboard);      // t
             break;
         case PICO_EVENT_KEY_UP:
-            lua_pushstring(L, "key.up");            // . | t | tag
-            lua_setfield(L, T, "tag");              // . | t
-            L_set_keyboard(L, T, &e.keyboard);      // . | t
+            lua_pushstring(L, "key.up");            // t | tag
+            lua_setfield(L, T, "tag");              // t
+            L_set_keyboard(L, T, &e.keyboard);      // t
             break;
 
         case PICO_EVENT_WIN_RESIZE:
-            lua_pushstring(L, "window");            // . | t | tag
-            lua_setfield(L, T, "tag");              // . | t
-            lua_pushinteger(L, e.window.w);         // . | t | w
-            lua_setfield(L, T, "w");                // . | t
-            lua_pushinteger(L, e.window.h);         // . | t | h
-            lua_setfield(L, T, "h");                // . | t
+            lua_pushstring(L, "window");            // t | tag
+            lua_setfield(L, T, "tag");              // t
+            lua_pushinteger(L, e.window.w);         // t | w
+            lua_setfield(L, T, "w");                // t
+            lua_pushinteger(L, e.window.h);         // t | h
+            lua_setfield(L, T, "h");                // t
             break;
 
         default:
             assert(0 && "unhandled event type");
     }
 
-    return 1;           // . | [t]
+    lua_pushinteger(L, dt);                         // t | dt
+    return 2;                                       // *t | dt*
 }
 
 static int l_input_loop (lua_State* L) {
@@ -1494,8 +1505,8 @@ static const luaL_Reg ll_get[] = {
     { "keyboard", l_get_keyboard },
     { "layer",    l_get_layer  },
     { "mouse",    l_get_mouse  },
+    { "now",      l_get_now    },
     { "text",     l_get_text   },
-    { "ticks",    l_get_ticks  },
     { "video",    l_get_video  },
     { "view",     l_get_view   },
     { "window",   l_get_window },

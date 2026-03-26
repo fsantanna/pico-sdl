@@ -21,6 +21,9 @@ Modifications:
         - target, source, clip stored as relative
     - rotation and flip: moved from global state to per-layer view
     - renamed `ref` -> `base` parameter in conversion functions
+    - renamed `pico.get.ticks` -> `pico.get.now`
+    - `pico.set.expert`: accepts FPS (0, -1/true, N>0)
+    - `pico.input.*`: all inputs return `dt` (ms elapsed)
 Removals:
     - colors: (r,g,b) three-argument form in Lua
 Documentation:

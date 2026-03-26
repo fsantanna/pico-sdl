@@ -21,9 +21,14 @@ colors as strings in buffer and other calls" above). Without that, `'transparent
 has no RGBA consumer — `set.color.draw` and `set.color.clear` use `Pico_Color`
 (RGB only).
 
-## Guide: `pico.get.ticks` never introduced
+## Guide: use input dt in animations
 
-In `lua/doc/guide.md` section 9.2, `pico.get.ticks` is used but never formally
+In `lua/doc/guide.md`, animation examples should use the `dt` return value
+from `pico.input.event` instead of fixed increments.
+
+## Guide: `pico.get.now` never introduced
+
+In `lua/doc/guide.md` section 9.2, `pico.get.now` is used but never formally
 introduced. Add documentation or an earlier mention.
 
 ## Independent grid per layer
