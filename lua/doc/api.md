@@ -77,9 +77,10 @@
         - `pico.get.layer () -> string?`
         - Returns `nil` for main layer
     - **pico.get.mouse**: Gets mouse position and button state.
-        - `pico.get.mouse (pos: Pos [, button: integer]) -> boolean`
-        - Updates `pos.x` and `pos.y` based on mode (`'!'`, `'%'`, or `'#'`)
-        - Returns true if specified button is pressed (1=left, 2=mid, 3=right)
+        - `pico.get.mouse ([mode: string]) -> Mouse`
+        - Returns `{mode, x=N, y=N, left=bool, right=bool, middle=bool}`
+        - Mode: `'!'` pixels, `'%'` percentage, `'#'` tiles, `'w'` window
+          (default from `pico.set.mouse`)
     - **pico.get.text**: Gets text dimensions.
         - `pico.get.text (text: string, dim: Dim) -> Dim`
     - **pico.get.ticks**: Gets milliseconds since initialization.
