@@ -1262,10 +1262,13 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
     while (1) {
         Pico_Event out;
         SDL_Event sdl;
-        int has = SDL_WaitEventTimeout(&sdl, timeout);
+        int has = (timeout == -1) ? SDL_WaitEvent(&sdl) : SDL_WaitEventTimeout(&sdl, timeout);
         int t1 = SDL_GetTicks();
         int dt = t1 - t0;
         if (!has) {
+            if (timeout==-1 && sdl.type==SDL_POLLSENTINEL) {
+                continue;
+            }
             if (evt != NULL) {
                 evt->type = PICO_EVENT_NONE;
             }
