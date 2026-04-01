@@ -584,7 +584,7 @@ static int l_get_alpha (lua_State* L) {
 }
 
 static int l_get_color_clear (lua_State* L) {
-    Pico_Color c = pico_get_color_clear();
+    Pico_Color_A c = pico_get_color_clear_alpha();
     lua_newtable(L);
     lua_pushinteger(L, c.r);
     lua_setfield(L, -2, "r");
@@ -592,6 +592,8 @@ static int l_get_color_clear (lua_State* L) {
     lua_setfield(L, -2, "g");
     lua_pushinteger(L, c.b);
     lua_setfield(L, -2, "b");
+    lua_pushinteger(L, c.a);
+    lua_setfield(L, -2, "a");
     return 1;
 }
 

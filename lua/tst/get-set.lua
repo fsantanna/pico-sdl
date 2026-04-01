@@ -20,13 +20,24 @@ print("color_clear")
 do
     pico.set.color.clear('red')
     local c = pico.get.color.clear()
-    assert(c.r == 255 and c.g == 0 and c.b == 0)
+    assert(c.r == 255 and c.g == 0 and c.b == 0 and c.a == 255)
     pico.set.color.clear('blue')
     c = pico.get.color.clear()
-    assert(c.r == 0 and c.g == 0 and c.b == 255)
+    assert(c.r == 0 and c.g == 0 and c.b == 255 and c.a == 255)
     pico.set.color.clear('black')
     c = pico.get.color.clear()
-    assert(c.r == 0 and c.g == 0 and c.b == 0)
+    assert(c.r == 0 and c.g == 0 and c.b == 0 and c.a == 255)
+end
+
+-- color_clear with alpha
+print("color_clear_alpha")
+do
+    pico.set.color.clear({'!', r=0, g=0, b=255, a=128})
+    local c = pico.get.color.clear()
+    assert(c.r == 0 and c.g == 0 and c.b == 255 and c.a == 128)
+    pico.set.color.clear({'!', r=255, g=0, b=0, a=0})
+    c = pico.get.color.clear()
+    assert(c.r == 255 and c.g == 0 and c.b == 0 and c.a == 0)
 end
 
 -- color_draw
