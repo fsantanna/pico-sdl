@@ -87,6 +87,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga553cbe4746e634d6266bef12c15644d0" id="r_ga553cbe4746e634d6266bef12c15644d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color.html">Pico_Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga553cbe4746e634d6266bef12c15644d0">pico_get_color_clear</a> (void)</td></tr>
 <tr class="memdesc:ga553cbe4746e634d6266bef12c15644d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the color set to clear the screen.  <br /></td></tr>
 <tr class="separator:ga553cbe4746e634d6266bef12c15644d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9701ec8658d854a3777aa69bccde4d69" id="r_ga9701ec8658d854a3777aa69bccde4d69"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color__A.html">Pico_Color_A</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga9701ec8658d854a3777aa69bccde4d69">pico_get_color_clear_alpha</a> (void)</td></tr>
+<tr class="memdesc:ga9701ec8658d854a3777aa69bccde4d69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the color and alpha set to clear the screen.  <br /></td></tr>
+<tr class="separator:ga9701ec8658d854a3777aa69bccde4d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga180b40402f19e0de5d667f4400d9874b" id="r_ga180b40402f19e0de5d667f4400d9874b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color.html">Pico_Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga180b40402f19e0de5d667f4400d9874b">pico_get_color_draw</a> (void)</td></tr>
 <tr class="memdesc:ga180b40402f19e0de5d667f4400d9874b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the color set to draw.  <br /></td></tr>
 <tr class="separator:ga180b40402f19e0de5d667f4400d9874b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,8 +175,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga674bf34be08cebca2659cd40fe693307"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the alpha transparency for drawing operations.  <br /></td></tr>
 <tr class="separator:ga674bf34be08cebca2659cd40fe693307"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabbbaee66a8c9386f38d771f3d65a1e45" id="r_gabbbaee66a8c9386f38d771f3d65a1e45"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gabbbaee66a8c9386f38d771f3d65a1e45">pico_set_color_clear</a> (<a class="el" href="structPico__Color.html">Pico_Color</a> color)</td></tr>
-<tr class="memdesc:gabbbaee66a8c9386f38d771f3d65a1e45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the color used to clear the screen.  <br /></td></tr>
+<tr class="memdesc:gabbbaee66a8c9386f38d771f3d65a1e45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the color used to clear the screen (alpha set to 255).  <br /></td></tr>
 <tr class="separator:gabbbaee66a8c9386f38d771f3d65a1e45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4fb1d0d4d0126f84925e7775485ba8e7" id="r_ga4fb1d0d4d0126f84925e7775485ba8e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga4fb1d0d4d0126f84925e7775485ba8e7">pico_set_color_clear_alpha</a> (<a class="el" href="structPico__Color__A.html">Pico_Color_A</a> color)</td></tr>
+<tr class="memdesc:ga4fb1d0d4d0126f84925e7775485ba8e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the color and alpha used to clear the screen.  <br /></td></tr>
+<tr class="separator:ga4fb1d0d4d0126f84925e7775485ba8e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1169c13cea92841444a00c149e69a233" id="r_ga1169c13cea92841444a00c149e69a233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga1169c13cea92841444a00c149e69a233">pico_set_color_draw</a> (<a class="el" href="structPico__Color.html">Pico_Color</a> color)</td></tr>
 <tr class="memdesc:ga1169c13cea92841444a00c149e69a233"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the color used to draw objects.  <br /></td></tr>
 <tr class="separator:ga1169c13cea92841444a00c149e69a233"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -255,7 +261,28 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the color set to clear the screen. </p>
-<dl class="section return"><dt>Returns</dt><dd>the current clear color </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the current clear color (without alpha) </dd></dl>
+
+</div>
+</div>
+<a id="ga9701ec8658d854a3777aa69bccde4d69" name="ga9701ec8658d854a3777aa69bccde4d69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9701ec8658d854a3777aa69bccde4d69">&#9670;&#160;</a></span>pico_get_color_clear_alpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structPico__Color__A.html">Pico_Color_A</a> pico_get_color_clear_alpha </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the color and alpha set to clear the screen. </p>
+<dl class="section return"><dt>Returns</dt><dd>the current clear color with alpha </dd></dl>
 
 </div>
 </div>
@@ -1366,10 +1393,36 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Changes the color used to clear the screen. </p>
+<p>Changes the color used to clear the screen (alpha set to 255). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">color</td><td>new color </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga4fb1d0d4d0126f84925e7775485ba8e7" name="ga4fb1d0d4d0126f84925e7775485ba8e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4fb1d0d4d0126f84925e7775485ba8e7">&#9670;&#160;</a></span>pico_set_color_clear_alpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pico_set_color_clear_alpha </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structPico__Color__A.html">Pico_Color_A</a>&#160;</td>
+          <td class="paramname"><em>color</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes the color and alpha used to clear the screen. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">color</td><td>new color with alpha </td></tr>
   </table>
   </dd>
 </dl>
