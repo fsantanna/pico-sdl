@@ -72,6 +72,8 @@ Support alpha in the clear color, primarily useful for layers.
 
 - [x] `tst/clear_alpha.c` — C test
 - [x] `lua/tst/clear_alpha.lua` — Lua test
+- [ ] Run full test suite (`make tests`) for regressions
+- [ ] Copy `tst/out/clear_alpha-01.png` to `tst/asr/`
 
 ### 10. Documentation
 
