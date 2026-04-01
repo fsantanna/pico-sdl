@@ -21,6 +21,7 @@ tests: pico_native.so
 	$(TST) tst/blend_raw.lua
 	$(TST) tst/buffer_pct.lua
 	$(TST) tst/buffer_raw.lua
+	$(TST) tst/clear_alpha.lua
 	$(TST) tst/clip_pct.lua
 	$(TST) tst/clip_raw.lua
 	$(TST) tst/collide_pct.lua
