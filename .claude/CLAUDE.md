@@ -216,9 +216,13 @@ The library provides two color types (defined in `colors.h`):
 
 - **Pico_Color_A**: RGBA color with per-pixel alpha (4 bytes: r, g, b, a)
     - Used for buffer drawing functions: `pico_output_draw_buffer()`
+    - Used for clear color with alpha: `pico_set_color_clear_alpha()`
     - Each pixel can have its own alpha value (0-255)
     - Alpha values are applied directly from the buffer data (global alpha
       from `pico_set_alpha()` is not used)
+
+- **_pico_color()**: Internal helper (`colors.h`) to convert
+  `Pico_Color_A` → `Pico_Color` (strips alpha)
 
 ### Coordinate Systems and API Suffixes
 
@@ -325,7 +329,8 @@ Conversion functions in `lua/pico.c`:
 - `c_rel_pos()` - Converts Lua table to `Pico_Rel_Pos*`
 - `c_rel_dim()` - Converts Lua table to `Pico_Rel_Dim*`
 - `c_anchor()` - Extracts anchor from table's `anc` field (string or table)
-- `c_color_st()` - Parses color as string (`'red'`) or table (`{r,g,b}`)
+- `c_color_st()` - Parses color as string (`'red'`) or table
+  (`{r,g,b[,a]}`), returns `Pico_Color_A` (defaults `a=255`)
 
 **API Structure:**
 
@@ -335,6 +340,8 @@ The Lua API mirrors the C API with nested tables:
 - `pico.get.mouse([mode])` - Get mouse state (returns `{mode, x, y, left, right, middle}`)
 - `pico.get.text(text, dim)` - Get text dimensions
 - `pico.get.view()` - Get view settings (returns table with tile field)
+- `pico.set.color.clear(color)` - Set clear color (supports alpha
+  via `a` field, e.g. `{'!', r=0, g=0, b=255, a=128}`)
 - `pico.set.color.draw(color)` - Set drawing color
 - `pico.set.mouse(mode)` - Set default mouse coordinate mode
 - `pico.set.view({...})` - Set view (accepts tile={w,h} for tile mode)

@@ -576,12 +576,43 @@ static void L_image_get_dim (lua_State* L, int i, const char* path) {
     lua_setfield(L, -2, "h");                       // rel | *abs*
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+static int l_get_alpha (lua_State* L) {
+    lua_pushinteger(L, pico_get_alpha());
+    return 1;
+}
+
+static int l_get_color_clear (lua_State* L) {
+    Pico_Color c = pico_get_color_clear();
+    lua_newtable(L);
+    lua_pushinteger(L, c.r);
+    lua_setfield(L, -2, "r");
+    lua_pushinteger(L, c.g);
+    lua_setfield(L, -2, "g");
+    lua_pushinteger(L, c.b);
+    lua_setfield(L, -2, "b");
+    return 1;
+}
+
+static int l_get_color_draw (lua_State* L) {
+    Pico_Color c = pico_get_color_draw();
+    lua_newtable(L);
+    lua_pushinteger(L, c.r);
+    lua_setfield(L, -2, "r");
+    lua_pushinteger(L, c.g);
+    lua_setfield(L, -2, "g");
+    lua_pushinteger(L, c.b);
+    lua_setfield(L, -2, "b");
+    return 1;
+}
+
 static int l_get_image (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);  // path | [dim]
 
     if (lua_gettop(L) == 1) { // default dim={'!',w=0,h=0}
         lua_newtable(L);                        // path | dim
-        lua_pushstring(L, "!");
+        lua_pushliteral(L, "!");
         lua_rawseti(L, -2, 1);
         lua_pushinteger(L, 0);
         lua_setfield(L, -2, "w");
@@ -609,6 +640,16 @@ static int l_get_layer (lua_State* L) {
         lua_pushnil(L);
     } else {
         lua_pushstring(L, name);
+    }
+    return 1;
+}
+
+static int l_get_style (lua_State* L) {
+    PICO_STYLE s = pico_get_style();
+    if (s == PICO_STYLE_FILL) {
+        lua_pushliteral(L, "fill");
+    } else {
+        lua_pushliteral(L, "stroke");
     }
     return 1;
 }
@@ -1216,39 +1257,39 @@ static int l_input_event (lua_State* L) {
     switch (e.type)
     {
         case PICO_EVENT_QUIT:
-            lua_pushstring(L, "quit");              // t | tag
+            lua_pushliteral(L, "quit");             // t | tag
             lua_setfield(L, T, "tag");              // t
             break;
 
         case PICO_EVENT_MOUSE_MOTION:
-            lua_pushstring(L, "mouse.motion");      // t | tag
+            lua_pushliteral(L, "mouse.motion");     // t | tag
             lua_setfield(L, T, "tag");              // t
             L_set_mouse(L, T, &e.mouse);            // t
             break;
         case PICO_EVENT_MOUSE_BUTTON_DN:
-            lua_pushstring(L, "mouse.button.dn");   // t | tag
+            lua_pushliteral(L, "mouse.button.dn");  // t | tag
             lua_setfield(L, T, "tag");              // t
             L_set_mouse(L, T, &e.mouse);            // t
             break;
         case PICO_EVENT_MOUSE_BUTTON_UP:
-            lua_pushstring(L, "mouse.button.up");   // t | tag
+            lua_pushliteral(L, "mouse.button.up");  // t | tag
             lua_setfield(L, T, "tag");              // t
             L_set_mouse(L, T, &e.mouse);            // t
             break;
 
         case PICO_EVENT_KEY_DN:
-            lua_pushstring(L, "key.dn");            // t | tag
+            lua_pushliteral(L, "key.dn");           // t | tag
             lua_setfield(L, T, "tag");              // t
             L_set_keyboard(L, T, &e.keyboard);      // t
             break;
         case PICO_EVENT_KEY_UP:
-            lua_pushstring(L, "key.up");            // t | tag
+            lua_pushliteral(L, "key.up");           // t | tag
             lua_setfield(L, T, "tag");              // t
             L_set_keyboard(L, T, &e.keyboard);      // t
             break;
 
         case PICO_EVENT_WIN_RESIZE:
-            lua_pushstring(L, "window");            // t | tag
+            lua_pushliteral(L, "window");           // t | tag
             lua_setfield(L, T, "tag");              // t
             lua_pushinteger(L, e.window.w);         // t | w
             lua_setfield(L, T, "w");                // t
@@ -1480,16 +1521,24 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
+    { "alpha",    l_get_alpha  },
     { "font",     l_get_font   },
     { "image",    l_get_image  },
     { "keyboard", l_get_keyboard },
     { "layer",    l_get_layer  },
     { "mouse",    l_get_mouse  },
     { "now",      l_get_now    },
+    { "style",    l_get_style  },
     { "text",     l_get_text   },
     { "video",    l_get_video  },
     { "view",     l_get_view   },
     { "window",   l_get_window },
+    { NULL, NULL }
+};
+
+static const luaL_Reg ll_get_color[] = {
+    { "clear", l_get_color_clear },
+    { "draw",  l_get_color_draw  },
     { NULL, NULL }
 };
 
@@ -1577,6 +1626,8 @@ int luaopen_pico_native (lua_State* L) {
     lua_setfield(L, -2, "color");           // pico
 
     luaL_newlib(L, ll_get);                 // pico | get
+    luaL_newlib(L, ll_get_color);           // pico | get | color
+    lua_setfield(L, -2, "color");           // pico | get
     lua_setfield(L, -2, "get");             // pico
 
     luaL_newlib(L, ll_set);                 // pico | set

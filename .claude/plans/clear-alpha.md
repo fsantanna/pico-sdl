@@ -15,61 +15,67 @@ Support alpha in the clear color, primarily useful for layers.
 - Existing `pico_get_color_clear(void)` stays, returns `Pico_Color`
   (drops alpha)
 - Push/pop saves and restores the full `Pico_Color_A`
-- Lua bindings: add `pico.set.color.clear_alpha(color_a)` accepting
-  a table with alpha
+- Lua: `pico.set.color.clear` accepts optional `a` field via
+  unified `c_color_st` (returns `Pico_Color_A`)
 
 ## Changes
 
 ### 1. `src/pico.c` — internal state
 
-- [ ] `Pico_State.color.clear`: change type `Pico_Color` →
-  `Pico_Color_A`
-- [ ] `S.color.clear` default: ensure initialized to
-  `{0, 0, 0, 255}` (black, opaque)
+- [x] `Pico_State.color.clear`: `Pico_Color` → `Pico_Color_A`
+- [x] `S.color.clear`: `Pico_Color` → `Pico_Color_A`
+- [x] `pico_init`: `{0, 0, 0, 0xFF}` literal
 
 ### 2. `src/pico.c` — set functions
 
-- [ ] `pico_set_color_clear(Pico_Color color)`: convert to
-  `Pico_Color_A` with `a=255`, store in `S.color.clear`
-- [ ] Add `pico_set_color_clear_alpha(Pico_Color_A color)`: store
-  directly in `S.color.clear`
+- [x] `pico_set_color_clear`: converts to `Pico_Color_A` with
+  `a=255`
+- [x] `pico_set_color_clear_alpha`: stores `Pico_Color_A` directly
 
 ### 3. `src/pico.c` — get functions
 
-- [ ] `pico_get_color_clear(void)`: extract `Pico_Color` from
-  `S.color.clear` (drop alpha), return it
-- [ ] Add `pico_get_color_clear_alpha(void)`: return `S.color.clear`
-  as `Pico_Color_A`
+- [x] `pico_get_color_clear`: uses `_pico_color()` to strip alpha
+- [x] `pico_get_color_clear_alpha`: returns `Pico_Color_A`
 
 ### 4. `src/pico.c` — `pico_output_clear`
 
-- [ ] Line 1338: replace hardcoded `0xFF` with `S.color.clear.a`
+- [x] Replaced hardcoded `0xFF` with `S.color.clear.a`
 
 ### 5. `src/pico.c` — push/pop
 
-- [ ] Already stores `S.color.clear` — type change propagates
-  automatically since `Pico_State.color.clear` becomes
-  `Pico_Color_A`
+- [x] Type change propagates automatically
 
 ### 6. `src/pico.h` — declarations
 
-- [ ] Add `void pico_set_color_clear_alpha(Pico_Color_A color);`
-- [ ] Add `Pico_Color_A pico_get_color_clear_alpha(void);`
+- [x] `void pico_set_color_clear_alpha(Pico_Color_A color);`
+- [x] `Pico_Color_A pico_get_color_clear_alpha(void);`
 
-### 7. `lua/pico.c` — Lua bindings
+### 7. `src/colors.h` — helper
 
-- [ ] Modify `l_set_color_clear`: duck type the argument
-    - String → `c_color_s` → `pico_set_color_clear` (no alpha)
-    - Table without `a` field → `c_color_t` →
-      `pico_set_color_clear` (no alpha)
-    - Table with `a` field → `c_color_a_t` →
-      `pico_set_color_clear_alpha` (with alpha)
-- [ ] No new Lua-side function or registration needed
+- [x] `static inline Pico_Color _pico_color(Pico_Color_A c)`
 
-### 8. Tests
+### 8. `lua/pico.c` — refactored color functions
 
-- [ ] Add test for `pico_set_color_clear_alpha` (C or Lua)
-- [ ] Verify layers with transparent clear composite correctly
+- [x] `c_color_t`: returns `Pico_Color_A`, parses optional `a`
+  (merged `c_color_a_t`)
+- [x] `c_color_s`: returns `Pico_Color_A` with `a=0xFF`
+- [x] `c_color_st`: returns `Pico_Color_A`
+- [x] `c_color_a_t`: removed
+- [x] `l_set_color_clear`: uses `c_color_st` +
+  `pico_set_color_clear_alpha`
+- [x] `l_set_color_draw`: strips alpha via `_pico_color()`
+- [x] `l_color_darker/lighter/mix/alpha`: strip alpha via
+  `_pico_color()`
+- [x] Buffer parsing: `c_color_a_t` → `c_color_t`
+
+### 9. Tests
+
+- [x] `tst/clear_alpha.c` — C test
+- [x] `lua/tst/clear_alpha.lua` — Lua test
+
+### 10. Documentation
+
+- [x] `.claude/CLAUDE.md` — Color Types, `c_color_st`, Lua API
 
 ## Notes
 
