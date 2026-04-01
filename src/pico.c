@@ -118,6 +118,8 @@ static struct {
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
 
+static void _show_tile (Pico_View* view, SDL_Rect dst);
+
 static void _pico_output_present (int force);
 
 static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
@@ -1544,6 +1546,9 @@ static void _show_grid (void) {
         }
     }
 
+    // tile grid lines
+    _show_tile(&S.layer->view, (SDL_Rect){0, 0, S.win.dim.w, S.win.dim.h});
+
     // metric labels
     {
         pico_set_alpha(0xFF);
@@ -1585,6 +1590,47 @@ static void _show_grid (void) {
 
     S.color.draw = x_clr;
     S.alpha = x_alpha;
+}
+
+static void _show_tile (Pico_View* view, SDL_Rect dst) {
+    if (view->tile.w<=0 || view->tile.h<=0) return;
+
+    Pico_Color x_clr   = S.color.draw;
+    int        x_alpha = S.alpha;
+    PICO_STYLE x_style = S.style;
+
+    pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0xFF});
+    pico_set_alpha(0xAA);
+    pico_set_style(PICO_STYLE_STROKE);
+
+    // grid
+    int dx = dst.w * view->tile.w / view->dim.w;
+    int dy = dst.h * view->tile.h / view->dim.h;
+    if (dx > 0) {
+        for (int i=dx; i<dst.w; i+=dx) {
+            pico_output_draw_line (
+                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW, NULL },
+                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW, NULL }
+            );
+        }
+    }
+    if (dy > 0) {
+        for (int j=dy; j<dst.h; j+=dy) {
+            pico_output_draw_line (
+                &(Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW, NULL },
+                &(Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW, NULL }
+            );
+        }
+    }
+
+    // surrounding rect
+    pico_output_draw_rect (
+        &(Pico_Rel_Rect){ '!', {dst.x, dst.y, dst.w, dst.h}, PICO_ANCHOR_NW, NULL }
+    );
+
+    S.color.draw = x_clr;
+    S.alpha      = x_alpha;
+    S.style      = x_style;
 }
 
 static void _pico_output_present (int force) {
