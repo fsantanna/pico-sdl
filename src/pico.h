@@ -273,8 +273,12 @@ void pico_output_sound (const char* path);
 int pico_get_alpha (void);
 
 /// @brief Gets the color set to clear the screen.
-/// @return the current clear color
+/// @return the current clear color (without alpha)
 Pico_Color pico_get_color_clear (void);
+
+/// @brief Gets the color and alpha set to clear the screen.
+/// @return the current clear color with alpha
+Pico_Color_A pico_get_color_clear_alpha (void);
 
 /// @brief Gets the color set to draw.
 /// @return the current draw color
@@ -481,9 +485,13 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 /// @param a alpha value (0: transparent; 255: opaque)
 void pico_set_alpha (int a);
 
-/// @brief Changes the color used to clear the screen.
+/// @brief Changes the color used to clear the screen (alpha set to 255).
 /// @param color new color
 void pico_set_color_clear (Pico_Color color);
+
+/// @brief Changes the color and alpha used to clear the screen.
+/// @param color new color with alpha
+void pico_set_color_clear_alpha (Pico_Color_A color);
 
 /// @brief Changes the color used to draw objects.
 /// @param color new color

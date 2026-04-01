@@ -74,7 +74,7 @@ static struct { // internal global state
 static struct { // exposed global state
     int alpha;
     struct {
-        Pico_Color clear;
+        Pico_Color_A clear;
         Pico_Color draw;
     } color;
     struct {
@@ -98,7 +98,7 @@ static struct { // exposed global state
 typedef struct {
     int           alpha;
     struct {
-        Pico_Color clear;
+        Pico_Color_A clear;
         Pico_Color draw;
     } color;
     const char*   font;
@@ -557,7 +557,7 @@ void pico_init (int on) {
 
         S = (typeof(S)) {
             .alpha  = 0xFF,
-            .color  = { PICO_COLOR_BLACK, PICO_COLOR_WHITE },
+            .color  = { {0, 0, 0, 0xFF}, PICO_COLOR_WHITE },
             .expert = {0, 0, 0, 0},
             .font   = NULL,
             .layer  = &G.main,
@@ -636,6 +636,10 @@ int pico_get_alpha (void) {
 }
 
 Pico_Color pico_get_color_clear (void) {
+    return (Pico_Color) { S.color.clear.r, S.color.clear.g, S.color.clear.b };
+}
+
+Pico_Color_A pico_get_color_clear_alpha (void) {
     return S.color.clear;
 }
 
@@ -807,6 +811,10 @@ void pico_set_alpha (int a) {
 }
 
 void pico_set_color_clear (Pico_Color color) {
+    S.color.clear = (Pico_Color_A) { color.r, color.g, color.b, 0xFF };
+}
+
+void pico_set_color_clear_alpha (Pico_Color_A color) {
     S.color.clear = color;
 }
 
@@ -1339,7 +1347,7 @@ void pico_input_loop (void) {
 
 void pico_output_clear (void) {
     SDL_SetRenderDrawColor(G.ren,
-        S.color.clear.r, S.color.clear.g, S.color.clear.b, 0xFF);
+        S.color.clear.r, S.color.clear.g, S.color.clear.b, S.color.clear.a);
     SDL_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
     SDL_RenderFillRect(G.ren, &r);
     _pico_output_present(0);
