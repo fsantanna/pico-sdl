@@ -120,6 +120,13 @@ static struct {
 
 static void _pico_output_present (int force);
 
+static void _pico_guard (void) {
+    if (!G.init) {
+        fprintf(stderr, "ERROR : pico-sdl is not initialized\n");
+        abort();
+    }
+}
+
 static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
     SDL_Texture* tex = SDL_CreateTexture (
         G.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
@@ -621,6 +628,7 @@ void pico_init (int on) {
 }
 
 void pico_quit (void) {
+    _pico_guard();
     SDL_Event e = { .type = SDL_QUIT };
     SDL_PushEvent(&e);
 }
@@ -630,14 +638,17 @@ void pico_quit (void) {
 ///////////////////////////////////////////////////////////////////////////////
 
 Pico_Color pico_get_color_clear (void) {
+    _pico_guard();
     return S.color.clear;
 }
 
 Pico_Color pico_get_color_draw (void) {
+    _pico_guard();
     return S.color.draw;
 }
 
 int pico_get_expert (int* fps) {
+    _pico_guard();
     if (fps != NULL) {
         *fps = S.expert.fps;
     }
@@ -645,10 +656,12 @@ int pico_get_expert (int* fps) {
 }
 
 const char* pico_get_font (void) {
+    _pico_guard();
     return S.font;
 }
 
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
+    _pico_guard();
     if (rel == NULL) {
         Pico_Layer* layer = _pico_layer_image('=', NULL, path);
         return layer->view.dim;
@@ -663,10 +676,12 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
 }
 
 const char* pico_get_layer (void) {
+    _pico_guard();
     return S.layer->name;
 }
 
 Pico_Mouse pico_get_mouse (char mode) {
+    _pico_guard();
     if (mode == 0) {
         mode = S.mouse;
     }
@@ -705,22 +720,27 @@ static Pico_Keyboard _pico_keyboard (int key, SDL_Keymod mod) {
 }
 
 Pico_Keyboard pico_get_keyboard (void) {
+    _pico_guard();
     return _pico_keyboard(0, SDL_GetModState());
 }
 
 Uint32 pico_get_now (void) {
+    _pico_guard();
     return SDL_GetTicks();
 }
 
 int pico_get_show (void) {
+    _pico_guard();
     return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
 }
 
 PICO_STYLE pico_get_style (void) {
+    _pico_guard();
     return S.style;
 }
 
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
+    _pico_guard();
     return pico_get_text_mode('=', NULL, text, rel);
 }
 
@@ -728,6 +748,7 @@ Pico_Abs_Dim pico_get_text_mode (
     int mode, const char* key,
     const char* text, Pico_Rel_Dim* rel
 ) {
+    _pico_guard();
     if (text[0] == '\0') return (Pico_Abs_Dim){0, 0};
 
     assert(rel!=NULL && rel->h!=0);
@@ -754,6 +775,7 @@ void pico_get_view (
     Pico_Rot*      rot,
     PICO_FLIP*     flip
 ) {
+    _pico_guard();
     if (grid != NULL) {
         *grid = S.layer->view.grid;
     }
@@ -781,6 +803,7 @@ void pico_get_view (
 }
 
 void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
+    _pico_guard();
     if (title != NULL) {
         *title = SDL_GetWindowTitle(G.win);
     }
@@ -797,24 +820,29 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void pico_set_alpha (int a) {
+    _pico_guard();
     S.alpha = a;
 }
 
 void pico_set_color_clear (Pico_Color color) {
+    _pico_guard();
     S.color.clear = color;
 }
 
 void pico_set_color_draw  (Pico_Color color) {
+    _pico_guard();
     S.color.draw = color;
 }
 
 void pico_set_dim (Pico_Rel_Dim* dim) {
+    _pico_guard();
     assert(S.layer==&G.main && "can only set dim from main layer");
     pico_set_window(NULL, -1, dim);
     pico_set_view(-1, dim, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
 int pico_set_expert (int on, int fps) {
+    _pico_guard();
     assert(fps >= -1);
     S.expert.on  = on;
     S.expert.fps = fps;
@@ -827,10 +855,12 @@ int pico_set_expert (int on, int fps) {
 }
 
 void pico_set_font (const char* path) {
+    _pico_guard();
     S.font = path;
 }
 
 void pico_set_layer (const char* key) {
+    _pico_guard();
     if (key == NULL) {
         S.layer = &G.main;
     } else {
@@ -849,6 +879,7 @@ void pico_set_layer (const char* key) {
 }
 
 void pico_set_show (int on) {
+    _pico_guard();
     if (on) {
         SDL_ShowWindow(G.win);
         _pico_output_present(0);
@@ -858,11 +889,13 @@ void pico_set_show (int on) {
 }
 
 void pico_set_mouse (char mode) {
+    _pico_guard();
     assert((mode=='w' || mode=='!' || mode=='%' || mode=='#') && "invalid mouse mode");
     S.mouse = mode;
 }
 
 void pico_set_style (PICO_STYLE style) {
+    _pico_guard();
     S.style = style;
 }
 
@@ -871,6 +904,7 @@ void pico_set_style (PICO_STYLE style) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void pico_push (void) {
+    _pico_guard();
     assert(STACK.n<PICO_STACK_MAX && "stack overflow");
     STACK.buf[STACK.n++] = (Pico_State) {
         .alpha = S.alpha,
@@ -883,6 +917,7 @@ void pico_push (void) {
 }
 
 void pico_pop (void) {
+    _pico_guard();
     assert(STACK.n>0 && "stack underflow");
     Pico_State* st = &STACK.buf[--STACK.n];
     S.alpha = st->alpha;
@@ -909,6 +944,7 @@ void pico_set_view (
     Pico_Rot*      rot,
     PICO_FLIP*     flip
 ) {
+    _pico_guard();
     if (grid != -1) {
         S.layer->view.grid = grid;
     }
@@ -951,6 +987,7 @@ void pico_set_view (
 }
 
 void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
+    _pico_guard();
     Pico_Abs_Dim new;
 
     // title: set window title
@@ -1008,6 +1045,7 @@ void pico_layer_buffer (
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
+    _pico_guard();
     pico_layer_buffer_mode('!', key, dim, pixels);
 }
 
@@ -1017,16 +1055,19 @@ void pico_layer_buffer_mode (
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
+    _pico_guard();
     _pico_layer_buffer(mode, key, dim, pixels);
 }
 
 void pico_layer_empty (const char* key, Pico_Abs_Dim dim) {
+    _pico_guard();
     pico_layer_empty_mode('!', key, dim);
 }
 
 void pico_layer_empty_mode (
     int mode, const char* key, Pico_Abs_Dim dim
 ) {
+    _pico_guard();
     assert(key!=NULL && "layer key required");
     void* ret = realm_put (
         G.realm, mode, strlen(key)+1, key,
@@ -1036,24 +1077,28 @@ void pico_layer_empty_mode (
 }
 
 void pico_layer_image (const char* key, const char* path) {
+    _pico_guard();
     pico_layer_image_mode('!', key, path);
 }
 
 void pico_layer_image_mode (
     int mode, const char* key, const char* path
 ) {
+    _pico_guard();
     _pico_layer_image(mode, key, path);
 }
 
 void pico_layer_sub (const char* key,
     const char* parent, const Pico_Rel_Rect* crop)
 {
+    _pico_guard();
     pico_layer_sub_mode('!', key, parent, crop);
 }
 
 void pico_layer_sub_mode (int mode, const char* key,
     const char* parent, const Pico_Rel_Rect* crop)
 {
+    _pico_guard();
     assert(key!=NULL      && "sub-layer key required");
     assert(parent!=NULL   && "parent key required");
     assert(crop!=NULL     && "crop rect required");
@@ -1076,12 +1121,14 @@ void pico_layer_sub_mode (int mode, const char* key,
 void pico_layer_text (
     const char* key, int height, const char* text
 ) {
+    _pico_guard();
     pico_layer_text_mode('!', key, height, text);
 }
 
 void pico_layer_text_mode (
     int mode, const char* key, int height, const char* text
 ) {
+    _pico_guard();
     assert(key!=NULL && "layer key required");
     _pico_layer_text(mode, key, height, text);
 }
@@ -1258,6 +1305,7 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
 }
 
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
+    _pico_guard();
     int t0 = SDL_GetTicks();
     while (1) {
         Pico_Event out;
@@ -1294,6 +1342,7 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 }
 
 int pico_input_event (Pico_Event* evt, int type) {
+    _pico_guard();
     if (S.expert.fps == 0) {
         return pico_input_event_timeout(evt, type, -1);
     } else if (S.expert.fps == -1) {
@@ -1320,10 +1369,12 @@ int pico_input_event (Pico_Event* evt, int type) {
 }
 
 int pico_input_delay (int ms) {
+    _pico_guard();
     return pico_input_event_timeout(NULL, PICO_EVENT_NONE, ms);
 }
 
 void pico_input_loop (void) {
+    _pico_guard();
     pico_input_event(NULL, PICO_EVENT_QUIT);
 }
 
@@ -1332,6 +1383,7 @@ void pico_input_loop (void) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void pico_output_clear (void) {
+    _pico_guard();
     SDL_SetRenderDrawColor(G.ren,
         S.color.clear.r, S.color.clear.g, S.color.clear.b, 0xFF);
     SDL_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
@@ -1345,12 +1397,14 @@ void pico_output_draw_buffer (
     const Pico_Color_A buffer[],
     const Pico_Rel_Rect* rect
 ) {
+    _pico_guard();
     assert(key!=NULL && "layer key required");
     pico_layer_buffer_mode('=', key, dim, buffer);
     pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
+    _pico_guard();
     Pico_Layer* layer = _pico_layer_image('=', NULL, path);
     Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h}, rect->up };
     Pico_Abs_Dim* orig = (rel.w==0 || rel.h==0) ? &layer->view.dim : NULL;
@@ -1361,6 +1415,7 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
 }
 
 void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect) {
+    _pico_guard();
     assert(key!=NULL && "layer key required");
 
     Pico_Layer* layer = (Pico_Layer*)realm_get(
@@ -1371,6 +1426,7 @@ void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect) {
 }
 
 void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
+    _pico_guard();
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     Pico_Abs_Pos i1 = pico_cv_pos_rel_abs(p1, NULL);
@@ -1380,6 +1436,7 @@ void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
 }
 
 void pico_output_draw_oval (Pico_Rel_Rect* rect) {
+    _pico_guard();
     Pico_Abs_Rect i = pico_cv_rect_rel_abs(rect, NULL);
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
@@ -1401,6 +1458,7 @@ void pico_output_draw_oval (Pico_Rel_Rect* rect) {
 }
 
 void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
+    _pico_guard();
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
     Pico_Abs_Pos i = pico_cv_pos_rel_abs(pos, NULL);
@@ -1410,6 +1468,7 @@ void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
 }
 
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
+    _pico_guard();
     SDL_Point vs[n];
     for (int i=0; i<n; i++) {
         vs[i] = pico_cv_pos_rel_abs(&ps[i], NULL);
@@ -1421,6 +1480,7 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
 }
 
 void pico_output_draw_rect (Pico_Rel_Rect* rect) {
+    _pico_guard();
     SDL_SetRenderDrawColor(G.ren,
         S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
 
@@ -1437,6 +1497,7 @@ void pico_output_draw_rect (Pico_Rel_Rect* rect) {
 }
 
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
+    _pico_guard();
     Sint16 xs[n], ys[n];
     for (int i=0; i<n; i++) {
         Pico_Abs_Pos v = pico_cv_pos_rel_abs(&ps[i], NULL);
@@ -1463,6 +1524,7 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
 }
 
 void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
+    _pico_guard();
     pico_output_draw_text_mode('=', NULL, text, rect);
 }
 
@@ -1470,6 +1532,7 @@ void pico_output_draw_text_mode (
     int mode, const char* key,
     const char* text, Pico_Rel_Rect* rect
 ) {
+    _pico_guard();
     if (text[0] == '\0') return;
 
     assert(rect->h != 0);
@@ -1487,6 +1550,7 @@ void pico_output_draw_text_mode (
 void pico_output_draw_tri (
     Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3
 ) {
+    _pico_guard();
     Pico_Abs_Pos i1 = pico_cv_pos_rel_abs(p1, NULL);
     Pico_Abs_Pos i2 = pico_cv_pos_rel_abs(p2, NULL);
     Pico_Abs_Pos i3 = pico_cv_pos_rel_abs(p3, NULL);
@@ -1660,6 +1724,7 @@ static void _pico_output_present (int force) {
 }
 
 void pico_output_present (void) {
+    _pico_guard();
     assert(S.layer==&G.main && "can only present from main layer");
     _pico_output_present(1);
 }
@@ -1686,6 +1751,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 }
 
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect) {
+    _pico_guard();
     assert(S.layer == &G.main);
     Pico_Abs_Rect phy = {0, 0, S.win.dim.w, S.win.dim.h};
     SDL_Rect ri = (rect == NULL) ? phy : pico_cv_rect_rel_abs(rect, &phy);
@@ -1723,6 +1789,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
 }
 
 void pico_output_sound (const char* path) {
+    _pico_guard();
     _pico_output_sound_cache(path, 1);
 }
 

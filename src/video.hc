@@ -130,12 +130,14 @@ static Pico_Layer_Video* _pico_layer_video (
 }
 
 void pico_layer_video (const char* key, const char* path) {
+    _pico_guard();
     pico_layer_video_mode('!', key, path);
 }
 
 void pico_layer_video_mode (
     int mode, const char* key, const char* path
 ) {
+    _pico_guard();
     assert(path != NULL && "video path required");
 
     Pico_Layer_Video* vs =
@@ -146,6 +148,7 @@ void pico_layer_video_mode (
 ///////////////////////////////////////////////////////////////////////////////
 
 Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
+    _pico_guard();
     Pico_Layer_Video* vs =
         _pico_layer_video('=', path, path);
     pico_assert(vs != NULL);
@@ -173,6 +176,7 @@ Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
 }
 
 int pico_set_video (const char* key, int frame) {
+    _pico_guard();
     assert(key != NULL && "layer key required");
 
     /* Find layer by key */
