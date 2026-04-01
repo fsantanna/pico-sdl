@@ -1038,23 +1038,19 @@ detection.
 The `pico.cv` functions convert relative coordinates to absolute:
 
 ```lua
-> pos = pico.cv.pos { '%', x=0.5, y=0.5 }
-> print(pos.x, pos.y)
+> pos = pico.cv.pos { '%', x=0.5, y=0.5 } ; print(pos.x, pos.y)
 50   50
 ```
 
 ```lua
-> rect = pico.cv.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
-> print(rect.x, rect.y, rect.w, rect.h)
+> rect = pico.cv.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' } ; print(rect.x, rect.y, rect.w, rect.h)
 35   35   30   30
 ```
 
 An optional `base` rectangle can serve as the reference frame:
 
 ```lua
-> base = { '!', x=0, y=0, w=50, h=50 }
-> pos = pico.cv.pos({'%', x=0.5, y=0.5}, base)
-> print(pos.x, pos.y)
+> base = { '!', x=0, y=0, w=50, h=50 } ; pos = pico.cv.pos({'%', x=0.5, y=0.5}, base) ; print(pos.x, pos.y)
 25   25
 ```
 
@@ -1088,7 +1084,7 @@ To save a screenshot of the current window, we call
 > pico.init(false) ; pico.init(true)
 > pico.set.color.draw 'red'
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
-> pico.output.screenshot('my-screenshot.png')
+> pico.output.screenshot('guide-11-01-screenshot.png')
 </pre>
 </td><td>
 <img src="img/guide-11-01-01.png" width="200">
@@ -1100,7 +1096,7 @@ An optional rectangle crops the screenshot:
 <table>
 <tr><td><pre>
 > pico.output.screenshot (
-    'crop.png',
+    'guide-11-01-crop.png',
     {'%', x=0.5, y=0.5, w=0.25, h=0.25},
   )
 </pre>
@@ -1114,7 +1110,7 @@ An optional rectangle crops the screenshot:
 To play a sound file:
 
 ```lua
-> pico.output.sound('path/to/sound.wav')
+> pico.output.sound('img/beep.wav')
 ```
 
 ### 11.3. Fullscreen Mode
@@ -1134,7 +1130,6 @@ To leave fullscreen mode:
 The current fullscreen state can be queried with `pico.get.window()`:
 
 ```lua
-> w = pico.get.window()
-> print(w.fullscreen)
+> w = pico.get.window() ; print(w.fullscreen)
 false
 ```
