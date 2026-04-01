@@ -636,7 +636,7 @@ int pico_get_alpha (void) {
 }
 
 Pico_Color pico_get_color_clear (void) {
-    return (Pico_Color) { S.color.clear.r, S.color.clear.g, S.color.clear.b };
+    return _pico_color(S.color.clear);
 }
 
 Pico_Color_A pico_get_color_clear_alpha (void) {

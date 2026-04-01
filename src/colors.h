@@ -38,6 +38,10 @@ extern const Pico_Color PICO_COLOR_OLIVE;
 
 extern const Pico_Color_A PICO_COLOR_TRANSPARENT;
 
+static inline Pico_Color _pico_color (Pico_Color_A c) {
+    return (Pico_Color) { c.r, c.g, c.b };
+}
+
 #endif // PICO_COLORS_H
 
 #ifdef PICO_COLORS_C

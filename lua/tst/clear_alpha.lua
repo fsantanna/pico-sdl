@@ -8,10 +8,10 @@ pico.set.view { dim={'!', w=64, h=36} }
 pico.set.color.clear({'!', r=0xFF, g=0x00, b=0x00})
 pico.output.clear()
 
--- overlay layer: blue clear (opaque), white rect
+-- overlay layer: blue clear (semi-transparent), white rect
 pico.layer.empty('!', "overlay", {w=64, h=36})
 pico.set.layer("overlay")
-pico.set.color.clear({'!', r=0x00, g=0x00, b=0xFF})
+pico.set.color.clear({'!', r=0x00, g=0x00, b=0xFF, a=0x80})
 pico.output.clear()
 pico.set.color.draw('white')
 pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
