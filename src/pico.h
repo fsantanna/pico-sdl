@@ -268,6 +268,10 @@ void pico_output_sound (const char* path);
 
 // GET
 
+/// @brief Gets the alpha transparency for drawing operations.
+/// @return alpha value (0: transparent; 255: opaque)
+int pico_get_alpha (void);
+
 /// @brief Gets the color set to clear the screen.
 /// @return the current clear color
 Pico_Color pico_get_color_clear (void);

@@ -631,6 +631,10 @@ void pico_quit (void) {
 // GET
 ///////////////////////////////////////////////////////////////////////////////
 
+int pico_get_alpha (void) {
+    return S.alpha;
+}
+
 Pico_Color pico_get_color_clear (void) {
     return S.color.clear;
 }
@@ -1519,8 +1523,8 @@ void pico_output_draw_tri (
 static void _show_grid (void) {
     if (!S.layer->view.grid) return;
 
-    Pico_Color x_clr = S.color.draw;
-    int x_alpha = S.alpha;
+    Pico_Color x_clr   = pico_get_color_draw();
+    int        x_alpha = pico_get_alpha();
     pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77});
 
     // grid lines
@@ -1551,6 +1555,7 @@ static void _show_grid (void) {
 
     // metric labels
     {
+        pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77});
         pico_set_alpha(0xFF);
         int H = 10;
         SDL_Rect src = pico_cv_rect_rel_abs (
@@ -1588,16 +1593,16 @@ static void _show_grid (void) {
         }
     }
 
-    S.color.draw = x_clr;
-    S.alpha = x_alpha;
+    pico_set_color_draw(x_clr);
+    pico_set_alpha(x_alpha);
 }
 
 static void _show_tile (Pico_View* view, SDL_Rect dst) {
     if (view->tile.w<=0 || view->tile.h<=0) return;
 
-    Pico_Color x_clr   = S.color.draw;
-    int        x_alpha = S.alpha;
-    PICO_STYLE x_style = S.style;
+    Pico_Color x_clr   = pico_get_color_draw();
+    int        x_alpha = pico_get_alpha();
+    PICO_STYLE x_style = pico_get_style();
 
     pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0xFF});
     pico_set_alpha(0xAA);
@@ -1628,9 +1633,9 @@ static void _show_tile (Pico_View* view, SDL_Rect dst) {
         &(Pico_Rel_Rect){ '!', {dst.x, dst.y, dst.w, dst.h}, PICO_ANCHOR_NW, NULL }
     );
 
-    S.color.draw = x_clr;
-    S.alpha      = x_alpha;
-    S.style      = x_style;
+    pico_set_color_draw(x_clr);
+    pico_set_alpha(x_alpha);
+    pico_set_style(x_style);
 }
 
 static void _pico_output_present (int force) {
