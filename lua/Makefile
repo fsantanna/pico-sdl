@@ -12,6 +12,12 @@ pico_native.so: ../src/pico.c pico.c
 test: pico_native.so
 	$(TST) tst/$(T).lua
 
+lua: pico_native.so
+	$(LUA) ./pico-lua tst/$(T).lua
+
+todo: pico_native.so
+	LUA_CPATH="../../pico/?.so;" LUA_PATH="../../?/init.lua;../../?.lua;" ./pico-lua tst/todo/$(T).lua
+
 int: pico_native.so
 	$(INT) tst/$(T).lua
 
