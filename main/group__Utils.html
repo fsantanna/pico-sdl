@@ -119,6 +119,9 @@ Functions</h2></td></tr>
 <tr class="separator:gac0774fc76dbc6a3f2ab709f7185730ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad5d85563550d8d427eef332b7b7e2a1a" id="r_gad5d85563550d8d427eef332b7b7e2a1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color__A.html">Pico_Color_A</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#gad5d85563550d8d427eef332b7b7e2a1a">pico_color_alpha</a> (<a class="el" href="structPico__Color.html">Pico_Color</a> clr, Uint8 a)</td></tr>
 <tr class="separator:gad5d85563550d8d427eef332b7b7e2a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa16014db379c76a6671269de6bef495e" id="r_gaa16014db379c76a6671269de6bef495e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color.html">Pico_Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#gaa16014db379c76a6671269de6bef495e">pico_color_hex</a> (uint32_t hex)</td></tr>
+<tr class="memdesc:gaa16014db379c76a6671269de6bef495e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a hex integer (0xRRGGBB) to a color.  <br /></td></tr>
+<tr class="separator:gaa16014db379c76a6671269de6bef495e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Utilities for users. </p>
@@ -187,6 +190,36 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the darkened color </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#ga17883d15d58697c7a96ab8e737d5b5ca" title="Makes a color lighter by the specified percentage.">pico_color_lighter</a> </dd></dl>
+
+</div>
+</div>
+<a id="gaa16014db379c76a6671269de6bef495e" name="gaa16014db379c76a6671269de6bef495e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa16014db379c76a6671269de6bef495e">&#9670;&#160;</a></span>pico_color_hex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structPico__Color.html">Pico_Color</a> pico_color_hex </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>hex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts a hex integer (0xRRGGBB) to a color. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hex</td><td>the color as a 24-bit integer (e.g. 0xFF0000 for red) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the corresponding color </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#ga8e3939c60494441a270b650349cded90" title="Makes a color darker by the specified percentage.">pico_color_darker</a> </dd>
+<dd>
+<a class="el" href="group__Utils.html#ga17883d15d58697c7a96ab8e737d5b5ca" title="Makes a color lighter by the specified percentage.">pico_color_lighter</a> </dd></dl>
 
 </div>
 </div>

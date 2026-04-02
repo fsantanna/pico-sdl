@@ -773,14 +773,21 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span> </div>
 <div class="line"><a id="l00674" name="l00674"></a><span class="lineno"><a class="line" href="group__Utils.html#gad5d85563550d8d427eef332b7b7e2a1a">  674</a></span><a class="code hl_struct" href="structPico__Color__A.html">Pico_Color_A</a> <a class="code hl_function" href="group__Utils.html#gad5d85563550d8d427eef332b7b7e2a1a">pico_color_alpha</a> (<a class="code hl_struct" href="structPico__Color.html">Pico_Color</a> clr, Uint8 a);</div>
 <div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span><span class="comment"></span> </div>
-<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span><span class="comment">/// @}</span></div>
-<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span><span class="comment"></span> </div>
-<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span>}</div>
-<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span> </div>
-<div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span><span class="preprocessor">#endif </span><span class="comment">// PICO_H</span></div>
-<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span> </div>
+<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span><span class="comment">/// @brief Converts a hex integer (0xRRGGBB) to a color.</span></div>
+<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span><span class="comment">/// @param hex the color as a 24-bit integer (e.g. 0xFF0000 for red)</span></div>
+<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span><span class="comment">/// @return the corresponding color</span></div>
+<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span><span class="comment">/// @sa pico_color_darker</span></div>
+<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span><span class="comment">/// @sa pico_color_lighter</span></div>
+<div class="line"><a id="l00681" name="l00681"></a><span class="lineno"><a class="line" href="group__Utils.html#gaa16014db379c76a6671269de6bef495e">  681</a></span><span class="comment"></span><a class="code hl_struct" href="structPico__Color.html">Pico_Color</a> <a class="code hl_function" href="group__Utils.html#gaa16014db379c76a6671269de6bef495e">pico_color_hex</a> (uint32_t hex);</div>
+<div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span><span class="comment"></span> </div>
+<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span><span class="comment">/// @}</span></div>
+<div class="line"><a id="l00684" name="l00684"></a><span class="lineno">  684</span><span class="comment"></span> </div>
+<div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span>}</div>
+<div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span> </div>
+<div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span><span class="preprocessor">#endif </span><span class="comment">// PICO_H</span></div>
+<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span> </div>
 <div class="ttc" id="agroup__Init_html_ga23af6ecbe77adf45ef2866252cb5b85e"><div class="ttname"><a href="group__Init.html#ga23af6ecbe77adf45ef2866252cb5b85e">pico_quit</a></div><div class="ttdeci">void pico_quit(void)</div><div class="ttdoc">Pushes a quit event.</div></div>
 <div class="ttc" id="agroup__Init_html_gab655caa50f1f8060182dc24f2d11e589"><div class="ttname"><a href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a></div><div class="ttdeci">void pico_init(int on)</div><div class="ttdoc">Initializes and terminates pico.</div></div>
 <div class="ttc" id="agroup__Input_html_gaac73f67a4c321eda57b199bf53495979"><div class="ttname"><a href="group__Input.html#gaac73f67a4c321eda57b199bf53495979">pico_input_loop</a></div><div class="ttdeci">void pico_input_loop(void)</div><div class="ttdoc">Blocks in an event loop until the window is closed. Equivalent to pico_input_event(NULL,...</div></div>
@@ -867,6 +874,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="agroup__Utils_html_ga8e3939c60494441a270b650349cded90"><div class="ttname"><a href="group__Utils.html#ga8e3939c60494441a270b650349cded90">pico_color_darker</a></div><div class="ttdeci">Pico_Color pico_color_darker(Pico_Color clr, float pct)</div><div class="ttdoc">Makes a color darker by the specified percentage.</div></div>
 <div class="ttc" id="agroup__Utils_html_ga9155824b4a13d2274c9b51822d40e4ba"><div class="ttname"><a href="group__Utils.html#ga9155824b4a13d2274c9b51822d40e4ba">pico_cv_rect_rel_rel</a></div><div class="ttdeci">void pico_cv_rect_rel_rel(const Pico_Rel_Rect *fr, Pico_Rel_Rect *to, Pico_Abs_Rect *base)</div><div class="ttdoc">Converts a relative rectangle to another relative mode.</div></div>
 <div class="ttc" id="agroup__Utils_html_ga9fc0b888b391e5b9e274c09fe27a6b64"><div class="ttname"><a href="group__Utils.html#ga9fc0b888b391e5b9e274c09fe27a6b64">pico_vs_rect_rect</a></div><div class="ttdeci">int pico_vs_rect_rect(Pico_Rel_Rect *r1, Pico_Rel_Rect *r2)</div><div class="ttdoc">Checks if two rectangles overlap.</div></div>
+<div class="ttc" id="agroup__Utils_html_gaa16014db379c76a6671269de6bef495e"><div class="ttname"><a href="group__Utils.html#gaa16014db379c76a6671269de6bef495e">pico_color_hex</a></div><div class="ttdeci">Pico_Color pico_color_hex(uint32_t hex)</div><div class="ttdoc">Converts a hex integer (0xRRGGBB) to a color.</div></div>
 <div class="ttc" id="agroup__Utils_html_gaa56255c9955ee7601ec6058cf04efd59"><div class="ttname"><a href="group__Utils.html#gaa56255c9955ee7601ec6058cf04efd59">pico_cv_pos_rel_abs</a></div><div class="ttdeci">Pico_Abs_Pos pico_cv_pos_rel_abs(const Pico_Rel_Pos *pos, Pico_Abs_Rect *base)</div><div class="ttdoc">Converts a relative position to absolute coordinates.</div></div>
 <div class="ttc" id="agroup__Utils_html_gac0774fc76dbc6a3f2ab709f7185730ee"><div class="ttname"><a href="group__Utils.html#gac0774fc76dbc6a3f2ab709f7185730ee">pico_color_mix</a></div><div class="ttdeci">Pico_Color pico_color_mix(Pico_Color c1, Pico_Color c2)</div><div class="ttdoc">Mixes two colors by averaging their RGB components.</div></div>
 <div class="ttc" id="agroup__Utils_html_gac5200d32b98c4d4252f99ce4a2c5ce88"><div class="ttname"><a href="group__Utils.html#gac5200d32b98c4d4252f99ce4a2c5ce88">pico_cv_pos_rel_rel</a></div><div class="ttdeci">void pico_cv_pos_rel_rel(const Pico_Rel_Pos *fr, Pico_Rel_Pos *to, Pico_Abs_Rect *base)</div><div class="ttdoc">Converts a relative position to another relative mode.</div></div>
