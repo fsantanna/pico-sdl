@@ -147,9 +147,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga8b57db112b8ec986958d5c15b2c854b2" id="r_ga8b57db112b8ec986958d5c15b2c854b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Keyboard.html">Pico_Keyboard</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga8b57db112b8ec986958d5c15b2c854b2">pico_get_keyboard</a> (void)</td></tr>
 <tr class="memdesc:ga8b57db112b8ec986958d5c15b2c854b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the keyboard state (current modifier flags).  <br /></td></tr>
 <tr class="separator:ga8b57db112b8ec986958d5c15b2c854b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga68539917cdd485f021786510f57bc1bc" id="r_ga68539917cdd485f021786510f57bc1bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Mouse.html">Pico_Mouse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga68539917cdd485f021786510f57bc1bc">pico_get_mouse</a> (char mode)</td></tr>
-<tr class="memdesc:ga68539917cdd485f021786510f57bc1bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mouse state.  <br /></td></tr>
-<tr class="separator:ga68539917cdd485f021786510f57bc1bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9118ded7c1e3371e741c51235a4c151a" id="r_ga9118ded7c1e3371e741c51235a4c151a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Mouse.html">Pico_Mouse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga9118ded7c1e3371e741c51235a4c151a">pico_get_mouse</a> (char mode, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
+<tr class="memdesc:ga9118ded7c1e3371e741c51235a4c151a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mouse state.  <br /></td></tr>
+<tr class="separator:ga9118ded7c1e3371e741c51235a4c151a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga20838f46d25a4201f8e9c20f800c244c" id="r_ga20838f46d25a4201f8e9c20f800c244c"><td class="memItemLeft" align="right" valign="top">Uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga20838f46d25a4201f8e9c20f800c244c">pico_get_now</a> (void)</td></tr>
 <tr class="memdesc:ga20838f46d25a4201f8e9c20f800c244c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the amount of ticks that passed since pico was initialized.  <br /></td></tr>
 <tr class="separator:ga20838f46d25a4201f8e9c20f800c244c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -435,8 +435,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga68539917cdd485f021786510f57bc1bc" name="ga68539917cdd485f021786510f57bc1bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga68539917cdd485f021786510f57bc1bc">&#9670;&#160;</a></span>pico_get_mouse()</h2>
+<a id="ga9118ded7c1e3371e741c51235a4c151a" name="ga9118ded7c1e3371e741c51235a4c151a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9118ded7c1e3371e741c51235a4c151a">&#9670;&#160;</a></span>pico_get_mouse()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -445,8 +445,18 @@ Functions</h2></td></tr>
           <td class="memname"><a class="el" href="structPico__Mouse.html">Pico_Mouse</a> pico_get_mouse </td>
           <td>(</td>
           <td class="paramtype">char&#160;</td>
-          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *&#160;</td>
+          <td class="paramname"><em>rect</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -455,6 +465,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">mode</td><td>coordinate mode ('!' pixels, '' percentage, '#' tiles, 'w' window, 0 uses default) </td></tr>
+    <tr><td class="paramname">rect</td><td>optional target rect for inverse transform (NULL for global coordinates, supports up chain) </td></tr>
   </table>
   </dd>
 </dl>

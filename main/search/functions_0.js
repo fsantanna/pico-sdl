@@ -21,7 +21,7 @@ var searchData=
   ['pico_5fget_5fimage_18',['pico_get_image',['../group__State.html#ga46901f637f0a1eea41572031c5d530c8',1,'pico.h']]],
   ['pico_5fget_5fkeyboard_19',['pico_get_keyboard',['../group__State.html#ga8b57db112b8ec986958d5c15b2c854b2',1,'pico.h']]],
   ['pico_5fget_5flayer_20',['pico_get_layer',['../group__State.html#ga7203c69b639b6d299213926b2bffd713',1,'pico.h']]],
-  ['pico_5fget_5fmouse_21',['pico_get_mouse',['../group__State.html#ga68539917cdd485f021786510f57bc1bc',1,'pico.h']]],
+  ['pico_5fget_5fmouse_21',['pico_get_mouse',['../group__State.html#ga9118ded7c1e3371e741c51235a4c151a',1,'pico.h']]],
   ['pico_5fget_5fnow_22',['pico_get_now',['../group__State.html#ga20838f46d25a4201f8e9c20f800c244c',1,'pico.h']]],
   ['pico_5fget_5fshow_23',['pico_get_show',['../group__State.html#ga3a6c89dfc0874a5f97d8e34359874cd5',1,'pico.h']]],
   ['pico_5fget_5fstyle_24',['pico_get_style',['../group__State.html#ga387b8f95c5803e2895880e24888d5b32',1,'pico.h']]],
