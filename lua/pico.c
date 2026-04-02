@@ -118,7 +118,7 @@ static Pico_Color_A c_color_s (lua_State* L, int i) {
     }
     Pico_Color* clr = lua_touserdata(L, -1);
     lua_pop(L, 3);
-    return pico_color_alpha(clr, 0xFF);
+    return pico_color_alpha(*clr, 0xFF);
 }
 
 static Pico_Color_A c_color_tis (lua_State* L, int i) {
