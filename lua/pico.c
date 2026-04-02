@@ -852,7 +852,7 @@ static int l_get_mouse (lua_State* L) {
         const char* s = luaL_checkstring(L, 1);
         mode = s[0];
     }
-    Pico_Mouse m = pico_get_mouse(mode);
+    Pico_Mouse m = pico_get_mouse(mode, NULL);
     lua_newtable(L);                            // t
     L_set_mouse(L, lua_gettop(L), &m);
     return 1;

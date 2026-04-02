@@ -407,13 +407,9 @@ Pico_Keyboard pico_get_keyboard (void);
 
 /// @brief Gets the mouse state.
 /// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window, 0 uses default)
+/// @param rect optional target rect for inverse transform (NULL for global coordinates, supports up chain)
 /// @return mouse state with position and button flags
-Pico_Mouse pico_get_mouse (char mode);
-
-/// @brief Gets the mouse state in the coordinate space of a rect.
-/// @param rect target rect (mode comes from rect->mode, supports up chain)
-/// @return mouse state with position and button flags
-Pico_Mouse pico_get_mouse_rect (Pico_Rel_Rect* rect);
+Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds

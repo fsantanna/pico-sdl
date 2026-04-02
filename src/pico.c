@@ -680,7 +680,7 @@ const char* pico_get_layer (void) {
     return S.layer->name;
 }
 
-Pico_Mouse pico_get_mouse (char mode) {
+Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
     _pico_guard();
     if (mode == 0) {
         mode = S.mouse;
@@ -701,7 +701,7 @@ Pico_Mouse pico_get_mouse (char mode) {
         m.y = phy.y;
     } else {
         SDL_FPoint log = _cv_phy_log(phy);
-        Pico_Rel_Pos rel = { .mode = mode, .anchor = PICO_ANCHOR_NW, .up = NULL };
+        Pico_Rel_Pos rel = { .mode = mode, .anchor = PICO_ANCHOR_NW, .up = rect };
         _cv_pos_flt_rel(log, &rel, NULL);
         m.x = rel.x;
         m.y = rel.y;
@@ -1294,7 +1294,7 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
         case PICO_EVENT_MOUSE_MOTION:
         case PICO_EVENT_MOUSE_BUTTON_DN:
         case PICO_EVENT_MOUSE_BUTTON_UP:
-            pico->mouse = pico_get_mouse(0);
+            pico->mouse = pico_get_mouse(0, NULL);
             break;
 
         default:
