@@ -172,6 +172,54 @@ int main (void) {
         _pico_check("colors-06");
     }
 
+    puts("hex color format");
+    {
+        pico_output_clear();
+
+        pico_set_color_draw(pico_color_hex(0xFF0000));
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, C, NULL });
+
+        pico_set_color_draw(pico_color_hex(0x00FF00));
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.30, 0.8, 0.1}, C, NULL });
+
+        pico_set_color_draw(pico_color_hex(0x0000FF));
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.45, 0.8, 0.1}, C, NULL });
+
+        pico_set_color_draw(pico_color_hex(0x7F7F7F));
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.60, 0.8, 0.1}, C, NULL });
+
+        pico_set_color_draw(pico_color_hex(0xFFFF00));
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, C, NULL });
+
+        pico_set_color_draw(pico_color_hex(0x00FFFF));
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.90, 0.8, 0.1}, C, NULL });
+
+        _pico_check("colors-06");
+    }
+
+    puts("hex color conversion");
+    {
+        Pico_Color c;
+
+        c = pico_color_hex(0xFF0000);
+        assert(c.r==255 && c.g==0 && c.b==0);
+
+        c = pico_color_hex(0x00FF00);
+        assert(c.r==0 && c.g==255 && c.b==0);
+
+        c = pico_color_hex(0x0000FF);
+        assert(c.r==0 && c.g==0 && c.b==255);
+
+        c = pico_color_hex(0x336699);
+        assert(c.r==0x33 && c.g==0x66 && c.b==0x99);
+
+        c = pico_color_hex(0x000000);
+        assert(c.r==0 && c.g==0 && c.b==0);
+
+        c = pico_color_hex(0xFFFFFF);
+        assert(c.r==255 && c.g==255 && c.b==255);
+    }
+
     puts("color alpha function");
     {
         pico_set_color_clear(PICO_COLOR_WHITE);
