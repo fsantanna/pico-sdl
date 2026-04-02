@@ -410,6 +410,11 @@ Pico_Keyboard pico_get_keyboard (void);
 /// @return mouse state with position and button flags
 Pico_Mouse pico_get_mouse (char mode);
 
+/// @brief Gets the mouse state in the coordinate space of a rect.
+/// @param rect target rect (mode comes from rect->mode, supports up chain)
+/// @return mouse state with position and button flags
+Pico_Mouse pico_get_mouse_rect (Pico_Rel_Rect* rect);
+
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds
 Uint32 pico_get_now (void);
