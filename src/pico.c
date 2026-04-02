@@ -818,7 +818,7 @@ void pico_set_alpha (int a) {
 }
 
 void pico_set_color_clear (Pico_Color color) {
-    S.color.clear = (Pico_Color_A) { color.r, color.g, color.b, 0xFF };
+    S.color.clear = pico_color_alpha(color, 0xFF);
 }
 
 void pico_set_color_clear_alpha (Pico_Color_A color) {

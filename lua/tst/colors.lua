@@ -136,6 +136,53 @@ do
 end
 
 do
+    print("hex color format")
+    pico.output.clear()
+
+    pico.set.color.draw(0xFF0000)
+    pico.output.draw.rect({'%', x=0.5, y=0.15, w=0.8, h=0.1})
+
+    pico.set.color.draw(0x00FF00)
+    pico.output.draw.rect({'%', x=0.5, y=0.30, w=0.8, h=0.1})
+
+    pico.set.color.draw(0x0000FF)
+    pico.output.draw.rect({'%', x=0.5, y=0.45, w=0.8, h=0.1})
+
+    pico.set.color.draw(0x7F7F7F)
+    pico.output.draw.rect({'%', x=0.5, y=0.60, w=0.8, h=0.1})
+
+    pico.set.color.draw(0xFFFF00)
+    pico.output.draw.rect({'%', x=0.5, y=0.75, w=0.8, h=0.1})
+
+    pico.set.color.draw(0x00FFFF)
+    pico.output.draw.rect({'%', x=0.5, y=0.90, w=0.8, h=0.1})
+
+    pico.check("colors-06")
+end
+
+do
+    print("hex color conversion")
+
+    local c = pico.color.darker(0xFF0000, 0)
+    assert(c.r==255 and c.g==0 and c.b==0)
+
+    c = pico.color.darker(0x00FF00, 0)
+    assert(c.r==0 and c.g==255 and c.b==0)
+
+    c = pico.color.darker(0x0000FF, 0)
+    assert(c.r==0 and c.g==0 and c.b==255)
+
+    c = pico.color.darker(0x336699, 0)
+    assert(c.r==0x33 and c.g==0x66 and c.b==0x99)
+
+    c = pico.color.darker(0x000000, 0)
+    assert(c.r==0 and c.g==0 and c.b==0)
+
+    c = pico.color.darker(0xFFFFFF, 0)
+    assert(c.r==255 and c.g==255 and c.b==255)
+end
+
+do
     print("color alpha function")
     pico.set.color.clear('white')
     pico.output.clear()

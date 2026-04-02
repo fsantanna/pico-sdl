@@ -118,7 +118,7 @@ static Pico_Color_A c_color_s (lua_State* L, int i) {
     }
     Pico_Color* clr = lua_touserdata(L, -1);
     lua_pop(L, 3);
-    return (Pico_Color_A) { clr->r, clr->g, clr->b, 0xFF };
+    return pico_color_alpha(clr, 0xFF);
 }
 
 static Pico_Color_A c_color_tis (lua_State* L, int i) {
@@ -126,11 +126,8 @@ static Pico_Color_A c_color_tis (lua_State* L, int i) {
     if (lua_type(L,i) == LUA_TSTRING) {
         return c_color_s(L, i);
     } else if (lua_isinteger(L, i)) {
-        uint32_t hex = (uint32_t)lua_tointeger(L, i);
-        uint8_t r = (hex >> 16) & 0xFF;
-        uint8_t g = (hex >> 8)  & 0xFF;
-        uint8_t b =  hex        & 0xFF;
-        return (Pico_Color) { r, g, b };
+        Pico_Color clr = pico_color_hex((uint32_t)lua_tointeger(L, i));
+        return pico_color_alpha(clr, 0xFF);
     } else {
         luaL_checktype(L, i, LUA_TTABLE);
         return c_color_t(L, i);
