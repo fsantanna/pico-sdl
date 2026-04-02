@@ -673,6 +673,13 @@ Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2);
 
 Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a);
 
+/// @brief Converts a hex integer (0xRRGGBB) to a color.
+/// @param hex the color as a 24-bit integer (e.g. 0xFF0000 for red)
+/// @return the corresponding color
+/// @sa pico_color_darker
+/// @sa pico_color_lighter
+Pico_Color pico_color_hex (uint32_t hex);
+
 /// @}
 
 #ifdef __cplusplus

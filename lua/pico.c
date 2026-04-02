@@ -118,13 +118,16 @@ static Pico_Color_A c_color_s (lua_State* L, int i) {
     }
     Pico_Color* clr = lua_touserdata(L, -1);
     lua_pop(L, 3);
-    return (Pico_Color_A) { clr->r, clr->g, clr->b, 0xFF };
+    return pico_color_alpha(clr, 0xFF);
 }
 
-static Pico_Color_A c_color_st (lua_State* L, int i) {
+static Pico_Color_A c_color_tis (lua_State* L, int i) {
     assert(i > 0);
     if (lua_type(L,i) == LUA_TSTRING) {
         return c_color_s(L, i);
+    } else if (lua_isinteger(L, i)) {
+        Pico_Color clr = pico_color_hex((uint32_t)lua_tointeger(L, i));
+        return pico_color_alpha(clr, 0xFF);
     } else {
         luaL_checktype(L, i, LUA_TTABLE);
         return c_color_t(L, i);
@@ -507,7 +510,7 @@ static void L_push_color_a (lua_State* L,
 }
 
 static int l_color_darker (lua_State* L) {
-    Pico_Color_A clr = c_color_st(L, 1);
+    Pico_Color_A clr = c_color_tis(L, 1);
     float pct = luaL_checknumber(L, 2);
     Pico_Color ret = pico_color_darker(_pico_color(clr), pct);
     L_push_color(L, ret);
@@ -515,7 +518,7 @@ static int l_color_darker (lua_State* L) {
 }
 
 static int l_color_lighter (lua_State* L) {
-    Pico_Color_A clr = c_color_st(L, 1);
+    Pico_Color_A clr = c_color_tis(L, 1);
     float pct = luaL_checknumber(L, 2);
     Pico_Color ret = pico_color_lighter(_pico_color(clr), pct);
     L_push_color(L, ret);
@@ -523,15 +526,15 @@ static int l_color_lighter (lua_State* L) {
 }
 
 static int l_color_mix (lua_State* L) {
-    Pico_Color_A c1 = c_color_st(L, 1);
-    Pico_Color_A c2 = c_color_st(L, 2);
+    Pico_Color_A c1 = c_color_tis(L, 1);
+    Pico_Color_A c2 = c_color_tis(L, 2);
     Pico_Color ret = pico_color_mix(_pico_color(c1), _pico_color(c2));
     L_push_color(L, ret);
     return 1;
 }
 
 static int l_color_alpha (lua_State* L) {
-    Pico_Color_A clr = c_color_st(L, 1);
+    Pico_Color_A clr = c_color_tis(L, 1);
     int a = luaL_checkinteger(L, 2);
     Pico_Color_A ret = pico_color_alpha(_pico_color(clr), a);
     L_push_color_a(L, ret);
@@ -915,13 +918,13 @@ static int l_set_expert (lua_State* L) {
 }
 
 static int l_set_color_clear (lua_State* L) {
-    Pico_Color_A clr = c_color_st(L, 1);
+    Pico_Color_A clr = c_color_tis(L, 1);
     pico_set_color_clear_alpha(clr);
     return 0;
 }
 
 static int l_set_color_draw (lua_State* L) {
-    Pico_Color_A clr = c_color_st(L, 1);
+    Pico_Color_A clr = c_color_tis(L, 1);
     pico_set_color_draw(_pico_color(clr));
     return 0;
 }

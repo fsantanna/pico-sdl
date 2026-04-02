@@ -512,6 +512,13 @@ Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
     return (Pico_Color_A) { clr.r, clr.g, clr.b, a };
 }
 
+Pico_Color pico_color_hex (uint32_t hex) {
+    uint8_t r = (hex >> 16) & 0xFF;
+    uint8_t g = (hex >> 8)  & 0xFF;
+    uint8_t b =  hex        & 0xFF;
+    return (Pico_Color) { r, g, b };
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
@@ -811,7 +818,7 @@ void pico_set_alpha (int a) {
 }
 
 void pico_set_color_clear (Pico_Color color) {
-    S.color.clear = (Pico_Color_A) { color.r, color.g, color.b, 0xFF };
+    S.color.clear = pico_color_alpha(color, 0xFF);
 }
 
 void pico_set_color_clear_alpha (Pico_Color_A color) {
