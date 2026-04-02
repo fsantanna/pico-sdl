@@ -268,9 +268,17 @@ void pico_output_sound (const char* path);
 
 // GET
 
+/// @brief Gets the alpha transparency for drawing operations.
+/// @return alpha value (0: transparent; 255: opaque)
+int pico_get_alpha (void);
+
 /// @brief Gets the color set to clear the screen.
-/// @return the current clear color
+/// @return the current clear color (without alpha)
 Pico_Color pico_get_color_clear (void);
+
+/// @brief Gets the color and alpha set to clear the screen.
+/// @return the current clear color with alpha
+Pico_Color_A pico_get_color_clear_alpha (void);
 
 /// @brief Gets the color set to draw.
 /// @return the current draw color
@@ -478,9 +486,13 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 /// @param a alpha value (0: transparent; 255: opaque)
 void pico_set_alpha (int a);
 
-/// @brief Changes the color used to clear the screen.
+/// @brief Changes the color used to clear the screen (alpha set to 255).
 /// @param color new color
 void pico_set_color_clear (Pico_Color color);
+
+/// @brief Changes the color and alpha used to clear the screen.
+/// @param color new color with alpha
+void pico_set_color_clear_alpha (Pico_Color_A color);
 
 /// @brief Changes the color used to draw objects.
 /// @param color new color
@@ -661,6 +673,13 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct);
 Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2);
 
 Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a);
+
+/// @brief Converts a hex integer (0xRRGGBB) to a color.
+/// @param hex the color as a 24-bit integer (e.g. 0xFF0000 for red)
+/// @return the corresponding color
+/// @sa pico_color_darker
+/// @sa pico_color_lighter
+Pico_Color pico_color_hex (uint32_t hex);
 
 /// @}
 

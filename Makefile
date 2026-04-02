@@ -33,6 +33,7 @@ tests:
 	$(EXE) tst/blend_raw.c
 	$(EXE) tst/buffer_pct.c
 	$(EXE) tst/buffer_raw.c
+	$(EXE) tst/clear_alpha.c
 	$(EXE) tst/clip_pct.c
 	$(EXE) tst/clip_raw.c
 	$(EXE) tst/collide_pct.c
@@ -61,6 +62,7 @@ tests:
 	$(EXE) tst/size_raw.c
 	$(EXE) tst/style.c
 	$(EXE) tst/text_empty.c
+	$(EXE) tst/tile-grid.c
 	$(EXE) tst/tiles.c
 	$(EXE) tst/video.c
 	$(EXE) tst/view_raw.c
