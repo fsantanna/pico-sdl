@@ -847,15 +847,18 @@ static int l_get_keyboard (lua_State* L) {
 }
 
 static int l_get_mouse (lua_State* L) {
-    char mode = 0;
-    if (lua_gettop(L) >= 1) {
-        const char* s = luaL_checkstring(L, 1);
-        mode = s[0];
+    Pico_Mouse mouse;
+    const char* s = luaL_checkstring(L, 1);     // mode | [rect]
+    if (lua_gettop(L) == 1) {
+        mouse = pico_get_mouse(s[0], NULL);     // mode
+    } else {
+        luaL_checktype(L, 2, LUA_TTABLE);       // mode | rect
+        Pico_Rel_Rect* rect = c_rel_rect(L, 2);
+        mouse = pico_get_mouse(s[0], rect);
     }
-    Pico_Mouse m = pico_get_mouse(mode, NULL);
-    lua_newtable(L);                            // t
-    L_set_mouse(L, lua_gettop(L), &m);
-    return 1;
+    lua_newtable(L);                            // ... | mouse
+    L_set_mouse(L, lua_gettop(L), &mouse);
+    return 1;                                   // ... | *mouse*
 }
 
 ///////////////////////////////////////////////////////////////////////////////
