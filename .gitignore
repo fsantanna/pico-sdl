@@ -6,7 +6,7 @@
 *.zip
 
 .claude/ok
-.claude/worktrees/
+.work/
 
 .vscode/
 build/
