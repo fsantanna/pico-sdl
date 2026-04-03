@@ -27,6 +27,9 @@ gen:
 
 tests:
 	@echo "Running tests..."
+	./pico-sdl | grep -q "Usage: pico-sdl"
+	./pico-sdl --help | grep -q "Usage: pico-sdl"
+	./pico-sdl --version | grep -q "v0.4-dev"
 	$(EXE) tst/anchor_pct.c
 	$(EXE) tst/anchor_raw.c
 	$(EXE) tst/blend_pct.c

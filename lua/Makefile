@@ -22,7 +22,10 @@ int: pico_native.so
 	$(INT) tst/$(T).lua
 
 tests: pico_native.so
-	./pico-lua --version | grep -q v0.4-dev
+	@echo "Running tests..."
+	./pico-lua | grep -q "Usage: pico-lua"
+	./pico-lua --help | grep -q "Usage: pico-lua"
+	./pico-lua --version | grep -q "v0.4-dev"
 	$(TST) tst/anchor.lua
 	$(TST) tst/blend_pct.lua
 	$(TST) tst/blend_raw.lua
@@ -64,6 +67,8 @@ tests: pico_native.so
 	$(TST) tst/video.lua
 	$(TST) tst/view_raw.lua
 	$(TST) tst/vs.lua
+	@echo ""
+	@echo "All tests passed!"
 
 install: pico_native.so
 	cp pico-lua /usr/local/bin/
