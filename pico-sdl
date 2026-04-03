@@ -1,6 +1,20 @@
 #!/bin/sh
 
-# /x/y/pico-sdl /a/b/c/d.c
+VERSION=v0.4-dev
+
+if [ "$1" = --version ]; then
+    echo pico-sdl $VERSION
+    exit 0
+fi
+
+if [ $# -eq 0 ] || [ "$1" = --help ]; then
+    echo "Usage: pico-sdl [options] <file.c>"
+    echo ""
+    echo "Options:"
+    echo "  --help       Show this help"
+    echo "  --version    Show version"
+    exit 0
+fi
 
 PICO=$(dirname $(realpath "$0"))    # /x/y/
 
