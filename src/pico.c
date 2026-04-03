@@ -67,7 +67,7 @@ static struct { // internal global state
     realm_t*      realm;
     Pico_Layer    main;
     SDL_Renderer* ren;
-    int           tgt;
+    int           presenting;
     SDL_Window*   win;
 } G = { 0 };
 
@@ -201,8 +201,8 @@ static SDL_FDim _sdl_dim (
     if (base == NULL) {
         r0 = (SDL_FRect) {
             0, 0,
-            (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
-            (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
+            (dim->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
+            (dim->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
         };
     } else {
         r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
@@ -210,6 +210,7 @@ static SDL_FDim _sdl_dim (
     SDL_FRect r1 = _f1(dim->up, r0, NULL);
     SDL_FDim ret;
     switch (dim->mode) {
+        case 'w':
         case '!':
             ret = _f3(dim->w, dim->h, ratio);
             if (dim->w == 0) dim->w = ret.w;
@@ -240,14 +241,15 @@ static SDL_FPoint _sdl_pos (
     if (base == NULL) {
         r0 = (SDL_FRect) {
             0, 0,
-            (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
-            (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
+            (pos->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
+            (pos->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
         };
     } else {
         r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
     }
     SDL_FRect r1 = _f1(pos->up, r0, NULL);
     switch (pos->mode) {
+        case 'w':
         case '!':
             ret = (SDL_FPoint) {
                 r1.x + pos->x - pos->anchor.x,
@@ -275,21 +277,22 @@ static SDL_FPoint _sdl_pos (
 static SDL_FRect _sdl_rect (
     const Pico_Rel_Rect* rect,
     const Pico_Abs_Rect* base,
-    const Pico_Abs_Dim* ratio
+    const Pico_Abs_Dim*  ratio
 ) {
     SDL_FRect ret;
     SDL_FRect r0;
     if (base == NULL) {
         r0 = (SDL_FRect) {
             0, 0,
-            (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
-            (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
+            (rect->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
+            (rect->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
         };
     } else {
         r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
     }
     SDL_FRect r1 = _f1(rect->up, r0, NULL);
     switch (rect->mode) {
+        case 'w':
         case '!': {
             SDL_FDim d = _f3(rect->w, rect->h, ratio);
             ret = (SDL_FRect) {
@@ -375,8 +378,8 @@ static void _cv_pos_flt_rel (SDL_FPoint fr, Pico_Rel_Pos* to, Pico_Abs_Rect* bas
     if (base == NULL) {
         r0 = (SDL_FRect) {
             0, 0,
-            (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
-            (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
+            (to->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
+            (to->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
         };
     } else {
         r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
@@ -386,6 +389,7 @@ static void _cv_pos_flt_rel (SDL_FPoint fr, Pico_Rel_Pos* to, Pico_Abs_Rect* bas
     SDL_FRect r1 = _f1(up_rect, r0, NULL);
 
     switch (to->mode) {
+        case 'w':
         case '!':
             to->x = fr.x - r1.x + to->anchor.x;
             to->y = fr.y - r1.y + to->anchor.y;
@@ -423,8 +427,8 @@ void pico_cv_rect_abs_rel (
     if (base == NULL) {
         r0 = (SDL_FRect) {
             0, 0,
-            (G.tgt == 0) ? S.win.dim.w : S.layer->view.dim.w,
-            (G.tgt == 0) ? S.win.dim.h : S.layer->view.dim.h,
+            (to->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
+            (to->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
         };
     } else {
         r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
@@ -433,6 +437,7 @@ void pico_cv_rect_abs_rel (
     SDL_FRect r1 = _f1(to->up, r0, NULL);
 
     switch (to->mode) {
+        case 'w':
         case '!':
             to->w = fr->w;
             to->h = fr->h;
@@ -555,7 +560,6 @@ void pico_init (int on) {
                 },
             },
             .ren = NULL,        // needs G.win
-            .tgt = 1,
             .win = SDL_CreateWindow (
                        PICO_TITLE,
                        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -1030,9 +1034,9 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
     if (dim != NULL) {
         assert(fs==-1 && !S.win.fs);
         assert(dim->mode!='%' && dim->up==NULL);
-        G.tgt = 0;
-        Pico_Abs_Dim di = pico_cv_dim_rel_abs(dim, NULL);
-        G.tgt = 1;
+        Pico_Abs_Dim di = pico_cv_dim_rel_abs (
+            dim, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+        );
         S.win.dim = di;
         SDL_SetWindowSize(G.win, di.w, di.h);
     }
@@ -1707,7 +1711,7 @@ static void _show_tile (Pico_View* view, SDL_Rect dst) {
 }
 
 static void _pico_output_present (int force) {
-    if (G.tgt == 0) {
+    if (G.presenting) {
         return;
     } else if (force) {
         // ok
@@ -1720,7 +1724,7 @@ static void _pico_output_present (int force) {
         return;
     }
 
-    G.tgt = 0;
+    G.presenting = 1;
     SDL_SetRenderTarget(G.ren, NULL);
     SDL_SetRenderDrawColor(G.ren, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(G.ren);
@@ -1762,7 +1766,7 @@ static void _pico_output_present (int force) {
             &(Pico_Abs_Rect){0, 0, G.main.view.dim.w, G.main.view.dim.h}
         );
         SDL_Rect dst = pico_cv_rect_rel_abs (
-            &G.main.view.dst, NULL
+            &G.main.view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
         );
         aux(&dst, &src, S.win.dim.w, S.win.dim.h);
         aux(&src, &dst, G.main.view.dim.w, G.main.view.dim.h);
@@ -1772,7 +1776,7 @@ static void _pico_output_present (int force) {
     _show_grid();
     SDL_RenderPresent(G.ren);
 
-    G.tgt = 1;
+    G.presenting = 0;
     SDL_SetRenderTarget(G.ren, G.main.tex);
     SDL_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);

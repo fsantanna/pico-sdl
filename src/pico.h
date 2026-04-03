@@ -49,6 +49,7 @@ typedef struct {
 } Pico_Abs_Dim;
 
 // MODES:
+// 'w': win (physical window pixels)
 // '!': raw (pixels)
 // '%': pct (0.0-1.0)
 // '#': tile (1-indexed grid coordinates)
