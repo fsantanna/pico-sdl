@@ -1,183 +1,122 @@
 # TODO
 
-## Accept colors as strings in buffer and other calls
-
-Allow color strings (e.g., `'red'`, `'blue'`) in buffer operations and other
-functions that accept colors, not just `{r, g, b}` tables.
-
-## Accept empty text string
-
-`pico_output_draw_text("")` currently asserts. Fix to ignore empty strings
-instead of failing.
-
-## Lua: support `'transparent'` as color string
-
-The color registry stores `Pico_Color*` via lightuserdata. `PICO_COLOR_TRANSPARENT`
-is `Pico_Color_A` (4 bytes), so `c_color_s` casting to `Pico_Color*` reads only
-`{0,0,0}` (black). Need to decide how `'transparent'` should behave:
-
-Only makes sense after color strings are supported in buffer calls (see "Accept
-colors as strings in buffer and other calls" above). Without that, `'transparent'`
-has no RGBA consumer — `set.color.draw` and `set.color.clear` use `Pico_Color`
-(RGB only).
-
-## Guide: use input dt in animations
-
-In `lua/doc/guide.md`, animation examples should use the `dt` return value
-from `pico.input.event` instead of fixed increments.
-
-## Guide: `pico.get.now` never introduced
-
-In `lua/doc/guide.md` section 9.2, `pico.get.now` is used but never formally
-introduced. Add documentation or an earlier mention.
-
-## Independent grid per layer
-
-Currently grid is only rendered for the main layer. The `view.grid` flag exists
-in `Pico_View` but is ignored for non-main layers. Render grid overlay for each
-layer with `view.grid` enabled.
-
-See: `.claude/plans/view.md` section 2.
-
-## Fix `tst/todo_*.c` files
-
-Several test files use deprecated APIs and need updating:
-
-| File             | Main Issues                                    |
-|------------------|------------------------------------------------|
-| `todo_rain.c`    | Deprecated types, `pico_output_draw_rect_pct()`|
-| `todo_rotate.c`  | `pico_set_view_raw()`, old types               |
-| `todo_hide.c`    | Missing window/view setup                      |
-| `todo_scale.c`   | `pico_set_scale()`, `pico_set_anchor_pos()`    |
-| `todo_control.c` | Wrong text drawing API                         |
-| `todo_main.c`    | Deprecated types throughout                    |
-
-See: `.claude/plans/view.md` section 7.
-
-## Create `extra/` directory
-
-Create an `extra/` directory to hold auxiliary tools and utilities:
-- `check.h` — visual regression testing header (currently in `tst/`)
-- Video generator (yet to come)
-
-## Support percentage mode for alpha
-
-`pico.set.alpha('%', 0.5)` — allow setting alpha as a normalized value (0.0–1.0)
-instead of only raw 0–255.
-
-## Rename alpha to transparency (invert values)
-
-`pico.set.alpha` uses SDL convention where 255=opaque, 0=transparent.
-Rename to `pico.set.transparency` (or similar) and invert so that
-0=opaque, 255=fully transparent — more intuitive for users.
-
-## Add ttl-GC to history and guide
-
-Document the TTL-based garbage collection mechanism (hash table with TTL
-eviction for resources) in the project history and in `lua/doc/guide.md`.
-
-## `pico.set.draw.*` — group all drawing state
-
-Move all drawing-related setters under `pico.set.draw.*` (color, style,
-alpha, font, etc.). Consider: should `pico.push`/`pico.pop` become
-scoped to `pico.set.draw`? E.g., `pico.draw { ... }` as a block that
-auto-pushes/pops.
-
-## `pico_set_view` present in non-expert mode
-
-Already calls `_pico_output_present(0)` (line 976). Pros: navigation
-works without input loop, guide nav would work. Cons: flicker on setup
-(blank texture after dim change), multiple presents per logical setup.
-Investigate if navigation isn't updating visually — the present is
-there, issue might be elsewhere.
-
-In guide: why pixels in 5.3 need clear? Why 6.1 doesn't work?
-
-## Review and complete guide
-
-Review `lua/doc/guide.md` for completeness, accuracy, and missing sections.
-
-Issue: [#103](https://github.com/fsantanna/pico-sdl/issues/103)
-
-## `pico.set` vs multi-arg setters
-
-The `set` dispatch calls `field(v)` with a single argument.
-Setters that take multiple positional args (`expert`, `video`) lose
-their extra arguments.
-
-See `.claude/plans/set.md` for alternatives.
-
-Issue: [#102](https://github.com/fsantanna/pico-sdl/issues/102)
-
-## README pico-lua cross image
-
-Issue: [#101](https://github.com/fsantanna/pico-sdl/issues/101)
-
-## Command-line options
-
-Issue: [#100](https://github.com/fsantanna/pico-sdl/issues/100)
-
-## Support screenshots of layers
-
-Issue: [#98](https://github.com/fsantanna/pico-sdl/issues/98)
-
-## Support hex integer colors (`0xRRGGBB`)
-
-Issue: [#95](https://github.com/fsantanna/pico-sdl/issues/95)
-
-## Non-blocking video I/O
-
-See `.claude/plans/select.md` for full plan.
-
-Issue: [#93](https://github.com/fsantanna/pico-sdl/issues/93)
-
-## "Help" aid
-
-Issue: [#72](https://github.com/fsantanna/pico-sdl/issues/72)
-
-## Expert mode should disable all aids
-
-Issue: [#71](https://github.com/fsantanna/pico-sdl/issues/71)
-
-## Fullscreen tests
-
-Issue: [#65](https://github.com/fsantanna/pico-sdl/issues/65)
-
-## Thickness for drawing primitives
-
-Overlaps with ThorVG Phase 2 (stroke width).
-
-Issue: [#62](https://github.com/fsantanna/pico-sdl/issues/62)
-
-## Create a logo for the project
-
-Issue: [#46](https://github.com/fsantanna/pico-sdl/issues/46)
-
-## Run manual tests for v0.3
-
-Interactive C tests (`todo_*.c`) and guide examples (`rects.lua`,
-`anims.lua`).
-
-See `.claude/plans/release.md` step 2b.
-
-## Announce v0.3
-
-Twitter, students, SDL lists, Lua lists.
-
-See `.claude/plans/release.md` step 10.
-
-## ThorVG Integration
-
-Replace SDL2_gfx (and later SDL2_ttf) with ThorVG as the vector
-rendering engine. ThorVG SwCanvas renders to ARGB8888 buffer, uploaded
-to SDL_Texture. Adds SVG support, anti-aliasing, gradients, bezier
-paths, variable stroke, and per-shape transforms.
-
-See `.claude/plans/thorvg.md` for full plan (4 phases).
-
-- [ ] Decide ThorVG build strategy (vendor source vs. static lib)
-- [ ] Decide ThorVG version to target
-- [ ] Phase 1: Foundation + SVG + Replace SDL2_gfx
-- [ ] Phase 2: New capabilities (stroke, rotation, gradients, bezier)
-- [ ] Phase 3: Replace SDL_ttf with ThorVG text
-- [ ] Phase 4: Advanced features (optional)
+1. Support `'transparent'` as color string
+    - `PICO_COLOR_TRANSPARENT` is `Pico_Color_A` (4 bytes)
+    - `c_color_s` casting to `Pico_Color*` reads only `{0,0,0}`
+    - Needs RGBA consumer — `set.color.draw` and `set.color.clear` use RGB only
+
+2. Guide: use input `dt` in animations
+    - Animation examples should use `dt` from `pico.input.event`
+    - Currently uses fixed increments
+
+3. Guide: `pico.get.now` never introduced
+    - Used in section 9.2 but never formally introduced
+
+4. Create `extra/` directory
+    - Move `check.h` from `tst/`
+    - Video generator (yet to come)
+
+5. Support percentage mode for alpha
+    - `pico.set.alpha('%', 0.5)` — normalized 0.0–1.0
+    - Currently only raw 0–255
+
+6. Rename alpha to transparency (invert values)
+    - SDL convention: 255=opaque, 0=transparent
+    - Invert so 0=opaque, 255=fully transparent
+
+7. Add ttl-GC to history and guide
+    - Document TTL-based garbage collection in HISTORY.md
+    - Document in `lua/doc/guide.md`
+
+8. Group all drawing state under `pico.set.draw.*`
+    - Move color, style, alpha, font under `pico.set.draw`
+    - Consider `pico.draw { ... }` block with auto push/pop
+
+9. `pico_set_view` present in non-expert mode
+    - Already calls `_pico_output_present(0)`
+    - Pros: navigation works without input loop
+    - Cons: flicker on setup, multiple presents per logical setup
+    - Guide: why pixels in 5.3 need clear? Why 6.1 doesn't work?
+
+10. Review and complete guide
+    - [#103](https://github.com/fsantanna/pico-sdl/issues/103)
+
+11. `pico.set` vs multi-arg setters
+    - `set` dispatch calls `field(v)` with single argument
+    - Multi-arg setters (`expert`, `video`) lose extra arguments
+    - See `.claude/plans/set.md`
+    - [#102](https://github.com/fsantanna/pico-sdl/issues/102)
+
+12. README pico-lua cross image
+    - [#101](https://github.com/fsantanna/pico-sdl/issues/101)
+
+13. Command-line options
+    - [#100](https://github.com/fsantanna/pico-sdl/issues/100)
+
+14. Support screenshots of layers
+    - [#98](https://github.com/fsantanna/pico-sdl/issues/98)
+
+15. Non-blocking video I/O
+    - See `.claude/plans/select.md`
+    - [#93](https://github.com/fsantanna/pico-sdl/issues/93)
+
+16. Help aid
+    - [#72](https://github.com/fsantanna/pico-sdl/issues/72)
+
+17. Expert mode should disable all aids
+    - [#71](https://github.com/fsantanna/pico-sdl/issues/71)
+
+18. Fullscreen vs accelerated rendering
+    - Redraw does not work in fullscreen + accelerated
+    - Send example `bug.c` to SDL mailing list
+    - [#65](https://github.com/fsantanna/pico-sdl/issues/65)
+
+19. Thickness for drawing primitives
+    - Overlaps with ThorVG Phase 2 (stroke width)
+    - [#62](https://github.com/fsantanna/pico-sdl/issues/62)
+
+20. Create a logo for the project
+    - [#46](https://github.com/fsantanna/pico-sdl/issues/46)
+
+21. Run manual tests for v0.3
+    - Interactive C tests and guide examples
+    - See `.claude/plans/release.md` step 2b
+
+22. Announce v0.3
+    - Twitter, students, SDL lists, Lua lists
+    - See `.claude/plans/release.md` step 10
+
+23. ThorVG integration
+    - Replace SDL2_gfx (and later SDL2_ttf) with ThorVG
+    - SwCanvas renders to ARGB8888, uploaded to SDL_Texture
+    - Adds SVG, anti-aliasing, gradients, bezier, stroke, transforms
+    - See `.claude/plans/thorvg.md` (4 phases)
+
+24. Networking support (`pico-sdl-net`)
+    - SDL3 needed due to blocking calls in SDL2_net
+
+25. Layout system
+    - Dispatch mechanism
+    - Click handling
+
+26. `pico_set_target(LOG/PHY)`
+    - Currently internal TGT, better with layers
+    - For drawing and percents
+    - Pct functions should still work
+    - Rewrite `size_pct.c` to mimic raw behavior
+    - Test `cv.c` with TGT=0 (phy)
+
+27. Default DejaVu font
+    - Consider replacing Tiny font
+    - Decide default font size
+    - Predefined font options (tiny, dejavu, etc)
+    - Test other fonts
+
+28. Unify panels, boxes, images, and text as layers
+    - Images are also layers
+    - Rotation: angle/anchor
+    - Crop, flip, dimensions unified across types
+    - Path identifies type; text uses string + font
+
+29. `pico_get_image/text` should accept ref parameter
+    - See `lua/tst/image_pct` commented tests

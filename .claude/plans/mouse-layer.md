@@ -74,7 +74,6 @@ Pico_Mouse pico_get_mouse_rect (Pico_Rel_Rect* rect) {
     SDL_Point phy;
     Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
     Pico_Mouse m = {
-        .mode   = mode,
         .left   = !!(masks & SDL_BUTTON(SDL_BUTTON_LEFT)),
         .right  = !!(masks & SDL_BUTTON(SDL_BUTTON_RIGHT)),
         .middle = !!(masks & SDL_BUTTON(SDL_BUTTON_MIDDLE)),
@@ -140,22 +139,47 @@ Verify no regressions.
 ### 7. (Breaking) Remove `pico_set_mouse`
 
 Remove `pico_set_mouse(mode)` and `S.mouse` global state.
-`pico_get_mouse(mode)` always requires an explicit mode arg.
+`pico_get_mouse(mode)` always requires an explicit mode arg
+(mode=0 is now an assert error).
 
 In Lua: remove `pico.set.mouse`.
 
-**Will break**: tests that use `pico_set_mouse` or
-`pico.set.mouse`.
+#### Changes
 
-### 8. (Breaking) Remove positions from mouse events
+| File | Place | Description |
+|---|---|---|
+| `src/pico.h:519-521` | `pico_set_mouse` | delete declaration + doc |
+| `src/pico.c:88` | `S.mouse` | remove field from `S` struct |
+| `src/pico.c:105` | `Pico_State.mouse` | remove field from stack state |
+| `src/pico.c:578` | `S` init | remove `.mouse = '!'` |
+| `src/pico.c:702-706` | `pico_get_mouse` | replace `S.mouse` fallback with assert |
+| `src/pico.c:915-919` | `pico_set_mouse` | delete function |
+| `src/pico.c:937` | `pico_push` | remove `.mouse = S.mouse` |
+| `src/pico.c:951` | `pico_pop` | remove `S.mouse = st->mouse` |
+| `lua/pico.c:945-949` | `l_set_mouse` | delete function |
+| `lua/pico.c:1562` | `ll_set` | remove `{ "mouse", l_set_mouse }` |
+| `tst/mouse.c:157` | test | remove `pico_set_mouse('%')` |
+| `tst/mouse.c:169,178` | test | `pico_get_mouse(0, NULL)` → `pico_get_mouse('%', NULL)` |
+| `tst/tiles.c:9` | test | remove `pico_set_mouse('#')` |
+| `tst/tiles.c:66,76,85` | test | `pico_get_mouse(0, NULL)` → `pico_get_mouse('#', NULL)` |
+
+### 8. (Breaking) Mouse events carry window-only positions
 
 Mouse events (`mouse.button.dn`, `mouse.button.up`,
-`mouse.motion`) stop carrying x/y coordinates.
-Users must call `pico_get_mouse` / `pico_get_mouse_rect`
-to get positions in the desired coordinate space.
+`mouse.motion`) carry only window-based (physical pixel)
+positions. Remove `mode` field from `Pico_Mouse` struct.
+Users call `pico_get_mouse` / `pico_get_mouse_rect` to get
+positions in the desired coordinate space.
 
-**Will break**: tests/programs that read x/y from mouse
-event data.
+#### Changes
+
+| File | Place | Description |
+|---|---|---|
+| `src/events.h:30` | `Pico_Mouse` | remove `mode` field |
+| `src/pico.c:712` | `pico_get_mouse` | remove `.mode = mode` from initializer |
+| `src/pico.c:1321` | `sdl_to_pico` | `pico_get_mouse(0, NULL)` → `pico_get_mouse('w', NULL)` |
+| `lua/pico.c:842-844` | `L_set_mouse` | remove mode push (index 1) |
+| `lua/pico.c:876-889` | `l_get_mouse` | push mode string into result table directly |
 
 ## Key Files
 
@@ -192,4 +216,4 @@ pico-lua lua/tst/todo/mouse-layer.lua
 - [ ] Update test
 - [ ] Run `make tests`
 - [ ] (Breaking) Remove `pico_set_mouse`
-- [ ] (Breaking) Remove positions from mouse events
+- [ ] (Breaking) Mouse events carry window-only positions
