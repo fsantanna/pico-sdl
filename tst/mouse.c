@@ -180,6 +180,14 @@ int main(void) {
         }
     }
 
+    puts("window mode (raw phy)");
+    {
+        SDL_WarpMouseInWindow(pico_win, 123, 456);
+        SDL_PumpEvents();
+        Pico_Mouse pos = pico_get_mouse('w', NULL);
+        assert(pos.x==123 && pos.y==456);
+    }
+
     pico_init(0);
     return 0;
 }

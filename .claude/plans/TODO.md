@@ -99,12 +99,10 @@
     - Dispatch mechanism
     - Click handling
 
-26. `pico_set_target(LOG/PHY)`
-    - Currently internal TGT, better with layers
-    - For drawing and percents
-    - Pct functions should still work
-    - Rewrite `size_pct.c` to mimic raw behavior
-    - Test `cv.c` with TGT=0 (phy)
+26. ~~`pico_set_target(LOG/PHY)`~~ DONE via `'w'` mode
+    - `'w'` mode added to all coordinate APIs (win-mode-w.md)
+    - `G.tgt` removed, replaced by `G.presenting` (guard only)
+    - For `'%'`/`'#'` in window space: create a matching layer
 
 27. Default DejaVu font
     - Consider replacing Tiny font

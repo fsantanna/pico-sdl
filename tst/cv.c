@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <math.h>
 
-// TODO: TGT=0 (phy)
-
 #define EPSILON 1
 
 static int pos_eq (Pico_Abs_Pos a, Pico_Abs_Pos b) {
@@ -397,6 +395,26 @@ int main (void) {
         assert(dim_eq(abs, (Pico_Abs_Dim){40, 30}));
     }
 
+    // WIN - 'w' resolves against window (500x500), not layer (100x100)
+    {
+        puts("win - pos - w mode");
+        Pico_Rel_Pos pos = { 'w', {320, 240}, PICO_ANCHOR_NW, NULL };
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
+        assert(abs.x==320 && abs.y==240);
+    }
+    {
+        puts("win - rect - w mode");
+        Pico_Rel_Rect rect = { 'w', {100, 50, 200, 100}, PICO_ANCHOR_NW, NULL };
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&rect, NULL);
+        assert(abs.x==100 && abs.y==50 && abs.w==200 && abs.h==100);
+    }
+    {
+        puts("win - dim - w mode");
+        Pico_Rel_Dim dim = { 'w', {320, 240}, NULL };
+        Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&dim, NULL);
+        assert(dim_eq(abs, (Pico_Abs_Dim){320, 240}));
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // NEW TESTS: abs_rel and rel_rel (canonical form invariant)
     ///////////////////////////////////////////////////////////////////////////
@@ -414,7 +432,7 @@ int main (void) {
     };
     int n_anchors = sizeof(anchors) / sizeof(anchors[0]);
 
-    char modes[] = { '!', '%' };
+    char modes[] = { '!', '%', 'w' };
     int n_modes = sizeof(modes) / sizeof(modes[0]);
 
     Pico_Abs_Rect base = { 0, 0, 100, 100 };

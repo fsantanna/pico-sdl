@@ -150,4 +150,4 @@ make tests
   - Used explicit window base for `dst` in present (like other
     call sites) instead of changing `dst.mode` to `'w'`
   - Used explicit window base in `pico_set_window` dim conversion
-- [ ] Verification: tests pass
+- [x] Verification: tests pass
