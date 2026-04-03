@@ -942,12 +942,6 @@ static int l_set_layer (lua_State* L) {
     return 0;
 }
 
-static int l_set_mouse (lua_State* L) {
-    const char* s = luaL_checkstring(L, 1);
-    pico_set_mouse(s[0]);
-    return 0;
-}
-
 static int l_set_style (lua_State* L) {
     const char* s = luaL_checkstring(L, 1);     // s
     lua_pushlightuserdata(L, (void*)&KEY);      // s | K
@@ -1559,7 +1553,6 @@ static const luaL_Reg ll_set[] = {
     { "expert", l_set_expert },
     { "font",   l_set_font   },
     { "layer",  l_set_layer  },
-    { "mouse",  l_set_mouse  },
     { "style",  l_set_style  },
     { "video",  l_set_video  },
     { "view",   l_set_view   },

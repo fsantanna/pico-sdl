@@ -85,7 +85,6 @@ static struct { // exposed global state
     } expert;
     const char* font;
     Pico_Layer* layer;
-    char mouse;
     PICO_STYLE style;
     struct {
         Pico_Abs_Dim dim;
@@ -102,7 +101,6 @@ typedef struct {
         Pico_Color draw;
     } color;
     const char*   font;
-    char          mouse;
     PICO_STYLE    style;
     Pico_Layer*   layer;
 } Pico_State;
@@ -575,7 +573,6 @@ void pico_init (int on) {
             .expert = {0, 0, 0, 0},
             .font   = NULL,
             .layer  = &G.main,
-            .mouse  = '!',
             .style  = PICO_STYLE_FILL,
             .win    = {
                 .dim = PICO_DIM_PHY,
@@ -701,9 +698,6 @@ const char* pico_get_layer (void) {
 
 Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
     _pico_guard();
-    if (mode == 0) {
-        mode = S.mouse;
-    }
 
     SDL_Point phy;
     Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
@@ -912,12 +906,6 @@ void pico_set_show (int on) {
     }
 }
 
-void pico_set_mouse (char mode) {
-    _pico_guard();
-    assert((mode=='w' || mode=='!' || mode=='%' || mode=='#') && "invalid mouse mode");
-    S.mouse = mode;
-}
-
 void pico_set_style (PICO_STYLE style) {
     _pico_guard();
     S.style = style;
@@ -934,7 +922,6 @@ void pico_push (void) {
         .alpha = S.alpha,
         .color = { S.color.clear, S.color.draw },
         .font  = S.font,
-        .mouse = S.mouse,
         .style = S.style,
         .layer = S.layer,
     };
@@ -948,7 +935,6 @@ void pico_pop (void) {
     S.color.clear = st->color.clear;
     S.color.draw  = st->color.draw;
     S.font        = st->font;
-    S.mouse       = st->mouse;
     S.style       = st->style;
     if (S.layer != st->layer) {
         S.layer = st->layer;
@@ -1318,7 +1304,7 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
         case PICO_EVENT_MOUSE_MOTION:
         case PICO_EVENT_MOUSE_BUTTON_DN:
         case PICO_EVENT_MOUSE_BUTTON_UP:
-            pico->mouse = pico_get_mouse(0, NULL);
+            pico->mouse = pico_get_mouse('w', NULL);
             break;
 
         default:

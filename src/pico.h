@@ -414,7 +414,7 @@ void pico_layer_video_mode (int mode,
 Pico_Keyboard pico_get_keyboard (void);
 
 /// @brief Gets the mouse state.
-/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window, 0 uses default)
+/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window)
 /// @param rect optional target rect for inverse transform (NULL for global coordinates, supports up chain)
 /// @return mouse state with position and button flags
 Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect);
@@ -515,10 +515,6 @@ void pico_set_layer (const char* key);
 /// @brief Toggles the application window visibility.
 /// @param on 1 to show, or 0 to hide
 void pico_set_show (int on);
-
-/// @brief Sets the default mouse coordinate mode.
-/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window)
-void pico_set_mouse (char mode);
 
 /// @brief Sets the drawing style.
 /// @param style new style
