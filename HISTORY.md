@@ -1,3 +1,17 @@
+v0.4 (???/26)
+-------------
+
+Additions:
+    - visual grid for tile mode `#`
+    - `pico_*_color_clear_alpha`: get/set clear color with alpha
+    - `pico_color_hex`: convert hex integer (0xRRGGBB) to color
+
+Modifications:
+    - `pico_get_mouse`: accepts `rect` for relative positioning
+
+Removals:
+    - `pico_set_mouse`: mouse events now carry only absolute window positions
+
 v0.3 (mar/26)
 -------------
 
@@ -14,6 +28,7 @@ Additions:
     - `pico.push/pop`: save/restore drawing state
     - `pico.set {}`: all-at-once setter for Lua
     - video: step-based playback
+
 Modifications:
     - view:
         - only handles world, window goes to pico_window_*
@@ -24,8 +39,10 @@ Modifications:
     - renamed `pico.get.ticks` -> `pico.get.now`
     - `pico.set.expert`: accepts FPS (0, -1/true, N>0)
     - `pico.input.*`: all inputs return `dt` (ms elapsed)
+
 Removals:
     - colors: (r,g,b) three-argument form in Lua
+
 Documentation:
     - guide to pico-lua: `lua/doc/guide.md`
 

@@ -76,7 +76,7 @@ pico-lua tst/cross.lua
 From `luarocks.org`:
 
 ```
-sudo luarocks --lua-version=5.4 install --dev pico-sdl
+sudo luarocks install --dev pico-sdl
 ```
 
 From local repo:
