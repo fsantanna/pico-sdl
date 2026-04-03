@@ -1,8 +1,15 @@
 #!/bin/sh
 
-# pico-sdl-lua /a/b/c/x.lua
+# pico-lua /a/b/c/x.lua
+
+VERSION=v0.4-dev
 
 PICO=$(dirname $(realpath "$0"))/../   # pico-sdl root
+
+if [ "$1" = --version ]; then
+    echo pico-lua $VERSION
+    exit 0
+fi
 
 LUA=lua5.4
 DIR=$(dirname -- "$1")  # /a/b/c

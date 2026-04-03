@@ -22,6 +22,7 @@ int: pico_native.so
 	$(INT) tst/$(T).lua
 
 tests: pico_native.so
+	./pico-lua --version | grep -q v0.4-dev
 	$(TST) tst/anchor.lua
 	$(TST) tst/blend_pct.lua
 	$(TST) tst/blend_raw.lua
