@@ -1,9 +1,10 @@
 #!/bin/sh
 
-# pico-sdl-lua /a/b/c/x.lua
+# pico-lua /a/b/c/x.lua
+
+VERSION=v0.4-dev
 
 PICO=$(dirname $(realpath "$0"))/../   # pico-sdl root
-VERSION=v0.3.1
 
 if [ "$1" = --version ]; then
     echo pico-lua $VERSION
