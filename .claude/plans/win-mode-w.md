@@ -140,6 +140,18 @@ make tests
 - Test `pico_get_mouse('w', NULL)` still works as before
 - Test coordinate conversion: `pico_cv_pos_rel_abs` with `'w'` mode
 
+## TODO
+
+- `'w'` mode for drawing functions
+    - Currently `'w'` only works for input (mouse) and
+      coordinate conversion
+    - Drawing with `'w'` should convert window pixels to layer
+      coordinates via the view's src/dst mapping (reverse of
+      `_cv_phy_log`), then draw on the main layer
+    - The result appears at the correct window position when
+      the layer is presented
+- Add same tests for lua (`lua/tst/`)
+
 ## Status
 
 - [x] Step 1: Update mode docs in `pico.h`

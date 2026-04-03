@@ -103,6 +103,9 @@
     - `'w'` mode added to all coordinate APIs (win-mode-w.md)
     - `G.tgt` removed, replaced by `G.presenting` (guard only)
     - For `'%'`/`'#'` in window space: create a matching layer
+    - TODO: `'w'` mode for drawing functions
+        - Convert window pixels to layer coords via `_cv_phy_log`
+        - Draw on main layer; result appears correctly when presented
 
 27. Default DejaVu font
     - Consider replacing Tiny font
