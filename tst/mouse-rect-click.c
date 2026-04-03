@@ -1,0 +1,85 @@
+#include "pico.h"
+#include <SDL2/SDL.h>
+#include <assert.h>
+
+extern SDL_Window* pico_win;
+
+int main (void) {
+    pico_init(1);
+
+    /* Layer 120x50 with 3 centered buttons equally spaced */
+    Pico_Rel_Rect btn1 = { '%', {0.25, 0.50, 0.15, 0.30}, PICO_ANCHOR_C, NULL };
+    Pico_Rel_Rect btn2 = { '%', {0.50, 0.50, 0.15, 0.30}, PICO_ANCHOR_C, NULL };
+    Pico_Rel_Rect btn3 = { '%', {0.75, 0.50, 0.15, 0.30}, PICO_ANCHOR_C, NULL };
+
+    pico_layer_empty("A", (Pico_Abs_Dim){120, 50});
+    pico_set_layer("A");
+    pico_set_color_clear(PICO_COLOR_NAVY);
+    pico_output_clear();
+    pico_set_color_draw(PICO_COLOR_WHITE);
+    pico_output_draw_rect(&btn1);
+    pico_output_draw_rect(&btn2);
+    pico_output_draw_rect(&btn3);
+    pico_set_layer(NULL);
+
+    /* Draw layer at bottom-right, 35%x35% of screen (distorted) */
+    Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE, NULL };
+    pico_set_color_clear(PICO_COLOR_BLACK);
+    pico_output_clear();
+    pico_output_draw_layer("A", &r);
+
+    /* no collision */
+    puts("no collision (394,355)");
+    {
+        SDL_WarpMouseInWindow(pico_win, 394, 355);
+        SDL_PumpEvents();
+        Pico_Mouse pct = pico_get_mouse('%', &r);
+        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
+        printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
+        assert(!pico_vs_pos_rect(&pos, &btn1));
+        assert(!pico_vs_pos_rect(&pos, &btn2));
+        assert(!pico_vs_pos_rect(&pos, &btn3));
+    }
+
+    /* click 3 */
+    puts("click 3 (457,431)");
+    {
+        SDL_WarpMouseInWindow(pico_win, 457, 431);
+        SDL_PumpEvents();
+        Pico_Mouse pct = pico_get_mouse('%', &r);
+        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
+        printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
+        assert(!pico_vs_pos_rect(&pos, &btn1));
+        assert(!pico_vs_pos_rect(&pos, &btn2));
+        assert( pico_vs_pos_rect(&pos, &btn3));
+    }
+
+    /* click 1 */
+    puts("click 1 (362,405)");
+    {
+        SDL_WarpMouseInWindow(pico_win, 362, 405);
+        SDL_PumpEvents();
+        Pico_Mouse pct = pico_get_mouse('%', &r);
+        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
+        printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
+        assert( pico_vs_pos_rect(&pos, &btn1));
+        assert(!pico_vs_pos_rect(&pos, &btn2));
+        assert(!pico_vs_pos_rect(&pos, &btn3));
+    }
+
+    /* click 2 */
+    puts("click 2 (418,392)");
+    {
+        SDL_WarpMouseInWindow(pico_win, 418, 392);
+        SDL_PumpEvents();
+        Pico_Mouse pct = pico_get_mouse('%', &r);
+        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
+        printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
+        assert(!pico_vs_pos_rect(&pos, &btn1));
+        assert( pico_vs_pos_rect(&pos, &btn2));
+        assert(!pico_vs_pos_rect(&pos, &btn3));
+    }
+
+    pico_init(0);
+    return 0;
+}

@@ -49,6 +49,7 @@ tests:
 	$(EXE) tst/init.c
 	$(EXE) tst/layers.c
 	$(EXE) tst/mouse.c
+	$(EXE) tst/mouse-rect-click.c
 	$(EXE) tst/move.c
 	$(EXE) tst/navigate.c
 	$(EXE) tst/pixels.c
