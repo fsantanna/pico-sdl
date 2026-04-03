@@ -2,11 +2,11 @@
 
 # pico-sdl-lua /a/b/c/x.lua
 
-PICO="$(dirname "$(realpath "$0")")/.."   # pico-sdl root
-VERSION="v0.3.1"
+PICO=$(dirname $(realpath "$0"))/../   # pico-sdl root
+VERSION=v0.3.1
 
-if [ "$1" = "--version" ]; then
-    echo "pico-lua $VERSION"
+if [ "$1" = --version ]; then
+    echo pico-lua $VERSION
     exit 0
 fi
 
