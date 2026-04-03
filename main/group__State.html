@@ -195,9 +195,6 @@ Functions</h2></td></tr>
 <tr class="memitem:gafd408cfe0b3afd13b8548261aafa7573" id="r_gafd408cfe0b3afd13b8548261aafa7573"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gafd408cfe0b3afd13b8548261aafa7573">pico_set_show</a> (int on)</td></tr>
 <tr class="memdesc:gafd408cfe0b3afd13b8548261aafa7573"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the application window visibility.  <br /></td></tr>
 <tr class="separator:gafd408cfe0b3afd13b8548261aafa7573"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab39c99f5a8a9a0ceda1123d2043d2104" id="r_gab39c99f5a8a9a0ceda1123d2043d2104"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gab39c99f5a8a9a0ceda1123d2043d2104">pico_set_mouse</a> (char mode)</td></tr>
-<tr class="memdesc:gab39c99f5a8a9a0ceda1123d2043d2104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the default mouse coordinate mode.  <br /></td></tr>
-<tr class="separator:gab39c99f5a8a9a0ceda1123d2043d2104"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga19739a6858568110a6ce75bd7df7cd96" id="r_ga19739a6858568110a6ce75bd7df7cd96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga19739a6858568110a6ce75bd7df7cd96">pico_set_style</a> (<a class="el" href="group__Types.html#ga467575c070b6218d5e653c4a44501900">PICO_STYLE</a> style)</td></tr>
 <tr class="memdesc:ga19739a6858568110a6ce75bd7df7cd96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the drawing style.  <br /></td></tr>
 <tr class="separator:ga19739a6858568110a6ce75bd7df7cd96"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -464,7 +461,7 @@ Functions</h2></td></tr>
 <p>Gets the mouse state. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mode</td><td>coordinate mode ('!' pixels, '' percentage, '#' tiles, 'w' window, 0 uses default) </td></tr>
+    <tr><td class="paramname">mode</td><td>coordinate mode ('!' pixels, '' percentage, '#' tiles, 'w' window) </td></tr>
     <tr><td class="paramname">rect</td><td>optional target rect for inverse transform (NULL for global coordinates, supports up chain) </td></tr>
   </table>
   </dd>
@@ -1576,32 +1573,6 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>layer key (NULL = main layer, must exist) </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gab39c99f5a8a9a0ceda1123d2043d2104" name="gab39c99f5a8a9a0ceda1123d2043d2104"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab39c99f5a8a9a0ceda1123d2043d2104">&#9670;&#160;</a></span>pico_set_mouse()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void pico_set_mouse </td>
-          <td>(</td>
-          <td class="paramtype">char&#160;</td>
-          <td class="paramname"><em>mode</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the default mouse coordinate mode. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">mode</td><td>coordinate mode ('!' pixels, '' percentage, '#' tiles, 'w' window) </td></tr>
   </table>
   </dd>
 </dl>
