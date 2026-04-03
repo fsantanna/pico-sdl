@@ -3,19 +3,10 @@
 # pico-sdl-lua /a/b/c/x.lua
 
 PICO="$(dirname "$(realpath "$0")")/.."   # pico-sdl root
+VERSION="v0.3.1"
 
 if [ "$1" = "--version" ]; then
-    VERSION=""
-    for file in "$PICO/lua"/pico-sdl-*.rockspec; do
-        if [ -f "$file" ]; then
-            VERSION="v$(basename "$file" | sed -E 's/.*pico-sdl-(.*)-[0-9]+\.rockspec/\1/')"
-            break
-        fi
-    done
-    if [ -z "$VERSION" ] && [ -f "$PICO/HISTORY.md" ]; then
-        VERSION=$(grep -m 1 '^v[0-9]' "$PICO/HISTORY.md" | awk '{print $1}')
-    fi
-    echo "pico-lua ${VERSION:-unknown}"
+    echo "pico-lua $VERSION"
     exit 0
 fi
 
