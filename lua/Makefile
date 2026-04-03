@@ -16,6 +16,7 @@ int: pico_native.so
 	$(INT) tst/$(T).lua
 
 tests: pico_native.so
+	@./pico-lua --version || echo "warning: --version failed"
 	$(TST) tst/anchor.lua
 	$(TST) tst/blend_pct.lua
 	$(TST) tst/blend_raw.lua
