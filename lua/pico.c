@@ -888,6 +888,13 @@ static int l_get_mouse (lua_State* L) {
     return 1;                                   // ... | *mouse*
 }
 
+static int l_set_mouse (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);          // pos
+    Pico_Rel_Pos* pos = c_rel_pos(L, 1);
+    pico_set_mouse(pos);
+    return 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_set_alpha (lua_State* L) {
@@ -1553,6 +1560,7 @@ static const luaL_Reg ll_set[] = {
     { "expert", l_set_expert },
     { "font",   l_set_font   },
     { "layer",  l_set_layer  },
+    { "mouse",  l_set_mouse  },
     { "style",  l_set_style  },
     { "video",  l_set_video  },
     { "view",   l_set_view   },
