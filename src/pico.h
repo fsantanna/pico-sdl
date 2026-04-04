@@ -420,6 +420,10 @@ Pico_Keyboard pico_get_keyboard (void);
 /// @return mouse state with position and button flags
 Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect);
 
+/// @brief Warps the mouse cursor to the given relative position.
+/// @param pos target position (mode, x, y, anchor, up chain)
+void pico_set_mouse (Pico_Rel_Pos* pos);
+
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds
 Uint32 pico_get_now (void);

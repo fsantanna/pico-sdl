@@ -1,8 +1,5 @@
 #include "pico.h"
-#include <SDL2/SDL.h>
 #include <assert.h>
-
-extern SDL_Window* pico_win;
 
 int main (void) {
     pico_init(1);
@@ -31,8 +28,7 @@ int main (void) {
     /* no collision */
     puts("no collision (394,355)");
     {
-        SDL_WarpMouseInWindow(pico_win, 394, 355);
-        SDL_PumpEvents();
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {394, 355}, PICO_ANCHOR_NW, NULL });
         Pico_Mouse pct = pico_get_mouse('%', &r);
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
@@ -44,8 +40,7 @@ int main (void) {
     /* click 3 */
     puts("click 3 (457,431)");
     {
-        SDL_WarpMouseInWindow(pico_win, 457, 431);
-        SDL_PumpEvents();
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {457, 431}, PICO_ANCHOR_NW, NULL });
         Pico_Mouse pct = pico_get_mouse('%', &r);
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
@@ -57,8 +52,7 @@ int main (void) {
     /* click 1 */
     puts("click 1 (362,405)");
     {
-        SDL_WarpMouseInWindow(pico_win, 362, 405);
-        SDL_PumpEvents();
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {362, 405}, PICO_ANCHOR_NW, NULL });
         Pico_Mouse pct = pico_get_mouse('%', &r);
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
@@ -70,8 +64,7 @@ int main (void) {
     /* click 2 */
     puts("click 2 (418,392)");
     {
-        SDL_WarpMouseInWindow(pico_win, 418, 392);
-        SDL_PumpEvents();
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {418, 392}, PICO_ANCHOR_NW, NULL });
         Pico_Mouse pct = pico_get_mouse('%', &r);
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
