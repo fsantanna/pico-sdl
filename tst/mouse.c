@@ -169,6 +169,45 @@ int main(void) {
         assert(pos.x==123 && pos.y==456);
     }
 
+    // roundtrip: set(rel) -> get(rel) -> assert equal
+    puts("roundtrip '!'");
+    {
+        pico_set_view (
+            -1, NULL, NULL, NULL,
+            &(Pico_Rel_Rect){ '!', {0, 0, 50, 50}, PICO_ANCHOR_NW, NULL },
+            NULL, NULL, NULL
+        );
+        pico_set_mouse (
+            &(Pico_Rel_Pos){ '!', {25, 25}, PICO_ANCHOR_NW, NULL }
+        );
+        Pico_Mouse pos = pico_get_mouse('!', NULL);
+        assert(pos.x==25 && pos.y==25);
+    }
+
+    puts("roundtrip '%'");
+    {
+        pico_set_mouse (
+            &(Pico_Rel_Pos){ '%', {0.5, 0.5}, PICO_ANCHOR_NW, NULL }
+        );
+        Pico_Mouse pos = pico_get_mouse('%', NULL);
+        assert(pos.x>0.49 && pos.x<0.51);
+        assert(pos.y>0.49 && pos.y<0.51);
+    }
+
+    puts("roundtrip '!' zoomed");
+    {
+        pico_set_view (
+            -1, NULL, NULL, NULL,
+            &(Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL },
+            NULL, NULL, NULL
+        );
+        pico_set_mouse (
+            &(Pico_Rel_Pos){ '!', {25, 25}, PICO_ANCHOR_NW, NULL }
+        );
+        Pico_Mouse pos = pico_get_mouse('!', NULL);
+        assert(pos.x==25 && pos.y==25);
+    }
+
     pico_init(0);
     return 0;
 }
