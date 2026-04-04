@@ -1,8 +1,5 @@
 #include "pico.h"
 #include "../check.h"
-#include <SDL2/SDL.h>
-
-extern SDL_Window* pico_win;
 
 int main (void) {
     pico_init(1);
@@ -60,8 +57,7 @@ int main (void) {
     // phy (0,0) -> log (0,0) -> tile (1,1)
     {
         puts("mouse tile (1,1)");
-        SDL_WarpMouseInWindow(pico_win, 0, 0);
-        SDL_PumpEvents();
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {0, 0}, PICO_ANCHOR_NW, NULL });
         Pico_Mouse pos = pico_get_mouse('#', NULL);
         assert(pos.x==1 && pos.y==1);
     }
@@ -70,8 +66,7 @@ int main (void) {
     // 160 phy / 16 log = 10x scale, so phy 40 = log 4
     {
         puts("mouse tile (2,2)");
-        SDL_WarpMouseInWindow(pico_win, 40, 40);
-        SDL_PumpEvents();
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {40, 40}, PICO_ANCHOR_NW, NULL });
         Pico_Mouse pos = pico_get_mouse('#', NULL);
         assert(pos.x==2 && pos.y==2);
     }
@@ -79,8 +74,7 @@ int main (void) {
     // phy (80,120) -> log (8,12) -> tile (3,4)
     {
         puts("mouse tile (3,4)");
-        SDL_WarpMouseInWindow(pico_win, 80, 120);
-        SDL_PumpEvents();
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {80, 120}, PICO_ANCHOR_NW, NULL });
         Pico_Mouse pos = pico_get_mouse('#', NULL);
         assert(pos.x==3 && pos.y==4);
     }

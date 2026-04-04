@@ -57,10 +57,6 @@ typedef struct Pico_Layer {
 
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
-#ifdef PICO_TESTS
-SDL_Window* pico_win;
-#endif
-
 static struct { // internal global state
     int           init;
     int           fsing;
@@ -358,6 +354,19 @@ static SDL_FPoint _cv_phy_log (SDL_Point phy) {
     };
 }
 
+static SDL_Point _cv_log_phy (SDL_FPoint log) {
+    SDL_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    float rx = (log.x - src.x) / (float)src.w;
+    float ry = (log.y - src.y) / (float)src.h;
+    return (SDL_Point) {
+        dst.x + rx*dst.w,
+        dst.y + ry*dst.h,
+    };
+}
+
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
     SDL_FDim df = _sdl_dim(dim, base, NULL);
     return _fi_dim(&df);
@@ -589,7 +598,6 @@ void pico_init (int on) {
         // create ren after win
         {
 #ifdef PICO_TESTS
-            pico_win = G.win;
             G.ren = SDL_CreateRenderer(G.win, -1, SDL_RENDERER_SOFTWARE);
 #else
             G.ren = SDL_CreateRenderer(G.win, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
@@ -725,6 +733,19 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
     }
 
     return m;
+}
+
+void pico_set_mouse (Pico_Rel_Pos* pos) {
+    _pico_guard();
+    SDL_FPoint fp = _sdl_pos(pos, NULL);
+    SDL_Point phy;
+    if (pos->mode == 'w') {
+        phy = (SDL_Point) { fp.x, fp.y };
+    } else {
+        phy = _cv_log_phy(fp);
+    }
+    SDL_WarpMouseInWindow(G.win, phy.x, phy.y);
+    SDL_PumpEvents();
 }
 
 static Pico_Keyboard _pico_keyboard (int key, SDL_Keymod mod) {
