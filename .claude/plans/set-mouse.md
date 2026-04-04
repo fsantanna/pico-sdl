@@ -53,24 +53,24 @@ pico_set_mouse:
 - [x] Remove `extern SDL_Window* pico_win` and `#include <SDL2/SDL.h>`
 
 ### 5. `tst/mouse-rect-click.c` — replace `SDL_WarpMouseInWindow`
-- [ ] Replace raw SDL calls with `pico_set_mouse`
-- [ ] Remove `extern SDL_Window* pico_win`
+- [x] Replace raw SDL calls with `pico_set_mouse`
+- [x] Remove `extern SDL_Window* pico_win` and `#include <SDL2/SDL.h>`
 
 ### 6. `tst/tiles.c` — replace `SDL_WarpMouseInWindow`
-- [ ] Replace raw SDL calls with `pico_set_mouse`
-- [ ] Remove `extern SDL_Window* pico_win`
+- [x] Replace raw SDL calls with `pico_set_mouse`
+- [x] Remove `extern SDL_Window* pico_win` and `#include <SDL2/SDL.h>`
 
 ### 7. `lua/pico.c` — add Lua binding `l_set_mouse`
-- [ ] `pico.set.mouse({'w', x=100, y=200})`
-- [ ] `pico.set.mouse({'%', x=0.5, y=0.5, up=rect})`
-- [ ] Register in `ll_set` table
+- [x] `pico.set.mouse({'w', x=100, y=200})`
+- [x] `pico.set.mouse({'%', x=0.5, y=0.5, up=rect})`
+- [x] Register in `ll_set` table
 
 ### 8. `lua/tst/` — Lua test ports
-- [ ] Port `tst/mouse.c` -> `lua/tst/mouse.lua`
-- [ ] Port `tst/mouse-rect-click.c` ->
+- [x] Port `tst/mouse.c` -> `lua/tst/mouse.lua`
+- [x] Port `tst/mouse-rect-click.c` ->
   `lua/tst/mouse-rect-click.lua`
-- [ ] Port `tst/tiles.c` mouse tests ->
-  `lua/tst/tiles.lua` (if applicable)
+- [x] Update `lua/tst/tiles.lua` mouse tests with
+  `pico.set.mouse`
 
 ### 9. Cleanup
-- [ ] Update `valgrind.supp` if `pico.c` line numbers shifted
+- [x] Update `valgrind.supp` (`pico.c` line 539 -> 550)

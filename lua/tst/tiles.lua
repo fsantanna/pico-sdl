@@ -56,11 +56,28 @@ do
 end
 
 -- Test 5: mouse position in tile mode
--- Note: cannot warp mouse from Lua, but verify get_mouse accepts '#' mode
+-- phy (0,0) -> log (0,0) -> tile (1,1)
 do
-    print("mouse tile mode check")
+    print("mouse tile (1,1)")
+    pico.set.mouse({'w', x=0, y=0})
     local pos = pico.get.mouse('#')
-    assert(type(pos.x) == 'number' and type(pos.y) == 'number')
+    assert(pos.x==1 and pos.y==1)
+end
+
+-- phy (40,40) -> log (4,4) -> tile (2,2)
+do
+    print("mouse tile (2,2)")
+    pico.set.mouse({'w', x=40, y=40})
+    local pos = pico.get.mouse('#')
+    assert(pos.x==2 and pos.y==2)
+end
+
+-- phy (80,120) -> log (8,12) -> tile (3,4)
+do
+    print("mouse tile (3,4)")
+    pico.set.mouse({'w', x=80, y=120})
+    local pos = pico.get.mouse('#')
+    assert(pos.x==3 and pos.y==4)
 end
 
 pico.init(false)
