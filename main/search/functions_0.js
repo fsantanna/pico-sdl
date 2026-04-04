@@ -75,11 +75,12 @@ var searchData=
   ['pico_5fset_5fexpert_72',['pico_set_expert',['../group__State.html#gab4fae47a6d4d354593eed0461d9391f2',1,'pico.h']]],
   ['pico_5fset_5ffont_73',['pico_set_font',['../group__State.html#ga39e28540050653cf3385aeb95aae17b2',1,'pico.h']]],
   ['pico_5fset_5flayer_74',['pico_set_layer',['../group__State.html#gadb552b2a6761380d5c1f74a5e402a8eb',1,'pico.h']]],
-  ['pico_5fset_5fshow_75',['pico_set_show',['../group__State.html#gafd408cfe0b3afd13b8548261aafa7573',1,'pico.h']]],
-  ['pico_5fset_5fstyle_76',['pico_set_style',['../group__State.html#ga19739a6858568110a6ce75bd7df7cd96',1,'pico.h']]],
-  ['pico_5fset_5fvideo_77',['pico_set_video',['../group__State.html#gab65becd42e321ae147c7c1f608541bde',1,'pico.h']]],
-  ['pico_5fset_5fview_78',['pico_set_view',['../group__State.html#gabc6119ad55ed862cd1019839017e971c',1,'pico.h']]],
-  ['pico_5fset_5fwindow_79',['pico_set_window',['../group__State.html#ga207f0c7f866f1aad2fd13e8cebc0bfdf',1,'pico.h']]],
-  ['pico_5fvs_5fpos_5frect_80',['pico_vs_pos_rect',['../group__Utils.html#ga62cec9ae5611818e2deb4e10f3ed583d',1,'pico.h']]],
-  ['pico_5fvs_5frect_5frect_81',['pico_vs_rect_rect',['../group__Utils.html#ga9fc0b888b391e5b9e274c09fe27a6b64',1,'pico.h']]]
+  ['pico_5fset_5fmouse_75',['pico_set_mouse',['../group__State.html#gabea09b22d11492ff21c9a30744de0193',1,'pico.h']]],
+  ['pico_5fset_5fshow_76',['pico_set_show',['../group__State.html#gafd408cfe0b3afd13b8548261aafa7573',1,'pico.h']]],
+  ['pico_5fset_5fstyle_77',['pico_set_style',['../group__State.html#ga19739a6858568110a6ce75bd7df7cd96',1,'pico.h']]],
+  ['pico_5fset_5fvideo_78',['pico_set_video',['../group__State.html#gab65becd42e321ae147c7c1f608541bde',1,'pico.h']]],
+  ['pico_5fset_5fview_79',['pico_set_view',['../group__State.html#gabc6119ad55ed862cd1019839017e971c',1,'pico.h']]],
+  ['pico_5fset_5fwindow_80',['pico_set_window',['../group__State.html#ga207f0c7f866f1aad2fd13e8cebc0bfdf',1,'pico.h']]],
+  ['pico_5fvs_5fpos_5frect_81',['pico_vs_pos_rect',['../group__Utils.html#ga62cec9ae5611818e2deb4e10f3ed583d',1,'pico.h']]],
+  ['pico_5fvs_5frect_5frect_82',['pico_vs_rect_rect',['../group__Utils.html#ga9fc0b888b391e5b9e274c09fe27a6b64',1,'pico.h']]]
 ];

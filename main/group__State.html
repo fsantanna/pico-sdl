@@ -150,6 +150,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga9118ded7c1e3371e741c51235a4c151a" id="r_ga9118ded7c1e3371e741c51235a4c151a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Mouse.html">Pico_Mouse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga9118ded7c1e3371e741c51235a4c151a">pico_get_mouse</a> (char mode, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
 <tr class="memdesc:ga9118ded7c1e3371e741c51235a4c151a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mouse state.  <br /></td></tr>
 <tr class="separator:ga9118ded7c1e3371e741c51235a4c151a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabea09b22d11492ff21c9a30744de0193" id="r_gabea09b22d11492ff21c9a30744de0193"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gabea09b22d11492ff21c9a30744de0193">pico_set_mouse</a> (<a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *pos)</td></tr>
+<tr class="memdesc:gabea09b22d11492ff21c9a30744de0193"><td class="mdescLeft">&#160;</td><td class="mdescRight">Warps the mouse cursor to the given relative position.  <br /></td></tr>
+<tr class="separator:gabea09b22d11492ff21c9a30744de0193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga20838f46d25a4201f8e9c20f800c244c" id="r_ga20838f46d25a4201f8e9c20f800c244c"><td class="memItemLeft" align="right" valign="top">Uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga20838f46d25a4201f8e9c20f800c244c">pico_get_now</a> (void)</td></tr>
 <tr class="memdesc:ga20838f46d25a4201f8e9c20f800c244c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the amount of ticks that passed since pico was initialized.  <br /></td></tr>
 <tr class="separator:ga20838f46d25a4201f8e9c20f800c244c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1573,6 +1576,32 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>layer key (NULL = main layer, must exist) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gabea09b22d11492ff21c9a30744de0193" name="gabea09b22d11492ff21c9a30744de0193"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabea09b22d11492ff21c9a30744de0193">&#9670;&#160;</a></span>pico_set_mouse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pico_set_mouse </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *&#160;</td>
+          <td class="paramname"><em>pos</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Warps the mouse cursor to the given relative position. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>target position (mode, x, y, anchor, up chain) </td></tr>
   </table>
   </dd>
 </dl>
