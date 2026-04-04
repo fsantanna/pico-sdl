@@ -1,5 +1,7 @@
 require 'pico.check'
 
+-- TODO: math.random() not same as C
+
 pico.init(true)
 pico.set.window { title="Moving Around", dim={'!', w=640, h=360} }
 pico.set.view { dim={'!', w=64, h=18} }
