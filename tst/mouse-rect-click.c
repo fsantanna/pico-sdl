@@ -1,4 +1,5 @@
 #include "pico.h"
+#include "../check.h"
 #include <SDL2/SDL.h>
 #include <assert.h>
 
@@ -27,6 +28,7 @@ int main (void) {
     pico_set_color_clear(PICO_COLOR_BLACK);
     pico_output_clear();
     pico_output_draw_layer("A", &r);
+    _pico_check("mouse-rect-click-01");
 
     /* no collision */
     puts("no collision (394,355)");
@@ -39,6 +41,9 @@ int main (void) {
         assert(!pico_vs_pos_rect(&pos, &btn1));
         assert(!pico_vs_pos_rect(&pos, &btn2));
         assert(!pico_vs_pos_rect(&pos, &btn3));
+        pico_set_color_draw(PICO_COLOR_RED);
+        pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {394, 355}, PICO_ANCHOR_NW, NULL });
+        _pico_check("mouse-rect-click-02");
     }
 
     /* click 3 */
@@ -52,6 +57,9 @@ int main (void) {
         assert(!pico_vs_pos_rect(&pos, &btn1));
         assert(!pico_vs_pos_rect(&pos, &btn2));
         assert( pico_vs_pos_rect(&pos, &btn3));
+        pico_set_color_draw(PICO_COLOR_RED);
+        pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {457, 431}, PICO_ANCHOR_NW, NULL });
+        _pico_check("mouse-rect-click-03");
     }
 
     /* click 1 */
@@ -65,6 +73,9 @@ int main (void) {
         assert( pico_vs_pos_rect(&pos, &btn1));
         assert(!pico_vs_pos_rect(&pos, &btn2));
         assert(!pico_vs_pos_rect(&pos, &btn3));
+        pico_set_color_draw(PICO_COLOR_RED);
+        pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {362, 405}, PICO_ANCHOR_NW, NULL });
+        _pico_check("mouse-rect-click-04");
     }
 
     /* click 2 */
@@ -78,6 +89,9 @@ int main (void) {
         assert(!pico_vs_pos_rect(&pos, &btn1));
         assert( pico_vs_pos_rect(&pos, &btn2));
         assert(!pico_vs_pos_rect(&pos, &btn3));
+        pico_set_color_draw(PICO_COLOR_RED);
+        pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {418, 392}, PICO_ANCHOR_NW, NULL });
+        _pico_check("mouse-rect-click-05");
     }
 
     pico_init(0);
