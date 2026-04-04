@@ -5,6 +5,8 @@ INT = PICO_CHECK_INT=1 PICO_CHECK_ASR= $(LUA) ./pico-lua
 
 .PHONY: tests install uninstall clean
 
+all: tests
+
 pico_native.so: ../src/pico.c pico.c
 	gcc -Wall -Werror -g -shared -fPIC -DPICO_TESTS -o pico/$@ $^ \
 		-llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
@@ -46,9 +48,10 @@ tests: pico_native.so
 	$(TST) tst/image_raw.lua
 	$(TST) tst/init.lua
 	$(TST) tst/layers.lua
-	#$(TST) tst/mouse.lua
-	#$(TST) tst/move.lua
-	#$(TST) tst/navigate.lua
+	$(TST) tst/mouse.lua
+	$(TST) tst/mouse-rect-click.lua
+	$(TST) tst/move.lua
+	$(TST) tst/navigate.lua
 	$(TST) tst/pixels.lua
 	$(TST) tst/pos.lua
 	$(TST) tst/push.lua
