@@ -36,7 +36,7 @@ static char c_mode (lua_State* L, int i, int asr) {
         luaL_error(L, "invalid mode at index 1");
     }
     lua_pop(L, 1);                              // T
-    if (mode!='!' && mode!='%' && mode!='#') {
+    if (mode!='w' && mode!='!' && mode!='%' && mode!='#') {
         luaL_error(L, "invalid mode '%c': expected '!', '%%', or '#'", mode);
     }
     return mode;
