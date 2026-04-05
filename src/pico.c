@@ -322,20 +322,24 @@ static SDL_FRect _sdl_rect (
     return ret;
 }
 
-static Pico_Abs_Dim _fi_dim (const SDL_FDim* f) {
-    return (Pico_Abs_Dim) { roundf(f->w), roundf(f->h) };
-}
+// use floorf(. + 0.5f) toward +inf: makes NW/C behave the same
 
-static SDL_Point _fi_pos (const SDL_FPoint* f) {
-    return (SDL_Point) {
-        floorf(f->x + 0.5f), floorf(f->y + 0.5f)
+static Pico_Abs_Dim _abs_dim (const SDL_FDim* f) {
+    return (Pico_Abs_Dim) {
+        floorf(f->w+0.5f), floorf(f->h+0.5f)
     };
 }
 
-static SDL_Rect _fi_rect (const SDL_FRect* f) {
-    return (SDL_Rect) {
-        floorf(f->x + 0.5f), floorf(f->y + 0.5f),
-        floorf(f->w + 0.5f), floorf(f->h + 0.5f)
+static Pico_Abs_Pos _abs_pos (const SDL_FPoint* f) {
+    return (Pico_Abs_Pos) {
+        floorf(f->x+0.5f), floorf(f->y+0.5f)
+    };
+}
+
+static Pico_Abs_Rect _abs_rect (const SDL_FRect* f) {
+    return (Pico_Abs_Rect) {
+        floorf(f->x+0.5f), floorf(f->y+0.5f),
+        floorf(f->w+0.5f), floorf(f->h+0.5f)
     };
 }
 
@@ -371,17 +375,17 @@ static SDL_Point _cv_log_phy (SDL_FPoint log) {
 
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
     SDL_FDim df = _sdl_dim(dim, base, NULL);
-    return _fi_dim(&df);
+    return _abs_dim(&df);
 }
 
 Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
     SDL_FPoint pf = _sdl_pos(pos, base);
-    return (Pico_Abs_Pos) _fi_pos(&pf);
+    return (Pico_Abs_Pos) _abs_pos(&pf);
 }
 
 Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base) {
     SDL_FRect rf = _sdl_rect(rect, base, NULL);
-    return (Pico_Abs_Rect) _fi_rect(&rf);
+    return (Pico_Abs_Rect) _abs_rect(&rf);
 }
 
 static void _cv_pos_flt_rel (SDL_FPoint fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base) {
