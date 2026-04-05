@@ -68,6 +68,7 @@ tests: pico_native.so
 	$(TST) tst/tile-grid.lua
 	$(TST) tst/tiles.lua
 	$(TST) tst/video.lua
+	$(TST) tst/view-target.lua
 	$(TST) tst/view_raw.lua
 	$(TST) tst/vs.lua
 	@echo ""

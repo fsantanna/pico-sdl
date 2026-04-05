@@ -69,6 +69,7 @@ tests:
 	$(EXE) tst/tile-grid.c
 	$(EXE) tst/tiles.c
 	$(EXE) tst/video.c
+	$(EXE) tst/view-target.c
 	$(EXE) tst/view_raw.c
 	$(EXE) tst/vs.c
 	@echo ""

@@ -739,6 +739,7 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
 
 void pico_set_mouse (Pico_Rel_Pos* pos) {
     _pico_guard();
+    pos->anchor = PICO_ANCHOR_NW;   // TODO
     SDL_FPoint fp = _sdl_pos(pos, NULL);
     SDL_Point phy;
     if (pos->mode == 'w') {
