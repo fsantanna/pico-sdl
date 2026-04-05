@@ -728,7 +728,7 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
         m.y = phy.y;
     } else {
         SDL_FPoint log = _cv_phy_log(phy);
-        Pico_Rel_Pos rel = { .mode = mode, .anchor = PICO_ANCHOR_NW, .up = rect };
+        Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW, .up=rect };
         _cv_pos_flt_rel(log, &rel, NULL);
         m.x = rel.x;
         m.y = rel.y;
