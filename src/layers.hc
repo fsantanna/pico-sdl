@@ -86,20 +86,15 @@ static Pico_Layer* _pico_layer_text (
 static void _pico_output_draw_layer (
     Pico_Layer* layer, Pico_Rel_Rect* rect
 ) {
-    SDL_Rect dst;
     if (rect == NULL) {
-        dst = pico_cv_rect_rel_abs (
-            &layer->view.dst,
-            &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-        );
-    } else {
-        Pico_Abs_Dim* dp = NULL;
-        if (rect->w == 0 || rect->h == 0) {
-            dp = &layer->view.dim;
-        }
-        SDL_FRect rf = _sdl_rect(rect, NULL, dp);
-        dst = _fi_rect(&rf);
+        rect = &layer->view.dst;
     }
+    Pico_Abs_Dim* dp = NULL;
+    if (rect->w == 0 || rect->h == 0) {
+        dp = &layer->view.dim;
+    }
+    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
+    SDL_Rect dst = _fi_rect(&rf);
 
     Pico_Layer* root = layer->parent ? layer->parent : layer;
     SDL_Rect src = pico_cv_rect_rel_abs (
