@@ -395,24 +395,25 @@ int main (void) {
         assert(dim_eq(abs, (Pico_Abs_Dim){40, 30}));
     }
 
-    // WIN - 'w' resolves against window (500x500), not layer (100x100)
+    // WIN - 'w' resolves against window, returns layer coordinates
+    // window=500x500, layer=16x16 (from tile setup above)
     {
         puts("win - pos - w mode");
         Pico_Rel_Pos pos = { 'w', {320, 240}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
-        assert(abs.x==320 && abs.y==240);
+        assert(abs.x==10 && abs.y==8);
     }
     {
         puts("win - rect - w mode");
         Pico_Rel_Rect rect = { 'w', {100, 50, 200, 100}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&rect, NULL);
-        assert(abs.x==100 && abs.y==50 && abs.w==200 && abs.h==100);
+        assert(abs.x==3 && abs.y==2 && abs.w==6 && abs.h==3);
     }
     {
         puts("win - dim - w mode");
         Pico_Rel_Dim dim = { 'w', {320, 240}, NULL };
         Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&dim, NULL);
-        assert(dim_eq(abs, (Pico_Abs_Dim){320, 240}));
+        assert(dim_eq(abs, (Pico_Abs_Dim){10, 8}));
     }
 
     ///////////////////////////////////////////////////////////////////////////

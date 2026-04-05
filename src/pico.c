@@ -206,7 +206,16 @@ static SDL_FDim _sdl_dim (
     SDL_FRect r1 = _f1(dim->up, r0, NULL);
     SDL_FDim ret;
     switch (dim->mode) {
-        case 'w':
+        case 'w': {
+            ret = _f3(dim->w, dim->h, ratio);
+            if (dim->w == 0) dim->w = ret.w;
+            if (dim->h == 0) dim->h = ret.h;
+            SDL_Rect dst = pico_cv_rect_rel_abs(&S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h});
+            SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+            ret.w *= src.w / (float)dst.w;
+            ret.h *= src.h / (float)dst.h;
+            break;
+        }
         case '!':
             ret = _f3(dim->w, dim->h, ratio);
             if (dim->w == 0) dim->w = ret.w;
@@ -246,6 +255,14 @@ static SDL_FPoint _sdl_pos (
     SDL_FRect r1 = _f1(pos->up, r0, NULL);
     switch (pos->mode) {
         case 'w':
+            ret = (SDL_FPoint) {
+                r1.x + pos->x,
+                r1.y + pos->y,
+            };
+            ret = _cv_phy_log_flt(ret);
+            ret.x -= pos->anchor.x;
+            ret.y -= pos->anchor.y;
+            break;
         case '!':
             ret = (SDL_FPoint) {
                 r1.x + pos->x - pos->anchor.x,
@@ -288,7 +305,23 @@ static SDL_FRect _sdl_rect (
     }
     SDL_FRect r1 = _f1(rect->up, r0, NULL);
     switch (rect->mode) {
-        case 'w':
+        case 'w': {
+            SDL_FDim d = _f3(rect->w, rect->h, ratio);
+            SDL_FRect win = {
+                r1.x + rect->x,
+                r1.y + rect->y,
+                d.w,
+                d.h
+            };
+            SDL_Rect ri = _cv_phy_log_rect(_fi_rect(&win));
+            ret = (SDL_FRect) {
+                ri.x - rect->anchor.x * ri.w,
+                ri.y - rect->anchor.y * ri.h,
+                ri.w,
+                ri.h
+            };
+            break;
+        }
         case '!': {
             SDL_FDim d = _f3(rect->w, rect->h, ratio);
             ret = (SDL_FRect) {
@@ -356,6 +389,30 @@ static SDL_FPoint _cv_phy_log (SDL_Point phy) {
     };
 }
 
+static SDL_FPoint _cv_phy_log_flt (SDL_FPoint phy) {
+    SDL_Rect dst = pico_cv_rect_rel_abs(&S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h});
+    SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    float rx = (phy.x - dst.x) / (float)dst.w;
+    float ry = (phy.y - dst.y) / (float)dst.h;
+    return (SDL_FPoint) {
+        src.x + rx*src.w,
+        src.y + ry*src.h,
+    };
+}
+
+static SDL_Rect _cv_phy_log_rect (SDL_Rect phy) {
+    SDL_Rect dst = pico_cv_rect_rel_abs(&S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h});
+    SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    float sx = src.w / (float)dst.w;
+    float sy = src.h / (float)dst.h;
+    return (SDL_Rect) {
+        roundf(src.x + (phy.x - dst.x) * sx),
+        roundf(src.y + (phy.y - dst.y) * sy),
+        roundf(phy.w * sx),
+        roundf(phy.h * sy),
+    };
+}
+
 static SDL_Point _cv_log_phy (SDL_FPoint log) {
     SDL_Rect dst = pico_cv_rect_rel_abs (
         &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
@@ -364,8 +421,8 @@ static SDL_Point _cv_log_phy (SDL_FPoint log) {
     float rx = (log.x - src.x) / (float)src.w;
     float ry = (log.y - src.y) / (float)src.h;
     return (SDL_Point) {
-        dst.x + rx*dst.w,
-        dst.y + ry*dst.h,
+        roundf(dst.x + rx*dst.w),
+        roundf(dst.y + ry*dst.h),
     };
 }
 
@@ -400,7 +457,13 @@ static void _cv_pos_flt_rel (SDL_FPoint fr, Pico_Rel_Pos* to, Pico_Abs_Rect* bas
     SDL_FRect r1 = _f1(up_rect, r0, NULL);
 
     switch (to->mode) {
-        case 'w':
+        case 'w': {
+            SDL_FPoint adj = { fr.x + to->anchor.x, fr.y + to->anchor.y };
+            SDL_Point phy = _cv_log_phy(adj);
+            to->x = (float)phy.x - r1.x;
+            to->y = (float)phy.y - r1.y;
+            break;
+        }
         case '!':
             to->x = fr.x - r1.x + to->anchor.x;
             to->y = fr.y - r1.y + to->anchor.y;
@@ -448,7 +511,23 @@ void pico_cv_rect_abs_rel (
     SDL_FRect r1 = _f1(to->up, r0, NULL);
 
     switch (to->mode) {
-        case 'w':
+        case 'w': {
+            SDL_Rect dst_r = pico_cv_rect_rel_abs(&S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h});
+            SDL_Rect src_r = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+            float sx = dst_r.w / (float)src_r.w;
+            float sy = dst_r.h / (float)src_r.h;
+            float lx = fr->x + to->anchor.x * fr->w;
+            float ly = fr->y + to->anchor.y * fr->h;
+            float wx = dst_r.x + (lx - src_r.x) * sx;
+            float wy = dst_r.y + (ly - src_r.y) * sy;
+            float ww = fr->w * sx;
+            float wh = fr->h * sy;
+            to->w = ww;
+            to->h = wh;
+            to->x = wx - r1.x;
+            to->y = wy - r1.y;
+            break;
+        }
         case '!':
             to->w = fr->w;
             to->h = fr->h;
@@ -728,7 +807,7 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
         m.y = phy.y;
     } else {
         SDL_FPoint log = _cv_phy_log(phy);
-        Pico_Rel_Pos rel = { .mode = mode, .anchor = PICO_ANCHOR_NW, .up = rect };
+        Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW, .up=rect };
         _cv_pos_flt_rel(log, &rel, NULL);
         m.x = rel.x;
         m.y = rel.y;
@@ -739,14 +818,8 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
 
 void pico_set_mouse (Pico_Rel_Pos* pos) {
     _pico_guard();
-    pos->anchor = PICO_ANCHOR_NW;   // TODO
     SDL_FPoint fp = _sdl_pos(pos, NULL);
-    SDL_Point phy;
-    if (pos->mode == 'w') {
-        phy = (SDL_Point) { fp.x, fp.y };
-    } else {
-        phy = _cv_log_phy(fp);
-    }
+    SDL_Point phy = _cv_log_phy(fp);
     SDL_WarpMouseInWindow(G.win, phy.x, phy.y);
     SDL_PumpEvents();
 }
