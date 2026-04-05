@@ -94,10 +94,10 @@ static void _pico_output_draw_layer (
         dp = &layer->view.dim;
     }
     SDL_FRect rf = _sdl_rect(rect, NULL, dp);
-    SDL_Rect dst = _fi_rect(&rf);
+    SDL_Rect dst = _abs_rect(&rf);
 
     Pico_Layer* root = layer->parent ? layer->parent : layer;
-    SDL_Rect src = pico_cv_rect_rel_abs (
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs (
         &layer->view.src,
         &(Pico_Abs_Rect){0, 0, root->view.dim.w, root->view.dim.h}
     );

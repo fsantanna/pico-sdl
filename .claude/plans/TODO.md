@@ -121,3 +121,10 @@
 
 29. `pico_get_image/text` should accept ref parameter
     - See `lua/tst/image_pct` commented tests
+
+30. Mouse anchor asymmetry between get and set
+    - `pico_get_mouse` forces `PICO_ANCHOR_NW` (`src/pico.c:731`)
+    - `pico_set_mouse` uses whatever anchor comes from Lua (defaults C)
+    - Why not use `PICO_ANCHOR_C` in both? Investigate symmetry
+    - Currently `pico.set.mouse` requires explicit `anchor='NW'`
+    - This is undesired — user shouldn't need to specify anchor
