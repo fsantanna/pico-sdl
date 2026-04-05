@@ -59,7 +59,7 @@ end
 -- phy (0,0) -> log (0,0) -> tile (1,1)
 do
     print("mouse tile (1,1)")
-    pico.set.mouse({'w', x=0, y=0})
+    pico.set.mouse({'w', x=0, y=0, anchor='NW'})
     local pos = pico.get.mouse('#')
     assert(pos.x==1 and pos.y==1)
 end
@@ -67,7 +67,7 @@ end
 -- phy (40,40) -> log (4,4) -> tile (2,2)
 do
     print("mouse tile (2,2)")
-    pico.set.mouse({'w', x=40, y=40})
+    pico.set.mouse({'w', x=40, y=40, anchor='NW'})
     local pos = pico.get.mouse('#')
     assert(pos.x==2 and pos.y==2)
 end
@@ -75,7 +75,7 @@ end
 -- phy (80,120) -> log (8,12) -> tile (3,4)
 do
     print("mouse tile (3,4)")
-    pico.set.mouse({'w', x=80, y=120})
+    pico.set.mouse({'w', x=80, y=120, anchor='NW'})
     local pos = pico.get.mouse('#')
     assert(pos.x==3 and pos.y==4)
 end
