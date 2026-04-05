@@ -344,7 +344,9 @@ static SDL_Rect _fi_rect (const SDL_FRect* f) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static SDL_FPoint _cv_phy_log (SDL_Point phy) {
-    SDL_Rect dst = pico_cv_rect_rel_abs(&S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h});
+    SDL_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
     SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
     float rx = (phy.x - dst.x) / (float)dst.w;
     float ry = (phy.y - dst.y) / (float)dst.h;
