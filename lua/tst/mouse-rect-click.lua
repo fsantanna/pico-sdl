@@ -22,7 +22,7 @@ local r = {'%', x=0.99, y=0.99, w=0.35, h=0.35, anchor='SE'}
 pico.set.color.clear('black')
 pico.output.clear()
 pico.output.draw.layer("A", r)
---pico.check("mouse-rect-click-01")
+pico.check("mouse-rect-click-01")
 
 -- no collision
 print("no collision (394,355)")
@@ -36,7 +36,7 @@ do
     assert(not pico.vs.pos_rect(pos, btn3))
     pico.set.color.draw('red')
     pico.output.draw.pixel({'w', x=394, y=355})
-    --pico.check("mouse-rect-click-02")
+    pico.check("mouse-rect-click-02")
 end
 
 -- click 3
@@ -51,7 +51,7 @@ do
     assert(    pico.vs.pos_rect(pos, btn3))
     pico.set.color.draw('red')
     pico.output.draw.pixel({'w', x=457, y=431})
-    --pico.check("mouse-rect-click-03")
+    pico.check("mouse-rect-click-03")
 end
 
 -- click 1
@@ -66,7 +66,7 @@ do
     assert(not pico.vs.pos_rect(pos, btn3))
     pico.set.color.draw('red')
     pico.output.draw.pixel({'w', x=362, y=405})
-    --pico.check("mouse-rect-click-04")
+    pico.check("mouse-rect-click-04")
 end
 
 -- click 2
@@ -81,7 +81,7 @@ do
     assert(not pico.vs.pos_rect(pos, btn3))
     pico.set.color.draw('red')
     pico.output.draw.pixel({'w', x=418, y=392})
-    --pico.check("mouse-rect-click-05")
+    pico.check("mouse-rect-click-05")
 end
 
 pico.init(false)
