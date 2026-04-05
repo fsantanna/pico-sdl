@@ -348,10 +348,10 @@ static Pico_Abs_Rect _abs_rect (const SDL_FRect* f) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static SDL_FPoint _cv_phy_log (SDL_Point phy) {
-    SDL_Rect dst = pico_cv_rect_rel_abs (
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
         &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
     );
-    SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
     float rx = (phy.x - dst.x) / (float)dst.w;
     float ry = (phy.y - dst.y) / (float)dst.h;
     return (SDL_FPoint) {
@@ -361,10 +361,10 @@ static SDL_FPoint _cv_phy_log (SDL_Point phy) {
 }
 
 static SDL_Point _cv_log_phy (SDL_FPoint log) {
-    SDL_Rect dst = pico_cv_rect_rel_abs (
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
         &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
     );
-    SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
     float rx = (log.x - src.x) / (float)src.w;
     float ry = (log.y - src.y) / (float)src.h;
     return (SDL_Point) {
@@ -619,7 +619,7 @@ void pico_init (int on) {
             G.main.tex = _tex_create(PICO_DIM_LOG);
             SDL_SetTextureBlendMode(G.main.tex, SDL_BLENDMODE_NONE);
             SDL_SetRenderTarget(G.ren, G.main.tex);
-            SDL_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
+            Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
             SDL_RenderSetClipRect(G.ren, &r);
             pico_output_clear();
         }
@@ -924,7 +924,7 @@ void pico_set_layer (const char* key) {
     }
 
     SDL_SetRenderTarget(G.ren, S.layer->tex);
-    SDL_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
+    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 }
 
@@ -971,7 +971,7 @@ void pico_pop (void) {
     if (S.layer != st->layer) {
         S.layer = st->layer;
         SDL_SetRenderTarget(G.ren, S.layer->tex);
-        SDL_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
+        Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
         SDL_RenderSetClipRect(G.ren, &r);
     }
 }
@@ -1005,7 +1005,7 @@ void pico_set_view (
         SDL_BlendMode mode = (S.layer == &G.main) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
         SDL_SetTextureBlendMode(S.layer->tex, mode);
         SDL_SetRenderTarget(G.ren, S.layer->tex);
-        SDL_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
+        Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
         SDL_RenderSetClipRect(G.ren, &r);
         pico_output_clear();
     }
@@ -1428,7 +1428,7 @@ void pico_output_clear (void) {
     _pico_guard();
     SDL_SetRenderDrawColor(G.ren,
         S.color.clear.r, S.color.clear.g, S.color.clear.b, S.color.clear.a);
-    SDL_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
+    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
     SDL_RenderFillRect(G.ren, &r);
     _pico_output_present(0);
 }
@@ -1511,7 +1511,7 @@ void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
 
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
     _pico_guard();
-    SDL_Point vs[n];
+    Pico_Abs_Pos vs[n];
     for (int i=0; i<n; i++) {
         vs[i] = pico_cv_pos_rel_abs(&ps[i], NULL);
     }
@@ -1658,7 +1658,7 @@ static void _show_grid (void) {
         pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77});
         pico_set_alpha(0xFF);
         int H = 10;
-        SDL_Rect src = pico_cv_rect_rel_abs (
+        Pico_Abs_Rect src = pico_cv_rect_rel_abs (
                 &S.layer->view.src,
                 &(Pico_Abs_Rect){0, 0, S.layer->view.dim.w, S.layer->view.dim.h}
         );
@@ -1789,11 +1789,11 @@ static void _pico_output_present (int force) {
                 a->h -= d;
             }
         }
-        SDL_Rect src = pico_cv_rect_rel_abs (
+        Pico_Abs_Rect src = pico_cv_rect_rel_abs (
             &G.main.view.src,
             &(Pico_Abs_Rect){0, 0, G.main.view.dim.w, G.main.view.dim.h}
         );
-        SDL_Rect dst = pico_cv_rect_rel_abs (
+        Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
             &G.main.view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
         );
         aux(&dst, &src, S.win.dim.w, S.win.dim.h);
@@ -1806,7 +1806,7 @@ static void _pico_output_present (int force) {
 
     G.presenting = 0;
     SDL_SetRenderTarget(G.ren, G.main.tex);
-    SDL_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
+    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 }
 
@@ -1841,7 +1841,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
     _pico_guard();
     assert(S.layer == &G.main);
     Pico_Abs_Rect phy = {0, 0, S.win.dim.w, S.win.dim.h};
-    SDL_Rect ri = (rect == NULL) ? phy : pico_cv_rect_rel_abs(rect, &phy);
+    Pico_Abs_Rect ri = (rect == NULL) ? phy : pico_cv_rect_rel_abs(rect, &phy);
 
     const char* ret;
     if (path != NULL) {
@@ -1869,7 +1869,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
     SDL_FreeSurface(sfc);
 
     SDL_SetRenderTarget(G.ren, G.main.tex);
-    SDL_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
+    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 
     return ret;
