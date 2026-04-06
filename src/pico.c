@@ -146,6 +146,8 @@ static TTF_Font* _font_get (const char* path, int h) {
     return ret;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 static SDL_FDim _f3 (float w, float h, const Pico_Abs_Dim* ratio) {
     if (ratio!=NULL && (w==0 || h==0)) {
         if (w == 0 && h == 0) {
@@ -187,6 +189,8 @@ static SDL_FRect _f1 (
         return _f2(abs, r->anchor, tmp, ratio);
     }
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 static SDL_FDim _sdl_dim (
     Pico_Rel_Dim*        dim,
@@ -453,30 +457,39 @@ static Pico_Abs_Rect _abs_rect (const SDL_FRect* f) {
 // CV
 ///////////////////////////////////////////////////////////////////////////////
 
-static SDL_FPoint _cv_phy_log (SDL_Point phy) {
+SDL_Point pico_cv_pos_rel_win (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
+    SDL_FPoint fp = _sdl_pos(pos, base);
+    if (pos->mode == 'w') {
+        return (SDL_Point) { fp.x, fp.y };
+    }
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    float rx = (fp.x - src.x) / (float)src.w;
+    float ry = (fp.y - src.y) / (float)src.h;
+    return (SDL_Point) {
+        dst.x + rx*dst.w,
+        dst.y + ry*dst.h,
+    };
+}
+
+void pico_cv_pos_win_rel (SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base) {
+    if (to->mode == 'w') {
+        _rel_pos((SDL_FPoint){phy.x, phy.y}, to, base);
+        return;
+    }
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
         &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
     );
     Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
     float rx = (phy.x - dst.x) / (float)dst.w;
     float ry = (phy.y - dst.y) / (float)dst.h;
-    return (SDL_FPoint) {
+    SDL_FPoint log = {
         src.x + rx*src.w,
         src.y + ry*src.h,
     };
-}
-
-static SDL_Point _cv_log_phy (SDL_FPoint log) {
-    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-    );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
-    float rx = (log.x - src.x) / (float)src.w;
-    float ry = (log.y - src.y) / (float)src.h;
-    return (SDL_Point) {
-        dst.x + rx*dst.w,
-        dst.y + ry*dst.h,
-    };
+    _rel_pos(log, to, base);
 }
 
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
@@ -779,9 +792,8 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
         m.x = phy.x;
         m.y = phy.y;
     } else {
-        SDL_FPoint log = _cv_phy_log(phy);
         Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW, .up=rect };
-        _cv_pos_flt_rel(log, &rel, NULL);
+        pico_cv_pos_win_rel(phy, &rel, NULL);
         m.x = rel.x;
         m.y = rel.y;
     }
@@ -792,13 +804,7 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
 void pico_set_mouse (Pico_Rel_Pos* pos) {
     _pico_guard();
     pos->anchor = PICO_ANCHOR_NW;   // TODO
-    SDL_FPoint fp = _sdl_pos(pos, NULL);
-    SDL_Point phy;
-    if (pos->mode == 'w') {
-        phy = (SDL_Point) { fp.x, fp.y };
-    } else {
-        phy = _cv_log_phy(fp);
-    }
+    SDL_Point phy = pico_cv_pos_rel_win(pos, NULL);
     SDL_WarpMouseInWindow(G.win, phy.x, phy.y);
     SDL_PumpEvents();
 }
