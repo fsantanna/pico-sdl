@@ -99,6 +99,42 @@ static void test_rect_rel_rel (
     }
 }
 
+static void test_dim_abs_rel (
+    Pico_Abs_Dim abs,
+    char mode,
+    Pico_Rel_Rect* up,
+    Pico_Abs_Rect* base
+) {
+    Pico_Rel_Dim to = { mode, {0, 0}, up };
+    pico_cv_dim_abs_rel(&abs, &to, base);
+    Pico_Abs_Dim abs2 = pico_cv_dim_rel_abs(&to, base);
+    if (!dim_eq(abs, abs2)) {
+        printf("FAIL dim_abs_rel: mode='%c'\n", mode);
+        printf("  abs=(%d,%d) -> rel=(%.2f,%.2f) -> abs2=(%d,%d)\n",
+               abs.w, abs.h, to.w, to.h, abs2.w, abs2.h);
+        assert(0);
+    }
+}
+
+static void test_dim_rel_rel (
+    Pico_Rel_Dim fr,
+    char mode_to,
+    Pico_Rel_Rect* up_to,
+    Pico_Abs_Rect* base
+) {
+    Pico_Abs_Dim abs1 = pico_cv_dim_rel_abs(&fr, base);
+    Pico_Rel_Dim to = { mode_to, {0, 0}, up_to };
+    pico_cv_dim_rel_rel(&fr, &to, base);
+    Pico_Abs_Dim abs2 = pico_cv_dim_rel_abs(&to, base);
+    if (!dim_eq(abs1, abs2)) {
+        printf("FAIL dim_rel_rel: fr.mode='%c' to.mode='%c'\n",
+               fr.mode, mode_to);
+        printf("  abs1=(%d,%d) abs2=(%d,%d)\n",
+               abs1.w, abs1.h, abs2.w, abs2.h);
+        assert(0);
+    }
+}
+
 int main (void) {
 
     ///////////////////////////////////////////////////////////////////////////
@@ -520,6 +556,37 @@ int main (void) {
         }
         printf("  passed: %d from x %d modes x %d anchors\n",
                n_from, n_modes, n_anchors);
+    }
+
+    printf("=== Testing pico_cv_dim_abs_rel ===\n");
+    {
+        Pico_Abs_Dim dims[] = {
+            {10, 10}, {50, 30}, {100, 100}, {25, 75}
+        };
+        int n_dims = sizeof(dims) / sizeof(dims[0]);
+
+        for (int i = 0; i < n_dims; i++) {
+            for (int m = 0; m < n_modes; m++) {
+                test_dim_abs_rel(dims[i], modes[m], NULL, &base);
+            }
+        }
+        printf("  passed: %d dims x %d modes\n", n_dims, n_modes);
+    }
+
+    printf("=== Testing pico_cv_dim_rel_rel ===\n");
+    {
+        Pico_Rel_Dim from_dims[] = {
+            { '!', {50, 30}, NULL },
+            { '%', {0.5, 0.75}, NULL },
+        };
+        int n_from = sizeof(from_dims) / sizeof(from_dims[0]);
+
+        for (int i = 0; i < n_from; i++) {
+            for (int m = 0; m < n_modes; m++) {
+                test_dim_rel_rel(from_dims[i], modes[m], NULL, &base);
+            }
+        }
+        printf("  passed: %d from x %d modes\n", n_from, n_modes);
     }
 
     printf("=== Testing with up hierarchy ===\n");

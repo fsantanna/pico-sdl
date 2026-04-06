@@ -378,6 +378,19 @@ Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
     return _abs_dim(&df);
 }
 
+void pico_cv_dim_abs_rel (
+    const Pico_Abs_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
+) {
+    _rel_dim((SDL_FDim){fr->w, fr->h}, to, base);
+}
+
+void pico_cv_dim_rel_rel (
+    Pico_Rel_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
+) {
+    Pico_Abs_Dim abs = pico_cv_dim_rel_abs(fr, base);
+    pico_cv_dim_abs_rel(&abs, to, base);
+}
+
 Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
     SDL_FPoint pf = _sdl_pos(pos, base);
     return (Pico_Abs_Pos) _abs_pos(&pf);
