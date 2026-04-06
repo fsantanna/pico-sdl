@@ -243,4 +243,6 @@ Loop over modes (`!`, `%`, `#`, `w`) × anchors (N/A for dim)
 
 ### Phase 4
 - [x] Add dim roundtrip tests
-- [ ] Verification
+- [x] Add individual concrete-value tests
+- [x] Inline `_cv_log_phy` / `_cv_phy_log`
+- [x] Verification

@@ -612,6 +612,90 @@ int main (void) {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // INDIVIDUAL TESTS: win conversions (5x scale: 100x100 -> 500x500)
+    ///////////////////////////////////////////////////////////////////////////
+
+    // WIN - rel->win - '!' NW: logical 50 * 5 = 250
+    {
+        puts("win - rel->win - ! NW");
+        Pico_Rel_Pos pos = { '!', {50, 50}, PICO_ANCHOR_NW, NULL };
+        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
+        assert(phy.x == 250 && phy.y == 250);
+    }
+
+    // WIN - rel->win - '%' NW: 50% of 100 = 50 logical -> 250 phy
+    {
+        puts("win - rel->win - % NW");
+        Pico_Rel_Pos pos = { '%', {0.5, 0.5}, PICO_ANCHOR_NW, NULL };
+        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
+        assert(phy.x == 250 && phy.y == 250);
+    }
+
+    // WIN - rel->win - 'w' NW: pass-through
+    {
+        puts("win - rel->win - w NW");
+        Pico_Rel_Pos pos = { 'w', {200, 300}, PICO_ANCHOR_NW, NULL };
+        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
+        assert(phy.x == 200 && phy.y == 300);
+    }
+
+    // WIN - win->rel - '!' NW: 250 phy / 5 = 50 logical
+    {
+        puts("win - win->rel - ! NW");
+        SDL_Point phy = { 250, 250 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 50 && to.y == 50);
+    }
+
+    // WIN - win->rel - '%' NW: 250 phy / 5 = 50 logical, 50/100 = 0.5
+    {
+        puts("win - win->rel - % NW");
+        SDL_Point phy = { 250, 250 };
+        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 0.5f && to.y == 0.5f);
+    }
+
+    // WIN - win->rel - 'w' NW: pass-through
+    {
+        puts("win - win->rel - w NW");
+        SDL_Point phy = { 200, 300 };
+        Pico_Rel_Pos to = { 'w', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 200 && to.y == 300);
+    }
+
+    // WIN - rel->win - '!' NW with up: parent (25,25,50,50), pos (25,25) -> logical (50,50) -> phy (250,250)
+    {
+        puts("win - rel->win - ! NW - up");
+        Pico_Rel_Rect up = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Pos pos = { '!', {25, 25}, PICO_ANCHOR_NW, &up };
+        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
+        assert(phy.x == 250 && phy.y == 250);
+    }
+
+    // WIN - win->rel - '!' NW with up: phy (250,250) -> logical (50,50), parent (25,25,50,50) -> rel (25,25)
+    {
+        puts("win - win->rel - ! NW - up");
+        Pico_Rel_Rect up = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
+        SDL_Point phy = { 250, 250 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, &up };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 25 && to.y == 25);
+    }
+
+    // WIN - win->rel - '%' NW with up: phy (250,250) -> logical (50,50), parent (25,25,50,50) -> rel (0.5,0.5)
+    {
+        puts("win - win->rel - % NW - up");
+        Pico_Rel_Rect up = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
+        SDL_Point phy = { 250, 250 };
+        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW, &up };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 0.5f && to.y == 0.5f);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     // BIDIR TESTS: abs_rel and rel_rel (canonical form invariant)
     ///////////////////////////////////////////////////////////////////////////
 
