@@ -1,6 +1,5 @@
 #include "pico.h"
 #include <stdio.h>
-#include <math.h>
 
 #define EPSILON 1
 
@@ -452,10 +451,171 @@ int main (void) {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // NEW TESTS: abs_rel and rel_rel (canonical form invariant)
+    // INDIVIDUAL TESTS: abs_rel, rel_rel, dim_abs_rel, dim_rel_rel
     ///////////////////////////////////////////////////////////////////////////
 
-    // Reset to 100x100 for inverse tests
+    // Reset to 100x100 for individual tests
+    {
+        Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
+    }
+
+    // POS - abs->rel - '!' NW
+    {
+        puts("pos - abs->rel - ! NW");
+        Pico_Abs_Pos abs = { 50, 70 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_abs_rel(&abs, &to, NULL);
+        assert(to.x == 50 && to.y == 70);
+    }
+
+    // POS - abs->rel - '%' NW
+    {
+        puts("pos - abs->rel - % NW");
+        Pico_Abs_Pos abs = { 50, 75 };
+        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_abs_rel(&abs, &to, NULL);
+        assert(to.x == 0.5f && to.y == 0.75f);
+    }
+
+    // POS - abs->rel - '!' C
+    {
+        puts("pos - abs->rel - ! C");
+        Pico_Abs_Pos abs = { 50, 50 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_C, NULL };
+        pico_cv_pos_abs_rel(&abs, &to, NULL);
+        assert(to.x == 50.5f && to.y == 50.5f);
+    }
+
+    // POS - abs->rel - '!' with base
+    {
+        puts("pos - abs->rel - ! NW - base");
+        Pico_Abs_Rect base = { 20, 20, 60, 60 };
+        Pico_Abs_Pos abs = { 50, 50 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_abs_rel(&abs, &to, &base);
+        assert(to.x == 30 && to.y == 30);
+    }
+
+    // POS - rel->rel - '!' NW -> '%' NW
+    {
+        puts("pos - rel->rel - ! NW -> % NW");
+        Pico_Rel_Pos fr = { '!', {50, 75}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_rel_rel(&fr, &to, NULL);
+        assert(to.x == 0.5f && to.y == 0.75f);
+    }
+
+    // POS - rel->rel - '%' NW -> '!' NW
+    {
+        puts("pos - rel->rel - % NW -> ! NW");
+        Pico_Rel_Pos fr = { '%', {0.5, 0.5}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_rel_rel(&fr, &to, NULL);
+        assert(to.x == 50 && to.y == 50);
+    }
+
+    // RECT - abs->rel - '!' NW
+    {
+        puts("rect - abs->rel - ! NW");
+        Pico_Abs_Rect abs = { 25, 25, 50, 50 };
+        Pico_Rel_Rect to = { '!', {0, 0, 0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_rect_abs_rel(&abs, &to, NULL);
+        assert(to.x == 25 && to.y == 25);
+        assert(to.w == 50 && to.h == 50);
+    }
+
+    // RECT - abs->rel - '%' NW
+    {
+        puts("rect - abs->rel - % NW");
+        Pico_Abs_Rect abs = { 25, 25, 50, 50 };
+        Pico_Rel_Rect to = { '%', {0, 0, 0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_rect_abs_rel(&abs, &to, NULL);
+        assert(to.x == 0.25f && to.y == 0.25f);
+        assert(to.w == 0.5f && to.h == 0.5f);
+    }
+
+    // RECT - abs->rel - '%' C
+    {
+        puts("rect - abs->rel - % C");
+        Pico_Abs_Rect abs = { 30, 30, 40, 40 };
+        Pico_Rel_Rect to = { '%', {0, 0, 0, 0}, PICO_ANCHOR_C, NULL };
+        pico_cv_rect_abs_rel(&abs, &to, NULL);
+        assert(to.w == 0.4f && to.h == 0.4f);
+        assert(to.x == 0.5f && to.y == 0.5f);
+    }
+
+    // RECT - rel->rel - '!' NW -> '%' NW
+    {
+        puts("rect - rel->rel - ! NW -> % NW");
+        Pico_Rel_Rect fr = { '!', {25, 25, 50, 50}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect to = { '%', {0, 0, 0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_rect_rel_rel(&fr, &to, NULL);
+        assert(to.x == 0.25f && to.y == 0.25f);
+        assert(to.w == 0.5f && to.h == 0.5f);
+    }
+
+    // RECT - rel->rel - '%' NW -> '!' NW
+    {
+        puts("rect - rel->rel - % NW -> ! NW");
+        Pico_Rel_Rect fr = { '%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect to = { '!', {0, 0, 0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_rect_rel_rel(&fr, &to, NULL);
+        assert(to.x == 50 && to.y == 50);
+        assert(to.w == 40 && to.h == 40);
+    }
+
+    // DIM - abs->rel - '!'
+    {
+        puts("dim - abs->rel - !");
+        Pico_Abs_Dim abs = { 50, 30 };
+        Pico_Rel_Dim to = { '!', {0, 0}, NULL };
+        pico_cv_dim_abs_rel(&abs, &to, NULL);
+        assert(to.w == 50 && to.h == 30);
+    }
+
+    // DIM - abs->rel - '%'
+    {
+        puts("dim - abs->rel - %");
+        Pico_Abs_Dim abs = { 50, 25 };
+        Pico_Rel_Dim to = { '%', {0, 0}, NULL };
+        pico_cv_dim_abs_rel(&abs, &to, NULL);
+        assert(to.w == 0.5f && to.h == 0.25f);
+    }
+
+    // DIM - abs->rel - '%' with base
+    {
+        puts("dim - abs->rel - % - base");
+        Pico_Abs_Rect base = { 10, 10, 80, 40 };
+        Pico_Abs_Dim abs = { 40, 20 };
+        Pico_Rel_Dim to = { '%', {0, 0}, NULL };
+        pico_cv_dim_abs_rel(&abs, &to, &base);
+        assert(to.w == 0.5f && to.h == 0.5f);
+    }
+
+    // DIM - rel->rel - '!' -> '%'
+    {
+        puts("dim - rel->rel - ! -> %");
+        Pico_Rel_Dim fr = { '!', {50, 25}, NULL };
+        Pico_Rel_Dim to = { '%', {0, 0}, NULL };
+        pico_cv_dim_rel_rel(&fr, &to, NULL);
+        assert(to.w == 0.5f && to.h == 0.25f);
+    }
+
+    // DIM - rel->rel - '%' -> '!'
+    {
+        puts("dim - rel->rel - % -> !");
+        Pico_Rel_Dim fr = { '%', {0.5, 0.25}, NULL };
+        Pico_Rel_Dim to = { '!', {0, 0}, NULL };
+        pico_cv_dim_rel_rel(&fr, &to, NULL);
+        assert(to.w == 50 && to.h == 25);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // BIDIR TESTS: abs_rel and rel_rel (canonical form invariant)
+    ///////////////////////////////////////////////////////////////////////////
+
+    // Reset to 100x100 for bidir tests
     {
         Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
         pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
