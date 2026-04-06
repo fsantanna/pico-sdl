@@ -314,12 +314,7 @@ static int l_push (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Rel_Dim* _c_tpl_dim (lua_State* L, int i) {
-    assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);    // T
-
-    char mode = c_mode(L, i, 1);
-
+static Pico_Rel_Rect* _c_tpl_up (lua_State* L, int i) {
     lua_getfield(L, i, "up");               // T | up
     Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
@@ -328,6 +323,15 @@ static Pico_Rel_Dim* _c_tpl_dim (lua_State* L, int i) {
     } else {
         lua_pop(L, 1);                      // T
     }
+    return up;
+}
+
+static Pico_Rel_Dim* _c_tpl_dim (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);    // T
+
+    char mode = c_mode(L, i, 1);
+    Pico_Rel_Rect* up = _c_tpl_up(L, i);
 
     Pico_Rel_Dim* d = lua_newuserdata(L, sizeof(Pico_Rel_Dim));
     *d = (Pico_Rel_Dim) {                   // T | [ud] | ud
@@ -343,15 +347,7 @@ static Pico_Rel_Pos* _c_tpl_pos (lua_State* L, int i) {
 
     char mode = c_mode(L, i, 1);
     Pico_Anchor anc = c_anchor(L, i);
-
-    lua_getfield(L, i, "up");               // T | up
-    Pico_Rel_Rect* up = NULL;
-    if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
-        lua_replace(L, -2);                 // T | ud
-    } else {
-        lua_pop(L, 1);                      // T
-    }
+    Pico_Rel_Rect* up = _c_tpl_up(L, i);
 
     Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
     *p = (Pico_Rel_Pos) {                   // T | [ud] | ud
@@ -368,15 +364,7 @@ static Pico_Rel_Rect* _c_tpl_rect (lua_State* L, int i) {
 
     char mode = c_mode(L, i, 1);
     Pico_Anchor anc = c_anchor(L, i);
-
-    lua_getfield(L, i, "up");               // T | up
-    Pico_Rel_Rect* up = NULL;
-    if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
-        lua_replace(L, -2);                 // T | ud
-    } else {
-        lua_pop(L, 1);                      // T
-    }
+    Pico_Rel_Rect* up = _c_tpl_up(L, i);
 
     Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
     *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
