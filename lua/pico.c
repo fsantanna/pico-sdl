@@ -939,8 +939,14 @@ static int l_set_layer (lua_State* L) {
 }
 
 static int l_set_mouse (lua_State* L) {
-    const char* s = luaL_checkstring(L, 1);
-    pico_set_mouse(s[0]);
+    if (lua_type(L, 1) == LUA_TSTRING) {
+        const char* s = lua_tostring(L, 1);
+        pico_set_mouse(s[0]);
+    } else {
+        luaL_checktype(L, 1, LUA_TTABLE);
+        Pico_Rel_Pos* pos = c_rel_pos(L, 1);
+        pico_warp_mouse(pos);
+    }
     return 0;
 }
 

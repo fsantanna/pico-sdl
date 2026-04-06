@@ -519,6 +519,10 @@ void pico_set_show (int on);
 /// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window)
 void pico_set_mouse (char mode);
 
+/// @brief Warps the mouse cursor to a point.
+/// @param pos target position (mode determines coordinates)
+void pico_warp_mouse (Pico_Rel_Pos* pos);
+
 /// @brief Sets the drawing style.
 /// @param style new style
 void pico_set_style (PICO_STYLE style);

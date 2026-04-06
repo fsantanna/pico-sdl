@@ -350,6 +350,17 @@ static SDL_FPoint _cv_phy_log (SDL_Point phy) {
     };
 }
 
+static SDL_Point _cv_log_phy (SDL_FPoint log) {
+    SDL_Rect dst = pico_cv_rect_rel_abs(&S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h});
+    SDL_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    float rx = (log.x - src.x) / (float)src.w;
+    float ry = (log.y - src.y) / (float)src.h;
+    return (SDL_Point) {
+        roundf(dst.x + rx*dst.w),
+        roundf(dst.y + ry*dst.h),
+    };
+}
+
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
     SDL_FDim df = _sdl_dim(dim, base, NULL);
     return _fi_dim(&df);
@@ -881,6 +892,16 @@ void pico_set_show (int on) {
 void pico_set_mouse (char mode) {
     assert((mode=='w' || mode=='!' || mode=='%' || mode=='#') && "invalid mouse mode");
     S.mouse = mode;
+}
+
+void pico_warp_mouse (Pico_Rel_Pos* pos) {
+    if (pos->mode == 'w') {
+        SDL_WarpMouseInWindow(G.win, (int)roundf(pos->x), (int)roundf(pos->y));
+    } else {
+        Pico_Abs_Pos log = pico_cv_pos_rel_abs(pos, NULL);
+        SDL_Point phy = _cv_log_phy((SDL_FPoint){log.x, log.y});
+        SDL_WarpMouseInWindow(G.win, phy.x, phy.y);
+    }
 }
 
 void pico_set_style (PICO_STYLE style) {
