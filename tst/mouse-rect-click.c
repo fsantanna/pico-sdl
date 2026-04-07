@@ -10,7 +10,7 @@ int main (void) {
     Pico_Rel_Rect btn2 = { '%', {0.50, 0.50, 0.15, 0.30}, PICO_ANCHOR_C, NULL };
     Pico_Rel_Rect btn3 = { '%', {0.75, 0.50, 0.15, 0.30}, PICO_ANCHOR_C, NULL };
 
-    pico_layer_empty("A", (Pico_Abs_Dim){120, 50});
+    pico_layer_empty("A", (Pico_Abs_Dim){120, 50}, NULL);
     pico_set_layer("A");
     pico_set_color_clear(PICO_COLOR_NAVY);
     pico_output_clear();

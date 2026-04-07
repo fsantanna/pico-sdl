@@ -107,11 +107,11 @@ cd lua && make test T=layer-empty-tile
 
 ## Status
 
-- [ ] `src/pico.h` — update declarations
-- [ ] `src/mem.hc` — extend alloc ctx, thread tile, set `view.tile`
-- [ ] `src/pico.c` — update `pico_layer_empty` / `_mode` bodies
-- [ ] `lua/pico.c` — accept optional 3rd positional
-- [ ] migrate existing C callers (`tst/*.c`, anywhere in `src/`)
-- [ ] add `tst/layer-empty-tile.c`
-- [ ] add `lua/tst/layer-empty-tile.lua`
+- [x] `src/pico.h` — update declarations
+- [x] `src/mem.hc` — extend alloc ctx, thread tile, set `view.tile`
+- [x] `src/pico.c` — update `pico_layer_empty` / `_mode` bodies
+- [ ] `lua/pico.c` — accept optional 3rd positional (currently passes NULL stopgap)
+- [x] migrate existing C callers (`tst/*.c`, anywhere in `src/`)
+- [x] add `tst/layer-empty-tile.c`
+- [x] add `lua/tst/layer-empty-tile.lua`
 - [ ] update `valgrind.supp` line `N` if `src/pico.c` `SDL_Init` line moves

@@ -1175,7 +1175,7 @@ static int l_layer_empty (lua_State* L) {
         (int) L_checkfieldnum(L, i+1, "w"),
         (int) L_checkfieldnum(L, i+1, "h"),
     };
-    pico_layer_empty_mode(m, key, dim);
+    pico_layer_empty_mode(m, key, dim, NULL);
     return 0;
 }
 
