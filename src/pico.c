@@ -154,13 +154,13 @@ static TTF_Font* _font_get (const char* path, int h) {
 
 SDL_Point pico_cv_pos_rel_win (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
     SDL_FPoint fp = _sdl_pos(pos, base);
-    SDL_FPoint win = _log_to_win_pos(fp);
+    SDL_FPoint win = _pos_wld_to_win(fp);
     return (SDL_Point) { floorf(win.x + 0.5f), floorf(win.y + 0.5f) };
 }
 
 void pico_cv_pos_win_rel (SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base) {
-    SDL_FPoint log = _win_to_log_pos((SDL_FPoint){phy.x, phy.y});
-    _rel_pos(log, to, base);
+    SDL_FPoint wld = _pos_win_to_wld((SDL_FPoint){phy.x, phy.y});
+    _rel_pos(wld, to, base);
 }
 
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
