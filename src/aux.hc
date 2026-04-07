@@ -48,6 +48,26 @@ static SDL_FRect _f1 (
 // _win_to_wld_* / _wld_to_win_*: window <-> logical coordinate transforms
 ///////////////////////////////////////////////////////////////////////////////
 
+static SDL_FDim _dim_win_to_wld (SDL_FDim win) {
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    return (SDL_FDim) {
+        win.w * src.w / (float)dst.w, win.h * src.h / (float)dst.h
+    };
+}
+
+static SDL_FDim _dim_wld_to_win (SDL_FDim wld) {
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
+    return (SDL_FDim) {
+        wld.w * dst.w / (float)src.w, wld.h * dst.h / (float)src.h
+    };
+}
+
 static SDL_FPoint _pos_win_to_wld (SDL_FPoint win) {
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
         &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
@@ -66,22 +86,6 @@ static SDL_FPoint _pos_wld_to_win (SDL_FPoint wld) {
     float rx = (wld.x - src.x) / (float)src.w;
     float ry = (wld.y - src.y) / (float)src.h;
     return (SDL_FPoint) { dst.x + rx*dst.w, dst.y + ry*dst.h };
-}
-
-static SDL_FDim _dim_win_to_wld (SDL_FDim win) {
-    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-    );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
-    return (SDL_FDim) { win.w * src.w / (float)dst.w, win.h * src.h / (float)dst.h };
-}
-
-static SDL_FDim _dim_wld_to_win (SDL_FDim wld) {
-    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-    );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
-    return (SDL_FDim) { wld.w * dst.w / (float)src.w, wld.h * dst.h / (float)src.h };
 }
 
 static SDL_FRect _rect_win_to_wld (SDL_FRect win) {
