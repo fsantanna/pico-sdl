@@ -377,21 +377,25 @@ static Pico_Rel_Rect* _c_tpl_rect (lua_State* L, int i) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_cv_dim (lua_State* L) {
+static int _cv_args (lua_State* L, Pico_Abs_Rect** base) {
     luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
-
     int has_to = (lua_gettop(L)>=2 && !lua_isnil(L,2));
     if (has_to) {
         luaL_checktype(L, 2, LUA_TTABLE);
     }
-
-    Pico_Abs_Rect* base = NULL;
-    Pico_Abs_Rect base_rect;
+    static Pico_Abs_Rect base_buf;
+    *base = NULL;
     if (lua_gettop(L)>=3 && !lua_isnil(L,3)) {
         luaL_checktype(L, 3, LUA_TTABLE);
-        base_rect = c_abs_rect(L, 3);
-        base = &base_rect;
+        base_buf = c_abs_rect(L, 3);
+        *base = &base_buf;
     }
+    return has_to;
+}
+
+static int l_cv_dim (lua_State* L) {
+    Pico_Abs_Rect* base;
+    int has_to = _cv_args(L, &base);
 
     if (!has_to) {
         // rel -> abs
@@ -427,20 +431,8 @@ static int l_cv_dim (lua_State* L) {
 }
 
 static int l_cv_pos (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
-
-    int has_to = (lua_gettop(L)>=2 && !lua_isnil(L,2));
-    if (has_to) {
-        luaL_checktype(L, 2, LUA_TTABLE);
-    }
-
-    Pico_Abs_Rect* base = NULL;
-    Pico_Abs_Rect base_rect;
-    if (lua_gettop(L)>=3 && !lua_isnil(L,3)) {
-        luaL_checktype(L, 3, LUA_TTABLE);
-        base_rect = c_abs_rect(L, 3);
-        base = &base_rect;
-    }
+    Pico_Abs_Rect* base;
+    int has_to = _cv_args(L, &base);
 
     if (!has_to) {
         // rel -> abs
@@ -476,20 +468,8 @@ static int l_cv_pos (lua_State* L) {
 }
 
 static int l_cv_rect (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // fr | [to] | [base]
-
-    int has_to = (lua_gettop(L)>=2 && !lua_isnil(L,2));
-    if (has_to) {
-        luaL_checktype(L, 2, LUA_TTABLE);
-    }
-
-    Pico_Abs_Rect* base = NULL;
-    Pico_Abs_Rect base_rect;
-    if (lua_gettop(L)>=3 && !lua_isnil(L,3)) {
-        luaL_checktype(L, 3, LUA_TTABLE);
-        base_rect = c_abs_rect(L, 3);
-        base = &base_rect;
-    }
+    Pico_Abs_Rect* base;
+    int has_to = _cv_args(L, &base);
 
     if (!has_to) {
         // rel -> abs
