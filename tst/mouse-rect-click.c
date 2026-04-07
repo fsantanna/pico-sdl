@@ -27,12 +27,16 @@ int main (void) {
     pico_output_draw_layer("A", &r);
     _pico_check("mouse-rect-click-01");
 
+    btn1.up = &r;
+    btn2.up = &r;
+    btn3.up = &r;
+
     /* no collision */
     puts("no collision (394,355)");
     {
         pico_set_mouse(&(Pico_Rel_Pos){ 'w', {394, 355}, PICO_ANCHOR_C, NULL });
         Pico_Mouse pct = pico_get_mouse('%', &r);
-        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C, &r };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
         assert(!pico_vs_pos_rect(&pos, &btn1));
         assert(!pico_vs_pos_rect(&pos, &btn2));
@@ -47,12 +51,12 @@ int main (void) {
     {
         pico_set_mouse(&(Pico_Rel_Pos){ 'w', {457, 431}, PICO_ANCHOR_C, NULL });
         Pico_Mouse pct = pico_get_mouse('%', &r);
-        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C, &r };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
         assert(!pico_vs_pos_rect(&pos, &btn1));
         assert(!pico_vs_pos_rect(&pos, &btn2));
         assert( pico_vs_pos_rect(&pos, &btn3));
-        pico_set_color_draw(PICO_COLOR_RED);
+        pico_set_color_draw(PICO_COLOR_GREEN);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {457, 431}, PICO_ANCHOR_C, NULL });
         _pico_check("mouse-rect-click-03");
     }
@@ -62,28 +66,28 @@ int main (void) {
     {
         pico_set_mouse(&(Pico_Rel_Pos){ 'w', {362, 405}, PICO_ANCHOR_C, NULL });
         Pico_Mouse pct = pico_get_mouse('%', &r);
-        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C, &r };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
         assert( pico_vs_pos_rect(&pos, &btn1));
         assert(!pico_vs_pos_rect(&pos, &btn2));
         assert(!pico_vs_pos_rect(&pos, &btn3));
-        pico_set_color_draw(PICO_COLOR_RED);
+        pico_set_color_draw(PICO_COLOR_GREEN);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {362, 405}, PICO_ANCHOR_C, NULL });
         _pico_check("mouse-rect-click-04");
     }
 
     /* click 2 */
-    puts("click 2 (418,392)");
+    puts("click 2 (415,392)");
     {
-        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {418, 392}, PICO_ANCHOR_C, NULL });
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {419, 392}, PICO_ANCHOR_C, NULL });
         Pico_Mouse pct = pico_get_mouse('%', &r);
-        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C, &r };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
         assert(!pico_vs_pos_rect(&pos, &btn1));
         assert( pico_vs_pos_rect(&pos, &btn2));
         assert(!pico_vs_pos_rect(&pos, &btn3));
-        pico_set_color_draw(PICO_COLOR_RED);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {418, 392}, PICO_ANCHOR_C, NULL });
+        pico_set_color_draw(PICO_COLOR_GREEN);
+        pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {419, 392}, PICO_ANCHOR_C, NULL });
         _pico_check("mouse-rect-click-05");
     }
 
