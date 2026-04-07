@@ -137,11 +137,8 @@ cd lua/ && make tests
 
 ## Status
 
+**Superseded by `pico_cv_win.md` Phase 5.**
+
 - [x] Step 0: view-target test (C + Lua)
 - [x] Fix `_pico_output_draw_layer` rect=NULL symmetry
-- [ ] Add `_cv_phy_log_rect` + `_cv_phy_log_flt` helpers
-- [ ] `_sdl_dim`: separate 'w' from '!'
-- [ ] `_sdl_pos`: separate 'w' from '!'
-- [ ] `_sdl_rect`: separate 'w' from '!'
-- [ ] `pico_set_mouse`: simplify
-- [ ] Verification
+- [~] Remaining steps moved to `pico_cv_win.md`

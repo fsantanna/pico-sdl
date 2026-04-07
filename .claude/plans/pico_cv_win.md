@@ -246,3 +246,249 @@ Loop over modes (`!`, `%`, `#`, `w`) × anchors (N/A for dim)
 - [x] Add individual concrete-value tests
 - [x] Inline `_cv_log_phy` / `_cv_phy_log`
 - [x] Verification
+
+### Phase 5: `_sdl_*` / `_rel_*` always in logical space
+
+Make `'w'` mode produce/consume logical coords in all internal
+helpers.
+Only `pico_cv_*_rel_win` / `pico_cv_*_win_rel` end in window
+coords.
+
+#### 19. Add `_win_to_log_*` / `_log_to_win_*` helpers
+
+```c
+static SDL_FPoint _win_to_log_pos (SDL_FPoint win) {
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst,
+        &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(
+        &S.layer->view.src, NULL
+    );
+    float rx = (win.x - dst.x) / (float)dst.w;
+    float ry = (win.y - dst.y) / (float)dst.h;
+    return (SDL_FPoint) {
+        src.x + rx*src.w, src.y + ry*src.h
+    };
+}
+
+static SDL_FPoint _log_to_win_pos (SDL_FPoint log) {
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst,
+        &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(
+        &S.layer->view.src, NULL
+    );
+    float rx = (log.x - src.x) / (float)src.w;
+    float ry = (log.y - src.y) / (float)src.h;
+    return (SDL_FPoint) {
+        dst.x + rx*dst.w, dst.y + ry*dst.h
+    };
+}
+
+static SDL_FDim _win_to_log_dim (SDL_FDim win) {
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst,
+        &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(
+        &S.layer->view.src, NULL
+    );
+    return (SDL_FDim) {
+        win.w * src.w / (float)dst.w,
+        win.h * src.h / (float)dst.h
+    };
+}
+
+static SDL_FDim _log_to_win_dim (SDL_FDim log) {
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst,
+        &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(
+        &S.layer->view.src, NULL
+    );
+    return (SDL_FDim) {
+        log.w * dst.w / (float)src.w,
+        log.h * dst.h / (float)src.h
+    };
+}
+
+static SDL_FRect _win_to_log_rect (SDL_FRect win) {
+    SDL_FPoint p = _win_to_log_pos(
+        (SDL_FPoint){win.x, win.y}
+    );
+    SDL_FDim d = _win_to_log_dim(
+        (SDL_FDim){win.w, win.h}
+    );
+    return (SDL_FRect) { p.x, p.y, d.w, d.h };
+}
+
+static SDL_FRect _log_to_win_rect (SDL_FRect log) {
+    SDL_FPoint p = _log_to_win_pos(
+        (SDL_FPoint){log.x, log.y}
+    );
+    SDL_FDim d = _log_to_win_dim(
+        (SDL_FDim){log.w, log.h}
+    );
+    return (SDL_FRect) { p.x, p.y, d.w, d.h };
+}
+```
+
+#### 20. `_sdl_pos`: separate `'w'` from `'!'`
+
+```c
+case 'w': {
+    ret = (SDL_FPoint) {
+        r1.x + pos->x - pos->anchor.x,
+        r1.y + pos->y - pos->anchor.y,
+    };
+    ret = _win_to_log_pos(ret);
+    break;
+}
+case '!':
+    ...
+```
+
+#### 21. `_sdl_dim`: separate `'w'` from `'!'`
+
+```c
+case 'w': {
+    ret = _f3(dim->w, dim->h, ratio);
+    if (dim->w == 0) dim->w = ret.w;
+    if (dim->h == 0) dim->h = ret.h;
+    ret = _win_to_log_dim(ret);
+    break;
+}
+case '!':
+    ...
+```
+
+#### 22. `_sdl_rect`: separate `'w'` from `'!'`
+
+```c
+case 'w': {
+    SDL_FDim d = _f3(rect->w, rect->h, ratio);
+    ret = (SDL_FRect) {
+        r1.x + rect->x - rect->anchor.x*d.w,
+        r1.y + rect->y - rect->anchor.y*d.h,
+        d.w, d.h
+    };
+    ret = _win_to_log_rect(ret);
+    break;
+}
+case '!': {
+    ...
+```
+
+#### 23. `_rel_pos`: separate `'w'` from `'!'`
+
+```c
+case 'w': {
+    SDL_FPoint wflt = _log_to_win_pos(flt);
+    to->x = wflt.x - r1.x + to->anchor.x;
+    to->y = wflt.y - r1.y + to->anchor.y;
+    break;
+}
+case '!':
+    ...
+```
+
+#### 24. `_rel_dim`: separate `'w'` from `'!'`
+
+```c
+case 'w': {
+    SDL_FDim wflt = _log_to_win_dim(flt);
+    to->w = wflt.w;
+    to->h = wflt.h;
+    break;
+}
+case '!':
+    ...
+```
+
+#### 25. `_rel_rect`: separate `'w'` from `'!'`
+
+```c
+case 'w': {
+    SDL_FRect wflt = _log_to_win_rect(flt);
+    to->w = wflt.w;
+    to->h = wflt.h;
+    to->x = wflt.x - r1.x + to->anchor.x * to->w;
+    to->y = wflt.y - r1.y + to->anchor.y * to->h;
+    break;
+}
+case '!':
+    ...
+```
+
+#### 26. Simplify `pico_cv_pos_rel_win`
+
+Remove `'w'` early return — `_sdl_pos` now returns logical
+for all modes:
+
+```c
+SDL_Point pico_cv_pos_rel_win (
+    const Pico_Rel_Pos* pos, Pico_Abs_Rect* base
+) {
+    SDL_FPoint fp = _sdl_pos(pos, base);
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst,
+        &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(
+        &S.layer->view.src, NULL
+    );
+    float rx = (fp.x - src.x) / (float)src.w;
+    float ry = (fp.y - src.y) / (float)src.h;
+    return (SDL_Point) {
+        dst.x + rx*dst.w, dst.y + ry*dst.h
+    };
+}
+```
+
+#### 27. Simplify `pico_cv_pos_win_rel`
+
+Remove `'w'` branch:
+
+```c
+void pico_cv_pos_win_rel (
+    SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base
+) {
+    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+        &S.layer->view.dst,
+        &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(
+        &S.layer->view.src, NULL
+    );
+    float rx = (phy.x - dst.x) / (float)dst.w;
+    float ry = (phy.y - dst.y) / (float)dst.h;
+    SDL_FPoint log = {
+        src.x + rx*src.w, src.y + ry*src.h
+    };
+    _rel_pos(log, to, base);
+}
+```
+
+#### 28. Update tests
+
+- `tst/cv.c`: `'w'` rel_abs tests now expect logical coords
+  (e.g., pos 320,240 on 500×500 win / 100×100 log → 64,48)
+- `tst/cv.c`: win conversion tests unchanged
+- `tst/todo/w-mouse.c`: should now work (draw with `'w'`)
+- `lua/tst/cv.lua`: update `'w'` mode expectations
+
+### Phase 5 status
+- [ ] Add `_win_to_log_*` / `_log_to_win_*` helpers
+- [ ] `_sdl_pos`: separate `'w'`, convert to logical
+- [ ] `_sdl_dim`: separate `'w'`, convert to logical
+- [ ] `_sdl_rect`: separate `'w'`, convert to logical
+- [ ] `_rel_pos`: convert logical→window for `'w'`
+- [ ] `_rel_dim`: convert logical→window for `'w'`
+- [ ] `_rel_rect`: convert logical→window for `'w'`
+- [ ] Simplify `pico_cv_pos_rel_win`
+- [ ] Simplify `pico_cv_pos_win_rel`
+- [ ] Update tests
+- [ ] Verification
