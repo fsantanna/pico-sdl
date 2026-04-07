@@ -2,15 +2,20 @@ v0.4 (???/26)
 -------------
 
 Additions:
-    - visual grid for tile mode `#`
+    - CLI options: `--version`, `--help`
+    - window mode 'w': absolute window positioning
+    - tile mode '#':
+        - visual grid
+        - init in `pico_layer_empty`
     - `pico_*_color_clear_alpha`: get/set clear color with alpha
     - `pico_color_hex`: convert hex integer (0xRRGGBB) to color
+    - `pico_cv_*`:
+        - `pico_cv_pos_rel_win`, `pico_cv_pos_win_rel`
+        - `pico_cv_dim_abs_rel`, `pico_cv_dim_rel_rel`
 
 Modifications:
     - `pico_get_mouse`: accepts `rect` for relative positioning
-
-Removals:
-    - `pico_set_mouse`: mouse events now carry only absolute window positions
+    - `pico_set_mouse`: sets mouse position to simulate movement
 
 v0.3 (mar/26)
 -------------

@@ -12,124 +12,84 @@
 3. Guide: `pico.get.now` never introduced
     - Used in section 9.2 but never formally introduced
 
-4. Create `extra/` directory
-    - Move `check.h` from `tst/`
-    - Video generator (yet to come)
-
-5. Support percentage mode for alpha
+4. Support percentage mode for alpha
     - `pico.set.alpha('%', 0.5)` — normalized 0.0–1.0
     - Currently only raw 0–255
 
-6. Rename alpha to transparency (invert values)
-    - SDL convention: 255=opaque, 0=transparent
-    - Invert so 0=opaque, 255=fully transparent
-
-7. Add ttl-GC to history and guide
-    - Document TTL-based garbage collection in HISTORY.md
+5. Document realm hash table / resource management
+    - The realm hash table (Lua-side resource registry) is undocumented
+    - Unclear how resources are managed / when they are released
+    - Document in HISTORY.md
     - Document in `lua/doc/guide.md`
 
-8. Group all drawing state under `pico.set.draw.*`
+6. Group all drawing state under `pico.set.draw.*`
     - Move color, style, alpha, font under `pico.set.draw`
     - Consider `pico.draw { ... }` block with auto push/pop
 
-9. `pico_set_view` present in non-expert mode
-    - Already calls `_pico_output_present(0)`
-    - Pros: navigation works without input loop
-    - Cons: flicker on setup, multiple presents per logical setup
-    - Guide: why pixels in 5.3 need clear? Why 6.1 doesn't work?
-
-10. Review and complete guide
+7. Review and complete guide
     - [#103](https://github.com/fsantanna/pico-sdl/issues/103)
 
-11. `pico.set` vs multi-arg setters
+8. `pico.set` vs multi-arg setters
     - `set` dispatch calls `field(v)` with single argument
     - Multi-arg setters (`expert`, `video`) lose extra arguments
     - See `.claude/plans/set.md`
     - [#102](https://github.com/fsantanna/pico-sdl/issues/102)
 
-12. README pico-lua cross image
+9. README pico-lua cross image
     - [#101](https://github.com/fsantanna/pico-sdl/issues/101)
 
-13. Command-line options
-    - [#100](https://github.com/fsantanna/pico-sdl/issues/100)
-
-14. Support screenshots of layers
+10. Support screenshots of layers
     - [#98](https://github.com/fsantanna/pico-sdl/issues/98)
 
-15. Non-blocking video I/O
+11. Non-blocking video I/O
     - See `.claude/plans/select.md`
     - [#93](https://github.com/fsantanna/pico-sdl/issues/93)
 
-16. Help aid
+12. Help aid
     - [#72](https://github.com/fsantanna/pico-sdl/issues/72)
 
-17. Expert mode should disable all aids
+13. Expert mode should disable all aids
     - [#71](https://github.com/fsantanna/pico-sdl/issues/71)
 
-18. Fullscreen vs accelerated rendering
+14. Fullscreen vs accelerated rendering
     - Redraw does not work in fullscreen + accelerated
     - Send example `bug.c` to SDL mailing list
     - [#65](https://github.com/fsantanna/pico-sdl/issues/65)
 
-19. Thickness for drawing primitives
-    - Overlaps with ThorVG Phase 2 (stroke width)
-    - [#62](https://github.com/fsantanna/pico-sdl/issues/62)
-
-20. Create a logo for the project
+15. Create a logo for the project
     - [#46](https://github.com/fsantanna/pico-sdl/issues/46)
 
-21. Run manual tests for v0.3
-    - Interactive C tests and guide examples
-    - See `.claude/plans/release.md` step 2b
-
-22. Announce v0.3
-    - Twitter, students, SDL lists, Lua lists
-    - See `.claude/plans/release.md` step 10
-
-23. ThorVG integration
+16. ThorVG integration
     - Replace SDL2_gfx (and later SDL2_ttf) with ThorVG
     - SwCanvas renders to ARGB8888, uploaded to SDL_Texture
     - Adds SVG, anti-aliasing, gradients, bezier, stroke, transforms
+    - Phase 2: thickness / stroke width for drawing primitives
+      ([#62](https://github.com/fsantanna/pico-sdl/issues/62))
     - See `.claude/plans/thorvg.md` (4 phases)
 
-24. Networking support (`pico-sdl-net`)
+17. Networking support (`pico-sdl-net`)
     - SDL3 needed due to blocking calls in SDL2_net
 
-25. Layout system
+18. Layout system
     - Dispatch mechanism
     - Click handling
 
-26. ~~`pico_set_target(LOG/PHY)`~~ DONE via `'w'` mode
-    - `'w'` mode added to all coordinate APIs (win-mode-w.md)
-    - `G.tgt` removed, replaced by `G.presenting` (guard only)
-    - For `'%'`/`'#'` in window space: create a matching layer
-    - TODO: `'w'` mode for drawing functions
-        - Convert window pixels to layer coords via `_cv_phy_log`
-        - Draw on main layer; result appears correctly when presented
-
-27. Default DejaVu font
+19. Default DejaVu font
     - Consider replacing Tiny font
     - Decide default font size
     - Predefined font options (tiny, dejavu, etc)
     - Test other fonts
 
-28. Unify panels, boxes, images, and text as layers
+20. Unify panels, boxes, images, and text as layers
     - Images are also layers
     - Rotation: angle/anchor
     - Crop, flip, dimensions unified across types
     - Path identifies type; text uses string + font
 
-29. `pico_get_image/text` should accept ref parameter
+21. `pico_get_image/text` should accept ref parameter
     - See `lua/tst/image_pct` commented tests
 
-30. Mouse anchor asymmetry between get and set
-    - `pico_get_mouse` forces `PICO_ANCHOR_NW` (`src/pico.c:731`)
-    - `pico_set_mouse` uses whatever anchor comes from Lua (defaults C)
-    - Why not use `PICO_ANCHOR_C` in both? Investigate symmetry
-    - Currently `pico.set.mouse` requires explicit `anchor='NW'`
-    - This is undesired — user shouldn't need to specify anchor
-
-31. `'w'` vs `r`-relative divergence near edges
+22. `'w'` vs `r`-relative divergence near edges
     - `pico_output_draw_pixel({'w', ...})` snaps through screen log grid
       (5 win px / log px) while collision via `up = &r` is continuous
     - Near edges of a distorted `r`, render and collision disagree
