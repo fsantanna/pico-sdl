@@ -23,18 +23,30 @@ int main (void) {
     pico_output_draw_layer("A", &r);
 
     /* Mouse near visible btn's right edge. */
+
+    pico_set_mouse(&(Pico_Rel_Pos){ 'w', {267, 250}, PICO_ANCHOR_NW, NULL });
+    Pico_Mouse pct1 = pico_get_mouse('%', &r);
+    Pico_Rel_Pos pos1 = { '%', {pct1.x, pct1.y}, PICO_ANCHOR_NW, &r };
+
     pico_set_mouse(&(Pico_Rel_Pos){ 'w', {268, 250}, PICO_ANCHOR_NW, NULL });
-    Pico_Mouse pct = pico_get_mouse('%', &r);
-    Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
+    Pico_Mouse pct2 = pico_get_mouse('%', &r);
+    Pico_Rel_Pos pos2 = { '%', {pct2.x, pct2.y}, PICO_ANCHOR_NW, &r };
+
+    btn.up = &r;
 
     /* Collision passes against the phantom screen-% btn... */
-    assert(pico_vs_pos_rect(&pos, &btn));
+    assert(pico_vs_pos_rect(&pos1, &btn));
+    assert(!pico_vs_pos_rect(&pos2, &btn));
 
-    /* ...but pixel renders outside the visible (layer-A composited) btn. */
+    pico_set_color_draw(PICO_COLOR_GREEN);
+    pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {267, 250}, PICO_ANCHOR_NW, NULL });
+    pico_output_draw_pixel(&pos1);
+    _pico_check("mouse-w-click-01");
+
     pico_set_color_draw(PICO_COLOR_RED);
     pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {268, 250}, PICO_ANCHOR_NW, NULL });
-    pico_output_draw_pixel(&pos);
-    _pico_check("mouse-w-click-01");
+    pico_output_draw_pixel(&pos2);
+    _pico_check("mouse-w-click-02");
 
     pico_init(0);
     return 0;
