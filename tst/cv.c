@@ -430,24 +430,30 @@ int main (void) {
         assert(dim_eq(abs, (Pico_Abs_Dim){40, 30}));
     }
 
-    // WIN - 'w' resolves against window (500x500), not layer (100x100)
+    // Reset to 100x100 logical for w-mode tests
     {
-        puts("win - pos - w mode");
-        Pico_Rel_Pos pos = { 'w', {320, 240}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
+    }
+
+    // WIN - 'w' mode in rel_abs: window -> logical (window 500x500, view 100x100, scale 5x)
+    {
+        puts("win - pos - w mode -> logical");
+        Pico_Rel_Pos pos = { 'w', {250, 250}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
-        assert(abs.x==320 && abs.y==240);
+        assert(abs.x==50 && abs.y==50);
     }
     {
-        puts("win - rect - w mode");
+        puts("win - rect - w mode -> logical");
         Pico_Rel_Rect rect = { 'w', {100, 50, 200, 100}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&rect, NULL);
-        assert(abs.x==100 && abs.y==50 && abs.w==200 && abs.h==100);
+        assert(abs.x==20 && abs.y==10 && abs.w==40 && abs.h==20);
     }
     {
-        puts("win - dim - w mode");
-        Pico_Rel_Dim dim = { 'w', {320, 240}, NULL };
+        puts("win - dim - w mode -> logical");
+        Pico_Rel_Dim dim = { 'w', {250, 500}, NULL };
         Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&dim, NULL);
-        assert(dim_eq(abs, (Pico_Abs_Dim){320, 240}));
+        assert(dim_eq(abs, (Pico_Abs_Dim){50, 100}));
     }
 
     ///////////////////////////////////////////////////////////////////////////

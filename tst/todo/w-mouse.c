@@ -19,11 +19,11 @@ int main (void) {
 
         // Red — NW anchor
         pico_set_color_draw(PICO_COLOR_RED);
-        //pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_NW, NULL});
+        pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_NW, NULL});
 
         // Green — C anchor
         pico_set_color_draw(PICO_COLOR_GREEN);
-        //pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_C, NULL});
+        pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_C, NULL});
 
         // Blue — SE anchor
         pico_set_color_draw(PICO_COLOR_BLUE);

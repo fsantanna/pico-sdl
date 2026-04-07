@@ -262,12 +262,12 @@ do
     assert(abs.w == 40 and abs.h == 30)
 end
 
-print "pico.cv.dim [log]: w mode"
+print "pico.cv.dim [log]: w mode -> logical"
 do
     print('', 1)
-    local dim = {'w', w=320, h=240}
+    local dim = {'w', w=250, h=500}
     local abs = pico.cv.dim(dim)
-    assert(abs.w == 320 and abs.h == 240)
+    assert(abs.w == 50 and abs.h == 100)
 end
 
 -- tile mode: 4x4 grid of 4x4 tiles = 16x16 logical

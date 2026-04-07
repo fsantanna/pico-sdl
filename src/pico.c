@@ -154,36 +154,12 @@ static TTF_Font* _font_get (const char* path, int h) {
 
 SDL_Point pico_cv_pos_rel_win (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
     SDL_FPoint fp = _sdl_pos(pos, base);
-    if (pos->mode == 'w') {
-        return (SDL_Point) { fp.x, fp.y };
-    }
-    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-    );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
-    float rx = (fp.x - src.x) / (float)src.w;
-    float ry = (fp.y - src.y) / (float)src.h;
-    return (SDL_Point) {
-        dst.x + rx*dst.w,
-        dst.y + ry*dst.h,
-    };
+    SDL_FPoint win = _log_to_win_pos(fp);
+    return (SDL_Point) { floorf(win.x + 0.5f), floorf(win.y + 0.5f) };
 }
 
 void pico_cv_pos_win_rel (SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base) {
-    if (to->mode == 'w') {
-        _rel_pos((SDL_FPoint){phy.x, phy.y}, to, base);
-        return;
-    }
-    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-    );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
-    float rx = (phy.x - dst.x) / (float)dst.w;
-    float ry = (phy.y - dst.y) / (float)dst.h;
-    SDL_FPoint log = {
-        src.x + rx*src.w,
-        src.y + ry*src.h,
-    };
+    SDL_FPoint log = _win_to_log_pos((SDL_FPoint){phy.x, phy.y});
     _rel_pos(log, to, base);
 }
 
