@@ -110,3 +110,21 @@ coordinate systems, here layer A's `120x50`, the screen layer's
   is a real architectural property that limits `'w'` precision to
   5-window-pixel cells. Worth a separate note in user docs but not a
   bug.
+
+- **`'w'` vs `r`-relative divergence (isolated in `tst/mouse-w-click.c`):**
+  even after `btn.up = &r`, a `'w'` pixel draw and a collision against
+  the same `btn` can disagree near edges. Collision goes
+  `win -> pct of r -> r-%` (continuous) while
+  `pico_output_draw_pixel({'w', ...})` snaps through the screen log grid
+  (5 win px / log px). When `r` is distorted or non-grid-aligned, the
+  snapped cell can land outside the visible btn even though the
+  continuous `r`-% point is inside.
+    - Repro: `tst/mouse-w-click.c`, single btn, `r = SE 0.99/0.99/0.35/0.35`,
+      mouse `'w' (400, 382)`. `pico_vs_pos_rect` passes; the green pixel
+      renders one row above btn's top edge (win 380 < 381.25).
+    - Options:
+        1. Route `'w'` draws through the same `_abs_pos` pipeline used by
+           collision against `r` (no screen-log snap when an `up` chain
+           exists or when called outside any explicit layer).
+        2. Document the 5-win-px quantization as a hard limit; require
+           edge-precision tests to draw via `up = &r` instead of `'w'`.
