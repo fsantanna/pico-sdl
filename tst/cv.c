@@ -672,6 +672,19 @@ int main (void) {
         assert(to.x == 200 && to.y == 300);
     }
 
+    // WIN - 'w' round-trip with non-clean ratios
+    // 418/500 and 392/500 are not exactly representable in float, so the
+    // win->wld->win round trip drifts by a few ulps. Use pos_eq tolerance.
+    {
+        puts("win - 'w' round-trip (drifty ratios)");
+        Pico_Rel_Pos in = { 'w', {418, 392}, PICO_ANCHOR_NW, NULL };
+        SDL_Point phy = pico_cv_pos_rel_win(&in, NULL);
+        assert(pos_eq((Pico_Abs_Pos){phy.x, phy.y}, (Pico_Abs_Pos){418, 392}));
+        Pico_Rel_Pos to = { 'w', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(pos_eq((Pico_Abs_Pos){(int)to.x, (int)to.y}, (Pico_Abs_Pos){418, 392}));
+    }
+
     // WIN - rel->win - '!' NW with up: parent (25,25,50,50), pos (25,25) -> logical (50,50) -> phy (250,250)
     {
         puts("win - rel->win - ! NW - up");

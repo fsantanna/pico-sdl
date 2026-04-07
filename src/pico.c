@@ -474,7 +474,6 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
 
 void pico_set_mouse (Pico_Rel_Pos* pos) {
     _pico_guard();
-    pos->anchor = PICO_ANCHOR_NW;   // TODO
     SDL_Point phy = pico_cv_pos_rel_win(pos, NULL);
     SDL_WarpMouseInWindow(G.win, phy.x, phy.y);
     SDL_PumpEvents();

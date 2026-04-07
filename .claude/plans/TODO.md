@@ -128,3 +128,10 @@
     - Why not use `PICO_ANCHOR_C` in both? Investigate symmetry
     - Currently `pico.set.mouse` requires explicit `anchor='NW'`
     - This is undesired — user shouldn't need to specify anchor
+
+31. `'w'` vs `r`-relative divergence near edges
+    - `pico_output_draw_pixel({'w', ...})` snaps through screen log grid
+      (5 win px / log px) while collision via `up = &r` is continuous
+    - Near edges of a distorted `r`, render and collision disagree
+    - Repro: `tst/mouse-w-click.c` (mouse `'w' (400, 382)`)
+    - See `.claude/plans/w-bug.md` open follow-ups for fix options
