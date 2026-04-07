@@ -5,13 +5,8 @@ int main (void) {
     pico_init(1);
 
     Pico_Rel_Dim phy = { '!', {480, 480}, NULL };
-    pico_set_window("EmptyTile", -1, &phy);
-
-    // Reset main view, grid off
-    {
-        Pico_Rel_Dim log = { '!', {480, 480}, NULL };
-        pico_set_view(0, &log, NULL, NULL, NULL, NULL, NULL, NULL);
-    }
+    pico_set_dim(&phy);
+    pico_set_view(0, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
     // Layer "map": 20x15 cols/rows of 16x16 tiles -> 320x240 px texture.
     // view.tile must be set at birth so '#'-mode works without pico_set_view.
@@ -20,15 +15,14 @@ int main (void) {
         Pico_Abs_Dim tile = { 16, 16 };
         pico_layer_empty("map", (Pico_Abs_Dim){20, 15}, &tile);
         pico_set_layer("map");
-        Pico_Rel_Dim log = { '#', {20, 15}, NULL };
-        pico_set_view(1, &log, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view(1, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_set_color_draw(PICO_COLOR_RED);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {0, 0, 1, 1}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {1, 1, 1, 1}, PICO_ANCHOR_NW, NULL });
         pico_set_color_draw(PICO_COLOR_GREEN);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {5, 3, 4, 2}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {6, 4, 4, 2}, PICO_ANCHOR_NW, NULL });
         pico_set_color_draw(PICO_COLOR_BLUE);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {19, 14, 1, 1}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {20, 15, 1, 1}, PICO_ANCHOR_NW, NULL });
         pico_set_layer(NULL);
     }
 
@@ -53,8 +47,6 @@ int main (void) {
         puts("layer fx: plain pixel layer (tile=NULL)");
         pico_layer_empty("fx", (Pico_Abs_Dim){64, 64}, NULL);
         pico_set_layer("fx");
-        Pico_Rel_Dim log = { '!', {64, 64}, NULL };
-        pico_set_view(0, &log, NULL, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
         pico_set_color_draw(PICO_COLOR_YELLOW);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '!', {8, 8, 48, 48}, PICO_ANCHOR_NW, NULL });

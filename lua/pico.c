@@ -1166,16 +1166,27 @@ static int c_opt_mode (lua_State* L) {
 }
 
 static int l_layer_empty (lua_State* L) {
-    int m = c_opt_mode(L);
+    int m = c_opt_mode(L);                      // [m] | key | dim | [tile]
     int i = m ? 2 : 1;
     if (!m) m = '!';
     const char* key = luaL_checkstring(L, i);
+
     luaL_checktype(L, i+1, LUA_TTABLE);
     Pico_Abs_Dim dim = {
         (int) L_checkfieldnum(L, i+1, "w"),
         (int) L_checkfieldnum(L, i+1, "h"),
     };
-    pico_layer_empty_mode(m, key, dim, NULL);
+
+    Pico_Abs_Dim tile;
+    Pico_Abs_Dim* ptr = NULL;
+    if (!lua_isnoneornil(L,i+2)) {
+        luaL_checktype(L, i+2, LUA_TTABLE);
+        tile.w = (int) L_checkfieldnum(L, i+2, "w");
+        tile.h = (int) L_checkfieldnum(L, i+2, "h");
+        ptr = &tile;
+    }
+
+    pico_layer_empty_mode(m, key, dim, ptr);
     return 0;
 }
 
