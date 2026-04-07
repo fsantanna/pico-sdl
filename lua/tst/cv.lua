@@ -243,4 +243,98 @@ do
     assert(abs_fr.w == abs_to.w and abs_fr.h == abs_to.h)
 end
 
+print "pico.cv.dim [log]: rel->abs (rel_abs)"
+do
+    print('', 1)
+    local dim = {'!', w=50, h=30}
+    local abs = pico.cv.dim(dim)
+    assert(abs.w == 50 and abs.h == 30)
+
+    print('', 2)
+    local dim = {'%', w=0.5, h=0.75}
+    local abs = pico.cv.dim(dim)
+    assert(abs.w == 50 and abs.h == 75)
+
+    print('', 3)
+    local base = {x=10, y=10, w=80, h=60}
+    local dim = {'%', w=0.5, h=0.5}
+    local abs = pico.cv.dim(dim, nil, base)
+    assert(abs.w == 40 and abs.h == 30)
+end
+
+print "pico.cv.dim [log]: w mode -> logical"
+do
+    print('', 1)
+    local dim = {'w', w=250, h=500}
+    local abs = pico.cv.dim(dim)
+    assert(abs.w == 50 and abs.h == 100)
+end
+
+-- tile mode: 4x4 grid of 4x4 tiles = 16x16 logical
+pico.set.view { dim={'#', w=4, h=4}, tile={w=4, h=4} }
+
+print "pico.cv.dim [tile]: rel->abs (rel_abs)"
+do
+    print('', 1)
+    local dim = {'%', w=0.5, h=0.75}
+    local abs = pico.cv.dim(dim)
+    assert(abs.w == 8 and abs.h == 12)
+
+    print('', 2)
+    local dim = {'#', w=2, h=3}
+    local abs = pico.cv.dim(dim)
+    assert(abs.w == 8 and abs.h == 12)
+end
+
+-- reset to 100x100 for inverse tests
+pico.set.view { dim={'!', w=100, h=100} }
+
+print "pico.cv.dim [log]: abs->rel (abs_rel)"
+do
+    print('', 1)
+    local abs = {w=50, h=30}
+    local to = {'!'}
+    pico.cv.dim(abs, to)
+    assert(to.w == 50 and to.h == 30)
+
+    print('', 2)
+    local abs = {w=50, h=25}
+    local to = {'%'}
+    pico.cv.dim(abs, to)
+    assert(to.w == 0.5 and to.h == 0.25)
+
+    print('', 3)
+    local base = {x=10, y=10, w=80, h=40}
+    local abs = {w=40, h=20}
+    local to = {'%'}
+    pico.cv.dim(abs, to, base)
+    assert(to.w == 0.5 and to.h == 0.5)
+end
+
+print "pico.cv.dim [log]: rel->rel (rel_rel)"
+do
+    print('', 1)
+    local fr = {'!', w=50, h=25}
+    local to = {'%'}
+    pico.cv.dim(fr, to)
+    assert(to.w == 0.5 and to.h == 0.25)
+
+    print('', 2)
+    local fr = {'%', w=0.5, h=0.25}
+    local to = {'!'}
+    pico.cv.dim(fr, to)
+    assert(to.w == 50 and to.h == 25)
+end
+
+print "pico.cv.dim [base]: round-trip"
+do
+    print('', 1)
+    local base = {x=10, y=10, w=80, h=40}
+    local fr = {'%', w=0.5, h=0.5}
+    local abs = pico.cv.dim(fr, nil, base)
+    local to = {'%'}
+    pico.cv.dim(abs, to, base)
+    assert(to.w == 0.5 and to.h == 0.5)
+end
+
 pico.init(false)

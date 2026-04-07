@@ -1,6 +1,5 @@
 #include "pico.h"
 #include <stdio.h>
-#include <math.h>
 
 #define EPSILON 1
 
@@ -95,6 +94,42 @@ static void test_rect_rel_rel (
         printf("  abs1=(%d,%d,%d,%d) abs2=(%d,%d,%d,%d)\n",
                abs1.x, abs1.y, abs1.w, abs1.h,
                abs2.x, abs2.y, abs2.w, abs2.h);
+        assert(0);
+    }
+}
+
+static void test_dim_abs_rel (
+    Pico_Abs_Dim abs,
+    char mode,
+    Pico_Rel_Rect* up,
+    Pico_Abs_Rect* base
+) {
+    Pico_Rel_Dim to = { mode, {0, 0}, up };
+    pico_cv_dim_abs_rel(&abs, &to, base);
+    Pico_Abs_Dim abs2 = pico_cv_dim_rel_abs(&to, base);
+    if (!dim_eq(abs, abs2)) {
+        printf("FAIL dim_abs_rel: mode='%c'\n", mode);
+        printf("  abs=(%d,%d) -> rel=(%.2f,%.2f) -> abs2=(%d,%d)\n",
+               abs.w, abs.h, to.w, to.h, abs2.w, abs2.h);
+        assert(0);
+    }
+}
+
+static void test_dim_rel_rel (
+    Pico_Rel_Dim fr,
+    char mode_to,
+    Pico_Rel_Rect* up_to,
+    Pico_Abs_Rect* base
+) {
+    Pico_Abs_Dim abs1 = pico_cv_dim_rel_abs(&fr, base);
+    Pico_Rel_Dim to = { mode_to, {0, 0}, up_to };
+    pico_cv_dim_rel_rel(&fr, &to, base);
+    Pico_Abs_Dim abs2 = pico_cv_dim_rel_abs(&to, base);
+    if (!dim_eq(abs1, abs2)) {
+        printf("FAIL dim_rel_rel: fr.mode='%c' to.mode='%c'\n",
+               fr.mode, mode_to);
+        printf("  abs1=(%d,%d) abs2=(%d,%d)\n",
+               abs1.w, abs1.h, abs2.w, abs2.h);
         assert(0);
     }
 }
@@ -395,31 +430,282 @@ int main (void) {
         assert(dim_eq(abs, (Pico_Abs_Dim){40, 30}));
     }
 
-    // WIN - 'w' resolves against window (500x500), not layer (100x100)
+    // Reset to 100x100 logical for w-mode tests
     {
-        puts("win - pos - w mode");
-        Pico_Rel_Pos pos = { 'w', {320, 240}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
+    }
+
+    // WIN - 'w' mode in rel_abs: window -> logical (window 500x500, view 100x100, scale 5x)
+    {
+        puts("win - pos - w mode -> logical");
+        Pico_Rel_Pos pos = { 'w', {250, 250}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
-        assert(abs.x==320 && abs.y==240);
+        assert(abs.x==50 && abs.y==50);
     }
     {
-        puts("win - rect - w mode");
+        puts("win - rect - w mode -> logical");
         Pico_Rel_Rect rect = { 'w', {100, 50, 200, 100}, PICO_ANCHOR_NW, NULL };
         Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&rect, NULL);
-        assert(abs.x==100 && abs.y==50 && abs.w==200 && abs.h==100);
+        assert(abs.x==20 && abs.y==10 && abs.w==40 && abs.h==20);
     }
     {
-        puts("win - dim - w mode");
-        Pico_Rel_Dim dim = { 'w', {320, 240}, NULL };
+        puts("win - dim - w mode -> logical");
+        Pico_Rel_Dim dim = { 'w', {250, 500}, NULL };
         Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&dim, NULL);
-        assert(dim_eq(abs, (Pico_Abs_Dim){320, 240}));
+        assert(dim_eq(abs, (Pico_Abs_Dim){50, 100}));
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // NEW TESTS: abs_rel and rel_rel (canonical form invariant)
+    // INDIVIDUAL TESTS: abs_rel, rel_rel, dim_abs_rel, dim_rel_rel
     ///////////////////////////////////////////////////////////////////////////
 
-    // Reset to 100x100 for inverse tests
+    // Reset to 100x100 for individual tests
+    {
+        Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
+    }
+
+    // POS - abs->rel - '!' NW
+    {
+        puts("pos - abs->rel - ! NW");
+        Pico_Abs_Pos abs = { 50, 70 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_abs_rel(&abs, &to, NULL);
+        assert(to.x == 50 && to.y == 70);
+    }
+
+    // POS - abs->rel - '%' NW
+    {
+        puts("pos - abs->rel - % NW");
+        Pico_Abs_Pos abs = { 50, 75 };
+        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_abs_rel(&abs, &to, NULL);
+        assert(to.x == 0.5f && to.y == 0.75f);
+    }
+
+    // POS - abs->rel - '!' C
+    {
+        puts("pos - abs->rel - ! C");
+        Pico_Abs_Pos abs = { 50, 50 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_C, NULL };
+        pico_cv_pos_abs_rel(&abs, &to, NULL);
+        assert(to.x == 50.5f && to.y == 50.5f);
+    }
+
+    // POS - abs->rel - '!' with base
+    {
+        puts("pos - abs->rel - ! NW - base");
+        Pico_Abs_Rect base = { 20, 20, 60, 60 };
+        Pico_Abs_Pos abs = { 50, 50 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_abs_rel(&abs, &to, &base);
+        assert(to.x == 30 && to.y == 30);
+    }
+
+    // POS - rel->rel - '!' NW -> '%' NW
+    {
+        puts("pos - rel->rel - ! NW -> % NW");
+        Pico_Rel_Pos fr = { '!', {50, 75}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_rel_rel(&fr, &to, NULL);
+        assert(to.x == 0.5f && to.y == 0.75f);
+    }
+
+    // POS - rel->rel - '%' NW -> '!' NW
+    {
+        puts("pos - rel->rel - % NW -> ! NW");
+        Pico_Rel_Pos fr = { '%', {0.5, 0.5}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_rel_rel(&fr, &to, NULL);
+        assert(to.x == 50 && to.y == 50);
+    }
+
+    // RECT - abs->rel - '!' NW
+    {
+        puts("rect - abs->rel - ! NW");
+        Pico_Abs_Rect abs = { 25, 25, 50, 50 };
+        Pico_Rel_Rect to = { '!', {0, 0, 0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_rect_abs_rel(&abs, &to, NULL);
+        assert(to.x == 25 && to.y == 25);
+        assert(to.w == 50 && to.h == 50);
+    }
+
+    // RECT - abs->rel - '%' NW
+    {
+        puts("rect - abs->rel - % NW");
+        Pico_Abs_Rect abs = { 25, 25, 50, 50 };
+        Pico_Rel_Rect to = { '%', {0, 0, 0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_rect_abs_rel(&abs, &to, NULL);
+        assert(to.x == 0.25f && to.y == 0.25f);
+        assert(to.w == 0.5f && to.h == 0.5f);
+    }
+
+    // RECT - abs->rel - '%' C
+    {
+        puts("rect - abs->rel - % C");
+        Pico_Abs_Rect abs = { 30, 30, 40, 40 };
+        Pico_Rel_Rect to = { '%', {0, 0, 0, 0}, PICO_ANCHOR_C, NULL };
+        pico_cv_rect_abs_rel(&abs, &to, NULL);
+        assert(to.w == 0.4f && to.h == 0.4f);
+        assert(to.x == 0.5f && to.y == 0.5f);
+    }
+
+    // RECT - rel->rel - '!' NW -> '%' NW
+    {
+        puts("rect - rel->rel - ! NW -> % NW");
+        Pico_Rel_Rect fr = { '!', {25, 25, 50, 50}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect to = { '%', {0, 0, 0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_rect_rel_rel(&fr, &to, NULL);
+        assert(to.x == 0.25f && to.y == 0.25f);
+        assert(to.w == 0.5f && to.h == 0.5f);
+    }
+
+    // RECT - rel->rel - '%' NW -> '!' NW
+    {
+        puts("rect - rel->rel - % NW -> ! NW");
+        Pico_Rel_Rect fr = { '%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect to = { '!', {0, 0, 0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_rect_rel_rel(&fr, &to, NULL);
+        assert(to.x == 50 && to.y == 50);
+        assert(to.w == 40 && to.h == 40);
+    }
+
+    // DIM - abs->rel - '!'
+    {
+        puts("dim - abs->rel - !");
+        Pico_Abs_Dim abs = { 50, 30 };
+        Pico_Rel_Dim to = { '!', {0, 0}, NULL };
+        pico_cv_dim_abs_rel(&abs, &to, NULL);
+        assert(to.w == 50 && to.h == 30);
+    }
+
+    // DIM - abs->rel - '%'
+    {
+        puts("dim - abs->rel - %");
+        Pico_Abs_Dim abs = { 50, 25 };
+        Pico_Rel_Dim to = { '%', {0, 0}, NULL };
+        pico_cv_dim_abs_rel(&abs, &to, NULL);
+        assert(to.w == 0.5f && to.h == 0.25f);
+    }
+
+    // DIM - abs->rel - '%' with base
+    {
+        puts("dim - abs->rel - % - base");
+        Pico_Abs_Rect base = { 10, 10, 80, 40 };
+        Pico_Abs_Dim abs = { 40, 20 };
+        Pico_Rel_Dim to = { '%', {0, 0}, NULL };
+        pico_cv_dim_abs_rel(&abs, &to, &base);
+        assert(to.w == 0.5f && to.h == 0.5f);
+    }
+
+    // DIM - rel->rel - '!' -> '%'
+    {
+        puts("dim - rel->rel - ! -> %");
+        Pico_Rel_Dim fr = { '!', {50, 25}, NULL };
+        Pico_Rel_Dim to = { '%', {0, 0}, NULL };
+        pico_cv_dim_rel_rel(&fr, &to, NULL);
+        assert(to.w == 0.5f && to.h == 0.25f);
+    }
+
+    // DIM - rel->rel - '%' -> '!'
+    {
+        puts("dim - rel->rel - % -> !");
+        Pico_Rel_Dim fr = { '%', {0.5, 0.25}, NULL };
+        Pico_Rel_Dim to = { '!', {0, 0}, NULL };
+        pico_cv_dim_rel_rel(&fr, &to, NULL);
+        assert(to.w == 50 && to.h == 25);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // INDIVIDUAL TESTS: win conversions (5x scale: 100x100 -> 500x500)
+    ///////////////////////////////////////////////////////////////////////////
+
+    // WIN - rel->win - '!' NW: logical 50 * 5 = 250
+    {
+        puts("win - rel->win - ! NW");
+        Pico_Rel_Pos pos = { '!', {50, 50}, PICO_ANCHOR_NW, NULL };
+        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
+        assert(phy.x == 250 && phy.y == 250);
+    }
+
+    // WIN - rel->win - '%' NW: 50% of 100 = 50 logical -> 250 phy
+    {
+        puts("win - rel->win - % NW");
+        Pico_Rel_Pos pos = { '%', {0.5, 0.5}, PICO_ANCHOR_NW, NULL };
+        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
+        assert(phy.x == 250 && phy.y == 250);
+    }
+
+    // WIN - rel->win - 'w' NW: pass-through
+    {
+        puts("win - rel->win - w NW");
+        Pico_Rel_Pos pos = { 'w', {200, 300}, PICO_ANCHOR_NW, NULL };
+        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
+        assert(phy.x == 200 && phy.y == 300);
+    }
+
+    // WIN - win->rel - '!' NW: 250 phy / 5 = 50 logical
+    {
+        puts("win - win->rel - ! NW");
+        SDL_Point phy = { 250, 250 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 50 && to.y == 50);
+    }
+
+    // WIN - win->rel - '%' NW: 250 phy / 5 = 50 logical, 50/100 = 0.5
+    {
+        puts("win - win->rel - % NW");
+        SDL_Point phy = { 250, 250 };
+        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 0.5f && to.y == 0.5f);
+    }
+
+    // WIN - win->rel - 'w' NW: pass-through
+    {
+        puts("win - win->rel - w NW");
+        SDL_Point phy = { 200, 300 };
+        Pico_Rel_Pos to = { 'w', {0, 0}, PICO_ANCHOR_NW, NULL };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 200 && to.y == 300);
+    }
+
+    // WIN - rel->win - '!' NW with up: parent (25,25,50,50), pos (25,25) -> logical (50,50) -> phy (250,250)
+    {
+        puts("win - rel->win - ! NW - up");
+        Pico_Rel_Rect up = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Pos pos = { '!', {25, 25}, PICO_ANCHOR_NW, &up };
+        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
+        assert(phy.x == 250 && phy.y == 250);
+    }
+
+    // WIN - win->rel - '!' NW with up: phy (250,250) -> logical (50,50), parent (25,25,50,50) -> rel (25,25)
+    {
+        puts("win - win->rel - ! NW - up");
+        Pico_Rel_Rect up = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
+        SDL_Point phy = { 250, 250 };
+        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW, &up };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 25 && to.y == 25);
+    }
+
+    // WIN - win->rel - '%' NW with up: phy (250,250) -> logical (50,50), parent (25,25,50,50) -> rel (0.5,0.5)
+    {
+        puts("win - win->rel - % NW - up");
+        Pico_Rel_Rect up = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
+        SDL_Point phy = { 250, 250 };
+        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW, &up };
+        pico_cv_pos_win_rel(phy, &to, NULL);
+        assert(to.x == 0.5f && to.y == 0.5f);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // BIDIR TESTS: abs_rel and rel_rel (canonical form invariant)
+    ///////////////////////////////////////////////////////////////////////////
+
+    // Reset to 100x100 for bidir tests
     {
         Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
         pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -520,6 +806,37 @@ int main (void) {
         }
         printf("  passed: %d from x %d modes x %d anchors\n",
                n_from, n_modes, n_anchors);
+    }
+
+    printf("=== Testing pico_cv_dim_abs_rel ===\n");
+    {
+        Pico_Abs_Dim dims[] = {
+            {10, 10}, {50, 30}, {100, 100}, {25, 75}
+        };
+        int n_dims = sizeof(dims) / sizeof(dims[0]);
+
+        for (int i = 0; i < n_dims; i++) {
+            for (int m = 0; m < n_modes; m++) {
+                test_dim_abs_rel(dims[i], modes[m], NULL, &base);
+            }
+        }
+        printf("  passed: %d dims x %d modes\n", n_dims, n_modes);
+    }
+
+    printf("=== Testing pico_cv_dim_rel_rel ===\n");
+    {
+        Pico_Rel_Dim from_dims[] = {
+            { '!', {50, 30}, NULL },
+            { '%', {0.5, 0.75}, NULL },
+        };
+        int n_from = sizeof(from_dims) / sizeof(from_dims[0]);
+
+        for (int i = 0; i < n_from; i++) {
+            for (int m = 0; m < n_modes; m++) {
+                test_dim_rel_rel(from_dims[i], modes[m], NULL, &base);
+            }
+        }
+        printf("  passed: %d from x %d modes\n", n_from, n_modes);
     }
 
     printf("=== Testing with up hierarchy ===\n");

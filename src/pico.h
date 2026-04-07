@@ -587,12 +587,40 @@ void pico_pop (void);
 /// @sa pico_cv_rect_rel_abs
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
 
+/// @brief Converts an absolute dimension to relative coordinates.
+/// @param fr absolute dimension to convert
+/// @param to relative dimension template (mode, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+void pico_cv_dim_abs_rel (
+    const Pico_Abs_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
+);
+
+/// @brief Converts a relative dimension to another relative mode.
+/// @param fr relative dimension to convert
+/// @param to relative dimension template (mode, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+void pico_cv_dim_rel_rel (
+    Pico_Rel_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
+);
+
 /// @brief Converts a relative position to absolute coordinates.
 /// @param pos relative position to convert
 /// @param base reference rectangle to use as basis (NULL uses world dimensions)
 /// @return absolute position in logical pixels
 /// @sa pico_cv_rect_rel_abs
 Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
+
+/// @brief Converts a relative position to window (physical) coordinates.
+/// @param pos relative position to convert
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @return physical pixel point in window coordinates
+SDL_Point pico_cv_pos_rel_win (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
+
+/// @brief Converts window (physical) coordinates to a relative position.
+/// @param phy physical pixel point in window coordinates
+/// @param to relative position template (mode, anchor, up must be set)
+/// @param base reference rectangle (NULL uses world dimensions)
+void pico_cv_pos_win_rel (SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative rectangle to absolute coordinates.
 /// @param rect relative rectangle to convert

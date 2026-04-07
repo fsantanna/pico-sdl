@@ -146,236 +146,39 @@ static TTF_Font* _font_get (const char* path, int h) {
     return ret;
 }
 
-static SDL_FDim _f3 (float w, float h, const Pico_Abs_Dim* ratio) {
-    if (ratio!=NULL && (w==0 || h==0)) {
-        if (w == 0 && h == 0) {
-            w = ratio->w;
-            h = ratio->h;
-        } else if (w == 0) {
-            w = h * ratio->w / ratio->h;
-        } else {
-            h = w * ratio->h / ratio->w;
-        }
-    }
-    return (SDL_FDim) { w, h };
-}
-
-static SDL_FRect _f2 (
-    SDL_FRect   dn,
-    Pico_Anchor anc,
-    SDL_FRect   up,
-    const Pico_Abs_Dim* ratio
-) {
-    SDL_FDim d = _f3(dn.w*up.w, dn.h*up.h, ratio);
-    return (SDL_FRect) {
-        up.x + dn.x*up.w - anc.x*d.w,
-        up.y + dn.y*up.h - anc.y*d.h,
-        d.w, d.h,
-    };
-}
-
-static SDL_FRect _f1 (
-    const Pico_Rel_Rect* r,
-    SDL_FRect base,
-    const Pico_Abs_Dim* ratio
-) {
-    if (r == NULL) {
-        return base;
-    } else {
-        SDL_FRect abs = { r->x, r->y, r->w, r->h };
-        SDL_FRect tmp = _f1(r->up, base, NULL);
-        return _f2(abs, r->anchor, tmp, ratio);
-    }
-}
-
-static SDL_FDim _sdl_dim (
-    Pico_Rel_Dim*        dim,
-    const Pico_Abs_Rect* base,
-    const Pico_Abs_Dim*  ratio
-) {
-    SDL_FRect r0;
-    if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (dim->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
-            (dim->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
-        };
-    } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
-    }
-    SDL_FRect r1 = _f1(dim->up, r0, NULL);
-    SDL_FDim ret;
-    switch (dim->mode) {
-        case 'w':
-        case '!':
-            ret = _f3(dim->w, dim->h, ratio);
-            if (dim->w == 0) dim->w = ret.w;
-            if (dim->h == 0) dim->h = ret.h;
-            break;
-        case '%':
-            ret = _f3(dim->w * r1.w, dim->h * r1.h, ratio);
-            if (dim->w == 0) dim->w = ret.w / r1.w;
-            if (dim->h == 0) dim->h = ret.h / r1.h;
-            break;
-        case '#':
-            ret = _f3(dim->w * S.layer->view.tile.w, dim->h * S.layer->view.tile.h, ratio);
-            if (dim->w == 0) dim->w = ret.w / S.layer->view.tile.w;
-            if (dim->h == 0) dim->h = ret.h / S.layer->view.tile.h;
-            break;
-        default:
-            assert(0 && "invalid mode");
-    }
-    return ret;
-}
-
-static SDL_FPoint _sdl_pos (
-    const Pico_Rel_Pos*  pos,
-    const Pico_Abs_Rect* base
-) {
-    SDL_FPoint ret;
-    SDL_FRect r0;
-    if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (pos->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
-            (pos->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
-        };
-    } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
-    }
-    SDL_FRect r1 = _f1(pos->up, r0, NULL);
-    switch (pos->mode) {
-        case 'w':
-        case '!':
-            ret = (SDL_FPoint) {
-                r1.x + pos->x - pos->anchor.x,
-                r1.y + pos->y - pos->anchor.y,
-            };
-            break;
-        case '%':
-            ret = (SDL_FPoint) {
-                r1.x + pos->x*r1.w - pos->anchor.x,
-                r1.y + pos->y*r1.h - pos->anchor.y,
-            };
-            break;
-        case '#':
-            ret = (SDL_FPoint) {
-                r1.x + (pos->x - 1 + pos->anchor.x)*S.layer->view.tile.w,
-                r1.y + (pos->y - 1 + pos->anchor.y)*S.layer->view.tile.h,
-            };
-            break;
-        default:
-            assert(0 && "invalid mode");
-    }
-    return ret;
-}
-
-static SDL_FRect _sdl_rect (
-    const Pico_Rel_Rect* rect,
-    const Pico_Abs_Rect* base,
-    const Pico_Abs_Dim*  ratio
-) {
-    SDL_FRect ret;
-    SDL_FRect r0;
-    if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (rect->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
-            (rect->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
-        };
-    } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
-    }
-    SDL_FRect r1 = _f1(rect->up, r0, NULL);
-    switch (rect->mode) {
-        case 'w':
-        case '!': {
-            SDL_FDim d = _f3(rect->w, rect->h, ratio);
-            ret = (SDL_FRect) {
-                r1.x + rect->x - rect->anchor.x*d.w,
-                r1.y + rect->y - rect->anchor.y*d.h,
-                d.w,
-                d.h
-            };
-            break;
-        }
-        case '%':
-            ret = _f1(rect, r0, ratio);
-            break;
-        case '#': {
-            SDL_FDim d = _f3 (
-                rect->w * S.layer->view.tile.w,
-                rect->h * S.layer->view.tile.h,
-                ratio
-            );
-            ret = (SDL_FRect) {
-                r1.x + (rect->x - 1 + rect->anchor.x)*S.layer->view.tile.w - rect->anchor.x*d.w,
-                r1.y + (rect->y - 1 + rect->anchor.y)*S.layer->view.tile.h - rect->anchor.y*d.h,
-                d.w,
-                d.h
-            };
-            break;
-        }
-        default:
-            assert(0 && "invalid mode");
-    }
-    return ret;
-}
-
-// use floorf(. + 0.5f) toward +inf: makes NW/C behave the same
-
-static Pico_Abs_Dim _abs_dim (const SDL_FDim* f) {
-    return (Pico_Abs_Dim) {
-        floorf(f->w+0.5f), floorf(f->h+0.5f)
-    };
-}
-
-static Pico_Abs_Pos _abs_pos (const SDL_FPoint* f) {
-    return (Pico_Abs_Pos) {
-        floorf(f->x+0.5f), floorf(f->y+0.5f)
-    };
-}
-
-static Pico_Abs_Rect _abs_rect (const SDL_FRect* f) {
-    return (Pico_Abs_Rect) {
-        floorf(f->x+0.5f), floorf(f->y+0.5f),
-        floorf(f->w+0.5f), floorf(f->h+0.5f)
-    };
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // CV
 ///////////////////////////////////////////////////////////////////////////////
 
-static SDL_FPoint _cv_phy_log (SDL_Point phy) {
-    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-    );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
-    float rx = (phy.x - dst.x) / (float)dst.w;
-    float ry = (phy.y - dst.y) / (float)dst.h;
-    return (SDL_FPoint) {
-        src.x + rx*src.w,
-        src.y + ry*src.h,
-    };
+#include "aux.hc"
+
+SDL_Point pico_cv_pos_rel_win (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
+    SDL_FPoint fp = _sdl_pos(pos, base);
+    SDL_FPoint win = _pos_wld_to_win(fp);
+    return (SDL_Point) { floorf(win.x + 0.5f), floorf(win.y + 0.5f) };
 }
 
-static SDL_Point _cv_log_phy (SDL_FPoint log) {
-    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-    );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->view.src, NULL);
-    float rx = (log.x - src.x) / (float)src.w;
-    float ry = (log.y - src.y) / (float)src.h;
-    return (SDL_Point) {
-        dst.x + rx*dst.w,
-        dst.y + ry*dst.h,
-    };
+void pico_cv_pos_win_rel (SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base) {
+    SDL_FPoint wld = _pos_win_to_wld((SDL_FPoint){phy.x, phy.y});
+    _rel_pos(wld, to, base);
 }
 
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
     SDL_FDim df = _sdl_dim(dim, base, NULL);
     return _abs_dim(&df);
+}
+
+void pico_cv_dim_abs_rel (
+    const Pico_Abs_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
+) {
+    _rel_dim((SDL_FDim){fr->w, fr->h}, to, base);
+}
+
+void pico_cv_dim_rel_rel (
+    Pico_Rel_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
+) {
+    Pico_Abs_Dim abs = pico_cv_dim_rel_abs(fr, base);
+    pico_cv_dim_abs_rel(&abs, to, base);
 }
 
 Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
@@ -388,44 +191,10 @@ Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ba
     return (Pico_Abs_Rect) _abs_rect(&rf);
 }
 
-static void _cv_pos_flt_rel (SDL_FPoint fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base) {
-    SDL_FRect r0;
-    if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (to->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
-            (to->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
-        };
-    } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
-    }
-
-    Pico_Rel_Rect* up_rect = (Pico_Rel_Rect*) to->up;
-    SDL_FRect r1 = _f1(up_rect, r0, NULL);
-
-    switch (to->mode) {
-        case 'w':
-        case '!':
-            to->x = fr.x - r1.x + to->anchor.x;
-            to->y = fr.y - r1.y + to->anchor.y;
-            break;
-        case '%':
-            to->x = (fr.x - r1.x + to->anchor.x) / r1.w;
-            to->y = (fr.y - r1.y + to->anchor.y) / r1.h;
-            break;
-        case '#':
-            to->x = (fr.x - r1.x) / S.layer->view.tile.w + 1 - to->anchor.x;
-            to->y = (fr.y - r1.y) / S.layer->view.tile.h + 1 - to->anchor.y;
-            break;
-        default:
-            assert(0 && "invalid mode");
-    }
-}
-
 void pico_cv_pos_abs_rel (
     const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
 ) {
-    _cv_pos_flt_rel((SDL_FPoint){fr->x, fr->y}, to, base);
+    _rel_pos((SDL_FPoint){fr->x, fr->y}, to, base);
 }
 
 void pico_cv_pos_rel_rel (
@@ -438,44 +207,7 @@ void pico_cv_pos_rel_rel (
 void pico_cv_rect_abs_rel (
     const Pico_Abs_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
 ) {
-    SDL_FRect r0;
-    if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (to->mode == 'w') ? S.win.dim.w : S.layer->view.dim.w,
-            (to->mode == 'w') ? S.win.dim.h : S.layer->view.dim.h,
-        };
-    } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
-    }
-
-    SDL_FRect r1 = _f1(to->up, r0, NULL);
-
-    switch (to->mode) {
-        case 'w':
-        case '!':
-            to->w = fr->w;
-            to->h = fr->h;
-            to->x = fr->x - r1.x + to->anchor.x * to->w;
-            to->y = fr->y - r1.y + to->anchor.y * to->h;
-            break;
-        case '%':
-            to->w = fr->w / r1.w;
-            to->h = fr->h / r1.h;
-            to->x = (fr->x - r1.x + to->anchor.x * fr->w) / r1.w;
-            to->y = (fr->y - r1.y + to->anchor.y * fr->h) / r1.h;
-            break;
-        case '#':
-            to->w = fr->w / (float)S.layer->view.tile.w;
-            to->h = fr->h / (float)S.layer->view.tile.h;
-            to->x = (fr->x - r1.x) / S.layer->view.tile.w + 1
-                    - to->anchor.x + to->anchor.x * to->w;
-            to->y = (fr->y - r1.y) / S.layer->view.tile.h + 1
-                    - to->anchor.y + to->anchor.y * to->h;
-            break;
-        default:
-            assert(0 && "invalid mode");
-    }
+    _rel_rect((SDL_FRect){fr->x, fr->y, fr->w, fr->h}, to, base);
 }
 
 void pico_cv_rect_rel_rel (
@@ -731,9 +463,8 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
         m.x = phy.x;
         m.y = phy.y;
     } else {
-        SDL_FPoint log = _cv_phy_log(phy);
         Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW, .up=rect };
-        _cv_pos_flt_rel(log, &rel, NULL);
+        pico_cv_pos_win_rel(phy, &rel, NULL);
         m.x = rel.x;
         m.y = rel.y;
     }
@@ -744,13 +475,7 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
 void pico_set_mouse (Pico_Rel_Pos* pos) {
     _pico_guard();
     pos->anchor = PICO_ANCHOR_NW;   // TODO
-    SDL_FPoint fp = _sdl_pos(pos, NULL);
-    SDL_Point phy;
-    if (pos->mode == 'w') {
-        phy = (SDL_Point) { fp.x, fp.y };
-    } else {
-        phy = _cv_log_phy(fp);
-    }
+    SDL_Point phy = pico_cv_pos_rel_win(pos, NULL);
     SDL_WarpMouseInWindow(G.win, phy.x, phy.y);
     SDL_PumpEvents();
 }
