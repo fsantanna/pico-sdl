@@ -826,17 +826,18 @@ void pico_layer_buffer_mode (
     _pico_layer_buffer(mode, key, dim, pixels);
 }
 
-void pico_layer_empty (const char* key, Pico_Abs_Dim dim) {
+void pico_layer_empty (const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
     _pico_guard();
-    pico_layer_empty_mode('!', key, dim);
+    pico_layer_empty_mode('!', key, dim, tile);
 }
 
-void pico_layer_empty_mode (int mode, const char* key, Pico_Abs_Dim dim) {
+void pico_layer_empty_mode (int mode, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
+    _alloc_empty_t ctx = { dim, tile };
     void* ret = realm_put (
         G.realm, mode, strlen(key)+1, key,
-        _free_layer, _alloc_layer_empty, &dim
+        _free_layer, _alloc_layer_empty, &ctx
     );
     assert(ret != NULL);
 }

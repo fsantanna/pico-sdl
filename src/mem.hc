@@ -11,6 +11,11 @@ typedef struct {
 } _alloc_buffer_t;
 
 typedef struct {
+    Pico_Abs_Dim  dim;
+    Pico_Abs_Dim* tile;
+} _alloc_empty_t;
+
+typedef struct {
     Pico_Layer* par;
     Pico_Rel_Rect crop;
 } _alloc_sub_t;
@@ -129,11 +134,21 @@ static void* _alloc_layer_buffer (int n, const void* key, void* ctx) {
 }
 
 static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
-    Pico_Abs_Dim* dim = (Pico_Abs_Dim*)ctx;
-    return _layer_new (
+    _alloc_empty_t* arg = (_alloc_empty_t*)ctx;
+    Pico_Abs_Dim dim = arg->dim;
+    if (arg->tile != NULL) {
+        dim.w *= arg->tile->w;
+        dim.h *= arg->tile->h;
+    }
+    Pico_Layer* lay = _layer_new (
         PICO_LAYER_PLAIN, sizeof(Pico_Layer),
-        (const char*)key, _tex_create(*dim), *dim
+        (const char*)key, _tex_create(dim), dim
     );
+    if (arg->tile != NULL) {
+        lay->view.tile = *arg->tile;
+    } else {
+    }
+    return lay;
 }
 
 static void* _alloc_layer_image (int n, const void* key, void* ctx) {
