@@ -340,8 +340,7 @@ void pico_layer_empty (const char* key, Pico_Abs_Dim dim);
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param key layer key (must not be NULL or start with '/')
 /// @param dim layer dimensions
-void pico_layer_empty_mode (int mode,
-    const char* key, Pico_Abs_Dim dim);
+void pico_layer_empty_mode (int mode, const char* key, Pico_Abs_Dim dim);
 
 /// @brief Creates a layer from an image file (exclusive mode).
 /// @param key layer key (NULL uses "/image/<path>", otherwise

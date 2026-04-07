@@ -831,9 +831,7 @@ void pico_layer_empty (const char* key, Pico_Abs_Dim dim) {
     pico_layer_empty_mode('!', key, dim);
 }
 
-void pico_layer_empty_mode (
-    int mode, const char* key, Pico_Abs_Dim dim
-) {
+void pico_layer_empty_mode (int mode, const char* key, Pico_Abs_Dim dim) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
     void* ret = realm_put (
