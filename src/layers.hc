@@ -1,6 +1,28 @@
 #ifndef PICO_LAYERS_HC
 #define PICO_LAYERS_HC
 
+typedef enum {
+    PICO_LAYER_ROOT,
+    PICO_LAYER_PLAIN,
+    PICO_LAYER_VIDEO,
+    PICO_LAYER_SUB,
+} PICO_LAYER;
+
+typedef struct Pico_Layer {
+    PICO_LAYER            type;
+    char*                 name;     // NULL for main layer
+    SDL_Texture*          tex;
+    Pico_View             view;
+    struct {
+        const char* up;             // parent id; NULL = root or detached
+        const char* nxt;            // next sibling under same up
+        struct {
+            const char* fst;        // first child (back; drawn first)
+            const char* lst;        // last child  (front; drawn last)
+        } dn;
+    } hier;
+} Pico_Layer;
+
 typedef struct {
     Pico_Layer   base;
     Pico_Abs_Dim sup;     // snapshot of source view.dim
