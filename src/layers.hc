@@ -1,6 +1,11 @@
 #ifndef PICO_LAYERS_HC
 #define PICO_LAYERS_HC
 
+typedef struct {
+    Pico_Layer   base;
+    Pico_Abs_Dim sup;     // snapshot of source view.dim
+} Pico_Layer_Sub;
+
 static Pico_Layer* _pico_layer_buffer (
     int mode, const char* key, Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
@@ -96,7 +101,7 @@ static void _pico_output_draw_layer (
     SDL_FRect rf = _sdl_rect(rect, NULL, dp);
     SDL_Rect dst = _abs_rect(&rf);
 
-    Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ? &layer->sup : &layer->view.dim;
+    Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ? &((Pico_Layer_Sub*)layer)->sup : &layer->view.dim;
     Pico_Abs_Rect src = pico_cv_rect_rel_abs (
         &layer->view.src,
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}

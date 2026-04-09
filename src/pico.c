@@ -57,7 +57,6 @@ typedef struct Pico_Layer {
             const char* lst;        // last child  (front; drawn last)
         } dn;
     } hier;
-    Pico_Abs_Dim          sup;      // SUB only: snapshot of parent view.dim
 } Pico_Layer;
 
 static void _layer_attach (Pico_Layer* up, Pico_Layer* self) {

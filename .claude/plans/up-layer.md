@@ -51,9 +51,13 @@ typedef struct Pico_Layer {
             const char* lst;   // last child  (front; drawn last)
         } dn;
     } hier;
-
-    Pico_Abs_Dim  sup;         // SUB only: snapshot of source view.dim
 } Pico_Layer;
+
+// SUB-only fields live in a derived struct in src/layers.hc:
+typedef struct {
+    Pico_Layer   base;
+    Pico_Abs_Dim sup;          // snapshot of source view.dim
+} Pico_Layer_Sub;
 ```
 
 **New enum value** `PICO_LAYER_ROOT` added to `PICO_LAYER`
@@ -324,7 +328,10 @@ parent id; `pico.mouse.get/set(layer, ...)`; new
 
 | File | Lines | Change |
 |---|---|---|
-| `src/pico.c:40-52` | enum + struct | add `PICO_LAYER_ROOT`; new `Pico_Layer` (id-based, `hier.{up,nxt,dn.fst,dn.lst}`) |
+| `src/pico.c:40-52` | enum + struct | add `PICO_LAYER_ROOT`; new `Pico_Layer` (id-based, `hier.{up,nxt,dn.fst,dn.lst}`); drop `sup` (moved to `Pico_Layer_Sub`) |
+| `src/layers.hc` | new typedef | `Pico_Layer_Sub { Pico_Layer base; Pico_Abs_Dim sup; }` |
+| `src/mem.hc:166-181` | `_alloc_layer_sub` | allocate `sizeof(Pico_Layer_Sub)`; write `sup` via cast |
+| `src/layers.hc:99` | `_pico_output_draw_layer` | cast SUB layer to `Pico_Layer_Sub*` for `sup` |
 | `src/pico.c` (new fn) | `_root_noop_free` | no-op realm free for static `G.root` |
 | `src/pico.c:60-89` | G/S | rename `G.main` → `G.root`; static init `name="root"`; remove `S.color.clear` |
 | `src/pico.c` | `pico_set_color_clear` | remove API; replace with per-layer `view.clear` access |
