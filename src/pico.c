@@ -47,7 +47,7 @@ static struct { // internal global state
     int           init;
     int           fsing;
     realm_t*      realm;
-    Pico_Layer    main;
+    Pico_Layer    root;
     SDL_Renderer* ren;
     int           presenting;
     SDL_Window*   win;
@@ -277,10 +277,11 @@ void pico_init (int on) {
             .init  = 0,
             .fsing = 0,
             .realm = realm_open(PICO_HASH_BUK),
-            .main  = {
-                .type = PICO_LAYER_PLAIN,
-                .name = NULL,
+            .root  = {
+                .type = PICO_LAYER_ROOT,
+                .name = "root",
                 .tex  = NULL,   // needs G.ren
+                .hier = { NULL, NULL, {NULL,NULL} },
                 .view = {
                     .grid = 1,
                     .dim  = PICO_DIM_LOG,
@@ -309,7 +310,7 @@ void pico_init (int on) {
             .color  = { {0, 0, 0, 0xFF}, PICO_COLOR_WHITE },
             .expert = {0, 0, 0, 0},
             .font   = NULL,
-            .layer  = &G.main,
+            .layer  = &G.root,
             .style  = PICO_STYLE_FILL,
             .win    = {
                 .dim = PICO_DIM_PHY,
@@ -318,6 +319,9 @@ void pico_init (int on) {
         };
 
         STACK.n = 0;
+
+        // realm_get("root") resolves
+        realm_put(G.realm, '!', strlen("root")+1, "root", NULL, NULL, &G.root);
 
         // create ren after win
         {
@@ -334,10 +338,10 @@ void pico_init (int on) {
 
         // create tex after ren
         {
-            G.main.tex = _tex_create(PICO_DIM_LOG);
-            SDL_SetTextureBlendMode(G.main.tex, SDL_BLENDMODE_NONE);
-            SDL_SetRenderTarget(G.ren, G.main.tex);
-            Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
+            G.root.tex = _tex_create(PICO_DIM_LOG);
+            SDL_SetTextureBlendMode(G.root.tex, SDL_BLENDMODE_NONE);
+            SDL_SetRenderTarget(G.ren, G.root.tex);
+            Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.root.view.clip, NULL);
             SDL_RenderSetClipRect(G.ren, &r);
             pico_output_clear();
         }
@@ -356,8 +360,8 @@ void pico_init (int on) {
 
         Mix_CloseAudio();
         TTF_Quit();
-        if (G.main.tex != NULL) {
-            SDL_DestroyTexture(G.main.tex);
+        if (G.root.tex != NULL) {
+            SDL_DestroyTexture(G.root.tex);
         }
         if (G.ren != NULL) {
             SDL_DestroyRenderer(G.ren);
@@ -596,7 +600,7 @@ void pico_set_color_draw  (Pico_Color color) {
 
 void pico_set_dim (Pico_Rel_Dim* dim) {
     _pico_guard();
-    assert(S.layer==&G.main && "can only set dim from main layer");
+    assert(S.layer==&G.root && "can only set dim from main layer");
     pico_set_window(NULL, -1, dim);
     pico_set_view(-1, dim, NULL, NULL, NULL, NULL, NULL, NULL);
 }
@@ -610,7 +614,7 @@ int pico_set_expert (int on, int fps) {
         S.expert.ms = (fps == -1) ? 0 : 1000/fps;
         S.expert.t0 = SDL_GetTicks();
     }
-    G.main.view.grid = 0;
+    G.root.view.grid = 0;
     return S.expert.ms;
 }
 
@@ -622,7 +626,7 @@ void pico_set_font (const char* path) {
 void pico_set_layer (const char* key) {
     _pico_guard();
     if (key == NULL) {
-        S.layer = &G.main;
+        S.layer = &G.root;
     } else {
         Pico_Layer* data = (Pico_Layer*)realm_get (
             G.realm, strlen(key)+1, key
@@ -712,7 +716,7 @@ void pico_set_view (
         }
         S.layer->tex = _tex_create(di);
         // main layer uses BLENDMODE_NONE to prevent 2x blend
-        SDL_BlendMode mode = (S.layer == &G.main) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
+        SDL_BlendMode mode = (S.layer == &G.root) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
         SDL_SetTextureBlendMode(S.layer->tex, mode);
         SDL_SetRenderTarget(G.ren, S.layer->tex);
         Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
@@ -919,7 +923,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_MINUS: {
-                    assert(S.layer == &G.main);
+                    assert(S.layer == &G.root);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.w += 0.1;
@@ -930,7 +934,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_EQUALS: {
-                    assert(S.layer == &G.main);
+                    assert(S.layer == &G.root);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.w -= 0.1;
@@ -941,7 +945,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_LEFT: {
-                    assert(S.layer == &G.main);
+                    assert(S.layer == &G.root);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.x -= 0.1;
@@ -951,7 +955,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_RIGHT: {
-                    assert(S.layer == &G.main);
+                    assert(S.layer == &G.root);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.x += 0.1;
@@ -961,7 +965,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_UP: {
-                    assert(S.layer == &G.main);
+                    assert(S.layer == &G.root);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.y -= 0.1;
@@ -971,7 +975,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_DOWN: {
-                    assert(S.layer == &G.main);
+                    assert(S.layer == &G.root);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
                     pico_cv_rect_rel_rel(&S.layer->view.src, &pct, NULL);
                     pct.y += 0.1;
@@ -981,8 +985,8 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_g: {
-                    assert(S.layer == &G.main);
-                    pico_set_view(!G.main.view.grid, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+                    assert(S.layer == &G.root);
+                    pico_set_view(!G.root.view.grid, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
                     return 1;
                 }
                 case SDLK_s: {
@@ -1454,7 +1458,7 @@ static void _pico_output_present (int force) {
         // ok
     } else if (S.expert.on) {
         return;
-    } else if (S.layer != &G.main) {
+    } else if (S.layer != &G.root) {
         return;  // auto-present only on main layer
     }
     if (!G.init) {
@@ -1499,29 +1503,29 @@ static void _pico_output_present (int force) {
             }
         }
         Pico_Abs_Rect src = pico_cv_rect_rel_abs (
-            &G.main.view.src,
-            &(Pico_Abs_Rect){0, 0, G.main.view.dim.w, G.main.view.dim.h}
+            &G.root.view.src,
+            &(Pico_Abs_Rect){0, 0, G.root.view.dim.w, G.root.view.dim.h}
         );
         Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-            &G.main.view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+            &G.root.view.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
         );
         aux(&dst, &src, S.win.dim.w, S.win.dim.h);
-        aux(&src, &dst, G.main.view.dim.w, G.main.view.dim.h);
-        SDL_RenderCopy(G.ren, G.main.tex, &src, &dst);
+        aux(&src, &dst, G.root.view.dim.w, G.root.view.dim.h);
+        SDL_RenderCopy(G.ren, G.root.tex, &src, &dst);
     }
 
     _show_grid();
     SDL_RenderPresent(G.ren);
 
     G.presenting = 0;
-    SDL_SetRenderTarget(G.ren, G.main.tex);
-    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
+    SDL_SetRenderTarget(G.ren, G.root.tex);
+    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.root.view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 }
 
 void pico_output_present (void) {
     _pico_guard();
-    assert(S.layer==&G.main && "can only present from main layer");
+    assert(S.layer==&G.root && "can only present from main layer");
     _pico_output_present(1);
 }
 
@@ -1548,7 +1552,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect) {
     _pico_guard();
-    assert(S.layer == &G.main);
+    assert(S.layer == &G.root);
     Pico_Abs_Rect phy = {0, 0, S.win.dim.w, S.win.dim.h};
     Pico_Abs_Rect ri = (rect == NULL) ? phy : pico_cv_rect_rel_abs(rect, &phy);
 
@@ -1577,8 +1581,8 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
     free(buf);
     SDL_FreeSurface(sfc);
 
-    SDL_SetRenderTarget(G.ren, G.main.tex);
-    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.main.view.clip, NULL);
+    SDL_SetRenderTarget(G.ren, G.root.tex);
+    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.root.view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 
     return ret;
