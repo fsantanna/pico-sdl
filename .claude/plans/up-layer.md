@@ -56,10 +56,40 @@ typedef struct Pico_Layer {
 } Pico_Layer;
 ```
 
-`G.root` (was `G.main`) statically initialized: `name="root"`,
-`hier.up=NULL`, `hier.nxt=NULL`, `hier.dn.fst=NULL`,
-`hier.dn.lst=NULL`. Inserted into the realm
-at `pico_init` so `realm_get(G.realm,"root")` resolves.
+**New enum value** `PICO_LAYER_ROOT` added to `PICO_LAYER`
+(`src/pico.c:40-52`). Used solely by `G.root`; backs the
+`root | false` row in the §3.3 `view.keep` table and lets
+asserts reject root in places where it does not apply (e.g.
+`pico_layer_remove_subtree`, sub-layer parents).
+
+`G.root` (was `G.main`) statically initialized:
+
+```c
+static Pico_Layer G_root = {
+    .type = PICO_LAYER_ROOT,
+    .name = "root",
+    .tex  = NULL,               // set in pico_init after renderer
+    .hier = { .up  = NULL,
+              .nxt = NULL,
+              .dn  = { .fst = NULL, .lst = NULL } },
+    .view = { /* defaults; .keep = 0 */ },
+};
+```
+
+Inserted into the realm at `pico_init`, after the renderer
+and screen-sized texture are created:
+
+```c
+G.root.tex = SDL_CreateTexture(...);
+realm_put(G.realm, '!', strlen("root")+1, "root",
+          _root_noop_free, NULL, &G.root);
+```
+
+- `'!'` (exclusive) — root must never be replaced.
+- `_root_noop_free` — no-op; the texture is owned by
+  `pico_quit`, and the struct is static.
+- `realm_get(G.realm,"root")` resolves to `&G.root`; no
+  special case in `pico_set_layer` / traversal.
 
 ## 2. Lifetime / memory
 
@@ -294,7 +324,8 @@ parent id; `pico.mouse.get/set(layer, ...)`; new
 
 | File | Lines | Change |
 |---|---|---|
-| `src/pico.c:40-52` | enum + struct | new `Pico_Layer` (id-based, dn/nxt) |
+| `src/pico.c:40-52` | enum + struct | add `PICO_LAYER_ROOT`; new `Pico_Layer` (id-based, `hier.{up,nxt,dn.fst,dn.lst}`) |
+| `src/pico.c` (new fn) | `_root_noop_free` | no-op realm free for static `G.root` |
 | `src/pico.c:60-89` | G/S | rename `G.main` → `G.root`; static init `name="root"`; remove `S.color.clear` |
 | `src/pico.c` | `pico_set_color_clear` | remove API; replace with per-layer `view.clear` access |
 | `src/pico.c:283-384` | `pico_init` | insert `G.root` into realm; bump `valgrind.supp:97` line N |
