@@ -38,6 +38,7 @@ typedef struct {
 } Pico_View;
 
 typedef enum {
+    PICO_LAYER_ROOT,
     PICO_LAYER_PLAIN,
     PICO_LAYER_VIDEO,
     PICO_LAYER_SUB,
@@ -48,8 +49,28 @@ typedef struct Pico_Layer {
     char*                 name;     // NULL for main layer
     SDL_Texture*          tex;
     Pico_View             view;
+    struct {
+        const char* up;             // parent id; NULL = root or detached
+        const char* nxt;            // next sibling under same up
+        struct {
+            const char* fst;        // first child (back; drawn first)
+            const char* lst;        // last child  (front; drawn last)
+        } dn;
+    } hier;
     Pico_Abs_Dim          sup;      // SUB only: snapshot of parent view.dim
 } Pico_Layer;
+
+static void _layer_attach (Pico_Layer* up, Pico_Layer* self) {
+    self->hier.nxt = NULL;
+    if (up->hier.dn.fst == NULL) {
+        up->hier.dn.fst = self->name;
+        up->hier.dn.lst = self->name;
+    } else {
+        Pico_Layer* tail = realm_get(G.realm, strlen(up->hier.dn.lst)+1, up->hier.dn.lst);
+        tail->hier.nxt = self->name;
+        up->hier.dn.lst = self->name;
+    }
+}
 
 #include "mem.hc"
 #include "layers.hc"
