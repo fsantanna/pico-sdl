@@ -43,7 +43,7 @@ typedef struct Pico_Layer {
     PICO_LAYER    type;
     const char*   name;        // own id; borrowed from realm
     SDL_Texture*  tex;
-    Pico_View     view;        // dst/src/rot/flip/alpha/keep/...
+    Pico_View     view;        // dst/src/rot/flip/clear/alpha/keep/...
 
     const char*   up;          // parent id; NULL = root or detached
     const char*   dn;          // first child id  (back; drawn first)
@@ -149,27 +149,61 @@ new children **append to tail** (O(1) via `dn_tail`).
 - `pico_output_draw_layer(name, rect)`: layer must be detached.
 - Inside traversal: skip child if `realm_get` fails.
 
-### Alpha split
+### View extensions (clear / alpha / keep)
 
-| field        | purpose                  | when applied                       |
-|--------------|--------------------------|------------------------------------|
-| `view.alpha` | composite mod, per layer | auto-traversal `RenderCopyEx`      |
-| `S.alpha`    | pixel-fill alpha, global | `SetRenderDrawColor` on primitives |
+```c
+typedef struct Pico_View {
+    // ... existing dst/src/rot/flip/tile ...
+
+    Pico_Color_A  clear;   // canvas color/alpha after clear
+    unsigned char alpha;   // composite mod (whole-texture)
+    unsigned char keep;    // skip post-composite clear
+} Pico_View;
+```
+
+### Alpha pipeline
+
+Three independent channels stack:
+
+1. **Pixel alpha** — what's stored in each pixel of `tex`.
+   Written by `clear` (uses `view.clear.a`) and primitives
+   (use `S.color.draw.rgb` + `S.alpha`).
+2. **Pixel-fill alpha** `S.alpha` — global drawing-state knob,
+   push/pop'd via `STACK`. Used during pixel-fill phase only:
+   `SetRenderDrawColor(r,g,b, S.alpha)`. Feeds (1).
+3. **Composite alpha** `view.alpha` — per layer. Applied at
+   composite time via `SetTextureAlphaMod(L->tex, L->view.alpha)`.
 
 Effective output alpha = `pixel_alpha * view.alpha / 255`.
 
-`S.alpha` lives in `S` (push/pop'd via `STACK`). The user
-never touches `S.alpha` for compositing; that's `view.alpha`.
+Both (1) and (3) are needed — they're orthogonal:
+- An opaque-cleared layer can be composited translucent
+  (`view.clear.a=255`, `view.alpha=128`) without affecting
+  what its pixel-fill draws blend onto.
+- A transparent-cleared layer can hold opaque content
+  (`view.clear.a=0`, sprite drawn at full alpha) — only the
+  sprite shows, not the canvas.
+- Whole-layer fades use `view.alpha` without touching pixel
+  contents.
 
-`S.color.clear` is repurposed as the **root clear color**.
-Per-layer clear color lives in `view.clear_color`.
+### Globals
+
+| global         | role                                                  |
+|----------------|-------------------------------------------------------|
+| `S.color.draw` | primitive draw color                                  |
+| `S.alpha`      | pixel-fill alpha (per primitive)                      |
+| ~~`S.color.clear`~~ | removed; per-layer `view.clear`                  |
 
 ### 3.3 Post-composite clear
 
 After a layer is composited (auto-traversal or free-mode),
-the engine clears its texture to `view.clear_color` — unless
+the engine clears its texture to `view.clear` — unless
 `view.keep` is set. Layer textures become **single-frame
 scratch buffers** by default.
+
+Note: the existing `pico_output_clear` function and the new
+`view.clear` field share the name "clear" but at different
+points — the function clears *now* using `view.clear`.
 
 #### `view.keep` defaults per type
 
@@ -257,7 +291,8 @@ parent id; `pico.mouse.get/set(layer, ...)`; new
 | File | Lines | Change |
 |---|---|---|
 | `src/pico.c:40-52` | enum + struct | new `Pico_Layer` (id-based, dn/nxt) |
-| `src/pico.c:60-89` | G/S | rename `G.main` → `G.root`; static init `name="root"` |
+| `src/pico.c:60-89` | G/S | rename `G.main` → `G.root`; static init `name="root"`; remove `S.color.clear` |
+| `src/pico.c` | `pico_set_color_clear` | remove API; replace with per-layer `view.clear` access |
 | `src/pico.c:283-384` | `pico_init` | insert `G.root` into realm; bump `valgrind.supp:97` line N |
 | `src/pico.c:432, :435, :528, :1173, :1307` | helper callers | `_pico_layer_image/_text` gain `up`, callers pass `"root"` |
 | `src/pico.c:449-473` | `pico_get_mouse` | new sig; chain walk via realm |
@@ -324,6 +359,108 @@ quantization through the screen log grid disappears once
   watch realm id stability across removes.
 - `make gen` to re-baseline visual tests.
 
+## Related work
+
+This is mainstream territory — basically a tiny **Core
+Animation `CALayer`** for SDL2. Nothing here is novel; the
+value is the compactness.
+
+### Closest cousins (retained-mode, per-node texture,
+compositor traversal)
+
+- **Apple Core Animation `CALayer`** — canonical match. Each
+  layer wraps a GPU texture (backing store); compositor walks
+  the tree applying per-layer `opacity`, `backgroundColor`,
+  transform, masking. Same producer/consumer split (paint vs
+  compose).
+- **Flutter Layer tree + `RepaintBoundary`** — render tree →
+  layer tree → compositor scene. `RepaintBoundary` is
+  exactly `view.keep == true`: rasterize once, reuse texture
+  across frames.
+- **Chrome `cc::Layer`** — each layer backed by tiles; main
+  thread paints, compositor thread walks the tree.
+- **Cocos2d `Sprite`** / **Godot `CanvasItem`** — 2D scene
+  graph with per-node modulate/opacity, parent-relative
+  transforms, last-added-on-top.
+- **GTK 4 render nodes** / **Android HWUI `RenderNode`** —
+  same model in OS UI toolkits.
+
+Older lineage: OpenInventor (Strauss & Carey 1992) introduced
+the scene-graph-with-state-stack model that everything here
+descends from; the push/pop `STACK` mechanism is straight from
+Display PostScript.
+
+### Bundled view vs composed view
+
+| system          | how src/dst/clip/transform/alpha are exposed |
+|-----------------|----------------------------------------------|
+| CALayer         | one object: `frame`, `contentsRect`, `masksToBounds`, `transform`, `opacity` |
+| Flutter         | one node *type* per attribute: `ClipRectLayer`, `TransformLayer`, `OpacityLayer`, ... |
+| Cocos2d Sprite  | one sprite object bundling everything       |
+| Godot CanvasItem| spread across base + leaf types             |
+| **`Pico_View`** | one flat struct, all fields                 |
+
+`Pico_View` is the **flat** form — minimal sound+complete set
+(src, dst, clip, rot, flip, alpha, clear, keep) in a single
+struct. Cousins: CALayer and Cocos2d Sprite. Trade-off:
+simpler API, less mix-and-match than Flutter's compositional
+approach.
+
+### Memory model lineage
+
+Three families exist for tree-of-nodes ownership:
+
+1. **Refcount, multi-owner** (CALayer, cc::Layer, Cocos2d) —
+   flexible, leak-prone via cycles or stray strong refs.
+2. **Tree-as-ownership, single parent** (Qt QObject, Godot
+   Node, Rust `Box<Node>`) — strong: drop the root, all
+   descendants gone in one recursive destructor. No cycles
+   possible.
+3. **Registry/arena, single owner** (Bevy ECS `World`, Flecs,
+   EnTT, Tk canvas, Apache APR pools, Rust `bumpalo`,
+   rustc's type arenas) — strongest: drop the registry,
+   *everything* inside is freed atomically. Tree links are
+   metadata, not ownership.
+
+**This plan picks family (3).** The realm is the sole owner;
+`up`/`dn`/`nxt` are weak id strings that may resolve to NULL
+(== detached). Identical in spirit to Bevy's
+World+`ChildOf` and to Tk canvas's id-keyed items. Bevy uses
+integer generations on entity ids; we use strings.
+
+### What family (3) gives us over Qt-style trees
+
+- **Detached state is first-class**: a layer can outlive its
+  parent (still in realm, `up` resolves to NULL). Qt/Godot
+  cannot — freeing the parent destroys the child.
+- **O(1) parent removal**: just drop the realm entry. No
+  recursive destructor walk.
+- **No double-free on `~` realm replace**: children re-resolve
+  next frame, lookups fail cleanly.
+- **Cycles structurally impossible** — `up` is locked at
+  create, ids can't form cycles in a registry.
+
+### What we give up vs Qt/Godot, and how to recover it
+
+A detached subtree stays alive in the realm until each node
+is individually evicted; Qt frees the entire subtree by
+deleting the root. Recover the ergonomics with an optional
+helper (Bevy-style):
+
+```c
+void pico_layer_remove_subtree (const char* name);
+// walks dn/nxt and removes each from the realm
+```
+
+Best of both worlds: single-owner guarantee + Qt-like
+recursive cleanup when the user wants it. Listed as a
+follow-up.
+
+### One-line summary
+
+> "Tiny CALayer for SDL2, with Bevy-style registry ownership
+> and Tk-style id keys."
+
 ## 10. Risks & follow-ups
 
 - **Soft-dangling ids**: realm must guarantee id-string
@@ -346,6 +483,8 @@ quantization through the screen log grid disappears once
   text/image/box).
 - **Follow-up 2**: explicit `pico_layer_detach(name)` and
   `pico_layer_alive(name)`.
+- **Follow-up 4**: `pico_layer_remove_subtree(name)` —
+  Qt-style recursive cleanup helper (see Related work).
 - **Follow-up 3**: dirty-rect optimization.
 
 ## Pending
