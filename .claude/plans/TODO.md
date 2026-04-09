@@ -89,13 +89,15 @@
 21. `pico_get_image/text` should accept ref parameter
     - See `lua/tst/image_pct` commented tests
 
-23. Layer `up` pointer + hierarchical mouse mapping
-    - Layer create takes explicit parent arg, stored as `up`
-    - On draw: assert `current == up` (lexical parent enforced)
-    - `pico.get/set.mouse` accept a layer pointer; walk `up` chain
-      to map window↔layer coords instead of relying on `current`
-    - Related to #22 (`'w'` vs `r` divergence)
-    - See `.claude/plans/up-layer.md`
+23. Layer scene graph (up-layer)
+    - Explicit `up` (parent) id at create; realm-as-sole-owner
+    - Auto-composite traversal in `pico_output_present`
+    - Free-mode `output.draw.layer` for detached layers only
+    - String-keyed `pico.mouse.get/set(layer)` and `pico.vs(l1, l2)`
+    - Post-composite clear with per-type `view.keep` defaults
+    - Closes #22 (`'w'` vs `r` divergence)
+    - Depends on `sub-layer-parent.md` (eliminates `Pico_Layer.parent`)
+    - See `.claude/plans/up-layer.md`, `.claude/plans/sub-layer-parent.md`
 
 22. `'w'` vs `r`-relative divergence near edges
     - `pico_output_draw_pixel({'w', ...})` snaps through screen log grid
