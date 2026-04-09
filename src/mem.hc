@@ -176,7 +176,7 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
     );
     data->view.src = c->crop;
     data->view.src.up = &c->par->view.src;
-    data->parent = c->par;
+    data->sup = c->par->view.dim;
     return data;
 }
 

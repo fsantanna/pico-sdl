@@ -48,7 +48,7 @@ typedef struct Pico_Layer {
     char*                 name;     // NULL for main layer
     SDL_Texture*          tex;
     Pico_View             view;
-    struct Pico_Layer*    parent;   // NULL if !PICO_LAYER_SUB
+    Pico_Abs_Dim          sup;      // SUB only: snapshot of parent view.dim
 } Pico_Layer;
 
 #include "mem.hc"
