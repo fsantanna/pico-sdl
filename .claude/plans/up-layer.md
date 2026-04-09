@@ -1,12 +1,10 @@
 # up-layer — scene-graph layer system
 
-Depends on `sub-layer-parent.md` landing first
-(eliminates `Pico_Layer.parent`).
-
 ## Context
 
-`pico-sdl` layers are flat. `Pico_Layer.parent` is set only for
-`SUB` (texture crop source). Drawing relies on global `S.layer`
+`pico-sdl` layers are flat. SUB layers carry a `sup` snapshot
+of their source's `view.dim` but no notion of a draw-target
+parent. Drawing relies on global `S.layer`
 implicitly. `pico_get_mouse` / `pico_set_mouse`
 (`src/pico.c:449, :475`) resolve coords against `S.layer` —
 repro at `tst/mouse-w-click.c` (TODO #22). No first-class
@@ -50,7 +48,7 @@ typedef struct Pico_Layer {
     const char*   dn_tail;     // last child id   (front; drawn last)
     const char*   nxt;         // next sibling under same up
 
-    Pico_Abs_Dim  src_dim;     // SUB only (from sub-layer-parent)
+    Pico_Abs_Dim  sup;         // SUB only: snapshot of source view.dim
 } Pico_Layer;
 ```
 
@@ -490,7 +488,6 @@ follow-up.
 ## Pending
 
 - [ ] Verify realm id-string storage stability
-- [ ] Land sub-layer-parent first
 - [ ] Add new struct fields and `_layer_attach`
 - [ ] Insert root into realm at `pico_init`
 - [ ] Implement `_pico_present_walk` and rewrite
