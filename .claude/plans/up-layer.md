@@ -43,17 +43,22 @@ typedef struct Pico_Layer {
     SDL_Texture*  tex;
     Pico_View     view;        // dst/src/rot/flip/clear/alpha/keep/...
 
-    const char*   up;          // parent id; NULL = root or detached
-    const char*   dn;          // first child id  (back; drawn first)
-    const char*   dn_tail;     // last child id   (front; drawn last)
-    const char*   nxt;         // next sibling under same up
+    struct {
+        const char* up;        // parent id; NULL = root or detached
+        const char* nxt;       // next sibling under same up
+        struct {
+            const char* fst;   // first child (back; drawn first)
+            const char* lst;   // last child  (front; drawn last)
+        } dn;
+    } hier;
 
     Pico_Abs_Dim  sup;         // SUB only: snapshot of source view.dim
 } Pico_Layer;
 ```
 
 `G.root` (was `G.main`) statically initialized: `name="root"`,
-`up=NULL`, `dn=NULL`, `dn_tail=NULL`. Inserted into the realm
+`hier.up=NULL`, `hier.nxt=NULL`, `hier.dn.fst=NULL`,
+`hier.dn.lst=NULL`. Inserted into the realm
 at `pico_init` so `realm_get(G.realm,"root")` resolves.
 
 ## 2. Lifetime / memory
@@ -62,31 +67,32 @@ at `pico_init` so `realm_get(G.realm,"root")` resolves.
 
 - **Create** (`_layer_new` in `src/mem.hc:101`): take
   `const char* up`. Insert into realm; append self id to
-  `up_layer->dn` list (O(1) via `dn_tail`).
+  `up_layer->hier.dn` list (O(1) via `hier.dn.lst`).
 - **`up == NULL` at create** ⇒ create as detached orphan.
   Valid state; no list insertion.
 - **Remove** (realm `~` or close): just drop the realm entry.
   Surviving siblings/parents/children still hold the dead id
-  in `up`/`dn`/`nxt` — but lookups via `realm_get` return
-  NULL, treated as "detached" by all walkers.
+  in `hier.up`/`hier.dn`/`hier.nxt` — but lookups via
+  `realm_get` return NULL, treated as "detached" by all
+  walkers.
 - **No traversal-on-remove, no null-out pass.** Detach is
   implicit through failed lookup.
 - **Stable id storage**: realm must hold id strings in stable
   memory so borrowed pointers stay readable as bytes after
   removal. Lookup fails cleanly; no UB.
-- **Cycles**: impossible — `up` is locked at create.
+- **Cycles**: impossible — `hier.up` is locked at create.
 
 O(1) attach:
 ```c
 static void _layer_attach (Pico_Layer* up, Pico_Layer* self) {
-    self->nxt = NULL;
-    if (up->dn == NULL) {
-        up->dn = self->name;
-        up->dn_tail = self->name;
+    self->hier.nxt = NULL;
+    if (up->hier.dn.fst == NULL) {
+        up->hier.dn.fst = self->name;
+        up->hier.dn.lst = self->name;
     } else {
-        Pico_Layer* tail = realm_get(G.realm, up->dn_tail);
-        tail->nxt = self->name;
-        up->dn_tail = self->name;
+        Pico_Layer* tail = realm_get(G.realm, up->hier.dn.lst);
+        tail->hier.nxt = self->name;
+        up->hier.dn.lst = self->name;
     }
 }
 ```
@@ -461,9 +467,22 @@ follow-up.
 
 ## 10. Risks & follow-ups
 
-- **Soft-dangling ids**: realm must guarantee id-string
-  storage outlives any borrower. Validate `realm` impl or
-  switch to interning.
+- **Soft-dangling ids — BLOCKER, unresolved**:
+  `realm_remove_entry` (`src/realm.hc:74`) calls
+  `free(e->key)`, so any borrowed `const char*` in
+  `up`/`dn`/`nxt` becomes a dangling pointer the moment its
+  owner is removed.
+  Subsequent `realm_get` would `memcmp` freed memory: UB,
+  not a clean NULL as the plan assumes.
+  Options:
+    1. Intern ids in a separate never-freed string pool;
+       realm keys point into the pool.
+    2. Refcount id strings held by realm + every borrower.
+    3. Change realm to defer key-free / use an arena.
+    4. Eager detach pass on remove (kills the
+       "no traversal-on-remove" property).
+  Option 1 is simplest and matches the plan's spirit.
+  Must be resolved before any struct-level work.
 - **Auto-composite ordering vs legacy**: existing tests may
   rely on a specific draw order; auto-traversal may produce
   different pixels. Visual baselines need re-review.
@@ -487,7 +506,10 @@ follow-up.
 
 ## Pending
 
-- [ ] Verify realm id-string storage stability
+- [x] Verify realm id-string storage stability
+      → **FAILED**: realm frees keys on remove
+        (`src/realm.hc:74`); see Risks §10 for options.
+        Blocks all subsequent items.
 - [ ] Add new struct fields and `_layer_attach`
 - [ ] Insert root into realm at `pico_init`
 - [ ] Implement `_pico_present_walk` and rewrite

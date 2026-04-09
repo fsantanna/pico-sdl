@@ -90,6 +90,12 @@
     - See `lua/tst/image_pct` commented tests
 
 23. Layer scene graph (up-layer)
+    - **BLOCKER**: realm frees keys on remove
+      (`src/realm.hc:74`), so borrowed id pointers in
+      `up`/`dn`/`nxt` dangle — `realm_get` would `memcmp`
+      freed memory.
+      Need id interning, refcount, arena, or eager detach.
+      See `.claude/plans/up-layer.md` §10.
     - Explicit `up` (parent) id at create; realm-as-sole-owner
     - Auto-composite traversal in `pico_output_present`
     - Free-mode `output.draw.layer` for detached layers only
