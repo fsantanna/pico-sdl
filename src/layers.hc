@@ -62,12 +62,12 @@ static void _layer_attach (Pico_Layer* up, Pico_Layer* dn) {
 
 static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
 
-static void _layer_traverse (Pico_Layer* node) {
-    const char* cur = node->hier.dn.fst;
+static void _layer_traverse (Pico_Layer* up) {
+    const char* cur = up->hier.dn.fst;
     while (cur != NULL) {
         Pico_Layer* CUR = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
         assert(CUR != NULL);
-        SDL_SetRenderTarget(G.ren, node->tex);
+        SDL_SetRenderTarget(G.ren, up->tex);
         _pico_output_draw_layer(CUR, NULL);
         cur = CUR->hier.nxt;
     }
@@ -160,7 +160,7 @@ static void _pico_output_draw_layer (
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-    SDL_SetTextureAlphaMod(layer->tex, layer->view.alpha);
+    SDL_SetTextureAlphaMod(layer->tex, S.alpha*layer->view.alpha/255);
     SDL_Point center = {
         dst.w * layer->view.rot.anchor.x,
         dst.h * layer->view.rot.anchor.y

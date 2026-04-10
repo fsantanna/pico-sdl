@@ -105,6 +105,11 @@
     - Depends on `sub-layer-parent.md` (eliminates `Pico_Layer.parent`)
     - See `.claude/plans/up-layer.md`, `.claude/plans/sub-layer-parent.md`
 
+24. Consider splitting `pico_set_view` into separate setters
+    - Currently an all-in-one with 9 optional params
+    - Alternatives: `pico_set_alpha`, `pico_set_target`, etc.
+    - See item 6 (`pico.set.draw.*` group)
+
 22. `'w'` vs `r`-relative divergence near edges
     - `pico_output_draw_pixel({'w', ...})` snaps through screen log grid
       (5 win px / log px) while collision via `up = &r` is continuous
