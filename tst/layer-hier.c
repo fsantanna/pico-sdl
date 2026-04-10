@@ -17,7 +17,7 @@ int main (void) {
 
     pico_set_layer("L");
     pico_set_view(-1, NULL, NULL,
-        &(Pico_Rel_Rect){'%', {0.3, 0.3, 0.5, 0.5}, PICO_ANCHOR_C, NULL},
+        &(Pico_Rel_Rect){'%', {0.3, 0.3, 0.4, 0.4}, PICO_ANCHOR_C, NULL},
         NULL, NULL, NULL, NULL
     );
     pico_set_color_clear(PICO_COLOR_WHITE);
@@ -34,7 +34,7 @@ int main (void) {
     pico_layer_image("root", "img", "open.png");
     pico_set_layer("img");
     pico_set_view(-1, NULL, NULL,
-        &(Pico_Rel_Rect){'%', {0.7, 0.7, 0.5, 0.5}, PICO_ANCHOR_C, NULL},
+        &(Pico_Rel_Rect){'%', {0.7, 0.7, 0.4, 0.4}, PICO_ANCHOR_C, NULL},
         NULL, NULL, NULL, NULL
     );
 
