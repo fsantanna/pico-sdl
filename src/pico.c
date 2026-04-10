@@ -814,11 +814,11 @@ void pico_layer_buffer_mode (
     const Pico_Color_A* pixels
 ) {
     _pico_guard();
-    Pico_Layer* ret = _pico_layer_buffer(mode, key, dim, pixels);
+    Pico_Layer* DN = _pico_layer_buffer(mode, key, dim, pixels);
     if (up != NULL) {
         Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
         assert(UP!=NULL && "invalid up layer");
-        _layer_attach(UP, ret);
+        _layer_attach(UP, DN);
     }
 }
 
@@ -902,9 +902,13 @@ void pico_layer_text_mode (
     int mode, const char* up, const char* key, int height, const char* text
 ) {
     _pico_guard();
-    (void)up;
     assert(key!=NULL && "layer key required");
-    _pico_layer_text(mode, key, height, text);
+    Pico_Layer* DN = _pico_layer_text(mode, key, height, text);
+    if (up != NULL) {
+        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
+        assert(UP!=NULL && "invalid up layer");
+        _layer_attach(UP, DN);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
