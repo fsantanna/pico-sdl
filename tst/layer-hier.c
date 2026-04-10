@@ -16,11 +16,14 @@ int main (void) {
     pico_layer_empty("root", "L", (Pico_Abs_Dim){8, 8}, NULL);
 
     pico_set_layer("L");
-    pico_set_color_clear(PICO_COLOR_BLACK);
+    pico_set_view(-1, NULL, NULL,
+        &(Pico_Rel_Rect){'%', {0.3, 0.3, 0.5, 0.5}, PICO_ANCHOR_C, NULL},
+        NULL, NULL, NULL, NULL);
+    pico_set_color_clear(PICO_COLOR_WHITE);
     pico_output_clear();
     pico_set_color_draw(PICO_COLOR_RED);
     pico_output_draw_rect(
-        &(Pico_Rel_Rect){'%', {.5, .5, 1, 1}, PICO_ANCHOR_C, NULL}
+        &(Pico_Rel_Rect){'%', {.5, .5, 0.5, 0.5}, PICO_ANCHOR_C, NULL}
     );
     pico_set_layer(NULL);
 
