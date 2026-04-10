@@ -42,6 +42,21 @@ int main (void) {
     pico_output_present();
     _pico_check("layer-hier-02");
 
+    static Pico_Color_A buf[4] = {
+        {255, 0, 0, 255}, {0, 255, 0, 255},
+        {0, 0, 255, 255}, {255, 255, 0, 255},
+    };
+    pico_layer_buffer("root", "buf", (Pico_Abs_Dim){2, 2}, buf);
+    pico_set_layer("buf");
+    pico_set_view(-1, NULL, NULL,
+        &(Pico_Rel_Rect){'%', {0.7, 0.3, 0.4, 0.4}, PICO_ANCHOR_C, NULL},
+        NULL, NULL, NULL, NULL
+    );
+
+    pico_set_layer("root");
+    pico_output_present();
+    _pico_check("layer-hier-03");
+
     pico_init(0);
     return 0;
 }

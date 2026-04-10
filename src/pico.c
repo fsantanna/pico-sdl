@@ -814,8 +814,12 @@ void pico_layer_buffer_mode (
     const Pico_Color_A* pixels
 ) {
     _pico_guard();
-    (void)up;
-    _pico_layer_buffer(mode, key, dim, pixels);
+    Pico_Layer* ret = _pico_layer_buffer(mode, key, dim, pixels);
+    if (up != NULL) {
+        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
+        assert(UP!=NULL && "invalid up layer");
+        _layer_attach(UP, ret);
+    }
 }
 
 void pico_layer_empty (const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
