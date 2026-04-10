@@ -848,8 +848,12 @@ void pico_layer_image_mode (
     int mode, const char* up, const char* key, const char* path
 ) {
     _pico_guard();
-    (void)up;
-    _pico_layer_image(mode, key, path);
+    Pico_Layer* DN = _pico_layer_image(mode, key, path);
+    if (up != NULL) {
+        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
+        assert(UP!=NULL && "invalid up layer");
+        _layer_attach(UP, DN);
+    }
 }
 
 void pico_layer_sub (const char* up, const char* key,
