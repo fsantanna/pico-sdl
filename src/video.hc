@@ -138,12 +138,13 @@ void pico_layer_video_mode (
     int mode, const char* up, const char* key, const char* path
 ) {
     _pico_guard();
-    (void)up;
     assert(path != NULL && "video path required");
-
-    Pico_Layer_Video* vs =
-        _pico_layer_video(mode, key, path);
-    pico_assert(vs != NULL);
+    const char* str = (key != NULL) ? key : path;
+    void* ret = _pico_layer_video(mode, key, path);
+    assert(ret != NULL);
+    if (up != NULL) {
+        _layer_attach(up, str);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -46,17 +46,21 @@ static void _pico_output_draw_layer (
 
 #ifdef PICO_LAYERS_C
 
-static void _layer_attach (Pico_Layer* up, Pico_Layer* dn) {
-    dn->hier.up = up->name;
-    dn->hier.nxt = NULL;
-    if (up->hier.dn.fst == NULL) {
-        up->hier.dn.fst = dn->name;
-        up->hier.dn.lst = dn->name;
+static void _layer_attach (const char* up, const char* dn) {
+    Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
+    Pico_Layer* DN = (Pico_Layer*) realm_get(G.realm, strlen(dn)+1, dn);
+    assert(UP!=NULL && "invalid up layer");
+    assert(DN!=NULL && "invalid dn layer");
+    DN->hier.up = UP->name;
+    DN->hier.nxt = NULL;
+    if (UP->hier.dn.fst == NULL) {
+        UP->hier.dn.fst = DN->name;
+        UP->hier.dn.lst = DN->name;
     } else {
         Pico_Layer* lst = (Pico_Layer*)
-            realm_get(G.realm, strlen(up->hier.dn.lst)+1, up->hier.dn.lst);
-        lst->hier.nxt = dn->name;
-        up->hier.dn.lst = dn->name;
+            realm_get(G.realm, strlen(UP->hier.dn.lst)+1, UP->hier.dn.lst);
+        lst->hier.nxt = DN->name;
+        UP->hier.dn.lst = DN->name;
     }
 }
 

@@ -39,7 +39,7 @@ int main(void) {
     {
         pico_set_view(-1, NULL, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {-25, -25, 100, 100}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL, NULL);
+            NULL, NULL, NULL, NULL);
 
         // phy (250, 250) -> log (25,25)
         {
@@ -69,7 +69,7 @@ int main(void) {
     {
         pico_set_view(-1, NULL, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL, NULL);
+            NULL, NULL, NULL, NULL);
 
         // phy (0,0) -> log (20,20)
         {
@@ -99,7 +99,7 @@ int main(void) {
     {
         pico_set_view(-1, NULL, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {25, 25, 25, 25}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL, NULL);
+            NULL, NULL, NULL, NULL);
 
         // phy (0,0) -> log (25,25)
         {
@@ -120,7 +120,7 @@ int main(void) {
     {
         pico_set_view(-1, NULL, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {0, 0, 50, 50}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL, NULL);
+            NULL, NULL, NULL, NULL);
 
         // phy (250,250) -> pct (0.5,0.5)
         {
@@ -143,7 +143,7 @@ int main(void) {
         // to full logical world
         pico_set_view(-1, NULL, NULL, NULL,
             &(Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL, NULL);
+            NULL, NULL, NULL, NULL);
 
         // phy (0,0) -> raw (20,20) -> pct (0.4,0.4)
         {

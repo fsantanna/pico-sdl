@@ -823,11 +823,9 @@ void pico_layer_buffer_mode (
     const Pico_Color_A* pixels
 ) {
     _pico_guard();
-    Pico_Layer* DN = _pico_layer_buffer(mode, key, dim, pixels);
+    _pico_layer_buffer(mode, key, dim, pixels);
     if (up != NULL) {
-        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
-        assert(UP!=NULL && "invalid up layer");
-        _layer_attach(UP, DN);
+        _layer_attach(up, key);
     }
 }
 
@@ -840,15 +838,13 @@ void pico_layer_empty_mode (int mode, const char* up, const char* key, Pico_Abs_
     _pico_guard();
     assert(key!=NULL && "layer key required");
     _alloc_empty_t ctx = { dim, tile };
-    Pico_Layer* DN = (Pico_Layer*) realm_put (
+    void* ret = realm_put (
         G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_empty, &ctx
     );
-    assert(DN != NULL);
+    assert(ret != NULL);
     if (up != NULL) {
-        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
-        assert(UP!=NULL && "invalid up layer");
-        _layer_attach(UP, DN);
+        _layer_attach(up, key);
     }
 }
 
@@ -861,11 +857,10 @@ void pico_layer_image_mode (
     int mode, const char* up, const char* key, const char* path
 ) {
     _pico_guard();
-    Pico_Layer* DN = _pico_layer_image(mode, key, path);
+    const char* str = (key != NULL) ? key : path;
+    _pico_layer_image(mode, key, path);
     if (up != NULL) {
-        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
-        assert(UP!=NULL && "invalid up layer");
-        _layer_attach(UP, DN);
+        _layer_attach(up, str);
     }
 }
 
@@ -892,15 +887,13 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
         && "cannot create sub-layer of sub-layer");
 
     _alloc_sub_t ctx = { par, *crop };
-    Pico_Layer* DN = (Pico_Layer*) realm_put (
+    void* ret = realm_put (
         G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_sub, &ctx
     );
-    assert(DN != NULL);
+    assert(ret != NULL);
     if (up != NULL) {
-        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
-        assert(UP!=NULL && "invalid up layer");
-        _layer_attach(UP, DN);
+        _layer_attach(up, key);
     }
 }
 
@@ -916,11 +909,9 @@ void pico_layer_text_mode (
 ) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
-    Pico_Layer* DN = _pico_layer_text(mode, key, height, text);
+    _pico_layer_text(mode, key, height, text);
     if (up != NULL) {
-        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
-        assert(UP!=NULL && "invalid up layer");
-        _layer_attach(UP, DN);
+        _layer_attach(up, key);
     }
 }
 
