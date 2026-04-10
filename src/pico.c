@@ -35,6 +35,7 @@ typedef struct {
     Pico_Abs_Dim  tile;
     Pico_Rot      rot;
     PICO_FLIP     flip;
+    unsigned char alpha;
 } Pico_View;
 
 #include "layers.hc"
@@ -532,7 +533,8 @@ void pico_get_view (
     Pico_Rel_Rect* src,
     Pico_Rel_Rect* clip,
     Pico_Rot*      rot,
-    PICO_FLIP*     flip
+    PICO_FLIP*     flip,
+    unsigned char* alpha
 ) {
     _pico_guard();
     if (grid != NULL) {
@@ -558,6 +560,9 @@ void pico_get_view (
     }
     if (flip != NULL) {
         *flip = S.layer->view.flip;
+    }
+    if (alpha != NULL) {
+        *alpha = S.layer->view.alpha;
     }
 }
 
@@ -602,7 +607,7 @@ void pico_set_dim (Pico_Rel_Dim* dim) {
     _pico_guard();
     assert(S.layer==&G.root && "can only set dim from main layer");
     pico_set_window(NULL, -1, dim);
-    pico_set_view(-1, dim, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_view(-1, dim, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
 int pico_set_expert (int on, int fps) {
@@ -698,7 +703,8 @@ void pico_set_view (
     Pico_Rel_Rect* src,
     Pico_Rel_Rect* clip,
     Pico_Rot*      rot,
-    PICO_FLIP*     flip
+    PICO_FLIP*     flip,
+    unsigned char* alpha
 ) {
     _pico_guard();
     if (grid != -1) {
@@ -738,6 +744,9 @@ void pico_set_view (
     }
     if (flip != NULL) {
         S.layer->view.flip = *flip;
+    }
+    if (alpha != NULL) {
+        S.layer->view.alpha = *alpha;
     }
     _pico_output_present(0);
 }
@@ -953,7 +962,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.h += 0.1;
                     Pico_Rel_Rect r = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL, NULL);
                     return 1;
                 }
                 case SDLK_EQUALS: {
@@ -964,7 +973,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.h -= 0.1;
                     Pico_Rel_Rect r = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL, NULL);
                     return 1;
                 }
                 case SDLK_LEFT: {
@@ -974,7 +983,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.x -= 0.1;
                     Pico_Rel_Rect r = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL, NULL);
                     return 1;
                 }
                 case SDLK_RIGHT: {
@@ -984,7 +993,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.x += 0.1;
                     Pico_Rel_Rect r = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL, NULL);
                     return 1;
                 }
                 case SDLK_UP: {
@@ -994,7 +1003,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.y -= 0.1;
                     Pico_Rel_Rect r = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL, NULL);
                     return 1;
                 }
                 case SDLK_DOWN: {
@@ -1004,12 +1013,12 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.y += 0.1;
                     Pico_Rel_Rect r = S.layer->view.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL);
+                    pico_set_view(-1, NULL, NULL, NULL, &r, NULL, NULL, NULL, NULL);
                     return 1;
                 }
                 case SDLK_g: {
                     assert(S.layer == &G.root);
-                    pico_set_view(!G.root.view.grid, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+                    pico_set_view(!G.root.view.grid, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
                     return 1;
                 }
                 case SDLK_s: {

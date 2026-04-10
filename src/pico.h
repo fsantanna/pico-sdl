@@ -475,7 +475,8 @@ void pico_get_view (
     Pico_Rel_Rect* source,
     Pico_Rel_Rect* clip,
     Pico_Rot* rot,
-    PICO_FLIP* flip
+    PICO_FLIP* flip,
+    unsigned char* alpha
 );
 
 /// @brief Gets window properties. NULL arguments are ignored.
@@ -549,7 +550,8 @@ void pico_set_view (
     Pico_Rel_Rect* source,
     Pico_Rel_Rect* clip,
     Pico_Rot* rot,
-    PICO_FLIP* flip
+    PICO_FLIP* flip,
+    unsigned char* alpha
 );
 
 /// @brief Sets window properties. NULL/(-1) arguments are ignored.

@@ -252,7 +252,7 @@ int main (void) {
 
     pico_init(1);
     Pico_Rel_Dim log = { '!', {100, 100}, NULL };
-    pico_set_view(-1, &log, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_view(-1, &log, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
     // ABS - POS - with up (0/1) - requires pico_init
     {
@@ -335,7 +335,7 @@ int main (void) {
     {
         Pico_Rel_Dim log  = { '#', {4, 4}, NULL };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_view(-1, &log, &tile, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view(-1, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
     }
 
     // TILE - POS - tile->abs
@@ -433,7 +433,7 @@ int main (void) {
     // Reset to 100x100 logical for w-mode tests
     {
         Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     }
 
     // WIN - 'w' mode in rel_abs: window -> logical (window 500x500, view 100x100, scale 5x)
@@ -463,7 +463,7 @@ int main (void) {
     // Reset to 100x100 for individual tests
     {
         Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     }
 
     // POS - abs->rel - '!' NW
@@ -721,7 +721,7 @@ int main (void) {
     // Reset to 100x100 for bidir tests
     {
         Pico_Rel_Dim dim = { '!', {100, 100}, NULL };
-        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     }
 
     Pico_Anchor anchors[] = {

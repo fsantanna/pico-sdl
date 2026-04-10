@@ -95,6 +95,7 @@ static Pico_View _view_new (Pico_Abs_Dim dim) {
         .tile = {0, 0},
         .rot  = {0, PICO_ANCHOR_C},
         .flip = PICO_FLIP_NONE,
+        .alpha = 0xFF,
     };
 }
 

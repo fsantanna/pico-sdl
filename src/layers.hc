@@ -160,7 +160,7 @@ static void _pico_output_draw_layer (
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-    SDL_SetTextureAlphaMod(layer->tex, S.alpha);
+    SDL_SetTextureAlphaMod(layer->tex, layer->view.alpha);
     SDL_Point center = {
         dst.w * layer->view.rot.anchor.x,
         dst.h * layer->view.rot.anchor.y
