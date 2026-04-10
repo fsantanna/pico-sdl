@@ -637,8 +637,8 @@ void pico_set_layer (const char* key) {
             G.realm, strlen(key)+1, key
         );
         pico_assert(data!=NULL && "layer does not exist");
-        pico_assert(data->type!=PICO_LAYER_SUB &&
-            "cannot set render target to sub-layer");
+        //pico_assert(data->type!=PICO_LAYER_SUB &&
+        //    "cannot set render target to sub-layer");
         S.layer = data;
     }
 
@@ -880,7 +880,6 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop)
 {
     _pico_guard();
-    (void)up;
     assert(key!=NULL      && "sub-layer key required");
     assert(parent!=NULL   && "parent key required");
     assert(crop!=NULL     && "crop rect required");
@@ -893,11 +892,16 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
         && "cannot create sub-layer of sub-layer");
 
     _alloc_sub_t ctx = { par, *crop };
-    void* ret = realm_put (
+    Pico_Layer* DN = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_sub, &ctx
     );
-    assert(ret != NULL);
+    assert(DN != NULL);
+    if (up != NULL) {
+        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
+        assert(UP!=NULL && "invalid up layer");
+        _layer_attach(UP, DN);
+    }
 }
 
 void pico_layer_text (
