@@ -38,7 +38,7 @@ int main (void) {
         NULL, NULL, NULL, NULL, NULL, NULL
     );
 
-    pico_layer_video("vid", VIDEO_PATH);
+    pico_layer_video(NULL, "vid", VIDEO_PATH);
 
     float speed = 1.0;
     int paused = 0;

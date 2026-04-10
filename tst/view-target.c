@@ -47,7 +47,7 @@ int main (void) {
     // 04: explicit layer with view target, drawn with rect=NULL
     {
         puts("target: explicit layer");
-        pico_layer_empty("bg", (Pico_Abs_Dim){32, 32}, NULL);
+        pico_layer_empty(NULL, "bg", (Pico_Abs_Dim){32, 32}, NULL);
         pico_set_layer("bg");
         pico_set_view(-1, NULL, NULL,
             &(Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE, NULL},
