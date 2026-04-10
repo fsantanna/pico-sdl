@@ -9,13 +9,13 @@ int main (void) {
     // get_layer returns NULL (main layer)
     puts("get_layer returns NULL initially");
     const char* layer = pico_get_layer();
-    assert(layer == NULL);
+    assert(!strcmp(layer,"root"));
 
     // set_layer(NULL) switches to main
     puts("set_layer(NULL) keeps main layer");
     pico_set_layer(NULL);
     layer = pico_get_layer();
-    assert(layer == NULL);
+    assert(!strcmp(layer,"root"));
 
     // create bg layer (32x32)
     puts("create and switch to layer");
@@ -58,7 +58,7 @@ int main (void) {
     puts("switch back to main");
     pico_set_layer(NULL);
     layer = pico_get_layer();
-    assert(layer == NULL);
+    assert(!strcmp(layer,"root"));
 
     // composite layers onto main
     puts("draw layers onto main");
