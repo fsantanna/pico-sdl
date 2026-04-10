@@ -797,31 +797,35 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void pico_layer_buffer (
+    const char* up,
     const char* key,
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
     _pico_guard();
-    pico_layer_buffer_mode('!', key, dim, pixels);
+    pico_layer_buffer_mode('!', up, key, dim, pixels);
 }
 
 void pico_layer_buffer_mode (
     int mode,
+    const char* up,
     const char* key,
     Pico_Abs_Dim dim,
     const Pico_Color_A* pixels
 ) {
     _pico_guard();
+    (void)up;
     _pico_layer_buffer(mode, key, dim, pixels);
 }
 
-void pico_layer_empty (const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
+void pico_layer_empty (const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
     _pico_guard();
-    pico_layer_empty_mode('!', key, dim, tile);
+    pico_layer_empty_mode('!', up, key, dim, tile);
 }
 
-void pico_layer_empty_mode (int mode, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
+void pico_layer_empty_mode (int mode, const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
     _pico_guard();
+    (void)up;
     assert(key!=NULL && "layer key required");
     _alloc_empty_t ctx = { dim, tile };
     void* ret = realm_put (
@@ -831,29 +835,31 @@ void pico_layer_empty_mode (int mode, const char* key, Pico_Abs_Dim dim, Pico_Ab
     assert(ret != NULL);
 }
 
-void pico_layer_image (const char* key, const char* path) {
+void pico_layer_image (const char* up, const char* key, const char* path) {
     _pico_guard();
-    pico_layer_image_mode('!', key, path);
+    pico_layer_image_mode('!', up, key, path);
 }
 
 void pico_layer_image_mode (
-    int mode, const char* key, const char* path
+    int mode, const char* up, const char* key, const char* path
 ) {
     _pico_guard();
+    (void)up;
     _pico_layer_image(mode, key, path);
 }
 
-void pico_layer_sub (const char* key,
+void pico_layer_sub (const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop)
 {
     _pico_guard();
-    pico_layer_sub_mode('!', key, parent, crop);
+    pico_layer_sub_mode('!', up, key, parent, crop);
 }
 
-void pico_layer_sub_mode (int mode, const char* key,
+void pico_layer_sub_mode (int mode, const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop)
 {
     _pico_guard();
+    (void)up;
     assert(key!=NULL      && "sub-layer key required");
     assert(parent!=NULL   && "parent key required");
     assert(crop!=NULL     && "crop rect required");
@@ -874,16 +880,17 @@ void pico_layer_sub_mode (int mode, const char* key,
 }
 
 void pico_layer_text (
-    const char* key, int height, const char* text
+    const char* up, const char* key, int height, const char* text
 ) {
     _pico_guard();
-    pico_layer_text_mode('!', key, height, text);
+    pico_layer_text_mode('!', up, key, height, text);
 }
 
 void pico_layer_text_mode (
-    int mode, const char* key, int height, const char* text
+    int mode, const char* up, const char* key, int height, const char* text
 ) {
     _pico_guard();
+    (void)up;
     assert(key!=NULL && "layer key required");
     _pico_layer_text(mode, key, height, text);
 }

@@ -317,7 +317,7 @@ const char* pico_get_layer (void);
 /// @param dim buffer dimensions
 /// @param pixels RGBA pixel data (must remain valid while layer
 ///               exists)
-void pico_layer_buffer (const char* key,
+void pico_layer_buffer (const char* up, const char* key,
                         Pico_Abs_Dim dim,
                         const Pico_Color_A* pixels);
 
@@ -327,26 +327,26 @@ void pico_layer_buffer (const char* key,
 /// @param dim buffer dimensions
 /// @param pixels RGBA pixel data (must remain valid while layer
 ///               exists)
-void pico_layer_buffer_mode (int mode, const char* key,
+void pico_layer_buffer_mode (int mode, const char* up, const char* key,
                              Pico_Abs_Dim dim,
                              const Pico_Color_A* pixels);
 
 /// @brief Creates an empty layer (exclusive mode).
 /// @param key layer key (must not be NULL or start with '/')
 /// @param dim layer dimensions
-void pico_layer_empty (const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile);
+void pico_layer_empty (const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile);
 
 /// @brief Creates an empty layer.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param key layer key (must not be NULL or start with '/')
 /// @param dim layer dimensions
-void pico_layer_empty_mode (int mode, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile);
+void pico_layer_empty_mode (int mode, const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile);
 
 /// @brief Creates a layer from an image file (exclusive mode).
 /// @param key layer key (NULL uses "/image/<path>", otherwise
 ///            must not start with '/')
 /// @param path path to the image file
-void pico_layer_image (const char* key, const char* path);
+void pico_layer_image (const char* up, const char* key, const char* path);
 
 /// @brief Creates a layer from an image file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
@@ -354,7 +354,7 @@ void pico_layer_image (const char* key, const char* path);
 ///            must not start with '/')
 /// @param path path to the image file
 void pico_layer_image_mode (int mode,
-    const char* key, const char* path);
+    const char* up, const char* key, const char* path);
 
 /// @brief Creates a sub-layer (crop) from an existing layer
 ///        (exclusive mode).
@@ -363,7 +363,7 @@ void pico_layer_image_mode (int mode,
 /// @param parent parent layer key (must exist, must not be a
 ///               sub-layer)
 /// @param crop source rectangle within the parent
-void pico_layer_sub (const char* key,
+void pico_layer_sub (const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a sub-layer (crop) from an existing layer.
@@ -373,7 +373,7 @@ void pico_layer_sub (const char* key,
 /// @param parent parent layer key (must exist, must not be a
 ///               sub-layer)
 /// @param crop source rectangle within the parent
-void pico_layer_sub_mode (int mode, const char* key,
+void pico_layer_sub_mode (int mode, const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a layer from text (exclusive mode).
@@ -381,7 +381,7 @@ void pico_layer_sub_mode (int mode, const char* key,
 /// @param height text height in pixels
 /// @param text the text to render
 /// @note Uses current font and draw color
-void pico_layer_text (const char* key,
+void pico_layer_text (const char* up, const char* key,
     int height, const char* text);
 
 /// @brief Creates a layer from text.
@@ -390,14 +390,14 @@ void pico_layer_text (const char* key,
 /// @param height text height in pixels
 /// @param text the text to render
 /// @note Uses current font and draw color
-void pico_layer_text_mode (int mode, const char* key,
+void pico_layer_text_mode (int mode, const char* up, const char* key,
     int height, const char* text);
 
 /// @brief Creates a video layer from a Y4M file (exclusive mode).
 /// @param key layer key (NULL uses path, otherwise must not
 ///            start with '/')
 /// @param path path to the Y4M video file
-void pico_layer_video (const char* key, const char* path);
+void pico_layer_video (const char* up, const char* key, const char* path);
 
 /// @brief Creates a video layer from a Y4M file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
@@ -405,7 +405,7 @@ void pico_layer_video (const char* key, const char* path);
 ///            start with '/')
 /// @param path path to the Y4M video file
 void pico_layer_video_mode (int mode,
-    const char* key, const char* path);
+    const char* up, const char* key, const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////
 
