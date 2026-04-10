@@ -827,16 +827,15 @@ void pico_layer_empty_mode (int mode, const char* up, const char* key, Pico_Abs_
     _pico_guard();
     assert(key!=NULL && "layer key required");
     _alloc_empty_t ctx = { dim, tile };
-    Pico_Layer* ret = (Pico_Layer*) realm_put (
+    Pico_Layer* DN = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_empty, &ctx
     );
-    assert(ret != NULL);
+    assert(DN != NULL);
     if (up != NULL) {
-        Pico_Layer* par = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
-        assert(par != NULL && "up layer does not exist");
-        ret->hier.up = par->name;
-        _layer_attach(par, ret);
+        Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
+        assert(UP!=NULL && "invalid up layer");
+        _layer_attach(UP, DN);
     }
 }
 

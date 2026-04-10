@@ -110,15 +110,17 @@ static Pico_Layer* _pico_layer_text (
     return ret;
 }
 
-static void _layer_attach (Pico_Layer* up, Pico_Layer* self) {
-    self->hier.nxt = NULL;
+static void _layer_attach (Pico_Layer* up, Pico_Layer* dn) {
+    dn->hier.up = up->name;
+    dn->hier.nxt = NULL;
     if (up->hier.dn.fst == NULL) {
-        up->hier.dn.fst = self->name;
-        up->hier.dn.lst = self->name;
+        up->hier.dn.fst = dn->name;
+        up->hier.dn.lst = dn->name;
     } else {
-        Pico_Layer* tail = (Pico_Layer*) realm_get(G.realm, strlen(up->hier.dn.lst)+1, up->hier.dn.lst);
-        tail->hier.nxt = self->name;
-        up->hier.dn.lst = self->name;
+        Pico_Layer* lst = (Pico_Layer*)
+            realm_get(G.realm, strlen(up->hier.dn.lst)+1, up->hier.dn.lst);
+        lst->hier.nxt = dn->name;
+        up->hier.dn.lst = dn->name;
     }
 }
 
@@ -128,15 +130,15 @@ static void _pico_output_draw_layer (
     Pico_Layer* layer, Pico_Rel_Rect* rect
 ) {
     // recurse: composite children onto layer->tex first
-    const char* cid = layer->hier.dn.fst;
-    while (cid != NULL) {
-        Pico_Layer* c = (Pico_Layer*) realm_get(G.realm, strlen(cid)+1, cid);
-        if (c == NULL) {
-            break;
+    {
+        const char* cur = layer->hier.dn.fst;
+        while (cur != NULL) {
+            Pico_Layer* c = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
+            assert(c != NULL);
+            SDL_SetRenderTarget(G.ren, layer->tex);
+            _pico_output_draw_layer(c, NULL);
+            cur = c->hier.nxt;
         }
-        SDL_SetRenderTarget(G.ren, layer->tex);
-        _pico_output_draw_layer(c, NULL);
-        cid = c->hier.nxt;
     }
 
     // blit layer onto current render target
