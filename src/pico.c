@@ -825,14 +825,19 @@ void pico_layer_empty (const char* up, const char* key, Pico_Abs_Dim dim, Pico_A
 
 void pico_layer_empty_mode (int mode, const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
     _pico_guard();
-    (void)up;
     assert(key!=NULL && "layer key required");
     _alloc_empty_t ctx = { dim, tile };
-    void* ret = realm_put (
+    Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_empty, &ctx
     );
     assert(ret != NULL);
+    if (up != NULL) {
+        Pico_Layer* par = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
+        assert(par != NULL && "up layer does not exist");
+        ret->hier.up = par->name;
+        _layer_attach(par, ret);
+    }
 }
 
 void pico_layer_image (const char* up, const char* key, const char* path) {
@@ -1473,6 +1478,21 @@ static void _pico_output_present (int force) {
     }
 
     G.presenting = 1;
+
+    // composite scene graph onto root.tex
+    {
+        const char* cid = G.root.hier.dn.fst;
+        while (cid != NULL) {
+            Pico_Layer* c = (Pico_Layer*) realm_get(G.realm, strlen(cid)+1, cid);
+            if (c == NULL) {
+                break;
+            }
+            SDL_SetRenderTarget(G.ren, G.root.tex);
+            _pico_output_draw_layer(c, NULL);
+            cid = c->hier.nxt;
+        }
+    }
+
     SDL_SetRenderTarget(G.ren, NULL);
     SDL_SetRenderDrawColor(G.ren, 0x77,0x77,0x77,0x77);
     SDL_RenderClear(G.ren);
