@@ -1479,18 +1479,7 @@ static void _pico_output_present (int force) {
     G.presenting = 1;
 
     // composite scene graph onto root.tex
-    {
-        const char* cid = G.root.hier.dn.fst;
-        while (cid != NULL) {
-            Pico_Layer* c = (Pico_Layer*) realm_get(G.realm, strlen(cid)+1, cid);
-            if (c == NULL) {
-                break;
-            }
-            SDL_SetRenderTarget(G.ren, G.root.tex);
-            _pico_output_draw_layer(c, NULL);
-            cid = c->hier.nxt;
-        }
-    }
+    _layer_traverse(&G.root);
 
     SDL_SetRenderTarget(G.ren, NULL);
     SDL_SetRenderDrawColor(G.ren, 0x77,0x77,0x77,0x77);
