@@ -37,8 +37,8 @@ typedef struct {
     PICO_FLIP     flip;
 } Pico_View;
 
-#include "mem.hc"
 #include "layers.hc"
+#include "mem.hc"
 #include "video.hc"
 
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
@@ -1161,7 +1161,7 @@ void pico_output_draw_buffer (
 ) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
-    pico_layer_buffer_mode('=', key, dim, buffer);
+    pico_layer_buffer_mode('=', NULL, key, dim, buffer);
     pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
 }
 
