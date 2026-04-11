@@ -5,13 +5,13 @@ pico.init(true)
 -- get_layer returns nil (main layer)
 print("get_layer returns nil initially")
 local layer = pico.get.layer()
-assert(layer == nil)
+assert(layer == "root")
 
 -- set_layer(nil) switches to main
 print("set_layer(nil) keeps main layer")
 pico.set.layer(nil)
 layer = pico.get.layer()
-assert(layer == nil)
+assert(layer == "root")
 
 -- create bg layer (32x32)
 print("create and switch to layer")
@@ -54,7 +54,7 @@ pico.check("layers-02")
 print("switch back to main")
 pico.set.layer(nil)
 layer = pico.get.layer()
-assert(layer == nil)
+assert(layer == "root")
 
 -- composite layers onto main
 print("draw layers onto main")
