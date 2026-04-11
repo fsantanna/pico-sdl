@@ -77,7 +77,7 @@ static Pico_Anchor c_anchor (lua_State* L, int i) {
     }
 }
 
-static Pico_Color_A c_color_t (lua_State* L, int i) {
+static Pico_Color c_color_t (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);    // clr = { ['!'|'%'], r,g,b[,a] }
 
@@ -98,13 +98,13 @@ static Pico_Color_A c_color_t (lua_State* L, int i) {
     float b = L_checkfieldnum(L, i, "b");
 
     if (mode == '%') {
-        return (Pico_Color_A) { r*255, g*255, b*255, a*255 };
+        return (Pico_Color) { r*255, g*255, b*255, a*255 };
     } else {
-        return (Pico_Color_A) { r, g, b, a };
+        return (Pico_Color) { r, g, b, a };
     }
 }
 
-static Pico_Color_A c_color_s (lua_State* L, int i) {
+static Pico_Color c_color_s (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TSTRING);   // clr = 'red'
     lua_pushlightuserdata(L, (void*)&KEY);  // clr | . | K
@@ -118,16 +118,15 @@ static Pico_Color_A c_color_s (lua_State* L, int i) {
     }
     Pico_Color* clr = lua_touserdata(L, -1);
     lua_pop(L, 3);
-    return pico_color_alpha(*clr, 0xFF);
+    return *clr;
 }
 
-static Pico_Color_A c_color_tis (lua_State* L, int i) {
+static Pico_Color c_color_tis (lua_State* L, int i) {
     assert(i > 0);
     if (lua_type(L,i) == LUA_TSTRING) {
         return c_color_s(L, i);
     } else if (lua_isinteger(L, i)) {
-        Pico_Color clr = pico_color_hex((uint32_t)lua_tointeger(L, i));
-        return pico_color_alpha(clr, 0xFF);
+        return pico_color_hex((uint32_t)lua_tointeger(L, i));
     } else {
         luaL_checktype(L, i, LUA_TTABLE);
         return c_color_t(L, i);
@@ -269,7 +268,7 @@ static Pico_Abs_Dim c_buffer_dim (lua_State* L, int i) {
 }
 
 static void c_buffer_fill (lua_State* L, int i, Pico_Abs_Dim dim,
-                           Pico_Color_A* buf) {
+                           Pico_Color* buf) {
     assert(i > 0);
     for (int row=1; row<=dim.h; row++) {
         lua_geti(L, i, row);                    // T | T[row]
@@ -546,51 +545,39 @@ static void L_push_color (lua_State* L, Pico_Color clr) {
     lua_setfield(L, -2, "g");
     lua_pushinteger(L, clr.b);
     lua_setfield(L, -2, "b");
-}
-
-static void L_push_color_a (lua_State* L,
-                            Pico_Color_A clr)
-{
-    lua_newtable(L);
-    lua_pushinteger(L, clr.r);
-    lua_setfield(L, -2, "r");
-    lua_pushinteger(L, clr.g);
-    lua_setfield(L, -2, "g");
-    lua_pushinteger(L, clr.b);
-    lua_setfield(L, -2, "b");
     lua_pushinteger(L, clr.a);
     lua_setfield(L, -2, "a");
 }
 
 static int l_color_darker (lua_State* L) {
-    Pico_Color_A clr = c_color_tis(L, 1);
+    Pico_Color clr = c_color_tis(L, 1);
     float pct = luaL_checknumber(L, 2);
-    Pico_Color ret = pico_color_darker(_pico_color(clr), pct);
+    Pico_Color ret = pico_color_darker(clr, pct);
     L_push_color(L, ret);
     return 1;
 }
 
 static int l_color_lighter (lua_State* L) {
-    Pico_Color_A clr = c_color_tis(L, 1);
+    Pico_Color clr = c_color_tis(L, 1);
     float pct = luaL_checknumber(L, 2);
-    Pico_Color ret = pico_color_lighter(_pico_color(clr), pct);
+    Pico_Color ret = pico_color_lighter(clr, pct);
     L_push_color(L, ret);
     return 1;
 }
 
 static int l_color_mix (lua_State* L) {
-    Pico_Color_A c1 = c_color_tis(L, 1);
-    Pico_Color_A c2 = c_color_tis(L, 2);
-    Pico_Color ret = pico_color_mix(_pico_color(c1), _pico_color(c2));
+    Pico_Color c1 = c_color_tis(L, 1);
+    Pico_Color c2 = c_color_tis(L, 2);
+    Pico_Color ret = pico_color_mix(c1, c2);
     L_push_color(L, ret);
     return 1;
 }
 
 static int l_color_alpha (lua_State* L) {
-    Pico_Color_A clr = c_color_tis(L, 1);
+    Pico_Color clr = c_color_tis(L, 1);
     int a = luaL_checkinteger(L, 2);
-    Pico_Color_A ret = pico_color_alpha(_pico_color(clr), a);
-    L_push_color_a(L, ret);
+    Pico_Color ret = pico_color_alpha(clr, a);
+    L_push_color(L, ret);
     return 1;
 }
 
@@ -640,28 +627,14 @@ static int l_get_alpha (lua_State* L) {
 }
 
 static int l_get_color_clear (lua_State* L) {
-    Pico_Color_A c = pico_get_color_clear_alpha();
-    lua_newtable(L);
-    lua_pushinteger(L, c.r);
-    lua_setfield(L, -2, "r");
-    lua_pushinteger(L, c.g);
-    lua_setfield(L, -2, "g");
-    lua_pushinteger(L, c.b);
-    lua_setfield(L, -2, "b");
-    lua_pushinteger(L, c.a);
-    lua_setfield(L, -2, "a");
+    Pico_Color c = pico_get_color_clear();
+    L_push_color(L, c);
     return 1;
 }
 
 static int l_get_color_draw (lua_State* L) {
     Pico_Color c = pico_get_color_draw();
-    lua_newtable(L);
-    lua_pushinteger(L, c.r);
-    lua_setfield(L, -2, "r");
-    lua_pushinteger(L, c.g);
-    lua_setfield(L, -2, "g");
-    lua_pushinteger(L, c.b);
-    lua_setfield(L, -2, "b");
+    L_push_color(L, c);
     return 1;
 }
 
@@ -982,14 +955,14 @@ static int l_set_expert (lua_State* L) {
 }
 
 static int l_set_color_clear (lua_State* L) {
-    Pico_Color_A clr = c_color_tis(L, 1);
-    pico_set_color_clear_alpha(clr);
+    Pico_Color clr = c_color_tis(L, 1);
+    pico_set_color_clear(clr);
     return 0;
 }
 
 static int l_set_color_draw (lua_State* L) {
-    Pico_Color_A clr = c_color_tis(L, 1);
-    pico_set_color_draw(_pico_color(clr));
+    Pico_Color clr = c_color_tis(L, 1);
+    pico_set_color_draw(clr);
     return 0;
 }
 
@@ -1240,10 +1213,10 @@ static int l_layer_buffer (lua_State* L) {
             buf_dim.w, buf_dim.h, dim.w, dim.h);
     }
 
-    Pico_Color_A buf[buf_dim.h][buf_dim.w];
-    c_buffer_fill(L, i+3, buf_dim, (Pico_Color_A*)buf);
+    Pico_Color buf[buf_dim.h][buf_dim.w];
+    c_buffer_fill(L, i+3, buf_dim, (Pico_Color*)buf);
 
-    pico_layer_buffer_mode(m, up, key, dim, (Pico_Color_A*)buf);
+    pico_layer_buffer_mode(m, up, key, dim, (Pico_Color*)buf);
     return 0;
 }
 
@@ -1411,11 +1384,11 @@ static int l_output_draw_buffer (lua_State* L) {
     luaL_checktype(L, 3, LUA_TTABLE);
 
     Pico_Abs_Dim dim = c_buffer_dim(L, 2);
-    Pico_Color_A buf[dim.h][dim.w];
-    c_buffer_fill(L, 2, dim, (Pico_Color_A*)buf);
+    Pico_Color buf[dim.h][dim.w];
+    c_buffer_fill(L, 2, dim, (Pico_Color*)buf);
 
     Pico_Rel_Rect* rect = c_rel_rect(L, 3);
-    pico_output_draw_buffer(name, dim, (Pico_Color_A*)buf, rect);
+    pico_output_draw_buffer(name, dim, (Pico_Color*)buf, rect);
     return 0;
 }
 

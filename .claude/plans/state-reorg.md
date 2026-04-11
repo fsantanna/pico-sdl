@@ -13,7 +13,9 @@ draw state per-layer, drop push/pop.
 
 Remove `Pico_Color` (RGB). Rename `Pico_Color_A` → `Pico_Color`
 (always RGBA). All constants get `.a = 0xFF`.
-Remove `_pico_color()` helper, `pico_color_alpha()` helper.
+Remove `_pico_color()` helper. `pico_color_alpha()` kept:
+still useful as a copy-with-alpha-override ergonomic helper
+(e.g., `pico_color_alpha(PICO_COLOR_RED, 0x80)`).
 
 `PICO_COLOR_TRANSPARENT` stays as-is (already RGBA).
 
@@ -145,10 +147,10 @@ to `Pico_Color` (RGBA, the renamed type).
 - [x] `src/pico.h` | update all signatures using `Pico_Color`
   or `Pico_Color_A` → unified `Pico_Color`; removed
   `pico_color_alpha` decl
-- [x] `src/pico.c` | update all internal uses; remove
-  `pico_color_alpha()` helper; color helpers preserve input
-  alpha (darker/lighter pass `clr.a`; mix averages; hex sets
-  `0xFF`)
+- [x] `src/pico.c` | update all internal uses; color helpers
+  preserve input alpha (darker/lighter pass `clr.a`; mix
+  averages; hex sets `0xFF`); `pico_color_alpha` kept (2-line
+  copy-with-alpha-override)
 - [x] `src/layers.hc` | `Pico_Color_A*` → `Pico_Color*`
 - [x] `src/mem.hc` | `Pico_Color_A*` → `Pico_Color*`
 - [x] `lua/pico.c` | unify color types; drop `L_push_color_a`

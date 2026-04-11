@@ -57,7 +57,7 @@ static struct { // internal global state
 static struct { // exposed global state
     int alpha;
     struct {
-        Pico_Color_A clear;
+        Pico_Color clear;
         Pico_Color draw;
     } color;
     struct {
@@ -80,7 +80,7 @@ static struct { // exposed global state
 typedef struct {
     int           alpha;
     struct {
-        Pico_Color_A clear;
+        Pico_Color clear;
         Pico_Color draw;
     } color;
     const char*   font;
@@ -227,10 +227,9 @@ int pico_vs_rect_rect (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2) {
 Pico_Color pico_color_darker (Pico_Color clr, float pct) {
     if (pct < 0) {
         return pico_color_lighter(clr, -pct);
-    } else {
-        float X = MAX(0, 1-pct);
-        return (Pico_Color) { clr.r*X, clr.g*X, clr.b*X };
     }
+    float X = MAX(0, 1-pct);
+    return (Pico_Color) { clr.r*X, clr.g*X, clr.b*X, clr.a };
 }
 
 Pico_Color pico_color_lighter (Pico_Color clr, float pct) {
@@ -240,7 +239,8 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct) {
     return (Pico_Color) {
         (clr.r + (255 - clr.r) * pct),
         (clr.g + (255 - clr.g) * pct),
-        (clr.b + (255 - clr.b) * pct)
+        (clr.b + (255 - clr.b) * pct),
+        clr.a
     };
 }
 
@@ -248,19 +248,21 @@ Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2) {
     return (Pico_Color) {
         (c1.r + c2.r) / 2,
         (c1.g + c2.g) / 2,
-        (c1.b + c2.b) / 2
+        (c1.b + c2.b) / 2,
+        (c1.a + c2.a) / 2
     };
 }
 
-Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a) {
-    return (Pico_Color_A) { clr.r, clr.g, clr.b, a };
+Pico_Color pico_color_alpha (Pico_Color clr, Uint8 a) {
+    clr.a = a;
+    return clr;
 }
 
 Pico_Color pico_color_hex (uint32_t hex) {
     uint8_t r = (hex >> 16) & 0xFF;
     uint8_t g = (hex >> 8)  & 0xFF;
     uint8_t b =  hex        & 0xFF;
-    return (Pico_Color) { r, g, b };
+    return (Pico_Color) { r, g, b, 0xFF };
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -391,10 +393,10 @@ int pico_get_alpha (void) {
 
 Pico_Color pico_get_color_clear (void) {
     _pico_guard();
-    return _pico_color(S.color.clear);
+    return S.color.clear;
 }
 
-Pico_Color_A pico_get_color_clear_alpha (void) {
+Pico_Color pico_get_color_clear_alpha (void) {
     _pico_guard();
     return S.color.clear;
 }
@@ -590,10 +592,10 @@ void pico_set_alpha (int a) {
 
 void pico_set_color_clear (Pico_Color color) {
     _pico_guard();
-    S.color.clear = pico_color_alpha(color, 0xFF);
+    S.color.clear = color;
 }
 
-void pico_set_color_clear_alpha (Pico_Color_A color) {
+void pico_set_color_clear_alpha (Pico_Color color) {
     _pico_guard();
     S.color.clear = color;
 }
@@ -809,7 +811,7 @@ void pico_layer_buffer (
     const char* up,
     const char* key,
     Pico_Abs_Dim dim,
-    const Pico_Color_A* pixels
+    const Pico_Color* pixels
 ) {
     _pico_guard();
     pico_layer_buffer_mode('!', up, key, dim, pixels);
@@ -820,7 +822,7 @@ void pico_layer_buffer_mode (
     const char* up,
     const char* key,
     Pico_Abs_Dim dim,
-    const Pico_Color_A* pixels
+    const Pico_Color* pixels
 ) {
     _pico_guard();
     _pico_layer_buffer(mode, key, dim, pixels);
@@ -1176,7 +1178,7 @@ void pico_output_clear (void) {
 void pico_output_draw_buffer (
     const char* key,
     Pico_Abs_Dim dim,
-    const Pico_Color_A buffer[],
+    const Pico_Color buffer[],
     const Pico_Rel_Rect* rect
 ) {
     _pico_guard();
@@ -1365,7 +1367,7 @@ static void _show_grid (void) {
 
     Pico_Color x_clr   = pico_get_color_draw();
     int        x_alpha = pico_get_alpha();
-    pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77});
+    pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77, 0xFF});
 
     // grid lines
     {
@@ -1395,7 +1397,7 @@ static void _show_grid (void) {
 
     // metric labels
     {
-        pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77});
+        pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77, 0xFF});
         pico_set_alpha(0xFF);
         int H = 10;
         Pico_Abs_Rect src = pico_cv_rect_rel_abs (
@@ -1444,7 +1446,7 @@ static void _show_tile (Pico_View* view, SDL_Rect dst) {
     int        x_alpha = pico_get_alpha();
     PICO_STYLE x_style = pico_get_style();
 
-    pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0xFF});
+    pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
     pico_set_alpha(0xAA);
     pico_set_style(PICO_STYLE_STROKE);
 

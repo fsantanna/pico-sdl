@@ -1,20 +1,13 @@
 #ifndef PICO_COLORS_H
 #define PICO_COLORS_H
 
-/// @brief RGB color without alpha channel.
-typedef struct {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-} Pico_Color;
-
 /// @brief RGBA color with per-pixel alpha channel.
 typedef struct {
     Uint8 r;
     Uint8 g;
     Uint8 b;
     Uint8 a;
-} Pico_Color_A;
+} Pico_Color;
 
 extern const Pico_Color PICO_COLOR_BLACK;
 extern const Pico_Color PICO_COLOR_WHITE;
@@ -36,11 +29,7 @@ extern const Pico_Color PICO_COLOR_NAVY;
 extern const Pico_Color PICO_COLOR_MAROON;
 extern const Pico_Color PICO_COLOR_OLIVE;
 
-extern const Pico_Color_A PICO_COLOR_TRANSPARENT;
-
-static inline Pico_Color _pico_color (Pico_Color_A c) {
-    return (Pico_Color) { c.r, c.g, c.b };
-}
+extern const Pico_Color PICO_COLOR_TRANSPARENT;
 
 #endif // PICO_COLORS_H
 
@@ -51,34 +40,34 @@ static inline Pico_Color _pico_color (Pico_Color_A c) {
 /// @{
 
 // Grayscale
-const Pico_Color PICO_COLOR_BLACK   = {0, 0, 0};
-const Pico_Color PICO_COLOR_WHITE   = {255, 255, 255};
-const Pico_Color PICO_COLOR_GRAY    = {128, 128, 128};
-const Pico_Color PICO_COLOR_SILVER  = {192, 192, 192};
+const Pico_Color PICO_COLOR_BLACK   = {0,   0,   0,   0xFF};
+const Pico_Color PICO_COLOR_WHITE   = {255, 255, 255, 0xFF};
+const Pico_Color PICO_COLOR_GRAY    = {128, 128, 128, 0xFF};
+const Pico_Color PICO_COLOR_SILVER  = {192, 192, 192, 0xFF};
 
 // Primary colors
-const Pico_Color PICO_COLOR_RED     = {255, 0, 0};
-const Pico_Color PICO_COLOR_GREEN   = {0, 255, 0};
-const Pico_Color PICO_COLOR_BLUE    = {0, 0, 255};
+const Pico_Color PICO_COLOR_RED     = {255, 0,   0,   0xFF};
+const Pico_Color PICO_COLOR_GREEN   = {0,   255, 0,   0xFF};
+const Pico_Color PICO_COLOR_BLUE    = {0,   0,   255, 0xFF};
 
 // Secondary colors
-const Pico_Color PICO_COLOR_YELLOW  = {255, 255, 0};
-const Pico_Color PICO_COLOR_CYAN    = {0, 255, 255};
-const Pico_Color PICO_COLOR_MAGENTA = {255, 0, 255};
+const Pico_Color PICO_COLOR_YELLOW  = {255, 255, 0,   0xFF};
+const Pico_Color PICO_COLOR_CYAN    = {0,   255, 255, 0xFF};
+const Pico_Color PICO_COLOR_MAGENTA = {255, 0,   255, 0xFF};
 
 // Common colors
-const Pico_Color PICO_COLOR_ORANGE  = {255, 165, 0};
-const Pico_Color PICO_COLOR_PURPLE  = {128, 0, 128};
-const Pico_Color PICO_COLOR_PINK    = {255, 192, 203};
-const Pico_Color PICO_COLOR_BROWN   = {165, 42, 42};
-const Pico_Color PICO_COLOR_LIME    = {0, 255, 0};
-const Pico_Color PICO_COLOR_TEAL    = {0, 128, 128};
-const Pico_Color PICO_COLOR_NAVY    = {0, 0, 128};
-const Pico_Color PICO_COLOR_MAROON  = {128, 0, 0};
-const Pico_Color PICO_COLOR_OLIVE   = {128, 128, 0};
+const Pico_Color PICO_COLOR_ORANGE  = {255, 165, 0,   0xFF};
+const Pico_Color PICO_COLOR_PURPLE  = {128, 0,   128, 0xFF};
+const Pico_Color PICO_COLOR_PINK    = {255, 192, 203, 0xFF};
+const Pico_Color PICO_COLOR_BROWN   = {165, 42,  42,  0xFF};
+const Pico_Color PICO_COLOR_LIME    = {0,   255, 0,   0xFF};
+const Pico_Color PICO_COLOR_TEAL    = {0,   128, 128, 0xFF};
+const Pico_Color PICO_COLOR_NAVY    = {0,   0,   128, 0xFF};
+const Pico_Color PICO_COLOR_MAROON  = {128, 0,   0,   0xFF};
+const Pico_Color PICO_COLOR_OLIVE   = {128, 128, 0,   0xFF};
 
 // Special colors
-const Pico_Color_A PICO_COLOR_TRANSPARENT = {0, 0, 0, 0};
+const Pico_Color PICO_COLOR_TRANSPARENT = {0, 0, 0, 0};
 
 /// @}
 

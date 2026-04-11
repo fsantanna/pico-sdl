@@ -7,7 +7,7 @@
 
 typedef struct {
     Pico_Abs_Dim dim;
-    const Pico_Color_A* pixels;
+    const Pico_Color* pixels;
 } _alloc_buffer_t;
 
 typedef struct {

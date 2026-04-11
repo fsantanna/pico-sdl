@@ -30,7 +30,7 @@ typedef struct {
 
 static Pico_Layer* _pico_layer_buffer (
     int mode, const char* key, Pico_Abs_Dim dim,
-    const Pico_Color_A* pixels
+    const Pico_Color* pixels
 );
 static Pico_Layer* _pico_layer_image (
     int mode, const char* key, const char* path
@@ -86,7 +86,7 @@ static Pico_Layer* _pico_layer_buffer (
     int mode,
     const char* key,
     Pico_Abs_Dim dim,
-    const Pico_Color_A* pixels
+    const Pico_Color* pixels
 ) {
     assert(key!=NULL && "layer key required");
     assert(pixels!=NULL && "pixels required");

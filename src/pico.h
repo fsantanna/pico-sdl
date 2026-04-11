@@ -702,6 +702,12 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct);
 /// @sa pico_color_lighter
 Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2);
 
+/// @brief Returns a copy of the color with alpha set to the given value.
+/// @param clr the original color
+/// @param a alpha value (0-255)
+/// @return copy of clr with .a = a
+Pico_Color pico_color_alpha (Pico_Color clr, Uint8 a);
+
 /// @brief Converts a hex integer (0xRRGGBB) to a color.
 /// @param hex the color as a 24-bit integer (e.g. 0xFF0000 for red)
 /// @return the corresponding color

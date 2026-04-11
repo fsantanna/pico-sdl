@@ -225,8 +225,8 @@ int main (void) {
         pico_set_color_clear(PICO_COLOR_WHITE);
         pico_output_clear();
         Pico_Color buffer[] = {
-            PICO_COLOR_RED,
-            {PICO_COLOR_RED.r, PICO_COLOR_RED.g, PICO_COLOR_RED.b, 0x80},
+            pico_color_alpha(PICO_COLOR_RED, 0xFF),
+            pico_color_alpha(PICO_COLOR_RED, 0x80),
             PICO_COLOR_TRANSPARENT,
         };
         Pico_Rel_Rect r = {
