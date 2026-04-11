@@ -80,12 +80,6 @@
     - Predefined font options (tiny, dejavu, etc)
     - Test other fonts
 
-20. Unify panels, boxes, images, and text as layers
-    - Images are also layers
-    - Rotation: angle/anchor
-    - Crop, flip, dimensions unified across types
-    - Path identifies type; text uses string + font
-
 21. `pico_get_image/text` should accept ref parameter
     - See `lua/tst/image_pct` commented tests
 
