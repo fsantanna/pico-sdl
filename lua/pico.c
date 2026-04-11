@@ -1169,7 +1169,7 @@ static int l_layer_empty (lua_State* L) {
     int m = c_opt_mode(L);  // [m] | up | key | dim | [tile]
     int i = m ? 2 : 1;
     if (!m) m = '!';
-    const char* up = lua_isnil(L, i) ? "root" : luaL_checkstring(L, i);
+    const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
     const char* key = luaL_checkstring(L, i+1);
 
     luaL_checktype(L, i+2, LUA_TTABLE);

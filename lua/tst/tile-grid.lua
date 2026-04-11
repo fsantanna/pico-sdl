@@ -61,7 +61,7 @@ pico.set.view { grid=false, dim={'!', w=480, h=480} }
 -- Layer A: 4x4 tiles of 4x4 pixels, grid enabled
 do
     print("layer A: 4x4 tiles, grid on")
-    pico.layer.empty("layerA", {w=16, h=16})
+    pico.layer.empty(nil, "layerA", {w=16, h=16})
     pico.set.layer("layerA")
     pico.set.view { grid=true, dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear()
@@ -73,7 +73,7 @@ end
 -- Layer B: 8x4 non-square tiles, grid enabled
 do
     print("layer B: 8x4 non-square tiles, grid on")
-    pico.layer.empty("layerB", {w=16, h=16})
+    pico.layer.empty(nil, "layerB", {w=16, h=16})
     pico.set.layer("layerB")
     pico.set.view { grid=true, dim={'#', w=8, h=4}, tile={w=2, h=4} }
     pico.output.clear()
@@ -85,7 +85,7 @@ end
 -- Layer C: 4x4 tiles of 4x4 pixels, grid disabled
 do
     print("layer C: 4x4 tiles, grid off")
-    pico.layer.empty("layerC", {w=16, h=16})
+    pico.layer.empty(nil, "layerC", {w=16, h=16})
     pico.set.layer("layerC")
     pico.set.view { grid=false, dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear()

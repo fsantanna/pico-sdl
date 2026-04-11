@@ -41,7 +41,7 @@ end
 -- 04: explicit layer with view target, drawn with rect=NULL
 do
     print("target: explicit layer")
-    pico.layer.empty("bg", {w=32, h=32})
+    pico.layer.empty(nil, "bg", {w=32, h=32})
     pico.set.layer("bg")
     pico.set.view {
         target = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
