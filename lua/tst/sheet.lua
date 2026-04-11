@@ -32,13 +32,13 @@ pico.check("sheet-01")
 
 -- Create sub-layers for each quadrant
 print("Test 2: explicit sub-layers (swapped)")
-pico.layer.sub('!', "tl", "sheet",
+pico.layer.sub('!', nil, "tl", "sheet",
     {'!', x=0, y=0, w=2, h=2, anchor='NW'})
-pico.layer.sub('!', "tr", "sheet",
+pico.layer.sub('!', nil, "tr", "sheet",
     {'!', x=2, y=0, w=2, h=2, anchor='NW'})
-pico.layer.sub('!', "bl", "sheet",
+pico.layer.sub('!', nil, "bl", "sheet",
     {'!', x=0, y=2, w=2, h=2, anchor='NW'})
-pico.layer.sub('!', "br", "sheet",
+pico.layer.sub('!', nil, "br", "sheet",
     {'!', x=2, y=2, w=2, h=2, anchor='NW'})
 
 -- Draw sub-layers swapped: TL->BR, TR->BL, BL->TR, BR->TL
@@ -66,7 +66,7 @@ pico.output.draw.rect(
     {'%', x=0.5, y=0, w=0.5, h=1, anchor='NW'})
 pico.output.screenshot("../../tst/out/sheet-grid.png")
 
-local names = pico.layer.images("grid",
+local names = pico.layer.images(nil, "grid",
     "../../tst/out/sheet-grid.png",
     {'#', w=2, h=1})
 assert(#names == 2)
@@ -83,7 +83,7 @@ pico.check("sheet-03")
 
 -- Test 4: pico.layer.images (explicit form)
 print("Test 4: explicit form")
-local names2 = pico.layer.images("expl",
+local names2 = pico.layer.images(nil, "expl",
     "../../tst/out/sheet-grid.png", {
     '!',
     left  = {'%', x=0, y=0, w=0.5, h=1,

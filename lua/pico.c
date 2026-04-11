@@ -1270,12 +1270,13 @@ static int l_layer_sub (lua_State* L) {
     int m = c_opt_mode(L);
     int i = m ? 2 : 1;
     if (!m) m = '!';
-    const char* key    = luaL_checkstring(L, i);
-    const char* parent = luaL_checkstring(L, i+1);
-    luaL_checktype(L, i+2, LUA_TTABLE);
-    L_dim_default_wh(L, i+2);
-    Pico_Rel_Rect* crop = c_rel_rect(L, i+2);
-    pico_layer_sub_mode(m, NULL, key, parent, crop);
+    const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
+    const char* key    = luaL_checkstring(L, i+1);
+    const char* parent = luaL_checkstring(L, i+2);
+    luaL_checktype(L, i+3, LUA_TTABLE);
+    L_dim_default_wh(L, i+3);
+    Pico_Rel_Rect* crop = c_rel_rect(L, i+3);
+    pico_layer_sub_mode(m, up, key, parent, crop);
     return 0;
 }
 
