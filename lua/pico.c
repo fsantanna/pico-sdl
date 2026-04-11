@@ -1242,10 +1242,11 @@ static int l_layer_text (lua_State* L) {
     int m = c_opt_mode(L);
     int i = m ? 2 : 1;
     if (!m) m = '!';
-    const char* key = luaL_checkstring(L, i);
-    int height = luaL_checkinteger(L, i+1);
-    const char* text = luaL_checkstring(L, i+2);
-    pico_layer_text_mode(m, NULL, key, height, text);
+    const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
+    const char* key = luaL_checkstring(L, i+1);
+    int height = luaL_checkinteger(L, i+2);
+    const char* text = luaL_checkstring(L, i+3);
+    pico_layer_text_mode(m, up, key, height, text);
     return 0;
 }
 
