@@ -67,6 +67,8 @@ static void _layer_attach (const char* up, const char* dn) {
 static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
 
 static void _layer_traverse (Pico_Layer* up) {
+    Pico_Layer* old = S.layer;
+    S.layer = up;
     const char* cur = up->hier.dn.fst;
     while (cur != NULL) {
         Pico_Layer* CUR = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
@@ -75,6 +77,7 @@ static void _layer_traverse (Pico_Layer* up) {
         _pico_output_draw_layer(CUR, NULL);
         cur = CUR->hier.nxt;
     }
+    S.layer = old;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,7 +148,9 @@ static void _pico_output_draw_layer (
     Pico_Layer* layer, Pico_Rel_Rect* rect
 ) {
     // recurse: composite children onto layer->tex first
+    SDL_Texture* old = SDL_GetRenderTarget(G.ren);
     _layer_traverse(layer);
+    SDL_SetRenderTarget(G.ren, old);
 
     // blit layer onto current render target
     if (rect == NULL) {

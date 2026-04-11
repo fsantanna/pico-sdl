@@ -72,12 +72,15 @@ int main (void) {
     ///////////////////////////////////////////////////////////////////////////
 
     // transparent overlay with yellow background
-    pico_layer_empty("root", "over", (Pico_Abs_Dim){4, 4}, NULL);
+    pico_layer_empty("root", "over", (Pico_Abs_Dim){500, 500}, NULL);
     pico_set_layer("over");
     pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0x00});
     pico_output_clear();
     unsigned char alpha = 0x80;
-    pico_set_view(-1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &alpha);
+    pico_set_view(-1, NULL, NULL,
+        &(Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL},
+        NULL, NULL, NULL, NULL, &alpha
+    );
     pico_set_layer("root");
 
     pico_set_layer("root");
@@ -89,7 +92,7 @@ int main (void) {
         &(Pico_Rel_Rect){'!', {0, 1, 1, 1}, PICO_ANCHOR_NW, NULL});
     pico_set_layer("blue");
     pico_set_view(-1, NULL, NULL,
-        &(Pico_Rel_Rect){'%', {0.15, 0.85, 0.10, 0.10}, PICO_ANCHOR_C, NULL},
+        &(Pico_Rel_Rect){'%', {0.20, 0.9, 0.10, 0.10}, PICO_ANCHOR_C, NULL},
         NULL, NULL, NULL, NULL, NULL
     );
 
@@ -97,7 +100,7 @@ int main (void) {
         &(Pico_Rel_Rect){'!', {1, 0, 1, 1}, PICO_ANCHOR_NW, NULL});
     pico_set_layer("green");
     pico_set_view(-1, NULL, NULL,
-        &(Pico_Rel_Rect){'%', {0.30, 0.85, 0.10, 0.10}, PICO_ANCHOR_C, NULL},
+        &(Pico_Rel_Rect){'%', {0.40, 0.9, 0.10, 0.10}, PICO_ANCHOR_C, NULL},
         NULL, NULL, NULL, NULL, NULL
     );
 
