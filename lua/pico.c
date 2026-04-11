@@ -807,7 +807,7 @@ static int l_get_view (lua_State* L) {
     PICO_FLIP     flip;
 
     // TODO: target, source, clip
-    pico_get_view(&grid, &log, &tile, NULL, NULL, NULL, &rot, &flip);
+    pico_get_view(&grid, &log, &tile, NULL, NULL, NULL, &rot, &flip, NULL);
 
     lua_newtable(L);                    // T
 
@@ -1142,7 +1142,7 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_view(grid, xwld, xtile, xdst, xsrc, xclip, xrot, xflip);
+    pico_set_view(grid, xwld, xtile, xdst, xsrc, xclip, xrot, xflip, NULL);
     return 0;
 }
 
@@ -1186,7 +1186,7 @@ static int l_layer_empty (lua_State* L) {
         ptr = &tile;
     }
 
-    pico_layer_empty_mode(m, key, dim, ptr);
+    pico_layer_empty_mode(m, NULL, key, dim, ptr);
     return 0;
 }
 
@@ -1204,7 +1204,7 @@ static int l_layer_image (lua_State* L) {
         path = luaL_checkstring(L, i);
         if (!m) m = '=';
     }
-    pico_layer_image_mode(m, key, path);
+    pico_layer_image_mode(m, NULL, key, path);
     return 0;
 }
 
@@ -1231,7 +1231,7 @@ static int l_layer_buffer (lua_State* L) {
     Pico_Color_A buf[buf_dim.h][buf_dim.w];
     c_buffer_fill(L, i+2, buf_dim, (Pico_Color_A*)buf);
 
-    pico_layer_buffer_mode(m, key, dim, (Pico_Color_A*)buf);
+    pico_layer_buffer_mode(m, NULL, key, dim, (Pico_Color_A*)buf);
     return 0;
 }
 
@@ -1242,7 +1242,7 @@ static int l_layer_text (lua_State* L) {
     const char* key = luaL_checkstring(L, i);
     int height = luaL_checkinteger(L, i+1);
     const char* text = luaL_checkstring(L, i+2);
-    pico_layer_text_mode(m, key, height, text);
+    pico_layer_text_mode(m, NULL, key, height, text);
     return 0;
 }
 
@@ -1260,7 +1260,7 @@ static int l_layer_video (lua_State* L) {
         path = luaL_checkstring(L, i);
         if (!m) m = '=';
     }
-    pico_layer_video_mode(m, key, path);
+    pico_layer_video_mode(m, NULL, key, path);
     return 0;
 }
 
@@ -1273,7 +1273,7 @@ static int l_layer_sub (lua_State* L) {
     luaL_checktype(L, i+2, LUA_TTABLE);
     L_dim_default_wh(L, i+2);
     Pico_Rel_Rect* crop = c_rel_rect(L, i+2);
-    pico_layer_sub_mode(m, key, parent, crop);
+    pico_layer_sub_mode(m, NULL, key, parent, crop);
     return 0;
 }
 
