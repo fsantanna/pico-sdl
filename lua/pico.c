@@ -1262,18 +1262,19 @@ static int l_layer_text (lua_State* L) {
 static int l_layer_video (lua_State* L) {
     int m = c_opt_mode(L);
     int i = m ? 2 : 1;
+    const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
     const char* key;
     const char* path;
-    if (lua_gettop(L) >= i+1) {
-        key  = luaL_checkstring(L, i);
-        path = luaL_checkstring(L, i+1);
+    if (lua_gettop(L) >= i+2) {
+        key  = luaL_checkstring(L, i+1);
+        path = luaL_checkstring(L, i+2);
         if (!m) m = '!';
     } else {
         key  = NULL;
-        path = luaL_checkstring(L, i);
+        path = luaL_checkstring(L, i+1);
         if (!m) m = '=';
     }
-    pico_layer_video_mode(m, NULL, key, path);
+    pico_layer_video_mode(m, up, key, path);
     return 0;
 }
 

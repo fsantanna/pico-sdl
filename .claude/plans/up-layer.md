@@ -557,6 +557,10 @@ follow-up.
 - [ ] String-keyed mouse / vs API
 - [ ] Restrict `pico_output_draw_layer` to detached
 - [ ] Migrate all C and Lua tests
+      - [x] Lua sweep: `l_layer_video` wired with `up`;
+            `lua/tst/video.lua`, `lua/tst/todo/video.lua`
+            prepend `nil` for detached. text/buffer already
+            migrated in `lua/tst/layer-hier.lua`.
 - [ ] New tests (up_attach, up_detach, up_remove, scene_vs,
       keep_persist)
 - [ ] Re-baseline visual tests
