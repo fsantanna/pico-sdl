@@ -1142,7 +1142,16 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_view(grid, xwld, xtile, xdst, xsrc, xclip, xrot, xflip, NULL);
+    unsigned char* xa = NULL;
+    unsigned char a;
+    lua_getfield(L, 1, "alpha");            // T | alpha
+    if (!lua_isnil(L, -1)) {
+        a = (unsigned char) luaL_checkinteger(L, -1);
+        xa = &a;
+    }
+    lua_pop(L, 1);                          // T
+
+    pico_set_view(grid, xwld, xtile, xdst, xsrc, xclip, xrot, xflip, xa);
     return 0;
 }
 
