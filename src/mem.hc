@@ -95,6 +95,7 @@ static Pico_View _view_new (Pico_Abs_Dim dim) {
         .tile = {0, 0},
         .rot  = {0, PICO_ANCHOR_C},
         .flip = PICO_FLIP_NONE,
+        .alpha = 0xFF,
     };
 }
 
@@ -170,13 +171,13 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
         &(Pico_Abs_Rect){0, 0, c->par->view.dim.w, c->par->view.dim.h}
     );
     Pico_Layer* data = _layer_new (
-        PICO_LAYER_SUB, sizeof(Pico_Layer),
+        PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
         (const char*)key, c->par->tex,
         (Pico_Abs_Dim){abs.w, abs.h}
     );
     data->view.src = c->crop;
     data->view.src.up = &c->par->view.src;
-    data->sup = c->par->view.dim;
+    ((Pico_Layer_Sub*)data)->sup = c->par->view.dim;
     return data;
 }
 

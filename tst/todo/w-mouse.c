@@ -4,7 +4,7 @@ int main (void) {
     pico_init(1);
     pico_set_view(-1,
         &(Pico_Rel_Dim){'!', {10, 10}, NULL},
-        NULL, NULL, NULL, NULL, NULL, NULL);
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
     pico_output_clear();
     pico_set_alpha(0x80);

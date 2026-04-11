@@ -35,10 +35,10 @@ int main (void) {
     pico_set_view(
         0,
         &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL},
-        NULL, NULL, NULL, NULL, NULL, NULL
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL
     );
 
-    pico_layer_video("vid", VIDEO_PATH);
+    pico_layer_video(NULL, "vid", VIDEO_PATH);
 
     float speed = 1.0;
     int paused = 0;

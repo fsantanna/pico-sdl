@@ -20,7 +20,7 @@ int main (void) {
     /* pico_layer_video: create layer */
     {
         puts("layer_video: create");
-        pico_layer_video("vid", "video.y4m");
+        pico_layer_video(NULL, "vid", "video.y4m");
     }
 
     /* pico_set_video: first frame (0) */

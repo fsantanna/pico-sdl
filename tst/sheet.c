@@ -6,7 +6,7 @@ int main (void) {
 
     // Create a 4x4 "sprite sheet" with colored quadrants
     const char* sheet = "sheet";
-    pico_layer_empty(sheet, (Pico_Abs_Dim){4, 4}, NULL);
+    pico_layer_empty(NULL, sheet, (Pico_Abs_Dim){4, 4}, NULL);
     pico_set_layer(sheet);
     pico_set_color_clear(PICO_COLOR_BLACK);
     pico_output_clear();
@@ -33,13 +33,13 @@ int main (void) {
     _pico_check("sheet-01");
 
     // Create sub-layers for each quadrant
-    pico_layer_sub("tl", sheet,
+    pico_layer_sub(NULL, "tl", sheet,
         &(Pico_Rel_Rect){'!', {0,0,2,2}, PICO_ANCHOR_NW, NULL});
-    pico_layer_sub("tr", sheet,
+    pico_layer_sub(NULL, "tr", sheet,
         &(Pico_Rel_Rect){'!', {2,0,2,2}, PICO_ANCHOR_NW, NULL});
-    pico_layer_sub("bl", sheet,
+    pico_layer_sub(NULL, "bl", sheet,
         &(Pico_Rel_Rect){'!', {0,2,2,2}, PICO_ANCHOR_NW, NULL});
-    pico_layer_sub("br", sheet,
+    pico_layer_sub(NULL, "br", sheet,
         &(Pico_Rel_Rect){'!', {2,2,2,2}, PICO_ANCHOR_NW, NULL});
 
     // Shot 2: draw swapped sub-layers

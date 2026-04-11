@@ -9,7 +9,7 @@ pico.set.view { grid=false }
 -- view.tile must be set at birth so '#'-mode works without pico.set.view.
 do
     print("layer map: 20x15 tiles of 16x16")
-    pico.layer.empty("map", {w=20, h=15}, {w=16, h=16})
+    pico.layer.empty(nil, "map", {w=20, h=15}, {w=16, h=16})
     pico.set.layer("map")
     pico.set.view { grid=true }
     pico.output.clear()
@@ -41,7 +41,7 @@ end
 -- Layer "fx": no tile arg -> dim is pixels, view.tile stays {0,0}
 do
     print("layer fx: plain pixel layer (no tile)")
-    pico.layer.empty("fx", {w=64, h=64})
+    pico.layer.empty(nil, "fx", {w=64, h=64})
     pico.set.layer("fx")
     pico.output.clear()
     pico.set.color.draw('yellow')

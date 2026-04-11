@@ -83,6 +83,27 @@
 21. `pico_get_image/text` should accept ref parameter
     - See `lua/tst/image_pct` commented tests
 
+23. Layer scene graph (up-layer)
+    - **BLOCKER**: realm frees keys on remove
+      (`src/realm.hc:74`), so borrowed id pointers in
+      `up`/`dn`/`nxt` dangle — `realm_get` would `memcmp`
+      freed memory.
+      Need id interning, refcount, arena, or eager detach.
+      See `.claude/plans/up-layer.md` §10.
+    - Explicit `up` (parent) id at create; realm-as-sole-owner
+    - Auto-composite traversal in `pico_output_present`
+    - Free-mode `output.draw.layer` for detached layers only
+    - String-keyed `pico.mouse.get/set(layer)` and `pico.vs(l1, l2)`
+    - Post-composite clear with per-type `view.keep` defaults
+    - Closes #22 (`'w'` vs `r` divergence)
+    - Depends on `sub-layer-parent.md` (eliminates `Pico_Layer.parent`)
+    - See `.claude/plans/up-layer.md`, `.claude/plans/sub-layer-parent.md`
+
+24. Consider splitting `pico_set_view` into separate setters
+    - Currently an all-in-one with 9 optional params
+    - Alternatives: `pico_set_alpha`, `pico_set_target`, etc.
+    - See item 6 (`pico.set.draw.*` group)
+
 22. `'w'` vs `r`-relative divergence near edges
     - `pico_output_draw_pixel({'w', ...})` snaps through screen log grid
       (5 win px / log px) while collision via `up = &r` is continuous
