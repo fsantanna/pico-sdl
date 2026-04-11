@@ -63,7 +63,7 @@ int main (void) {
 
         /* Draw video */
         pico_set_color_clear(
-            (Pico_Color){0x20, 0x20, 0x20}
+            (Pico_Color){0x20, 0x20, 0x20, 0xFF}
         );
         pico_output_clear();
         pico_output_draw_layer(
@@ -78,7 +78,7 @@ int main (void) {
 
         /* Draw seek bar background */
         pico_set_color_draw(
-            (Pico_Color){0x40, 0x40, 0x40}
+            (Pico_Color){0x40, 0x40, 0x40, 0xFF}
         );
         pico_output_draw_rect(
             &(Pico_Rel_Rect){
@@ -92,7 +92,7 @@ int main (void) {
         float pct = (float)frame / (total - 1);
         int bar_w = (int)(pct * win_w);
         pico_set_color_draw(
-            (Pico_Color){0x00, 0xAA, 0xFF}
+            (Pico_Color){0x00, 0xAA, 0xFF, 0xFF}
         );
         pico_output_draw_rect(
             &(Pico_Rel_Rect){
@@ -110,7 +110,7 @@ int main (void) {
                 frame, total - 1, speed,
                 paused ? "  [PAUSED]" : "");
             pico_set_color_draw(
-                (Pico_Color){0xFF, 0xFF, 0xFF}
+                (Pico_Color){0xFF, 0xFF, 0xFF, 0xFF}
             );
             pico_output_draw_text(
                 label,

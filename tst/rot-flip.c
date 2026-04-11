@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window("Rotate / Flip", -1, NULL);
-    pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
+    pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
     // Create a layer from image for rotation/flip tests
     pico_layer_image(NULL, "img", "open.png");

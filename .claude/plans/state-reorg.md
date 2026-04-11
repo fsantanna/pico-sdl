@@ -137,18 +137,30 @@ to `Pico_Color` (RGBA, the renamed type).
 
 ## Steps
 
-### 1. Unify color types
+### 1. Unify color types [x]
 
-- `src/colors.h` | remove `Pico_Color` (RGB); rename
+- [x] `src/colors.h` | remove `Pico_Color` (RGB); rename
   `Pico_Color_A` → `Pico_Color`; all constants become RGBA
   with `.a = 0xFF`; remove `_pico_color()` helper
-- `src/pico.h` | update all signatures using `Pico_Color` or
-  `Pico_Color_A` → unified `Pico_Color`
-- `src/pico.c` | update all internal uses; remove
-  `pico_color_alpha()` helper if it exists
-- `tst/*.c` | update any explicit `Pico_Color_A` or
-  `Pico_Color` literals
-- Compile + test
+- [x] `src/pico.h` | update all signatures using `Pico_Color`
+  or `Pico_Color_A` → unified `Pico_Color`; removed
+  `pico_color_alpha` decl
+- [x] `src/pico.c` | update all internal uses; remove
+  `pico_color_alpha()` helper; color helpers preserve input
+  alpha (darker/lighter pass `clr.a`; mix averages; hex sets
+  `0xFF`)
+- [x] `src/layers.hc` | `Pico_Color_A*` → `Pico_Color*`
+- [x] `src/mem.hc` | `Pico_Color_A*` → `Pico_Color*`
+- [x] `lua/pico.c` | unify color types; drop `L_push_color_a`
+  (merged into `L_push_color`); `l_color_alpha` reimplemented
+  without deleted helper; Lua color tables now always have
+  `.a`
+- [x] `tst/*.c` | added `, 0xFF` to 98 literals across 26
+  files; renamed `Pico_Color_A` → `Pico_Color`; rewrote
+  `pico_color_alpha` test in `tst/colors.c` with direct `.a`
+  field
+- [x] Compile + test: `make tests` (C) and
+  `cd lua/ && make tests` both pass
 
 ### 2. Move draw state to `Pico_View`
 

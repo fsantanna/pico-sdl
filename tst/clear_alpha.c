@@ -7,15 +7,15 @@ int main (void) {
     pico_set_view(-1, &(Pico_Rel_Dim){'!', {64, 36}, NULL}, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
     // red background on main
-    pico_set_color_clear((Pico_Color){0xFF, 0x00, 0x00});
+    pico_set_color_clear((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
     pico_output_clear();
 
     // overlay layer: blue clear (semi-transparent), small white rect
     pico_layer_empty(NULL, "overlay", (Pico_Abs_Dim){64, 36}, NULL);
     pico_set_layer("overlay");
-    pico_set_color_clear_alpha((Pico_Color_A){0x00, 0x00, 0xFF, 0x80});
+    pico_set_color_clear_alpha((Pico_Color){0x00, 0x00, 0xFF, 0x80});
     pico_output_clear();
-    pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0xFF});
+    pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
     pico_output_draw_rect(&(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL});
 
     // composite overlay on main

@@ -175,7 +175,7 @@ void pico_output_clear (void);
 /// @param rect drawing rectangle (mode determines coordinate interpretation)
 /// @sa pico_output_draw_image
 void pico_output_draw_buffer (const char* key, Pico_Abs_Dim dim,
-                              const Pico_Color_A buffer[],
+                              const Pico_Color buffer[],
                               const Pico_Rel_Rect* rect);
 
 /// @brief Draws an image.
@@ -274,12 +274,12 @@ void pico_output_sound (const char* path);
 int pico_get_alpha (void);
 
 /// @brief Gets the color set to clear the screen.
-/// @return the current clear color (without alpha)
+/// @return the current clear color
 Pico_Color pico_get_color_clear (void);
 
 /// @brief Gets the color and alpha set to clear the screen.
 /// @return the current clear color with alpha
-Pico_Color_A pico_get_color_clear_alpha (void);
+Pico_Color pico_get_color_clear_alpha (void);
 
 /// @brief Gets the color set to draw.
 /// @return the current draw color
@@ -319,7 +319,7 @@ const char* pico_get_layer (void);
 ///               exists)
 void pico_layer_buffer (const char* up, const char* key,
                         Pico_Abs_Dim dim,
-                        const Pico_Color_A* pixels);
+                        const Pico_Color* pixels);
 
 /// @brief Creates a layer from a pixel buffer.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
@@ -329,7 +329,7 @@ void pico_layer_buffer (const char* up, const char* key,
 ///               exists)
 void pico_layer_buffer_mode (int mode, const char* up, const char* key,
                              Pico_Abs_Dim dim,
-                             const Pico_Color_A* pixels);
+                             const Pico_Color* pixels);
 
 /// @brief Creates an empty layer (exclusive mode).
 /// @param key layer key (must not be NULL or start with '/')
@@ -491,13 +491,13 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 /// @param a alpha value (0: transparent; 255: opaque)
 void pico_set_alpha (int a);
 
-/// @brief Changes the color used to clear the screen (alpha set to 255).
+/// @brief Changes the color used to clear the screen.
 /// @param color new color
 void pico_set_color_clear (Pico_Color color);
 
 /// @brief Changes the color and alpha used to clear the screen.
 /// @param color new color with alpha
-void pico_set_color_clear_alpha (Pico_Color_A color);
+void pico_set_color_clear_alpha (Pico_Color color);
 
 /// @brief Changes the color used to draw objects.
 /// @param color new color
@@ -701,8 +701,6 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct);
 /// @sa pico_color_darker
 /// @sa pico_color_lighter
 Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2);
-
-Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a);
 
 /// @brief Converts a hex integer (0xRRGGBB) to a color.
 /// @param hex the color as a 24-bit integer (e.g. 0xFF0000 for red)

@@ -134,37 +134,37 @@ int main (void) {
         pico_output_clear();
 
         // {'%', r=1, g=0, b=0} -> (255, 0, 0)
-        pico_set_color_draw((Pico_Color){255, 0, 0});
+        pico_set_color_draw((Pico_Color){255, 0, 0, 0xFF});
         pico_output_draw_rect(
             &(Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, C, NULL }
         );
 
         // {'%', r=0, g=1, b=0} -> (0, 255, 0)
-        pico_set_color_draw((Pico_Color){0, 255, 0});
+        pico_set_color_draw((Pico_Color){0, 255, 0, 0xFF});
         pico_output_draw_rect(
             &(Pico_Rel_Rect){ '%', {0.5, 0.30, 0.8, 0.1}, C, NULL }
         );
 
         // {'%', r=0, g=0, b=1} -> (0, 0, 255)
-        pico_set_color_draw((Pico_Color){0, 0, 255});
+        pico_set_color_draw((Pico_Color){0, 0, 255, 0xFF});
         pico_output_draw_rect(
             &(Pico_Rel_Rect){ '%', {0.5, 0.45, 0.8, 0.1}, C, NULL }
         );
 
         // {'%', r=0.5, g=0.5, b=0.5} -> (127, 127, 127)
-        pico_set_color_draw((Pico_Color){127, 127, 127});
+        pico_set_color_draw((Pico_Color){127, 127, 127, 0xFF});
         pico_output_draw_rect(
             &(Pico_Rel_Rect){ '%', {0.5, 0.60, 0.8, 0.1}, C, NULL }
         );
 
         // {'!', r=255, g=255, b=0} -> (255, 255, 0)
-        pico_set_color_draw((Pico_Color){255, 255, 0});
+        pico_set_color_draw((Pico_Color){255, 255, 0, 0xFF});
         pico_output_draw_rect(
             &(Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, C, NULL }
         );
 
         // {r=0, g=255, b=255} -> (0, 255, 255)
-        pico_set_color_draw((Pico_Color){0, 255, 255});
+        pico_set_color_draw((Pico_Color){0, 255, 255, 0xFF});
         pico_output_draw_rect(
             &(Pico_Rel_Rect){ '%', {0.5, 0.90, 0.8, 0.1}, C, NULL }
         );
@@ -224,9 +224,9 @@ int main (void) {
     {
         pico_set_color_clear(PICO_COLOR_WHITE);
         pico_output_clear();
-        Pico_Color_A buffer[] = {
-            pico_color_alpha(PICO_COLOR_RED, 0xFF),
-            pico_color_alpha(PICO_COLOR_RED, 0x80),
+        Pico_Color buffer[] = {
+            PICO_COLOR_RED,
+            {PICO_COLOR_RED.r, PICO_COLOR_RED.g, PICO_COLOR_RED.b, 0x80},
             PICO_COLOR_TRANSPARENT,
         };
         Pico_Rel_Rect r = {

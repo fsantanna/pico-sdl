@@ -12,9 +12,9 @@ int main (void) {
     pico_set_view(-1, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
 
     // 4x4 pixel white tile
-    Pico_Color_A white[16];
+    Pico_Color white[16];
     for (int i = 0; i < 16; i++) {
-        white[i] = (Pico_Color_A){ 0xFF, 0xFF, 0xFF, 0xFF };
+        white[i] = (Pico_Color){ 0xFF, 0xFF, 0xFF, 0xFF };
     }
 
     // Test 1: tile (1,1) with NW anchor - top-left corner

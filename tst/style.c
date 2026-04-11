@@ -39,7 +39,7 @@ int main (void) {
     puts("default fill");
     {
         pico_output_clear();
-        pico_set_color_draw((Pico_Color){255, 255, 255});
+        pico_set_color_draw((Pico_Color){255, 255, 255, 0xFF});
         pico_output_draw_rect(&rect);
         pico_output_draw_oval(&oval);
         pico_output_draw_tri(&t1, &t2, &t3);
@@ -51,7 +51,7 @@ int main (void) {
     {
         pico_output_clear();
         pico_set_style(PICO_STYLE_STROKE);
-        pico_set_color_draw((Pico_Color){255, 255, 255});
+        pico_set_color_draw((Pico_Color){255, 255, 255, 0xFF});
         pico_output_draw_rect(&rect);
         pico_output_draw_oval(&oval);
         pico_output_draw_tri(&t1, &t2, &t3);
@@ -63,7 +63,7 @@ int main (void) {
     {
         pico_output_clear();
         pico_set_style(PICO_STYLE_FILL);
-        pico_set_color_draw((Pico_Color){255, 255, 255});
+        pico_set_color_draw((Pico_Color){255, 255, 255, 0xFF});
         pico_output_draw_rect(&rect);
         pico_output_draw_oval(&oval);
         pico_output_draw_tri(&t1, &t2, &t3);

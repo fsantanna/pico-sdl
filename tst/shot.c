@@ -22,7 +22,7 @@ int main (void) {
 
     {
         puts("entire screen - 02");
-        pico_set_color_draw((Pico_Color){200, 0, 0});
+        pico_set_color_draw((Pico_Color){200, 0, 0, 0xFF});
         Pico_Rel_Rect r = { '!', {30, 30, 10, 10}, PICO_ANCHOR_NW, NULL };
         pico_output_draw_rect(&r);
         const char* f = pico_output_screenshot("out/shot-02.png", NULL);
@@ -32,7 +32,7 @@ int main (void) {
 
     {
         puts("part of screen (raw)");
-        pico_set_color_draw((Pico_Color){0, 200, 0});
+        pico_set_color_draw((Pico_Color){0, 200, 0, 0xFF});
         Pico_Rel_Rect r = { '!', {40, 5, 10, 10}, PICO_ANCHOR_NW, NULL };
         pico_output_draw_rect(&r);
         Pico_Rel_Rect clip = { '!', {0, 0, 250, 150}, PICO_ANCHOR_NW, NULL };
@@ -44,7 +44,7 @@ int main (void) {
 
     {
         puts("part of screen (pct)");
-        pico_set_color_draw((Pico_Color){0, 0, 200});
+        pico_set_color_draw((Pico_Color){0, 0, 200, 0xFF});
         pico_output_draw_rect (
             &(Pico_Rel_Rect) { '!', {50, 50, 10, 10}, PICO_ANCHOR_NW, NULL }
         );

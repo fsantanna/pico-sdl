@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window("Image - Size - Crop", -1, NULL);
-    pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
+    pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
     // pico_get_image
     {

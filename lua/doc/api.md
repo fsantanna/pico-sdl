@@ -42,8 +42,6 @@
     - **pico.vs.rect_rect**: Collision between two rectangles.
         - `pico.vs.rect_rect (r1: Rect, r2: Rect) -> boolean`
 - **pico.color**
-    - **pico.color.alpha**: Applies alpha to a color.
-        - `pico.color.alpha (clr: Color, a: integer) -> Color`
     - **pico.color.darker**: Makes a color darker.
         - `pico.color.darker (clr: Color, pct: number) -> Color`
     - **pico.color.lighter**: Makes a color lighter.

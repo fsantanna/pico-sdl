@@ -11,7 +11,7 @@ int main (void) {
     // .x.
     // xxx
     // .x.
-    Pico_Color_A buffer[] = {
+    Pico_Color buffer[] = {
         { 0x00, 0x00, 0x00, 0xFF },
         { 0xFF, 0xFF, 0x00, 0xFF },
         { 0x00, 0x00, 0x00, 0xFF },
@@ -33,7 +33,7 @@ int main (void) {
 
     {
         puts("bottomright 9x1 on white");
-        pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF});
+        pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
         pico_output_clear();
         Pico_Rel_Rect r = { '!', {1,9,0,0}, PICO_ANCHOR_NW, NULL };
         pico_output_draw_buffer("buf2", (Pico_Abs_Dim){9,1}, buffer, &r);

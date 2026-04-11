@@ -42,7 +42,7 @@ int main (void) {
     pico_output_present();
     _pico_check("layer-hier-02");
 
-    static Pico_Color_A buf[4] = {
+    static Pico_Color buf[4] = {
         {255, 0, 0, 255}, {0, 255, 0, 255},
         {0, 0, 255, 255}, {255, 255, 0, 255},
     };
@@ -74,7 +74,7 @@ int main (void) {
     // transparent overlay with yellow background
     pico_layer_empty("root", "over", (Pico_Abs_Dim){500, 500}, NULL);
     pico_set_layer("over");
-    pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0x00});
+    pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
     pico_output_clear();
     unsigned char alpha = 0x80;
     pico_set_view(-1, NULL, NULL,

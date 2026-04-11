@@ -15,11 +15,11 @@ int main() {
     for (int y=r.y-1; y<=r.y+r.h; y++) {
         for (int x=r.x-1; x<=r.x+r.w; x++) {
             pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,255,255});
+            pico_set_color_draw((Pico_Color){255,255,255, 0xFF});
             pico_output_draw_rect(&r);
 
             Pico_Rel_Pos p = { '!', {x, y}, PICO_ANCHOR_NW, NULL };
-            pico_set_color_draw((Pico_Color){255,0,0});
+            pico_set_color_draw((Pico_Color){255,0,0, 0xFF});
             pico_output_draw_pixel(&p);
 
             int in = pico_vs_pos_rect(&p, &r);
@@ -57,11 +57,11 @@ int main() {
     for (int y=r.y-r.h; y<=r.y+r.h; y++) {
         for (int x=r.x-r.w; x<=r.x+r.w; x++) {
             pico_output_clear();
-            pico_set_color_draw((Pico_Color){255,255,255});
+            pico_set_color_draw((Pico_Color){255,255,255, 0xFF});
             pico_output_draw_rect(&r);
 
             Pico_Rel_Rect r2 = { '!', {x,y,4,4}, PICO_ANCHOR_NW, NULL };
-            pico_set_color_draw((Pico_Color){255,0,0});
+            pico_set_color_draw((Pico_Color){255,0,0, 0xFF});
             pico_output_draw_rect(&r2);
 
             int in = pico_vs_rect_rect(&r2, &r);
