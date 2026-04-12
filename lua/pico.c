@@ -301,16 +301,6 @@ static int l_quit (lua_State* L) {
     return 0;
 }
 
-static int l_pop (lua_State* L) {
-    pico_pop();
-    return 0;
-}
-
-static int l_push (lua_State* L) {
-    pico_push();
-    return 0;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Rel_Rect* _c_tpl_up (lua_State* L, int i) {
@@ -1552,8 +1542,6 @@ static int l_output_sound (lua_State* L) {
 static const luaL_Reg ll_all[] = {
     { "init", l_init },
     { "quit", l_quit },
-    { "pop",  l_pop  },
-    { "push", l_push },
     { NULL, NULL }
 };
 

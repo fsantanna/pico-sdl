@@ -59,7 +59,6 @@ tests:
 	$(EXE) tst/navigate.c
 	$(EXE) tst/pixels.c
 	$(EXE) tst/pos.c
-	$(EXE) tst/push.c
 	$(EXE) tst/quit.c
 	$(EXE) tst/rect.c
 	$(EXE) tst/rot-flip.c

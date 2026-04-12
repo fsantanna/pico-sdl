@@ -564,17 +564,6 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim);
 /// @param dim dimensions for both window and world
 void pico_set_dim (Pico_Rel_Dim* dim);
 
-// PUSH / POP
-
-/// @brief Saves the current drawing state onto a stack.
-/// Saves: alpha, colors, font, mouse, style, layer.
-/// @sa pico_pop
-void pico_push (void);
-
-/// @brief Restores the drawing state from the stack.
-/// @sa pico_push
-void pico_pop (void);
-
 /// @}
 
 /// @defgroup Utils

@@ -75,26 +75,6 @@ static struct { // exposed global state
     } win;
 } S;
 
-#define PICO_STACK_MAX 16
-
-typedef struct {
-    int           alpha;
-    struct {
-        Pico_Color clear;
-        Pico_Color draw;
-    } color;
-    const char*   font;
-    PICO_STYLE    style;
-    Pico_Layer*   layer;
-} Pico_State;
-
-static struct {
-    Pico_State buf[PICO_STACK_MAX];
-    int        n;
-} STACK = {
-    {}, 0
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
@@ -328,8 +308,6 @@ void pico_init (int on) {
                 .fs  = 0,
             },
         };
-
-        STACK.n = 0;
 
         // realm_get("root") resolves
         realm_put(G.realm, '!', strlen("root")+1, "root", NULL, NULL, &G.root);
@@ -669,40 +647,7 @@ void pico_set_show (int on) {
 
 void pico_set_style (PICO_STYLE style) {
     _pico_guard();
-    S.style = style;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// PUSH / POP
-///////////////////////////////////////////////////////////////////////////////
-
-void pico_push (void) {
-    _pico_guard();
-    assert(STACK.n<PICO_STACK_MAX && "stack overflow");
-    STACK.buf[STACK.n++] = (Pico_State) {
-        .alpha = S.alpha,
-        .color = { S.color.clear, S.color.draw },
-        .font  = S.font,
-        .style = S.style,
-        .layer = S.layer,
-    };
-}
-
-void pico_pop (void) {
-    _pico_guard();
-    assert(STACK.n>0 && "stack underflow");
-    Pico_State* st = &STACK.buf[--STACK.n];
-    S.alpha = st->alpha;
-    S.color.clear = st->color.clear;
-    S.color.draw  = st->color.draw;
-    S.font        = st->font;
-    S.style       = st->style;
-    if (S.layer != st->layer) {
-        S.layer = st->layer;
-        SDL_SetRenderTarget(G.ren, S.layer->tex);
-        Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
-        SDL_RenderSetClipRect(G.ren, &r);
-    }
+    S.layer->draw.style = style;
 }
 
 void pico_set_view (
