@@ -66,43 +66,78 @@ Composite uses only `view.alpha` — the parent's
 
 ## New API
 
-**`pico_set_view` shrinks** (spatial only):
+Four groups. All `layer`-param functions take an optional
+`const char* layer` as first arg. If `NULL`, use current
+layer (`S.layer`).
 
 ```c
-void pico_set_view (
-    Pico_Rel_Dim*  dim,
-    Pico_Abs_Dim*  tile,
-    Pico_Rel_Rect* target,
-    Pico_Rel_Rect* source,
-    Pico_Rel_Rect* clip
-);
+static Pico_Layer* _layer (const char* layer) {
+    if (layer == NULL) return S.layer;
+    Pico_Layer* L = realm_get(
+        G.realm, strlen(layer)+1, layer);
+    pico_assert(L != NULL && "layer does not exist");
+    return L;
+}
 ```
 
-**Individual layer setters** (new + migrated):
+### Window (global, no `layer` param)
 
-```c
-// migrated from S (now per-layer)
-void       pico_set_color_draw  (Pico_Color c);
-void       pico_set_color_clear (Pico_Color c);
-void       pico_set_style       (PICO_STYLE s);
-void       pico_set_font        (const char* path);
+| getter                    | setter                       |
+|---------------------------|------------------------------|
+| `pico_get_window(...)`    | `pico_set_window(...)`       |
+| `pico_get_window_title()` | `pico_set_window_title(t)`  |
+| `pico_get_window_fs()`   | `pico_set_window_fs(fs)`     |
+| `pico_get_window_show()`  | `pico_set_window_show(on)`  |
+|                           | `pico_set_dim(dim)` shorthand (window+view) |
 
-// new layer properties
-void       pico_set_layer_alpha (unsigned char a);
-void       pico_set_layer_keep  (int on);
-void       pico_set_layer_rot   (Pico_Rot* rot);
-void       pico_set_layer_flip  (PICO_FLIP flip);
-void       pico_set_layer_grid  (int on);
-```
+### View (spatial, `layer` param)
 
-Matching getters for each.
+| getter                       | setter                            |
+|------------------------------|-----------------------------------|
+| `pico_get_view(layer,...)`   | `pico_set_view(layer,...)`        |
+| `pico_get_view_dim(layer)`   | `pico_set_view_dim(layer,dim)`   |
+| `pico_get_view_tile(layer)`  | `pico_set_view_tile(layer,tile)` |
+| `pico_get_view_dst(layer)`   | `pico_set_view_dst(layer,dst)`   |
+| `pico_get_view_src(layer)`   | `pico_set_view_src(layer,src)`   |
+| `pico_get_view_clip(layer)`  | `pico_set_view_clip(layer,clip)` |
 
-**Note**: `pico_set_color_draw` / `pico_set_color_clear` keep
-their names but now write to `S.layer->view.draw` /
-`S.layer->view.clear`. Signature changes from `Pico_Color` (RGB)
-to `Pico_Color` (RGBA, the renamed type).
+### Show (presentation, `layer` param)
 
-**Removed**:
+| getter                            | setter                               |
+|-----------------------------------|--------------------------------------|
+| `pico_get_show_color(layer)`      | `pico_set_show_color(layer,c)`       |
+| `pico_get_show_grid(layer)`       | `pico_set_show_grid(layer,on)`       |
+| `pico_get_show_rotation(layer)`   | `pico_set_show_rotation(layer,rot)`  |
+| `pico_get_show_flip(layer)`       | `pico_set_show_flip(layer,flip)`     |
+| `pico_get_show_alpha(layer)`      | `pico_set_show_alpha(layer,a)`       |
+| `pico_get_show_keep(layer)`       | `pico_set_show_keep(layer,on)`       |
+
+### Draw (draw state, `layer` param)
+
+| getter                         | setter                              |
+|--------------------------------|-------------------------------------|
+| `pico_get_draw_color(layer)`   | `pico_set_draw_color(layer,c)`      |
+| `pico_get_draw_style(layer)`   | `pico_set_draw_style(layer,s)`      |
+| `pico_get_draw_font(layer)`    | `pico_set_draw_font(layer,path)`    |
+
+### Renames
+
+| old                    | new                       |
+|------------------------|---------------------------|
+| `pico_get_show`        | `pico_get_window_show`    |
+| `pico_set_show`        | `pico_set_window_show`    |
+| `pico_get_color_clear` | `pico_get_show_color`     |
+| `pico_set_color_clear` | `pico_set_show_color`     |
+| `pico_get_color_draw`  | `pico_get_draw_color`     |
+| `pico_set_color_draw`  | `pico_set_draw_color`     |
+| `pico_get_style`       | `pico_get_draw_style`     |
+| `pico_set_style`       | `pico_set_draw_style`     |
+| `pico_get_font`        | `pico_get_draw_font`      |
+| `pico_set_font`        | `pico_set_draw_font`      |
+| `Pico_View.rot`        | `Pico_View.rotation`      |
+
+### Removed
+
 - `pico_set_alpha` / `pico_get_alpha`
 - `pico_set_color_clear_alpha` / `pico_get_color_clear_alpha`
 - `pico_push` / `pico_pop`
@@ -273,22 +308,11 @@ removed from C and Lua. Tests updated: `tst/push.c` deleted,
 | `tst/*.c`       | color type, push/pop removal, set_view shrink   |
 | `valgrind.supp` | bump sdl-init line N                            |
 
-## TODO
+## Struct field renames
 
-API naming — these are now per-layer (write to
-`S.layer->draw.*` / `S.layer->view.color`).
-Are these the correct names?
-
-```
-pico_get_color_clear
-pico_get_color_draw
-pico_get_font
-pico_get_style
-
-pico_set_color_clear
-pico_set_color_draw
-pico_set_font
-```
+| struct       | old   | new        |
+|--------------|-------|------------|
+| `Pico_View`  | `rot` | `rotation` |
 
 ## Verification
 
