@@ -29,6 +29,9 @@ typedef struct {
     Pico_Abs_Dim sup;     // snapshot of source view.dim
 } Pico_Layer_Sub;
 
+static Pico_Layer* _pico_layer_name (const char* name);
+static Pico_Layer* _pico_layer_null (const char* name);
+
 static Pico_Layer* _pico_layer_buffer (
     int mode, const char* key, Pico_Abs_Dim dim,
     const Pico_Color* pixels
@@ -47,11 +50,24 @@ static void _pico_output_draw_layer (
 
 #ifdef PICO_LAYERS_C
 
+static Pico_Layer* _pico_layer_name (const char* name) {
+    assert(name != NULL);
+    Pico_Layer* L = (Pico_Layer*) realm_get(G.realm, strlen(name)+1, name);
+    pico_assert(L!=NULL && "layer does not exist");
+    return L;
+}
+
+static Pico_Layer* _pico_layer_null (const char* name) {
+    if (name == NULL) {
+        return S.layer;
+    } else {
+        return _pico_layer_name(name);
+    }
+}
+
 static void _layer_attach (const char* up, const char* dn) {
-    Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
-    Pico_Layer* DN = (Pico_Layer*) realm_get(G.realm, strlen(dn)+1, dn);
-    assert(UP!=NULL && "invalid up layer");
-    assert(DN!=NULL && "invalid dn layer");
+    Pico_Layer* UP = _pico_layer_name(up);
+    Pico_Layer* DN = _pico_layer_name(dn);
     DN->hier.up = UP->name;
     DN->hier.nxt = NULL;
     if (UP->hier.dn.fst == NULL) {

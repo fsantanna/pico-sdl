@@ -61,8 +61,9 @@ still useful as a copy-with-alpha-override ergonomic helper
    color)
 3. **`view.alpha`** — composite alpha at blit time
 
-Composite uses only `view.alpha` — the parent's
-`draw.color.a` is not involved in layer compositing.
+Composite: `draw.color.a * view.alpha / 255`.
+Draw color alpha acts as pen opacity for both primitives
+and layer blits.
 
 ## New API
 
@@ -174,10 +175,9 @@ static Pico_Layer* _layer (const char* layer) {
 7. **Testing cadence**: full `make tests` after each step.
    No per-step smoke test selection.
 
-8. **Composite alpha**: uses only `layer->view.alpha`, not
-   multiplied by parent's `draw.color.a`. Draw color alpha
-   affects only primitive rendering (SDL lines, rects, etc.),
-   not layer compositing.
+8. **Composite alpha**: `draw.color.a * view.alpha / 255`.
+   Draw color alpha acts as "pen opacity" for both primitives
+   and layer blits.
 
 ## Steps
 
