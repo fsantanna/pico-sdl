@@ -85,21 +85,6 @@ static void _free_sound (int n, const void* key, void* value) {
 // Alloc helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_View _view_new (Pico_Abs_Dim dim) {
-    return (Pico_View) {
-        .color = {0, 0, 0, 0xFF},
-        .grid = 0,
-        .dim  = dim,
-        .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-        .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-        .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-        .tile = {0, 0},
-        .rot  = {0, PICO_ANCHOR_C},
-        .flip = PICO_FLIP_NONE,
-        .alpha = 0xFF,
-    };
-}
-
 static Pico_Layer* _layer_new (
     int type, size_t size, const char* key, SDL_Texture* tex, Pico_Abs_Dim dim
 ) {
@@ -112,7 +97,15 @@ static Pico_Layer* _layer_new (
         .draw = {
             {0xFF, 0xFF, 0xFF, 0xFF}, PICO_STYLE_FILL, NULL
         },
-        .view = _view_new(dim),
+        .show = {
+            {0, 0, 0, 0xFF}, 0, {0, PICO_ANCHOR_C}, PICO_FLIP_NONE, 0xFF
+        },
+        .view = {
+            dim, {0, 0},
+            {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+        },
     };
     assert(data->name != NULL);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);

@@ -8,12 +8,35 @@ typedef enum {
     PICO_LAYER_SUB,
 } PICO_LAYER;
 
+typedef struct {
+    Pico_Color    color;
+    PICO_STYLE    style;
+    const char*   font;
+} Pico_Layer_Draw;
+
+typedef struct {
+    Pico_Color    color;
+    int           grid;
+    Pico_Rot      rot;
+    PICO_FLIP     flip;
+    unsigned char alpha;
+} Pico_Layer_Show;
+
+typedef struct {
+    Pico_Abs_Dim  dim;
+    Pico_Abs_Dim  tile;
+    Pico_Rel_Rect dst;
+    Pico_Rel_Rect src;
+    Pico_Rel_Rect clip;
+} Pico_Layer_View;
+
 typedef struct Pico_Layer {
     PICO_LAYER            type;
     char*                 name;     // NULL for main layer
     SDL_Texture*          tex;
-    Pico_Draw             draw;
-    Pico_View             view;
+    Pico_Layer_Draw       draw;
+    Pico_Layer_Show       show;
+    Pico_Layer_View       view;
     struct {
         const char* up;             // parent id; NULL = root or detached
         const char* nxt;            // next sibling under same up
@@ -186,16 +209,16 @@ static void _pico_output_draw_layer (
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-    SDL_SetTextureAlphaMod(layer->tex, S.layer->draw.color.a*layer->view.alpha/255);
+    SDL_SetTextureAlphaMod(layer->tex, S.layer->draw.color.a*layer->show.alpha/255);
     SDL_Point center = {
-        dst.w * layer->view.rot.anchor.x,
-        dst.h * layer->view.rot.anchor.y
+        dst.w * layer->show.rot.anchor.x,
+        dst.h * layer->show.rot.anchor.y
     };
     SDL_RenderCopyEx(G.ren, layer->tex, &src, &dst,
-                     layer->view.rot.angle, &center,
-                     layer->view.flip);
+                     layer->show.rot.angle, &center,
+                     layer->show.flip);
 
-    if (layer->view.grid) {
+    if (layer->show.grid) {
         _show_tile(&layer->view, dst);
     }
 
