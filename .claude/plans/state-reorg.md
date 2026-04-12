@@ -56,11 +56,13 @@ still useful as a copy-with-alpha-override ergonomic helper
 
 ## Three alpha channels
 
-1. **`view.clear.a`** — canvas alpha after clear
-2. **`view.draw.a`** — primitive fill alpha (part of draw color)
+1. **`view.color.a`** — canvas alpha after clear
+2. **`draw.color.a`** — primitive fill alpha (part of draw
+   color)
 3. **`view.alpha`** — composite alpha at blit time
 
-Composite result: `pixel_alpha * view.alpha / 255`.
+Composite uses only `view.alpha` — the parent's
+`draw.color.a` is not involved in layer compositing.
 
 ## New API
 
@@ -136,6 +138,11 @@ to `Pico_Color` (RGBA, the renamed type).
 
 7. **Testing cadence**: full `make tests` after each step.
    No per-step smoke test selection.
+
+8. **Composite alpha**: uses only `layer->view.alpha`, not
+   multiplied by parent's `draw.color.a`. Draw color alpha
+   affects only primitive rendering (SDL lines, rects, etc.),
+   not layer compositing.
 
 ## Steps
 
@@ -265,6 +272,23 @@ removed from C and Lua. Tests updated: `tst/push.c` deleted,
 | `src/layers.hc` | post-composite clear in _layer_traverse         |
 | `tst/*.c`       | color type, push/pop removal, set_view shrink   |
 | `valgrind.supp` | bump sdl-init line N                            |
+
+## TODO
+
+API naming — these are now per-layer (write to
+`S.layer->draw.*` / `S.layer->view.color`).
+Are these the correct names?
+
+```
+pico_get_color_clear
+pico_get_color_draw
+pico_get_font
+pico_get_style
+
+pico_set_color_clear
+pico_set_color_draw
+pico_set_font
+```
 
 ## Verification
 
