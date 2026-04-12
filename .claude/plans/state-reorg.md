@@ -164,26 +164,34 @@ to `Pico_Color` (RGBA, the renamed type).
 - [x] Compile + test: `make tests` (C) and
   `cd lua/ && make tests` both pass
 
-### 2. Move draw state to `Pico_View`
+### 2. Move draw state to `Pico_Draw` on `Pico_Layer` [x]
 
-- `src/pico.c` | `Pico_View` | add `Pico_Color draw;
-  PICO_STYLE style; const char* font;`
-- `src/mem.hc` | `_view_new` | init
-  `.draw = {0xFF,0xFF,0xFF,0xFF}, .style = PICO_STYLE_FILL,
-  .font = NULL`
-- `src/pico.c` | `S` struct | remove `alpha`, `color`,
-  `font`, `style`
-- `src/pico.c` | `pico_set_color_draw` | write to
-  `S.layer->view.draw`
-- `src/pico.c` | `pico_set_style` | write to
-  `S.layer->view.style`
-- `src/pico.c` | `pico_set_font` | write to
-  `S.layer->view.font`
-- `src/pico.c` | all primitives that read `S.color.draw` /
-  `S.alpha` / `S.style` / `S.font` → read from
-  `S.layer->view.*`
-- `src/pico.c` | `G.root` init view | set draw defaults
-- Compile + test
+- [x] `src/pico.c` | new `Pico_Draw` type | `{ color,
+  alpha, style, font }` — separate `alpha` field kept
+  (avoids `pico_set_alpha`/`pico_set_color_draw` clobber
+  until Step 4 merges into `.color.a`)
+- [x] `src/layers.hc` | `Pico_Layer` struct | added
+  `Pico_Draw draw;` field
+- [x] `src/mem.hc` | `_layer_new` | init `.draw` defaults
+  (white, alpha=0xFF, FILL, font=NULL)
+- [x] `src/pico.c` | `S` struct | removed `alpha`,
+  `color.draw`, `font`, `style`; kept `color_clear`
+- [x] `src/pico.c` | `G.root` init | added `.draw` defaults
+- [x] `src/pico.c` | set/get alpha, color_draw, style, font
+  | redirect to `S.layer->draw.*`
+- [x] `src/pico.c` | all primitives | `S.color.draw.*` →
+  `S.layer->draw.color.*`; `S.alpha` →
+  `S.layer->draw.alpha`; `S.style` →
+  `S.layer->draw.style`
+- [x] `src/pico.c` | `Pico_State` → `_Stack_Entry` | save/
+  restore `S.layer->draw` + `S.color_clear` + `S.layer`
+- [x] `src/layers.hc` | `_pico_layer_text` + draw_layer |
+  `S.font` → `S.layer->draw.font`; composite alpha uses
+  `S.layer->draw.alpha`
+- [x] `src/mem.hc` | `_tex_text` | `S.color.draw.*` →
+  `S.layer->draw.color.*`; `S.font` →
+  `S.layer->draw.font`
+- [x] Compile + test: `make tests` (C) and Lua both pass
 
 ### 3. Add `clear` and `keep` to `Pico_View`
 

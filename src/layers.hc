@@ -12,6 +12,7 @@ typedef struct Pico_Layer {
     PICO_LAYER            type;
     char*                 name;     // NULL for main layer
     SDL_Texture*          tex;
+    Pico_Draw             draw;
     Pico_View             view;
     struct {
         const char* up;             // parent id; NULL = root or detached
@@ -120,8 +121,8 @@ static Pico_Layer* _pico_layer_text (
     const char* str;
     char* str_buf = NULL;
     if (key == NULL) {
-        const char* font = S.font;
-        Pico_Color clr = S.color.draw;
+        const char* font = S.layer->draw.font;
+        Pico_Color clr = S.layer->draw.color;
         const char* font_str = font ? font : "null";
         int buflen = strlen("/text/") + strlen(font_str) + 1
             + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
@@ -169,7 +170,7 @@ static void _pico_output_draw_layer (
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-    SDL_SetTextureAlphaMod(layer->tex, S.alpha*layer->view.alpha/255);
+    SDL_SetTextureAlphaMod(layer->tex, S.layer->draw.alpha*layer->view.alpha/255);
     SDL_Point center = {
         dst.w * layer->view.rot.anchor.x,
         dst.h * layer->view.rot.anchor.y

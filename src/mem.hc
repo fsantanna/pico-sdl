@@ -108,6 +108,9 @@ static Pico_Layer* _layer_new (
         .type = type,
         .name = strdup(key),
         .tex  = tex,
+        .draw = {
+            {0xFF, 0xFF, 0xFF, 0xFF}, 0xFF, PICO_STYLE_FILL, NULL
+        },
         .view = _view_new(dim),
     };
     assert(data->name != NULL);
@@ -182,8 +185,8 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
 }
 
 static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
-    SDL_Color c = { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF };
-    TTF_Font* ttf = _font_get(S.font, height);
+    SDL_Color c = { S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, 0xFF };
+    TTF_Font* ttf = _font_get(S.layer->draw.font, height);
     SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
