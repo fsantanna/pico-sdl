@@ -10,8 +10,8 @@ typedef enum {
 
 typedef struct {
     Pico_Color    color;
-    PICO_STYLE    style;
     const char*   font;
+    PICO_STYLE    style;
 } Pico_Layer_Draw;
 
 typedef struct {

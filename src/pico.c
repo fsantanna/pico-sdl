@@ -253,7 +253,7 @@ void pico_init (int on) {
                 .type = PICO_LAYER_ROOT,
                 .name = "root",
                 .tex  = NULL,   // needs G.ren
-                .draw = { {0xFF, 0xFF, 0xFF, 0xFF}, PICO_STYLE_FILL, NULL },
+                .draw = { {0xFF, 0xFF, 0xFF, 0xFF}, NULL, PICO_STYLE_FILL },
                 .show = { 0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 1, {0, PICO_ANCHOR_C} },
                 .hier = { NULL, NULL, {NULL,NULL} },
                 .view = {
@@ -347,6 +347,14 @@ void pico_quit (void) {
 ///////////////////////////////////////////////////////////////////////////////
 // GET
 ///////////////////////////////////////////////////////////////////////////////
+
+void pico_get_draw (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style) {
+    _pico_guard();
+    Pico_Layer* L = _pico_layer_null(layer);
+    if (color != NULL) { *color = L->draw.color; }
+    if (font != NULL)  { *font  = L->draw.font; }
+    if (style != NULL) { *style = L->draw.style; }
+}
 
 Pico_Color pico_get_draw_color (const char* layer) {
     _pico_guard();
@@ -600,6 +608,14 @@ void pico_set_show_grid (const char* layer, int on) {
 void pico_set_show_rotation (const char* layer, Pico_Rot rotation) {
     _pico_guard();
     _pico_layer_null(layer)->show.rotation = rotation;
+}
+
+void pico_set_draw (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style) {
+    _pico_guard();
+    Pico_Layer* L = _pico_layer_null(layer);
+    if (color != NULL) { L->draw.color = *color; }
+    if (font != NULL)  { L->draw.font  = *font; }
+    if (style != NULL) { L->draw.style = *style; }
 }
 
 void pico_set_draw_color (const char* layer, Pico_Color color) {

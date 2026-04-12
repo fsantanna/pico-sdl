@@ -95,7 +95,7 @@ static Pico_Layer* _layer_new (
         .name = strdup(key),
         .tex  = tex,
         .draw = {
-            {0xFF, 0xFF, 0xFF, 0xFF}, PICO_STYLE_FILL, NULL
+            {0xFF, 0xFF, 0xFF, 0xFF}, NULL, PICO_STYLE_FILL
         },
         .show = {
             0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 0, {0, PICO_ANCHOR_C}

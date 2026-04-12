@@ -276,18 +276,17 @@ PICO_FLIP     pico_get_show_flip     (const char* layer);
 int           pico_get_show_grid     (const char* layer);
 Pico_Rot      pico_get_show_rotation (const char* layer);
 
-/// @brief Gets the color set to draw.
-/// @return the current draw color
+void       pico_get_draw       (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style);
 Pico_Color pico_get_draw_color (const char* layer);
+
+/// @brief Gets the font used to draw texts.
+/// @return path to the current font file
+const char* pico_get_draw_font (const char* layer);
 
 /// @brief Gets the state of expert mode.
 /// @param fps optional pointer to receive fps value (NULL to ignore)
 /// @return 1 if enabled, or 0 otherwise
 int pico_get_expert (int* fps);
-
-/// @brief Gets the font used to draw texts.
-/// @return path to the current font file
-const char* pico_get_draw_font (const char* layer);
 
 /// @brief Gets the dimensions of the given image.
 /// @param path image filepath
@@ -490,7 +489,7 @@ void pico_set_show_grid     (const char* layer, int on);
 void pico_set_show_rotation (const char* layer, Pico_Rot rotation);
 
 /// @brief Changes the color used to draw objects.
-/// @param color new color
+void pico_set_draw       (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style);
 void pico_set_draw_color (const char* layer, Pico_Color color);
 
 /// @brief Toggles the expert mode with optional FPS timing.

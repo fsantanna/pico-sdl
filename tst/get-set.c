@@ -35,8 +35,8 @@ int main (void) {
         assert(c.r == 255 && c.g == 255 && c.b == 255);
     }
 
-    // style
-    puts("style");
+    // draw_style
+    puts("draw_style");
     {
         pico_set_draw_style(NULL, PICO_STYLE_FILL);
         assert(pico_get_draw_style(NULL) == PICO_STYLE_FILL);
@@ -44,6 +44,26 @@ int main (void) {
         assert(pico_get_draw_style(NULL) == PICO_STYLE_STROKE);
         pico_set_draw_style(NULL, PICO_STYLE_FILL);
         assert(pico_get_draw_style(NULL) == PICO_STYLE_FILL);
+    }
+
+    // draw (bulk setter/getter)
+    puts("draw bulk");
+    {
+        Pico_Color c = PICO_COLOR_RED;
+        const char* f = "test.ttf";
+        PICO_STYLE s = PICO_STYLE_STROKE;
+        pico_set_draw(NULL, &c, &f, &s);
+
+        Pico_Color gc;
+        const char* gf;
+        PICO_STYLE gs;
+        pico_get_draw(NULL, &gc, &gf, &gs);
+        assert(gc.r == 255 && gc.g == 0 && gc.b == 0);
+        assert(strcmp(gf, "test.ttf") == 0);
+        assert(gs == PICO_STYLE_STROKE);
+
+        // restore
+        pico_set_draw(NULL, &(Pico_Color){0xFF,0xFF,0xFF,0xFF}, &(const char*){NULL}, &(PICO_STYLE){PICO_STYLE_FILL});
     }
 
     // show (individual setters)
