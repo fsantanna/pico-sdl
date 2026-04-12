@@ -42,11 +42,11 @@ int main (void) {
         Pico_Rel_Dim dim = { '!', {world.w, world.h}, NULL };
         pico_set_view(-1, &dim, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_WHITE);
+        pico_set_draw_color(PICO_COLOR_WHITE);
         pico_output_draw_rect (
             &(Pico_Rel_Rect){ '!', {world.w/2-5, world.h/2-5, 10, 10}, PICO_ANCHOR_NW, NULL }
         );
-        pico_set_color_draw(PICO_COLOR_RED);
+        pico_set_draw_color(PICO_COLOR_RED);
         pico_output_draw_line (
             &(Pico_Rel_Pos){ '%', {0.5, 0.5}, PICO_ANCHOR_C, NULL },
             &(Pico_Rel_Pos){ '%', {1.0, 0}, PICO_ANCHOR_C, NULL }

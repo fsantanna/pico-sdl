@@ -12,7 +12,7 @@ int main (void) {
     pico_set_layer("A");
     pico_set_color_clear(PICO_COLOR_NAVY);
     pico_output_clear();
-    pico_set_color_draw(PICO_COLOR_WHITE);
+    pico_set_draw_color(PICO_COLOR_WHITE);
     pico_output_draw_rect(&btn1);
     pico_output_draw_rect(&btn2);
     pico_output_draw_rect(&btn3);

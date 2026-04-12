@@ -77,7 +77,7 @@ int main (void) {
         );
 
         /* Draw seek bar background */
-        pico_set_color_draw(
+        pico_set_draw_color(
             (Pico_Color){0x40, 0x40, 0x40, 0xFF}
         );
         pico_output_draw_rect(
@@ -91,7 +91,7 @@ int main (void) {
         /* Draw seek bar progress */
         float pct = (float)frame / (total - 1);
         int bar_w = (int)(pct * win_w);
-        pico_set_color_draw(
+        pico_set_draw_color(
             (Pico_Color){0x00, 0xAA, 0xFF, 0xFF}
         );
         pico_output_draw_rect(
@@ -109,7 +109,7 @@ int main (void) {
                 "frame %d/%d  speed %.1fx%s",
                 frame, total - 1, speed,
                 paused ? "  [PAUSED]" : "");
-            pico_set_color_draw(
+            pico_set_draw_color(
                 (Pico_Color){0xFF, 0xFF, 0xFF, 0xFF}
             );
             pico_output_draw_text(

@@ -39,7 +39,7 @@ int main (void) {
     puts("default fill");
     {
         pico_output_clear();
-        pico_set_color_draw((Pico_Color){255, 255, 255, 0xFF});
+        pico_set_draw_color((Pico_Color){255, 255, 255, 0xFF});
         pico_output_draw_rect(&rect);
         pico_output_draw_oval(&oval);
         pico_output_draw_tri(&t1, &t2, &t3);
@@ -50,8 +50,8 @@ int main (void) {
     puts("stroke");
     {
         pico_output_clear();
-        pico_set_style(PICO_STYLE_STROKE);
-        pico_set_color_draw((Pico_Color){255, 255, 255, 0xFF});
+        pico_set_draw_style(PICO_STYLE_STROKE);
+        pico_set_draw_color((Pico_Color){255, 255, 255, 0xFF});
         pico_output_draw_rect(&rect);
         pico_output_draw_oval(&oval);
         pico_output_draw_tri(&t1, &t2, &t3);
@@ -62,8 +62,8 @@ int main (void) {
     puts("back to fill");
     {
         pico_output_clear();
-        pico_set_style(PICO_STYLE_FILL);
-        pico_set_color_draw((Pico_Color){255, 255, 255, 0xFF});
+        pico_set_draw_style(PICO_STYLE_FILL);
+        pico_set_draw_color((Pico_Color){255, 255, 255, 0xFF});
         pico_output_draw_rect(&rect);
         pico_output_draw_oval(&oval);
         pico_output_draw_tri(&t1, &t2, &t3);
@@ -73,12 +73,12 @@ int main (void) {
 
     puts("get style");
     {
-        pico_set_style(PICO_STYLE_FILL);
-        assert(pico_get_style() == PICO_STYLE_FILL);
-        pico_set_style(PICO_STYLE_STROKE);
-        assert(pico_get_style() == PICO_STYLE_STROKE);
-        pico_set_style(PICO_STYLE_FILL);
-        assert(pico_get_style() == PICO_STYLE_FILL);
+        pico_set_draw_style(PICO_STYLE_FILL);
+        assert(pico_get_draw_style() == PICO_STYLE_FILL);
+        pico_set_draw_style(PICO_STYLE_STROKE);
+        assert(pico_get_draw_style() == PICO_STYLE_STROKE);
+        pico_set_draw_style(PICO_STYLE_FILL);
+        assert(pico_get_draw_style() == PICO_STYLE_FILL);
     }
 
     pico_init(0);

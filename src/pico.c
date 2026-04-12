@@ -375,9 +375,9 @@ Pico_Color pico_get_color_clear (void) {
     return S.layer->view.color;
 }
 
-Pico_Color pico_get_color_draw (void) {
+Pico_Color pico_get_draw_color (void) {
     _pico_guard();
-    return S.layer->draw.color;
+    return _pico_layer_null(NULL)->draw.color;
 }
 
 int pico_get_expert (int* fps) {
@@ -388,7 +388,7 @@ int pico_get_expert (int* fps) {
     return S.expert.on;
 }
 
-const char* pico_get_font (void) {
+const char* pico_get_draw_font (void) {
     _pico_guard();
     return S.layer->draw.font;
 }
@@ -470,7 +470,7 @@ int pico_get_show (void) {
     return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
 }
 
-PICO_STYLE pico_get_style (void) {
+PICO_STYLE pico_get_draw_style (void) {
     _pico_guard();
     return S.layer->draw.style;
 }
@@ -564,7 +564,7 @@ void pico_set_color_clear (Pico_Color color) {
     S.layer->view.color = color;
 }
 
-void pico_set_color_draw  (Pico_Color color) {
+void pico_set_draw_color  (Pico_Color color) {
     _pico_guard();
     S.layer->draw.color = color;
 }
@@ -589,7 +589,7 @@ int pico_set_expert (int on, int fps) {
     return S.expert.ms;
 }
 
-void pico_set_font (const char* path) {
+void pico_set_draw_font (const char* path) {
     _pico_guard();
     S.layer->draw.font = path;
 }
@@ -623,7 +623,7 @@ void pico_set_show (int on) {
     }
 }
 
-void pico_set_style (PICO_STYLE style) {
+void pico_set_draw_style (PICO_STYLE style) {
     _pico_guard();
     S.layer->draw.style = style;
 }
@@ -1304,8 +1304,8 @@ void pico_output_draw_tri (
 static void _show_grid (void) {
     if (!S.layer->view.grid) return;
 
-    Pico_Color x_clr = pico_get_color_draw();
-    pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77, 0x77});
+    Pico_Color x_clr = pico_get_draw_color();
+    pico_set_draw_color((Pico_Color){0x77, 0x77, 0x77, 0x77});
 
     // grid lines
     {
@@ -1334,7 +1334,7 @@ static void _show_grid (void) {
 
     // metric labels
     {
-        pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77, 0xFF});
+        pico_set_draw_color((Pico_Color){0x77, 0x77, 0x77, 0xFF});
         int H = 10;
         Pico_Abs_Rect src = pico_cv_rect_rel_abs (
                 &S.layer->view.src,
@@ -1371,17 +1371,17 @@ static void _show_grid (void) {
         }
     }
 
-    pico_set_color_draw(x_clr);
+    pico_set_draw_color(x_clr);
 }
 
 static void _show_tile (Pico_View* view, SDL_Rect dst) {
     if (view->tile.w<=0 || view->tile.h<=0) return;
 
-    Pico_Color x_clr   = pico_get_color_draw();
-    PICO_STYLE x_style = pico_get_style();
+    Pico_Color x_clr   = pico_get_draw_color();
+    PICO_STYLE x_style = pico_get_draw_style();
 
-    pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0xFF, 0xAA});
-    pico_set_style(PICO_STYLE_STROKE);
+    pico_set_draw_color((Pico_Color){0xFF, 0xFF, 0xFF, 0xAA});
+    pico_set_draw_style(PICO_STYLE_STROKE);
 
     // grid
     int dx = dst.w * view->tile.w / view->dim.w;
@@ -1408,8 +1408,8 @@ static void _show_tile (Pico_View* view, SDL_Rect dst) {
         &(Pico_Rel_Rect){ '!', {dst.x, dst.y, dst.w, dst.h}, PICO_ANCHOR_NW, NULL }
     );
 
-    pico_set_color_draw(x_clr);
-    pico_set_style(x_style);
+    pico_set_draw_color(x_clr);
+    pico_set_draw_style(x_style);
 }
 
 static void _pico_output_present (int force) {

@@ -17,11 +17,11 @@ int main (void) {
         pico_set_layer("map");
         pico_set_view(1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_RED);
+        pico_set_draw_color(PICO_COLOR_RED);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {1, 1, 1, 1}, PICO_ANCHOR_NW, NULL });
-        pico_set_color_draw(PICO_COLOR_GREEN);
+        pico_set_draw_color(PICO_COLOR_GREEN);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {6, 4, 4, 2}, PICO_ANCHOR_NW, NULL });
-        pico_set_color_draw(PICO_COLOR_BLUE);
+        pico_set_draw_color(PICO_COLOR_BLUE);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {20, 15, 1, 1}, PICO_ANCHOR_NW, NULL });
         pico_set_layer(NULL);
     }
@@ -48,7 +48,7 @@ int main (void) {
         pico_layer_empty(NULL, "fx", (Pico_Abs_Dim){64, 64}, NULL);
         pico_set_layer("fx");
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_YELLOW);
+        pico_set_draw_color(PICO_COLOR_YELLOW);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '!', {8, 8, 48, 48}, PICO_ANCHOR_NW, NULL });
         pico_set_layer(NULL);
     }

@@ -22,7 +22,7 @@ int main (void) {
     );
     pico_set_color_clear(PICO_COLOR_WHITE);
     pico_output_clear();
-    pico_set_color_draw(PICO_COLOR_RED);
+    pico_set_draw_color(PICO_COLOR_RED);
     pico_output_draw_rect(
         &(Pico_Rel_Rect){'%', {.5, .5, 0.5, 0.5}, PICO_ANCHOR_C, NULL}
     );
@@ -57,7 +57,7 @@ int main (void) {
     pico_output_present();
     _pico_check("layer-hier-03");
 
-    pico_set_color_draw(PICO_COLOR_GREEN);
+    pico_set_draw_color(PICO_COLOR_GREEN);
     pico_layer_text("root", "txt", 10, "hello");
     pico_set_layer("txt");
     pico_set_view(-1, NULL, NULL,
