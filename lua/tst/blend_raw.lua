@@ -9,8 +9,7 @@ do
     local p = {'!', x=32, y=18, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.alpha(a)
-        pico.set.color.draw('red')
+        pico.set.color.draw(pico.color.alpha('red', a))
         pico.output.draw.pixel(p)
         pico.input.delay(10)
         if a == 120 then
@@ -26,8 +25,7 @@ do
     local r = {'!', x=32-d.w//2, y=18-5, w=d.w, h=10, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.alpha(a)
-        pico.set.color.draw('red')
+        pico.set.color.draw(pico.color.alpha('red', a))
         pico.output.draw.text("SOME TEXT", r)
         pico.input.delay(10)
         if a == 120 then
@@ -41,8 +39,7 @@ do
     local r = {'!', x=32-30, y=18-6, w=60, h=12, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.alpha(a)
-        pico.set.color.draw('red')
+        pico.set.color.draw(pico.color.alpha('red', a))
         pico.output.draw.rect(r)
         pico.input.delay(10)
         if a == 120 then
@@ -56,8 +53,7 @@ do
     local r = {'!', x=32-30, y=18-6, w=60, h=12, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.alpha(a)
-        pico.set.color.draw('red')
+        pico.set.color.draw(pico.color.alpha('red', a))
         pico.output.draw.oval(r)
         pico.input.delay(10)
         if a == 120 then
@@ -73,8 +69,7 @@ do
     local p3 = {'!', x=62, y=24, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.alpha(a)
-        pico.set.color.draw('red')
+        pico.set.color.draw(pico.color.alpha('red', a))
         pico.output.draw.tri(p1, p2, p3)
         pico.input.delay(10)
         if a == 120 then
@@ -89,8 +84,7 @@ do
     local p2 = {'!', x=52, y=24, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.alpha(a)
-        pico.set.color.draw('red')
+        pico.set.color.draw(pico.color.alpha('red', a))
         pico.output.draw.line(p1, p2)
         pico.input.delay(10)
         if a == 120 then
@@ -108,8 +102,7 @@ do
     }
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.alpha(a)
-        pico.set.color.draw('red')
+        pico.set.color.draw(pico.color.alpha('red', a))
         pico.output.draw.poly(poly)
         pico.input.delay(10)
         if a == 120 then

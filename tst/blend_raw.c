@@ -10,8 +10,7 @@ int main (void) {
         puts("pixel dimming");
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
-            pico_set_alpha(a);
-            pico_set_color_draw((Pico_Color){255,0,0, 0xFF});
+            pico_set_color_draw((Pico_Color){255,0,0,a});
             pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {32,18}, PICO_ANCHOR_NW, NULL});
             pico_input_delay(10);
             if (a == 120) {
@@ -25,8 +24,7 @@ int main (void) {
         Pico_Rel_Rect r = {'!', {32-dim.w/2, 18-5, 0, 10}, PICO_ANCHOR_NW, NULL};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
-            pico_set_alpha(a);
-            pico_set_color_draw((Pico_Color){255,0,0, 0xFF});
+            pico_set_color_draw((Pico_Color){255,0,0,a});
             pico_output_draw_text("SOME TEXT", &r);
             pico_input_delay(10);
             if (a == 120) {
@@ -39,8 +37,7 @@ int main (void) {
         Pico_Rel_Rect r = {'!', {32-30, 18-6, 60, 12}, PICO_ANCHOR_NW, NULL};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
-            pico_set_alpha(a);
-            pico_set_color_draw((Pico_Color){255,0,0, 0xFF});
+            pico_set_color_draw((Pico_Color){255,0,0,a});
             pico_output_draw_rect(&r);
             pico_input_delay(10);
             if (a == 120) {
@@ -53,8 +50,7 @@ int main (void) {
         Pico_Rel_Rect r = {'!', {32-30, 18-6, 60, 12}, PICO_ANCHOR_NW, NULL};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
-            pico_set_alpha(a);
-            pico_set_color_draw((Pico_Color){255,0,0, 0xFF});
+            pico_set_color_draw((Pico_Color){255,0,0,a});
             pico_output_draw_oval(&r);
             pico_input_delay(10);
             if (a == 120) {
@@ -69,8 +65,7 @@ int main (void) {
         Pico_Rel_Pos p3 = {'!', {62, 24}, PICO_ANCHOR_NW, NULL};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
-            pico_set_alpha(a);
-            pico_set_color_draw((Pico_Color){255,0,0, 0xFF});
+            pico_set_color_draw((Pico_Color){255,0,0,a});
             pico_output_draw_tri(&p1, &p2, &p3);
             pico_input_delay(10);
             if (a == 120) {
@@ -84,8 +79,7 @@ int main (void) {
         Pico_Rel_Pos p2 = {'!', {52, 24}, PICO_ANCHOR_NW, NULL};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
-            pico_set_alpha(a);
-            pico_set_color_draw((Pico_Color){255,0,0, 0xFF});
+            pico_set_color_draw((Pico_Color){255,0,0,a});
             pico_output_draw_line(&p1, &p2);
             pico_input_delay(10);
             if (a == 120) {
@@ -103,8 +97,7 @@ int main (void) {
 
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
-            pico_set_alpha(a);
-            pico_set_color_draw((Pico_Color){255,0,0, 0xFF});
+            pico_set_color_draw((Pico_Color){255,0,0,a});
             pico_output_draw_poly(3, poly);
             pico_input_delay(10);
             if (a == 120) {

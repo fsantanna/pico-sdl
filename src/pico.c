@@ -27,6 +27,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef struct {
+    Pico_Color    color;
+    PICO_STYLE    style;
+    const char*   font;
+} Pico_Draw;
+
+typedef struct {
+    Pico_Color    color;
     Pico_Abs_Dim  dim;
     Pico_Rel_Rect dst;
     int           grid;
@@ -55,20 +62,13 @@ static struct { // internal global state
 } G = { 0 };
 
 static struct { // exposed global state
-    int alpha;
-    struct {
-        Pico_Color clear;
-        Pico_Color draw;
-    } color;
     struct {
         int on;
         int fps;
         int ms;
         int t0;
     } expert;
-    const char* font;
     Pico_Layer* layer;
-    PICO_STYLE style;
     struct {
         Pico_Abs_Dim dim;
         int          fs;
@@ -272,8 +272,10 @@ void pico_init (int on) {
                 .type = PICO_LAYER_ROOT,
                 .name = "root",
                 .tex  = NULL,   // needs G.ren
+                .draw = { .color = {0xFF, 0xFF, 0xFF, 0xFF}, .style = PICO_STYLE_FILL, .font = NULL },
                 .hier = { NULL, NULL, {NULL,NULL} },
                 .view = {
+                    .color = {0, 0, 0, 0xFF},
                     .grid = 1,
                     .dim  = PICO_DIM_LOG,
                     .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
@@ -297,12 +299,8 @@ void pico_init (int on) {
         realm_enter(G.realm);
 
         S = (typeof(S)) {
-            .alpha  = 0xFF,
-            .color  = { {0, 0, 0, 0xFF}, PICO_COLOR_WHITE },
             .expert = {0, 0, 0, 0},
-            .font   = NULL,
             .layer  = &G.root,
-            .style  = PICO_STYLE_FILL,
             .win    = {
                 .dim = PICO_DIM_PHY,
                 .fs  = 0,
@@ -372,24 +370,14 @@ void pico_quit (void) {
 // GET
 ///////////////////////////////////////////////////////////////////////////////
 
-int pico_get_alpha (void) {
-    _pico_guard();
-    return S.alpha;
-}
-
 Pico_Color pico_get_color_clear (void) {
     _pico_guard();
-    return S.color.clear;
-}
-
-Pico_Color pico_get_color_clear_alpha (void) {
-    _pico_guard();
-    return S.color.clear;
+    return S.layer->view.color;
 }
 
 Pico_Color pico_get_color_draw (void) {
     _pico_guard();
-    return S.color.draw;
+    return S.layer->draw.color;
 }
 
 int pico_get_expert (int* fps) {
@@ -402,7 +390,7 @@ int pico_get_expert (int* fps) {
 
 const char* pico_get_font (void) {
     _pico_guard();
-    return S.font;
+    return S.layer->draw.font;
 }
 
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
@@ -484,7 +472,7 @@ int pico_get_show (void) {
 
 PICO_STYLE pico_get_style (void) {
     _pico_guard();
-    return S.style;
+    return S.layer->draw.style;
 }
 
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
@@ -571,24 +559,14 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
 // SET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_set_alpha (int a) {
-    _pico_guard();
-    S.alpha = a;
-}
-
 void pico_set_color_clear (Pico_Color color) {
     _pico_guard();
-    S.color.clear = color;
-}
-
-void pico_set_color_clear_alpha (Pico_Color color) {
-    _pico_guard();
-    S.color.clear = color;
+    S.layer->view.color = color;
 }
 
 void pico_set_color_draw  (Pico_Color color) {
     _pico_guard();
-    S.color.draw = color;
+    S.layer->draw.color = color;
 }
 
 void pico_set_dim (Pico_Rel_Dim* dim) {
@@ -613,7 +591,7 @@ int pico_set_expert (int on, int fps) {
 
 void pico_set_font (const char* path) {
     _pico_guard();
-    S.font = path;
+    S.layer->draw.font = path;
 }
 
 void pico_set_layer (const char* key) {
@@ -1122,7 +1100,8 @@ void pico_input_loop (void) {
 void pico_output_clear (void) {
     _pico_guard();
     SDL_SetRenderDrawColor(G.ren,
-        S.color.clear.r, S.color.clear.g, S.color.clear.b, S.color.clear.a);
+        S.layer->view.color.r, S.layer->view.color.g, S.layer->view.color.b, S.layer->view.color.a
+    );
     Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
     SDL_RenderFillRect(G.ren, &r);
     _pico_output_present(0);
@@ -1165,7 +1144,8 @@ void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect) {
 void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
     _pico_guard();
     SDL_SetRenderDrawColor(G.ren,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+        S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
+    );
     Pico_Abs_Pos i1 = pico_cv_pos_rel_abs(p1, NULL);
     Pico_Abs_Pos i2 = pico_cv_pos_rel_abs(p2, NULL);
     SDL_RenderDrawLine(G.ren, i1.x,i1.y, i2.x,i2.y);
@@ -1176,18 +1156,19 @@ void pico_output_draw_oval (Pico_Rel_Rect* rect) {
     _pico_guard();
     Pico_Abs_Rect i = pico_cv_rect_rel_abs(rect, NULL);
     SDL_SetRenderDrawColor(G.ren,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    switch (S.style) {
+        S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
+    );
+    switch (S.layer->draw.style) {
         case PICO_STYLE_FILL:
             filledEllipseRGBA (G.ren,
                 i.x+i.w/2, i.y+i.h/2, i.w/2, i.h/2,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+                S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
             );
             break;
         case PICO_STYLE_STROKE:
             ellipseRGBA (G.ren,
                 i.x+i.w/2, i.y+i.h/2, i.w/2, i.h/2,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+                S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
             );
             break;
     }
@@ -1197,7 +1178,8 @@ void pico_output_draw_oval (Pico_Rel_Rect* rect) {
 void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
     _pico_guard();
     SDL_SetRenderDrawColor(G.ren,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+        S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
+    );
     Pico_Abs_Pos i = pico_cv_pos_rel_abs(pos, NULL);
     SDL_RenderDrawPoint(G.ren, i.x, i.y);
         // TODO: could use PointF, but 4.5->4 (not 5 desired)
@@ -1211,7 +1193,8 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
         vs[i] = pico_cv_pos_rel_abs(&ps[i], NULL);
     }
     SDL_SetRenderDrawColor(G.ren,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+        S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
+    );
     SDL_RenderDrawPoints(G.ren, vs, n);
     _pico_output_present(0);
 }
@@ -1219,10 +1202,11 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
 void pico_output_draw_rect (Pico_Rel_Rect* rect) {
     _pico_guard();
     SDL_SetRenderDrawColor(G.ren,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
+        S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
+    );
 
     Pico_Abs_Rect i = pico_cv_rect_rel_abs(rect, NULL);
-    switch (S.style) {
+    switch (S.layer->draw.style) {
         case PICO_STYLE_FILL:
             SDL_RenderFillRect(G.ren, &i);
             break;
@@ -1242,18 +1226,19 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
         ys[i] = v.y;
     }
     SDL_SetRenderDrawColor(G.ren,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    switch (S.style) {
+        S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
+    );
+    switch (S.layer->draw.style) {
         case PICO_STYLE_FILL:
             filledPolygonRGBA(G.ren,
                 xs, ys, n,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+                S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
             );
             break;
         case PICO_STYLE_STROKE:
             polygonRGBA(G.ren,
                 xs, ys, n,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+                S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
             );
             break;
     }
@@ -1293,14 +1278,15 @@ void pico_output_draw_tri (
     Pico_Abs_Pos i3 = pico_cv_pos_rel_abs(p3, NULL);
 
     SDL_SetRenderDrawColor(G.ren,
-        S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha);
-    switch (S.style) {
+        S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
+    );
+    switch (S.layer->draw.style) {
         case PICO_STYLE_FILL:
             filledTrigonRGBA(G.ren,
                 i1.x, i1.y,
                 i2.x, i2.y,
                 i3.x, i3.y,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+                S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
             );
             break;
         case PICO_STYLE_STROKE:
@@ -1308,7 +1294,7 @@ void pico_output_draw_tri (
                 i1.x, i1.y,
                 i2.x, i2.y,
                 i3.x, i3.y,
-                S.color.draw.r, S.color.draw.g, S.color.draw.b, S.alpha
+                S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, S.layer->draw.color.a
             );
             break;
     }
@@ -1318,13 +1304,11 @@ void pico_output_draw_tri (
 static void _show_grid (void) {
     if (!S.layer->view.grid) return;
 
-    Pico_Color x_clr   = pico_get_color_draw();
-    int        x_alpha = pico_get_alpha();
-    pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77, 0xFF});
+    Pico_Color x_clr = pico_get_color_draw();
+    pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77, 0x77});
 
     // grid lines
     {
-        pico_set_alpha(0x77);
         if ((S.win.dim.w%S.layer->view.dim.w == 0) && (S.layer->view.dim.w< S.win.dim.w)) {
             for (int i=0; i<S.win.dim.w; i+=(S.win.dim.w/S.layer->view.dim.w)) {
                 if (i == 0) continue;
@@ -1351,7 +1335,6 @@ static void _show_grid (void) {
     // metric labels
     {
         pico_set_color_draw((Pico_Color){0x77, 0x77, 0x77, 0xFF});
-        pico_set_alpha(0xFF);
         int H = 10;
         Pico_Abs_Rect src = pico_cv_rect_rel_abs (
                 &S.layer->view.src,
@@ -1389,18 +1372,15 @@ static void _show_grid (void) {
     }
 
     pico_set_color_draw(x_clr);
-    pico_set_alpha(x_alpha);
 }
 
 static void _show_tile (Pico_View* view, SDL_Rect dst) {
     if (view->tile.w<=0 || view->tile.h<=0) return;
 
     Pico_Color x_clr   = pico_get_color_draw();
-    int        x_alpha = pico_get_alpha();
     PICO_STYLE x_style = pico_get_style();
 
-    pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
-    pico_set_alpha(0xAA);
+    pico_set_color_draw((Pico_Color){0xFF, 0xFF, 0xFF, 0xAA});
     pico_set_style(PICO_STYLE_STROKE);
 
     // grid
@@ -1429,7 +1409,6 @@ static void _show_tile (Pico_View* view, SDL_Rect dst) {
     );
 
     pico_set_color_draw(x_clr);
-    pico_set_alpha(x_alpha);
     pico_set_style(x_style);
 }
 

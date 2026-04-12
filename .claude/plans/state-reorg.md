@@ -193,7 +193,17 @@ to `Pico_Color` (RGBA, the renamed type).
   `S.layer->draw.font`
 - [x] Compile + test: `make tests` (C) and Lua both pass
 
-### 3. Add `clear` and `keep` to `Pico_View`
+### 3. Collapsed into Step 2 [x]
+
+Clear color moved to `Pico_View.color`. `keep` deferred to
+Step 6. `Pico_Draw.alpha` removed (alpha lives in
+`draw.color.a`). Push/pop/stack removed entirely.
+`pico_set/get_alpha`, `pico_set/get_color_clear_alpha`
+removed from C and Lua. Tests updated: `tst/push.c` deleted,
+`lua/tst/push.lua` deleted, blend tests use `color.a`,
+`valgrind.supp` line updated.
+
+### ~~3.~~ Add `clear` and `keep` to `Pico_View`
 
 - `src/pico.c` | `Pico_View` | add
   `Pico_Color clear; unsigned char keep;`
@@ -208,7 +218,7 @@ to `Pico_Color` (RGBA, the renamed type).
 - Remove `S.color.clear` from S
 - Compile + test
 
-### 4. Drop push/pop
+### ~~4.~~ Drop push/pop (collapsed into Step 2)
 
 - `src/pico.c` | remove `Pico_State`, `STACK`,
   `pico_push`, `pico_pop`

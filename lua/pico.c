@@ -611,11 +611,6 @@ static void L_image_get_dim (lua_State* L, int i, const char* path) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_get_alpha (lua_State* L) {
-    lua_pushinteger(L, pico_get_alpha());
-    return 1;
-}
-
 static int l_get_color_clear (lua_State* L) {
     Pico_Color c = pico_get_color_clear();
     L_push_color(L, c);
@@ -912,12 +907,6 @@ static int l_set_mouse (lua_State* L) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-static int l_set_alpha (lua_State* L) {
-    int a = luaL_checkinteger(L, 1);
-    pico_set_alpha(a);
-    return 0;
-}
 
 static int l_set_font (lua_State* L) {
     const char* path = NULL;
@@ -1571,7 +1560,6 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
-    { "alpha",    l_get_alpha  },
     { "font",     l_get_font   },
     { "image",    l_get_image  },
     { "keyboard", l_get_keyboard },
@@ -1595,7 +1583,6 @@ static const luaL_Reg ll_get_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_set[] = {
-    { "alpha",  l_set_alpha  },
     { "dim",    l_set_dim    },
     { "expert", l_set_expert },
     { "font",   l_set_font   },

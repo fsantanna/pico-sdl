@@ -7,7 +7,7 @@ int main (void) {
         NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
     pico_output_clear();
-    pico_set_alpha(0x80);
+    pico_set_color_draw(pico_color_alpha(pico_get_color_draw(), 0x80));
 
     // Each position drawn 3 times with NW/C/SE anchors
 #if 1

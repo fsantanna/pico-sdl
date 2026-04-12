@@ -87,6 +87,7 @@ static void _free_sound (int n, const void* key, void* value) {
 
 static Pico_View _view_new (Pico_Abs_Dim dim) {
     return (Pico_View) {
+        .color = {0, 0, 0, 0xFF},
         .grid = 0,
         .dim  = dim,
         .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
@@ -109,7 +110,7 @@ static Pico_Layer* _layer_new (
         .name = strdup(key),
         .tex  = tex,
         .draw = {
-            {0xFF, 0xFF, 0xFF, 0xFF}, 0xFF, PICO_STYLE_FILL, NULL
+            {0xFF, 0xFF, 0xFF, 0xFF}, PICO_STYLE_FILL, NULL
         },
         .view = _view_new(dim),
     };

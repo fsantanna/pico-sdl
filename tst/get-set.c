@@ -7,17 +7,6 @@ int main (void) {
     pico_set_window("Get-Set", -1, &(Pico_Rel_Dim){ '!', {640, 480}, NULL });
     pico_set_view(-1, &(Pico_Rel_Dim){ '!', {64, 48}, NULL }, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-    // alpha
-    puts("alpha");
-    {
-        pico_set_alpha(128);
-        assert(pico_get_alpha() == 128);
-        pico_set_alpha(0);
-        assert(pico_get_alpha() == 0);
-        pico_set_alpha(255);
-        assert(pico_get_alpha() == 255);
-    }
-
     // color_clear
     puts("color_clear");
     {

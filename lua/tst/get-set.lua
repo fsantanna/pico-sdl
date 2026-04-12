@@ -4,17 +4,6 @@ pico.init(true)
 pico.set.window { title="Get-Set", dim={'!', w=640, h=480} }
 pico.set.view { dim={'!', w=64, h=48} }
 
--- alpha
-print("alpha")
-do
-    pico.set.alpha(128)
-    assert(pico.get.alpha() == 128)
-    pico.set.alpha(0)
-    assert(pico.get.alpha() == 0)
-    pico.set.alpha(255)
-    assert(pico.get.alpha() == 255)
-end
-
 -- color_clear
 print("color_clear")
 do
