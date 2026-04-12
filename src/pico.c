@@ -443,7 +443,7 @@ Uint32 pico_get_now (void) {
     return SDL_GetTicks();
 }
 
-int pico_get_show (void) {
+int pico_get_window_show (void) {
     _pico_guard();
     return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
 }
@@ -591,7 +591,7 @@ void pico_set_layer (const char* key) {
     SDL_RenderSetClipRect(G.ren, &r);
 }
 
-void pico_set_show (int on) {
+void pico_set_window_show (int on) {
     _pico_guard();
     if (on) {
         SDL_ShowWindow(G.win);

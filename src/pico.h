@@ -421,7 +421,7 @@ Uint32 pico_get_now (void);
 
 /// @brief Gets the visibility state of the window.
 /// @return 1 if visible, or 0 otherwise
-int pico_get_show (void);
+int pico_get_window_show (void);
 
 /// @brief Gets the drawing style.
 /// @return PICO_STYLE_FILL or PICO_STYLE_STROKE
@@ -503,7 +503,7 @@ void pico_set_layer (const char* key);
 
 /// @brief Toggles the application window visibility.
 /// @param on 1 to show, or 0 to hide
-void pico_set_show (int on);
+void pico_set_window_show (int on);
 
 /// @brief Sets the drawing style.
 /// @param style new style
