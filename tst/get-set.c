@@ -46,6 +46,54 @@ int main (void) {
         assert(pico_get_draw_style(NULL) == PICO_STYLE_FILL);
     }
 
+    // show (individual setters)
+    puts("show individual");
+    {
+        pico_set_show_alpha(NULL, 0x80);
+        assert(pico_get_show_alpha(NULL) == 0x80);
+        pico_set_show_alpha(NULL, 0xFF);
+
+        pico_set_show_grid(NULL, 1);
+        assert(pico_get_show_grid(NULL) == 1);
+        pico_set_show_grid(NULL, 0);
+        assert(pico_get_show_grid(NULL) == 0);
+
+        pico_set_show_flip(NULL, PICO_FLIP_H);
+        assert(pico_get_show_flip(NULL) == PICO_FLIP_H);
+        pico_set_show_flip(NULL, PICO_FLIP_NONE);
+
+        Pico_Rot rot = {45, PICO_ANCHOR_C};
+        pico_set_show_rotation(NULL, rot);
+        Pico_Rot got = pico_get_show_rotation(NULL);
+        assert(got.angle == 45);
+        pico_set_show_rotation(NULL, (Pico_Rot){0, PICO_ANCHOR_C});
+    }
+
+    // show (bulk setter/getter)
+    puts("show bulk");
+    {
+        unsigned char a = 0x40;
+        Pico_Color c = PICO_COLOR_RED;
+        PICO_FLIP f = PICO_FLIP_V;
+        Pico_Rot r = {90, PICO_ANCHOR_C};
+        pico_set_show(NULL, &a, &c, &f, 1, &r);
+
+        unsigned char ga;
+        Pico_Color gc;
+        PICO_FLIP gf;
+        int gg;
+        Pico_Rot gr;
+        pico_get_show(NULL, &ga, &gc, &gf, &gg, &gr);
+        assert(ga == 0x40);
+        assert(gc.r == 255 && gc.g == 0 && gc.b == 0);
+        assert(gf == PICO_FLIP_V);
+        assert(gg == 1);
+        assert(gr.angle == 90);
+
+        // restore
+        pico_set_show(NULL, &(unsigned char){0xFF}, &(Pico_Color){0,0,0,0xFF}, &(PICO_FLIP){PICO_FLIP_NONE}, 0, &(Pico_Rot){0, PICO_ANCHOR_C});
+    }
+
     puts("OK");
     pico_init(0);
     return 0;

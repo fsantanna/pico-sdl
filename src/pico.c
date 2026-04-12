@@ -253,8 +253,8 @@ void pico_init (int on) {
                 .type = PICO_LAYER_ROOT,
                 .name = "root",
                 .tex  = NULL,   // needs G.ren
-                .draw = { .color = {0xFF, 0xFF, 0xFF, 0xFF}, .style = PICO_STYLE_FILL, .font = NULL },
-                .show = { .color = {0, 0, 0, 0xFF}, .grid = 1, .rot = {0, PICO_ANCHOR_C}, .flip = PICO_FLIP_NONE, .alpha = 0xFF },
+                .draw = { {0xFF, 0xFF, 0xFF, 0xFF}, PICO_STYLE_FILL, NULL },
+                .show = { 0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 1, {0, PICO_ANCHOR_C} },
                 .hier = { NULL, NULL, {NULL,NULL} },
                 .view = {
                     .dim  = PICO_DIM_LOG,
@@ -348,14 +348,44 @@ void pico_quit (void) {
 // GET
 ///////////////////////////////////////////////////////////////////////////////
 
+Pico_Color pico_get_draw_color (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->draw.color;
+}
+
+void pico_get_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, Pico_Rot* rotation) {
+    _pico_guard();
+    Pico_Layer* L = _pico_layer_null(layer);
+    if (alpha != NULL)    { *alpha    = L->show.alpha; }
+    if (color != NULL)    { *color    = L->show.color; }
+    if (flip != NULL)     { *flip     = L->show.flip; }
+    if (grid != NULL)     { *grid     = L->show.grid; }
+    if (rotation != NULL) { *rotation = L->show.rotation; }
+}
+
+unsigned char pico_get_show_alpha (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.alpha;
+}
+
 Pico_Color pico_get_show_color (const char* layer) {
     _pico_guard();
     return _pico_layer_null(layer)->show.color;
 }
 
-Pico_Color pico_get_draw_color (const char* layer) {
+PICO_FLIP pico_get_show_flip (const char* layer) {
     _pico_guard();
-    return _pico_layer_null(layer)->draw.color;
+    return _pico_layer_null(layer)->show.flip;
+}
+
+int pico_get_show_grid (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.grid;
+}
+
+Pico_Rot pico_get_show_rotation (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.rotation;
 }
 
 int pico_get_expert (int* fps) {
@@ -510,7 +540,7 @@ void pico_get_view (
         *tile = S.layer->view.tile;
     }
     if (rot != NULL) {
-        *rot = S.layer->show.rot;
+        *rot = S.layer->show.rotation;
     }
     if (flip != NULL) {
         *flip = S.layer->show.flip;
@@ -537,9 +567,39 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
 // SET
 ///////////////////////////////////////////////////////////////////////////////
 
+void pico_set_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int grid, Pico_Rot* rotation) {
+    _pico_guard();
+    Pico_Layer* L = _pico_layer_null(layer);
+    if (alpha != NULL)    { L->show.alpha    = *alpha; }
+    if (color != NULL)    { L->show.color    = *color; }
+    if (flip != NULL)     { L->show.flip     = *flip; }
+    if (grid != -1)       { L->show.grid     = grid; }
+    if (rotation != NULL) { L->show.rotation = *rotation; }
+}
+
+void pico_set_show_alpha (const char* layer, unsigned char alpha) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.alpha = alpha;
+}
+
 void pico_set_show_color (const char* layer, Pico_Color color) {
     _pico_guard();
     _pico_layer_null(layer)->show.color = color;
+}
+
+void pico_set_show_flip (const char* layer, PICO_FLIP flip) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.flip = flip;
+}
+
+void pico_set_show_grid (const char* layer, int on) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.grid = on;
+}
+
+void pico_set_show_rotation (const char* layer, Pico_Rot rotation) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.rotation = rotation;
 }
 
 void pico_set_draw_color (const char* layer, Pico_Color color) {
@@ -651,7 +711,7 @@ void pico_set_view (
         S.layer->view.clip = *clip;
     }
     if (rot != NULL) {
-        S.layer->show.rot = *rot;
+        S.layer->show.rotation = *rot;
     }
     if (flip != NULL) {
         S.layer->show.flip = *flip;

@@ -269,9 +269,12 @@ void pico_output_sound (const char* path);
 
 // GET
 
-/// @brief Gets the color set to clear the screen.
-/// @return the current clear color
-Pico_Color pico_get_show_color (const char* layer);
+void          pico_get_show          (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, Pico_Rot* rotation);
+unsigned char pico_get_show_alpha    (const char* layer);
+Pico_Color    pico_get_show_color    (const char* layer);
+PICO_FLIP     pico_get_show_flip     (const char* layer);
+int           pico_get_show_grid     (const char* layer);
+Pico_Rot      pico_get_show_rotation (const char* layer);
 
 /// @brief Gets the color set to draw.
 /// @return the current draw color
@@ -479,9 +482,12 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 
 // SET
 
-/// @brief Changes the color used to clear the screen.
-/// @param color new color
-void pico_set_show_color (const char* layer, Pico_Color color);
+void pico_set_show          (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int grid, Pico_Rot* rotation);
+void pico_set_show_alpha    (const char* layer, unsigned char alpha);
+void pico_set_show_color    (const char* layer, Pico_Color color);
+void pico_set_show_flip     (const char* layer, PICO_FLIP flip);
+void pico_set_show_grid     (const char* layer, int on);
+void pico_set_show_rotation (const char* layer, Pico_Rot rotation);
 
 /// @brief Changes the color used to draw objects.
 /// @param color new color

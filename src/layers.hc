@@ -15,11 +15,11 @@ typedef struct {
 } Pico_Layer_Draw;
 
 typedef struct {
-    Pico_Color    color;
-    int           grid;
-    Pico_Rot      rot;
-    PICO_FLIP     flip;
     unsigned char alpha;
+    Pico_Color    color;
+    PICO_FLIP     flip;
+    int           grid;
+    Pico_Rot      rotation;
 } Pico_Layer_Show;
 
 typedef struct {
@@ -211,11 +211,11 @@ static void _pico_output_draw_layer (
 
     SDL_SetTextureAlphaMod(layer->tex, S.layer->draw.color.a*layer->show.alpha/255);
     SDL_Point center = {
-        dst.w * layer->show.rot.anchor.x,
-        dst.h * layer->show.rot.anchor.y
+        dst.w * layer->show.rotation.anchor.x,
+        dst.h * layer->show.rotation.anchor.y
     };
     SDL_RenderCopyEx(G.ren, layer->tex, &src, &dst,
-                     layer->show.rot.angle, &center,
+                     layer->show.rotation.angle, &center,
                      layer->show.flip);
 
     if (layer->show.grid) {
