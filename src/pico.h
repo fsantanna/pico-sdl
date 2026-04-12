@@ -165,7 +165,7 @@ void pico_input_loop (void);
 /// @brief Draw primitives, play sounds, etc.
 /// @{
 
-/// @brief Clears screen with color set by @ref pico_set_color_clear.
+/// @brief Clears screen with color set by @ref pico_set_show_color.
 void pico_output_clear (void);
 
 /// @brief Draws an RGBA image buffer.
@@ -271,7 +271,7 @@ void pico_output_sound (const char* path);
 
 /// @brief Gets the color set to clear the screen.
 /// @return the current clear color
-Pico_Color pico_get_color_clear (void);
+Pico_Color pico_get_show_color (const char* layer);
 
 /// @brief Gets the color set to draw.
 /// @return the current draw color
@@ -481,7 +481,7 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 
 /// @brief Changes the color used to clear the screen.
 /// @param color new color
-void pico_set_color_clear (Pico_Color color);
+void pico_set_show_color (const char* layer, Pico_Color color);
 
 /// @brief Changes the color used to draw objects.
 /// @param color new color

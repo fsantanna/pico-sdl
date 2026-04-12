@@ -62,7 +62,7 @@ int main (void) {
         pico_set_video("vid", frame);
 
         /* Draw video */
-        pico_set_color_clear(
+        pico_set_show_color(NULL, 
             (Pico_Color){0x20, 0x20, 0x20, 0xFF}
         );
         pico_output_clear();

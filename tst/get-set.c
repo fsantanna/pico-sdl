@@ -10,14 +10,14 @@ int main (void) {
     // color_clear
     puts("color_clear");
     {
-        pico_set_color_clear(PICO_COLOR_RED);
-        Pico_Color c = pico_get_color_clear();
+        pico_set_show_color(NULL, PICO_COLOR_RED);
+        Pico_Color c = pico_get_show_color(NULL);
         assert(c.r == 255 && c.g == 0 && c.b == 0);
-        pico_set_color_clear(PICO_COLOR_BLUE);
-        c = pico_get_color_clear();
+        pico_set_show_color(NULL, PICO_COLOR_BLUE);
+        c = pico_get_show_color(NULL);
         assert(c.r == 0 && c.g == 0 && c.b == 255);
-        pico_set_color_clear(PICO_COLOR_BLACK);
-        c = pico_get_color_clear();
+        pico_set_show_color(NULL, PICO_COLOR_BLACK);
+        c = pico_get_show_color(NULL);
         assert(c.r == 0 && c.g == 0 && c.b == 0);
     }
 

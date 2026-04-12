@@ -34,7 +34,7 @@ int main (void) {
     {
         puts("bottomright 9x1 on white");
         Pico_Rel_Rect r = { '%', {1,1,0,0}, PICO_ANCHOR_SE, NULL };
-        pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
+        pico_set_show_color(NULL, (Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
         pico_output_clear();
         pico_output_draw_buffer("buf2", (Pico_Abs_Dim){9,1}, buffer, &r);
         _pico_check("buffer-02");   // same as raw

@@ -612,7 +612,7 @@ static void L_image_get_dim (lua_State* L, int i, const char* path) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_get_color_clear (lua_State* L) {
-    Pico_Color c = pico_get_color_clear();
+    Pico_Color c = pico_get_show_color(NULL);
     L_push_color(L, c);
     return 1;
 }
@@ -935,7 +935,7 @@ static int l_set_expert (lua_State* L) {
 
 static int l_set_color_clear (lua_State* L) {
     Pico_Color clr = c_color_tis(L, 1);
-    pico_set_color_clear(clr);
+    pico_set_show_color(NULL, clr);
     return 0;
 }
 

@@ -231,7 +231,7 @@ int main (void) {
 
     puts("color alpha function");
     {
-        pico_set_color_clear(PICO_COLOR_WHITE);
+        pico_set_show_color(NULL, PICO_COLOR_WHITE);
         pico_output_clear();
         Pico_Color buffer[] = {
             pico_color_alpha(PICO_COLOR_RED, 0xFF),

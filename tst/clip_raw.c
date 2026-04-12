@@ -13,7 +13,7 @@ int main (void) {
 
     puts("gray background");
     pico_set_view(-1, NULL, NULL, NULL, NULL, &r1, NULL, NULL, NULL);
-    pico_set_color_clear((Pico_Color){0xCC, 0xCC, 0xCC, 0xFF});
+    pico_set_show_color(NULL, (Pico_Color){0xCC, 0xCC, 0xCC, 0xFF});
     pico_output_clear();
     _pico_check("clip-02"); // same as pct
 

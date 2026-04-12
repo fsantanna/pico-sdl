@@ -10,7 +10,7 @@
 int main (void) {
     pico_init(1);
 
-    pico_set_color_clear(PICO_COLOR_BLACK);
+    pico_set_show_color(NULL, PICO_COLOR_BLACK);
     pico_output_clear();
 
     pico_layer_empty("root", "L", (Pico_Abs_Dim){8, 8}, NULL);
@@ -20,7 +20,7 @@ int main (void) {
         &(Pico_Rel_Rect){'%', {0.3, 0.3, 0.4, 0.4}, PICO_ANCHOR_C, NULL},
         NULL, NULL, NULL, NULL, NULL
     );
-    pico_set_color_clear(PICO_COLOR_WHITE);
+    pico_set_show_color(NULL, PICO_COLOR_WHITE);
     pico_output_clear();
     pico_set_draw_color(NULL, PICO_COLOR_RED);
     pico_output_draw_rect(
@@ -74,7 +74,7 @@ int main (void) {
     // transparent overlay with yellow background
     pico_layer_empty("root", "over", (Pico_Abs_Dim){500, 500}, NULL);
     pico_set_layer("over");
-    pico_set_color_clear((Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
+    pico_set_show_color(NULL, (Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
     pico_output_clear();
     unsigned char alpha = 0x80;
     pico_set_view(-1, NULL, NULL,

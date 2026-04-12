@@ -8,7 +8,7 @@ int main (void) {
     const char* sheet = "sheet";
     pico_layer_empty(NULL, sheet, (Pico_Abs_Dim){4, 4}, NULL);
     pico_set_layer(sheet);
-    pico_set_color_clear(PICO_COLOR_BLACK);
+    pico_set_show_color(NULL, PICO_COLOR_BLACK);
     pico_output_clear();
 
     // TL red, TR green, BL blue, BR white

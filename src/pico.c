@@ -370,9 +370,9 @@ void pico_quit (void) {
 // GET
 ///////////////////////////////////////////////////////////////////////////////
 
-Pico_Color pico_get_color_clear (void) {
+Pico_Color pico_get_show_color (const char* layer) {
     _pico_guard();
-    return S.layer->view.color;
+    return _pico_layer_null(layer)->view.color;
 }
 
 Pico_Color pico_get_draw_color (const char* layer) {
@@ -559,9 +559,9 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
 // SET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_set_color_clear (Pico_Color color) {
+void pico_set_show_color (const char* layer, Pico_Color color) {
     _pico_guard();
-    S.layer->view.color = color;
+    _pico_layer_null(layer)->view.color = color;
 }
 
 void pico_set_draw_color (const char* layer, Pico_Color color) {
