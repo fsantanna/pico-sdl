@@ -275,7 +275,7 @@ Pico_Color pico_get_color_clear (void);
 
 /// @brief Gets the color set to draw.
 /// @return the current draw color
-Pico_Color pico_get_draw_color (void);
+Pico_Color pico_get_draw_color (const char* layer);
 
 /// @brief Gets the state of expert mode.
 /// @param fps optional pointer to receive fps value (NULL to ignore)
@@ -284,7 +284,7 @@ int pico_get_expert (int* fps);
 
 /// @brief Gets the font used to draw texts.
 /// @return path to the current font file
-const char* pico_get_draw_font (void);
+const char* pico_get_draw_font (const char* layer);
 
 /// @brief Gets the dimensions of the given image.
 /// @param path image filepath
@@ -425,7 +425,7 @@ int pico_get_show (void);
 
 /// @brief Gets the drawing style.
 /// @return PICO_STYLE_FILL or PICO_STYLE_STROKE
-PICO_STYLE pico_get_draw_style (void);
+PICO_STYLE pico_get_draw_style (const char* layer);
 
 /// @brief Gets the dimensions of the given text (shared caching).
 /// @param text text to measure
@@ -485,7 +485,7 @@ void pico_set_color_clear (Pico_Color color);
 
 /// @brief Changes the color used to draw objects.
 /// @param color new color
-void pico_set_draw_color (Pico_Color color);
+void pico_set_draw_color (const char* layer, Pico_Color color);
 
 /// @brief Toggles the expert mode with optional FPS timing.
 /// @param on 1 to enable it, or 0 to disable it
@@ -495,7 +495,7 @@ int pico_set_expert (int on, int fps);
 
 /// @brief Changes the font used to draw texts.
 /// @param path path to font file
-void pico_set_draw_font (const char* path);
+void pico_set_draw_font (const char* layer, const char* path);
 
 /// @brief Switches to a layer.
 /// @param key layer key (NULL = main layer, must exist)
@@ -507,7 +507,7 @@ void pico_set_show (int on);
 
 /// @brief Sets the drawing style.
 /// @param style new style
-void pico_set_draw_style (PICO_STYLE style);
+void pico_set_draw_style (const char* layer, PICO_STYLE style);
 
 /// @brief Syncs a video layer to a target frame.
 /// Supports forward and backward seeking.

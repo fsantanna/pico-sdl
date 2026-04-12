@@ -12,7 +12,7 @@ int main (void) {
     pico_set_layer("A");
     pico_set_color_clear(PICO_COLOR_NAVY);
     pico_output_clear();
-    pico_set_draw_color(PICO_COLOR_WHITE);
+    pico_set_draw_color(NULL, PICO_COLOR_WHITE);
     pico_output_draw_rect(&btn);
     pico_set_layer(NULL);
 
@@ -34,7 +34,7 @@ int main (void) {
 
     assert(pico_vs_pos_rect(&pos, &btn));
 
-    pico_set_draw_color(PICO_COLOR_GREEN);
+    pico_set_draw_color(NULL, PICO_COLOR_GREEN);
     pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW, NULL });
     _pico_check("mouse-w-click-01");
 

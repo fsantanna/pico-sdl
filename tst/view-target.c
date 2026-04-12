@@ -25,7 +25,7 @@ int main (void) {
         Pico_Rel_Rect r1 = {'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL};
         pico_output_draw_rect(&r1);
         Pico_Rel_Rect r2 = {'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, &r1};
-        pico_set_draw_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
+        pico_set_draw_color(NULL, (Pico_Color){0xFF, 0x00, 0x00, 0xFF});
         pico_output_draw_rect(&r2);
         _pico_check("view-target-02");
     }
@@ -37,7 +37,7 @@ int main (void) {
             &(Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL},
             NULL, NULL, NULL, NULL, NULL);
         pico_output_clear();
-        pico_set_draw_color(PICO_COLOR_WHITE);
+        pico_set_draw_color(NULL, PICO_COLOR_WHITE);
         pico_output_draw_rect(
             &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL}
         );
@@ -54,7 +54,7 @@ int main (void) {
             NULL, NULL, NULL, NULL, NULL);
         pico_set_color_clear((Pico_Color){0x80, 0x00, 0x00, 0xFF});
         pico_output_clear();
-        pico_set_draw_color(PICO_COLOR_WHITE);
+        pico_set_draw_color(NULL, PICO_COLOR_WHITE);
         pico_output_draw_rect(
             &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL}
         );

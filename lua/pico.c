@@ -618,7 +618,7 @@ static int l_get_color_clear (lua_State* L) {
 }
 
 static int l_get_color_draw (lua_State* L) {
-    Pico_Color c = pico_get_draw_color();
+    Pico_Color c = pico_get_draw_color(NULL);
     L_push_color(L, c);
     return 1;
 }
@@ -641,7 +641,7 @@ static int l_get_image (lua_State* L) {
 }
 
 static int l_get_font (lua_State* L) {
-    const char* font = pico_get_draw_font();
+    const char* font = pico_get_draw_font(NULL);
     if (font == NULL) {
         lua_pushnil(L);
     } else {
@@ -661,7 +661,7 @@ static int l_get_layer (lua_State* L) {
 }
 
 static int l_get_style (lua_State* L) {
-    PICO_STYLE s = pico_get_draw_style();
+    PICO_STYLE s = pico_get_draw_style(NULL);
     if (s == PICO_STYLE_FILL) {
         lua_pushliteral(L, "fill");
     } else {
@@ -913,7 +913,7 @@ static int l_set_font (lua_State* L) {
     if (lua_gettop(L) >= 1 && !lua_isnil(L, 1)) {
         path = luaL_checkstring(L, 1);
     }
-    pico_set_draw_font(path);
+    pico_set_draw_font(NULL, path);
     return 0;
 }
 
@@ -941,7 +941,7 @@ static int l_set_color_clear (lua_State* L) {
 
 static int l_set_color_draw (lua_State* L) {
     Pico_Color clr = c_color_tis(L, 1);
-    pico_set_draw_color(clr);
+    pico_set_draw_color(NULL, clr);
     return 0;
 }
 
@@ -968,7 +968,7 @@ static int l_set_style (lua_State* L) {
         luaL_error(L, "invalid style \"%s\"", s);
     }
 
-    pico_set_draw_style(ss);
+    pico_set_draw_style(NULL, ss);
     return 0;
 }
 
