@@ -218,6 +218,15 @@ int main (void) {
 
         c = pico_color_hex(0xFFFFFF);
         assert(c.r==255 && c.g==255 && c.b==255);
+
+        c = pico_color_hex(0xFF000080);
+        assert(c.r==255 && c.g==0 && c.b==0 && c.a==0x80);
+
+        c = pico_color_hex(0x33669900);
+        assert(c.r==0x33 && c.g==0x66 && c.b==0x99 && c.a==0);
+
+        c = pico_color_hex(0xFFFFFFFF);
+        assert(c.r==255 && c.g==255 && c.b==255 && c.a==255);
     }
 
     puts("color alpha function");

@@ -259,10 +259,18 @@ Pico_Color pico_color_alpha (Pico_Color clr, Uint8 a) {
 }
 
 Pico_Color pico_color_hex (uint32_t hex) {
-    uint8_t r = (hex >> 16) & 0xFF;
-    uint8_t g = (hex >> 8)  & 0xFF;
-    uint8_t b =  hex        & 0xFF;
-    return (Pico_Color) { r, g, b, 0xFF };
+    if (hex > 0xFFFFFF) {
+        uint8_t r = (hex >> 24) & 0xFF;
+        uint8_t g = (hex >> 16) & 0xFF;
+        uint8_t b = (hex >> 8)  & 0xFF;
+        uint8_t a =  hex        & 0xFF;
+        return (Pico_Color) { r, g, b, a };
+    } else {
+        uint8_t r = (hex >> 16) & 0xFF;
+        uint8_t g = (hex >> 8)  & 0xFF;
+        uint8_t b =  hex        & 0xFF;
+        return (Pico_Color) { r, g, b, 0xFF };
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
