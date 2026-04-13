@@ -140,7 +140,7 @@ Remove `ll_get_color`, `ll_set_color` tables entirely.
 - [x] `src/pico.c` | new bulk implementations
 - [x] `tst/get-set.c` | update bulk tests
 - [x] `lua/pico.c` | update `l_get/set_show`, `l_get/set_view`
-- [ ] compile + test
+- [x] compile + test
 
 ### Step C: Lua bulk draw + complete show/view [x]
 - [x] `lua/pico.c` | add `l_get_draw`, `l_set_draw`
@@ -150,7 +150,10 @@ Remove `ll_get_color`, `ll_set_color` tables entirely.
 - [x] `lua/pico.c` | registration: `draw` in `ll_get`/`ll_set`
 - [x] show getter fields alpha-ordered: alpha, color, flip,
   grid, keep, rotate
-- [ ] compile + test
+- [x] `lua/pico.c` | `L_reg_get` helper: registry table
+  lookup, replaces 6 call sites
+- [x] `lua/tst/get-set.lua` | view round-trip test
+- [x] compile + test
 
 ### Step D: remove Lua individual setters/getters
 - [ ] `lua/pico.c` | remove individual functions
