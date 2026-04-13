@@ -7,6 +7,7 @@ int main (void) {
     pico_set_window("Keep", -1, &(Pico_Rel_Dim){'!', {640, 360}, NULL});
     pico_set_view_dim(NULL, &(Pico_Rel_Dim){'!', {64, 36}, NULL});
     pico_set_show_grid(NULL, 0);
+    pico_output_clear();
 
     // two empty layers side by side
     pico_layer_empty("root", "left",  (Pico_Abs_Dim){32, 36}, NULL);
@@ -32,14 +33,12 @@ int main (void) {
 
     // composite frame 1: both red
     pico_set_layer(NULL);
-    pico_output_clear();
     pico_output_present();
     _pico_check("keep-01");
 
     // frame 2: do NOT draw on layers, just composite again
     // left (keep=0) should be cleared after frame 1 composite
     // right (keep=1) should retain red rect
-    pico_output_clear();
     pico_output_present();
     _pico_check("keep-02");
 

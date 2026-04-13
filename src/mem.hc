@@ -98,7 +98,7 @@ static Pico_Layer* _layer_new (
             {0xFF, 0xFF, 0xFF, 0xFF}, NULL, PICO_STYLE_FILL
         },
         .show = {
-            0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 0, 0, {0, PICO_ANCHOR_C}
+            0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 0, 1, {0, PICO_ANCHOR_C}
         },
         .view = {
             dim, {0, 0},
@@ -142,9 +142,9 @@ static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
         PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, _tex_create(dim), dim
     );
+    lay->show.keep = 0;
     if (arg->tile != NULL) {
         lay->view.tile = *arg->tile;
-    } else {
     }
     return lay;
 }

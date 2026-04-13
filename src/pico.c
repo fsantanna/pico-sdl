@@ -612,7 +612,9 @@ void pico_set_show_grid (const char* layer, int on) {
 
 void pico_set_show_keep (const char* layer, int on) {
     _pico_guard();
-    _pico_layer_null(layer)->show.keep = on;
+    Pico_Layer* L = _pico_layer_null(layer);
+    assert(L->type != PICO_LAYER_SUB && "cannot set keep on sub-layer");
+    L->show.keep = on;
 }
 
 void pico_set_show_rotation (const char* layer, Pico_Rot rotation) {
@@ -1547,6 +1549,13 @@ static void _pico_output_present (int force) {
     SDL_SetRenderTarget(G.ren, G.root.tex);
     Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.root.view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
+
+    // post-present clear
+    if (!G.root.show.keep) {
+        Pico_Color c = G.root.show.color;
+        SDL_SetRenderDrawColor(G.ren, c.r, c.g, c.b, c.a);
+        SDL_RenderClear(G.ren);
+    }
 }
 
 void pico_output_present (void) {

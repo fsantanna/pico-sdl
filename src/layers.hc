@@ -116,6 +116,13 @@ static void _layer_traverse (Pico_Layer* up) {
         assert(CUR != NULL);
         SDL_SetRenderTarget(G.ren, up->tex);
         _pico_output_draw_layer(CUR, NULL);
+        // post-composite clear
+        if (!CUR->show.keep) {
+            SDL_SetRenderTarget(G.ren, CUR->tex);
+            Pico_Color c = CUR->show.color;
+            SDL_SetRenderDrawColor(G.ren, c.r, c.g, c.b, c.a);
+            SDL_RenderClear(G.ren);
+        }
         cur = CUR->hier.nxt;
     }
     S.layer = old;
