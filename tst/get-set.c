@@ -49,21 +49,20 @@ int main (void) {
     // draw (bulk setter/getter)
     puts("draw bulk");
     {
-        Pico_Color c = PICO_COLOR_RED;
-        const char* f = "test.ttf";
-        PICO_STYLE s = PICO_STYLE_STROKE;
-        pico_set_draw(NULL, &c, &f, &s);
+        pico_set_draw(NULL, (Pico_Layer_Draw){
+            .color=PICO_COLOR_RED, .font="test.ttf", .style=PICO_STYLE_STROKE
+        });
 
-        Pico_Color gc;
-        const char* gf;
-        PICO_STYLE gs;
-        pico_get_draw(NULL, &gc, &gf, &gs);
-        assert(gc.r == 255 && gc.g == 0 && gc.b == 0);
-        assert(strcmp(gf, "test.ttf") == 0);
-        assert(gs == PICO_STYLE_STROKE);
+        Pico_Layer_Draw gd;
+        pico_get_draw(NULL, &gd);
+        assert(gd.color.r == 255 && gd.color.g == 0 && gd.color.b == 0);
+        assert(strcmp(gd.font, "test.ttf") == 0);
+        assert(gd.style == PICO_STYLE_STROKE);
 
         // restore
-        pico_set_draw(NULL, &(Pico_Color){0xFF,0xFF,0xFF,0xFF}, &(const char*){NULL}, &(PICO_STYLE){PICO_STYLE_FILL});
+        pico_set_draw(NULL, (Pico_Layer_Draw){
+            .color={0xFF,0xFF,0xFF,0xFF}, .font=NULL, .style=PICO_STYLE_FILL
+        });
     }
 
     // show (individual setters)
@@ -92,28 +91,23 @@ int main (void) {
     // show (bulk setter/getter)
     puts("show bulk");
     {
-        unsigned char a = 0x40;
-        Pico_Color c = PICO_COLOR_RED;
-        PICO_FLIP f = PICO_FLIP_V;
-        Pico_Rot r = {90, PICO_ANCHOR_C};
-        pico_set_show(NULL, &a, &c, &f, 1, -1, &r);
+        pico_set_show(NULL, (Pico_Layer_Show){
+            .alpha=0x40, .color=PICO_COLOR_RED, .flip=PICO_FLIP_V, .grid=1, .keep=0, .rotate={90, PICO_ANCHOR_C}
+        });
 
-        unsigned char ga;
-        Pico_Color gc;
-        PICO_FLIP gf;
-        int gg;
-        int gk;
-        Pico_Rot gr;
-        pico_get_show(NULL, &ga, &gc, &gf, &gg, &gk, &gr);
-        assert(ga == 0x40);
-        assert(gc.r == 255 && gc.g == 0 && gc.b == 0);
-        assert(gf == PICO_FLIP_V);
-        assert(gg == 1);
-        assert(gk == 0);
-        assert(gr.angle == 90);
+        Pico_Layer_Show gs;
+        pico_get_show(NULL, &gs);
+        assert(gs.alpha == 0x40);
+        assert(gs.color.r == 255 && gs.color.g == 0 && gs.color.b == 0);
+        assert(gs.flip == PICO_FLIP_V);
+        assert(gs.grid == 1);
+        assert(gs.keep == 0);
+        assert(gs.rotate.angle == 90);
 
         // restore
-        pico_set_show(NULL, &(unsigned char){0xFF}, &(Pico_Color){0,0,0,0xFF}, &(PICO_FLIP){PICO_FLIP_NONE}, 0, -1, &(Pico_Rot){0, PICO_ANCHOR_C});
+        pico_set_show(NULL, (Pico_Layer_Show){
+            .alpha=0xFF, .color={0,0,0,0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .keep=0, .rotate={0, PICO_ANCHOR_C}
+        });
     }
 
     puts("OK");

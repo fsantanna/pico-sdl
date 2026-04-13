@@ -755,99 +755,53 @@ static int l_get_video (lua_State* L) {
 }
 
 static int l_get_view (lua_State* L) {
-    Pico_Abs_Dim  log;
-    Pico_Abs_Dim  tile;
-
-    // TODO: target, source, clip
-    pico_get_view(NULL, NULL, &log, NULL, NULL, &tile);
+    Pico_Layer_View view;
+    pico_get_view(NULL, &view);
 
     lua_newtable(L);                    // T
 
-#if 0
-    lua_newtable(L);                    // T | dst
-    lua_pushinteger(L, dst.x);
-    lua_setfield(L, -2, "x");
-    lua_pushinteger(L, dst.y);
-    lua_setfield(L, -2, "y");
-    lua_pushinteger(L, dst.w);
+    lua_newtable(L);                    // T | dim
+    lua_pushinteger(L, view.dim.w);
     lua_setfield(L, -2, "w");
-    lua_pushinteger(L, dst.h);
-    lua_setfield(L, -2, "h");
-    lua_setfield(L, -2, "target");      // T
-#endif
-
-    lua_newtable(L);                    // T | log
-    lua_pushinteger(L, log.w);
-    lua_setfield(L, -2, "w");
-    lua_pushinteger(L, log.h);
+    lua_pushinteger(L, view.dim.h);
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "dim");         // T
 
     lua_newtable(L);                    // T | tile
-    lua_pushinteger(L, tile.w);
+    lua_pushinteger(L, view.tile.w);
     lua_setfield(L, -2, "w");
-    lua_pushinteger(L, tile.h);
+    lua_pushinteger(L, view.tile.h);
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "tile");        // T
-
-#if 0
-    lua_newtable(L);                    // T | src
-    lua_pushinteger(L, src.x);
-    lua_setfield(L, -2, "x");
-    lua_pushinteger(L, src.y);
-    lua_setfield(L, -2, "y");
-    lua_pushinteger(L, src.w);
-    lua_setfield(L, -2, "w");
-    lua_pushinteger(L, src.h);
-    lua_setfield(L, -2, "h");
-    lua_setfield(L, -2, "source");      // T
-#endif
-
-#if 0
-    lua_newtable(L);                    // T | clip
-    lua_pushinteger(L, clip.x);
-    lua_setfield(L, -2, "x");
-    lua_pushinteger(L, clip.y);
-    lua_setfield(L, -2, "y");
-    lua_pushinteger(L, clip.w);
-    lua_setfield(L, -2, "w");
-    lua_pushinteger(L, clip.h);
-    lua_setfield(L, -2, "h");
-    lua_setfield(L, -2, "clip");        // T
-#endif
 
     return 1;
 }
 
 static int l_get_show (lua_State* L) {
-    int grid;
-    Pico_Rot rot;
-    PICO_FLIP flip;
-    unsigned char alpha;
-
-    pico_get_show(NULL, &alpha, NULL, &flip, &grid, NULL, &rot);
+    Pico_Layer_Show show;
+    pico_get_show(NULL, &show);
 
     lua_newtable(L);                    // T
 
-    lua_pushinteger(L, alpha);          // T | alpha
+    lua_pushinteger(L, show.alpha);     // T | alpha
     lua_setfield(L, -2, "alpha");       // T
 
-    lua_pushboolean(L, grid);           // T | grid
+    lua_pushboolean(L, show.grid);      // T | grid
     lua_setfield(L, -2, "grid");        // T
 
     lua_newtable(L);                    // T | rot
-    lua_pushinteger(L, rot.angle);
+    lua_pushinteger(L, show.rotate.angle);
     lua_setfield(L, -2, "angle");
     lua_newtable(L);                    // T | rot | anc
-    lua_pushnumber(L, rot.anchor.x);
+    lua_pushnumber(L, show.rotate.anchor.x);
     lua_setfield(L, -2, "x");
-    lua_pushnumber(L, rot.anchor.y);
+    lua_pushnumber(L, show.rotate.anchor.y);
     lua_setfield(L, -2, "y");
     lua_setfield(L, -2, "anchor");      // T | rot
     lua_setfield(L, -2, "rotate");      // T
 
     const char* flip_str;
-    switch (flip) {
+    switch (show.flip) {
         case PICO_FLIP_NONE:       flip_str = "none";       break;
         case PICO_FLIP_HORIZONTAL: flip_str = "horizontal"; break;
         case PICO_FLIP_VERTICAL:   flip_str = "vertical";   break;
@@ -1067,32 +1021,39 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_view(NULL, xclip, xwld, xdst, xsrc, xtile);
+    if (xtile != NULL) { pico_set_view_tile(NULL, *xtile); }
+    if (xwld  != NULL) { pico_set_view_dim (NULL, xwld);   }
+    if (xclip != NULL) { pico_set_view_clip(NULL, *xclip); }
+    if (xdst  != NULL) { pico_set_view_dst (NULL, *xdst);  }
+    if (xsrc  != NULL) { pico_set_view_src (NULL, *xsrc);  }
     return 0;
 }
 
 static int l_set_show (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    int grid = -1;
+    Pico_Layer_Show show;
+    pico_get_show(NULL, &show);
+
+    lua_getfield(L, 1, "alpha");            // T | alpha
+    if (!lua_isnil(L, -1)) {
+        show.alpha = (unsigned char) luaL_checkinteger(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+
     lua_getfield(L, 1, "grid");             // T | grid
     if (!lua_isnil(L, -1)) {
-        grid = lua_toboolean(L, -1);
+        show.grid = lua_toboolean(L, -1);
     }
     lua_pop(L, 1);                          // T
 
-    Pico_Rot* xrot = NULL;
-    Pico_Rot rot_val;
     lua_getfield(L, 1, "rotate");           // T | rot
     if (!lua_isnil(L, -1)) {
-        rot_val.angle = L_checkfieldnum(L, lua_gettop(L), "angle");
-        rot_val.anchor = c_anchor(L, lua_gettop(L));
-        xrot = &rot_val;
+        show.rotate.angle = L_checkfieldnum(L, lua_gettop(L), "angle");
+        show.rotate.anchor = c_anchor(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
 
-    PICO_FLIP* xflip = NULL;
-    PICO_FLIP flip_val;
     lua_getfield(L, 1, "flip");             // T | flip
     if (!lua_isnil(L, -1)) {
         const char* s = luaL_checkstring(L, -1);
@@ -1102,25 +1063,15 @@ static int l_set_show (lua_State* L) {
         lua_pushvalue(L, -3);                   // T | flip | G | flips | flip
         lua_gettable(L, -2);                    // T | flip | G | flips | *val*
         int ok;
-        flip_val = lua_tointegerx(L, -1, &ok);
+        show.flip = lua_tointegerx(L, -1, &ok);
         if (!ok) {
             luaL_error(L, "invalid flip \"%s\"", s);
         }
         lua_pop(L, 3);                          // T | flip
-        xflip = &flip_val;
     }
     lua_pop(L, 1);                          // T
 
-    unsigned char* xa = NULL;
-    unsigned char a;
-    lua_getfield(L, 1, "alpha");            // T | alpha
-    if (!lua_isnil(L, -1)) {
-        a = (unsigned char) luaL_checkinteger(L, -1);
-        xa = &a;
-    }
-    lua_pop(L, 1);                          // T
-
-    pico_set_show(NULL, xa, NULL, xflip, grid, -1, xrot);
+    pico_set_show(NULL, show);
     return 0;
 }
 
