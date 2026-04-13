@@ -253,8 +253,8 @@ void pico_init (int on) {
                 .type = PICO_LAYER_ROOT,
                 .name = "root",
                 .tex  = NULL,   // needs G.ren
-                .draw = { {0xFF, 0xFF, 0xFF, 0xFF}, NULL, PICO_STYLE_FILL },
-                .show = { 0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 1, 0, {0, PICO_ANCHOR_C} },
+                .draw = { .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL },
+                .show = { .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=1, .keep=0, .rotate={0, PICO_ANCHOR_C} },
                 .hier = { NULL, NULL, {NULL,NULL} },
                 .view = {
                     .dim  = PICO_DIM_LOG,

@@ -96,16 +96,16 @@ static Pico_Layer* _layer_new (
         .name = strdup(key),
         .tex  = tex,
         .draw = {
-            {0xFF, 0xFF, 0xFF, 0xFF}, NULL, PICO_STYLE_FILL
+            .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL
         },
         .show = {
-            0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 0, keep, {0, PICO_ANCHOR_C}
+            .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .keep=keep, .rotate={0, PICO_ANCHOR_C}
         },
         .view = {
-            dim, {0, 0},
-            {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .dim=dim, .tile={0, 0},
+            .dst={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .src={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .clip={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
         },
     };
     assert(data->name != NULL);
