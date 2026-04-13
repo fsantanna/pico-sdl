@@ -664,12 +664,9 @@ static int l_get_layer (lua_State* L) {
 
 static int l_get_style (lua_State* L) {
     PICO_STYLE s = pico_get_draw_style(NULL);
-    if (s == PICO_STYLE_FILL) {
-        lua_pushliteral(L, "fill");
-    } else {
-        assert(s == PICO_STYLE_STROKE);
-        lua_pushliteral(L, "stroke");
-    }
+    lua_pushinteger(L, s);              // s
+    L_reg_get(L, "styles", -1);         // s | *str*
+    lua_replace(L, -2);                 // *str*
     return 1;
 }
 
@@ -825,12 +822,10 @@ static int l_get_draw (lua_State* L) {
     }
     lua_setfield(L, -2, "font");        // T
 
-    if (draw.style == PICO_STYLE_FILL) {
-        lua_pushliteral(L, "fill");     // T | style
-    } else {
-        lua_pushliteral(L, "stroke");   // T | style
-    }
-    lua_setfield(L, -2, "style");       // T
+    lua_pushinteger(L, draw.style);        // T | s
+    L_reg_get(L, "styles", -1);             // T | s | *str*
+    lua_replace(L, -2);                     // T | *str*
+    lua_setfield(L, -2, "style");           // T
 
     return 1;
 }
@@ -847,16 +842,10 @@ static int l_get_show (lua_State* L) {
     L_push_color(L, show.color);        // T | color
     lua_setfield(L, -2, "color");       // T
 
-    const char* flip_str;
-    switch (show.flip) {
-        case PICO_FLIP_NONE:       flip_str = "none";       break;
-        case PICO_FLIP_HORIZONTAL: flip_str = "horizontal"; break;
-        case PICO_FLIP_VERTICAL:   flip_str = "vertical";   break;
-        case PICO_FLIP_BOTH:       flip_str = "both";       break;
-        default:                   flip_str = "none";       break;
-    }
-    lua_pushstring(L, flip_str);        // T | flip
-    lua_setfield(L, -2, "flip");        // T
+    lua_pushinteger(L, show.flip);          // T | f
+    L_reg_get(L, "flips", -1);              // T | f | *str*
+    lua_replace(L, -2);                     // T | *str*
+    lua_setfield(L, -2, "flip");            // T
 
     lua_pushboolean(L, show.grid);      // T | grid
     lua_setfield(L, -2, "grid");        // T
@@ -1869,6 +1858,10 @@ int luaopen_pico_native (lua_State* L) {
         lua_setfield(L, -2, "fill");            // . | G | styles
         lua_pushinteger(L, PICO_STYLE_STROKE);  // . | G | styles | stroke
         lua_setfield(L, -2, "stroke");          // . | G | styles
+        lua_pushliteral(L, "fill");             // . | G | styles | "fill"
+        lua_rawseti(L, -2, PICO_STYLE_FILL);    // . | G | styles
+        lua_pushliteral(L, "stroke");           // . | G | styles | "stroke"
+        lua_rawseti(L, -2, PICO_STYLE_STROKE);  // . | G | styles
         lua_setfield(L, -2, "styles");          // . | G
         lua_pop(L, 1);                          // .
     }
@@ -1886,6 +1879,14 @@ int luaopen_pico_native (lua_State* L) {
         lua_setfield(L, -2, "vertical");
         lua_pushinteger(L, PICO_FLIP_BOTH);
         lua_setfield(L, -2, "both");
+        lua_pushliteral(L, "none");
+        lua_rawseti(L, -2, PICO_FLIP_NONE);
+        lua_pushliteral(L, "horizontal");
+        lua_rawseti(L, -2, PICO_FLIP_HORIZONTAL);
+        lua_pushliteral(L, "vertical");
+        lua_rawseti(L, -2, PICO_FLIP_VERTICAL);
+        lua_pushliteral(L, "both");
+        lua_rawseti(L, -2, PICO_FLIP_BOTH);
         lua_setfield(L, -2, "flips");           // . | G
         lua_pop(L, 1);                          // .
     }

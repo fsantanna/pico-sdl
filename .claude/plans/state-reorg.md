@@ -253,7 +253,9 @@ static Pico_Layer* _layer (const char* layer) {
 ## Remaining
 
 - update `valgrind.supp` line number if needed
-- Lua: expose individual show/draw/view setters (optional)
+- Lua: individual show/draw/view set/get via key filtering
+  - setter: `pico.set.show { field=value }` — sets only passed keys
+  - getter: `pico.get.show { field=true }` — returns only requested fields
 - swap GET order in pico.c (show before draw)
 
 ## Verification
