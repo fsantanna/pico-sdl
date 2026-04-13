@@ -809,6 +809,32 @@ static int l_get_view (lua_State* L) {
     return 1;
 }
 
+static int l_get_draw (lua_State* L) {
+    Pico_Layer_Draw draw;
+    pico_get_draw(NULL, &draw);
+
+    lua_newtable(L);                    // T
+
+    L_push_color(L, draw.color);        // T | color
+    lua_setfield(L, -2, "color");       // T
+
+    if (draw.font == NULL) {
+        lua_pushnil(L);                 // T | nil
+    } else {
+        lua_pushstring(L, draw.font);   // T | font
+    }
+    lua_setfield(L, -2, "font");        // T
+
+    if (draw.style == PICO_STYLE_FILL) {
+        lua_pushliteral(L, "fill");     // T | style
+    } else {
+        lua_pushliteral(L, "stroke");   // T | style
+    }
+    lua_setfield(L, -2, "style");       // T
+
+    return 1;
+}
+
 static int l_get_show (lua_State* L) {
     Pico_Layer_Show show;
     pico_get_show(NULL, &show);
@@ -818,19 +844,8 @@ static int l_get_show (lua_State* L) {
     lua_pushinteger(L, show.alpha);     // T | alpha
     lua_setfield(L, -2, "alpha");       // T
 
-    lua_pushboolean(L, show.grid);      // T | grid
-    lua_setfield(L, -2, "grid");        // T
-
-    lua_newtable(L);                    // T | rot
-    lua_pushinteger(L, show.rotate.angle);
-    lua_setfield(L, -2, "angle");
-    lua_newtable(L);                    // T | rot | anc
-    lua_pushnumber(L, show.rotate.anchor.x);
-    lua_setfield(L, -2, "x");
-    lua_pushnumber(L, show.rotate.anchor.y);
-    lua_setfield(L, -2, "y");
-    lua_setfield(L, -2, "anchor");      // T | rot
-    lua_setfield(L, -2, "rotate");      // T
+    L_push_color(L, show.color);        // T | color
+    lua_setfield(L, -2, "color");       // T
 
     const char* flip_str;
     switch (show.flip) {
@@ -842,6 +857,23 @@ static int l_get_show (lua_State* L) {
     }
     lua_pushstring(L, flip_str);        // T | flip
     lua_setfield(L, -2, "flip");        // T
+
+    lua_pushboolean(L, show.grid);      // T | grid
+    lua_setfield(L, -2, "grid");        // T
+
+    lua_pushboolean(L, show.keep);      // T | keep
+    lua_setfield(L, -2, "keep");        // T
+
+    lua_newtable(L);                    // T | rot
+    lua_pushinteger(L, show.rotate.angle);
+    lua_setfield(L, -2, "angle");
+    lua_newtable(L);                    // T | rot | anc
+    lua_pushnumber(L, show.rotate.anchor.x);
+    lua_setfield(L, -2, "x");
+    lua_pushnumber(L, show.rotate.anchor.y);
+    lua_setfield(L, -2, "y");
+    lua_setfield(L, -2, "anchor");      // T | rot
+    lua_setfield(L, -2, "rotate");      // T
 
     return 1;
 }
@@ -1069,9 +1101,35 @@ static int l_set_show (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
+    lua_getfield(L, 1, "color");            // T | color
+    if (!lua_isnil(L, -1)) {
+        show.color = c_color_tis(L, lua_gettop(L));
+    }
+    lua_pop(L, 1);                          // T
+
+    lua_getfield(L, 1, "flip");             // T | flip
+    if (!lua_isnil(L, -1)) {
+        const char* s = luaL_checkstring(L, -1);
+        int fi = lua_gettop(L);
+        L_reg_get(L, "flips", fi);              // T | flip | *val*
+        int ok;
+        show.flip = lua_tointegerx(L, -1, &ok);
+        if (!ok) {
+            luaL_error(L, "invalid flip \"%s\"", s);
+        }
+        lua_pop(L, 1);                          // T | flip
+    }
+    lua_pop(L, 1);                          // T
+
     lua_getfield(L, 1, "grid");             // T | grid
     if (!lua_isnil(L, -1)) {
         show.grid = lua_toboolean(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+
+    lua_getfield(L, 1, "keep");             // T | keep
+    if (!lua_isnil(L, -1)) {
+        show.keep = lua_toboolean(L, -1);
     }
     lua_pop(L, 1);                          // T
 
@@ -1082,24 +1140,43 @@ static int l_set_show (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    lua_getfield(L, 1, "flip");             // T | flip
+    pico_set_show(NULL, show);
+    return 0;
+}
+
+static int l_set_draw (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // T
+
+    Pico_Layer_Draw draw;
+    pico_get_draw(NULL, &draw);
+
+    lua_getfield(L, 1, "color");            // T | color
     if (!lua_isnil(L, -1)) {
-        const char* s = luaL_checkstring(L, -1);
-        lua_pushlightuserdata(L, (void*)&KEY);
-        lua_gettable(L, LUA_REGISTRYINDEX);     // T | flip | G
-        lua_getfield(L, -1, "flips");           // T | flip | G | flips
-        lua_pushvalue(L, -3);                   // T | flip | G | flips | flip
-        lua_gettable(L, -2);                    // T | flip | G | flips | *val*
-        int ok;
-        show.flip = lua_tointegerx(L, -1, &ok);
-        if (!ok) {
-            luaL_error(L, "invalid flip \"%s\"", s);
-        }
-        lua_pop(L, 3);                          // T | flip
+        draw.color = c_color_tis(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_show(NULL, show);
+    lua_getfield(L, 1, "font");             // T | font
+    if (!lua_isnil(L, -1)) {
+        draw.font = luaL_checkstring(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+
+    lua_getfield(L, 1, "style");            // T | style
+    if (!lua_isnil(L, -1)) {
+        const char* s = luaL_checkstring(L, -1);
+        int si = lua_gettop(L);
+        L_reg_get(L, "styles", si);             // T | style | *val*
+        int ok;
+        draw.style = lua_tointegerx(L, -1, &ok);
+        if (!ok) {
+            luaL_error(L, "invalid style \"%s\"", s);
+        }
+        lua_pop(L, 1);                          // T | style
+    }
+    lua_pop(L, 1);                          // T
+
+    pico_set_draw(NULL, draw);
     return 0;
 }
 
@@ -1553,6 +1630,7 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
+    { "draw",     l_get_draw   },
     { "font",     l_get_font   },
     { "image",    l_get_image  },
     { "keyboard", l_get_keyboard },
@@ -1578,6 +1656,7 @@ static const luaL_Reg ll_get_color[] = {
 
 static const luaL_Reg ll_set[] = {
     { "dim",    l_set_dim    },
+    { "draw",   l_set_draw   },
     { "expert", l_set_expert },
     { "font",   l_set_font   },
     { "layer",  l_set_layer  },

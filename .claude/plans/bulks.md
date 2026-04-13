@@ -142,11 +142,14 @@ Remove `ll_get_color`, `ll_set_color` tables entirely.
 - [x] `lua/pico.c` | update `l_get/set_show`, `l_get/set_view`
 - [ ] compile + test
 
-### Step C: Lua bulk draw + complete show/view
-- [ ] `lua/pico.c` | add `l_get_draw`, `l_set_draw`
-- [ ] `lua/pico.c` | add color/keep to show
-- [ ] `lua/pico.c` | uncomment view getter fields
-- [ ] `lua/pico.c` | update bulks to use new C API
+### Step C: Lua bulk draw + complete show/view [x]
+- [x] `lua/pico.c` | add `l_get_draw`, `l_set_draw`
+- [x] `lua/pico.c` | add color/keep to show getter+setter
+- [x] `lua/pico.c` | view getter: target/source/clip via
+  `L_push_rel_rect` helper
+- [x] `lua/pico.c` | registration: `draw` in `ll_get`/`ll_set`
+- [x] show getter fields alpha-ordered: alpha, color, flip,
+  grid, keep, rotate
 - [ ] compile + test
 
 ### Step D: remove Lua individual setters/getters
@@ -160,3 +163,13 @@ Remove `ll_get_color`, `ll_set_color` tables entirely.
 - [ ] `lua/doc/api.md`
 - [ ] `lua/doc/guide.md`
 - [ ] `lua/doc/gen-guide-images.lua`
+
+## TODO
+
+- Lua test: use bulk combined with `pico.set { ... }`:
+  ```lua
+  pico.set {
+      view = {...},
+      draw = {...},
+  }
+  ```
