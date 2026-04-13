@@ -754,6 +754,27 @@ static int l_get_video (lua_State* L) {
     return 1;
 }
 
+static void L_push_rel_rect (lua_State* L, Pico_Rel_Rect* r) {
+    lua_newtable(L);
+    char mode[2] = { r->mode, '\0' };
+    lua_pushstring(L, mode);
+    lua_rawseti(L, -2, 1);
+    lua_pushnumber(L, r->x);
+    lua_setfield(L, -2, "x");
+    lua_pushnumber(L, r->y);
+    lua_setfield(L, -2, "y");
+    lua_pushnumber(L, r->w);
+    lua_setfield(L, -2, "w");
+    lua_pushnumber(L, r->h);
+    lua_setfield(L, -2, "h");
+    lua_newtable(L);
+    lua_pushnumber(L, r->anchor.x);
+    lua_setfield(L, -2, "x");
+    lua_pushnumber(L, r->anchor.y);
+    lua_setfield(L, -2, "y");
+    lua_setfield(L, -2, "anchor");
+}
+
 static int l_get_view (lua_State* L) {
     Pico_Layer_View view;
     pico_get_view(NULL, &view);
@@ -773,6 +794,15 @@ static int l_get_view (lua_State* L) {
     lua_pushinteger(L, view.tile.h);
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "tile");        // T
+
+    L_push_rel_rect(L, &view.dst);      // T | dst
+    lua_setfield(L, -2, "target");      // T
+
+    L_push_rel_rect(L, &view.src);      // T | src
+    lua_setfield(L, -2, "source");      // T
+
+    L_push_rel_rect(L, &view.clip);     // T | clip
+    lua_setfield(L, -2, "clip");        // T
 
     return 1;
 }

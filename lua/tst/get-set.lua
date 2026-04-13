@@ -54,5 +54,30 @@ do
     assert(pico.get.style() == 'fill')
 end
 
+-- view (get defaults, set, get back)
+print("view")
+do
+    local v = pico.get.view()
+    assert(v.dim.w == 64 and v.dim.h == 48)
+    assert(v.tile.w == 0 and v.tile.h == 0)
+    assert(v.target[1] == '%' and v.target.x == 0.5 and v.target.y == 0.5 and v.target.w == 1 and v.target.h == 1)
+    assert(v.source[1] == '%' and v.source.x == 0.5 and v.source.y == 0.5 and v.source.w == 1 and v.source.h == 1)
+    assert(v.clip[1] == '%' and v.clip.x == 0.5 and v.clip.y == 0.5 and v.clip.w == 1 and v.clip.h == 1)
+
+    pico.set.view { target={'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'} }
+    v = pico.get.view()
+    assert(v.target.w == 0.5 and v.target.h == 0.5)
+
+    pico.set.view { source={'%', x=0.6, y=0.4, w=0.8, h=0.8, anchor='C'} }
+    v = pico.get.view()
+    assert(v.source.x == 0.6 and v.source.y == 0.4)
+
+    -- restore
+    pico.set.view {
+        target={'%', x=0.5, y=0.5, w=1, h=1, anchor='C'},
+        source={'%', x=0.5, y=0.5, w=1, h=1, anchor='C'},
+    }
+end
+
 print("OK")
 pico.init(false)
