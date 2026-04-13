@@ -89,7 +89,7 @@ print "waits more 2 seconds"
 local e3 = pico.input.event(2000);
 
 -- GRID=0
-pico.set.view {grid=false}
+pico.set.show {grid=false}
 print "disables grid"
 pico.input.delay(2000)
 

@@ -755,23 +755,13 @@ static int l_get_video (lua_State* L) {
 }
 
 static int l_get_view (lua_State* L) {
-    int grid;
-    //Pico_Abs_Rect dst;
     Pico_Abs_Dim  log;
-    //Pico_Abs_Rect src;
-    //Pico_Abs_Rect clip;
     Pico_Abs_Dim  tile;
-    Pico_Rot      rot;
-    PICO_FLIP     flip;
 
     // TODO: target, source, clip
     pico_get_view(NULL, NULL, &log, NULL, NULL, &tile);
-    pico_get_show(NULL, NULL, NULL, &flip, &grid, &rot);
 
     lua_newtable(L);                    // T
-
-    lua_pushboolean(L, grid);           // T | grid
-    lua_setfield(L, -2, "grid");        // T
 
 #if 0
     lua_newtable(L);                    // T | dst
@@ -825,6 +815,25 @@ static int l_get_view (lua_State* L) {
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "clip");        // T
 #endif
+
+    return 1;
+}
+
+static int l_get_show (lua_State* L) {
+    int grid;
+    Pico_Rot rot;
+    PICO_FLIP flip;
+    unsigned char alpha;
+
+    pico_get_show(NULL, &alpha, NULL, &flip, &grid, &rot);
+
+    lua_newtable(L);                    // T
+
+    lua_pushinteger(L, alpha);          // T | alpha
+    lua_setfield(L, -2, "alpha");       // T
+
+    lua_pushboolean(L, grid);           // T | grid
+    lua_setfield(L, -2, "grid");        // T
 
     lua_newtable(L);                    // T | rot
     lua_pushinteger(L, rot.angle);
@@ -1024,13 +1033,6 @@ static int l_set_view (lua_State* L) {
     Pico_Rel_Rect* xsrc  = NULL;
     Pico_Rel_Rect* xclip = NULL;
 
-    int grid = -1;
-    lua_getfield(L, 1, "grid");             // T | grid
-    if (!lua_isnil(L, -1)) {
-        grid = lua_toboolean(L, -1);
-    }
-    lua_pop(L, 1);                          // T
-
     lua_getfield(L, 1, "target");           // T | dst
     if (!lua_isnil(L, -1)) {
         xdst = c_rel_rect(L, lua_gettop(L));
@@ -1062,6 +1064,20 @@ static int l_set_view (lua_State* L) {
         tile_dim.w = L_checkfieldnum(L, lua_gettop(L), "w");
         tile_dim.h = L_checkfieldnum(L, lua_gettop(L), "h");
         xtile = &tile_dim;
+    }
+    lua_pop(L, 1);                          // T
+
+    pico_set_view(NULL, xclip, xwld, xdst, xsrc, xtile);
+    return 0;
+}
+
+static int l_set_show (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // T
+
+    int grid = -1;
+    lua_getfield(L, 1, "grid");             // T | grid
+    if (!lua_isnil(L, -1)) {
+        grid = lua_toboolean(L, -1);
     }
     lua_pop(L, 1);                          // T
 
@@ -1104,10 +1120,7 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    if (grid != -1 || xrot != NULL || xflip != NULL || xa != NULL) {
-        pico_set_show(NULL, xa, NULL, xflip, grid, xrot);
-    }
-    pico_set_view(NULL, xclip, xwld, xdst, xsrc, xtile);
+    pico_set_show(NULL, xa, NULL, xflip, grid, xrot);
     return 0;
 }
 
@@ -1570,6 +1583,7 @@ static const luaL_Reg ll_get[] = {
     { "layer",    l_get_layer  },
     { "mouse",    l_get_mouse  },
     { "now",      l_get_now    },
+    { "show",     l_get_show   },
     { "style",    l_get_style  },
     { "text",     l_get_text   },
     { "video",    l_get_video  },
@@ -1592,6 +1606,7 @@ static const luaL_Reg ll_set[] = {
     { "font",   l_set_font   },
     { "layer",  l_set_layer  },
     { "mouse",  l_set_mouse  },
+    { "show",   l_set_show   },
     { "style",  l_set_style  },
     { "video",  l_set_video  },
     { "view",   l_set_view   },

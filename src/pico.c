@@ -681,6 +681,16 @@ void pico_set_window_show (int on) {
     }
 }
 
+void pico_set_view (const char* layer, Pico_Rel_Rect* clip, Pico_Rel_Dim* dim, Pico_Rel_Rect* dst, Pico_Rel_Rect* src, Pico_Abs_Dim* tile) {
+    _pico_guard();
+    if (tile != NULL) { pico_set_view_tile(layer, *tile); }
+    if (dim != NULL)  { pico_set_view_dim(layer, dim); }
+    if (clip != NULL) { pico_set_view_clip(layer, *clip); }
+    if (dst != NULL)  { pico_set_view_dst(layer, *dst); }
+    if (src != NULL)  { pico_set_view_src(layer, *src); }
+    _pico_output_present(0);
+}
+
 void pico_set_view_clip (const char* layer, Pico_Rel_Rect clip) {
     _pico_guard();
     _pico_layer_null(layer)->view.clip = clip;
@@ -720,16 +730,6 @@ void pico_set_view_src (const char* layer, Pico_Rel_Rect src) {
 void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile) {
     _pico_guard();
     _pico_layer_null(layer)->view.tile = tile;
-    _pico_output_present(0);
-}
-
-void pico_set_view (const char* layer, Pico_Rel_Rect* clip, Pico_Rel_Dim* dim, Pico_Rel_Rect* dst, Pico_Rel_Rect* src, Pico_Abs_Dim* tile) {
-    _pico_guard();
-    if (tile != NULL) { pico_set_view_tile(layer, *tile); }
-    if (dim != NULL)  { pico_set_view_dim(layer, dim); }
-    if (clip != NULL) { pico_set_view_clip(layer, *clip); }
-    if (dst != NULL)  { pico_set_view_dst(layer, *dst); }
-    if (src != NULL)  { pico_set_view_src(layer, *src); }
     _pico_output_present(0);
 }
 
