@@ -39,7 +39,7 @@ Modifications:
         - only handles world, window goes to pico_window_*
         - handles grid, target, source, flip, rotate, clip
         - target, source, clip stored as relative
-    - rotation and flip: moved from global state to per-layer view
+    - rotate and flip: moved from global state to per-layer show
     - renamed `ref` -> `base` parameter in conversion functions
     - renamed `pico.get.ticks` -> `pico.get.now`
     - `pico.set.expert`: accepts FPS (0, -1/true, N>0)

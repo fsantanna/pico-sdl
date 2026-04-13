@@ -708,7 +708,7 @@ First, let's rotate the flag and draw it at the top-right:
 <table>
 <tr><td><pre>
 > pico.set.layer("flag")
-> pico.set.view { rotation={angle=30, anchor='C'} }
+> pico.set.view { rotate={angle=30, anchor='C'} }
 > pico.set.layer()
 > pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 </pre>
@@ -717,7 +717,7 @@ First, let's rotate the flag and draw it at the top-right:
 </td></tr>
 </table>
 
-The `rotation` table takes an `angle` in degrees and an `anchor` for the pivot
+The `rotate` table takes an `angle` in degrees and an `anchor` for the pivot
 point.
 
 Now, let's reset the rotation, flip horizontally, and draw the flag at the
@@ -727,7 +727,7 @@ bottom-left:
 <tr><td><pre>
 > pico.set.layer("flag")
 > pico.set.view {
-    rotation = {angle=0},
+    rotate = {angle=0},
     flip = 'horizontal',
   }
 > pico.set.layer()

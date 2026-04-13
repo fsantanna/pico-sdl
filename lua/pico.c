@@ -844,7 +844,7 @@ static int l_get_show (lua_State* L) {
     lua_pushnumber(L, rot.anchor.y);
     lua_setfield(L, -2, "y");
     lua_setfield(L, -2, "anchor");      // T | rot
-    lua_setfield(L, -2, "rotation");    // T
+    lua_setfield(L, -2, "rotate");      // T
 
     const char* flip_str;
     switch (flip) {
@@ -1083,7 +1083,7 @@ static int l_set_show (lua_State* L) {
 
     Pico_Rot* xrot = NULL;
     Pico_Rot rot_val;
-    lua_getfield(L, 1, "rotation");         // T | rot
+    lua_getfield(L, 1, "rotate");           // T | rot
     if (!lua_isnil(L, -1)) {
         rot_val.angle = L_checkfieldnum(L, lua_gettop(L), "angle");
         rot_val.anchor = c_anchor(L, lua_gettop(L));
