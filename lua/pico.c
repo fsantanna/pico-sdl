@@ -7,6 +7,7 @@
 static const char KEY;
 
 static void L_reg_get (lua_State* L, const char* t, int i) {
+    assert(i > 0);
     lua_pushlightuserdata(L, (void*)&KEY);  // ... | K
     lua_gettable(L, LUA_REGISTRYINDEX);     // ... | G
     lua_getfield(L, -1, t);                 // ... | G | T
@@ -664,9 +665,8 @@ static int l_get_layer (lua_State* L) {
 
 static int l_get_style (lua_State* L) {
     PICO_STYLE s = pico_get_draw_style(NULL);
-    lua_pushinteger(L, s);              // s
-    L_reg_get(L, "styles", -1);         // s | *str*
-    lua_replace(L, -2);                 // *str*
+    lua_pushinteger(L, s);                  // s
+    L_reg_get(L, "styles", lua_gettop(L));  // s | *str*
     return 1;
 }
 
@@ -822,9 +822,9 @@ static int l_get_draw (lua_State* L) {
     }
     lua_setfield(L, -2, "font");        // T
 
-    lua_pushinteger(L, draw.style);        // T | s
-    L_reg_get(L, "styles", -1);             // T | s | *str*
-    lua_replace(L, -2);                     // T | *str*
+    lua_pushinteger(L, draw.style);         // T | s
+    L_reg_get(L, "styles", lua_gettop(L));  // T | s | *str*
+    lua_remove(L, -2);                      // T | *str*
     lua_setfield(L, -2, "style");           // T
 
     return 1;
@@ -843,8 +843,8 @@ static int l_get_show (lua_State* L) {
     lua_setfield(L, -2, "color");       // T
 
     lua_pushinteger(L, show.flip);          // T | f
-    L_reg_get(L, "flips", -1);              // T | f | *str*
-    lua_replace(L, -2);                     // T | *str*
+    L_reg_get(L, "flips", lua_gettop(L));   // T | f | *str*
+    lua_remove(L, -2);                      // T | *str*
     lua_setfield(L, -2, "flip");            // T
 
     lua_pushboolean(L, show.grid);      // T | grid
