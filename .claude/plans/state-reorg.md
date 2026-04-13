@@ -19,40 +19,25 @@ still useful as a copy-with-alpha-override ergonomic helper
 
 `PICO_COLOR_TRANSPARENT` stays as-is (already RGBA).
 
-## Two state categories
+## Three per-layer structs
 
-| category  | struct       | what                                     |
-|-----------|--------------|------------------------------------------|
-| internal  | `G`          | init, realm, ren, win, root, presenting  |
-| per-layer | `Pico_View`  | all drawing + compositing state          |
+| struct             | what                                  |
+|--------------------|---------------------------------------|
+| `Pico_Layer_Draw`  | color, font, style                    |
+| `Pico_Layer_Show`  | alpha, color, flip, grid, rotation    |
+| `Pico_Layer_View`  | clip, dim, dst, src, tile             |
+
+All fields alpha-ordered within each struct.
 
 **`S` shrinks** to only:
 - `Pico_Layer* layer` — current render target
 - `struct { int on; int fps; int ms; int t0; } expert`
 - `struct { Pico_Abs_Dim dim; int fs; } win`
 
-**`Pico_View` gains** (from S):
-- `Pico_Color draw` — RGBA draw color (was `S.color.draw` +
-  `S.alpha`)
-- `Pico_Color clear` — RGBA clear color (was `S.color.clear`)
-- `PICO_STYLE style` — fill/stroke (was `S.style`)
-- `const char* font` — font path (was `S.font`)
-
-**`Pico_View` keeps**:
-- `dim`, `dst`, `src`, `clip`, `tile`, `rot`, `flip`, `grid`
-- `unsigned char alpha` — composite-only
-
-**`Pico_View` adds**:
-- `unsigned char keep` — skip post-composite clear
-
-**Drop entirely**:
-- `Pico_State` struct
-- `STACK` struct
-- `pico_push()` / `pico_pop()`
-- `pico_set_alpha()` / `pico_get_alpha()` — alpha is `.a` of
-  draw color
-- `pico_set_color_clear_alpha()` / `pico_get_color_clear_alpha()`
-  — clear is already RGBA
+**Dropped entirely**:
+- `Pico_State` / `STACK` / `pico_push` / `pico_pop`
+- `pico_set_alpha` / `pico_get_alpha`
+- `pico_set_color_clear_alpha` / `pico_get_color_clear_alpha`
 
 ## Three alpha channels
 
@@ -206,119 +191,76 @@ static Pico_Layer* _layer (const char* layer) {
 - [x] Compile + test: `make tests` (C) and
   `cd lua/ && make tests` both pass
 
-### 2. Move draw state to `Pico_Draw` on `Pico_Layer` [x]
+### 2–4. Collapsed: structs + removals [x]
 
-- [x] `src/pico.c` | new `Pico_Draw` type | `{ color,
-  alpha, style, font }` — separate `alpha` field kept
-  (avoids `pico_set_alpha`/`pico_set_color_draw` clobber
-  until Step 4 merges into `.color.a`)
-- [x] `src/layers.hc` | `Pico_Layer` struct | added
-  `Pico_Draw draw;` field
-- [x] `src/mem.hc` | `_layer_new` | init `.draw` defaults
-  (white, alpha=0xFF, FILL, font=NULL)
-- [x] `src/pico.c` | `S` struct | removed `alpha`,
-  `color.draw`, `font`, `style`; kept `color_clear`
-- [x] `src/pico.c` | `G.root` init | added `.draw` defaults
-- [x] `src/pico.c` | set/get alpha, color_draw, style, font
-  | redirect to `S.layer->draw.*`
-- [x] `src/pico.c` | all primitives | `S.color.draw.*` →
-  `S.layer->draw.color.*`; `S.alpha` →
-  `S.layer->draw.alpha`; `S.style` →
-  `S.layer->draw.style`
-- [x] `src/pico.c` | `Pico_State` → `_Stack_Entry` | save/
-  restore `S.layer->draw` + `S.color_clear` + `S.layer`
-- [x] `src/layers.hc` | `_pico_layer_text` + draw_layer |
-  `S.font` → `S.layer->draw.font`; composite alpha uses
-  `S.layer->draw.alpha`
-- [x] `src/mem.hc` | `_tex_text` | `S.color.draw.*` →
-  `S.layer->draw.color.*`; `S.font` →
-  `S.layer->draw.font`
-- [x] Compile + test: `make tests` (C) and Lua both pass
+- [x] `Pico_Layer_Draw` (`color, font, style`) in
+  `layers.hc`; `Pico_Layer_Show` (`alpha, color, flip,
+  grid, rotation`) in `layers.hc`; `Pico_Layer_View`
+  (`clip, dim, dst, src, tile`) stays spatial-only
+- [x] `S` shrunk: removed `alpha`, `color`, `font`,
+  `style`; only `expert`, `layer`, `win` remain
+- [x] `Pico_State` / `STACK` / `pico_push` / `pico_pop`
+  removed; `tst/push.c` + `lua/tst/push.lua` deleted
+- [x] `pico_set/get_alpha` removed; draw alpha is
+  `.draw.color.a`; blend tests use `pico_color_alpha`
+- [x] `pico_set/get_color_clear_alpha` removed
+- [x] Clear color in `show.color`; `pico_output_clear`
+  reads `S.layer->show.color`
+- [x] `valgrind.supp` updated
+- [x] All tests pass (C + Lua)
 
-### 3. Collapsed into Step 2 [x]
+### 5. API reorganization [x]
 
-Clear color moved to `Pico_View.color`. `keep` deferred to
-Step 6. `Pico_Draw.alpha` removed (alpha lives in
-`draw.color.a`). Push/pop/stack removed entirely.
-`pico_set/get_alpha`, `pico_set/get_color_clear_alpha`
-removed from C and Lua. Tests updated: `tst/push.c` deleted,
-`lua/tst/push.lua` deleted, blend tests use `color.a`,
-`valgrind.supp` line updated.
+- [x] `_pico_layer_name` / `_pico_layer_null` helpers in
+  `layers.hc` with forward declarations
+- [x] Draw renames: `pico_set/get_color_draw` →
+  `pico_set/get_draw_color`; `pico_set/get_style` →
+  `pico_set/get_draw_style`; `pico_set/get_font` →
+  `pico_set/get_draw_font`; all with `layer` first param
+- [x] Show renames: `pico_set/get_color_clear` →
+  `pico_set/get_show_color`; `pico_set/get_show` →
+  `pico_set/get_window_show`; `rot` → `rotation`
+- [x] Show bulk + individual setters/getters (alpha, color,
+  flip, grid, rotation) with `layer` param
+- [x] Draw bulk + individual setters/getters (color, font,
+  style) with `layer` param
+- [x] View shrunk: `pico_set/get_view` from 9 to 6 params
+  (layer + clip, dim, dst, src, tile); individual
+  setters/getters for each field
+- [x] `pico_set_view_dim` extracts texture-recreation logic
+- [x] All individual setters call `_pico_output_present(0)`
+- [x] pico.c sections organized: getters in GET (show then
+  draw, alpha-ordered), setters in SET (same)
+- [x] Lua `l_set_view` / `l_get_view` stripped of show
+  fields; new `l_set_show` / `l_get_show` bindings
+- [x] All test call sites migrated (~320 sites across ~40
+  files); `tst/get-set.c` tests show + draw bulk/individual
+- [x] All tests pass (C + Lua)
 
-### ~~3.~~ Add `clear` and `keep` to `Pico_View`
+### 6. Post-composite clear via `show.keep`
 
-- `src/pico.c` | `Pico_View` | add
-  `Pico_Color clear; unsigned char keep;`
-- `src/mem.hc` | `_view_new` |
-  `.clear = {0,0,0,0xFF}, .keep = 0`
-- `src/mem.hc` | each `_alloc_layer_*` | set per-type `keep`:
-  empty→0, buffer→1, image→1, sub→1, text→1, video→1
-- `src/pico.c` | `pico_output_clear` | read
-  `S.layer->view.clear`
-- `src/pico.c` | `pico_set_color_clear` | write to
-  `S.layer->view.clear`
-- Remove `S.color.clear` from S
-- Compile + test
-
-### ~~4.~~ Drop push/pop (collapsed into Step 2)
-
-- `src/pico.c` | remove `Pico_State`, `STACK`,
-  `pico_push`, `pico_pop`
-- `src/pico.h` | remove declarations
-- `src/pico.c` | remove `pico_set_alpha` / `pico_get_alpha`
-- `src/pico.h` | remove declarations
-- `tst/push.c` | remove or rewrite (test no longer applies)
-- `tst/*.c` | remove all `pico_push()` / `pico_pop()` calls;
-  replace `pico_set_alpha(a)` with
-  `pico_set_color_draw({r,g,b,a})`
-- Compile + test
-
-### 5. Add new layer setters / shrink `pico_set_view`
-
-- `src/pico.h` | new declarations: `pico_set_layer_alpha`,
-  `pico_set_layer_keep`, `pico_set_layer_rot`,
-  `pico_set_layer_flip`, `pico_set_layer_grid` + getters
-- `src/pico.c` | implementations
-- `src/pico.h` | `pico_set_view` sig: 9 → 5 params
-- `src/pico.h` | `pico_get_view` sig: same
-- `src/pico.c` | implementations; internal callers updated
-- `tst/*.c` | 9-arg calls → 5-arg + individual setters
-- Compile + test
-
-### 6. Post-composite clear via `view.keep`
-
+- `src/layers.hc` | `Pico_Layer_Show` | add `keep` field
 - `src/layers.hc` | `_layer_traverse` | after composite:
-  if `!CUR->view.keep && type != SUB`, clear texture
-  using `CUR->view.clear`
+  if `!CUR->show.keep && type != SUB`, clear texture
+  using `CUR->show.color`
 - `src/pico.c` | `_pico_output_present` | clear root if
-  `!G.root.view.keep`
+  `!G.root.show.keep`
+- `src/pico.c` + `src/pico.h` | add
+  `pico_set/get_show_keep(layer, on)`
+- `src/mem.hc` | per-type `keep`: empty→0, others→1
 - Compile + test
 
-## Files
+## Remaining
 
-| file            | changes                                         |
-|-----------------|-------------------------------------------------|
-| `src/colors.h`  | unify types; constants → RGBA                   |
-| `src/pico.h`    | signatures; remove push/pop/alpha; new setters  |
-| `src/pico.c`    | Pico_View gains draw/clear/keep/style/font;     |
-|                 | S loses draw state; remove push/pop/stack;      |
-|                 | primitives read from view; set/get_view shrinks |
-| `src/mem.hc`    | _view_new defaults; per-type keep               |
-| `src/layers.hc` | post-composite clear in _layer_traverse         |
-| `tst/*.c`       | color type, push/pop removal, set_view shrink   |
-| `valgrind.supp` | bump sdl-init line N                            |
-
-## Struct field renames
-
-| struct       | old   | new        |
-|--------------|-------|------------|
-| `Pico_View`  | `rot` | `rotation` |
+- update `valgrind.supp` line number if needed
+- Lua: expose individual show/draw/view setters (optional)
+- swap GET order in pico.c (show before draw)
 
 ## Verification
 
-- `make tests` after each step
+- `make tests` + `make -C lua tests` after each step
 - `make int T=layer-hier` — verify composite + alpha
 - `tst/clear_alpha.c` — per-layer clear color
-- `tst/rot-flip.c` — layer rot/flip setters
+- `tst/rot-flip.c` — layer rotation/flip setters
 - `tst/blend_*.c` — draw alpha via RGBA color
-- Verify no `pico_push`/`pico_pop` references remain
+- `tst/get-set.c` — show + draw bulk/individual tests
