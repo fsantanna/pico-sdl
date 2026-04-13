@@ -15,7 +15,7 @@ int main (void) {
         pico_output_clear();
         pico_set_layer("img");
         Pico_Rot rot = {0, PICO_ANCHOR_C};
-        pico_set_show_rotation(NULL, rot);
+        pico_set_show_rotate(NULL, rot);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
         pico_output_draw_layer("img", &r);
@@ -26,7 +26,7 @@ int main (void) {
         pico_output_clear();
         pico_set_layer("img");
         Pico_Rot rot = {45, PICO_ANCHOR_C};
-        pico_set_show_rotation(NULL, rot);
+        pico_set_show_rotate(NULL, rot);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
         pico_output_draw_layer("img", &r);
@@ -37,7 +37,7 @@ int main (void) {
         pico_output_clear();
         pico_set_layer("img");
         Pico_Rot rot = {90, PICO_ANCHOR_C};
-        pico_set_show_rotation(NULL, rot);
+        pico_set_show_rotate(NULL, rot);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
         pico_output_draw_layer("img", &r);
@@ -48,7 +48,7 @@ int main (void) {
         pico_output_clear();
         pico_set_layer("img");
         Pico_Rot rot = {180, PICO_ANCHOR_C};
-        pico_set_show_rotation(NULL, rot);
+        pico_set_show_rotate(NULL, rot);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
         pico_output_draw_layer("img", &r);
@@ -61,7 +61,7 @@ int main (void) {
         pico_output_clear();
         pico_set_layer("img");
         Pico_Rot rot = {45, PICO_ANCHOR_NW};
-        pico_set_show_rotation(NULL, rot);
+        pico_set_show_rotate(NULL, rot);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
         pico_output_draw_layer("img", &r);
@@ -72,7 +72,7 @@ int main (void) {
     {
         pico_set_layer("img");
         Pico_Rot rot = {0, PICO_ANCHOR_C};
-        pico_set_show_rotation(NULL, rot);
+        pico_set_show_rotate(NULL, rot);
         pico_set_layer(NULL);
     }
 
@@ -118,7 +118,7 @@ int main (void) {
         pico_set_layer("img");
         Pico_Rot rot = {45, PICO_ANCHOR_C};
         PICO_FLIP flip = PICO_FLIP_HORIZONTAL;
-        pico_set_show_rotation(NULL, rot); pico_set_show_flip(NULL, flip);
+        pico_set_show_rotate(NULL, rot); pico_set_show_flip(NULL, flip);
         pico_set_layer(NULL);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C, NULL};
         pico_output_draw_layer("img", &r);
@@ -133,7 +133,7 @@ int main (void) {
             pico_output_clear();
             pico_set_layer("img");
             Pico_Rot rot = {angle, PICO_ANCHOR_C};
-            pico_set_show_rotation(NULL, rot);
+            pico_set_show_rotate(NULL, rot);
             pico_set_layer(NULL);
             pico_output_draw_layer("img", &r);
             if (angle == 180) {
@@ -151,7 +151,7 @@ int main (void) {
             pico_output_clear();
             pico_set_layer("img");
             Pico_Rot rot = {angle, {1.1, 1.1}};
-            pico_set_show_rotation(NULL, rot);
+            pico_set_show_rotate(NULL, rot);
             pico_set_layer(NULL);
             pico_output_draw_layer("img", &r);
             if (angle == 180) {
@@ -169,7 +169,7 @@ int main (void) {
             pico_output_clear();
             pico_set_layer("img");
             Pico_Rot rot = {angle, {-0.1, -0.1}};
-            pico_set_show_rotation(NULL, rot);
+            pico_set_show_rotate(NULL, rot);
             pico_set_layer(NULL);
             pico_output_draw_layer("img", &r);
             if (angle == 180) {

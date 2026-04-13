@@ -371,7 +371,7 @@ PICO_STYLE pico_get_draw_style (const char* layer) {
     return _pico_layer_null(layer)->draw.style;
 }
 
-void pico_get_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, int* keep, Pico_Rot* rotation) {
+void pico_get_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, int* keep, Pico_Rot* rotate) {
     _pico_guard();
     Pico_Layer* L = _pico_layer_null(layer);
     if (alpha != NULL)    { *alpha    = L->show.alpha; }
@@ -379,7 +379,7 @@ void pico_get_show (const char* layer, unsigned char* alpha, Pico_Color* color, 
     if (flip != NULL)     { *flip     = L->show.flip; }
     if (grid != NULL)     { *grid     = L->show.grid; }
     if (keep != NULL)     { *keep     = L->show.keep; }
-    if (rotation != NULL) { *rotation = L->show.rotation; }
+    if (rotate != NULL)   { *rotate   = L->show.rotate; }
 }
 
 unsigned char pico_get_show_alpha (const char* layer) {
@@ -407,9 +407,9 @@ int pico_get_show_keep (const char* layer) {
     return _pico_layer_null(layer)->show.keep;
 }
 
-Pico_Rot pico_get_show_rotation (const char* layer) {
+Pico_Rot pico_get_show_rotate (const char* layer) {
     _pico_guard();
-    return _pico_layer_null(layer)->show.rotation;
+    return _pico_layer_null(layer)->show.rotate;
 }
 
 int pico_get_expert (int* fps) {
@@ -575,7 +575,7 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
 // SET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_set_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int grid, int keep, Pico_Rot* rotation) {
+void pico_set_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int grid, int keep, Pico_Rot* rotate) {
     _pico_guard();
     Pico_Layer* L = _pico_layer_null(layer);
     if (alpha != NULL)    { L->show.alpha    = *alpha; }
@@ -583,7 +583,7 @@ void pico_set_show (const char* layer, unsigned char* alpha, Pico_Color* color, 
     if (flip != NULL)     { L->show.flip     = *flip; }
     if (grid != -1)       { L->show.grid     = grid; }
     if (keep != -1)       { L->show.keep     = keep; }
-    if (rotation != NULL) { L->show.rotation = *rotation; }
+    if (rotate != NULL)   { L->show.rotate   = *rotate; }
 }
 
 void pico_set_show_alpha (const char* layer, unsigned char alpha) {
@@ -618,9 +618,9 @@ void pico_set_show_keep (const char* layer, int on) {
     L->show.keep = on;
 }
 
-void pico_set_show_rotation (const char* layer, Pico_Rot rotation) {
+void pico_set_show_rotate (const char* layer, Pico_Rot rotate) {
     _pico_guard();
-    _pico_layer_null(layer)->show.rotation = rotation;
+    _pico_layer_null(layer)->show.rotate = rotate;
     _pico_output_present(0);
 }
 

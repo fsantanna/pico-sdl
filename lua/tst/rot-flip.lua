@@ -4,15 +4,15 @@ pico.init(true)
 pico.set.window { title="Rotate / Flip" }
 pico.set.color.clear('white')
 
--- Create a layer from image for rotation/flip tests
+-- Create a layer from image for rotate/flip tests
 pico.layer.image('!', nil, "img", "open.png")
 
 -- ROTATION - center anchor
 do
-    print("rotate 0 degrees (no rotation)")
+    print("rotate 0 degrees (no rotate)")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.show { rotation = { angle=0, anchor='C' } }
+    pico.set.show { rotate = { angle=0, anchor='C' } }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
@@ -22,7 +22,7 @@ do
     print("rotate 45 degrees")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.show { rotation = { angle=45, anchor='C' } }
+    pico.set.show { rotate = { angle=45, anchor='C' } }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
@@ -32,7 +32,7 @@ do
     print("rotate 90 degrees")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.show { rotation = { angle=90, anchor='C' } }
+    pico.set.show { rotate = { angle=90, anchor='C' } }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
@@ -42,7 +42,7 @@ do
     print("rotate 180 degrees")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.show { rotation = { angle=180, anchor='C' } }
+    pico.set.show { rotate = { angle=180, anchor='C' } }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
@@ -54,17 +54,17 @@ do
     print("rotate 45 degrees, anchor NW")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.show { rotation = { angle=45, anchor='NW' } }
+    pico.set.show { rotate = { angle=45, anchor='NW' } }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-05")
 end
 
--- Reset rotation for flip tests
+-- Reset rotate for flip tests
 do
     pico.set.layer("img")
-    pico.set.show { rotation = { angle=0, anchor='C' } }
+    pico.set.show { rotate = { angle=0, anchor='C' } }
     pico.set.layer()
 end
 
@@ -105,7 +105,7 @@ do
     print("rotate 45 + flip horizontal")
     pico.output.clear()
     pico.set.layer("img")
-    pico.set.show { rotation = { angle=45, anchor='C' }, flip = "horizontal" }
+    pico.set.show { rotate = { angle=45, anchor='C' }, flip = "horizontal" }
     pico.set.layer()
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
@@ -114,12 +114,12 @@ end
 
 -- ANIMATED ROTATION - center anchor (default)
 do
-    print("animated rotation - center anchor")
+    print("animated rotate - center anchor")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     for angle = 0, 355, 5 do
         pico.output.clear()
         pico.set.layer("img")
-        pico.set.show { rotation = { angle=angle, anchor='C' } }
+        pico.set.show { rotate = { angle=angle, anchor='C' } }
         pico.set.layer()
         pico.output.draw.layer("img", r)
         if angle == 180 then
@@ -131,12 +131,12 @@ end
 
 -- ANIMATED ROTATION - anchor outside (1.1, 1.1)
 do
-    print("animated rotation - anchor outside (1.1, 1.1)")
+    print("animated rotate - anchor outside (1.1, 1.1)")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     for angle = 0, 355, 5 do
         pico.output.clear()
         pico.set.layer("img")
-        pico.set.show { rotation = { angle=angle, anchor={x=1.1, y=1.1} } }
+        pico.set.show { rotate = { angle=angle, anchor={x=1.1, y=1.1} } }
         pico.set.layer()
         pico.output.draw.layer("img", r)
         if angle == 180 then
@@ -148,12 +148,12 @@ end
 
 -- ANIMATED ROTATION - anchor negative (-0.1, -0.1)
 do
-    print("animated rotation - anchor negative (-0.1, -0.1)")
+    print("animated rotate - anchor negative (-0.1, -0.1)")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     for angle = 0, 355, 5 do
         pico.output.clear()
         pico.set.layer("img")
-        pico.set.show { rotation = { angle=angle, anchor={x=-0.1, y=-0.1} } }
+        pico.set.show { rotate = { angle=angle, anchor={x=-0.1, y=-0.1} } }
         pico.set.layer()
         pico.output.draw.layer("img", r)
         if angle == 180 then

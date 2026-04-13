@@ -24,7 +24,7 @@ still useful as a copy-with-alpha-override ergonomic helper
 | struct             | what                                  |
 |--------------------|---------------------------------------|
 | `Pico_Layer_Draw`  | color, font, style                    |
-| `Pico_Layer_Show`  | alpha, color, flip, grid, rotation    |
+| `Pico_Layer_Show`  | alpha, color, flip, grid, rotate    |
 | `Pico_Layer_View`  | clip, dim, dst, src, tile             |
 
 All fields alpha-ordered within each struct.
@@ -93,7 +93,7 @@ static Pico_Layer* _layer (const char* layer) {
 |-----------------------------------|--------------------------------------|
 | `pico_get_show_color(layer)`      | `pico_set_show_color(layer,c)`       |
 | `pico_get_show_grid(layer)`       | `pico_set_show_grid(layer,on)`       |
-| `pico_get_show_rotation(layer)`   | `pico_set_show_rotation(layer,rot)`  |
+| `pico_get_show_rotate(layer)`   | `pico_set_show_rotate(layer,rot)`  |
 | `pico_get_show_flip(layer)`       | `pico_set_show_flip(layer,flip)`     |
 | `pico_get_show_alpha(layer)`      | `pico_set_show_alpha(layer,a)`       |
 | `pico_get_show_keep(layer)`       | `pico_set_show_keep(layer,on)`       |
@@ -120,7 +120,7 @@ static Pico_Layer* _layer (const char* layer) {
 | `pico_set_style`       | `pico_set_draw_style`     |
 | `pico_get_font`        | `pico_get_draw_font`      |
 | `pico_set_font`        | `pico_set_draw_font`      |
-| `Pico_View.rot`        | `Pico_View.rotation`      |
+| `Pico_View.rot`        | `Pico_View.rotate`      |
 
 ### Removed
 
@@ -195,7 +195,7 @@ static Pico_Layer* _layer (const char* layer) {
 
 - [x] `Pico_Layer_Draw` (`color, font, style`) in
   `layers.hc`; `Pico_Layer_Show` (`alpha, color, flip,
-  grid, rotation`) in `layers.hc`; `Pico_Layer_View`
+  grid, rotate`) in `layers.hc`; `Pico_Layer_View`
   (`clip, dim, dst, src, tile`) stays spatial-only
 - [x] `S` shrunk: removed `alpha`, `color`, `font`,
   `style`; only `expert`, `layer`, `win` remain
@@ -219,9 +219,9 @@ static Pico_Layer* _layer (const char* layer) {
   `pico_set/get_draw_font`; all with `layer` first param
 - [x] Show renames: `pico_set/get_color_clear` →
   `pico_set/get_show_color`; `pico_set/get_show` →
-  `pico_set/get_window_show`; `rot` → `rotation`
+  `pico_set/get_window_show`; `rot` → `rotate`
 - [x] Show bulk + individual setters/getters (alpha, color,
-  flip, grid, rotation) with `layer` param
+  flip, grid, rotate) with `layer` param
 - [x] Draw bulk + individual setters/getters (color, font,
   style) with `layer` param
 - [x] View shrunk: `pico_set/get_view` from 9 to 6 params
@@ -261,6 +261,6 @@ static Pico_Layer* _layer (const char* layer) {
 - `make tests` + `make -C lua tests` after each step
 - `make int T=layer-hier` — verify composite + alpha
 - `tst/clear_alpha.c` — per-layer clear color
-- `tst/rot-flip.c` — layer rotation/flip setters
+- `tst/rot-flip.c` — layer rotate/flip setters
 - `tst/blend_*.c` — draw alpha via RGBA color
 - `tst/get-set.c` — show + draw bulk/individual tests

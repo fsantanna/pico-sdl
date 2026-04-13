@@ -20,7 +20,7 @@ typedef struct {
     PICO_FLIP     flip;
     int           grid;
     int           keep;
-    Pico_Rot      rotation;
+    Pico_Rot      rotate;
 } Pico_Layer_Show;
 
 typedef struct {
@@ -218,11 +218,11 @@ static void _pico_output_draw_layer (
 
     SDL_SetTextureAlphaMod(layer->tex, S.layer->draw.color.a*layer->show.alpha/255);
     SDL_Point center = {
-        dst.w * layer->show.rotation.anchor.x,
-        dst.h * layer->show.rotation.anchor.y
+        dst.w * layer->show.rotate.anchor.x,
+        dst.h * layer->show.rotate.anchor.y
     };
     SDL_RenderCopyEx(G.ren, layer->tex, &src, &dst,
-                     layer->show.rotation.angle, &center,
+                     layer->show.rotate.angle, &center,
                      layer->show.flip);
 
     if (layer->show.grid) {

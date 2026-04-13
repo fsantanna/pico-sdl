@@ -27,10 +27,6 @@
     - `pico.init (on: boolean)`
 - **pico.quit**: Pushes a quit event to terminate the application.
     - `pico.quit ()`
-- **pico.push**: Saves drawing state to the stack.
-    - `pico.push ()`
-- **pico.pop**: Restores drawing state from the stack.
-    - `pico.pop ()`
 - **pico.cv**
     - **pico.cv.pos**: Converts relative position to absolute.
         - `pico.cv.pos (pos: Pos [,base: Rect]) -> Pos`
@@ -87,25 +83,27 @@
         - `pico.get.text (text: string, dim: Dim) -> Dim`
     - **pico.get.video**: Gets video information.
         - `pico.get.video (path: string [, rect: Rect]) -> Video`
+    - **pico.get.show**: Gets show configuration.
+        - `pico.get.show () -> { alpha: integer, grid: boolean, rotate: Rotation, flip: Flip }`
     - **pico.get.view**: Gets view configuration.
-        - `pico.get.view () -> { grid: boolean, dim: Dim, tile: Tile, rotation: Rotation, flip: Flip }`
+        - `pico.get.view () -> { dim: Dim, tile: Tile }`
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { title: string, fullscreen: boolean, dim: Dim }`
 - **pico.set**
-    - **pico.set.alpha**: Sets alpha transparency.
-        - `pico.set.alpha (a: integer)`
     - **pico.set.dim**: Sets both window and world to the same dimensions.
         - `pico.set.dim (dim: Dim)`
     - **pico.set.expert**: Toggles expert mode.
         - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
         - fps: `nil`/`false` = wait forever, `true` = as fast as possible, `N>0` = fixed FPS
         - Returns frame period in ms
+    - **pico.set.show**: Sets show configuration.
+        - `pico.set.show (cfg: { [alpha: integer], [grid: boolean], [rotate: Rotation], [flip: Flip] })`
     - **pico.set.style**: Sets drawing style.
         - `pico.set.style (style: 'fill'|'stroke')`
     - **pico.set.video**: Sets video frame.
         - `pico.set.video (name: string, frame: integer) -> boolean`
     - **pico.set.view**: Sets view configuration.
-        - `pico.set.view (cfg: { [grid: boolean], [dim: Dim], [tile: Tile], [target: Rect], [source: Rect], [clip: Rect], [rotation: Rotation], [flip: Flip] })`
+        - `pico.set.view (cfg: { [dim: Dim], [tile: Tile], [target: Rect], [source: Rect], [clip: Rect] })`
         - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
     - **pico.set.window**: Sets window configuration.
         - `pico.set.window (cfg: { [title: string], [fullscreen: boolean], [dim: Dim] })`

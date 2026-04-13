@@ -83,10 +83,10 @@ int main (void) {
         pico_set_show_flip(NULL, PICO_FLIP_NONE);
 
         Pico_Rot rot = {45, PICO_ANCHOR_C};
-        pico_set_show_rotation(NULL, rot);
-        Pico_Rot got = pico_get_show_rotation(NULL);
+        pico_set_show_rotate(NULL, rot);
+        Pico_Rot got = pico_get_show_rotate(NULL);
         assert(got.angle == 45);
-        pico_set_show_rotation(NULL, (Pico_Rot){0, PICO_ANCHOR_C});
+        pico_set_show_rotate(NULL, (Pico_Rot){0, PICO_ANCHOR_C});
     }
 
     // show (bulk setter/getter)

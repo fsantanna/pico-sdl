@@ -319,15 +319,15 @@ do
 
     -- 8.3 step 1: rotate 30°, draw at NE
     pico.set.layer("flag")
-    pico.set.view { rotation = {angle=30, anchor='C'} }
+    pico.set.show { rotate = {angle=30, anchor='C'} }
     pico.set.layer()
     pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
     shot("guide-08-03-01")
 
     -- 8.3 step 2: reset rotation, flip horizontal, draw at SW
     pico.set.layer("flag")
-    pico.set.view {
-        rotation = {angle=0},
+    pico.set.show {
+        rotate = {angle=0},
         flip = "horizontal",
     }
     pico.set.layer()
