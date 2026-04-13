@@ -361,6 +361,16 @@ Pico_Color pico_get_draw_color (const char* layer) {
     return _pico_layer_null(layer)->draw.color;
 }
 
+const char* pico_get_draw_font (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->draw.font;
+}
+
+PICO_STYLE pico_get_draw_style (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->draw.style;
+}
+
 void pico_get_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, Pico_Rot* rotation) {
     _pico_guard();
     Pico_Layer* L = _pico_layer_null(layer);
@@ -402,11 +412,6 @@ int pico_get_expert (int* fps) {
         *fps = S.expert.fps;
     }
     return S.expert.on;
-}
-
-const char* pico_get_draw_font (const char* layer) {
-    _pico_guard();
-    return _pico_layer_null(layer)->draw.font;
 }
 
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
@@ -484,11 +489,6 @@ Uint32 pico_get_now (void) {
 int pico_get_window_show (void) {
     _pico_guard();
     return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
-}
-
-PICO_STYLE pico_get_draw_style (const char* layer) {
-    _pico_guard();
-    return _pico_layer_null(layer)->draw.style;
 }
 
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
@@ -623,6 +623,16 @@ void pico_set_draw_color (const char* layer, Pico_Color color) {
     _pico_layer_null(layer)->draw.color = color;
 }
 
+void pico_set_draw_font (const char* layer, const char* path) {
+    _pico_guard();
+    _pico_layer_null(layer)->draw.font = path;
+}
+
+void pico_set_draw_style (const char* layer, PICO_STYLE style) {
+    _pico_guard();
+    _pico_layer_null(layer)->draw.style = style;
+}
+
 void pico_set_dim (Pico_Rel_Dim* dim) {
     _pico_guard();
     assert(S.layer==&G.root && "can only set dim from main layer");
@@ -641,11 +651,6 @@ int pico_set_expert (int on, int fps) {
     }
     G.root.show.grid = 0;
     return S.expert.ms;
-}
-
-void pico_set_draw_font (const char* layer, const char* path) {
-    _pico_guard();
-    _pico_layer_null(layer)->draw.font = path;
 }
 
 void pico_set_layer (const char* key) {
@@ -675,11 +680,6 @@ void pico_set_window_show (int on) {
     } else {
         SDL_HideWindow(G.win);
     }
-}
-
-void pico_set_draw_style (const char* layer, PICO_STYLE style) {
-    _pico_guard();
-    _pico_layer_null(layer)->draw.style = style;
 }
 
 void pico_set_view (

@@ -276,12 +276,10 @@ PICO_FLIP     pico_get_show_flip     (const char* layer);
 int           pico_get_show_grid     (const char* layer);
 Pico_Rot      pico_get_show_rotation (const char* layer);
 
-void       pico_get_draw       (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style);
-Pico_Color pico_get_draw_color (const char* layer);
-
-/// @brief Gets the font used to draw texts.
-/// @return path to the current font file
-const char* pico_get_draw_font (const char* layer);
+void        pico_get_draw       (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style);
+Pico_Color  pico_get_draw_color (const char* layer);
+const char* pico_get_draw_font  (const char* layer);
+PICO_STYLE  pico_get_draw_style (const char* layer);
 
 /// @brief Gets the state of expert mode.
 /// @param fps optional pointer to receive fps value (NULL to ignore)
@@ -425,10 +423,6 @@ Uint32 pico_get_now (void);
 /// @return 1 if visible, or 0 otherwise
 int pico_get_window_show (void);
 
-/// @brief Gets the drawing style.
-/// @return PICO_STYLE_FILL or PICO_STYLE_STROKE
-PICO_STYLE pico_get_draw_style (const char* layer);
-
 /// @brief Gets the dimensions of the given text (shared caching).
 /// @param text text to measure
 /// @param dim dim with h for font size (mode '!' or '%'),
@@ -488,31 +482,14 @@ void pico_set_show_flip     (const char* layer, PICO_FLIP flip);
 void pico_set_show_grid     (const char* layer, int on);
 void pico_set_show_rotation (const char* layer, Pico_Rot rotation);
 
-/// @brief Changes the color used to draw objects.
 void pico_set_draw       (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style);
 void pico_set_draw_color (const char* layer, Pico_Color color);
-
-/// @brief Toggles the expert mode with optional FPS timing.
-/// @param on 1 to enable it, or 0 to disable it
-/// @param fps target frames per second (0 = wait forever, -1 = as fast as possible, N>0 = fixed FPS)
-/// @return frame period in ms
-int pico_set_expert (int on, int fps);
-
-/// @brief Changes the font used to draw texts.
-/// @param path path to font file
-void pico_set_draw_font (const char* layer, const char* path);
-
-/// @brief Switches to a layer.
-/// @param key layer key (NULL = main layer, must exist)
-void pico_set_layer (const char* key);
-
-/// @brief Toggles the application window visibility.
-/// @param on 1 to show, or 0 to hide
-void pico_set_window_show (int on);
-
-/// @brief Sets the drawing style.
-/// @param style new style
+void pico_set_draw_font  (const char* layer, const char* path);
 void pico_set_draw_style (const char* layer, PICO_STYLE style);
+
+int pico_set_expert (int on, int fps);
+void pico_set_layer (const char* key);
+void pico_set_window_show (int on);
 
 /// @brief Syncs a video layer to a target frame.
 /// Supports forward and backward seeking.
