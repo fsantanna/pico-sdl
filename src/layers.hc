@@ -8,29 +8,6 @@ typedef enum {
     PICO_LAYER_SUB,
 } PICO_LAYER;
 
-typedef struct {
-    Pico_Color    color;
-    const char*   font;
-    PICO_STYLE    style;
-} Pico_Layer_Draw;
-
-typedef struct {
-    unsigned char alpha;
-    Pico_Color    color;
-    PICO_FLIP     flip;
-    int           grid;
-    int           keep;
-    Pico_Rot      rotate;
-} Pico_Layer_Show;
-
-typedef struct {
-    Pico_Abs_Dim  dim;
-    Pico_Abs_Dim  tile;
-    Pico_Rel_Rect dst;
-    Pico_Rel_Rect src;
-    Pico_Rel_Rect clip;
-} Pico_Layer_View;
-
 typedef struct Pico_Layer {
     PICO_LAYER            type;
     char*                 name;     // NULL for main layer

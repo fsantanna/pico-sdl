@@ -130,16 +130,16 @@ Remove `ll_get_color`, `ll_set_color` tables entirely.
 
 ## Steps
 
-### Step A: named initializers
-- [ ] `src/pico.c` | `G.root.draw`, `G.root.show`
-- [ ] `src/mem.hc` | `_layer_new` `.draw`, `.show`, `.view`
-- [ ] compile + test
+### Step A: named initializers [x]
+- [x] `src/pico.c` | `G.root.draw`, `G.root.show`
+- [x] `src/mem.hc` | `_layer_new` `.draw`, `.show`, `.view`
 
-### Step B: export structs + bulk C signatures
-- [ ] `src/pico.h` | move structs from `layers.hc`
-- [ ] `src/pico.h` | new bulk declarations
-- [ ] `src/pico.c` | new bulk implementations
-- [ ] `tst/get-set.c` | update bulk tests
+### Step B: export structs + bulk C signatures [x]
+- [x] `src/pico.h` | move structs from `layers.hc`
+- [x] `src/pico.h` | new bulk declarations
+- [x] `src/pico.c` | new bulk implementations
+- [x] `tst/get-set.c` | update bulk tests
+- [x] `lua/pico.c` | update `l_get/set_show`, `l_get/set_view`
 - [ ] compile + test
 
 ### Step C: Lua bulk draw + complete show/view

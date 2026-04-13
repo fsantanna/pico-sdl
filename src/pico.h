@@ -106,6 +106,29 @@ typedef struct {
     Pico_Anchor anchor;
 } Pico_Rot;
 
+typedef struct {
+    Pico_Color    color;
+    const char*   font;
+    PICO_STYLE    style;
+} Pico_Layer_Draw;
+
+typedef struct {
+    unsigned char alpha;
+    Pico_Color    color;
+    PICO_FLIP     flip;
+    int           grid;
+    int           keep;
+    Pico_Rot      rotate;
+} Pico_Layer_Show;
+
+typedef struct {
+    Pico_Abs_Dim  dim;
+    Pico_Abs_Dim  tile;
+    Pico_Rel_Rect dst;
+    Pico_Rel_Rect src;
+    Pico_Rel_Rect clip;
+} Pico_Layer_View;
+
 /// @}
 
 /// @defgroup Init
@@ -269,7 +292,7 @@ void pico_output_sound (const char* path);
 
 // GET
 
-void          pico_get_show          (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, int* keep, Pico_Rot* rotate);
+void          pico_get_show          (const char* layer, Pico_Layer_Show* show);
 unsigned char pico_get_show_alpha    (const char* layer);
 Pico_Color    pico_get_show_color    (const char* layer);
 PICO_FLIP     pico_get_show_flip     (const char* layer);
@@ -277,7 +300,7 @@ int           pico_get_show_grid     (const char* layer);
 int           pico_get_show_keep     (const char* layer);
 Pico_Rot      pico_get_show_rotate   (const char* layer);
 
-void        pico_get_draw       (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style);
+void        pico_get_draw       (const char* layer, Pico_Layer_Draw* draw);
 Pico_Color  pico_get_draw_color (const char* layer);
 const char* pico_get_draw_font  (const char* layer);
 PICO_STYLE  pico_get_draw_style (const char* layer);
@@ -446,7 +469,7 @@ Pico_Abs_Dim pico_get_text_mode (
     Pico_Rel_Dim* dim
 );
 
-void          pico_get_view      (const char* layer, Pico_Rel_Rect* clip, Pico_Abs_Dim* dim, Pico_Rel_Rect* dst, Pico_Rel_Rect* src, Pico_Abs_Dim* tile);
+void          pico_get_view      (const char* layer, Pico_Layer_View* view);
 Pico_Rel_Rect pico_get_view_clip (const char* layer);
 Pico_Abs_Dim  pico_get_view_dim  (const char* layer);
 Pico_Rel_Rect pico_get_view_dst  (const char* layer);
@@ -461,7 +484,7 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 
 // SET
 
-void pico_set_show          (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int grid, int keep, Pico_Rot* rotate);
+void pico_set_show          (const char* layer, Pico_Layer_Show show);
 void pico_set_show_alpha    (const char* layer, unsigned char alpha);
 void pico_set_show_color    (const char* layer, Pico_Color color);
 void pico_set_show_flip     (const char* layer, PICO_FLIP flip);
@@ -469,7 +492,7 @@ void pico_set_show_grid     (const char* layer, int on);
 void pico_set_show_keep     (const char* layer, int on);
 void pico_set_show_rotate   (const char* layer, Pico_Rot rotate);
 
-void pico_set_draw       (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style);
+void pico_set_draw       (const char* layer, Pico_Layer_Draw draw);
 void pico_set_draw_color (const char* layer, Pico_Color color);
 void pico_set_draw_font  (const char* layer, const char* path);
 void pico_set_draw_style (const char* layer, PICO_STYLE style);
@@ -485,7 +508,7 @@ void pico_set_window_show (int on);
 /// @return 1 if frame is valid, or 0 past EOF
 int pico_set_video (const char* key, int frame);
 
-void pico_set_view      (const char* layer, Pico_Rel_Rect* clip, Pico_Rel_Dim* dim, Pico_Rel_Rect* dst, Pico_Rel_Rect* src, Pico_Abs_Dim* tile);
+void pico_set_view      (const char* layer, Pico_Layer_View view);
 void pico_set_view_clip (const char* layer, Pico_Rel_Rect clip);
 void pico_set_view_dim  (const char* layer, Pico_Rel_Dim* dim);
 void pico_set_view_dst  (const char* layer, Pico_Rel_Rect dst);
