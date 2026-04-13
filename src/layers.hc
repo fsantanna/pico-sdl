@@ -107,15 +107,20 @@ static void _layer_attach (const char* up, const char* dn) {
 
 static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
 
-static void _layer_traverse (Pico_Layer* up) {
+static void _layer_traverse (Pico_Layer* UP) {
     Pico_Layer* old = S.layer;
-    S.layer = up;
-    const char* cur = up->hier.dn.fst;
+    S.layer = UP;
+    const char* cur = UP->hier.dn.fst;
     while (cur != NULL) {
         Pico_Layer* CUR = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
         assert(CUR != NULL);
-        SDL_SetRenderTarget(G.ren, up->tex);
+
+        SDL_SetRenderTarget(G.ren, CUR->tex);
+        _layer_traverse(CUR);
+
+        SDL_SetRenderTarget(G.ren, UP->tex);
         _pico_output_draw_layer(CUR, NULL);
+
         if (!CUR->show.keep) {  // post-composite clear
             SDL_SetRenderTarget(G.ren, CUR->tex);
             Pico_Color c = CUR->show.color;
@@ -194,11 +199,6 @@ static Pico_Layer* _pico_layer_text (
 static void _pico_output_draw_layer (
     Pico_Layer* layer, Pico_Rel_Rect* rect
 ) {
-    // recurse: composite children onto layer->tex first
-    SDL_Texture* old = SDL_GetRenderTarget(G.ren);
-    _layer_traverse(layer);
-    SDL_SetRenderTarget(G.ren, old);
-
     // blit layer onto current render target
     if (rect == NULL) {
         rect = &layer->view.dst;

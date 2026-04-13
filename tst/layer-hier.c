@@ -16,6 +16,7 @@ int main (void) {
     pico_layer_empty("root", "L", (Pico_Abs_Dim){8, 8}, NULL);
 
     pico_set_layer("L");
+    pico_set_show_keep(NULL, 1);
     pico_set_view_dst(NULL, (Pico_Rel_Rect){'%', {0.3, 0.3, 0.4, 0.4}, PICO_ANCHOR_C, NULL});
     pico_set_show_color(NULL, PICO_COLOR_WHITE);
     pico_output_clear();
