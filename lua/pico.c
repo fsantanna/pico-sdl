@@ -825,7 +825,7 @@ static int l_get_show (lua_State* L) {
     PICO_FLIP flip;
     unsigned char alpha;
 
-    pico_get_show(NULL, &alpha, NULL, &flip, &grid, &rot);
+    pico_get_show(NULL, &alpha, NULL, &flip, &grid, NULL, &rot);
 
     lua_newtable(L);                    // T
 
@@ -1120,7 +1120,7 @@ static int l_set_show (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_show(NULL, xa, NULL, xflip, grid, xrot);
+    pico_set_show(NULL, xa, NULL, xflip, grid, -1, xrot);
     return 0;
 }
 

@@ -254,7 +254,7 @@ void pico_init (int on) {
                 .name = "root",
                 .tex  = NULL,   // needs G.ren
                 .draw = { {0xFF, 0xFF, 0xFF, 0xFF}, NULL, PICO_STYLE_FILL },
-                .show = { 0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 1, {0, PICO_ANCHOR_C} },
+                .show = { 0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 1, 0, {0, PICO_ANCHOR_C} },
                 .hier = { NULL, NULL, {NULL,NULL} },
                 .view = {
                     .dim  = PICO_DIM_LOG,
@@ -371,13 +371,14 @@ PICO_STYLE pico_get_draw_style (const char* layer) {
     return _pico_layer_null(layer)->draw.style;
 }
 
-void pico_get_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, Pico_Rot* rotation) {
+void pico_get_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, int* keep, Pico_Rot* rotation) {
     _pico_guard();
     Pico_Layer* L = _pico_layer_null(layer);
     if (alpha != NULL)    { *alpha    = L->show.alpha; }
     if (color != NULL)    { *color    = L->show.color; }
     if (flip != NULL)     { *flip     = L->show.flip; }
     if (grid != NULL)     { *grid     = L->show.grid; }
+    if (keep != NULL)     { *keep     = L->show.keep; }
     if (rotation != NULL) { *rotation = L->show.rotation; }
 }
 
@@ -399,6 +400,11 @@ PICO_FLIP pico_get_show_flip (const char* layer) {
 int pico_get_show_grid (const char* layer) {
     _pico_guard();
     return _pico_layer_null(layer)->show.grid;
+}
+
+int pico_get_show_keep (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.keep;
 }
 
 Pico_Rot pico_get_show_rotation (const char* layer) {
@@ -569,13 +575,14 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
 // SET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_set_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int grid, Pico_Rot* rotation) {
+void pico_set_show (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int grid, int keep, Pico_Rot* rotation) {
     _pico_guard();
     Pico_Layer* L = _pico_layer_null(layer);
     if (alpha != NULL)    { L->show.alpha    = *alpha; }
     if (color != NULL)    { L->show.color    = *color; }
     if (flip != NULL)     { L->show.flip     = *flip; }
     if (grid != -1)       { L->show.grid     = grid; }
+    if (keep != -1)       { L->show.keep     = keep; }
     if (rotation != NULL) { L->show.rotation = *rotation; }
 }
 
@@ -601,6 +608,11 @@ void pico_set_show_grid (const char* layer, int on) {
     _pico_guard();
     _pico_layer_null(layer)->show.grid = on;
     _pico_output_present(0);
+}
+
+void pico_set_show_keep (const char* layer, int on) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.keep = on;
 }
 
 void pico_set_show_rotation (const char* layer, Pico_Rot rotation) {

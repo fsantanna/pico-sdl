@@ -50,6 +50,7 @@ tests:
 	$(EXE) tst/image_pct.c
 	$(EXE) tst/image_raw.c
 	$(EXE) tst/init.c
+	$(EXE) tst/keep.c
 	$(EXE) tst/layer-hier.c
 	$(EXE) tst/layers.c
 	$(EXE) tst/mouse.c

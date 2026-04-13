@@ -19,6 +19,7 @@ typedef struct {
     Pico_Color    color;
     PICO_FLIP     flip;
     int           grid;
+    int           keep;
     Pico_Rot      rotation;
 } Pico_Layer_Show;
 

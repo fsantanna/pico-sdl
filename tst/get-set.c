@@ -96,22 +96,24 @@ int main (void) {
         Pico_Color c = PICO_COLOR_RED;
         PICO_FLIP f = PICO_FLIP_V;
         Pico_Rot r = {90, PICO_ANCHOR_C};
-        pico_set_show(NULL, &a, &c, &f, 1, &r);
+        pico_set_show(NULL, &a, &c, &f, 1, -1, &r);
 
         unsigned char ga;
         Pico_Color gc;
         PICO_FLIP gf;
         int gg;
+        int gk;
         Pico_Rot gr;
-        pico_get_show(NULL, &ga, &gc, &gf, &gg, &gr);
+        pico_get_show(NULL, &ga, &gc, &gf, &gg, &gk, &gr);
         assert(ga == 0x40);
         assert(gc.r == 255 && gc.g == 0 && gc.b == 0);
         assert(gf == PICO_FLIP_V);
         assert(gg == 1);
+        assert(gk == 0);
         assert(gr.angle == 90);
 
         // restore
-        pico_set_show(NULL, &(unsigned char){0xFF}, &(Pico_Color){0,0,0,0xFF}, &(PICO_FLIP){PICO_FLIP_NONE}, 0, &(Pico_Rot){0, PICO_ANCHOR_C});
+        pico_set_show(NULL, &(unsigned char){0xFF}, &(Pico_Color){0,0,0,0xFF}, &(PICO_FLIP){PICO_FLIP_NONE}, 0, -1, &(Pico_Rot){0, PICO_ANCHOR_C});
     }
 
     puts("OK");

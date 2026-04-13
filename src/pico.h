@@ -269,11 +269,12 @@ void pico_output_sound (const char* path);
 
 // GET
 
-void          pico_get_show          (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, Pico_Rot* rotation);
+void          pico_get_show          (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int* grid, int* keep, Pico_Rot* rotation);
 unsigned char pico_get_show_alpha    (const char* layer);
 Pico_Color    pico_get_show_color    (const char* layer);
 PICO_FLIP     pico_get_show_flip     (const char* layer);
 int           pico_get_show_grid     (const char* layer);
+int           pico_get_show_keep     (const char* layer);
 Pico_Rot      pico_get_show_rotation (const char* layer);
 
 void        pico_get_draw       (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style);
@@ -460,11 +461,12 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 
 // SET
 
-void pico_set_show          (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int grid, Pico_Rot* rotation);
+void pico_set_show          (const char* layer, unsigned char* alpha, Pico_Color* color, PICO_FLIP* flip, int grid, int keep, Pico_Rot* rotation);
 void pico_set_show_alpha    (const char* layer, unsigned char alpha);
 void pico_set_show_color    (const char* layer, Pico_Color color);
 void pico_set_show_flip     (const char* layer, PICO_FLIP flip);
 void pico_set_show_grid     (const char* layer, int on);
+void pico_set_show_keep     (const char* layer, int on);
 void pico_set_show_rotation (const char* layer, Pico_Rot rotation);
 
 void pico_set_draw       (const char* layer, Pico_Color* color, const char** font, PICO_STYLE* style);

@@ -98,7 +98,7 @@ static Pico_Layer* _layer_new (
             {0xFF, 0xFF, 0xFF, 0xFF}, NULL, PICO_STYLE_FILL
         },
         .show = {
-            0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 0, {0, PICO_ANCHOR_C}
+            0xFF, {0, 0, 0, 0xFF}, PICO_FLIP_NONE, 0, 0, {0, PICO_ANCHOR_C}
         },
         .view = {
             dim, {0, 0},
