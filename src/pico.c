@@ -1550,8 +1550,7 @@ static void _pico_output_present (int force) {
     Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.root.view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 
-    // post-present clear
-    if (!G.root.show.keep) {
+    if (!G.root.show.keep) {    // post-present clear
         Pico_Color c = G.root.show.color;
         SDL_SetRenderDrawColor(G.ren, c.r, c.g, c.b, c.a);
         SDL_RenderClear(G.ren);
