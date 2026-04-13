@@ -6,6 +6,16 @@
 
 static const char KEY;
 
+static void L_reg_get (lua_State* L, const char* t, int i) {
+    lua_pushlightuserdata(L, (void*)&KEY);  // ... | K
+    lua_gettable(L, LUA_REGISTRYINDEX);     // ... | G
+    lua_getfield(L, -1, t);                 // ... | G | T
+    lua_pushvalue(L, i);                    // ... | G | T | k
+    lua_gettable(L, -2);                    // ... | G | T | *v*
+    lua_replace(L, -3);                     // ... | *v* | T
+    lua_pop(L, 1);                          // ... | *v*
+}
+
 static float L_checkfieldnum (lua_State* L, int i, const char* k) {
     assert(i > 0);
     luaL_checktype(L, i, LUA_TTABLE);   // T
@@ -51,17 +61,13 @@ static Pico_Anchor c_anchor (lua_State* L, int i) {
     } else {
         int top = lua_gettop(L);
         if (lua_type(L, top) == LUA_TSTRING) {
-            lua_pushlightuserdata(L, (void*)&KEY);      // T | anc | K
-            lua_gettable(L, LUA_REGISTRYINDEX);         // T | anc | G
-            lua_getfield(L, -1, "anchors");             // T | anc | G | ancs
-            lua_pushvalue(L, top);                      // T | anc | G | ancs | anc
-            lua_gettable(L, -2);                        // T | anc | G | ancs | *anc*
+            L_reg_get(L, "anchors", top);               // T | anc | *anc*
             int ok = lua_islightuserdata(L, -1);
             if (!ok) {
                 luaL_error(L, "invalid anchor \"%s\"", lua_tostring(L, top));
             }
             Pico_Anchor* anc = lua_touserdata(L, -1);
-            lua_pop(L, 4);                              // T
+            lua_pop(L, 2);                              // T
             return *anc;
         } else if (lua_type(L, top) == LUA_TTABLE) {
             Pico_Anchor anc = (Pico_Anchor) {
@@ -107,17 +113,13 @@ static Pico_Color c_color_t (lua_State* L, int i) {
 static Pico_Color c_color_s (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TSTRING);   // clr = 'red'
-    lua_pushlightuserdata(L, (void*)&KEY);  // clr | . | K
-    lua_gettable(L, LUA_REGISTRYINDEX);     // clr | . | G
-    lua_getfield(L, -1, "colors");          // clr | . | G | clrs
-    lua_pushvalue(L, i);                    // clr | . | G | clrs | clr
-    lua_gettable(L, -2);                    // clr | . | G | clrs | *clr*
+    L_reg_get(L, "colors", i);              // clr | . | *clr*
     int ok = lua_islightuserdata(L, -1);
     if (!ok) {
         luaL_error(L, "invalid color \"%s\"", lua_tostring(L,i));
     }
     Pico_Color* clr = lua_touserdata(L, -1);
-    lua_pop(L, 3);
+    lua_pop(L, 1);
     return *clr;
 }
 
@@ -950,11 +952,7 @@ static int l_set_layer (lua_State* L) {
 
 static int l_set_style (lua_State* L) {
     const char* s = luaL_checkstring(L, 1);     // s
-    lua_pushlightuserdata(L, (void*)&KEY);      // s | K
-    lua_gettable(L, LUA_REGISTRYINDEX);         // s | G
-    lua_getfield(L, -1, "styles");              // s | G | styles
-    lua_pushvalue(L, 1);                        // s | G | styles | s
-    lua_gettable(L, -2);                        // s | G | styles | *s*
+    L_reg_get(L, "styles", 1);                  // s | *s*
 
     int ok;
     int ss = lua_tointegerx(L, -1, &ok);
@@ -1263,16 +1261,13 @@ static int l_input_event (lua_State* L) {
 
     int id = PICO_EVENT_ANY;
     if (lua_type(L,1) == LUA_TSTRING) {
-        lua_pushlightuserdata(L, (void*)&KEY);  // "e" | K
-        lua_gettable(L, LUA_REGISTRYINDEX);     // "e" | G
-        lua_getfield(L, -1, "events");          // "e" | G | events
-        lua_pushvalue(L, 1);                    // "e" | G | events | "e"
-        lua_gettable(L, -2);                    // "e" | G | events | e
+        L_reg_get(L, "events", 1);              // "e" | *e*
         int ok;
         id = lua_tointegerx(L, -1, &ok);
         if (!ok) {
             return luaL_error(L, "invalid event \"%s\"", lua_tostring(L,1));
         }
+        lua_pop(L, 1);                          // "e"
     }
 
     Pico_Event e;
