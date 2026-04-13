@@ -445,27 +445,12 @@ Pico_Abs_Dim pico_get_text_mode (
     Pico_Rel_Dim* dim
 );
 
-/// @brief Gets the current view configuration. NULL arguments are ignored.
-/// @param grid pointer to retrieve grid state
-/// @param dim pointer to retrieve world/logical dimensions
-/// @param tile pointer to retrieve tile dimensions in pixels
-/// @param target pointer to retrieve window target region
-/// @param source pointer to retrieve world source region
-/// @param clip pointer to retrieve world clipping region
-/// @param rot pointer to retrieve rotation settings
-/// @param flip pointer to retrieve flip state
-/// @sa pico_set_view
-void pico_get_view (
-    int* grid,
-    Pico_Abs_Dim* dim,
-    Pico_Abs_Dim* tile,
-    Pico_Rel_Rect* target,
-    Pico_Rel_Rect* source,
-    Pico_Rel_Rect* clip,
-    Pico_Rot* rot,
-    PICO_FLIP* flip,
-    unsigned char* alpha
-);
+void          pico_get_view      (const char* layer, Pico_Rel_Rect* clip, Pico_Abs_Dim* dim, Pico_Rel_Rect* dst, Pico_Rel_Rect* src, Pico_Abs_Dim* tile);
+Pico_Rel_Rect pico_get_view_clip (const char* layer);
+Pico_Abs_Dim  pico_get_view_dim  (const char* layer);
+Pico_Rel_Rect pico_get_view_dst  (const char* layer);
+Pico_Rel_Rect pico_get_view_src  (const char* layer);
+Pico_Abs_Dim  pico_get_view_tile (const char* layer);
 
 /// @brief Gets window properties. NULL arguments are ignored.
 /// @param title pointer to retrieve window title
@@ -498,27 +483,12 @@ void pico_set_window_show (int on);
 /// @return 1 if frame is valid, or 0 past EOF
 int pico_set_video (const char* key, int frame);
 
-/// @brief Sets the view configuration. NULL arguments are ignored.
-/// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
-/// @param dim world/logical dimensions (mode '#' = tiles, otherwise pixels)
-/// @param tile tile size in pixels (required when dim mode is '#')
-/// @param target target region within window
-/// @param source source region within world
-/// @param clip clipping region within world
-/// @param rot rotation settings (angle and anchor point)
-/// @param flip flip state (PICO_FLIP_NONE, PICO_FLIP_HORIZONTAL, PICO_FLIP_VERTICAL)
-/// @sa pico_get_view
-void pico_set_view (
-    int grid,
-    Pico_Rel_Dim*  dim,
-    Pico_Abs_Dim*  tile,
-    Pico_Rel_Rect* target,
-    Pico_Rel_Rect* source,
-    Pico_Rel_Rect* clip,
-    Pico_Rot* rot,
-    PICO_FLIP* flip,
-    unsigned char* alpha
-);
+void pico_set_view      (const char* layer, Pico_Rel_Rect* clip, Pico_Rel_Dim* dim, Pico_Rel_Rect* dst, Pico_Rel_Rect* src, Pico_Abs_Dim* tile);
+void pico_set_view_clip (const char* layer, Pico_Rel_Rect clip);
+void pico_set_view_dim  (const char* layer, Pico_Rel_Dim* dim);
+void pico_set_view_dst  (const char* layer, Pico_Rel_Rect dst);
+void pico_set_view_src  (const char* layer, Pico_Rel_Rect src);
+void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile);
 
 /// @brief Sets window properties. NULL/(-1) arguments are ignored.
 /// @param title window title (NULL to keep current)

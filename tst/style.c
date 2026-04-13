@@ -7,11 +7,7 @@ int main (void) {
         "Style", -1,
         &(Pico_Rel_Dim){ '!', {640, 480}, NULL }
     );
-    pico_set_view(
-        -1,
-        &(Pico_Rel_Dim){ '!', {64, 48}, NULL },
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL
-    );
+    pico_set_view_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
 
     // shapes used across tests
     Pico_Rel_Rect rect = {

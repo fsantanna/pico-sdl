@@ -8,9 +8,7 @@ int main (void) {
     // 01: target = bottom-right quadrant, draw centered rect
     {
         puts("target: bottom-right quadrant");
-        pico_set_view(-1, NULL, NULL,
-            &(Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE, NULL},
-            NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_dst(NULL, (Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE, NULL});
         pico_output_clear();
         pico_output_draw_rect(
             &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL}
@@ -33,9 +31,7 @@ int main (void) {
     // 03: reset target, draw same — should fill full window
     {
         puts("target: reset to full window");
-        pico_set_view(-1, NULL, NULL,
-            &(Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL},
-            NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_dst(NULL, (Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL});
         pico_output_clear();
         pico_set_draw_color(NULL, PICO_COLOR_WHITE);
         pico_output_draw_rect(
@@ -49,9 +45,7 @@ int main (void) {
         puts("target: explicit layer");
         pico_layer_empty(NULL, "bg", (Pico_Abs_Dim){32, 32}, NULL);
         pico_set_layer("bg");
-        pico_set_view(-1, NULL, NULL,
-            &(Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE, NULL},
-            NULL, NULL, NULL, NULL, NULL);
+        pico_set_view_dst(NULL, (Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE, NULL});
         pico_set_show_color(NULL, (Pico_Color){0x80, 0x00, 0x00, 0xFF});
         pico_output_clear();
         pico_set_draw_color(NULL, PICO_COLOR_WHITE);

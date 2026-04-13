@@ -2,9 +2,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_view(-1,
-        &(Pico_Rel_Dim){'!', {10, 10}, NULL},
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_view_dim(NULL, &(Pico_Rel_Dim){'!', {10, 10}, NULL});
 
     pico_output_clear();
     pico_set_draw_color(NULL, pico_color_alpha(pico_get_draw_color(NULL), 0x80));

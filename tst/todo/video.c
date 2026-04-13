@@ -32,11 +32,8 @@ int main (void) {
         "Video Player", -1,
         &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL}
     );
-    pico_set_view(
-        0,
-        &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL},
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL
-    );
+    pico_set_show_grid(NULL, 0);
+    pico_set_view_dim(NULL, &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL});
 
     pico_layer_video(NULL, "vid", VIDEO_PATH);
 
