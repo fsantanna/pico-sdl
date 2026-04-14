@@ -614,18 +614,6 @@ static void L_image_get_dim (lua_State* L, int i, const char* path) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_get_color_clear (lua_State* L) {
-    Pico_Color c = pico_get_show_color(NULL);
-    L_push_color(L, c);
-    return 1;
-}
-
-static int l_get_color_draw (lua_State* L) {
-    Pico_Color c = pico_get_draw_color(NULL);
-    L_push_color(L, c);
-    return 1;
-}
-
 static int l_get_image (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);  // path | [dim]
 
@@ -643,16 +631,6 @@ static int l_get_image (lua_State* L) {
     return 1;
 }
 
-static int l_get_font (lua_State* L) {
-    const char* font = pico_get_draw_font(NULL);
-    if (font == NULL) {
-        lua_pushnil(L);
-    } else {
-        lua_pushstring(L, font);
-    }
-    return 1;
-}
-
 static int l_get_layer (lua_State* L) {
     const char* name = pico_get_layer();
     if (name == NULL) {
@@ -660,13 +638,6 @@ static int l_get_layer (lua_State* L) {
     } else {
         lua_pushstring(L, name);
     }
-    return 1;
-}
-
-static int l_get_style (lua_State* L) {
-    PICO_STYLE s = pico_get_draw_style(NULL);
-    lua_pushinteger(L, s);                  // s
-    L_reg_get(L, "styles", lua_gettop(L));  // s | *str*
     return 1;
 }
 
@@ -925,15 +896,6 @@ static int l_set_mouse (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_set_font (lua_State* L) {
-    const char* path = NULL;
-    if (lua_gettop(L) >= 1 && !lua_isnil(L, 1)) {
-        path = luaL_checkstring(L, 1);
-    }
-    pico_set_draw_font(NULL, path);
-    return 0;
-}
-
 static int l_set_expert (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);     // ok | [fps]
     int on = lua_toboolean(L, 1);
@@ -950,38 +912,12 @@ static int l_set_expert (lua_State* L) {
     return 1;
 }
 
-static int l_set_color_clear (lua_State* L) {
-    Pico_Color clr = c_color_tis(L, 1);
-    pico_set_show_color(NULL, clr);
-    return 0;
-}
-
-static int l_set_color_draw (lua_State* L) {
-    Pico_Color clr = c_color_tis(L, 1);
-    pico_set_draw_color(NULL, clr);
-    return 0;
-}
-
 static int l_set_layer (lua_State* L) {
     const char* name = NULL;
     if (lua_gettop(L)>=1 && !lua_isnil(L, 1)) {
         name = luaL_checkstring(L, 1);
     }
     pico_set_layer(name);
-    return 0;
-}
-
-static int l_set_style (lua_State* L) {
-    const char* s = luaL_checkstring(L, 1);     // s
-    L_reg_get(L, "styles", 1);                  // s | *s*
-
-    int ok;
-    int ss = lua_tointegerx(L, -1, &ok);
-    if (!ok) {
-        luaL_error(L, "invalid style \"%s\"", s);
-    }
-
-    pico_set_draw_style(NULL, ss);
     return 0;
 }
 
@@ -1620,24 +1556,16 @@ static const luaL_Reg ll_color[] = {
 
 static const luaL_Reg ll_get[] = {
     { "draw",     l_get_draw   },
-    { "font",     l_get_font   },
     { "image",    l_get_image  },
     { "keyboard", l_get_keyboard },
     { "layer",    l_get_layer  },
     { "mouse",    l_get_mouse  },
     { "now",      l_get_now    },
     { "show",     l_get_show   },
-    { "style",    l_get_style  },
     { "text",     l_get_text   },
     { "video",    l_get_video  },
     { "view",     l_get_view   },
     { "window",   l_get_window },
-    { NULL, NULL }
-};
-
-static const luaL_Reg ll_get_color[] = {
-    { "clear", l_get_color_clear },
-    { "draw",  l_get_color_draw  },
     { NULL, NULL }
 };
 
@@ -1647,20 +1575,12 @@ static const luaL_Reg ll_set[] = {
     { "dim",    l_set_dim    },
     { "draw",   l_set_draw   },
     { "expert", l_set_expert },
-    { "font",   l_set_font   },
     { "layer",  l_set_layer  },
     { "mouse",  l_set_mouse  },
     { "show",   l_set_show   },
-    { "style",  l_set_style  },
     { "video",  l_set_video  },
     { "view",   l_set_view   },
     { "window", l_set_window },
-    { NULL, NULL }
-};
-
-static const luaL_Reg ll_set_color[] = {
-    { "clear", l_set_color_clear },
-    { "draw",  l_set_color_draw  },
     { NULL, NULL }
 };
 
@@ -1726,13 +1646,9 @@ int luaopen_pico_native (lua_State* L) {
     lua_setfield(L, -2, "color");           // pico
 
     luaL_newlib(L, ll_get);                 // pico | get
-    luaL_newlib(L, ll_get_color);           // pico | get | color
-    lua_setfield(L, -2, "color");           // pico | get
     lua_setfield(L, -2, "get");             // pico
 
     luaL_newlib(L, ll_set);                 // pico | set
-    luaL_newlib(L, ll_set_color);           // pico | set | color
-    lua_setfield(L, -2, "color");           // pico | set
     lua_setfield(L, -2, "set");             // pico
 
     luaL_newlib(L, ll_layer);               // pico | layer
