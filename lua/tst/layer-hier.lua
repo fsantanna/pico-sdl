@@ -15,7 +15,7 @@ pico.set.layer("L")
 pico.set.view({
     target = {'%', x=0.3, y=0.3, w=0.4, h=0.4, anchor='C'},
 })
-pico.set.show { color='white' }
+pico.set.show { keep=true, color='white' }
 pico.output.clear()
 pico.set.draw { color='red' }
 pico.output.draw.rect(
@@ -65,11 +65,10 @@ pico.check("layer-hier-04")
 -- transparent overlay with yellow background
 pico.layer.empty("root", "over", {w=500, h=500})
 pico.set.layer("over")
-pico.set.show { color={r=0xFF, g=0xFF, b=0x00} }
+pico.set.show { color={r=0xFF, g=0xFF, b=0x00}, alpha=0x80 }
 pico.output.clear()
 pico.set.view({
     target = {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'},
-    alpha = 0x80,
 })
 pico.set.layer("root")
 
