@@ -292,14 +292,6 @@ void pico_output_sound (const char* path);
 
 // GET
 
-void          pico_get_show          (const char* layer, Pico_Layer_Show* show);
-unsigned char pico_get_show_alpha    (const char* layer);
-Pico_Color    pico_get_show_color    (const char* layer);
-PICO_FLIP     pico_get_show_flip     (const char* layer);
-int           pico_get_show_grid     (const char* layer);
-int           pico_get_show_keep     (const char* layer);
-Pico_Rot      pico_get_show_rotate   (const char* layer);
-
 void        pico_get_draw       (const char* layer, Pico_Layer_Draw* draw);
 Pico_Color  pico_get_draw_color (const char* layer);
 const char* pico_get_draw_font  (const char* layer);
@@ -316,15 +308,23 @@ int pico_get_expert (int* fps);
 /// @return absolute dimensions (missing w or h filled based on aspect ratio)
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 
+/// @brief Gets current layer key.
+/// @return layer key (NULL = main layer)
+const char* pico_get_layer (void);
+
+void          pico_get_show          (const char* layer, Pico_Layer_Show* show);
+unsigned char pico_get_show_alpha    (const char* layer);
+Pico_Color    pico_get_show_color    (const char* layer);
+PICO_FLIP     pico_get_show_flip     (const char* layer);
+int           pico_get_show_grid     (const char* layer);
+int           pico_get_show_keep     (const char* layer);
+Pico_Rot      pico_get_show_rotate   (const char* layer);
+
 /// @brief Gets video properties.
 /// @param path path to the Y4M video file
 /// @param rect optional rect with w/h to complete (NULL ok)
 /// @return video properties (dim, fps, frame, done)
 Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
-
-/// @brief Gets current layer key.
-/// @return layer key (NULL = main layer)
-const char* pico_get_layer (void);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -484,13 +484,9 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 
 // SET
 
-void pico_set_show          (const char* layer, Pico_Layer_Show show);
-void pico_set_show_alpha    (const char* layer, unsigned char alpha);
-void pico_set_show_color    (const char* layer, Pico_Color color);
-void pico_set_show_flip     (const char* layer, PICO_FLIP flip);
-void pico_set_show_grid     (const char* layer, int on);
-void pico_set_show_keep     (const char* layer, int on);
-void pico_set_show_rotate   (const char* layer, Pico_Rot rotate);
+/// @brief Sets both window and world to the same dimensions.
+/// @param dim dimensions for both window and world
+void pico_set_dim (Pico_Rel_Dim* dim);
 
 void pico_set_draw       (const char* layer, Pico_Layer_Draw draw);
 void pico_set_draw_color (const char* layer, Pico_Color color);
@@ -499,7 +495,14 @@ void pico_set_draw_style (const char* layer, PICO_STYLE style);
 
 int pico_set_expert (int on, int fps);
 void pico_set_layer (const char* key);
-void pico_set_window_show (int on);
+
+void pico_set_show          (const char* layer, Pico_Layer_Show show);
+void pico_set_show_alpha    (const char* layer, unsigned char alpha);
+void pico_set_show_color    (const char* layer, Pico_Color color);
+void pico_set_show_flip     (const char* layer, PICO_FLIP flip);
+void pico_set_show_grid     (const char* layer, int on);
+void pico_set_show_keep     (const char* layer, int on);
+void pico_set_show_rotate   (const char* layer, Pico_Rot rotate);
 
 /// @brief Syncs a video layer to a target frame.
 /// Supports forward and backward seeking.
@@ -515,15 +518,13 @@ void pico_set_view_dst  (const char* layer, Pico_Rel_Rect dst);
 void pico_set_view_src  (const char* layer, Pico_Rel_Rect src);
 void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile);
 
+void pico_set_window_show (int on);
+
 /// @brief Sets window properties. NULL/(-1) arguments are ignored.
 /// @param title window title (NULL to keep current)
 /// @param fs fullscreen: 1=enable, 0=disable, -1=unchanged
 /// @param dim window dimensions (NULL to keep current)
 void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim);
-
-/// @brief Sets both window and world to the same dimensions.
-/// @param dim dimensions for both window and world
-void pico_set_dim (Pico_Rel_Dim* dim);
 
 /// @}
 

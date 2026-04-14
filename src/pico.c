@@ -561,50 +561,6 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
 // SET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_set_show (const char* layer, Pico_Layer_Show show) {
-    _pico_guard();
-    _pico_layer_null(layer)->show = show;
-    _pico_output_present(0);
-}
-
-void pico_set_show_alpha (const char* layer, unsigned char alpha) {
-    _pico_guard();
-    _pico_layer_null(layer)->show.alpha = alpha;
-    _pico_output_present(0);
-}
-
-void pico_set_show_color (const char* layer, Pico_Color color) {
-    _pico_guard();
-    _pico_layer_null(layer)->show.color = color;
-    _pico_output_present(0);
-}
-
-void pico_set_show_flip (const char* layer, PICO_FLIP flip) {
-    _pico_guard();
-    _pico_layer_null(layer)->show.flip = flip;
-    _pico_output_present(0);
-}
-
-void pico_set_show_grid (const char* layer, int on) {
-    _pico_guard();
-    _pico_layer_null(layer)->show.grid = on;
-    _pico_output_present(0);
-}
-
-void pico_set_show_keep (const char* layer, int on) {
-    _pico_guard();
-    Pico_Layer* L = _pico_layer_null(layer);
-    assert(L->type!=PICO_LAYER_ROOT && "cannot set keep on root");
-    assert(L->type!=PICO_LAYER_SUB  && "cannot set keep on sub-layer");
-    L->show.keep = on;
-}
-
-void pico_set_show_rotate (const char* layer, Pico_Rot rotate) {
-    _pico_guard();
-    _pico_layer_null(layer)->show.rotate = rotate;
-    _pico_output_present(0);
-}
-
 void pico_set_draw (const char* layer, Pico_Layer_Draw draw) {
     _pico_guard();
     _pico_layer_null(layer)->draw = draw;
@@ -664,14 +620,48 @@ void pico_set_layer (const char* key) {
     SDL_RenderSetClipRect(G.ren, &r);
 }
 
-void pico_set_window_show (int on) {
+void pico_set_show (const char* layer, Pico_Layer_Show show) {
     _pico_guard();
-    if (on) {
-        SDL_ShowWindow(G.win);
-        _pico_output_present(0);
-    } else {
-        SDL_HideWindow(G.win);
-    }
+    _pico_layer_null(layer)->show = show;
+    _pico_output_present(0);
+}
+
+void pico_set_show_alpha (const char* layer, unsigned char alpha) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.alpha = alpha;
+    _pico_output_present(0);
+}
+
+void pico_set_show_color (const char* layer, Pico_Color color) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.color = color;
+    _pico_output_present(0);
+}
+
+void pico_set_show_flip (const char* layer, PICO_FLIP flip) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.flip = flip;
+    _pico_output_present(0);
+}
+
+void pico_set_show_grid (const char* layer, int on) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.grid = on;
+    _pico_output_present(0);
+}
+
+void pico_set_show_keep (const char* layer, int on) {
+    _pico_guard();
+    Pico_Layer* L = _pico_layer_null(layer);
+    assert(L->type!=PICO_LAYER_ROOT && "cannot set keep on root");
+    assert(L->type!=PICO_LAYER_SUB  && "cannot set keep on sub-layer");
+    L->show.keep = on;
+}
+
+void pico_set_show_rotate (const char* layer, Pico_Rot rotate) {
+    _pico_guard();
+    _pico_layer_null(layer)->show.rotate = rotate;
+    _pico_output_present(0);
 }
 
 void pico_set_view (const char* layer, Pico_Layer_View view) {
@@ -775,6 +765,16 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
     }
 
     _pico_output_present(0);
+}
+
+void pico_set_window_show (int on) {
+    _pico_guard();
+    if (on) {
+        SDL_ShowWindow(G.win);
+        _pico_output_present(0);
+    } else {
+        SDL_HideWindow(G.win);
+    }
 }
 
 #define PICO_MEM_C
