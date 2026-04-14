@@ -276,11 +276,28 @@ static Pico_Layer* _layer (const char* layer) {
   `pico.set.draw`; updated `pico.get/set.show` and
   `pico.get.view` field lists
 
-## Remaining
+### 8. Alpha-sort + doxygen polish [x]
 
-- update `valgrind.supp` line number if needed
-- swap GET order in `lua/pico.c` (show before draw)
-- expert mode API redesign (see `expert.md` plan)
+- [x] `src/pico.h` GET/SET alpha-sorted within blocks
+  (draw, expert, image, layer, show, video / keyboard,
+  mouse, now, text, view, window, window_show)
+- [x] `src/pico.c` GET/SET alpha-sorted; misplaced
+  `pico_set_mouse` moved from GET to SET; `_pico_keyboard`
+  helper relocated; `pico_set_dim` moved before
+  `pico_set_draw`
+- [x] `lua/pico.c` GET/SET alpha-sorted (helpers
+  `L_push_rel_rect`, `L_set_keyboard`, `L_set_mouse`
+  hoisted to top of GET section)
+- [x] `src/pico.h` doxygen: 9 new blocks (6 bulks +
+  3 standalones) plus `@sa` cross-refs on 12 existing
+  entries
+- [x] `valgrind.supp` line `src:pico.c:N` updated to
+  match current `SDL_Init` line
+
+## Done. Remaining work moved to side plans:
+
+- `expert.md` — `pico_set_expert` ms semantics rewrite
+- `window.md` — `Pico_Window` bulk struct redesign
 
 ## Verification
 
