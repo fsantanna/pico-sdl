@@ -65,7 +65,7 @@ pico.check("layer-hier-04")
 -- transparent overlay with yellow background
 pico.layer.empty("root", "over", {w=500, h=500})
 pico.set.layer("over")
-pico.set.show { color={'!', r=0xFF, g=0xFF, b=0x00} }
+pico.set.show { color={r=0xFF, g=0xFF, b=0x00} }
 pico.output.clear()
 pico.set.view({
     target = {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'},
