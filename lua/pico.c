@@ -64,6 +64,100 @@ static Pico_Abs_Rect c_abs_rect (lua_State* L, int i) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static char c_mode (lua_State* L, int i, int asr) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);
+    char mode = '!';
+    lua_geti(L, i, 1);                          // T | [1]
+    if (!lua_isnil(L, -1)) {
+        if (!lua_isstring(L, -1)) {
+            luaL_error(L, "invalid mode at index 1");
+        }
+        const char* s = lua_tostring(L, -1);
+        mode = s[0];
+    } else if (asr) {
+        luaL_error(L, "invalid mode at index 1");
+    }
+    lua_pop(L, 1);                              // T
+    if (mode!='w' && mode!='!' && mode!='%' && mode!='#') {
+        luaL_error(L, "invalid mode '%c': expected '!', '%%', or '#'", mode);
+    }
+    return mode;
+}
+
+// Detect optional realm mode as first arg.
+// Returns mode char or '\0' when no mode is set.
+static int c_mode_opt (lua_State* L) {
+    if (!lua_isstring(L, 1)) {
+        return '\0';
+    }
+    const char* ms = lua_tostring(L, 1);
+    if (strlen(ms) > 1) {
+        return '\0';
+    }
+    char m = ms[0];
+    if (m!='!' && m!='=' && m!='~') {
+        return '\0';
+    }
+    return ms[0];
+}
+
+static Pico_Color c_color_s (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TSTRING);   // clr = 'red'
+    L_reg_get(L, "colors", i);              // clr | . | *clr*
+    int ok = lua_islightuserdata(L, -1);
+    if (!ok) {
+        luaL_error(L, "invalid color \"%s\"", lua_tostring(L,i));
+    }
+    Pico_Color* clr = lua_touserdata(L, -1);
+    lua_pop(L, 1);
+    return *clr;
+}
+
+static Pico_Color c_color_t (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { ['!'|'%'], r,g,b[,a] }
+
+    char mode = c_mode(L, i, 0);
+    if (mode!='!' && mode!='%') {
+        luaL_error(L, "invalid mode '%c': expected '!', '%%'", mode);
+    }
+
+    float a = (mode == '%') ? 1.0 : 0xFF;
+    lua_getfield(L, i, "a");                // T | a
+    if (!lua_isnil(L,-1)) {
+        a = L_checkfieldnum(L, i, "a");
+    }
+    lua_pop(L, 1);                          // T
+
+    float r = L_checkfieldnum(L, i, "r");
+    float g = L_checkfieldnum(L, i, "g");
+    float b = L_checkfieldnum(L, i, "b");
+
+    if (mode == '%') {
+        return (Pico_Color) { r*255, g*255, b*255, a*255 };
+    } else {
+        return (Pico_Color) { r, g, b, a };
+    }
+}
+
+static Pico_Color c_color_tis (lua_State* L, int i) {
+    assert(i > 0);
+    if (lua_type(L,i) == LUA_TSTRING) {
+        return c_color_s(L, i);
+    } else if (lua_isinteger(L, i)) {
+        return pico_color_hex((uint32_t)lua_tointeger(L, i));
+    } else {
+        luaL_checktype(L, i, LUA_TTABLE);
+        return c_color_t(L, i);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+
 static Pico_Anchor c_anchor (lua_State* L, int i) {
     assert(i > 0);
     lua_getfield(L, i, "anchor");                   // T | anchor
@@ -136,99 +230,35 @@ static void c_buffer_fill (lua_State* L, int i, Pico_Abs_Dim dim,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Color c_color_s (lua_State* L, int i) {
-    assert(i > 0);
-    assert(lua_type(L,i) == LUA_TSTRING);   // clr = 'red'
-    L_reg_get(L, "colors", i);              // clr | . | *clr*
-    int ok = lua_islightuserdata(L, -1);
-    if (!ok) {
-        luaL_error(L, "invalid color \"%s\"", lua_tostring(L,i));
-    }
-    Pico_Color* clr = lua_touserdata(L, -1);
-    lua_pop(L, 1);
-    return *clr;
-}
-
-static Pico_Color c_color_t (lua_State* L, int i) {
-    assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);    // clr = { ['!'|'%'], r,g,b[,a] }
-
-    char mode = c_mode(L, i, 0);
-    if (mode!='!' && mode!='%') {
-        luaL_error(L, "invalid mode '%c': expected '!', '%%'", mode);
-    }
-
-    float a = (mode == '%') ? 1.0 : 0xFF;
-    lua_getfield(L, i, "a");                // T | a
-    if (!lua_isnil(L,-1)) {
-        a = L_checkfieldnum(L, i, "a");
-    }
-    lua_pop(L, 1);                          // T
-
-    float r = L_checkfieldnum(L, i, "r");
-    float g = L_checkfieldnum(L, i, "g");
-    float b = L_checkfieldnum(L, i, "b");
-
-    if (mode == '%') {
-        return (Pico_Color) { r*255, g*255, b*255, a*255 };
-    } else {
-        return (Pico_Color) { r, g, b, a };
-    }
-}
-
-static Pico_Color c_color_tis (lua_State* L, int i) {
-    assert(i > 0);
-    if (lua_type(L,i) == LUA_TSTRING) {
-        return c_color_s(L, i);
-    } else if (lua_isinteger(L, i)) {
-        return pico_color_hex((uint32_t)lua_tointeger(L, i));
-    } else {
-        luaL_checktype(L, i, LUA_TTABLE);
-        return c_color_t(L, i);
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-static char c_mode (lua_State* L, int i, int asr) {
+static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
-    char mode = '!';
-    lua_geti(L, i, 1);                          // T | [1]
+
+    char mode = c_mode(L, i, 1);
+    Pico_Anchor anc = c_anchor(L, i);
+
+    lua_getfield(L, i, "up");               // T | up
+    Pico_Rel_Rect* up = NULL;
     if (!lua_isnil(L, -1)) {
-        if (!lua_isstring(L, -1)) {
-            luaL_error(L, "invalid mode at index 1");
-        }
-        const char* s = lua_tostring(L, -1);
-        mode = s[0];
-    } else if (asr) {
-        luaL_error(L, "invalid mode at index 1");
+        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
+        lua_replace(L, -2);                 // T | ud
+    } else {
+        lua_pop(L, 1);                      // T
     }
-    lua_pop(L, 1);                              // T
-    if (mode!='w' && mode!='!' && mode!='%' && mode!='#') {
-        luaL_error(L, "invalid mode '%c': expected '!', '%%', or '#'", mode);
-    }
-    return mode;
-}
 
-// Detect optional realm mode as first arg.
-// Returns mode char or '\0' when no mode is set.
-static int c_mode_opt (lua_State* L) {
-    if (!lua_isstring(L, 1)) {
-        return '\0';
-    }
-    const char* ms = lua_tostring(L, 1);
-    if (strlen(ms) > 1) {
-        return '\0';
-    }
-    char m = ms[0];
-    if (m!='!' && m!='=' && m!='~') {
-        return '\0';
-    }
-    return ms[0];
-}
+    Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
+    *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
+        .mode = mode,
+        .x = L_checkfieldnum(L, i, "x"),
+        .y = L_checkfieldnum(L, i, "y"),
+        .w = L_checkfieldnum(L, i, "w"),
+        .h = L_checkfieldnum(L, i, "h"),
+        .anchor = anc,
+        .up = up,
+    };
 
-///////////////////////////////////////////////////////////////////////////////
+    return r;                               // T | *ud*
+}
 
 static Pico_Rel_Dim* c_rel_dim (lua_State* L, int i) {
     assert(i > 0);
@@ -282,36 +312,6 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     };
 
     return p;                               // T | *ud*
-}
-
-static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
-    assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);
-
-    char mode = c_mode(L, i, 1);
-    Pico_Anchor anc = c_anchor(L, i);
-
-    lua_getfield(L, i, "up");               // T | up
-    Pico_Rel_Rect* up = NULL;
-    if (!lua_isnil(L, -1)) {
-        up = c_rel_rect(L, lua_gettop(L));  // T | up | ud
-        lua_replace(L, -2);                 // T | ud
-    } else {
-        lua_pop(L, 1);                      // T
-    }
-
-    Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
-    *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
-        .mode = mode,
-        .x = L_checkfieldnum(L, i, "x"),
-        .y = L_checkfieldnum(L, i, "y"),
-        .w = L_checkfieldnum(L, i, "w"),
-        .h = L_checkfieldnum(L, i, "h"),
-        .anchor = anc,
-        .up = up,
-    };
-
-    return r;                               // T | *ud*
 }
 
 ///////////////////////////////////////////////////////////////////////////////
