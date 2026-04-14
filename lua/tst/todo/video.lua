@@ -65,7 +65,7 @@ while true do
               w=win_w, h=win_h - BAR_H*2, anchor='C'})
 
     -- Draw seek bar background
-    pico.set.color.draw({'!', r=0x40, g=0x40, b=0x40})
+    pico.set.draw { color={'!', r=0x40, g=0x40, b=0x40} }
     pico.output.draw.rect(
         {'!', x=0, y=win_h - BAR_H*2,
               w=win_w, h=BAR_H, anchor='NW'})
@@ -73,7 +73,7 @@ while true do
     -- Draw seek bar progress
     local pct = frame / (total - 1)
     local bar_w = math.floor(pct * win_w)
-    pico.set.color.draw({'!', r=0x00, g=0xAA, b=0xFF})
+    pico.set.draw { color={'!', r=0x00, g=0xAA, b=0xFF} }
     pico.output.draw.rect(
         {'!', x=0, y=win_h - BAR_H*2,
               w=bar_w, h=BAR_H, anchor='NW'})
@@ -82,7 +82,7 @@ while true do
     local label = string.format("frame %d/%d  speed %.1fx%s",
         frame, total - 1, speed,
         paused and "  [PAUSED]" or "")
-    pico.set.color.draw('white')
+    pico.set.draw { color='white' }
     pico.output.draw.text(label,
         {'!', x=2, y=win_h - BAR_H,
               w=0, h=BAR_H, anchor='NW'})

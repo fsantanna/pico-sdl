@@ -11,7 +11,7 @@ pico.layer.empty('!', nil, "A", {w=120, h=50})
 pico.set.layer("A")
 pico.set.show { color='navy' }
 pico.output.clear()
-pico.set.color.draw('white')
+pico.set.draw { color='white' }
 pico.output.draw.rect(btn1)
 pico.output.draw.rect(btn2)
 pico.output.draw.rect(btn3)

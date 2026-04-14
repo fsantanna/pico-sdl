@@ -12,9 +12,9 @@ local m = {'!', x=5, y=5}        -- mouse pixel
 
 while true do
     pico.output.clear()
-    pico.set.color.draw 'red'
+    pico.set.draw { color='red' }
     pico.output.draw.pixel(m)
-    pico.set.color.draw 'blue'
+    pico.set.draw { color='blue' }
     pico.output.draw.pixel(k)
     pico.output.present()
 
