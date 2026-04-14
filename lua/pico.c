@@ -158,8 +158,6 @@ static Pico_Color C_color_tis (lua_State* L, int i) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-
 static Pico_Anchor C_anchor (lua_State* L, int i) {
     assert(i > 0);
     lua_getfield(L, i, "anchor");                   // T | anchor
@@ -314,6 +312,105 @@ static Pico_Rel_Pos* C_rel_pos (lua_State* L, int i) {
     };
 
     return p;                               // T | *ud*
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+static void L_dim_default_wh (lua_State* L, int i) {
+    lua_getfield(L, i, "w");
+    if (lua_isnil(L, -1)) {
+        lua_pushinteger(L, 0);
+        lua_setfield(L, i, "w");
+    }
+    lua_pop(L, 1);
+    lua_getfield(L, i, "h");
+    if (lua_isnil(L, -1)) {
+        lua_pushinteger(L, 0);
+        lua_setfield(L, i, "h");
+    }
+    lua_pop(L, 1);
+}
+
+static void L_image_get_dim (lua_State* L, int i, const char* path) {
+    assert(i > 0);
+    luaL_checktype(L, i, LUA_TTABLE);               // rel
+    L_dim_default_wh(L, i);
+
+    Pico_Rel_Dim* dim = C_rel_dim(L, i);            // rel | ud
+    Pico_Abs_Dim abs = pico_get_image(path, dim);
+    lua_pop(L, 1);                                  // rel
+
+    lua_pushnumber(L, dim->w);
+    lua_setfield(L, i, "w");
+    lua_pushnumber(L, dim->h);
+    lua_setfield(L, i, "h");
+
+    lua_newtable(L);                                // rel | abs
+    lua_pushnumber(L, abs.w);                       // rel | abs | w
+    lua_setfield(L, -2, "w");                       // rel | abs
+    lua_pushnumber(L, abs.h);                       // rel | abs | h
+    lua_setfield(L, -2, "h");                       // rel | *abs*
+}
+
+static void L_push_color (lua_State* L, Pico_Color clr) {
+    lua_newtable(L);
+    lua_pushinteger(L, clr.r);
+    lua_setfield(L, -2, "r");
+    lua_pushinteger(L, clr.g);
+    lua_setfield(L, -2, "g");
+    lua_pushinteger(L, clr.b);
+    lua_setfield(L, -2, "b");
+    lua_pushinteger(L, clr.a);
+    lua_setfield(L, -2, "a");
+}
+
+static void L_push_rel_rect (lua_State* L, Pico_Rel_Rect* r) {
+    lua_newtable(L);
+    char mode[2] = { r->mode, '\0' };
+    lua_pushstring(L, mode);
+    lua_rawseti(L, -2, 1);
+    lua_pushnumber(L, r->x);
+    lua_setfield(L, -2, "x");
+    lua_pushnumber(L, r->y);
+    lua_setfield(L, -2, "y");
+    lua_pushnumber(L, r->w);
+    lua_setfield(L, -2, "w");
+    lua_pushnumber(L, r->h);
+    lua_setfield(L, -2, "h");
+    lua_newtable(L);
+    lua_pushnumber(L, r->anchor.x);
+    lua_setfield(L, -2, "x");
+    lua_pushnumber(L, r->anchor.y);
+    lua_setfield(L, -2, "y");
+    lua_setfield(L, -2, "anchor");
+}
+
+static void L_set_keyboard (lua_State* L, int idx, Pico_Keyboard* k) {
+    const char* name = SDL_GetKeyName(k->key);
+    lua_pushstring(L, name);                    // T | key
+    lua_setfield(L, idx, "key");                // T
+    lua_pushboolean(L, k->ctrl);                // T | ctrl
+    lua_setfield(L, idx, "ctrl");               // T
+    lua_pushboolean(L, k->shift);               // T | shift
+    lua_setfield(L, idx, "shift");              // T
+    lua_pushboolean(L, k->alt);                 // T | alt
+    lua_setfield(L, idx, "alt");                // T
+}
+
+static void L_set_mouse (lua_State* L, int idx, Pico_Mouse* m) {
+    lua_pushstring(L, (char[]){m->mode, 0});    // T | mode
+    lua_seti(L, idx, 1);                        // T
+    lua_pushnumber(L, m->x);                    // T | x
+    lua_setfield(L, idx, "x");                  // T
+    lua_pushnumber(L, m->y);                    // T | y
+    lua_setfield(L, idx, "y");                  // T
+    lua_pushboolean(L, m->left);                // T | left
+    lua_setfield(L, idx, "left");               // T
+    lua_pushboolean(L, m->right);               // T | right
+    lua_setfield(L, idx, "right");              // T
+    lua_pushboolean(L, m->middle);              // T | middle
+    lua_setfield(L, idx, "middle");             // T
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -563,18 +660,6 @@ static int l_vs_rect_rect (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static void L_push_color (lua_State* L, Pico_Color clr) {
-    lua_newtable(L);
-    lua_pushinteger(L, clr.r);
-    lua_setfield(L, -2, "r");
-    lua_pushinteger(L, clr.g);
-    lua_setfield(L, -2, "g");
-    lua_pushinteger(L, clr.b);
-    lua_setfield(L, -2, "b");
-    lua_pushinteger(L, clr.a);
-    lua_setfield(L, -2, "a");
-}
-
 static int l_color_darker (lua_State* L) {
     Pico_Color clr = C_color_tis(L, 1);
     float pct = luaL_checknumber(L, 2);
@@ -605,96 +690,6 @@ static int l_color_alpha (lua_State* L) {
     Pico_Color ret = pico_color_alpha(clr, a);
     L_push_color(L, ret);
     return 1;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-static void L_dim_default_wh (lua_State* L, int i) {
-    lua_getfield(L, i, "w");
-    if (lua_isnil(L, -1)) {
-        lua_pushinteger(L, 0);
-        lua_setfield(L, i, "w");
-    }
-    lua_pop(L, 1);
-    lua_getfield(L, i, "h");
-    if (lua_isnil(L, -1)) {
-        lua_pushinteger(L, 0);
-        lua_setfield(L, i, "h");
-    }
-    lua_pop(L, 1);
-}
-
-static void L_image_get_dim (lua_State* L, int i, const char* path) {
-    assert(i > 0);
-    luaL_checktype(L, i, LUA_TTABLE);               // rel
-    L_dim_default_wh(L, i);
-
-    Pico_Rel_Dim* dim = C_rel_dim(L, i);            // rel | ud
-    Pico_Abs_Dim abs = pico_get_image(path, dim);
-    lua_pop(L, 1);                                  // rel
-
-    lua_pushnumber(L, dim->w);
-    lua_setfield(L, i, "w");
-    lua_pushnumber(L, dim->h);
-    lua_setfield(L, i, "h");
-
-    lua_newtable(L);                                // rel | abs
-    lua_pushnumber(L, abs.w);                       // rel | abs | w
-    lua_setfield(L, -2, "w");                       // rel | abs
-    lua_pushnumber(L, abs.h);                       // rel | abs | h
-    lua_setfield(L, -2, "h");                       // rel | *abs*
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-// Helpers (used by GET section below and event handling later)
-
-static void L_push_rel_rect (lua_State* L, Pico_Rel_Rect* r) {
-    lua_newtable(L);
-    char mode[2] = { r->mode, '\0' };
-    lua_pushstring(L, mode);
-    lua_rawseti(L, -2, 1);
-    lua_pushnumber(L, r->x);
-    lua_setfield(L, -2, "x");
-    lua_pushnumber(L, r->y);
-    lua_setfield(L, -2, "y");
-    lua_pushnumber(L, r->w);
-    lua_setfield(L, -2, "w");
-    lua_pushnumber(L, r->h);
-    lua_setfield(L, -2, "h");
-    lua_newtable(L);
-    lua_pushnumber(L, r->anchor.x);
-    lua_setfield(L, -2, "x");
-    lua_pushnumber(L, r->anchor.y);
-    lua_setfield(L, -2, "y");
-    lua_setfield(L, -2, "anchor");
-}
-
-static void L_set_keyboard (lua_State* L, int idx, Pico_Keyboard* k) {
-    const char* name = SDL_GetKeyName(k->key);
-    lua_pushstring(L, name);                    // T | key
-    lua_setfield(L, idx, "key");                // T
-    lua_pushboolean(L, k->ctrl);                // T | ctrl
-    lua_setfield(L, idx, "ctrl");               // T
-    lua_pushboolean(L, k->shift);               // T | shift
-    lua_setfield(L, idx, "shift");              // T
-    lua_pushboolean(L, k->alt);                 // T | alt
-    lua_setfield(L, idx, "alt");                // T
-}
-
-static void L_set_mouse (lua_State* L, int idx, Pico_Mouse* m) {
-    lua_pushstring(L, (char[]){m->mode, 0});    // T | mode
-    lua_seti(L, idx, 1);                        // T
-    lua_pushnumber(L, m->x);                    // T | x
-    lua_setfield(L, idx, "x");                  // T
-    lua_pushnumber(L, m->y);                    // T | y
-    lua_setfield(L, idx, "y");                  // T
-    lua_pushboolean(L, m->left);                // T | left
-    lua_setfield(L, idx, "left");               // T
-    lua_pushboolean(L, m->right);               // T | right
-    lua_setfield(L, idx, "right");              // T
-    lua_pushboolean(L, m->middle);              // T | middle
-    lua_setfield(L, idx, "middle");             // T
 }
 
 ///////////////////////////////////////////////////////////////////////////////
