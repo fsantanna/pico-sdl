@@ -9,10 +9,10 @@ params (`title`, `fs`, `dim`) and NULL/-1 sentinels for
 struct. Promote window state to a first-class bulk struct
 matching the rest of the API.
 
-## Status: implementation complete, tests not yet run
+## Status: complete
 
 All steps 1–6 done. `make tests` and `cd lua/ && make tests`
-not yet executed. Restart point: run those two test suites.
+both pass.
 
 ## Final struct
 
@@ -156,7 +156,7 @@ Lua table key is `fullscreen` (not `fs`) for backward compat.
 
 ## Verification
 
-Not yet run:
+Both suites pass:
 ```bash
 make tests
 cd lua/ && make tests

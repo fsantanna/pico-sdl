@@ -762,25 +762,24 @@ void pico_set_window_fs (int fs) {
     _pico_guard();
     if (fs == S.win.fs) {
         return;
-    } else {
-        static Pico_Abs_Dim _old;
-        Pico_Abs_Dim new;
-        G.fsing = 1;
-        if (fs) {
-            _old = S.win.dim;
-            int ret = SDL_SetWindowFullscreen(G.win, SDL_WINDOW_FULLSCREEN_DESKTOP);
-            pico_assert(ret == 0);
-            pico_input_delay(50);    // TODO: required for some reason
-            SDL_GetWindowSize(G.win, &new.w, &new.h);
-        } else {
-            pico_assert(0 == SDL_SetWindowFullscreen(G.win, 0));
-            new = _old;
-        }
-        S.win.fs = fs;
-        S.win.dim = new;
-        SDL_SetWindowSize(G.win, new.w, new.h);
-        _pico_output_present(0);
     }
+    static Pico_Abs_Dim _old;
+    Pico_Abs_Dim new;
+    G.fsing = 1;
+    if (fs) {
+        _old = S.win.dim;
+        int ret = SDL_SetWindowFullscreen(G.win, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        pico_assert(ret == 0);
+        pico_input_delay(50);    // TODO: required for some reason
+        SDL_GetWindowSize(G.win, &new.w, &new.h);
+    } else {
+        pico_assert(0 == SDL_SetWindowFullscreen(G.win, 0));
+        new = _old;
+    }
+    S.win.fs = fs;
+    S.win.dim = new;
+    SDL_SetWindowSize(G.win, new.w, new.h);
+    _pico_output_present(0);
 }
 
 void pico_set_window_show (int on) {
