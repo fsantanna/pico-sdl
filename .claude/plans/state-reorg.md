@@ -253,9 +253,26 @@ static Pico_Layer* _layer (const char* layer) {
 ## Remaining
 
 - update `valgrind.supp` line number if needed
-- Lua: individual show/draw/view set/get via key filtering
-  - setter: `pico.set.show { field=value }` — sets only passed keys
-  - getter: `pico.get.show { field=true }` — returns only requested fields
+- Lua: drop individual getters/setters; use bulk only
+  - getter: `pico.get.show().keep` — Lua field access on
+    bulk result
+  - setter: `pico.set.show { field=value }` — partial
+    table sets only passed keys (already works)
+  - remove individual C functions: `l_get/set_font`,
+    `l_get/set_style`, `l_get/set_color_draw`,
+    `l_get/set_color_clear`
+  - remove entries from `ll_get`, `ll_set`, `ll_get_color`,
+    `ll_set_color`; drop `ll_get_color`/`ll_set_color`
+    tables entirely (only had `clear`/`draw`)
+  - migrate ~48 caller files (tests + docs):
+      - `pico.get.font()`        → `pico.get.draw().font`
+      - `pico.get.style()`       → `pico.get.draw().style`
+      - `pico.get.color.clear()` → `pico.get.show().color`
+      - `pico.get.color.draw()`  → `pico.get.draw().color`
+      - `pico.set.font(p)`       → `pico.set.draw{font=p}`
+      - `pico.set.style(s)`      → `pico.set.draw{style=s}`
+      - `pico.set.color.clear(c)`→ `pico.set.show{color=c}`
+      - `pico.set.color.draw(c)` → `pico.set.draw{color=c}`
 - swap GET order in pico.c (show before draw)
 
 ## Verification
