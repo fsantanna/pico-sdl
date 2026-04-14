@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("View Target", -1, NULL);
+    pico_set_window_title("View Target");
 
     // 01: target = bottom-right quadrant, draw centered rect
     {

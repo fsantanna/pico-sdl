@@ -5,10 +5,9 @@ int main (void) {
     pico_init(1);
 
     // 4x4 grid of 4x4 pixel tiles = 16x16 logical world
-    Pico_Rel_Dim phy  = { '!', {160, 160}, NULL };
     Pico_Rel_Dim log  = { '#', {4, 4}, NULL };
     Pico_Abs_Dim tile = { 4, 4 };
-    pico_set_window("Tile", -1, &phy);
+    pico_set_window((Pico_Window){ .dim={160,160}, .fs=0, .show=1, .title="Tile" });
     pico_set_view_tile(NULL, tile); pico_set_view_dim(NULL, &log);
 
     // 4x4 pixel white tile

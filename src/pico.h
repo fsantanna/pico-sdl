@@ -129,6 +129,13 @@ typedef struct {
     Pico_Rel_Rect clip;
 } Pico_Layer_View;
 
+typedef struct {
+    Pico_Abs_Dim dim;
+    int          fs;
+    int          show;
+    const char*  title;
+} Pico_Window;
+
 /// @}
 
 /// @defgroup Init
@@ -487,17 +494,14 @@ Pico_Rel_Rect pico_get_view_dst  (const char* layer);
 Pico_Rel_Rect pico_get_view_src  (const char* layer);
 Pico_Abs_Dim  pico_get_view_tile (const char* layer);
 
-/// @brief Gets window properties. NULL arguments are ignored.
-/// @param title pointer to retrieve window title
-/// @param fs pointer to retrieve fullscreen state
-/// @param dim pointer to retrieve window dimensions
+/// @brief Gets the entire window state.
+/// @param win output struct populated with window state
 /// @sa pico_set_window
-void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
-
-/// @brief Gets the visibility state of the window.
-/// @return 1 if visible, or 0 otherwise
-/// @sa pico_set_window_show
-int pico_get_window_show (void);
+void         pico_get_window       (Pico_Window* win);
+Pico_Abs_Dim pico_get_window_dim   (void);
+int          pico_get_window_fs    (void);
+int          pico_get_window_show  (void);
+const char*  pico_get_window_title (void);
 
 // SET
 
@@ -564,17 +568,14 @@ void pico_set_view_dst  (const char* layer, Pico_Rel_Rect dst);
 void pico_set_view_src  (const char* layer, Pico_Rel_Rect src);
 void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile);
 
-/// @brief Sets window properties. NULL/(-1) arguments are ignored.
-/// @param title window title (NULL to keep current)
-/// @param fs fullscreen: 1=enable, 0=disable, -1=unchanged
-/// @param dim window dimensions (NULL to keep current)
+/// @brief Sets the entire window state.
+/// @param win new window state
 /// @sa pico_get_window
-void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim);
-
-/// @brief Toggles window visibility.
-/// @param on 1 to show, 0 to hide
-/// @sa pico_get_window_show
-void pico_set_window_show (int on);
+void pico_set_window       (Pico_Window win);
+void pico_set_window_dim   (Pico_Rel_Dim* dim);
+void pico_set_window_fs    (int fs);
+void pico_set_window_show  (int on);
+void pico_set_window_title (const char* title);
 
 /// @}
 

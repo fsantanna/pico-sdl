@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("Clip", -1, NULL);
+    pico_set_window_title("Clip");
 
     puts("rect at 30%");
     pico_output_clear();

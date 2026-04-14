@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("Expert FPS", -1, NULL);
+    pico_set_window_title("Expert FPS");
 
     // test 1: set.expert returns ms
     int ms = pico_set_expert(1, 40);

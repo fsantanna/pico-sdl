@@ -3,9 +3,8 @@
 
 int main (void) {
     pico_init(1);
-    Pico_Rel_Dim phy = { '!', {100,100}, NULL };
     Pico_Rel_Dim log = { '!', { 10, 10}, NULL };
-    pico_set_window("Buffer", -1, &phy);
+    pico_set_window((Pico_Window){ .dim={100,100}, .fs=0, .show=1, .title="Buffer" });
     pico_set_view_dim(NULL, &log);
 
     // .x.

@@ -532,22 +532,34 @@ Pico_Abs_Dim pico_get_view_tile (const char* layer) {
     return _pico_layer_null(layer)->view.tile;
 }
 
-void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
+void pico_get_window (Pico_Window* win) {
     _pico_guard();
-    if (title != NULL) {
-        *title = SDL_GetWindowTitle(G.win);
-    }
-    if (fs != NULL) {
-        *fs = S.win.fs;
-    }
-    if (dim != NULL) {
-        *dim = S.win.dim;
-    }
+    *win = (Pico_Window) {
+        .dim   = S.win.dim,
+        .fs    = S.win.fs,
+        .show  = SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN,
+        .title = SDL_GetWindowTitle(G.win),
+    };
+}
+
+Pico_Abs_Dim pico_get_window_dim (void) {
+    _pico_guard();
+    return S.win.dim;
+}
+
+int pico_get_window_fs (void) {
+    _pico_guard();
+    return S.win.fs;
 }
 
 int pico_get_window_show (void) {
     _pico_guard();
     return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
+}
+
+const char* pico_get_window_title (void) {
+    _pico_guard();
+    return SDL_GetWindowTitle(G.win);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -557,7 +569,7 @@ int pico_get_window_show (void) {
 void pico_set_dim (Pico_Rel_Dim* dim) {
     _pico_guard();
     assert(S.layer==&G.root && "can only set dim from main layer");
-    pico_set_window(NULL, -1, dim);
+    pico_set_window_dim(dim);
     pico_set_view_dim(NULL, dim);
 }
 
@@ -777,6 +789,12 @@ void pico_set_window_show (int on) {
     }
 }
 
+void pico_set_window_title (const char* title) {
+    _pico_guard();
+    SDL_SetWindowTitle(G.win, title);
+    _pico_output_present(0);
+}
+
 #define PICO_MEM_C
 #include "mem.hc"
 
@@ -918,7 +936,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 G.fsing = 0;
             } else {
                 Pico_Rel_Dim phy = { '!', {pico->window.w, pico->window.h}, NULL };
-                pico_set_window(NULL, -1, &phy);
+                pico_set_window_dim(&phy);
             }
             break;
         }

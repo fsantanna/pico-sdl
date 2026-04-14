@@ -895,26 +895,26 @@ static int l_get_view (lua_State* L) {
 }
 
 static int l_get_window (lua_State* L) {
-    const char* title;
-    int fs;
-    Pico_Abs_Dim dim;
-
-    pico_get_window(&title, &fs, &dim);
+    Pico_Window win;
+    pico_get_window(&win);
 
     lua_newtable(L);                    // T
 
-    lua_pushstring(L, title);           // T | title
-    lua_setfield(L, -2, "title");       // T
-
-    lua_pushboolean(L, fs);             // T | fs
-    lua_setfield(L, -2, "fullscreen");  // T
-
     lua_newtable(L);                    // T | dim
-    lua_pushinteger(L, dim.w);
+    lua_pushinteger(L, win.dim.w);
     lua_setfield(L, -2, "w");
-    lua_pushinteger(L, dim.h);
+    lua_pushinteger(L, win.dim.h);
     lua_setfield(L, -2, "h");
     lua_setfield(L, -2, "dim");         // T
+
+    lua_pushboolean(L, win.fs);         // T | fs
+    lua_setfield(L, -2, "fullscreen");  // T
+
+    lua_pushboolean(L, win.show);       // T | show
+    lua_setfield(L, -2, "show");        // T
+
+    lua_pushstring(L, win.title);       // T | title
+    lua_setfield(L, -2, "title");       // T
 
     return 1;
 }
@@ -1112,28 +1112,39 @@ static int l_set_view (lua_State* L) {
 static int l_set_window (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    const char* title = NULL;
-    lua_getfield(L, 1, "title");            // T | title
-    if (!lua_isnil(L, -1)) {
-        title = lua_tostring(L, -1);
-    }
-    lua_pop(L, 1);                          // T
+    Pico_Rel_Dim* xdim   = NULL;
+    int           xfs    = -1;
+    int           xshow  = -1;
+    const char*   xtitle = NULL;
 
-    int fs = -1;
-    lua_getfield(L, 1, "fullscreen");       // T | fs
-    if (!lua_isnil(L, -1)) {
-        fs = lua_toboolean(L, -1);
-    }
-    lua_pop(L, 1);                          // T
-
-    Pico_Rel_Dim* xdim = NULL;
     lua_getfield(L, 1, "dim");              // T | dim
     if (!lua_isnil(L, -1)) {
         xdim = C_rel_dim(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_window(title, fs, xdim);
+    lua_getfield(L, 1, "fullscreen");       // T | fs
+    if (!lua_isnil(L, -1)) {
+        xfs = lua_toboolean(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+
+    lua_getfield(L, 1, "show");             // T | show
+    if (!lua_isnil(L, -1)) {
+        xshow = lua_toboolean(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+
+    lua_getfield(L, 1, "title");            // T | title
+    if (!lua_isnil(L, -1)) {
+        xtitle = lua_tostring(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+
+    if (xtitle != NULL) { pico_set_window_title(xtitle); }
+    if (xfs    != -1)   { pico_set_window_fs   (xfs);    }
+    if (xdim   != NULL) { pico_set_window_dim  (xdim);   }
+    if (xshow  != -1)   { pico_set_window_show (xshow);  }
     return 0;
 }
 

@@ -90,7 +90,7 @@
     - **pico.get.view**: Gets view configuration.
         - `pico.get.view () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect }`
     - **pico.get.window**: Gets window configuration.
-        - `pico.get.window () -> { title: string, fullscreen: boolean, dim: Dim }`
+        - `pico.get.window () -> { dim: Dim, fullscreen: boolean, show: boolean, title: string }`
 - **pico.set**
     - **pico.set.dim**: Sets both window and world to the same dimensions.
         - `pico.set.dim (dim: Dim)`
@@ -108,7 +108,7 @@
         - `pico.set.view (cfg: { [dim: Dim], [tile: Tile], [target: Rect], [source: Rect], [clip: Rect] })`
         - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
     - **pico.set.window**: Sets window configuration.
-        - `pico.set.window (cfg: { [title: string], [fullscreen: boolean], [dim: Dim] })`
+        - `pico.set.window (cfg: { [dim: Dim], [fullscreen: boolean], [show: boolean], [title: string] })`
     - **pico.set.layer**: Switches to a layer.
         - `pico.set.layer (name: string?)`
         - `nil` switches to main layer

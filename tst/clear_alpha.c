@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("Clear Alpha", -1, &(Pico_Rel_Dim){'!', {640, 360}, NULL});
+    pico_set_window((Pico_Window){ .dim={640,360}, .fs=0, .show=1, .title="Clear Alpha" });
     pico_set_view_dim(NULL, &(Pico_Rel_Dim){'!', {64, 36}, NULL});
 
     // red background on main
