@@ -7,14 +7,13 @@ int main (void) {
 
     // TITLE
     puts("title: set and get");
-    pico_set_window("Test Title", -1, NULL);
-    const char* title;
-    pico_get_window(&title, NULL, NULL);
+    pico_set_window_title("Test Title");
+    const char* title = pico_get_window_title();
     assert(strcmp(title, "Test Title") == 0);
-    pico_set_window("View Raw", -1, NULL);
+    pico_set_window_title("View Raw");
 
     Pico_Abs_Dim window, world;
-    pico_get_window(NULL, NULL, &window);
+    window = pico_get_window_dim();
     world = pico_get_view_dim(NULL);
     assert(window.w==500 && window.h==500);
     assert(world.w==100 && world.h==100);
