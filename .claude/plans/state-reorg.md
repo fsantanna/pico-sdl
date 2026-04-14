@@ -237,43 +237,50 @@ static Pico_Layer* _layer (const char* layer) {
   files); `tst/get-set.c` tests show + draw bulk/individual
 - [x] All tests pass (C + Lua)
 
-### 6. Post-composite clear via `show.keep`
+### 6. Post-composite clear via `show.keep` [x]
 
-- `src/layers.hc` | `Pico_Layer_Show` | add `keep` field
-- `src/layers.hc` | `_layer_traverse` | after composite:
-  if `!CUR->show.keep && type != SUB`, clear texture
-  using `CUR->show.color`
-- `src/pico.c` | `_pico_output_present` | clear root if
-  `!G.root.show.keep`
-- `src/pico.c` + `src/pico.h` | add
-  `pico_set/get_show_keep(layer, on)`
-- `src/mem.hc` | per-type `keep`: empty→0, others→1
-- Compile + test
+- [x] `src/layers.hc` | `Pico_Layer_Show` | `keep` field added
+- [x] `src/layers.hc` | `_layer_traverse` | post-composite
+  clear when `!CUR->show.keep` (line 101)
+- [x] `src/pico.c` | `_pico_output_present` | root clear
+  guarded by `show.keep`
+- [x] `src/pico.c` + `src/pico.h` |
+  `pico_set/get_show_keep(layer, on)` added
+- [x] `src/mem.hc` | per-type defaults: empty=0, others=1
+  (image/buffer/sub/text/video)
+- [x] All tests pass (C + Lua)
+
+### 7. Lua individual getter/setter removal [x]
+
+- [x] `lua/pico.c` | removed 8 C funcs: `l_get/set_font`,
+  `l_get/set_style`, `l_get/set_color_clear`,
+  `l_get/set_color_draw`
+- [x] `lua/pico.c` | dropped `ll_get_color` + `ll_set_color`
+  tables + their wiring in `luaopen_pico_native`
+- [x] `lua/pico.c` | removed `font`/`style` entries from
+  `ll_get` + `ll_set`
+- [x] Migrated ~99 call sites across 30 files:
+  `pico.tst/*.lua` (12 files), `tst/todo/*.lua` (11 files),
+  `doc/*.{lua,md}` (7 files)
+- [x] Extra fixes surfaced during migration:
+  `lua/tst/layer-hier.lua` (alpha moved from view to show,
+  added `keep=true` on layer "L");
+  `lua/tst/set.lua` (top-level `pico.set{}` bulk calls
+  migrated to `pico.set.draw{}`);
+  `lua/tst/get-set.lua` (float `==` replaced with
+  `pico.equal` tolerance helper in `lua/pico/check.lua`);
+  `doc/` updates for stale `pico.set.alpha(X)` and
+  `pico.set{alpha=,color={draw=},style=}` bulk forms
+- [x] `lua/doc/api.md` | removed `pico.set.style` and
+  `pico.set.color` entries; added `pico.get.draw` and
+  `pico.set.draw`; updated `pico.get/set.show` and
+  `pico.get.view` field lists
 
 ## Remaining
 
 - update `valgrind.supp` line number if needed
-- Lua: drop individual getters/setters; use bulk only
-  - getter: `pico.get.show().keep` — Lua field access on
-    bulk result
-  - setter: `pico.set.show { field=value }` — partial
-    table sets only passed keys (already works)
-  - remove individual C functions: `l_get/set_font`,
-    `l_get/set_style`, `l_get/set_color_draw`,
-    `l_get/set_color_clear`
-  - remove entries from `ll_get`, `ll_set`, `ll_get_color`,
-    `ll_set_color`; drop `ll_get_color`/`ll_set_color`
-    tables entirely (only had `clear`/`draw`)
-  - migrate ~48 caller files (tests + docs):
-      - `pico.get.font()`        → `pico.get.draw().font`
-      - `pico.get.style()`       → `pico.get.draw().style`
-      - `pico.get.color.clear()` → `pico.get.show().color`
-      - `pico.get.color.draw()`  → `pico.get.draw().color`
-      - `pico.set.font(p)`       → `pico.set.draw{font=p}`
-      - `pico.set.style(s)`      → `pico.set.draw{style=s}`
-      - `pico.set.color.clear(c)`→ `pico.set.show{color=c}`
-      - `pico.set.color.draw(c)` → `pico.set.draw{color=c}`
-- swap GET order in pico.c (show before draw)
+- swap GET order in `lua/pico.c` (show before draw)
+- expert mode API redesign (see `expert.md` plan)
 
 ## Verification
 
