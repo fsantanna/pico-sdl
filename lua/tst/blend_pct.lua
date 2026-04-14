@@ -9,7 +9,7 @@ do
     local r = {'%', x=0.5, y=0.5, w=0.5, h=0, anchor='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.color.draw(pico.color.alpha(pico.get.color.draw(), a))
+        pico.set.draw { color=pico.color.alpha(pico.get.draw().color, a) }
         pico.output.draw.image("open.png", r)
         pico.input.delay(10)
         if a == 120 then
@@ -23,7 +23,7 @@ do
     local p = {'%', x=0.5, y=0.5, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.color.draw(pico.color.alpha('red', a))
+        pico.set.draw { color=pico.color.alpha('red', a) }
         pico.output.draw.pixel(p)
         pico.input.delay(10)
         if a == 120 then
@@ -38,7 +38,7 @@ do
     local z = {'!', x=6.296000, y=12.960000, w=51.408001, h=10.080000, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.color.draw(pico.color.alpha('red', a))
+        pico.set.draw { color=pico.color.alpha('red', a) }
         pico.output.draw.rect(z);
         pico.output.draw.text("SOME TEXT", r)
         pico.input.delay(10)
@@ -53,7 +53,7 @@ do
     local r = {'%', x=0.5, y=0.5, w=0.95, h=0.34, anchor='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.color.draw(pico.color.alpha('red', a))
+        pico.set.draw { color=pico.color.alpha('red', a) }
         pico.output.draw.rect(r)
         pico.input.delay(10)
         if a == 120 then
@@ -67,7 +67,7 @@ do
     local r = {'%', x=0.5, y=0.5, w=0.95, h=0.34, anchor='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.color.draw(pico.color.alpha('red', a))
+        pico.set.draw { color=pico.color.alpha('red', a) }
         pico.output.draw.oval(r)
         pico.input.delay(10)
         if a == 120 then
@@ -83,7 +83,7 @@ do
     local p3 = {'%', x=0.66, y=0.66, anchor='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.color.draw(pico.color.alpha('red', a))
+        pico.set.draw { color=pico.color.alpha('red', a) }
         pico.output.draw.tri(p1, p2, p3)
         pico.input.delay(10)
         if a == 120 then
@@ -98,7 +98,7 @@ do
     local p2 = {'%', x=0.66, y=0.66, anchor='C'}
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.color.draw(pico.color.alpha('red', a))
+        pico.set.draw { color=pico.color.alpha('red', a) }
         pico.output.draw.line(p1, p2)
         pico.input.delay(10)
         if a == 120 then
@@ -116,7 +116,7 @@ do
     }
     for a = 255, 1, -5 do
         pico.output.clear()
-        pico.set.color.draw(pico.color.alpha('red', a))
+        pico.set.draw { color=pico.color.alpha('red', a) }
         pico.output.draw.poly(poly)
         pico.input.delay(10)
         if a == 120 then
