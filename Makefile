@@ -46,6 +46,7 @@ tests:
 	$(EXE) tst/cv.c
 	$(EXE) tst/dim.c
 	$(EXE) tst/expert.c
+	#$(EXE) tst/expert_fps.c
 	$(EXE) tst/font.c
 	$(EXE) tst/get-set.c
 	$(EXE) tst/image_pct.c

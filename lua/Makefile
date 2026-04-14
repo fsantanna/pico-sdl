@@ -43,6 +43,7 @@ tests: pico_native.so
 	$(TST) tst/cv.lua
 	$(TST) tst/dim.lua
 	$(TST) tst/expert.lua
+	#$(TST) tst/expert_fps.lua
 	$(TST) tst/font.lua
 	$(TST) tst/get-set.lua
 	$(TST) tst/image_pct.lua
