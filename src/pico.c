@@ -735,19 +735,36 @@ void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile) {
     _pico_output_present(0);
 }
 
-void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
+void pico_set_window (Pico_Window win) {
     _pico_guard();
-    Pico_Abs_Dim new;
-
-    // title: set window title
-    if (title != NULL) {
-        SDL_SetWindowTitle(G.win, title);
+    pico_set_window_title(win.title);
+    pico_set_window_fs(win.fs);
+    if (!win.fs) {
+        Pico_Rel_Dim rel = {'!', {win.dim.w, win.dim.h}, NULL};
+        pico_set_window_dim(&rel);
     }
+    pico_set_window_show(win.show);
+}
 
-    // fs: fullscreen
-    if (fs!=-1 && fs!=S.win.fs) {
-        assert(dim == NULL);
+void pico_set_window_dim (Pico_Rel_Dim* dim) {
+    _pico_guard();
+    assert(!S.win.fs);
+    assert(dim->mode!='%' && dim->up==NULL);
+    Pico_Abs_Dim di = pico_cv_dim_rel_abs (
+        dim, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+    );
+    S.win.dim = di;
+    SDL_SetWindowSize(G.win, di.w, di.h);
+    _pico_output_present(0);
+}
+
+void pico_set_window_fs (int fs) {
+    _pico_guard();
+    if (fs == S.win.fs) {
+        return;
+    } else {
         static Pico_Abs_Dim _old;
+        Pico_Abs_Dim new;
         G.fsing = 1;
         if (fs) {
             _old = S.win.dim;
@@ -755,28 +772,15 @@ void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim) {
             pico_assert(ret == 0);
             pico_input_delay(50);    // TODO: required for some reason
             SDL_GetWindowSize(G.win, &new.w, &new.h);
-        }
-        else {
+        } else {
             pico_assert(0 == SDL_SetWindowFullscreen(G.win, 0));
             new = _old;
         }
         S.win.fs = fs;
         S.win.dim = new;
         SDL_SetWindowSize(G.win, new.w, new.h);
+        _pico_output_present(0);
     }
-
-    // dim: window dimensions
-    if (dim != NULL) {
-        assert(fs==-1 && !S.win.fs);
-        assert(dim->mode!='%' && dim->up==NULL);
-        Pico_Abs_Dim di = pico_cv_dim_rel_abs (
-            dim, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
-        );
-        S.win.dim = di;
-        SDL_SetWindowSize(G.win, di.w, di.h);
-    }
-
-    _pico_output_present(0);
 }
 
 void pico_set_window_show (int on) {
