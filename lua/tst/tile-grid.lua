@@ -11,7 +11,7 @@ do
     pico.set.show { grid=true }
     pico.set.view { dim={'!', w=16, h=16} }
     pico.output.clear()
-    pico.set.color.draw('red')
+    pico.set.draw { color='red' }
     pico.output.draw.rect {'!', x=4, y=4, w=8, h=8, anchor='NW'}
     pico.check("tile-grid-01")
 end
@@ -22,7 +22,7 @@ do
     pico.set.show { grid=true }
     pico.set.view { dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear()
-    pico.set.color.draw('green')
+    pico.set.draw { color='green' }
     pico.output.draw.rect {'#', x=1, y=1, w=2, h=2, anchor='NW'}
     pico.check("tile-grid-02")
 end
@@ -33,7 +33,7 @@ do
     pico.set.show { grid=true }
     pico.set.view { dim={'#', w=8, h=8}, tile={w=2, h=2} }
     pico.output.clear()
-    pico.set.color.draw('blue')
+    pico.set.draw { color='blue' }
     pico.output.draw.rect {'#', x=3, y=3, w=2, h=2, anchor='NW'}
     pico.check("tile-grid-03")
 end
@@ -44,7 +44,7 @@ do
     pico.set.show { grid=true }
     pico.set.view { dim={'#', w=4, h=8}, tile={w=4, h=2} }
     pico.output.clear()
-    pico.set.color.draw('yellow')
+    pico.set.draw { color='yellow' }
     pico.output.draw.rect {'#', x=2, y=4, w=1, h=2, anchor='NW'}
     pico.check("tile-grid-04")
 end
@@ -55,7 +55,7 @@ do
     pico.set.show { grid=false }
     pico.set.view { dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear()
-    pico.set.color.draw('red')
+    pico.set.draw { color='red' }
     pico.output.draw.rect {'#', x=2, y=2, w=1, h=1, anchor='C'}
     pico.check("tile-grid-05")
 end
@@ -72,7 +72,7 @@ do
     pico.set.show { grid=true }
     pico.set.view { dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear()
-    pico.set.color.draw('red')
+    pico.set.draw { color='red' }
     pico.output.draw.rect {'#', x=1, y=1, w=2, h=2, anchor='NW'}
     pico.set.layer(nil)
 end
@@ -85,7 +85,7 @@ do
     pico.set.show { grid=true }
     pico.set.view { dim={'#', w=8, h=4}, tile={w=2, h=4} }
     pico.output.clear()
-    pico.set.color.draw('green')
+    pico.set.draw { color='green' }
     pico.output.draw.rect {'#', x=5, y=2, w=2, h=1, anchor='NW'}
     pico.set.layer(nil)
 end
@@ -98,7 +98,7 @@ do
     pico.set.show { grid=false }
     pico.set.view { dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear()
-    pico.set.color.draw('blue')
+    pico.set.draw { color='blue' }
     pico.output.draw.rect {'#', x=3, y=3, w=1, h=1, anchor='NW'}
     pico.set.layer(nil)
 end
