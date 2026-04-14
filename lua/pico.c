@@ -17,7 +17,10 @@ static void L_reg_get (lua_State* L, const char* t, int i) {
     lua_pop(L, 1);                          // ... | *v*
 }
 
-static float L_checkfieldnum (lua_State* L, int i, const char* k) {
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+static float C_checkfieldnum (lua_State* L, int i, const char* k) {
     assert(i > 0);
     luaL_checktype(L, i, LUA_TTABLE);   // T
     lua_getfield(L, i, k);              // T | k
@@ -31,14 +34,13 @@ static float L_checkfieldnum (lua_State* L, int i, const char* k) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Abs_Dim c_abs_dim (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
     return (Pico_Abs_Dim) {
-        (int) L_checkfieldnum(L, i, "w"),
-        (int) L_checkfieldnum(L, i, "h"),
+        (int) C_checkfieldnum(L, i, "w"),
+        (int) C_checkfieldnum(L, i, "h"),
     };
 }
 
@@ -46,8 +48,8 @@ static Pico_Abs_Pos c_abs_pos (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
     return (Pico_Abs_Pos) {
-        (int) L_checkfieldnum(L, i, "x"),
-        (int) L_checkfieldnum(L, i, "y"),
+        (int) C_checkfieldnum(L, i, "x"),
+        (int) C_checkfieldnum(L, i, "y"),
     };
 }
 
@@ -55,10 +57,10 @@ static Pico_Abs_Rect c_abs_rect (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
     return (Pico_Abs_Rect) {
-        (int) L_checkfieldnum(L, i, "x"),
-        (int) L_checkfieldnum(L, i, "y"),
-        (int) L_checkfieldnum(L, i, "w"),
-        (int) L_checkfieldnum(L, i, "h"),
+        (int) C_checkfieldnum(L, i, "x"),
+        (int) C_checkfieldnum(L, i, "y"),
+        (int) C_checkfieldnum(L, i, "w"),
+        (int) C_checkfieldnum(L, i, "h"),
     };
 }
 
@@ -127,13 +129,13 @@ static Pico_Color c_color_t (lua_State* L, int i) {
     float a = (mode == '%') ? 1.0 : 0xFF;
     lua_getfield(L, i, "a");                // T | a
     if (!lua_isnil(L,-1)) {
-        a = L_checkfieldnum(L, i, "a");
+        a = C_checkfieldnum(L, i, "a");
     }
     lua_pop(L, 1);                          // T
 
-    float r = L_checkfieldnum(L, i, "r");
-    float g = L_checkfieldnum(L, i, "g");
-    float b = L_checkfieldnum(L, i, "b");
+    float r = C_checkfieldnum(L, i, "r");
+    float g = C_checkfieldnum(L, i, "g");
+    float b = C_checkfieldnum(L, i, "b");
 
     if (mode == '%') {
         return (Pico_Color) { r*255, g*255, b*255, a*255 };
@@ -177,8 +179,8 @@ static Pico_Anchor c_anchor (lua_State* L, int i) {
             return *anc;
         } else if (lua_type(L, top) == LUA_TTABLE) {
             Pico_Anchor anc = (Pico_Anchor) {
-                .x = L_checkfieldnum(L, top, "x"),
-                .y = L_checkfieldnum(L, top, "y"),
+                .x = C_checkfieldnum(L, top, "x"),
+                .y = C_checkfieldnum(L, top, "y"),
             };
             lua_pop(L, 1);                              // T
             return anc;
@@ -249,10 +251,10 @@ static Pico_Rel_Rect* c_rel_rect (lua_State* L, int i) {
     Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
     *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
         .mode = mode,
-        .x = L_checkfieldnum(L, i, "x"),
-        .y = L_checkfieldnum(L, i, "y"),
-        .w = L_checkfieldnum(L, i, "w"),
-        .h = L_checkfieldnum(L, i, "h"),
+        .x = C_checkfieldnum(L, i, "x"),
+        .y = C_checkfieldnum(L, i, "y"),
+        .w = C_checkfieldnum(L, i, "w"),
+        .h = C_checkfieldnum(L, i, "h"),
         .anchor = anc,
         .up = up,
     };
@@ -278,8 +280,8 @@ static Pico_Rel_Dim* c_rel_dim (lua_State* L, int i) {
     Pico_Rel_Dim* d = lua_newuserdata(L, sizeof(Pico_Rel_Dim));
     *d = (Pico_Rel_Dim) {                   // T | ud
         .mode = mode,
-        .w = L_checkfieldnum(L, i, "w"),
-        .h = L_checkfieldnum(L, i, "h"),
+        .w = C_checkfieldnum(L, i, "w"),
+        .h = C_checkfieldnum(L, i, "h"),
         .up = up,
     };
 
@@ -305,8 +307,8 @@ static Pico_Rel_Pos* c_rel_pos (lua_State* L, int i) {
     Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
     *p = (Pico_Rel_Pos) {                   // T | [ud] | ud
         .mode = mode,
-        .x = L_checkfieldnum(L, i, "x"),
-        .y = L_checkfieldnum(L, i, "y"),
+        .x = C_checkfieldnum(L, i, "x"),
+        .y = C_checkfieldnum(L, i, "y"),
         .anchor = anc,
         .up = up,
     };
@@ -1045,7 +1047,7 @@ static int l_set_show (lua_State* L) {
 
     lua_getfield(L, 1, "rotate");           // T | rot
     if (!lua_isnil(L, -1)) {
-        show.rotate.angle = L_checkfieldnum(L, lua_gettop(L), "angle");
+        show.rotate.angle = C_checkfieldnum(L, lua_gettop(L), "angle");
         show.rotate.anchor = c_anchor(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
@@ -1098,8 +1100,8 @@ static int l_set_view (lua_State* L) {
     Pico_Abs_Dim tile_dim;
     lua_getfield(L, 1, "tile");             // T | tile
     if (!lua_isnil(L, -1)) {
-        tile_dim.w = L_checkfieldnum(L, lua_gettop(L), "w");
-        tile_dim.h = L_checkfieldnum(L, lua_gettop(L), "h");
+        tile_dim.w = C_checkfieldnum(L, lua_gettop(L), "w");
+        tile_dim.h = C_checkfieldnum(L, lua_gettop(L), "h");
         xtile = &tile_dim;
     }
     lua_pop(L, 1);                          // T
@@ -1151,16 +1153,16 @@ static int l_layer_empty (lua_State* L) {
 
     luaL_checktype(L, i+2, LUA_TTABLE);
     Pico_Abs_Dim dim = {
-        (int) L_checkfieldnum(L, i+2, "w"),
-        (int) L_checkfieldnum(L, i+2, "h"),
+        (int) C_checkfieldnum(L, i+2, "w"),
+        (int) C_checkfieldnum(L, i+2, "h"),
     };
 
     Pico_Abs_Dim tile;
     Pico_Abs_Dim* ptr = NULL;
     if (!lua_isnoneornil(L,i+3)) {
         luaL_checktype(L, i+3, LUA_TTABLE);
-        tile.w = (int) L_checkfieldnum(L, i+3, "w");
-        tile.h = (int) L_checkfieldnum(L, i+3, "h");
+        tile.w = (int) C_checkfieldnum(L, i+3, "w");
+        tile.h = (int) C_checkfieldnum(L, i+3, "h");
         ptr = &tile;
     }
 
@@ -1197,8 +1199,8 @@ static int l_layer_buffer (lua_State* L) {
     luaL_checktype(L, i+3, LUA_TTABLE);
 
     Pico_Abs_Dim dim = {
-        (int) L_checkfieldnum(L, i+2, "w"),
-        (int) L_checkfieldnum(L, i+2, "h"),
+        (int) C_checkfieldnum(L, i+2, "w"),
+        (int) C_checkfieldnum(L, i+2, "h"),
     };
 
     Pico_Abs_Dim buf_dim = c_buffer_dim(L, i+3);
