@@ -252,28 +252,143 @@ static Pico_Layer* _layer (const char* layer) {
 
 ## Remaining
 
+### Lua: drop individual getters/setters; use bulk only
+
+Migration mappings (mechanical substitutions):
+
+```
+pico.get.font()          → pico.get.draw().font
+pico.get.style()         → pico.get.draw().style
+pico.get.color.clear()   → pico.get.show().color
+pico.get.color.draw()    → pico.get.draw().color
+pico.set.font(p)         → pico.set.draw { font=p }
+pico.set.style(s)        → pico.set.draw { style=s }
+pico.set.color.clear(c)  → pico.set.show { color=c }
+pico.set.color.draw(c)   → pico.set.draw { color=c }
+```
+
+Rules:
+- token-less form (`pico.set.color.draw 'red'`) always
+  becomes curly form (`pico.set.draw { color='red' }`)
+- adjacent `set.style` + `set.color.draw` can be combined:
+  `pico.set.draw { style=s, color=c }`
+
+#### Step A: migrate all callers (tests + docs)
+
+Tests — **done** in this session:
+
+- `lua/tst/get-set.lua` (view section has pre-existing
+  failure at line 73; unrelated to migration)
+- `lua/tst/colors.lua`
+- `lua/tst/sheet.lua`
+- `lua/tst/blend_pct.lua`
+- `lua/tst/blend_raw.lua`
+- `lua/tst/tile-grid.lua`
+- `lua/tst/mouse-rect-click.lua`
+- `lua/tst/pos.lua`
+- `lua/tst/rect.lua`
+- `lua/tst/collide_pct.lua`
+- `lua/tst/style.lua`
+- `lua/tst/clip_pct.lua`
+- `lua/tst/clip_raw.lua`
+- `lua/tst/layers.lua`
+- `lua/tst/view-target.lua`
+- `lua/tst/layer-empty-tile.lua`
+- `lua/tst/clear_alpha.lua`
+- `lua/tst/shot.lua`
+- `lua/tst/buffer_pct.lua`
+- `lua/tst/buffer_raw.lua`
+- `lua/tst/image_pct.lua`
+- `lua/tst/image_raw.lua`
+- `lua/tst/rot-flip.lua`
+- `lua/tst/video.lua`
+- `lua/tst/set.lua`
+- `lua/tst/move.lua`
+- `lua/tst/view_raw.lua`
+
+Tests — **pending**:
+
+- `lua/tst/todo/main.lua` (~8 sites: mix of clear/draw)
+- `lua/tst/todo/style.lua` (4 sites: 2 `set.style` +
+  2 `pcall(pico.set.style, …)` — need rewrite to
+  `pcall(function() pico.set.draw{style=…} end)`)
+- `lua/tst/todo/video.lua` (4 sites: clear + 3 draws)
+- `lua/tst/todo/pct.lua` (~9 sites: red/white draws)
+- `lua/tst/todo/mouse-layer.lua` (2 sites: red/black clear)
+- `lua/tst/todo/mouse-rect-click.lua` (3 sites: navy/black
+  clear + white draw)
+- `lua/tst/todo/navigate.lua` (1 site: `set.style 'stroke'`)
+- `lua/tst/todo/move.lua` (2 sites: white draw, 1 comment)
+- `lua/tst/todo/move2.lua` (1 site: white draw)
+- `lua/tst/todo/layout.lua` (1 site:
+  `pico.set.color.draw(pico.color.red)`)
+- `lua/tst/todo/rotate.lua` (1 site: `pico.set.font(nil, 16)`
+  — weird 2-arg call; check if the `16` is really used or
+  leftover from old API)
+
+Docs — **pending** (update last, after C removal):
+
+- `lua/doc/anims.lua`
+- `lua/doc/api.md` (lines 101–102, 114–117 describe
+  `pico.set.style` and `pico.set.color.*`)
+- `lua/doc/gen-guide-anims-gif.lua`
+- `lua/doc/gen-guide-images.lua` (~16 sites)
+- `lua/doc/gen-guide-rects-gif.lua`
+- `lua/doc/guide.md` (tutorial text references
+  `pico.set.color.draw` extensively)
+- `lua/doc/rects.lua`
+
+#### Step B: remove individual C functions
+
+Only after all callers migrated:
+
+- `lua/pico.c` | delete `l_get_color_clear`,
+  `l_get_color_draw`, `l_get_font`, `l_get_style`,
+  `l_set_color_clear`, `l_set_color_draw`, `l_set_font`,
+  `l_set_style`
+- `lua/pico.c` | `ll_get` | remove `font`, `style` entries
+- `lua/pico.c` | `ll_set` | remove `font`, `style` entries
+- `lua/pico.c` | delete `ll_get_color` and `ll_set_color`
+  arrays entirely (only had `clear`/`draw`)
+- `lua/pico.c` | module init (`luaopen_pico`) | remove
+  setup code that registers `pico.get.color` and
+  `pico.set.color` sub-tables
+
+Note: the C side `pico_set_draw_font`, `pico_set_draw_style`
+etc. stay — only the Lua wrappers are removed. Bulk
+`l_set_draw` / `l_get_draw` already call those under the
+hood.
+
+### Pre-existing issues (independent)
+
+- `lua/tst/get-set.lua` line 73 assertion fails:
+  `v.source.x == 0.6 and v.source.y == 0.4` after
+  `pico.set.view { source={'%', x=0.6, y=0.4, …} }`.
+  Investigate `l_set_view` handling of `source` field or
+  `c_rel_rect` conversion. Not caused by migration.
+
+### Other remaining items
+
 - update `valgrind.supp` line number if needed
-- Lua: drop individual getters/setters; use bulk only
-  - getter: `pico.get.show().keep` — Lua field access on
-    bulk result
-  - setter: `pico.set.show { field=value }` — partial
-    table sets only passed keys (already works)
-  - remove individual C functions: `l_get/set_font`,
-    `l_get/set_style`, `l_get/set_color_draw`,
-    `l_get/set_color_clear`
-  - remove entries from `ll_get`, `ll_set`, `ll_get_color`,
-    `ll_set_color`; drop `ll_get_color`/`ll_set_color`
-    tables entirely (only had `clear`/`draw`)
-  - migrate ~48 caller files (tests + docs):
-      - `pico.get.font()`        → `pico.get.draw().font`
-      - `pico.get.style()`       → `pico.get.draw().style`
-      - `pico.get.color.clear()` → `pico.get.show().color`
-      - `pico.get.color.draw()`  → `pico.get.draw().color`
-      - `pico.set.font(p)`       → `pico.set.draw{font=p}`
-      - `pico.set.style(s)`      → `pico.set.draw{style=s}`
-      - `pico.set.color.clear(c)`→ `pico.set.show{color=c}`
-      - `pico.set.color.draw(c)` → `pico.set.draw{color=c}`
 - swap GET order in pico.c (show before draw)
+
+## Next steps (explicit, in order)
+
+1. Finish Step A pending files: `lua/tst/todo/*.lua`
+   (11 files). Run `cd lua && make test T=<name>` after
+   each (todo tests may not all have make targets — check).
+2. Migrate docs: `lua/doc/*.lua` and `lua/doc/*.md`.
+3. Run full test suite: `make tests` and
+   `cd lua/ && make tests`. All previously-passing tests
+   must still pass (get-set view-section failure is
+   pre-existing, track separately).
+4. Step B: remove 8 individual C functions + their
+   registration entries in `lua/pico.c`. Recompile, run
+   full suite again.
+5. Diagnose pre-existing `get-set.lua:73` failure in
+   `pico.set.view { source=... }` handling.
+6. Step 6 of the main reorg: `show.keep` field +
+   post-composite clear logic (see `## Steps` → 6).
 
 ## Verification
 
