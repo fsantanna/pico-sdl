@@ -58,7 +58,7 @@ while true do
     pico.set.video("vid", frame)
 
     -- Draw video
-    pico.set.color.clear({'!', r=0x20, g=0x20, b=0x20})
+    pico.set.show { color={r=0x20, g=0x20, b=0x20} }
     pico.output.clear()
     pico.output.draw.layer("vid",
         {'!', x=win_w/2, y=(win_h - BAR_H*2)/2,

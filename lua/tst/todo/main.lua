@@ -25,7 +25,7 @@ pico.output.sound "start.wav"
 pico.input.delay(2000)
 
 -- CLEAR
-pico.set.color.clear('white')
+pico.set.show { color='white' }
 pico.output.clear()
 
 print "shows white screen"
@@ -39,7 +39,7 @@ print "shows centered image"
 pico.input.delay(2000)
 
 -- DRAW_PIXEL/RECT/OVAL
-pico.set.color.clear(pico.color.black)
+pico.set.show { color=pico.color.black }
 pico.set.color.draw(pico.color.white)
 pico.output.clear()
 pico.output.draw.pixel(pt)

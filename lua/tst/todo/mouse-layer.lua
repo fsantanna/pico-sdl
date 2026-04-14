@@ -5,14 +5,14 @@ pico.init(true)
 -- Create layer 50x50, draw centered circle
 pico.layer.empty('!', nil, "A", {w=50, h=50})
 pico.set.layer("A")
-pico.set.color.clear('red')
+pico.set.show { color='red' }
 pico.output.clear()
 pico.output.draw.oval({'%', x=0.3, y=0.6, w=0.5, h=0.5, anc='C'})
 pico.set.layer()
 
 -- Draw layer distorted 2:1 on main
 local r = {'%', x=0.6, y=0.3, w=0.8, h=0.4, anc='C'}
-pico.set.color.clear('black')
+pico.set.show { color='black' }
 pico.output.clear()
 pico.output.draw.layer("A", r)
 
