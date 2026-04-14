@@ -2,7 +2,7 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.window { title="Rotate / Flip" }
-pico.set.color.clear('white')
+pico.set.show { color='white' }
 
 -- Create a layer from image for rotate/flip tests
 pico.layer.image('!', nil, "img", "open.png")
