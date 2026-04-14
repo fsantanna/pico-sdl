@@ -2,7 +2,7 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.window { title="Video" }
-pico.set.color.clear({'!', r=0x00, g=0x00, b=0x00})
+pico.set.show { color={'!', r=0x00, g=0x00, b=0x00} }
 
 -- pico_get_video: check Y4M header parsing
 do

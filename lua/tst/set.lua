@@ -29,7 +29,7 @@ end
 do
     print("individual setters")
     pico.output.clear()
-    pico.set.color.draw(pico.color.alpha('green', 0xCC))
+    pico.set.draw { color=pico.color.alpha('green', 0xCC) }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.check("set-03")
 end
