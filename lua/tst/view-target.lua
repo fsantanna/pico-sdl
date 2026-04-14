@@ -21,7 +21,7 @@ do
     local r1 = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
     pico.output.draw.rect(r1)
     local r2 = {'%', x=0.5, y=0.5, w=0.5, h=0.5, up=r1}
-    pico.set.color.draw('red')
+    pico.set.draw { color='red' }
     pico.output.draw.rect(r2)
     pico.check("view-target-02")
 end
@@ -33,7 +33,7 @@ do
         target = {'%', x=0.5, y=0.5, w=1, h=1}
     }
     pico.output.clear()
-    pico.set.color.draw('white')
+    pico.set.draw { color='white' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.check("view-target-03")
 end
@@ -46,12 +46,12 @@ do
     pico.set.view {
         target = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
     }
-    pico.set.color.clear({r=0x80, g=0x00, b=0x00})
+    pico.set.show { color={r=0x80, g=0x00, b=0x00} }
     pico.output.clear()
-    pico.set.color.draw('white')
+    pico.set.draw { color='white' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.layer(nil)
-    pico.set.color.clear('black')
+    pico.set.show { color='black' }
     pico.output.clear()
     pico.output.draw.layer("bg")
     pico.check("view-target-04")

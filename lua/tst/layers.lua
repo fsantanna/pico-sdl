@@ -30,7 +30,7 @@ assert(layer == "ui")
 -- draw on bg layer (red background)
 print("draw on layer (no auto-present)")
 pico.set.layer("background")
-pico.set.color.clear({'!', r=0x80, g=0x00, b=0x00})
+pico.set.show { color={'!', r=0x80, g=0x00, b=0x00} }
 pico.output.clear()
 pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
 pico.set.layer()
@@ -41,9 +41,9 @@ pico.check("layers-01")
 -- draw on ui layer (blue background)
 print("draw on ui layer")
 pico.set.layer("ui")
-pico.set.color.clear({'!', r=0x00, g=0x00, b=0x80})
+pico.set.show { color={'!', r=0x00, g=0x00, b=0x80} }
 pico.output.clear()
-pico.set.color.draw('green')
+pico.set.draw { color='green' }
 pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
 pico.set.layer(nil)
 pico.output.clear()
@@ -58,7 +58,7 @@ assert(layer == "root")
 
 -- composite layers onto main
 print("draw layers onto main")
-pico.set.color.clear('black')
+pico.set.show { color='black' }
 pico.output.clear()
 pico.output.draw.layer("background", {'%', x=1.0/3, y=1.0/3, h=1.0/3, anchor='C'})
 pico.output.draw.layer("ui", {'%', x=2.0/3, y=2.0/3, w=1.0/3, anchor='C'})

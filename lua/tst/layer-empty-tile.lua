@@ -13,11 +13,11 @@ do
     pico.set.layer("map")
     pico.set.show { grid=true }
     pico.output.clear()
-    pico.set.color.draw('red')
+    pico.set.draw { color='red' }
     pico.output.draw.rect {'#', x=1, y=1, w=1, h=1, anchor='NW'}
-    pico.set.color.draw('green')
+    pico.set.draw { color='green' }
     pico.output.draw.rect {'#', x=6, y=4, w=4, h=2, anchor='NW'}
-    pico.set.color.draw('blue')
+    pico.set.draw { color='blue' }
     pico.output.draw.rect {'#', x=20, y=15, w=1, h=1, anchor='NW'}
     pico.set.layer(nil)
 end
@@ -44,7 +44,7 @@ do
     pico.layer.empty(nil, "fx", {w=64, h=64})
     pico.set.layer("fx")
     pico.output.clear()
-    pico.set.color.draw('yellow')
+    pico.set.draw { color='yellow' }
     pico.output.draw.rect {'!', x=8, y=8, w=48, h=48, anchor='NW'}
     pico.set.layer(nil)
 end
