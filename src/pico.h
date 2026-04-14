@@ -523,7 +523,7 @@ void pico_set_draw_style (const char* layer, PICO_STYLE style);
 /// @brief Toggles expert mode (manual present, frame pacing).
 /// @param on 1 to enable, 0 to disable
 /// @param fps frame rate hint (-1 = unlimited, 0 = block on event, N>0 = fixed FPS)
-/// @return frame period in ms (or 0 when unlimited)
+/// @return frame period in ms: -1 = block forever, 0 = immediate, N>0 = frame period
 /// @sa pico_get_expert
 int pico_set_expert (int on, int fps);
 

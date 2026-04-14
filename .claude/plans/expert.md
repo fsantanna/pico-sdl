@@ -48,35 +48,41 @@ Benefits:
   `ms > 0`).
 - No stale-state bug: `ms` always reflects the new fps.
 
+## Status: implementation complete, tests not yet run
+
 ## Steps
 
-### 1. Document in `src/pico.h`
+### 1. Document in `src/pico.h` [x]
 
-- `pico_set_expert` doc comment | describe three fps inputs
-  and `ms` return semantics
+- `pico_set_expert` doc (line 525-526) | return now documented
+  as SDL timeout (`-1` block, `0` immediate, `N>0` period)
 
-### 2. Fix `src/pico.c`
+### 2. Fix `src/pico.c` [x]
 
-- `pico_set_expert` (line 635-646) | map
+- `pico_set_expert` (line 596-613) | maps
   `fps=0 → ms=-1`, `fps=-1 → ms=0`, `fps>0 → 1000/fps`;
-  always update `ms` when `on`
-- `pico_input_event` (line 1108-1114) | collapse
-  `fps==0`/`fps==-1` branches; pass `S.expert.ms` as
-  timeout; keep the `ms > 0` timing loop
+  always updates `ms` and `t0` when `on`
+- `pico_input_event` (line 1129-1132) | collapsed to single
+  `S.expert.ms <= 0` branch that delegates to
+  `pico_input_event_timeout(evt, type, S.expert.ms)`; the
+  `ms > 0` timing loop below is unchanged
 
-### 3. Update Lua doc
+### 3. Update Lua doc [x]
 
-- `lua/doc/api.md` (`pico.set.expert` entry) | clarify that
-  the return is an SDL-timeout value (`-1` = block forever,
-  `0` = immediate, `N` = wait up to N ms)
+- `lua/doc/api.md` line 102 | return documented as SDL
+  timeout (`-1` block, `0` immediate, `N>0` period)
 
-### 4. Update tests
+### 4. Update tests [x]
 
-- `tst/expert_fps.c` | tests 2, 4, 6 | `ms == -1` for
-  fps=0 / no-arg / false
-- `lua/tst/expert_fps.lua` | tests 2, 4, 6 | same
+- `tst/expert_fps.c` | only test 2 (fps=0) changed to expect
+  `ms == -1` (tests 4 and 6 check getter/NULL, unaffected)
+- `lua/tst/expert_fps.lua` | tests 2 (fps=0), 4 (no-arg),
+  6 (false) changed to expect `ms == -1`
 
 ## Verification
 
-- `make tests`
-- `cd lua/ && make tests`
+Not yet run:
+```bash
+make tests
+cd lua/ && make tests
+```

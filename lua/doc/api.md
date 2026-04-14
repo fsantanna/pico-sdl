@@ -99,7 +99,7 @@
     - **pico.set.expert**: Toggles expert mode.
         - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
         - fps: `nil`/`false` = wait forever, `true` = as fast as possible, `N>0` = fixed FPS
-        - Returns frame period in ms
+        - Returns frame period in ms: `-1` = block forever, `0` = immediate, `N>0` = frame period
     - **pico.set.show**: Sets show configuration.
         - `pico.set.show (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [keep: boolean], [rotate: Rotation] })`
     - **pico.set.video**: Sets video frame.
