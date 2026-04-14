@@ -213,11 +213,11 @@ the current color, alpha transparency, and drawing style.
 
 ### 4.1. Color
 
-To change the drawing color state, we call `pico.set.color.draw`:
+To change the drawing color state, we call `pico.set.draw` with `color`:
 
 <table>
 <tr><td><pre>
-> pico.set.color.draw 'red'
+> pico.set.draw { color='red' }
 > pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
 </pre>
 </td><td>
@@ -236,9 +236,9 @@ is omitted.
 Colors can also be specified as tables with RGB values:
 
 ```lua
-> pico.set.color.draw { r=128, g=0xFF, b=200 }      -- absolute (0-255), (0x00-0xFF)
-> pico.set.color.draw { '%', r=0.5, g=0.25, b=0.8 } -- percentage mode '%' (0.0-1.0)
-> pico.set.color.draw 'red'                         -- restore red (for the tutorial)
+> pico.set.draw { color={ r=128, g=0xFF, b=200 } }      -- absolute (0-255), (0x00-0xFF)
+> pico.set.draw { color={ '%', r=0.5, g=0.25, b=0.8 } } -- percentage mode '%' (0.0-1.0)
+> pico.set.draw { color='red' }                         -- restore red (for the tutorial)
 ```
 
 ### 4.2. Transparency
@@ -247,7 +247,7 @@ We may also change the alpha transparency for further drawing operations:
 
 <table>
 <tr><td><pre>
-> pico.set.alpha(0x88)
+> pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
 > pico.output.draw.oval { '!', x=50, y=80, w=35, h=15 }
 </pre>
 </td><td>
@@ -269,9 +269,8 @@ function:
 
 <table>
 <tr><td><pre>
-> pico.set {
-    alpha = 0xFF,
-    color = { draw = 'blue' },
+> pico.set.draw {
+    color = pico.color.alpha('blue', 0xFF),
     style = 'stroke',
   }
 > pico.output.draw.rect { '!', x=60, y=50, w=30, h=30 }
@@ -304,12 +303,7 @@ Let's restart `pico-lua` with some transparency:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set {
-    alpha = 0x88,
-    color = {
-        draw = 'red',
-    },
-  }
+> pico.set.draw { color = pico.color.alpha('red', 0x88) }
 </pre>
 </td><td>
 <img src="img/guide-05-00-01.png" width="200">
@@ -342,13 +336,13 @@ coordinate:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.set.color.draw 'white'
+> pico.set.draw { color='white' }
 > pico.output.draw.pixel { '%', x=0.5, y=0.5 }
-> pico.set.color.draw 'red'
+> pico.set.draw { color='red' }
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW' }
-> pico.set.color.draw 'green'
+> pico.set.draw { color='green' }
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
-> pico.set.color.draw 'blue'
+> pico.set.draw { color='blue' }
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
 </pre>
 </td><td>
@@ -667,11 +661,11 @@ redirect further drawing operations to it:
 > pico.init(false) ; pico.init(true)
 > pico.layer.empty("flag", {w=300, h=200})
 > pico.set.layer("flag")
-> pico.set.color.draw { r=0x00, g=0x2B, b=0x7F }
+> pico.set.draw { color={ r=0x00, g=0x2B, b=0x7F } }
   pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
-  pico.set.color.draw { r=0xFC, g=0xD1, b=0x16 }
+  pico.set.draw { color={ r=0xFC, g=0xD1, b=0x16 } }
   pico.output.draw.rect { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' }
-  pico.set.color.draw { r=0xCE, g=0x11, b=0x26 }
+  pico.set.draw { color={ r=0xCE, g=0x11, b=0x26 } }
   pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
 ```
 
@@ -889,9 +883,9 @@ local m = {'!', x=5, y=5}           -- mouse pixel
 
 while true do                       -- main loop
     pico.output.clear()             -- redraw scene
-    pico.set.color.draw 'red'
+    pico.set.draw { color='red' }
     pico.output.draw.pixel(m)
-    pico.set.color.draw 'blue'
+    pico.set.draw { color='blue' }
     pico.output.draw.pixel(k)
     pico.output.present()
 
@@ -1086,7 +1080,7 @@ To save a screenshot of the current window, we call
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.color.draw 'red'
+> pico.set.draw { color='red' }
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
 > pico.output.screenshot('my-screenshot.png')
 </pre>

@@ -98,7 +98,7 @@ do
     pico.output.draw.image('img/open.png', {'!', x=70, y=20, w=20, h=20})
     pico.set.draw { color='red' }
     pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
-    pico.set.alpha(0x88)
+    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
     pico.output.draw.oval({'!', x=50, y=80, w=35, h=15})
     shot("guide-04-02-01")
     pico.init(false)
@@ -112,11 +112,10 @@ do
         {'!', x=70, y=20, w=20, h=20})
     pico.set.draw { color='red' }
     pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
-    pico.set.alpha(0x88)
+    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
     pico.output.draw.oval({'!', x=50, y=80, w=35, h=15})
-    pico.set {
-        alpha = 0xFF,
-        color = { draw = 'blue' },
+    pico.set.draw {
+        color = pico.color.alpha('blue', 0xFF),
         style = 'stroke',
     }
     pico.output.draw.rect({'!', x=60, y=50, w=30, h=30})
@@ -131,7 +130,7 @@ end
 do
     pico.init(true)
     pico.output.clear()
-    pico.set.alpha(0x88)
+    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
     pico.set.draw { color='red' }
     shot("guide-05-00-01")
     pico.init(false)
@@ -140,7 +139,7 @@ end
 do
     pico.init(true)
     pico.set.draw { color='red' }
-    pico.set.alpha(0x88)
+    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
     pico.output.clear()
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
     shot("guide-05-01-01")
@@ -149,7 +148,7 @@ end
 
 do
     pico.init(true)
-    pico.set.alpha(0x88)
+    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
     pico.output.clear()
     pico.set.draw { color='white' }
     pico.output.draw.pixel({'%', x=0.5, y=0.5})
