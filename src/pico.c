@@ -598,8 +598,14 @@ int pico_set_expert (int on, int fps) {
     assert(fps >= -1);
     S.expert.on  = on;
     S.expert.fps = fps;
-    if (on && fps!=0) {
-        S.expert.ms = (fps == -1) ? 0 : 1000/fps;
+    {
+        if (fps == 0) {
+            S.expert.ms = -1;
+        } else if (fps == -1) {
+            S.expert.ms = 0;
+        } else {
+            S.expert.ms = 1000 / fps;
+        }
         S.expert.t0 = SDL_GetTicks();
     }
     G.root.show.grid = 0;
@@ -1128,10 +1134,8 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 int pico_input_event (Pico_Event* evt, int type) {
     _pico_guard();
-    if (S.expert.fps == 0) {
-        return pico_input_event_timeout(evt, type, -1);
-    } else if (S.expert.fps == -1) {
-        return pico_input_event_timeout(evt, type, 0);
+    if (S.expert.ms==0 || S.expert.ms==-1) {
+        return pico_input_event_timeout(evt, type, S.expert.ms);
     }
 
     int now = SDL_GetTicks();
