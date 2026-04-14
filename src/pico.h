@@ -435,17 +435,9 @@ Pico_Keyboard pico_get_keyboard (void);
 /// @return mouse state with position and button flags
 Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect);
 
-/// @brief Warps the mouse cursor to the given relative position.
-/// @param pos target position (mode, x, y, anchor, up chain)
-void pico_set_mouse (Pico_Rel_Pos* pos);
-
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds
 Uint32 pico_get_now (void);
-
-/// @brief Gets the visibility state of the window.
-/// @return 1 if visible, or 0 otherwise
-int pico_get_window_show (void);
 
 /// @brief Gets the dimensions of the given text (shared caching).
 /// @param text text to measure
@@ -482,6 +474,10 @@ Pico_Abs_Dim  pico_get_view_tile (const char* layer);
 /// @param dim pointer to retrieve window dimensions
 void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
 
+/// @brief Gets the visibility state of the window.
+/// @return 1 if visible, or 0 otherwise
+int pico_get_window_show (void);
+
 // SET
 
 /// @brief Sets both window and world to the same dimensions.
@@ -495,6 +491,10 @@ void pico_set_draw_style (const char* layer, PICO_STYLE style);
 
 int pico_set_expert (int on, int fps);
 void pico_set_layer (const char* key);
+
+/// @brief Warps the mouse cursor to the given relative position.
+/// @param pos target position (mode, x, y, anchor, up chain)
+void pico_set_mouse (Pico_Rel_Pos* pos);
 
 void pico_set_show          (const char* layer, Pico_Layer_Show show);
 void pico_set_show_alpha    (const char* layer, unsigned char alpha);
@@ -518,13 +518,13 @@ void pico_set_view_dst  (const char* layer, Pico_Rel_Rect dst);
 void pico_set_view_src  (const char* layer, Pico_Rel_Rect src);
 void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile);
 
-void pico_set_window_show (int on);
-
 /// @brief Sets window properties. NULL/(-1) arguments are ignored.
 /// @param title window title (NULL to keep current)
 /// @param fs fullscreen: 1=enable, 0=disable, -1=unchanged
 /// @param dim window dimensions (NULL to keep current)
 void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim);
+
+void pico_set_window_show (int on);
 
 /// @}
 

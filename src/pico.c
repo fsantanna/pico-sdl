@@ -368,41 +368,6 @@ PICO_STYLE pico_get_draw_style (const char* layer) {
     return _pico_layer_null(layer)->draw.style;
 }
 
-void pico_get_show (const char* layer, Pico_Layer_Show* show) {
-    _pico_guard();
-    *show = _pico_layer_null(layer)->show;
-}
-
-unsigned char pico_get_show_alpha (const char* layer) {
-    _pico_guard();
-    return _pico_layer_null(layer)->show.alpha;
-}
-
-Pico_Color pico_get_show_color (const char* layer) {
-    _pico_guard();
-    return _pico_layer_null(layer)->show.color;
-}
-
-PICO_FLIP pico_get_show_flip (const char* layer) {
-    _pico_guard();
-    return _pico_layer_null(layer)->show.flip;
-}
-
-int pico_get_show_grid (const char* layer) {
-    _pico_guard();
-    return _pico_layer_null(layer)->show.grid;
-}
-
-int pico_get_show_keep (const char* layer) {
-    _pico_guard();
-    return _pico_layer_null(layer)->show.keep;
-}
-
-Pico_Rot pico_get_show_rotate (const char* layer) {
-    _pico_guard();
-    return _pico_layer_null(layer)->show.rotate;
-}
-
 int pico_get_expert (int* fps) {
     _pico_guard();
     if (fps != NULL) {
@@ -424,6 +389,20 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
         SDL_FDim fd = _sdl_dim(rel, NULL, NULL);
         return (Pico_Abs_Dim){fd.w, fd.h};
     }
+}
+
+static Pico_Keyboard _pico_keyboard (int key, SDL_Keymod mod) {
+    return (Pico_Keyboard) {
+        .key   = key,
+        .ctrl  = !!(mod & KMOD_CTRL),
+        .shift = !!(mod & KMOD_SHIFT),
+        .alt   = !!(mod & KMOD_ALT),
+    };
+}
+
+Pico_Keyboard pico_get_keyboard (void) {
+    _pico_guard();
+    return _pico_keyboard(0, SDL_GetModState());
 }
 
 const char* pico_get_layer (void) {
@@ -457,35 +436,44 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
     return m;
 }
 
-void pico_set_mouse (Pico_Rel_Pos* pos) {
-    _pico_guard();
-    SDL_Point phy = pico_cv_pos_rel_win(pos, NULL);
-    SDL_WarpMouseInWindow(G.win, phy.x, phy.y);
-    SDL_PumpEvents();
-}
-
-static Pico_Keyboard _pico_keyboard (int key, SDL_Keymod mod) {
-    return (Pico_Keyboard) {
-        .key   = key,
-        .ctrl  = !!(mod & KMOD_CTRL),
-        .shift = !!(mod & KMOD_SHIFT),
-        .alt   = !!(mod & KMOD_ALT),
-    };
-}
-
-Pico_Keyboard pico_get_keyboard (void) {
-    _pico_guard();
-    return _pico_keyboard(0, SDL_GetModState());
-}
-
 Uint32 pico_get_now (void) {
     _pico_guard();
     return SDL_GetTicks();
 }
 
-int pico_get_window_show (void) {
+void pico_get_show (const char* layer, Pico_Layer_Show* show) {
     _pico_guard();
-    return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
+    *show = _pico_layer_null(layer)->show;
+}
+
+unsigned char pico_get_show_alpha (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.alpha;
+}
+
+Pico_Color pico_get_show_color (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.color;
+}
+
+PICO_FLIP pico_get_show_flip (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.flip;
+}
+
+int pico_get_show_grid (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.grid;
+}
+
+int pico_get_show_keep (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.keep;
+}
+
+Pico_Rot pico_get_show_rotate (const char* layer) {
+    _pico_guard();
+    return _pico_layer_null(layer)->show.rotate;
 }
 
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
@@ -557,9 +545,21 @@ void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim) {
     }
 }
 
+int pico_get_window_show (void) {
+    _pico_guard();
+    return SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // SET
 ///////////////////////////////////////////////////////////////////////////////
+
+void pico_set_dim (Pico_Rel_Dim* dim) {
+    _pico_guard();
+    assert(S.layer==&G.root && "can only set dim from main layer");
+    pico_set_window(NULL, -1, dim);
+    pico_set_view_dim(NULL, dim);
+}
 
 void pico_set_draw (const char* layer, Pico_Layer_Draw draw) {
     _pico_guard();
@@ -579,13 +579,6 @@ void pico_set_draw_font (const char* layer, const char* path) {
 void pico_set_draw_style (const char* layer, PICO_STYLE style) {
     _pico_guard();
     _pico_layer_null(layer)->draw.style = style;
-}
-
-void pico_set_dim (Pico_Rel_Dim* dim) {
-    _pico_guard();
-    assert(S.layer==&G.root && "can only set dim from main layer");
-    pico_set_window(NULL, -1, dim);
-    pico_set_view_dim(NULL, dim);
 }
 
 int pico_set_expert (int on, int fps) {
@@ -618,6 +611,13 @@ void pico_set_layer (const char* key) {
     SDL_SetRenderTarget(G.ren, S.layer->tex);
     Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->view.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
+}
+
+void pico_set_mouse (Pico_Rel_Pos* pos) {
+    _pico_guard();
+    SDL_Point phy = pico_cv_pos_rel_win(pos, NULL);
+    SDL_WarpMouseInWindow(G.win, phy.x, phy.y);
+    SDL_PumpEvents();
 }
 
 void pico_set_show (const char* layer, Pico_Layer_Show show) {
