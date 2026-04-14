@@ -10,7 +10,7 @@ pico.set.view {
 -- stroke
 do
     print("30/30 - stroke")
-    pico.set.style('stroke')
+    pico.set.draw { style='stroke' }
     local r = {'C', x=0.3, y=0.3, w=0.2, h=0.2}
     pico.output.draw.rect(r)
 end
@@ -18,7 +18,7 @@ end
 -- fill
 do
     print("80/80 - fill")
-    pico.set.style('fill')
+    pico.set.draw { style='fill' }
     local r = {'C', x=0.8, y=0.8, w=0.1, h=0.1}
     pico.output.draw.rect(r)
 end
@@ -26,7 +26,7 @@ end
 pico.check("style-01")
 
 -- error handling
-print(pcall(pico.set.style, 'xxx'))
-print(pcall(pico.set.style, true))
+print(pcall(function() pico.set.draw { style='xxx' } end))
+print(pcall(function() pico.set.draw { style=true } end))
 
 pico.init(false)

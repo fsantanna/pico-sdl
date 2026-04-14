@@ -44,7 +44,7 @@ local function walk(side, step, fstep)
     return frames[f[(fstep // 4) % 4 + 1]], x, y
 end
 os.execute("mkdir -p img/anims/")
-pico.set.style 'stroke'
+pico.set.draw { style='stroke' }
 local f1, x1, y1 = walk('clock',   0, 0)
 local f2, x2, y2 = walk('counter', 0, 0)
 for step=0, 79 do

@@ -1,7 +1,7 @@
 pico.init(true)
 
 pico.set.expert(true, 20)
-pico.set.style 'stroke'
+pico.set.draw { style='stroke' }
 
 -- 4x4 sprite sheet -> subs "walk-01" to "walk-16"
 
