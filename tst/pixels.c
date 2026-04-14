@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("pixels", -1, &(Pico_Rel_Dim){ '!', {100, 100}, NULL });
+    pico_set_window((Pico_Window){ .dim={100,100}, .fs=0, .show=1, .title="pixels" });
     pico_set_view_dim(NULL, &(Pico_Rel_Dim){ '!', {5, 5}, NULL });
 
     {

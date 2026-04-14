@@ -25,7 +25,7 @@ pico.output.sound "start.wav"
 pico.input.delay(2000)
 
 -- CLEAR
-pico.set.color.clear('white')
+pico.set.show { color='white' }
 pico.output.clear()
 
 print "shows white screen"
@@ -39,8 +39,8 @@ print "shows centered image"
 pico.input.delay(2000)
 
 -- DRAW_PIXEL/RECT/OVAL
-pico.set.color.clear(pico.color.black)
-pico.set.color.draw(pico.color.white)
+pico.set.show { color=pico.color.black }
+pico.set.draw { color=pico.color.white }
 pico.output.clear()
 pico.output.draw.pixel(pt)
 local rct = pico.pos { x=75, y=25 }
@@ -114,9 +114,9 @@ for i=1, 20 do
     pico.set.dim.world(log)
     local ct = pico.pos { x=50, y=50 }
     pico.output.clear()
-    pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }
+    pico.set.draw { color={r=0xFF,g=0xFF,b=0xFF,a=0xFF} }
     pico.output.draw.rect { x=ct.x, y=ct.y, w=10, h=10 }
-    pico.set.color.draw { r=0xFF,g=0x00,b=0x00,a=0xFF }
+    pico.set.draw { color={r=0xFF,g=0x00,b=0x00,a=0xFF} }
     pico.output.draw.text(pico.pos{x=25,y=75}, "X")
     pico.output.draw.line(ct, pico.pos{x=100,y=0})
     pico.input.delay(250)
@@ -128,14 +128,14 @@ for i=1, 20 do
     pico.set.dim.world(log)
     local ct = pico.pos { x=50, y=50 }
     pico.output.clear()
-    pico.set.color.draw { r=0xFF,g=0xFF,b=0xFF,a=0xFF }
+    pico.set.draw { color={r=0xFF,g=0xFF,b=0xFF,a=0xFF} }
     pico.output.draw.rect { x=ct.x, y=ct.y, w=10, h=10 }
-    pico.set.color.draw { r=0xFF,g=0x00,b=0x00,a=0xFF }
+    pico.set.draw { color={r=0xFF,g=0x00,b=0x00,a=0xFF} }
     pico.output.draw.text(pico.pos{x=25,y=75}, "X")
     pico.output.draw.line(ct, pico.pos{x=100,y=0})
     pico.input.delay(250)
 end
-pico.set.color.draw { r=0xFF, g=0xFF, b=0xFF, a=0xFF }
+pico.set.draw { color={r=0xFF, g=0xFF, b=0xFF, a=0xFF} }
 
 -- PAN
 

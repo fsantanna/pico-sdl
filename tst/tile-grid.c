@@ -4,8 +4,7 @@
 int main (void) {
     pico_init(1);
 
-    Pico_Rel_Dim phy = { '!', {480, 480}, NULL };
-    pico_set_window("Grid", -1, &phy);
+    pico_set_window((Pico_Window){ .dim={480,480}, .fs=0, .show=1, .title="Grid" });
 
     // Test 1: main layer, no tile mode, pixel grid only
     {

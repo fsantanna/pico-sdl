@@ -28,10 +28,7 @@ int main (void) {
     int scale = 30;
     int win_w = info.dim.w * scale;
     int win_h = info.dim.h * scale + BAR_H * 2;
-    pico_set_window(
-        "Video Player", -1,
-        &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL}
-    );
+    pico_set_window((Pico_Window){ .dim={win_w,win_h}, .fs=0, .show=1, .title="Video Player" });
     pico_set_show_grid(NULL, 0);
     pico_set_view_dim(NULL, &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL});
 

@@ -4,17 +4,17 @@ pico.set {
     expert = true,
     window = { dim={'!', w=200, h=200}, title="2x Rects" },
     view   = { dim={'!', w=10,  h=10}  },
-    alpha  = 0xCC,
 }
+pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0xCC) }
 
 local k = {'!', x=4, y=4}        -- arrow-key pixel (centered)
 local m = {'!', x=5, y=5}        -- mouse pixel
 
 while true do
     pico.output.clear()
-    pico.set.color.draw 'red'
+    pico.set.draw { color='red' }
     pico.output.draw.pixel(m)
-    pico.set.color.draw 'blue'
+    pico.set.draw { color='blue' }
     pico.output.draw.pixel(k)
     pico.output.present()
 

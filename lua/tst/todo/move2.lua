@@ -10,7 +10,7 @@ math.randomseed(0)
 
 local pos = {x=32, y=9}  -- Center of world (50%, 50%)
 for i = 0, 99 do
-    pico.set.color.draw('white')
+    pico.set.draw { color='white' }
     pico.output.draw.pixel(pos)
 
     pico.input.delay(10)

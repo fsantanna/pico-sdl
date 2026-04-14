@@ -1,5 +1,7 @@
 local pico = require "pico"
 
+require "pico.check"
+
 pico.init(true)
 pico.set.window { title="Get-Set", dim={'!', w=640, h=480} }
 pico.set.view { dim={'!', w=64, h=48} }
@@ -70,7 +72,7 @@ do
 
     pico.set.view { source={'%', x=0.6, y=0.4, w=0.8, h=0.8, anchor='C'} }
     v = pico.get.view()
-    assert(v.source.x == 0.6 and v.source.y == 0.4)
+    assert(pico.equal(v.source.x,0.6) and pico.equal(v.source.y,0.4))
 
     -- restore
     pico.set.view {

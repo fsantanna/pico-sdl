@@ -43,11 +43,14 @@ tests: pico_native.so
 	$(TST) tst/cv.lua
 	$(TST) tst/dim.lua
 	$(TST) tst/expert.lua
-	#$(TST) tst/get-set.lua
+	#$(TST) tst/expert_fps.lua
 	$(TST) tst/font.lua
+	$(TST) tst/get-set.lua
 	$(TST) tst/image_pct.lua
 	$(TST) tst/image_raw.lua
 	$(TST) tst/init.lua
+	$(TST) tst/layer-empty-tile.lua
+	$(TST) tst/layer-hier.lua
 	$(TST) tst/layers.lua
 	$(TST) tst/mouse.lua
 	$(TST) tst/mouse-rect-click.lua

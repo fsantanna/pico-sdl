@@ -8,7 +8,7 @@ int main(void) {
 
     puts("phy (500,500) -> log (50,50)");
     {
-        pico_set_window("Mouse", -1, &(Pico_Rel_Dim){ '!', {500, 500}, NULL });
+        pico_set_window((Pico_Window){ .dim={500,500}, .fs=0, .show=1, .title="Mouse" });
         pico_set_view_dim(NULL, &(Pico_Rel_Dim){ '!', {50, 50}, NULL });
 
         // phy (0,0) -> log (0,0)

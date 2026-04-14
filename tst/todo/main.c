@@ -6,7 +6,7 @@ int main (void) {
     puts("shows dark screen");
     {
         Pico_Dim phy, log;
-        pico_get_window(NULL, NULL, &phy);
+        phy = pico_get_window_dim();
         log = pico_get_view_dim(NULL);
         assert(phy.w==500 && phy.h==500);
         assert(log.w==100 && log.h==100);
@@ -20,7 +20,7 @@ int main (void) {
 
     puts("changes window title to \"Testing...\"");
     {
-        pico_set_window("Testing...", -1, NULL);
+        pico_set_window_title("Testing...");
         pico_input_delay(2000);
     }
 

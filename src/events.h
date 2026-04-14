@@ -16,10 +16,6 @@ typedef enum PICO_EVENT {
 } PICO_EVENT;
 
 typedef struct {
-    int w, h;
-} Pico_Window;
-
-typedef struct {
     int key;
     unsigned ctrl  : 1;
     unsigned shift : 1;
@@ -37,9 +33,9 @@ typedef struct {
 typedef struct {
     PICO_EVENT type;
     union {
-        Pico_Window   window;
-        Pico_Keyboard keyboard;
-        Pico_Mouse    mouse;
+        struct { int w, h; } window;
+        Pico_Keyboard        keyboard;
+        Pico_Mouse           mouse;
     };
 } Pico_Event;
 

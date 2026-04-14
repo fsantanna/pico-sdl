@@ -1,5 +1,9 @@
 local pico = require "pico"
 
+function pico.equal (a, b)
+    return math.abs(a - b) < 0.001
+end
+
 local function on (name)
     local v = os.getenv(name)
     return v~=nil and v~=""

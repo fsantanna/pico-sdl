@@ -4,7 +4,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("Get-Set", -1, &(Pico_Rel_Dim){ '!', {640, 480}, NULL });
+    pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Get-Set" });
     pico_set_view_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
 
     // color_clear
@@ -77,8 +77,8 @@ int main (void) {
         pico_set_show_grid(NULL, 0);
         assert(pico_get_show_grid(NULL) == 0);
 
-        pico_set_show_flip(NULL, PICO_FLIP_H);
-        assert(pico_get_show_flip(NULL) == PICO_FLIP_H);
+        pico_set_show_flip(NULL, PICO_FLIP_HORIZONTAL);
+        assert(pico_get_show_flip(NULL) == PICO_FLIP_HORIZONTAL);
         pico_set_show_flip(NULL, PICO_FLIP_NONE);
 
         Pico_Rot rot = {45, PICO_ANCHOR_C};
@@ -92,14 +92,14 @@ int main (void) {
     puts("show bulk");
     {
         pico_set_show(NULL, (Pico_Layer_Show){
-            .alpha=0x40, .color=PICO_COLOR_RED, .flip=PICO_FLIP_V, .grid=1, .keep=0, .rotate={90, PICO_ANCHOR_C}
+            .alpha=0x40, .color=PICO_COLOR_RED, .flip=PICO_FLIP_VERTICAL, .grid=1, .keep=0, .rotate={90, PICO_ANCHOR_C}
         });
 
         Pico_Layer_Show gs;
         pico_get_show(NULL, &gs);
         assert(gs.alpha == 0x40);
         assert(gs.color.r == 255 && gs.color.g == 0 && gs.color.b == 0);
-        assert(gs.flip == PICO_FLIP_V);
+        assert(gs.flip == PICO_FLIP_VERTICAL);
         assert(gs.grid == 1);
         assert(gs.keep == 0);
         assert(gs.rotate.angle == 90);
