@@ -129,23 +129,24 @@ Functions</h2></td></tr>
 <tr class="memitem:gac0774fc76dbc6a3f2ab709f7185730ee" id="r_gac0774fc76dbc6a3f2ab709f7185730ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color.html">Pico_Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#gac0774fc76dbc6a3f2ab709f7185730ee">pico_color_mix</a> (<a class="el" href="structPico__Color.html">Pico_Color</a> c1, <a class="el" href="structPico__Color.html">Pico_Color</a> c2)</td></tr>
 <tr class="memdesc:gac0774fc76dbc6a3f2ab709f7185730ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mixes two colors by averaging their RGB components.  <br /></td></tr>
 <tr class="separator:gac0774fc76dbc6a3f2ab709f7185730ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad5d85563550d8d427eef332b7b7e2a1a" id="r_gad5d85563550d8d427eef332b7b7e2a1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color__A.html">Pico_Color_A</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#gad5d85563550d8d427eef332b7b7e2a1a">pico_color_alpha</a> (<a class="el" href="structPico__Color.html">Pico_Color</a> clr, Uint8 a)</td></tr>
-<tr class="separator:gad5d85563550d8d427eef332b7b7e2a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga86aed0d294010e147d2fb18292e995f1" id="r_ga86aed0d294010e147d2fb18292e995f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color.html">Pico_Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#ga86aed0d294010e147d2fb18292e995f1">pico_color_alpha</a> (<a class="el" href="structPico__Color.html">Pico_Color</a> clr, Uint8 a)</td></tr>
+<tr class="memdesc:ga86aed0d294010e147d2fb18292e995f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the color with alpha set to the given value.  <br /></td></tr>
+<tr class="separator:ga86aed0d294010e147d2fb18292e995f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa16014db379c76a6671269de6bef495e" id="r_gaa16014db379c76a6671269de6bef495e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Color.html">Pico_Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#gaa16014db379c76a6671269de6bef495e">pico_color_hex</a> (uint32_t hex)</td></tr>
-<tr class="memdesc:gaa16014db379c76a6671269de6bef495e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a hex integer (0xRRGGBB) to a color.  <br /></td></tr>
+<tr class="memdesc:gaa16014db379c76a6671269de6bef495e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a hex integer to a color.  <br /></td></tr>
 <tr class="separator:gaa16014db379c76a6671269de6bef495e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Utilities for users. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="gad5d85563550d8d427eef332b7b7e2a1a" name="gad5d85563550d8d427eef332b7b7e2a1a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad5d85563550d8d427eef332b7b7e2a1a">&#9670;&#160;</a></span>pico_color_alpha()</h2>
+<a id="ga86aed0d294010e147d2fb18292e995f1" name="ga86aed0d294010e147d2fb18292e995f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga86aed0d294010e147d2fb18292e995f1">&#9670;&#160;</a></span>pico_color_alpha()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structPico__Color__A.html">Pico_Color_A</a> pico_color_alpha </td>
+          <td class="memname"><a class="el" href="structPico__Color.html">Pico_Color</a> pico_color_alpha </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structPico__Color.html">Pico_Color</a>&#160;</td>
           <td class="paramname"><em>clr</em>, </td>
@@ -163,6 +164,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns a copy of the color with alpha set to the given value. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">clr</td><td>the original color </td></tr>
+    <tr><td class="paramname">a</td><td>alpha value (0-255) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>copy of clr with .a = a </dd></dl>
 
 </div>
 </div>
@@ -221,10 +232,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Converts a hex integer (0xRRGGBB) to a color. </p>
+<p>Converts a hex integer to a color. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hex</td><td>the color as a 24-bit integer (e.g. 0xFF0000 for red) </td></tr>
+    <tr><td class="paramname">hex</td><td>0xRRGGBB (24-bit, alpha=0xFF) or 0xRRGGBBAA (32-bit) </td></tr>
   </table>
   </dd>
 </dl>
