@@ -565,3 +565,16 @@ follow-up.
       keep_persist)
 - [ ] Re-baseline visual tests
 - [ ] Update `HISTORY.md` and `lua/doc/guide.md`
+- [ ] `pico_cv_*` family works with layers
+      - accept layer id so conversions use that layer's view
+        chain instead of `S.layer`
+      - applies to `pos_abs_rel`, `pos_rel_abs`, `rect_abs_rel`,
+        `rect_rel_abs`, `dim_abs_rel`, `dim_rel_abs`
+- [ ] `pico.vs` string-keyed scene-graph dispatcher
+      - `pico_vs(const char* l1, const char* l2)` via LCA walk
+        (see §4)
+      - Lua `pico.vs(l1, l2)`
+- [ ] `pico.mouse.get/set` with layer id
+      - `pico_get_mouse(const char* layer, char mode)` and
+        `pico_set_mouse(const char* layer, ...)` per §5
+      - Lua `pico.mouse.get/set(layer, ...)`
