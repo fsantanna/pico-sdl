@@ -119,7 +119,7 @@ do
     for i=1, 7 do
         local pt = pico.pos({x=50,y=50}, rs[i], {x='left',y='top'})
 --require'atmos.x'.print(pt)
-        pico.set.color.draw(pico.color.red)
+        pico.set.draw { color=pico.color.red }
         pico.output.draw.pixel(pt)
     end
     pico.input.delay(1000)

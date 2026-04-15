@@ -21,7 +21,7 @@ void init_drop (Drop* drop) {
 int main(void) {
     srand(time(NULL));
     pico_init(1);
-    pico_set_window("Rain Simulation", -1, NULL);
+    pico_set_window_title("Rain Simulation");
     pico_set_expert(1, 60);
 
     Drop drops[DROP_COUNT];
@@ -29,8 +29,8 @@ int main(void) {
         init_drop(&drops[i]);
     }
 
-    pico_set_color_clear((Pico_Color){20, 20, 40});
-    pico_set_color_draw((Pico_Color){100, 100, 255});
+    pico_set_show_color(NULL, (Pico_Color){20, 20, 40, 0xFF});
+    pico_set_draw_color(NULL, (Pico_Color){100, 100, 255, 0xFF});
 
     while (1) {
         Pico_Event e;

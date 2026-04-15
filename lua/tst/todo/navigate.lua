@@ -18,7 +18,7 @@ do
     )
 
     -- RECT at center
-    pico.set.style('stroke')
+    pico.set.draw { style='stroke' }
     pico.output.draw.rect({'C', x=0.5, y=0.5, w=0.25, h=0.25})
 end
 

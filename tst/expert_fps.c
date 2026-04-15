@@ -3,15 +3,15 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("Expert FPS", -1, NULL);
+    pico_set_window_title("Expert FPS");
 
     // test 1: set.expert returns ms
     int ms = pico_set_expert(1, 40);
     assert(ms == 25);
 
-    // test 2: fps=0 returns 0
+    // test 2: fps=0 returns -1 (block forever)
     int ms0 = pico_set_expert(1, 0);
-    assert(ms0 == 0);
+    assert(ms0 == -1);
 
     // test 3: frame timing with compensation
     pico_set_expert(1, 40);

@@ -9,9 +9,9 @@ pico.set.view { dim={'!', w=64, h=48} }
 do
     print("set all: alpha comparison")
     pico.output.clear()
-    pico.set { alpha=0x80, color={draw='red'} }
+    pico.set.draw { color=pico.color.alpha('red', 0x80) }
     pico.output.draw.rect({'%', x=0.25, y=0.5, w=0.4, h=0.8})
-    pico.set { alpha=0xFF }
+    pico.set.draw { color=pico.color.alpha('red', 0xFF) }
     pico.output.draw.rect({'%', x=0.75, y=0.5, w=0.4, h=0.8})
     pico.check("set-01")
 end
@@ -20,7 +20,7 @@ end
 do
     print("set all: style")
     pico.output.clear()
-    pico.set { style='stroke', color={draw='white'} }
+    pico.set.draw { style='stroke', color='white' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.8, h=0.8})
     pico.check("set-02")
 end
@@ -29,8 +29,7 @@ end
 do
     print("individual setters")
     pico.output.clear()
-    pico.set.color.draw('green')
-    pico.set.alpha(0xCC)
+    pico.set.draw { color=pico.color.alpha('green', 0xCC) }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.check("set-03")
 end

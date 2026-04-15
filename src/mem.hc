@@ -7,7 +7,7 @@
 
 typedef struct {
     Pico_Abs_Dim dim;
-    const Pico_Color_A* pixels;
+    const Pico_Color* pixels;
 } _alloc_buffer_t;
 
 typedef struct {
@@ -85,22 +85,9 @@ static void _free_sound (int n, const void* key, void* value) {
 // Alloc helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_View _view_new (Pico_Abs_Dim dim) {
-    return (Pico_View) {
-        .grid = 0,
-        .dim  = dim,
-        .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-        .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-        .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-        .tile = {0, 0},
-        .rot  = {0, PICO_ANCHOR_C},
-        .flip = PICO_FLIP_NONE,
-        .alpha = 0xFF,
-    };
-}
-
 static Pico_Layer* _layer_new (
-    int type, size_t size, const char* key, SDL_Texture* tex, Pico_Abs_Dim dim
+    int keep, int type, size_t size,
+    const char* key, SDL_Texture* tex, Pico_Abs_Dim dim
 ) {
     Pico_Layer* data = calloc(1, size);
     assert(data != NULL);
@@ -108,7 +95,18 @@ static Pico_Layer* _layer_new (
         .type = type,
         .name = strdup(key),
         .tex  = tex,
-        .view = _view_new(dim),
+        .draw = {
+            .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL
+        },
+        .show = {
+            .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .keep=keep, .rotate={0, PICO_ANCHOR_C}
+        },
+        .view = {
+            .dim=dim, .tile={0, 0},
+            .dst={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .src={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .clip={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+        },
     };
     assert(data->name != NULL);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
@@ -129,7 +127,7 @@ static void* _alloc_layer_buffer (int n, const void* key, void* ctx) {
     pico_assert(tex != NULL);
     SDL_FreeSurface(sfc);
     return _layer_new (
-        PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, tex, c->dim
     );
 }
@@ -142,12 +140,11 @@ static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
         dim.h *= arg->tile->h;
     }
     Pico_Layer* lay = _layer_new (
-        PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, _tex_create(dim), dim
     );
     if (arg->tile != NULL) {
         lay->view.tile = *arg->tile;
-    } else {
     }
     return lay;
 }
@@ -159,7 +156,7 @@ static void* _alloc_layer_image (int n, const void* key, void* ctx) {
     Pico_Abs_Dim dim;
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
     return _layer_new (
-        PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, tex, dim
     );
 }
@@ -171,7 +168,7 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
         &(Pico_Abs_Rect){0, 0, c->par->view.dim.w, c->par->view.dim.h}
     );
     Pico_Layer* data = _layer_new (
-        PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
+        1, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
         (const char*)key, c->par->tex,
         (Pico_Abs_Dim){abs.w, abs.h}
     );
@@ -182,8 +179,8 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
 }
 
 static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
-    SDL_Color c = { S.color.draw.r, S.color.draw.g, S.color.draw.b, 0xFF };
-    TTF_Font* ttf = _font_get(S.font, height);
+    SDL_Color c = { S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, 0xFF };
+    TTF_Font* ttf = _font_get(S.layer->draw.font, height);
     SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
@@ -198,7 +195,7 @@ static void* _alloc_layer_text (int n, const void* key, void* ctx) {
     Pico_Abs_Dim dim;
     SDL_Texture* tex = _tex_text(c->height, c->text, &dim);
     return _layer_new (
-        PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, tex, dim
     );
 }
@@ -222,7 +219,7 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
     pico_assert(tex != NULL);
 
     Pico_Layer_Video* vs = (Pico_Layer_Video*)_layer_new (
-        PICO_LAYER_VIDEO, sizeof(Pico_Layer_Video),
+        1, PICO_LAYER_VIDEO, sizeof(Pico_Layer_Video),
         (const char*)key, tex, (Pico_Abs_Dim){w, h}
     );
 

@@ -14,7 +14,7 @@ void push_key (SDL_Keycode key) {
 
 int main() {
     pico_init(1);
-    pico_set_view(-1, &(Pico_Rel_Dim){ '!', {1000, 1000}, NULL }, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_view_dim(NULL, &(Pico_Rel_Dim){ '!', {1000, 1000}, NULL });
 
     // draw
     {
@@ -29,7 +29,7 @@ int main() {
         );
 
         // RECT at center
-        pico_set_style(PICO_STYLE_STROKE);
+        pico_set_draw_style(NULL, PICO_STYLE_STROKE);
         pico_output_draw_rect(
             &(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.25, 0.25}, PICO_ANCHOR_C, NULL }
         );

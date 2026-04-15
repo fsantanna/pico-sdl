@@ -3,7 +3,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("Dim", -1, NULL);
+    pico_set_window_title("Dim");
 
     Pico_Rel_Rect r = { '%', {0.5,0.5, 0,0}, PICO_ANCHOR_C, NULL };
     char fmt[64];
@@ -22,13 +22,11 @@ int main (void) {
     for (float i=0; i<=125; i+=25) {
         pico_output_clear();
 
-        pico_set_alpha(255);
-        pico_set_color_draw((Pico_Color){255,255,255});
+        pico_set_draw_color(NULL, (Pico_Color){255,255,255, 0xFF});
         pico_output_draw_rect(&r);
 
         Pico_Rel_Rect rr = { '%', {0.5,0.5, i/100.0,i/100.0}, PICO_ANCHOR_C, &r };
-        pico_set_alpha(150);
-        pico_set_color_draw((Pico_Color){255,0,0});
+        pico_set_draw_color(NULL, (Pico_Color){255,0,0, 150});
         pico_output_draw_rect(&rr);
 
         sprintf(fmt, "dim-%02d", N++);

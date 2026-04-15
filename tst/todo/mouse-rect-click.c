@@ -10,9 +10,9 @@ int main (void) {
 
     pico_layer_empty(NULL, "A", (Pico_Abs_Dim){120, 50}, NULL);
     pico_set_layer("A");
-    pico_set_color_clear(PICO_COLOR_NAVY);
+    pico_set_show_color(NULL, PICO_COLOR_NAVY);
     pico_output_clear();
-    pico_set_color_draw(PICO_COLOR_WHITE);
+    pico_set_draw_color(NULL, PICO_COLOR_WHITE);
     pico_output_draw_rect(&btn1);
     pico_output_draw_rect(&btn2);
     pico_output_draw_rect(&btn3);
@@ -20,7 +20,7 @@ int main (void) {
 
     /* Draw layer at bottom-right, 35%x35% of screen (distorted) */
     Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE, NULL };
-    pico_set_color_clear(PICO_COLOR_BLACK);
+    pico_set_show_color(NULL, PICO_COLOR_BLACK);
     pico_output_clear();
     pico_output_draw_layer("A", &r);
 

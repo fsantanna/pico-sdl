@@ -8,8 +8,8 @@ int main(void) {
 
     puts("phy (500,500) -> log (50,50)");
     {
-        pico_set_window("Mouse", -1, &(Pico_Rel_Dim){ '!', {500, 500}, NULL });
-        pico_set_view(-1, &(Pico_Rel_Dim){ '!', {50, 50}, NULL }, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_window((Pico_Window){ .dim={500,500}, .fs=0, .show=1, .title="Mouse" });
+        pico_set_view_dim(NULL, &(Pico_Rel_Dim){ '!', {50, 50}, NULL });
 
         // phy (0,0) -> log (0,0)
         {
@@ -37,9 +37,7 @@ int main(void) {
     // centered 100x100 logical
     puts("zoom out 2x");
     {
-        pico_set_view(-1, NULL, NULL, NULL,
-            &(Pico_Rel_Rect){ '!', {-25, -25, 100, 100}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL);
+        pico_set_view_src(NULL, (Pico_Rel_Rect){ '!', {-25, -25, 100, 100}, PICO_ANCHOR_NW, NULL });
 
         // phy (250, 250) -> log (25,25)
         {
@@ -67,9 +65,7 @@ int main(void) {
     // centered 10x10 logical
     puts("zoom in 5x");
     {
-        pico_set_view(-1, NULL, NULL, NULL,
-            &(Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL);
+        pico_set_view_src(NULL, (Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL });
 
         // phy (0,0) -> log (20,20)
         {
@@ -97,9 +93,7 @@ int main(void) {
     // bottom-right (SE) half
     puts("scroll/zoom SE");
     {
-        pico_set_view(-1, NULL, NULL, NULL,
-            &(Pico_Rel_Rect){ '!', {25, 25, 25, 25}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL);
+        pico_set_view_src(NULL, (Pico_Rel_Rect){ '!', {25, 25, 25, 25}, PICO_ANCHOR_NW, NULL });
 
         // phy (0,0) -> log (25,25)
         {
@@ -118,9 +112,7 @@ int main(void) {
 
     puts("normal PCT");
     {
-        pico_set_view(-1, NULL, NULL, NULL,
-            &(Pico_Rel_Rect){ '!', {0, 0, 50, 50}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL);
+        pico_set_view_src(NULL, (Pico_Rel_Rect){ '!', {0, 0, 50, 50}, PICO_ANCHOR_NW, NULL });
 
         // phy (250,250) -> pct (0.5,0.5)
         {
@@ -141,9 +133,7 @@ int main(void) {
     {
         // Zoom with src = {20, 20, 10, 10}, but pct should still be 0-1 relative
         // to full logical world
-        pico_set_view(-1, NULL, NULL, NULL,
-            &(Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL);
+        pico_set_view_src(NULL, (Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL });
 
         // phy (0,0) -> raw (20,20) -> pct (0.4,0.4)
         {
@@ -172,11 +162,7 @@ int main(void) {
     // roundtrip: set(rel) -> get(rel) -> assert equal
     puts("roundtrip '!'");
     {
-        pico_set_view (
-            -1, NULL, NULL, NULL,
-            &(Pico_Rel_Rect){ '!', {0, 0, 50, 50}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL
-        );
+        pico_set_view_src(NULL, (Pico_Rel_Rect){ '!', {0, 0, 50, 50}, PICO_ANCHOR_NW, NULL });
         pico_set_mouse (
             &(Pico_Rel_Pos){ '!', {25, 25}, PICO_ANCHOR_NW, NULL }
         );
@@ -196,11 +182,7 @@ int main(void) {
 
     puts("roundtrip '!' zoomed");
     {
-        pico_set_view (
-            -1, NULL, NULL, NULL,
-            &(Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL },
-            NULL, NULL, NULL, NULL
-        );
+        pico_set_view_src(NULL, (Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW, NULL });
         pico_set_mouse (
             &(Pico_Rel_Pos){ '!', {25, 25}, PICO_ANCHOR_NW, NULL }
         );

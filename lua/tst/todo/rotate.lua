@@ -3,11 +3,10 @@ local pico = require 'pico'
 pico.init(true)
 
 pico.set.window { title="Rotate" }
-pico.set.view { grid=true }
+pico.set.show { grid=true }
 pico.set.dim.window(500,500)
 pico.set.dim.world(100,100)
 pico.set.anchor.pos('center', 'middle')
-pico.set.font(nil, 16)
 
 local pt   = pico.pos(50, 50)
 local rect = {x=pt.x, y=pt.y, w=50, h=50}

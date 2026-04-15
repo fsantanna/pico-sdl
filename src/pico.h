@@ -106,6 +106,36 @@ typedef struct {
     Pico_Anchor anchor;
 } Pico_Rot;
 
+typedef struct {
+    Pico_Color    color;
+    const char*   font;
+    PICO_STYLE    style;
+} Pico_Layer_Draw;
+
+typedef struct {
+    unsigned char alpha;
+    Pico_Color    color;
+    PICO_FLIP     flip;
+    int           grid;
+    int           keep;
+    Pico_Rot      rotate;
+} Pico_Layer_Show;
+
+typedef struct {
+    Pico_Abs_Dim  dim;
+    Pico_Abs_Dim  tile;
+    Pico_Rel_Rect dst;
+    Pico_Rel_Rect src;
+    Pico_Rel_Rect clip;
+} Pico_Layer_View;
+
+typedef struct {
+    Pico_Abs_Dim dim;
+    int          fs;
+    int          show;
+    const char*  title;
+} Pico_Window;
+
 /// @}
 
 /// @defgroup Init
@@ -165,7 +195,7 @@ void pico_input_loop (void);
 /// @brief Draw primitives, play sounds, etc.
 /// @{
 
-/// @brief Clears screen with color set by @ref pico_set_color_clear.
+/// @brief Clears screen with color set by @ref pico_set_show_color.
 void pico_output_clear (void);
 
 /// @brief Draws an RGBA image buffer.
@@ -175,7 +205,7 @@ void pico_output_clear (void);
 /// @param rect drawing rectangle (mode determines coordinate interpretation)
 /// @sa pico_output_draw_image
 void pico_output_draw_buffer (const char* key, Pico_Abs_Dim dim,
-                              const Pico_Color_A buffer[],
+                              const Pico_Color buffer[],
                               const Pico_Rel_Rect* rect);
 
 /// @brief Draws an image.
@@ -269,30 +299,20 @@ void pico_output_sound (const char* path);
 
 // GET
 
-/// @brief Gets the alpha transparency for drawing operations.
-/// @return alpha value (0: transparent; 255: opaque)
-int pico_get_alpha (void);
-
-/// @brief Gets the color set to clear the screen.
-/// @return the current clear color (without alpha)
-Pico_Color pico_get_color_clear (void);
-
-/// @brief Gets the color and alpha set to clear the screen.
-/// @return the current clear color with alpha
-Pico_Color_A pico_get_color_clear_alpha (void);
-
-/// @brief Gets the color set to draw.
-/// @return the current draw color
-Pico_Color pico_get_color_draw (void);
+/// @brief Gets the entire draw state of a layer.
+/// @param layer layer key (NULL = current layer)
+/// @param draw output struct populated with draw state
+/// @sa pico_set_draw
+void        pico_get_draw       (const char* layer, Pico_Layer_Draw* draw);
+Pico_Color  pico_get_draw_color (const char* layer);
+const char* pico_get_draw_font  (const char* layer);
+PICO_STYLE  pico_get_draw_style (const char* layer);
 
 /// @brief Gets the state of expert mode.
 /// @param fps optional pointer to receive fps value (NULL to ignore)
 /// @return 1 if enabled, or 0 otherwise
+/// @sa pico_set_expert
 int pico_get_expert (int* fps);
-
-/// @brief Gets the font used to draw texts.
-/// @return path to the current font file
-const char* pico_get_font (void);
 
 /// @brief Gets the dimensions of the given image.
 /// @param path image filepath
@@ -300,15 +320,30 @@ const char* pico_get_font (void);
 /// @return absolute dimensions (missing w or h filled based on aspect ratio)
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 
+/// @brief Gets current layer key.
+/// @return layer key (NULL = main layer)
+/// @sa pico_set_layer
+const char* pico_get_layer (void);
+
+/// @brief Gets the entire show state of a layer.
+/// @param layer layer key (NULL = current layer)
+/// @param show output struct populated with show state
+/// @sa pico_set_show
+void          pico_get_show          (const char* layer, Pico_Layer_Show* show);
+unsigned char pico_get_show_alpha    (const char* layer);
+Pico_Color    pico_get_show_color    (const char* layer);
+PICO_FLIP     pico_get_show_flip     (const char* layer);
+int           pico_get_show_grid     (const char* layer);
+int           pico_get_show_keep     (const char* layer);
+Pico_Rot      pico_get_show_rotate   (const char* layer);
+
 /// @brief Gets video properties.
 /// @param path path to the Y4M video file
 /// @param rect optional rect with w/h to complete (NULL ok)
 /// @return video properties (dim, fps, frame, done)
+/// @sa pico_set_video
+/// @sa pico_get_image
 Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
-
-/// @brief Gets current layer key.
-/// @return layer key (NULL = main layer)
-const char* pico_get_layer (void);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -319,7 +354,7 @@ const char* pico_get_layer (void);
 ///               exists)
 void pico_layer_buffer (const char* up, const char* key,
                         Pico_Abs_Dim dim,
-                        const Pico_Color_A* pixels);
+                        const Pico_Color* pixels);
 
 /// @brief Creates a layer from a pixel buffer.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
@@ -329,7 +364,7 @@ void pico_layer_buffer (const char* up, const char* key,
 ///               exists)
 void pico_layer_buffer_mode (int mode, const char* up, const char* key,
                              Pico_Abs_Dim dim,
-                             const Pico_Color_A* pixels);
+                             const Pico_Color* pixels);
 
 /// @brief Creates an empty layer (exclusive mode).
 /// @param key layer key (must not be NULL or start with '/')
@@ -417,29 +452,19 @@ Pico_Keyboard pico_get_keyboard (void);
 /// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window)
 /// @param rect optional target rect for inverse transform (NULL for global coordinates, supports up chain)
 /// @return mouse state with position and button flags
+/// @sa pico_set_mouse
 Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect);
-
-/// @brief Warps the mouse cursor to the given relative position.
-/// @param pos target position (mode, x, y, anchor, up chain)
-void pico_set_mouse (Pico_Rel_Pos* pos);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds
 Uint32 pico_get_now (void);
-
-/// @brief Gets the visibility state of the window.
-/// @return 1 if visible, or 0 otherwise
-int pico_get_show (void);
-
-/// @brief Gets the drawing style.
-/// @return PICO_STYLE_FILL or PICO_STYLE_STROKE
-PICO_STYLE pico_get_style (void);
 
 /// @brief Gets the dimensions of the given text (shared caching).
 /// @param text text to measure
 /// @param dim dim with h for font size (mode '!' or '%'),
 ///            w filled in
 /// @return absolute dimensions
+/// @sa pico_get_text_mode
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
 
 /// @brief Gets text dimensions with explicit realm mode and
@@ -451,129 +476,106 @@ Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
 /// @param dim dim with h for font size (mode '!' or '%'),
 ///            w filled in
 /// @return absolute dimensions
+/// @sa pico_get_text
 Pico_Abs_Dim pico_get_text_mode (
     int mode,
     const char* key, const char* text,
     Pico_Rel_Dim* dim
 );
 
-/// @brief Gets the current view configuration. NULL arguments are ignored.
-/// @param grid pointer to retrieve grid state
-/// @param dim pointer to retrieve world/logical dimensions
-/// @param tile pointer to retrieve tile dimensions in pixels
-/// @param target pointer to retrieve window target region
-/// @param source pointer to retrieve world source region
-/// @param clip pointer to retrieve world clipping region
-/// @param rot pointer to retrieve rotation settings
-/// @param flip pointer to retrieve flip state
+/// @brief Gets the entire view state of a layer.
+/// @param layer layer key (NULL = current layer)
+/// @param view output struct populated with view state
 /// @sa pico_set_view
-void pico_get_view (
-    int* grid,
-    Pico_Abs_Dim* dim,
-    Pico_Abs_Dim* tile,
-    Pico_Rel_Rect* target,
-    Pico_Rel_Rect* source,
-    Pico_Rel_Rect* clip,
-    Pico_Rot* rot,
-    PICO_FLIP* flip,
-    unsigned char* alpha
-);
+void          pico_get_view      (const char* layer, Pico_Layer_View* view);
+Pico_Rel_Rect pico_get_view_clip (const char* layer);
+Pico_Abs_Dim  pico_get_view_dim  (const char* layer);
+Pico_Rel_Rect pico_get_view_dst  (const char* layer);
+Pico_Rel_Rect pico_get_view_src  (const char* layer);
+Pico_Abs_Dim  pico_get_view_tile (const char* layer);
 
-/// @brief Gets window properties. NULL arguments are ignored.
-/// @param title pointer to retrieve window title
-/// @param fs pointer to retrieve fullscreen state
-/// @param dim pointer to retrieve window dimensions
-void pico_get_window (const char** title, int* fs, Pico_Abs_Dim* dim);
+/// @brief Gets the entire window state.
+/// @param win output struct populated with window state
+/// @sa pico_set_window
+void         pico_get_window       (Pico_Window* win);
+Pico_Abs_Dim pico_get_window_dim   (void);
+int          pico_get_window_fs    (void);
+int          pico_get_window_show  (void);
+const char*  pico_get_window_title (void);
 
 // SET
 
-/// @brief Sets the alpha transparency for drawing operations.
-/// @param a alpha value (0: transparent; 255: opaque)
-void pico_set_alpha (int a);
+/// @brief Sets both window and world to the same dimensions.
+/// @param dim dimensions for both window and world
+/// @sa pico_set_window
+/// @sa pico_set_view_dim
+void pico_set_dim (Pico_Rel_Dim* dim);
 
-/// @brief Changes the color used to clear the screen (alpha set to 255).
-/// @param color new color
-void pico_set_color_clear (Pico_Color color);
+/// @brief Sets the entire draw state of a layer.
+/// @param layer layer key (NULL = current layer)
+/// @param draw new draw state
+/// @sa pico_get_draw
+void pico_set_draw       (const char* layer, Pico_Layer_Draw draw);
+void pico_set_draw_color (const char* layer, Pico_Color color);
+void pico_set_draw_font  (const char* layer, const char* path);
+void pico_set_draw_style (const char* layer, PICO_STYLE style);
 
-/// @brief Changes the color and alpha used to clear the screen.
-/// @param color new color with alpha
-void pico_set_color_clear_alpha (Pico_Color_A color);
-
-/// @brief Changes the color used to draw objects.
-/// @param color new color
-void pico_set_color_draw (Pico_Color color);
-
-/// @brief Toggles the expert mode with optional FPS timing.
-/// @param on 1 to enable it, or 0 to disable it
-/// @param fps target frames per second (0 = wait forever, -1 = as fast as possible, N>0 = fixed FPS)
-/// @return frame period in ms
+/// @brief Toggles expert mode (manual present, frame pacing).
+/// @param on 1 to enable, 0 to disable
+/// @param fps frame rate hint (-1 = unlimited, 0 = block on event, N>0 = fixed FPS)
+/// @return frame period in ms: -1 = block forever, 0 = immediate, N>0 = frame period
+/// @sa pico_get_expert
 int pico_set_expert (int on, int fps);
 
-/// @brief Changes the font used to draw texts.
-/// @param path path to font file
-void pico_set_font (const char* path);
-
-/// @brief Switches to a layer.
-/// @param key layer key (NULL = main layer, must exist)
+/// @brief Switches the current render-target layer.
+/// @param key layer key (NULL = main layer)
+/// @sa pico_get_layer
 void pico_set_layer (const char* key);
 
-/// @brief Toggles the application window visibility.
-/// @param on 1 to show, or 0 to hide
-void pico_set_show (int on);
+/// @brief Warps the mouse cursor to the given relative position.
+/// @param pos target position (mode, x, y, anchor, up chain)
+/// @sa pico_get_mouse
+void pico_set_mouse (Pico_Rel_Pos* pos);
 
-/// @brief Sets the drawing style.
-/// @param style new style
-void pico_set_style (PICO_STYLE style);
+/// @brief Sets the entire show state of a layer.
+/// @param layer layer key (NULL = current layer)
+/// @param show new show state
+/// @sa pico_get_show
+void pico_set_show          (const char* layer, Pico_Layer_Show show);
+void pico_set_show_alpha    (const char* layer, unsigned char alpha);
+void pico_set_show_color    (const char* layer, Pico_Color color);
+void pico_set_show_flip     (const char* layer, PICO_FLIP flip);
+void pico_set_show_grid     (const char* layer, int on);
+void pico_set_show_keep     (const char* layer, int on);
+void pico_set_show_rotate   (const char* layer, Pico_Rot rotate);
 
 /// @brief Syncs a video layer to a target frame.
 /// Supports forward and backward seeking.
 /// @param key layer key (must exist as video layer)
 /// @param frame target frame number
 /// @return 1 if frame is valid, or 0 past EOF
+/// @sa pico_get_video
 int pico_set_video (const char* key, int frame);
 
-/// @brief Sets the view configuration. NULL arguments are ignored.
-/// @param grid 1 to show grid, 0 to hide, or -1 to keep unchanged
-/// @param dim world/logical dimensions (mode '#' = tiles, otherwise pixels)
-/// @param tile tile size in pixels (required when dim mode is '#')
-/// @param target target region within window
-/// @param source source region within world
-/// @param clip clipping region within world
-/// @param rot rotation settings (angle and anchor point)
-/// @param flip flip state (PICO_FLIP_NONE, PICO_FLIP_HORIZONTAL, PICO_FLIP_VERTICAL)
+/// @brief Sets the entire view state of a layer.
+/// @param layer layer key (NULL = current layer)
+/// @param view new view state
 /// @sa pico_get_view
-void pico_set_view (
-    int grid,
-    Pico_Rel_Dim*  dim,
-    Pico_Abs_Dim*  tile,
-    Pico_Rel_Rect* target,
-    Pico_Rel_Rect* source,
-    Pico_Rel_Rect* clip,
-    Pico_Rot* rot,
-    PICO_FLIP* flip,
-    unsigned char* alpha
-);
+void pico_set_view      (const char* layer, Pico_Layer_View view);
+void pico_set_view_clip (const char* layer, Pico_Rel_Rect clip);
+void pico_set_view_dim  (const char* layer, Pico_Rel_Dim* dim);
+void pico_set_view_dst  (const char* layer, Pico_Rel_Rect dst);
+void pico_set_view_src  (const char* layer, Pico_Rel_Rect src);
+void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile);
 
-/// @brief Sets window properties. NULL/(-1) arguments are ignored.
-/// @param title window title (NULL to keep current)
-/// @param fs fullscreen: 1=enable, 0=disable, -1=unchanged
-/// @param dim window dimensions (NULL to keep current)
-void pico_set_window (const char* title, int fs, Pico_Rel_Dim* dim);
-
-/// @brief Sets both window and world to the same dimensions.
-/// @param dim dimensions for both window and world
-void pico_set_dim (Pico_Rel_Dim* dim);
-
-// PUSH / POP
-
-/// @brief Saves the current drawing state onto a stack.
-/// Saves: alpha, colors, font, mouse, style, layer.
-/// @sa pico_pop
-void pico_push (void);
-
-/// @brief Restores the drawing state from the stack.
-/// @sa pico_push
-void pico_pop (void);
+/// @brief Sets the entire window state.
+/// @param win new window state
+/// @sa pico_get_window
+void pico_set_window       (Pico_Window win);
+void pico_set_window_dim   (Pico_Rel_Dim* dim);
+void pico_set_window_fs    (int fs);
+void pico_set_window_show  (int on);
+void pico_set_window_title (const char* title);
 
 /// @}
 
@@ -702,10 +704,14 @@ Pico_Color pico_color_lighter (Pico_Color clr, float pct);
 /// @sa pico_color_lighter
 Pico_Color pico_color_mix (Pico_Color c1, Pico_Color c2);
 
-Pico_Color_A pico_color_alpha (Pico_Color clr, Uint8 a);
+/// @brief Returns a copy of the color with alpha set to the given value.
+/// @param clr the original color
+/// @param a alpha value (0-255)
+/// @return copy of clr with .a = a
+Pico_Color pico_color_alpha (Pico_Color clr, Uint8 a);
 
-/// @brief Converts a hex integer (0xRRGGBB) to a color.
-/// @param hex the color as a 24-bit integer (e.g. 0xFF0000 for red)
+/// @brief Converts a hex integer to a color.
+/// @param hex 0xRRGGBB (24-bit, alpha=0xFF) or 0xRRGGBBAA (32-bit)
 /// @return the corresponding color
 /// @sa pico_color_darker
 /// @sa pico_color_lighter

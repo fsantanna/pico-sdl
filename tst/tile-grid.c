@@ -4,16 +4,15 @@
 int main (void) {
     pico_init(1);
 
-    Pico_Rel_Dim phy = { '!', {480, 480}, NULL };
-    pico_set_window("Grid", -1, &phy);
+    pico_set_window((Pico_Window){ .dim={480,480}, .fs=0, .show=1, .title="Grid" });
 
     // Test 1: main layer, no tile mode, pixel grid only
     {
         puts("pixel grid only (no tile)");
         Pico_Rel_Dim log = { '!', {16, 16}, NULL };
-        pico_set_view(1, &log, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_show_grid(NULL, 1); pico_set_view_dim(NULL, &log);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_RED);
+        pico_set_draw_color(NULL, PICO_COLOR_RED);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '!', {4, 4, 8, 8}, PICO_ANCHOR_NW, NULL });
         _pico_check("tile-grid-01");
     }
@@ -23,9 +22,9 @@ int main (void) {
         puts("pixel + tile grid (4x4 tiles)");
         Pico_Rel_Dim log = { '#', {4, 4}, NULL };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_view(1, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_show_grid(NULL, 1); pico_set_view_tile(NULL, tile); pico_set_view_dim(NULL, &log);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_GREEN);
+        pico_set_draw_color(NULL, PICO_COLOR_GREEN);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {1, 1, 2, 2}, PICO_ANCHOR_NW, NULL });
         _pico_check("tile-grid-02");
     }
@@ -35,9 +34,9 @@ int main (void) {
         puts("pixel + tile grid (8x8 tiles)");
         Pico_Rel_Dim log = { '#', {8, 8}, NULL };
         Pico_Abs_Dim tile = { 2, 2 };
-        pico_set_view(1, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_show_grid(NULL, 1); pico_set_view_tile(NULL, tile); pico_set_view_dim(NULL, &log);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_BLUE);
+        pico_set_draw_color(NULL, PICO_COLOR_BLUE);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {3, 3, 2, 2}, PICO_ANCHOR_NW, NULL });
         _pico_check("tile-grid-03");
     }
@@ -47,9 +46,9 @@ int main (void) {
         puts("pixel + tile grid (non-square 4x2 tiles)");
         Pico_Rel_Dim log = { '#', {4, 8}, NULL };
         Pico_Abs_Dim tile = { 4, 2 };
-        pico_set_view(1, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_show_grid(NULL, 1); pico_set_view_tile(NULL, tile); pico_set_view_dim(NULL, &log);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_YELLOW);
+        pico_set_draw_color(NULL, PICO_COLOR_YELLOW);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {2, 4, 1, 2}, PICO_ANCHOR_NW, NULL });
         _pico_check("tile-grid-04");
     }
@@ -59,9 +58,9 @@ int main (void) {
         puts("grid disabled");
         Pico_Rel_Dim log = { '#', {4, 4}, NULL };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_view(0, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_show_grid(NULL, 0); pico_set_view_tile(NULL, tile); pico_set_view_dim(NULL, &log);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_RED);
+        pico_set_draw_color(NULL, PICO_COLOR_RED);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {2, 2, 1, 1}, PICO_ANCHOR_C, NULL });
         _pico_check("tile-grid-05");
     }
@@ -69,7 +68,7 @@ int main (void) {
     // Reset main to simple view for layer tests, grid off
     {
         Pico_Rel_Dim log = { '!', {480, 480}, NULL };
-        pico_set_view(0, &log, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_show_grid(NULL, 0); pico_set_view_dim(NULL, &log);
     }
 
     // Layer A: 4x4 tiles of 4x4 pixels, grid enabled
@@ -79,9 +78,9 @@ int main (void) {
         pico_set_layer("layerA");
         Pico_Rel_Dim log = { '#', {4, 4}, NULL };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_view(1, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_show_grid(NULL, 1); pico_set_view_tile(NULL, tile); pico_set_view_dim(NULL, &log);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_RED);
+        pico_set_draw_color(NULL, PICO_COLOR_RED);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {1, 1, 2, 2}, PICO_ANCHOR_NW, NULL });
         pico_set_layer(NULL);
     }
@@ -93,9 +92,9 @@ int main (void) {
         pico_set_layer("layerB");
         Pico_Rel_Dim log = { '#', {8, 4}, NULL };
         Pico_Abs_Dim tile = { 2, 4 };
-        pico_set_view(1, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_show_grid(NULL, 1); pico_set_view_tile(NULL, tile); pico_set_view_dim(NULL, &log);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_GREEN);
+        pico_set_draw_color(NULL, PICO_COLOR_GREEN);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {5, 2, 2, 1}, PICO_ANCHOR_NW, NULL });
         pico_set_layer(NULL);
     }
@@ -107,9 +106,9 @@ int main (void) {
         pico_set_layer("layerC");
         Pico_Rel_Dim log = { '#', {4, 4}, NULL };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_view(0, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
+        pico_set_show_grid(NULL, 0); pico_set_view_tile(NULL, tile); pico_set_view_dim(NULL, &log);
         pico_output_clear();
-        pico_set_color_draw(PICO_COLOR_BLUE);
+        pico_set_draw_color(NULL, PICO_COLOR_BLUE);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {3, 3, 1, 1}, PICO_ANCHOR_NW, NULL });
         pico_set_layer(NULL);
     }

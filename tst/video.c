@@ -3,8 +3,8 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("Video", -1, NULL);
-    pico_set_color_clear((Pico_Color){0x00, 0x00, 0x00});
+    pico_set_window_title("Video");
+    pico_set_show_color(NULL, (Pico_Color){0x00, 0x00, 0x00, 0xFF});
 
     /* pico_get_video: check Y4M header parsing */
     {

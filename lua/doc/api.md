@@ -27,10 +27,6 @@
     - `pico.init (on: boolean)`
 - **pico.quit**: Pushes a quit event to terminate the application.
     - `pico.quit ()`
-- **pico.push**: Saves drawing state to the stack.
-    - `pico.push ()`
-- **pico.pop**: Restores drawing state from the stack.
-    - `pico.pop ()`
 - **pico.cv**
     - **pico.cv.pos**: Converts relative position to absolute.
         - `pico.cv.pos (pos: Pos [,base: Rect]) -> Pos`
@@ -42,7 +38,7 @@
     - **pico.vs.rect_rect**: Collision between two rectangles.
         - `pico.vs.rect_rect (r1: Rect, r2: Rect) -> boolean`
 - **pico.color**
-    - **pico.color.alpha**: Applies alpha to a color.
+    - **pico.color.alpha**: Returns a copy of the color with alpha set.
         - `pico.color.alpha (clr: Color, a: integer) -> Color`
     - **pico.color.darker**: Makes a color darker.
         - `pico.color.darker (clr: Color, pct: number) -> Color`
@@ -71,6 +67,8 @@
         - Grid form: `t = {'#', w=cols, h=rows [, n=count, key=prefix]}`
         - Explicit form: `t = {'!', name1={crop}, name2={crop}, ...}`
 - **pico.get**
+    - **pico.get.draw**: Gets draw configuration.
+        - `pico.get.draw () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
     - **pico.get.image**: Gets image dimensions.
         - `pico.get.image (path: string [, dim: Dim]) -> Dim`
     - **pico.get.layer**: Gets current layer name.
@@ -87,36 +85,33 @@
         - `pico.get.text (text: string, dim: Dim) -> Dim`
     - **pico.get.video**: Gets video information.
         - `pico.get.video (path: string [, rect: Rect]) -> Video`
+    - **pico.get.show**: Gets show configuration.
+        - `pico.get.show () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, keep: boolean, rotate: Rotation }`
     - **pico.get.view**: Gets view configuration.
-        - `pico.get.view () -> { grid: boolean, dim: Dim, tile: Tile, rotation: Rotation, flip: Flip }`
+        - `pico.get.view () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect }`
     - **pico.get.window**: Gets window configuration.
-        - `pico.get.window () -> { title: string, fullscreen: boolean, dim: Dim }`
+        - `pico.get.window () -> { dim: Dim, fullscreen: boolean, show: boolean, title: string }`
 - **pico.set**
-    - **pico.set.alpha**: Sets alpha transparency.
-        - `pico.set.alpha (a: integer)`
     - **pico.set.dim**: Sets both window and world to the same dimensions.
         - `pico.set.dim (dim: Dim)`
+    - **pico.set.draw**: Sets draw configuration.
+        - `pico.set.draw (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
     - **pico.set.expert**: Toggles expert mode.
         - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
         - fps: `nil`/`false` = wait forever, `true` = as fast as possible, `N>0` = fixed FPS
-        - Returns frame period in ms
-    - **pico.set.style**: Sets drawing style.
-        - `pico.set.style (style: 'fill'|'stroke')`
+        - Returns frame period in ms: `-1` = block forever, `0` = immediate, `N>0` = frame period
+    - **pico.set.show**: Sets show configuration.
+        - `pico.set.show (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [keep: boolean], [rotate: Rotation] })`
     - **pico.set.video**: Sets video frame.
         - `pico.set.video (name: string, frame: integer) -> boolean`
     - **pico.set.view**: Sets view configuration.
-        - `pico.set.view (cfg: { [grid: boolean], [dim: Dim], [tile: Tile], [target: Rect], [source: Rect], [clip: Rect], [rotation: Rotation], [flip: Flip] })`
+        - `pico.set.view (cfg: { [dim: Dim], [tile: Tile], [target: Rect], [source: Rect], [clip: Rect] })`
         - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
     - **pico.set.window**: Sets window configuration.
-        - `pico.set.window (cfg: { [title: string], [fullscreen: boolean], [dim: Dim] })`
+        - `pico.set.window (cfg: { [dim: Dim], [fullscreen: boolean], [show: boolean], [title: string] })`
     - **pico.set.layer**: Switches to a layer.
         - `pico.set.layer (name: string?)`
         - `nil` switches to main layer
-    - **pico.set.color**
-        - **pico.set.color.clear**: Sets clear color.
-            - `pico.set.color.clear (clr: Color)`
-        - **pico.set.color.draw**: Sets draw color.
-            - `pico.set.color.draw (clr: Color)`
 - **pico.input**
     - **pico.input.delay**: Freezes execution for milliseconds.
         - `pico.input.delay (ms: integer) -> integer`

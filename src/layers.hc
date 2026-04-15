@@ -12,7 +12,9 @@ typedef struct Pico_Layer {
     PICO_LAYER            type;
     char*                 name;     // NULL for main layer
     SDL_Texture*          tex;
-    Pico_View             view;
+    Pico_Layer_Draw       draw;
+    Pico_Layer_Show       show;
+    Pico_Layer_View       view;
     struct {
         const char* up;             // parent id; NULL = root or detached
         const char* nxt;            // next sibling under same up
@@ -28,9 +30,12 @@ typedef struct {
     Pico_Abs_Dim sup;     // snapshot of source view.dim
 } Pico_Layer_Sub;
 
+static Pico_Layer* _pico_layer_name (const char* name);
+static Pico_Layer* _pico_layer_null (const char* name);
+
 static Pico_Layer* _pico_layer_buffer (
     int mode, const char* key, Pico_Abs_Dim dim,
-    const Pico_Color_A* pixels
+    const Pico_Color* pixels
 );
 static Pico_Layer* _pico_layer_image (
     int mode, const char* key, const char* path
@@ -46,11 +51,24 @@ static void _pico_output_draw_layer (
 
 #ifdef PICO_LAYERS_C
 
+static Pico_Layer* _pico_layer_name (const char* name) {
+    assert(name != NULL);
+    Pico_Layer* L = (Pico_Layer*) realm_get(G.realm, strlen(name)+1, name);
+    pico_assert(L!=NULL && "layer does not exist");
+    return L;
+}
+
+static Pico_Layer* _pico_layer_null (const char* name) {
+    if (name == NULL) {
+        return S.layer;
+    } else {
+        return _pico_layer_name(name);
+    }
+}
+
 static void _layer_attach (const char* up, const char* dn) {
-    Pico_Layer* UP = (Pico_Layer*) realm_get(G.realm, strlen(up)+1, up);
-    Pico_Layer* DN = (Pico_Layer*) realm_get(G.realm, strlen(dn)+1, dn);
-    assert(UP!=NULL && "invalid up layer");
-    assert(DN!=NULL && "invalid dn layer");
+    Pico_Layer* UP = _pico_layer_name(up);
+    Pico_Layer* DN = _pico_layer_name(dn);
     DN->hier.up = UP->name;
     DN->hier.nxt = NULL;
     if (UP->hier.dn.fst == NULL) {
@@ -66,15 +84,26 @@ static void _layer_attach (const char* up, const char* dn) {
 
 static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
 
-static void _layer_traverse (Pico_Layer* up) {
+static void _layer_traverse (Pico_Layer* UP) {
     Pico_Layer* old = S.layer;
-    S.layer = up;
-    const char* cur = up->hier.dn.fst;
+    S.layer = UP;
+    const char* cur = UP->hier.dn.fst;
     while (cur != NULL) {
         Pico_Layer* CUR = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
         assert(CUR != NULL);
-        SDL_SetRenderTarget(G.ren, up->tex);
+
+        SDL_SetRenderTarget(G.ren, CUR->tex);
+        _layer_traverse(CUR);
+
+        SDL_SetRenderTarget(G.ren, UP->tex);
         _pico_output_draw_layer(CUR, NULL);
+
+        if (!CUR->show.keep) {  // post-composite clear
+            SDL_SetRenderTarget(G.ren, CUR->tex);
+            Pico_Color c = CUR->show.color;
+            SDL_SetRenderDrawColor(G.ren, c.r, c.g, c.b, c.a);
+            SDL_RenderClear(G.ren);
+        }
         cur = CUR->hier.nxt;
     }
     S.layer = old;
@@ -86,7 +115,7 @@ static Pico_Layer* _pico_layer_buffer (
     int mode,
     const char* key,
     Pico_Abs_Dim dim,
-    const Pico_Color_A* pixels
+    const Pico_Color* pixels
 ) {
     assert(key!=NULL && "layer key required");
     assert(pixels!=NULL && "pixels required");
@@ -120,8 +149,8 @@ static Pico_Layer* _pico_layer_text (
     const char* str;
     char* str_buf = NULL;
     if (key == NULL) {
-        const char* font = S.font;
-        Pico_Color clr = S.color.draw;
+        const char* font = S.layer->draw.font;
+        Pico_Color clr = S.layer->draw.color;
         const char* font_str = font ? font : "null";
         int buflen = strlen("/text/") + strlen(font_str) + 1
             + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
@@ -147,11 +176,6 @@ static Pico_Layer* _pico_layer_text (
 static void _pico_output_draw_layer (
     Pico_Layer* layer, Pico_Rel_Rect* rect
 ) {
-    // recurse: composite children onto layer->tex first
-    SDL_Texture* old = SDL_GetRenderTarget(G.ren);
-    _layer_traverse(layer);
-    SDL_SetRenderTarget(G.ren, old);
-
     // blit layer onto current render target
     if (rect == NULL) {
         rect = &layer->view.dst;
@@ -169,16 +193,16 @@ static void _pico_output_draw_layer (
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-    SDL_SetTextureAlphaMod(layer->tex, S.alpha*layer->view.alpha/255);
+    SDL_SetTextureAlphaMod(layer->tex, S.layer->draw.color.a*layer->show.alpha/255);
     SDL_Point center = {
-        dst.w * layer->view.rot.anchor.x,
-        dst.h * layer->view.rot.anchor.y
+        dst.w * layer->show.rotate.anchor.x,
+        dst.h * layer->show.rotate.anchor.y
     };
     SDL_RenderCopyEx(G.ren, layer->tex, &src, &dst,
-                     layer->view.rot.angle, &center,
-                     layer->view.flip);
+                     layer->show.rotate.angle, &center,
+                     layer->show.flip);
 
-    if (layer->view.grid) {
+    if (layer->show.grid) {
         _show_tile(&layer->view, dst);
     }
 

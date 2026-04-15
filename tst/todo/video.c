@@ -28,15 +28,9 @@ int main (void) {
     int scale = 30;
     int win_w = info.dim.w * scale;
     int win_h = info.dim.h * scale + BAR_H * 2;
-    pico_set_window(
-        "Video Player", -1,
-        &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL}
-    );
-    pico_set_view(
-        0,
-        &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL},
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL
-    );
+    pico_set_window((Pico_Window){ .dim={win_w,win_h}, .fs=0, .show=1, .title="Video Player" });
+    pico_set_show_grid(NULL, 0);
+    pico_set_view_dim(NULL, &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL});
 
     pico_layer_video(NULL, "vid", VIDEO_PATH);
 
@@ -62,8 +56,8 @@ int main (void) {
         pico_set_video("vid", frame);
 
         /* Draw video */
-        pico_set_color_clear(
-            (Pico_Color){0x20, 0x20, 0x20}
+        pico_set_show_color(NULL, 
+            (Pico_Color){0x20, 0x20, 0x20, 0xFF}
         );
         pico_output_clear();
         pico_output_draw_layer(
@@ -77,8 +71,8 @@ int main (void) {
         );
 
         /* Draw seek bar background */
-        pico_set_color_draw(
-            (Pico_Color){0x40, 0x40, 0x40}
+        pico_set_draw_color(NULL, 
+            (Pico_Color){0x40, 0x40, 0x40, 0xFF}
         );
         pico_output_draw_rect(
             &(Pico_Rel_Rect){
@@ -91,8 +85,8 @@ int main (void) {
         /* Draw seek bar progress */
         float pct = (float)frame / (total - 1);
         int bar_w = (int)(pct * win_w);
-        pico_set_color_draw(
-            (Pico_Color){0x00, 0xAA, 0xFF}
+        pico_set_draw_color(NULL, 
+            (Pico_Color){0x00, 0xAA, 0xFF, 0xFF}
         );
         pico_output_draw_rect(
             &(Pico_Rel_Rect){
@@ -109,8 +103,8 @@ int main (void) {
                 "frame %d/%d  speed %.1fx%s",
                 frame, total - 1, speed,
                 paused ? "  [PAUSED]" : "");
-            pico_set_color_draw(
-                (Pico_Color){0xFF, 0xFF, 0xFF}
+            pico_set_draw_color(NULL, 
+                (Pico_Color){0xFF, 0xFF, 0xFF, 0xFF}
             );
             pico_output_draw_text(
                 label,

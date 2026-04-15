@@ -12,9 +12,9 @@ int main (void) {
 
     pico_layer_empty(NULL, "A", (Pico_Abs_Dim){120, 50}, NULL);
     pico_set_layer("A");
-    pico_set_color_clear(PICO_COLOR_NAVY);
+    pico_set_show_color(NULL, PICO_COLOR_NAVY);
     pico_output_clear();
-    pico_set_color_draw(PICO_COLOR_WHITE);
+    pico_set_draw_color(NULL, PICO_COLOR_WHITE);
     pico_output_draw_rect(&btn1);
     pico_output_draw_rect(&btn2);
     pico_output_draw_rect(&btn3);
@@ -22,7 +22,7 @@ int main (void) {
 
     /* Draw layer at bottom-right, 35%x35% of screen (distorted) */
     Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE, NULL };
-    pico_set_color_clear(PICO_COLOR_BLACK);
+    pico_set_show_color(NULL, PICO_COLOR_BLACK);
     pico_output_clear();
     pico_output_draw_layer("A", &r);
     _pico_check("mouse-rect-click-01");
@@ -41,7 +41,7 @@ int main (void) {
         assert(!pico_vs_pos_rect(&pos, &btn1));
         assert(!pico_vs_pos_rect(&pos, &btn2));
         assert(!pico_vs_pos_rect(&pos, &btn3));
-        pico_set_color_draw(PICO_COLOR_RED);
+        pico_set_draw_color(NULL, PICO_COLOR_RED);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {394, 355}, PICO_ANCHOR_C, NULL });
         _pico_check("mouse-rect-click-02");
     }
@@ -56,7 +56,7 @@ int main (void) {
         assert(!pico_vs_pos_rect(&pos, &btn1));
         assert(!pico_vs_pos_rect(&pos, &btn2));
         assert( pico_vs_pos_rect(&pos, &btn3));
-        pico_set_color_draw(PICO_COLOR_GREEN);
+        pico_set_draw_color(NULL, PICO_COLOR_GREEN);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {457, 431}, PICO_ANCHOR_C, NULL });
         _pico_check("mouse-rect-click-03");
     }
@@ -71,7 +71,7 @@ int main (void) {
         assert( pico_vs_pos_rect(&pos, &btn1));
         assert(!pico_vs_pos_rect(&pos, &btn2));
         assert(!pico_vs_pos_rect(&pos, &btn3));
-        pico_set_color_draw(PICO_COLOR_GREEN);
+        pico_set_draw_color(NULL, PICO_COLOR_GREEN);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {362, 405}, PICO_ANCHOR_C, NULL });
         _pico_check("mouse-rect-click-04");
     }
@@ -86,7 +86,7 @@ int main (void) {
         assert(!pico_vs_pos_rect(&pos, &btn1));
         assert( pico_vs_pos_rect(&pos, &btn2));
         assert(!pico_vs_pos_rect(&pos, &btn3));
-        pico_set_color_draw(PICO_COLOR_GREEN);
+        pico_set_draw_color(NULL, PICO_COLOR_GREEN);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {419, 392}, PICO_ANCHOR_C, NULL });
         _pico_check("mouse-rect-click-05");
     }

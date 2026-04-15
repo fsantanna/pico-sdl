@@ -3,8 +3,8 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window("Image - Size - Crop", -1, NULL);
-    pico_set_color_clear((Pico_Color){0xFF,0xFF,0xFF});
+    pico_set_window_title("Image - Size - Crop");
+    pico_set_show_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
     // pico_get_image
     {
@@ -78,10 +78,8 @@ int main (void) {
         pico_output_clear();
         pico_layer_image(NULL, "crop", "open.png");
         pico_set_layer("crop");
-        pico_set_view(-1, NULL, NULL, NULL,
-            &(Pico_Rel_Rect){'!', {9, 9, 30, 30},
-                PICO_ANCHOR_NW, NULL},
-            NULL, NULL, NULL, NULL);
+        pico_set_view_src(NULL, (Pico_Rel_Rect){'!', {9, 9, 30, 30},
+                PICO_ANCHOR_NW, NULL});
         pico_set_layer(NULL);
         Pico_Rel_Rect r1 = {
             '!', {50-24, 50-24, 0, 0}, PICO_ANCHOR_NW, NULL

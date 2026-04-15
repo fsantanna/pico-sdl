@@ -5,8 +5,8 @@ int main (void) {
 
     Pico_Rel_Dim phy = { '!', {200, 200}, NULL };
     Pico_Rel_Dim log = { '!', {100, 100}, NULL };
-    pico_set_window(NULL, -1, &phy);
-    pico_set_view(-1, &log, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_window_dim(&phy);
+    pico_set_view_dim(NULL, &log);
 
     // pico_vs_pos_rect - abs
     {

@@ -9,7 +9,7 @@ math.randomseed(0)
 
 local pos = {'!', x=32, y=9}
 for i = 0, 99 do
-    pico.set.color.draw({r=0xFF, g=0xFF, b=0xFF})
+    pico.set.draw { color={r=0xFF, g=0xFF, b=0xFF} }
     pico.output.draw.pixel(pos)
 
     pico.input.delay(10)

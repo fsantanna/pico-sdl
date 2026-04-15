@@ -8,20 +8,20 @@ int main (void) {
     const char* sheet = "sheet";
     pico_layer_empty(NULL, sheet, (Pico_Abs_Dim){4, 4}, NULL);
     pico_set_layer(sheet);
-    pico_set_color_clear(PICO_COLOR_BLACK);
+    pico_set_show_color(NULL, PICO_COLOR_BLACK);
     pico_output_clear();
 
     // TL red, TR green, BL blue, BR white
-    pico_set_color_draw(PICO_COLOR_RED);
+    pico_set_draw_color(NULL, PICO_COLOR_RED);
     pico_output_draw_rect(&(Pico_Rel_Rect){
         '!', {0,0,2,2}, PICO_ANCHOR_NW, NULL});
-    pico_set_color_draw(PICO_COLOR_GREEN);
+    pico_set_draw_color(NULL, PICO_COLOR_GREEN);
     pico_output_draw_rect(&(Pico_Rel_Rect){
         '!', {2,0,2,2}, PICO_ANCHOR_NW, NULL});
-    pico_set_color_draw(PICO_COLOR_BLUE);
+    pico_set_draw_color(NULL, PICO_COLOR_BLUE);
     pico_output_draw_rect(&(Pico_Rel_Rect){
         '!', {0,2,2,2}, PICO_ANCHOR_NW, NULL});
-    pico_set_color_draw(PICO_COLOR_WHITE);
+    pico_set_draw_color(NULL, PICO_COLOR_WHITE);
     pico_output_draw_rect(&(Pico_Rel_Rect){
         '!', {2,2,2,2}, PICO_ANCHOR_NW, NULL});
     pico_set_layer(NULL);

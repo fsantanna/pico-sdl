@@ -5,16 +5,15 @@ int main (void) {
     pico_init(1);
 
     // 4x4 grid of 4x4 pixel tiles = 16x16 logical world
-    Pico_Rel_Dim phy  = { '!', {160, 160}, NULL };
     Pico_Rel_Dim log  = { '#', {4, 4}, NULL };
     Pico_Abs_Dim tile = { 4, 4 };
-    pico_set_window("Tile", -1, &phy);
-    pico_set_view(-1, &log, &tile, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_window((Pico_Window){ .dim={160,160}, .fs=0, .show=1, .title="Tile" });
+    pico_set_view_tile(NULL, tile); pico_set_view_dim(NULL, &log);
 
     // 4x4 pixel white tile
-    Pico_Color_A white[16];
+    Pico_Color white[16];
     for (int i = 0; i < 16; i++) {
-        white[i] = (Pico_Color_A){ 0xFF, 0xFF, 0xFF, 0xFF };
+        white[i] = (Pico_Color){ 0xFF, 0xFF, 0xFF, 0xFF };
     }
 
     // Test 1: tile (1,1) with NW anchor - top-left corner

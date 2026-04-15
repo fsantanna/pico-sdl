@@ -46,23 +46,27 @@ tests:
 	$(EXE) tst/cv.c
 	$(EXE) tst/dim.c
 	$(EXE) tst/expert.c
+	$(EXE) tst/expert_fps.c
 	$(EXE) tst/font.c
+	$(EXE) tst/get-set.c
 	$(EXE) tst/image_pct.c
 	$(EXE) tst/image_raw.c
 	$(EXE) tst/init.c
+	$(EXE) tst/keep.c
+	$(EXE) tst/layer-empty-tile.c
 	$(EXE) tst/layer-hier.c
 	$(EXE) tst/layers.c
 	$(EXE) tst/mouse.c
-	$(EXE) tst/mouse-w-click.c
 	$(EXE) tst/mouse-rect-click.c
+	$(EXE) tst/mouse-w-click.c
 	$(EXE) tst/move.c
 	$(EXE) tst/navigate.c
 	$(EXE) tst/pixels.c
 	$(EXE) tst/pos.c
-	$(EXE) tst/push.c
 	$(EXE) tst/quit.c
 	$(EXE) tst/rect.c
 	$(EXE) tst/rot-flip.c
+	$(EXE) tst/sheet.c
 	$(EXE) tst/shot.c
 	$(EXE) tst/size_pct.c
 	$(EXE) tst/size_raw.c

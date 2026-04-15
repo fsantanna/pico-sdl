@@ -7,9 +7,9 @@ pico.set.window { title="Expert FPS" }
 local ms = pico.set.expert(true, 40)
 assert(ms == 25)
 
--- test 2: fps=0 returns 0
+-- test 2: fps=0 returns -1 (block forever)
 local ms0 = pico.set.expert(true, 0)
-assert(ms0 == 0)
+assert(ms0 == -1)
 
 -- test 3: frame timing
 pico.set.expert(true, 40)
@@ -22,15 +22,15 @@ assert(elapsed>=100 and elapsed<=110)
 
 -- test 4: backward compat (no fps arg)
 local ms1 = pico.set.expert(true)
-assert(ms1 == 0)
+assert(ms1 == -1)
 
 -- test 5: fps=true (as fast as possible) returns ms=0
 local ms2 = pico.set.expert(true, true)
 assert(ms2 == 0)
 
--- test 6: fps=false returns ms=0
+-- test 6: fps=false returns ms=-1
 local ms3 = pico.set.expert(true, false)
-assert(ms3 == 0)
+assert(ms3 == -1)
 
 -- test 7: fps=true returns immediately, evt=nil
 pico.set.expert(true, true)

@@ -3,10 +3,11 @@
 
 int main (void) {
     pico_init(1);
-    Pico_Rel_Dim phy = { '!', {200,200}, NULL };
     Pico_Rel_Dim log = { '!', { 10, 10}, NULL };
-    pico_set_window("Anchoring Pct...", -1, &phy);
-    pico_set_view(-1, &log, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    pico_set_window((Pico_Window){
+        .dim={200,200}, .fs=0, .show=1, .title="Anchoring Pct..."
+    });
+    pico_set_view_dim(NULL, &log);
 
     // PIXELS
     {
