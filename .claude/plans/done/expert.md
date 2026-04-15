@@ -48,7 +48,7 @@ Benefits:
   `ms > 0`).
 - No stale-state bug: `ms` always reflects the new fps.
 
-## Status: implementation complete, tests not yet run
+## Status: complete
 
 ## Steps
 
@@ -61,9 +61,10 @@ Benefits:
 
 - `pico_set_expert` (line 596-613) | maps
   `fps=0 → ms=-1`, `fps=-1 → ms=0`, `fps>0 → 1000/fps`;
-  always updates `ms` and `t0` when `on`
-- `pico_input_event` (line 1129-1132) | collapsed to single
-  `S.expert.ms <= 0` branch that delegates to
+  always updates `ms` and `t0` (no `if (on)` guard) so
+  `pico_input_event` never reads a stale `ms` after disable
+- `pico_input_event` (line 1129-1132) | collapsed two
+  branches into `ms==0 || ms==-1` that delegates to
   `pico_input_event_timeout(evt, type, S.expert.ms)`; the
   `ms > 0` timing loop below is unchanged
 
@@ -81,7 +82,7 @@ Benefits:
 
 ## Verification
 
-Not yet run:
+Both suites pass:
 ```bash
 make tests
 cd lua/ && make tests
