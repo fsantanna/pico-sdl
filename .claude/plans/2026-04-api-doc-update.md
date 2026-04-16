@@ -58,23 +58,39 @@ parameter. None of this is documented.
 
 ## Preconditions
 
-- Verify `pico.color.hex` is actually bound in `lua/pico.c`
-  (`ll_color`) before adding to docs — pico.h has it but the
-  Lua table may not. If absent, mark as gap instead.
+- [x] Verify `pico.color.hex` is bound in `lua/pico.c`
+  `ll_color` (`lua/pico.c:1574`).
+    - Result: **not** a standalone binding.
+    - However, `C_color_tis` (`lua/pico.c:147`) accepts an
+      integer and routes it through `pico_color_hex`.
+    - Consequence: Color in Lua is a union of three forms
+      (string / integer-hex / table). Document this on the
+      Color type, not as `pico.color.hex`.
 
 ## Pending
 
-- [ ] Verify `pico.color.hex` is in `ll_color` (`lua/pico.c:1574`)
-- [ ] Add `up` param to all `pico.layer.*` signatures
-- [ ] Add `tile` param to `pico.layer.empty`
-- [ ] Add `pico.cv.dim` entry
-- [ ] Add `pico.get.keyboard` entry
-- [ ] Add `pico.set.mouse` entry
-- [ ] Add `pico.color.hex` entry (if bound)
-- [ ] Remove `pico.layer.images` entry
-- [ ] Update Event type: add `win.resize`
-- [ ] Update `key.dn`/`key.up` event: add `ctrl`, `shift`, `alt`
-- [ ] Update mouse events: replace `but` with
+- [x] Add `up` param to all `pico.layer.*` signatures
+      (also documented optional `[mode]` prefix)
+- [x] Add `tile` param to `pico.layer.empty`
+- [x] Add `pico.cv.dim` entry
+- [x] Add `pico.get.keyboard` entry
+- [x] Add `pico.set.mouse` entry
+- [x] Update Color type: document 3 accepted forms
+      (string, integer-hex, table) via `C_color_tis`
+- [x] Remove `pico.layer.images` entry
+- [x] Update Event type: add `win.resize` event
+      (asymmetry resolved: `lua/pico.c:1354` now emits `'win.resize'`)
+- [x] Update `key.dn`/`key.up` event: add `ctrl`, `shift`, `alt`
+- [x] Update mouse events: replace `but` with
       `left`, `right`, `middle`
-- [ ] Re-grep `ll_*` tables and `pico.h` to confirm no new
-      drift after edits
+- [x] Expand `pico.input.event` filter list
+      (`mouse.motion`, `mouse.button.up`, `win.resize`)
+- [x] Re-grep `ll_*` tables and `pico.h` to confirm no new
+      drift after edits — all 56 bindings match
+
+## Follow-ups
+
+- ~~Event tag asymmetry~~ — resolved by renaming the emitted
+  tag to `win.resize` in `lua/pico.c:1354`.
+- ~~Expose `pico.color.hex`~~ — declined; integer coercion via
+  `C_color_tis` is sufficient.

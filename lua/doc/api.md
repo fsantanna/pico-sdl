@@ -3,17 +3,24 @@
 ## Types
 
 - **Anchor**: `string` | `{ x: number, y: number }`
-    - Strings: `'C'`, `'NW'`, `'N'`, `'NE'`, `'E'`, `'SE'`, `'S'`, `'SW'`, `'W'`
-- **Color**: `string` | `{ ['!'|'%'], r: number, g: number, b: number [, a: number] }`
-    - Strings: `'black'`, `'white'`, `'gray'`, `'silver'`, `'red'`, `'green'`,
-      `'blue'`, `'yellow'`, `'cyan'`, `'magenta'`, `'orange'`, `'purple'`,
-      `'pink'`, `'brown'`, `'lime'`, `'teal'`, `'navy'`, `'maroon'`, `'olive'`
-- **Dim**: `{ w: number, h: number ['!'|'%'|'#', up: Rect] }`
+    - String: `'C'`, `'NW'`, `'N'`, `'NE'`, `'E'`, `'SE'`, `'S'`, `'SW'`, `'W'`
+- **Color**: `table` | `integer` | `string`
+    - Table: `{ ['!'|'%'], r: number, g: number, b: number [, a: number] }`
+    - Integer: `0xRRGGBB` (24-bit, alpha=0xFF) or `0xRRGGBBAA` (32-bit)
+    - String:
+        `'black'`, `'white'`, `'gray'`, `'silver'`, `'red'`, `'green'`,
+        `'blue'`, `'yellow'`, `'cyan'`, `'magenta'`, `'orange'`, `'purple'`,
+        `'pink'`, `'brown'`, `'lime'`, `'teal'`, `'navy'`, `'maroon'`,
+        `'olive'`
+- **Dim**: `{ ['!'|'%'|'#'], w: number, h: number, [up: Rect] }`
 - **Event**: `{ tag: string, ... }`
     - `{ tag='quit' }`
-    - `{ tag='key.dn'|'key.up', key: string }`
+    - `{ tag='win.resize', w: integer, h: integer }`
+    - `{ tag='key.dn'|'key.up',
+        key: string, ctrl: boolean, shift: boolean, alt: boolean }`
     - `{ tag='mouse.motion'|'mouse.button.dn'|'mouse.button.up',
-        '!', x: integer, y: integer, anchor: string [, but: string] }`
+        '!', x: integer, y: integer,
+        left: boolean, right: boolean, middle: boolean }`
 - **Flip**: `'none'` | `'horizontal'` | `'vertical'` | `'both'`
 - **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
 - **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
@@ -28,6 +35,9 @@
 - **pico.quit**: Pushes a quit event to terminate the application.
     - `pico.quit ()`
 - **pico.cv**
+    - **pico.cv.dim**: Converts relative dimensions to absolute.
+        - `pico.cv.dim (dim: Dim [, base: Rect]) -> Dim`
+        - `pico.cv.dim (dim: Dim, to: Dim [, base: Rect])`
     - **pico.cv.pos**: Converts relative position to absolute.
         - `pico.cv.pos (pos: Pos [,base: Rect]) -> Pos`
     - **pico.cv.rect**: Converts relative rectangle to absolute.
@@ -47,30 +57,36 @@
     - **pico.color.mix**: Mixes two colors.
         - `pico.color.mix (c1: Color, c2: Color) -> Color`
 - **pico.layer**
+    - All layer creators accept an optional mode prefix
+      (`'!'`|`'%'`|`'#'`|`'='`) as the first argument.
+    - `up` is the parent layer name (string) or `nil` for the main layer.
     - **pico.layer.empty**: Creates an empty layer.
-        - `pico.layer.empty (name: string, dim: Dim) -> string`
+        - `pico.layer.empty ([mode,] up: string?, key: string,
+          dim: Dim [, tile: Tile])`
     - **pico.layer.buffer**: Creates a layer from a pixel buffer.
-        - `pico.layer.buffer (name: string, dim: Dim, buffer: {{Color}}) -> string`
-        - `name` is required (buffer is copied, so pointer-based caching not possible)
+        - `pico.layer.buffer ([mode,] up: string?, key: string,
+          dim: Dim, buffer: {{Color}})`
+        - Buffer is copied; pointer-based caching not possible.
     - **pico.layer.image**: Creates a layer from an image file.
-        - `pico.layer.image (name: string?, path: string) -> string`
-        - If `name` is `nil`, uses `"/image/<path>"` as layer name
+        - `pico.layer.image ([mode,] up: string?, key: string?, path: string)`
+        - If `key` is omitted, uses `"/image/<path>"` as layer name.
     - **pico.layer.text**: Creates a layer from text.
-        - `pico.layer.text (name: string, height: integer, text: string) -> string`
+        - `pico.layer.text ([mode,] up: string?, key: string,
+          height: integer, text: string)`
     - **pico.layer.video**: Creates a layer from a video file.
-        - `pico.layer.video (name: string, path: string) -> string`
-    - **pico.layer.sub**: Creates a sub-layer from a crop region of a parent layer.
-        - `pico.layer.sub (key: string, parent: string, crop: Rect) -> string`
-        - Parent must exist and cannot be a sub-layer itself
-    - **pico.layer.images**: Creates multiple sub-layers from a single image.
-        - `pico.layer.images (key: string, path: string, t: table) -> {string}`
-        - Grid form: `t = {'#', w=cols, h=rows [, n=count, key=prefix]}`
-        - Explicit form: `t = {'!', name1={crop}, name2={crop}, ...}`
+        - `pico.layer.video ([mode,] up: string?, key: string?, path: string)`
+    - **pico.layer.sub**: Creates a sub-layer from a crop region of a parent.
+        - `pico.layer.sub ([mode,] up: string?, key: string,
+          parent: string, crop: Rect)`
+        - Parent must exist and cannot be a sub-layer itself.
 - **pico.get**
     - **pico.get.draw**: Gets draw configuration.
         - `pico.get.draw () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
     - **pico.get.image**: Gets image dimensions.
         - `pico.get.image (path: string [, dim: Dim]) -> Dim`
+    - **pico.get.keyboard**: Gets keyboard modifier state.
+        - `pico.get.keyboard () ->
+          { key: string, ctrl: boolean, shift: boolean, alt: boolean }`
     - **pico.get.layer**: Gets current layer name.
         - `pico.get.layer () -> string?`
         - Returns `nil` for main layer
@@ -112,6 +128,8 @@
     - **pico.set.layer**: Switches to a layer.
         - `pico.set.layer (name: string?)`
         - `nil` switches to main layer
+    - **pico.set.mouse**: Sets mouse cursor position.
+        - `pico.set.mouse (pos: Pos)`
 - **pico.input**
     - **pico.input.delay**: Freezes execution for milliseconds.
         - `pico.input.delay (ms: integer) -> integer`
@@ -122,7 +140,8 @@
         - `pico.input.event (filter: string) -> Event, integer`
         - `pico.input.event (filter: string, ms: integer) -> Event?, integer`
         - Returns event (or nil on timeout) and elapsed time in ms (delta time)
-        - Filters: `'quit'`, `'key.dn'`, `'key.up'`, `'mouse.button.dn'`
+        - Filters: `'quit'`, `'win.resize'`, `'key.dn'`, `'key.up'`,
+          `'mouse.motion'`, `'mouse.button.dn'`, `'mouse.button.up'`
     - **pico.input.loop**: Blocks on event loop until quit.
         - `pico.input.loop ()`
 - **pico.output**

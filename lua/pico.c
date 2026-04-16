@@ -1351,7 +1351,7 @@ static int l_input_event (lua_State* L) {
             break;
 
         case PICO_EVENT_WIN_RESIZE:
-            lua_pushliteral(L, "window");           // t | tag
+            lua_pushliteral(L, "win.resize");       // t | tag
             lua_setfield(L, T, "tag");              // t
             lua_pushinteger(L, e.window.w);         // t | w
             lua_setfield(L, T, "w");                // t
