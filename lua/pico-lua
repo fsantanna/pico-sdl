@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION=v0.4-dev
+VERSION=dev-apr-16
 
 if [ "$1" = --version ]; then
     echo pico-lua $VERSION
