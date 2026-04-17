@@ -30,23 +30,8 @@
 
 ## Operations
 
-- **pico.init**: Initializes and finalizes pico.
-    - `pico.init (on: boolean)`
-- **pico.quit**: Pushes a quit event to terminate the application.
-    - `pico.quit ()`
-- **pico.cv**
-    - **pico.cv.dim**: Converts relative dimensions to absolute.
-        - `pico.cv.dim (dim: Dim [, base: Rect]) -> Dim`
-        - `pico.cv.dim (dim: Dim, to: Dim [, base: Rect])`
-    - **pico.cv.pos**: Converts relative position to absolute.
-        - `pico.cv.pos (pos: Pos [,base: Rect]) -> Pos`
-    - **pico.cv.rect**: Converts relative rectangle to absolute.
-        - `pico.cv.rect (rect: Rect [, base: Rect]) -> Rect`
-- **pico.vs**
-    - **pico.vs.pos_rect**: Collision between position and rectangle.
-        - `pico.vs.pos_rect (pos: Pos, rect: Rect) -> boolean`
-    - **pico.vs.rect_rect**: Collision between two rectangles.
-        - `pico.vs.rect_rect (r1: Rect, r2: Rect) -> boolean`
+In alphabetical order:
+
 - **pico.color**
     - **pico.color.alpha**: Returns a copy of the color with alpha set.
         - `pico.color.alpha (clr: Color, a: integer) -> Color`
@@ -56,29 +41,14 @@
         - `pico.color.lighter (clr: Color, pct: number) -> Color`
     - **pico.color.mix**: Mixes two colors.
         - `pico.color.mix (c1: Color, c2: Color) -> Color`
-- **pico.layer**
-    - All layer creators accept an optional mode prefix
-      (`'!'`|`'%'`|`'#'`|`'='`) as the first argument.
-    - `up` is the parent layer name (string) or `nil` for the main layer.
-    - **pico.layer.empty**: Creates an empty layer.
-        - `pico.layer.empty ([mode,] up: string?, key: string,
-          dim: Dim [, tile: Tile])`
-    - **pico.layer.buffer**: Creates a layer from a pixel buffer.
-        - `pico.layer.buffer ([mode,] up: string?, key: string,
-          dim: Dim, buffer: {{Color}})`
-        - Buffer is copied; pointer-based caching not possible.
-    - **pico.layer.image**: Creates a layer from an image file.
-        - `pico.layer.image ([mode,] up: string?, key: string?, path: string)`
-        - If `key` is omitted, uses `"/image/<path>"` as layer name.
-    - **pico.layer.text**: Creates a layer from text.
-        - `pico.layer.text ([mode,] up: string?, key: string,
-          height: integer, text: string)`
-    - **pico.layer.video**: Creates a layer from a video file.
-        - `pico.layer.video ([mode,] up: string?, key: string?, path: string)`
-    - **pico.layer.sub**: Creates a sub-layer from a crop region of a parent.
-        - `pico.layer.sub ([mode,] up: string?, key: string,
-          parent: string, crop: Rect)`
-        - Parent must exist and cannot be a sub-layer itself.
+- **pico.cv**
+    - **pico.cv.dim**: Converts relative dimensions to absolute.
+        - `pico.cv.dim (dim: Dim [, base: Rect]) -> Dim`
+        - `pico.cv.dim (dim: Dim, to: Dim [, base: Rect])`
+    - **pico.cv.pos**: Converts relative position to absolute.
+        - `pico.cv.pos (pos: Pos [,base: Rect]) -> Pos`
+    - **pico.cv.rect**: Converts relative rectangle to absolute.
+        - `pico.cv.rect (rect: Rect [, base: Rect]) -> Rect`
 - **pico.get**
     - **pico.get.draw**: Gets draw configuration.
         - `pico.get.draw () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
@@ -107,29 +77,8 @@
         - `pico.get.view () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect }`
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { dim: Dim, fullscreen: boolean, show: boolean, title: string }`
-- **pico.set**
-    - **pico.set.dim**: Sets both window and world to the same dimensions.
-        - `pico.set.dim (dim: Dim)`
-    - **pico.set.draw**: Sets draw configuration.
-        - `pico.set.draw (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
-    - **pico.set.expert**: Toggles expert mode.
-        - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
-        - fps: `nil`/`false` = wait forever, `true` = as fast as possible, `N>0` = fixed FPS
-        - Returns frame period in ms: `-1` = block forever, `0` = immediate, `N>0` = frame period
-    - **pico.set.show**: Sets show configuration.
-        - `pico.set.show (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [keep: boolean], [rotate: Rotation] })`
-    - **pico.set.video**: Sets video frame.
-        - `pico.set.video (name: string, frame: integer) -> boolean`
-    - **pico.set.view**: Sets view configuration.
-        - `pico.set.view (cfg: { [dim: Dim], [tile: Tile], [target: Rect], [source: Rect], [clip: Rect] })`
-        - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
-    - **pico.set.window**: Sets window configuration.
-        - `pico.set.window (cfg: { [dim: Dim], [fullscreen: boolean], [show: boolean], [title: string] })`
-    - **pico.set.layer**: Switches to a layer.
-        - `pico.set.layer (name: string?)`
-        - `nil` switches to main layer
-    - **pico.set.mouse**: Sets mouse cursor position.
-        - `pico.set.mouse (pos: Pos)`
+- **pico.init**: Initializes and finalizes pico.
+    - `pico.init (on: boolean)`
 - **pico.input**
     - **pico.input.delay**: Freezes execution for milliseconds.
         - `pico.input.delay (ms: integer) -> integer`
@@ -144,6 +93,29 @@
           `'mouse.motion'`, `'mouse.button.dn'`, `'mouse.button.up'`
     - **pico.input.loop**: Blocks on event loop until quit.
         - `pico.input.loop ()`
+- **pico.layer**
+    - All layer creators accept an optional mode prefix
+      (`'!'`|`'%'`|`'#'`|`'='`) as the first argument.
+    - `up` is the parent layer name (string) or `nil` for the main layer.
+    - **pico.layer.empty**: Creates an empty layer.
+        - `pico.layer.empty ([mode,] up: string?, key: string,
+          dim: Dim [, tile: Tile])`
+    - **pico.layer.buffer**: Creates a layer from a pixel buffer.
+        - `pico.layer.buffer ([mode,] up: string?, key: string,
+          dim: Dim, buffer: {{Color}})`
+        - Buffer is copied; pointer-based caching not possible.
+    - **pico.layer.image**: Creates a layer from an image file.
+        - `pico.layer.image ([mode,] up: string?, key: string?, path: string)`
+        - If `key` is omitted, uses `"/image/<path>"` as layer name.
+    - **pico.layer.text**: Creates a layer from text.
+        - `pico.layer.text ([mode,] up: string?, key: string,
+          height: integer, text: string)`
+    - **pico.layer.video**: Creates a layer from a video file.
+        - `pico.layer.video ([mode,] up: string?, key: string?, path: string)`
+    - **pico.layer.sub**: Creates a sub-layer from a crop region of a parent.
+        - `pico.layer.sub ([mode,] up: string?, key: string,
+          parent: string, crop: Rect)`
+        - Parent must exist and cannot be a sub-layer itself.
 - **pico.output**
     - **pico.output.clear**: Clears window.
         - `pico.output.clear ()`
@@ -178,3 +150,33 @@
             - `pico.output.draw.tri (p1: Pos, p2: Pos, p3: Pos)`
         - **pico.output.draw.video**: Draws video frame.
             - `pico.output.draw.video (path: string, rect: Rect) -> boolean`
+- **pico.quit**: Pushes a quit event to terminate the application.
+    - `pico.quit ()`
+- **pico.set**
+    - **pico.set.dim**: Sets both window and world to the same dimensions.
+        - `pico.set.dim (dim: Dim)`
+    - **pico.set.draw**: Sets draw configuration.
+        - `pico.set.draw (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
+    - **pico.set.expert**: Toggles expert mode.
+        - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
+        - fps: `nil`/`false` = wait forever, `true` = as fast as possible, `N>0` = fixed FPS
+        - Returns frame period in ms: `-1` = block forever, `0` = immediate, `N>0` = frame period
+    - **pico.set.show**: Sets show configuration.
+        - `pico.set.show (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [keep: boolean], [rotate: Rotation] })`
+    - **pico.set.video**: Sets video frame.
+        - `pico.set.video (name: string, frame: integer) -> boolean`
+    - **pico.set.view**: Sets view configuration.
+        - `pico.set.view (cfg: { [dim: Dim], [tile: Tile], [target: Rect], [source: Rect], [clip: Rect] })`
+        - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
+    - **pico.set.window**: Sets window configuration.
+        - `pico.set.window (cfg: { [dim: Dim], [fullscreen: boolean], [show: boolean], [title: string] })`
+    - **pico.set.layer**: Switches to a layer.
+        - `pico.set.layer (name: string?)`
+        - `nil` switches to main layer
+    - **pico.set.mouse**: Sets mouse cursor position.
+        - `pico.set.mouse (pos: Pos)`
+- **pico.vs**
+    - **pico.vs.pos_rect**: Collision between position and rectangle.
+        - `pico.vs.pos_rect (pos: Pos, rect: Rect) -> boolean`
+    - **pico.vs.rect_rect**: Collision between two rectangles.
+        - `pico.vs.rect_rect (r1: Rect, r2: Rect) -> boolean`
