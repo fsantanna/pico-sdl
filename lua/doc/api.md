@@ -2,6 +2,8 @@
 
 ## Types
 
+In alphabetical order:
+
 - **Anchor**: `string` | `{ x: number, y: number }`
     - String: `'C'`, `'NW'`, `'N'`, `'NE'`, `'E'`, `'SE'`, `'S'`, `'SW'`, `'W'`
 - **Color**: `table` | `integer` | `string`

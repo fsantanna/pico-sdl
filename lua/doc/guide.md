@@ -1,28 +1,27 @@
 # Guide
 
-1. [Introduction](#1-introduction)
-2. [Initialization](#2-initialization)
-3. [Basic Drawing](#3-basic-drawing)
-4. [Graphics State](#4-graphics-state)
-5. [Positioning: Mode & Anchor](#5-positioning-mode--anchor)
-6. [Advanced View](#6-advanced-view)
-7. [Events](#7-events)
-8. [Layers](#8-layers)
-9. [Expert Mode](#9-expert-mode)
+1.  [Introduction](#1-introduction)
+2.  [Initialization](#2-initialization)
+3.  [Basic Drawing](#3-basic-drawing)
+4.  [Graphics State](#4-graphics-state)
+5.  [Positioning: Mode & Anchor](#5-positioning-mode--anchor)
+6.  [Advanced View](#6-advanced-view)
+7.  [Events](#7-events)
+8.  [Layers](#8-layers)
+9.  [Expert Mode](#9-expert-mode)
 10. [Auxiliary Functions](#10-auxiliary-functions)
 11. [Extras](#11-extras)
 
 ## 1. Introduction
 
 `pico-lua` is a graphics library for 2D games and applications.
-It is designed around 3 groups of APIs:
+It is designed around 4 groups of APIs:
 
-- `pico.output.*` for output operations,
-    such as drawing shapes and playing audio.
-- `pico.input.*` for input events,
-    such as waiting time and key presses.
-- `pico.get.*` and `pico.set.*` for the internal library state,
+- `pico.output.*`: draw shapes and layers; play sound and video.
+- `pico.input.*`: handle events, such as time passing and key presses.
+- `pico.get.*` and `pico.set.*`: manage internal library state,
     such as current drawing color, and window dimensions.
+- `pico.layer.*`: structure visuals in hierarquical scenes.
 
 This guide is an interactive walk-through of `pico-lua`.
 It is not meant to be exhaustive.
@@ -31,7 +30,6 @@ Consult the [API](api.md) for completeness.
 From the command line, simply execute `pico-lua` with no parameters:
 
 ```bash
-$ cd <...>/pico-sdl/lua/doc/    # pico-lua "doc" folder
 $ pico-lua
 Lua 5.4.4  Copyright (C) 1994-2022 Lua.org, PUC-Rio
 >
