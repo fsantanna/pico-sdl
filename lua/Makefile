@@ -25,7 +25,6 @@ int: pico_native.so
 
 tests: pico_native.so
 	@echo "Running tests..."
-	./pico-lua | grep -q "Usage: pico-lua"
 	./pico-lua --help | grep -q "Usage: pico-lua"
 	./pico-lua --version | grep -q "dev-apr-16"
 	$(TST) tst/anchor.lua

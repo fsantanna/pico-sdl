@@ -74,8 +74,7 @@ To configure the window and the world view, we use `pico.set.window` and
     dim   = { '!', w=200, h=200 },
   }
 > pico.set.view {
-    grid = false,
-    dim  = { '!', w=200, h=200 },
+    dim = { '!', w=200, h=200 },
   }
 </pre>
 </td><td>
@@ -83,8 +82,8 @@ To configure the window and the world view, we use `pico.set.window` and
 </td></tr>
 </table>
 
-After the two commands, the window title is set, the grid is disabled, and both
-the window and view are set to the same dimensions.
+After the two commands, the window title changes and the grid disappears, since
+the pixel size is now `1x1`.
 
 The character `'!'` indicates a dimension in "raw mode", which we will discuss
 in [#Positioning Mode](#5-positioning-mode--anchor).
@@ -202,7 +201,8 @@ To draw an [image](img/open.png), we call `pico.output.draw.image`:
 
 Note that `pico-lua` retains both objects on the screen.
 
-Other drawing operations include `draw.line`, `draw.polygon`, and `draw.text`.
+Other drawing operations include `pico.output.draw.line`,
+`pico.output.draw.polygon`, and `pico.output.draw.text`.
 
 ## 4. Graphics State
 
@@ -228,15 +228,14 @@ operations.
 
 Therefore, the text appears in red, centered at the given position.
 
-Note that `pico-lua` preserves the correct text aspect ratio if the width `w`
-is omitted.
+Note that `pico-lua` preserves the correct text aspect ratio when width `w` is
+omitted.
 
-Colors can also be specified as tables with RGB values:
+Colors can also be specified as numbers or tables:
 
 ```lua
-> pico.set.draw { color={ r=128, g=0xFF, b=200 } }      -- absolute (0-255), (0x00-0xFF)
-> pico.set.draw { color={ '%', r=0.5, g=0.25, b=0.8 } } -- percentage mode '%' (0.0-1.0)
-> pico.set.draw { color='red' }                         -- restore red (for the tutorial)
+> pico.set.draw { color=0x00FF00CC }                    -- 0xRRGGBBAA
+> pico.set.draw { color={ '%', r=0.5, g=0.25, b=0.8 } } -- percentages (0.0-1.0)
 ```
 
 ### 4.2. Transparency

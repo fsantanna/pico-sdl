@@ -119,16 +119,16 @@ In alphabetical order:
           parent: string, crop: Rect)`
         - Parent must exist and cannot be a sub-layer itself.
 - **pico.output**
-    - **pico.output.clear**: Clears window.
+    - **pico.output.clear**: Clears screen.
         - `pico.output.clear ()`
     - **pico.output.present**: Presents buffer (expert mode only).
         - `pico.output.present ()`
-    - **pico.output.screenshot**: Takes a window screenshot.
+    - **pico.output.screenshot**: Takes a screenshot.
         - `pico.output.screenshot ([path: string] [, rect: Rect]) -> string`
     - **pico.output.sound**: Plays sound.
         - `pico.output.sound (path: string)`
     - **pico.output.draw**
-        - **pico.output.draw.buffer**: Draws array of RGBA colors.
+        - **pico.output.draw.buffer**: Draws array of colored pixels.
             - `pico.output.draw.buffer (buffer: {{Color}}, rect: Rect)`
         - **pico.output.draw.image**: Draws image.
             - `pico.output.draw.image (path: string, rect: Rect)`
@@ -168,7 +168,7 @@ In alphabetical order:
     - **pico.set.video**: Sets video frame.
         - `pico.set.video (name: string, frame: integer) -> boolean`
     - **pico.set.view**: Sets view configuration.
-        - `pico.set.view (cfg: { [dim: Dim], [tile: Tile], [target: Rect], [source: Rect], [clip: Rect] })`
+        - `pico.set.view (cfg: { [dim: Dim], [source: Rect], [clip: Rect], [target: Rect], [tile: Tile] })`
         - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
     - **pico.set.window**: Sets window configuration.
         - `pico.set.window (cfg: { [dim: Dim], [fullscreen: boolean], [show: boolean], [title: string] })`
