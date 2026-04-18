@@ -133,7 +133,25 @@ We can see that the title, grid, and sizes are now reset to default.
 
 To ease prototyping, drawing operations in `pico-lua` take immediate effect.
 
-### 3.1. Pixel
+### 3.1. Shapes
+
+- centered rect
+- pixel in center
+
+### 3.2. Colors
+
+- set.draw / shapes
+    - string, table, number
+- set.show / clear
+
+### 3.3. Image and Text
+
+- draw.image
+- draw.buffer
+- draw.text / font
+
+- cache
+
 
 To draw a single pixel, we call `pico.output.draw.pixel`:
 
@@ -149,7 +167,33 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 The pixel occupies a physical `5x5` square representing a single world pixel,
 as expected.
 
-### 3.2. Clear
+### 3.2. Colors
+
+To change the drawing color, we call `pico.set.draw`:
+
+<table>
+<tr><td><pre>
+> pico.set.draw { color='red' }
+> pico.output.draw.pixel { '!', x=25, y=25 }
+</pre>
+</td><td>
+<img src="img/guide-04-01-01.png" width="200">
+</td></tr>
+</table>
+
+Colors can also be specified as numbers or tables:
+
+```lua
+> pico.set.draw {       -- 0xRRGGBB[AA]
+    color = 0x00FF00
+  }
+> pico.output.draw.pixel { '!', x=75, y=75 }
+
+> pico.set.draw {       -- percent mode '%' (0.0-1.0)
+    color={ '%', r=0.5, g=0.5, b=0.5 }
+  }
+> pico.output.draw.pixel { '!', x=25, y=75 }
+```
 
 To clear the screen, we call `pico.output.clear`:
 
