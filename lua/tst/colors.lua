@@ -186,7 +186,7 @@ do
     print("color alpha function")
     pico.set.show { color='white' }
     pico.output.clear()
-    local buffer = {
+    local pixmap = {
         {
             pico.color.alpha('red', 0xFF),
             pico.color.alpha('red', 0x80),
@@ -194,7 +194,7 @@ do
         },
     }
     local r = {'%', x=0.5, y=0.5, w=0, h=0}
-    pico.output.draw.buffer("alpha", buffer, r)
+    pico.output.draw.pixmap("alpha", pixmap, r)
     pico.check("colors-07")
 end
 

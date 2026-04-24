@@ -814,17 +814,17 @@ void pico_set_window_title (const char* title) {
 // LAYER
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_layer_buffer (
+void pico_layer_pixmap (
     const char* up,
     const char* key,
     Pico_Abs_Dim dim,
     const Pico_Color* pixels
 ) {
     _pico_guard();
-    pico_layer_buffer_mode('!', up, key, dim, pixels);
+    pico_layer_pixmap_mode('!', up, key, dim, pixels);
 }
 
-void pico_layer_buffer_mode (
+void pico_layer_pixmap_mode (
     int mode,
     const char* up,
     const char* key,
@@ -832,7 +832,7 @@ void pico_layer_buffer_mode (
     const Pico_Color* pixels
 ) {
     _pico_guard();
-    _pico_layer_buffer(mode, key, dim, pixels);
+    _pico_layer_pixmap(mode, key, dim, pixels);
     if (up != NULL) {
         _layer_attach(up, key);
     }
@@ -1181,15 +1181,15 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_buffer (
+void pico_output_draw_pixmap (
     const char* key,
     Pico_Abs_Dim dim,
-    const Pico_Color buffer[],
+    const Pico_Color pixmap[],
     const Pico_Rel_Rect* rect
 ) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
-    pico_layer_buffer_mode('=', NULL, key, dim, buffer);
+    pico_layer_pixmap_mode('=', NULL, key, dim, pixmap);
     pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
 }
 

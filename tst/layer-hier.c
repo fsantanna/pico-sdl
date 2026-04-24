@@ -41,7 +41,7 @@ int main (void) {
         {255, 0, 0, 255}, {0, 255, 0, 255},
         {0, 0, 255, 255}, {255, 255, 0, 255},
     };
-    pico_layer_buffer("root", "buf", (Pico_Abs_Dim){2, 2}, buf);
+    pico_layer_pixmap("root", "buf", (Pico_Abs_Dim){2, 2}, buf);
     pico_set_layer("buf");
     pico_set_view_dst(NULL, (Pico_Rel_Rect){'%', {0.7, 0.3, 0.4, 0.4}, PICO_ANCHOR_C, NULL});
 

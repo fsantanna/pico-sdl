@@ -87,22 +87,22 @@ int main (void) {
     pico_output_draw_layer("reuse", &(Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL});
     _pico_check("layers-04");
 
-    // pico_layer_buffer with name (reuse)
-    puts("layer_buffer with name");
+    // pico_layer_pixmap with name (reuse)
+    puts("layer_pixmap with name");
     static Pico_Color buf1[4] = {
         {255, 0, 0, 255}, {0, 255, 0, 255},
         {0, 0, 255, 255}, {255, 255, 0, 255}
     };
-    pico_layer_buffer_mode('=', NULL, "mybuf", (Pico_Abs_Dim){2, 2}, buf1);
-    pico_layer_buffer_mode('=', NULL, "mybuf", (Pico_Abs_Dim){2, 2}, buf1);
+    pico_layer_pixmap_mode('=', NULL, "mybuf", (Pico_Abs_Dim){2, 2}, buf1);
+    pico_layer_pixmap_mode('=', NULL, "mybuf", (Pico_Abs_Dim){2, 2}, buf1);
 
-    // pico_layer_buffer with different name
-    puts("layer_buffer different name");
-    pico_layer_buffer_mode('=', NULL, "xxx", (Pico_Abs_Dim){2, 2}, buf1);
-    pico_layer_buffer_mode('=', NULL, "xxx", (Pico_Abs_Dim){2, 2}, buf1);
+    // pico_layer_pixmap with different name
+    puts("layer_pixmap different name");
+    pico_layer_pixmap_mode('=', NULL, "xxx", (Pico_Abs_Dim){2, 2}, buf1);
+    pico_layer_pixmap_mode('=', NULL, "xxx", (Pico_Abs_Dim){2, 2}, buf1);
 
-    // draw buffer layer
-    puts("draw buffer layer");
+    // draw pixmap layer
+    puts("draw pixmap layer");
     pico_set_layer(NULL);
     pico_set_show_color(NULL, (Pico_Color){0x00, 0x00, 0x00, 0xFF});
     pico_output_clear();
