@@ -150,9 +150,9 @@ do
 end
 
 do
-    print("BUFFER")
+    print("PIXMAP")
 
-    local buffer = {
+    local pixmap = {
         {
             { r=0x00, g=0x00, b=0x00 },
             { r=0xFF, g=0xFF, b=0x00 },
@@ -172,12 +172,12 @@ do
 
     pico.set.rotate(0)
     pico.output.clear()
-    pico.output.draw.buffer(pt, buffer)
+    pico.output.draw.pixmap(pt, pixmap)
     pico.input.delay(500)
     for i=1, 72 do
         pico.set.rotate(pico.get.rotate() + 5)
         pico.output.clear()
-        pico.output.draw.buffer(pt, buffer)
+        pico.output.draw.pixmap(pt, pixmap)
         pico.input.delay(50)
     end
     pico.input.delay(500)

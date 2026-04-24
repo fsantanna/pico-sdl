@@ -198,20 +198,20 @@ void pico_input_loop (void);
 /// @brief Clears screen with color set by @ref pico_set_show_color.
 void pico_output_clear (void);
 
-/// @brief Draws an RGBA image buffer.
+/// @brief Draws an RGBA pixmap.
 /// @param key layer key for caching (required)
-/// @param dim image dimensions in pixels
-/// @param buffer the RGBA image data
+/// @param dim pixmap dimensions in pixels
+/// @param pixmap the RGBA pixel data
 /// @param rect drawing rectangle (mode determines coordinate interpretation)
 /// @sa pico_output_draw_image
-void pico_output_draw_buffer (const char* key, Pico_Abs_Dim dim,
-                              const Pico_Color buffer[],
+void pico_output_draw_pixmap (const char* key, Pico_Abs_Dim dim,
+                              const Pico_Color pixmap[],
                               const Pico_Rel_Rect* rect);
 
 /// @brief Draws an image.
 /// @param path path to the image file
 /// @param rect target position and dimension (mode determines coordinates)
-/// @sa pico_output_draw_buffer
+/// @sa pico_output_draw_pixmap
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect);
 
 /// @brief Draws a line.
@@ -347,22 +347,22 @@ Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// @brief Creates a layer from a pixel buffer (exclusive mode).
+/// @brief Creates a layer from a pixmap (exclusive mode).
 /// @param key layer key (must not be NULL or start with '/')
-/// @param dim buffer dimensions
+/// @param dim pixmap dimensions
 /// @param pixels RGBA pixel data (must remain valid while layer
 ///               exists)
-void pico_layer_buffer (const char* up, const char* key,
+void pico_layer_pixmap (const char* up, const char* key,
                         Pico_Abs_Dim dim,
                         const Pico_Color* pixels);
 
-/// @brief Creates a layer from a pixel buffer.
+/// @brief Creates a layer from a pixmap.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param key layer key (must not be NULL or start with '/')
-/// @param dim buffer dimensions
+/// @param dim pixmap dimensions
 /// @param pixels RGBA pixel data (must remain valid while layer
 ///               exists)
-void pico_layer_buffer_mode (int mode, const char* up, const char* key,
+void pico_layer_pixmap_mode (int mode, const char* up, const char* key,
                              Pico_Abs_Dim dim,
                              const Pico_Color* pixels);
 

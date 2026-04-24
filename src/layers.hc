@@ -33,7 +33,7 @@ typedef struct {
 static Pico_Layer* _pico_layer_name (const char* name);
 static Pico_Layer* _pico_layer_null (const char* name);
 
-static Pico_Layer* _pico_layer_buffer (
+static Pico_Layer* _pico_layer_pixmap (
     int mode, const char* key, Pico_Abs_Dim dim,
     const Pico_Color* pixels
 );
@@ -111,7 +111,7 @@ static void _layer_traverse (Pico_Layer* UP) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Layer* _pico_layer_buffer (
+static Pico_Layer* _pico_layer_pixmap (
     int mode,
     const char* key,
     Pico_Abs_Dim dim,
@@ -119,10 +119,10 @@ static Pico_Layer* _pico_layer_buffer (
 ) {
     assert(key!=NULL && "layer key required");
     assert(pixels!=NULL && "pixels required");
-    _alloc_buffer_t ctx = { dim, pixels };
+    _alloc_pixmap_t ctx = { dim, pixels };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(key)+1, key,
-        _free_layer, _alloc_layer_buffer, &ctx
+        _free_layer, _alloc_layer_pixmap, &ctx
     );
     assert(ret != NULL);
     return ret;

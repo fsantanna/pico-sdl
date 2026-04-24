@@ -34,8 +34,6 @@ tests:
 	$(EXE) tst/anchor_raw.c
 	$(EXE) tst/blend_pct.c
 	$(EXE) tst/blend_raw.c
-	$(EXE) tst/buffer_pct.c
-	$(EXE) tst/buffer_raw.c
 	$(EXE) tst/clear_alpha.c
 	$(EXE) tst/clip_pct.c
 	$(EXE) tst/clip_raw.c
@@ -62,6 +60,8 @@ tests:
 	$(EXE) tst/move.c
 	$(EXE) tst/navigate.c
 	$(EXE) tst/pixels.c
+	$(EXE) tst/pixmap_pct.c
+	$(EXE) tst/pixmap_raw.c
 	$(EXE) tst/pos.c
 	$(EXE) tst/quit.c
 	$(EXE) tst/rect.c

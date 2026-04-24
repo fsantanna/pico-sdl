@@ -102,13 +102,13 @@ In alphabetical order:
     - **pico.layer.empty**: Creates an empty layer.
         - `pico.layer.empty ([mode,] up: string?, key: string,
           dim: Dim [, tile: Tile])`
-    - **pico.layer.buffer**: Creates a layer from a pixel buffer.
-        - `pico.layer.buffer ([mode,] up: string?, key: string,
-          dim: Dim, buffer: {{Color}})`
-        - Buffer is copied; pointer-based caching not possible.
     - **pico.layer.image**: Creates a layer from an image file.
         - `pico.layer.image ([mode,] up: string?, key: string?, path: string)`
         - If `key` is omitted, uses `"/image/<path>"` as layer name.
+    - **pico.layer.pixmap**: Creates a layer from a pixmap.
+        - `pico.layer.pixmap ([mode,] up: string?, key: string,
+          dim: Dim, pixmap: {{Color}})`
+        - Pixmap is copied; pointer-based caching not possible.
     - **pico.layer.text**: Creates a layer from text.
         - `pico.layer.text ([mode,] up: string?, key: string,
           height: integer, text: string)`
@@ -128,8 +128,6 @@ In alphabetical order:
     - **pico.output.sound**: Plays sound.
         - `pico.output.sound (path: string)`
     - **pico.output.draw**
-        - **pico.output.draw.buffer**: Draws array of colored pixels.
-            - `pico.output.draw.buffer (buffer: {{Color}}, rect: Rect)`
         - **pico.output.draw.image**: Draws image.
             - `pico.output.draw.image (path: string, rect: Rect)`
         - **pico.output.draw.layer**: Draws a layer onto the current layer.
@@ -142,6 +140,8 @@ In alphabetical order:
             - `pico.output.draw.pixel (pos: Pos)`
         - **pico.output.draw.pixels**: Draws multiple pixels.
             - `pico.output.draw.pixels (ps: {Pos})`
+        - **pico.output.draw.pixmap**: Draws a pixmap of colored pixels.
+            - `pico.output.draw.pixmap (pixmap: {{Color}}, rect: Rect)`
         - **pico.output.draw.poly**: Draws polygon.
             - `pico.output.draw.poly (ps: {Pos})`
         - **pico.output.draw.rect**: Draws rectangle.

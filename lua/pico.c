@@ -191,7 +191,7 @@ static Pico_Anchor C_anchor (lua_State* L, int i) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Abs_Dim C_buffer_dim (lua_State* L, int i) {
+static Pico_Abs_Dim C_pixmap_dim (lua_State* L, int i) {
     assert(i > 0);
     luaL_checktype(L, i, LUA_TTABLE);
 
@@ -208,7 +208,7 @@ static Pico_Abs_Dim C_buffer_dim (lua_State* L, int i) {
     return (Pico_Abs_Dim) { .w=c, .h=l };
 }
 
-static void C_buffer_fill (lua_State* L, int i, Pico_Abs_Dim dim,
+static void C_pixmap_fill (lua_State* L, int i, Pico_Abs_Dim dim,
                            Pico_Color* buf) {
     assert(i > 0);
     for (int row=1; row<=dim.h; row++) {
@@ -1195,7 +1195,7 @@ static int l_layer_image (lua_State* L) {
     return 0;
 }
 
-static int l_layer_buffer (lua_State* L) {
+static int l_layer_pixmap (lua_State* L) {
     int m = C_mode_opt(L);
     int i = m ? 2 : 1;
     if (!m) m = '!';
@@ -1209,17 +1209,17 @@ static int l_layer_buffer (lua_State* L) {
         (int) C_checkfieldnum(L, i+2, "h"),
     };
 
-    Pico_Abs_Dim buf_dim = C_buffer_dim(L, i+3);
+    Pico_Abs_Dim buf_dim = C_pixmap_dim(L, i+3);
     if (buf_dim.w != dim.w || buf_dim.h != dim.h) {
         return luaL_error(L,
-            "buffer size %dx%d doesn't match dim %dx%d",
+            "pixmap size %dx%d doesn't match dim %dx%d",
             buf_dim.w, buf_dim.h, dim.w, dim.h);
     }
 
     Pico_Color buf[buf_dim.h][buf_dim.w];
-    C_buffer_fill(L, i+3, buf_dim, (Pico_Color*)buf);
+    C_pixmap_fill(L, i+3, buf_dim, (Pico_Color*)buf);
 
-    pico_layer_buffer_mode(m, up, key, dim, (Pico_Color*)buf);
+    pico_layer_pixmap_mode(m, up, key, dim, (Pico_Color*)buf);
     return 0;
 }
 
@@ -1379,17 +1379,17 @@ static int l_output_clear (lua_State* L) {
     return 0;
 }
 
-static int l_output_draw_buffer (lua_State* L) {
+static int l_output_draw_pixmap (lua_State* L) {
     const char* name = luaL_checkstring(L, 1);  // name | buf | rect
     luaL_checktype(L, 2, LUA_TTABLE);
     luaL_checktype(L, 3, LUA_TTABLE);
 
-    Pico_Abs_Dim dim = C_buffer_dim(L, 2);
+    Pico_Abs_Dim dim = C_pixmap_dim(L, 2);
     Pico_Color buf[dim.h][dim.w];
-    C_buffer_fill(L, 2, dim, (Pico_Color*)buf);
+    C_pixmap_fill(L, 2, dim, (Pico_Color*)buf);
 
     Pico_Rel_Rect* rect = C_rel_rect(L, 3);
-    pico_output_draw_buffer(name, dim, (Pico_Color*)buf, rect);
+    pico_output_draw_pixmap(name, dim, (Pico_Color*)buf, rect);
     return 0;
 }
 
@@ -1614,9 +1614,9 @@ static const luaL_Reg ll_set[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_layer[] = {
-    { "buffer", l_layer_buffer },
     { "empty",  l_layer_empty  },
     { "image",  l_layer_image  },
+    { "pixmap", l_layer_pixmap },
     { "sub",    l_layer_sub    },
     { "text",   l_layer_text   },
     { "video",  l_layer_video  },
@@ -1643,13 +1643,13 @@ static const luaL_Reg ll_output[] = {
 };
 
 static const luaL_Reg ll_output_draw[] = {
-    { "buffer", l_output_draw_buffer },
     { "image",  l_output_draw_image  },
     { "layer",  l_output_draw_layer  },
     { "line",   l_output_draw_line   },
     { "oval",   l_output_draw_oval   },
     { "pixel",  l_output_draw_pixel  },
     { "pixels", l_output_draw_pixels },
+    { "pixmap", l_output_draw_pixmap },
     { "poly",   l_output_draw_poly   },
     { "rect",   l_output_draw_rect   },
     { "text",   l_output_draw_text   },

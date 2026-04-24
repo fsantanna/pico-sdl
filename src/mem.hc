@@ -8,7 +8,7 @@
 typedef struct {
     Pico_Abs_Dim dim;
     const Pico_Color* pixels;
-} _alloc_buffer_t;
+} _alloc_pixmap_t;
 
 typedef struct {
     Pico_Abs_Dim  dim;
@@ -42,7 +42,7 @@ static void _free_sound (int, const void*, void*);
 // Alloc callbacks
 ///////////////////////////////////////////////////////////////////////////////
 
-static void* _alloc_layer_buffer (int, const void*, void*);
+static void* _alloc_layer_pixmap (int, const void*, void*);
 static void* _alloc_layer_empty (int, const void*, void*);
 static void* _alloc_layer_image (int, const void*, void*);
 static void* _alloc_layer_sub (int, const void*, void*);
@@ -117,8 +117,8 @@ static Pico_Layer* _layer_new (
 // Alloc callbacks
 ///////////////////////////////////////////////////////////////////////////////
 
-static void* _alloc_layer_buffer (int n, const void* key, void* ctx) {
-    _alloc_buffer_t* c = (_alloc_buffer_t*)ctx;
+static void* _alloc_layer_pixmap (int n, const void* key, void* ctx) {
+    _alloc_pixmap_t* c = (_alloc_pixmap_t*)ctx;
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom(
         (void*)c->pixels, c->dim.w, c->dim.h,
         32, 4 * c->dim.w, SDL_PIXELFORMAT_RGBA32

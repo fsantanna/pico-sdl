@@ -695,7 +695,7 @@ Finally, close the window (e.g., `ALT+F4`) to escape from the loop.
 Layers are independent views, in which you can draw shapes in separate, and
 then compose them to form complex scenes.
 
-The main logical world is itself a layer, as well as images, texts, buffers,
+The main logical world is itself a layer, as well as images, texts, pixmaps,
 and videos.
 Therefore, all discussed [#view properties](#6-advanced-view) also apply to
 layers.
