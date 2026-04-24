@@ -277,7 +277,7 @@ void pico_init (int on) {
         realm_enter(G.realm);
 
         S = (typeof(S)) {
-            .expert = {0, 0, 0, 0},
+            .expert = {0, 0, -1, 0},
             .layer  = &G.root,
             .win    = {
                 .dim = PICO_DIM_PHY,
