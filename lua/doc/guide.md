@@ -135,24 +135,6 @@ To ease prototyping, drawing operations in `pico-lua` take immediate effect.
 
 ### 3.1. Shapes
 
-- centered rect
-- pixel in center
-
-### 3.2. Colors
-
-- set.draw / shapes
-    - string, table, number
-- set.show / clear
-
-### 3.3. Image and Text
-
-- draw.image
-- draw.buffer
-- draw.text / font
-
-- cache
-
-
 To draw a single pixel, we call `pico.output.draw.pixel`:
 
 <table>
@@ -167,33 +149,28 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 The pixel occupies a physical `5x5` square representing a single world pixel,
 as expected.
 
-### 3.2. Colors
-
-To change the drawing color, we call `pico.set.draw`:
+To draw a rectangle, we call `pico.output.draw.rect`:
 
 <table>
 <tr><td><pre>
-> pico.set.draw { color='red' }
-> pico.output.draw.pixel { '!', x=25, y=25 }
+> pico.output.draw.rect { '!', x=20, y=20, w=30, h=30 }
 </pre>
 </td><td>
-<img src="img/guide-04-01-01.png" width="200">
+<img src="img/guide-03-01-XX.png" width="200">
 </td></tr>
 </table>
 
-Colors can also be specified as numbers or tables:
+The table specifies a rectangle at position `(20,20)` with size `30x30`.
 
-```lua
-> pico.set.draw {       -- 0xRRGGBB[AA]
-    color = 0x00FF00
-  }
-> pico.output.draw.pixel { '!', x=75, y=75 }
+Unlike most graphics libraries, `pico-lua` **centers** objects by default,
+which we will discuss in [#Anchors](#52-anchors).
+With the aid of the tick marks, we can see that the rectangle is actually
+centered at the given position.
 
-> pico.set.draw {       -- percent mode '%' (0.0-1.0)
-    color={ '%', r=0.5, g=0.5, b=0.5 }
-  }
-> pico.output.draw.pixel { '!', x=25, y=75 }
-```
+Other drawing operations include `pico.output.draw.line`,
+`pico.output.draw.polygon`, and `pico.output.draw.oval`.
+
+### 3.2. Colors
 
 To clear the screen, we call `pico.output.clear`:
 
@@ -206,27 +183,57 @@ To clear the screen, we call `pico.output.clear`:
 </td></tr>
 </table>
 
-Now the pixel is gone.
+Now the pixel and rectangle are gone.
 
-### 3.3. Rectangle
+By default `pico-lua`, uses black to clear the screen and white to draw shapes.
 
-To draw a rectangle, we call `pico.output.draw.rect`:
+To pick different colors, we use `pico.set.show` and `pico.set.draw` passing
+the `color` attribute:
 
 <table>
 <tr><td><pre>
-> pico.output.draw.rect { '!', x=20, y=20, w=30, h=30 }
+> pico.set.show { color='yellow' }  -- background
+> pico.set.draw { color='red'    }  -- shapes
+> pico.output.clear()
+> pico.output.draw.rect { '!', x=50, y=50, w=50, h=50 }
 </pre>
 </td><td>
-<img src="img/guide-03-03-01.png" width="200">
+<img src="img/guide-03-02-XX.png" width="200">
 </td></tr>
 </table>
 
-The table specifies a rectangle at position `(20,20)` with size `30x30`.
+In the example, we set the background color as yellow, and the drawing color
+for shapes as red.
+Then, we clear the screen and draw a centered rectangle.
 
-Unlike most graphics libraries, `pico-lua` **centers** objects by default,
-which we will discuss in [#Anchors](#52-anchors).
-With the aid of the tick marks, we can see that the rectangle is actually
-centered at the given position.
+Colors can also be specified as numbers or tables:
+
+<table>
+<tr><td><pre>
+```lua
+> pico.set.draw {       -- 0xRRGGBB[AA]
+    color = 0x00FF00
+  }
+  pico.output.draw.pixel { '!', x=25, y=25 }
+
+> pico.set.draw {       -- percent mode '%' (0.0-1.0)
+    color={ '%', r=0.5, g=0.5, b=0.5 }
+  }
+  pico.output.draw.pixel { '!', x=75, y=75 }
+```
+</pre>
+</td><td>
+<img src="img/guide-03-02-XX.png" width="200">
+</td></tr>
+</table>
+
+### 3.3. Image and Text
+
+- draw.image
+- draw.buffer
+- draw.text / font
+
+- cache
 
 ### 3.4. Image
 
