@@ -248,7 +248,7 @@ To draw text, we call `pico.output.draw.text`:
 <table>
 <tr><td><pre>
 > pico.output.draw.text("Hello", {'!', x=50, y=33, h=30})
-> pico.set.draw { font='../../DejaVuSans.ttf' }
+> pico.set.draw { font='../../res/DejaVuSans.ttf' }
 > pico.output.draw.text("Hello", {'!', x=50, y=66, h=30})
 </pre>
 </td><td>
@@ -263,7 +263,7 @@ bottom.
 Note that `pico-lua` preserves the correct text aspect ratio when width `w` is
 omitted.
 
-To draw an [image](img/open.png), we call `pico.output.draw.image`:
+To draw an [image](../../res/open.png), we call `pico.output.draw.image`:
 
 <table>
 <tr><td><pre>
@@ -308,4 +308,4 @@ dimensions and aspect ratio.
 
 Internally, `pico-lua` caches texts, images and pixmaps such that they are
 reused on subsequent redraws.
-We will detail caching in [#Layers](#XX-layers).
+We will detail caching in [#Layers](#8-layers).
