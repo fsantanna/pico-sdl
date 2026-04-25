@@ -252,7 +252,7 @@ static void* _alloc_font (int n, const void* key, void* ctx) {
     _alloc_font_t* c = (_alloc_font_t*)ctx;
     TTF_Font* ttf;
     if (c->path == NULL) {
-        SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
+        SDL_RWops* rw = SDL_RWFromConstMem(pico_pixel_operator, pico_pixel_operator_len);
         ttf = TTF_OpenFontRW(rw, 1, c->h);
     } else {
         ttf = TTF_OpenFont(c->path, c->h);

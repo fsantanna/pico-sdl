@@ -9,16 +9,16 @@ do
 
     local pct = {'%', w=nil, h=0.1}
     local dim = pico.get.text("ABC", pct)
-    assert(pct.w*100//1==17 and pct.h*100//1==10)
-    assert(dim.w==17 and dim.h==10)
+    assert(pico.equal(pct.w, 0.12) and pico.equal(pct.h, 0.10))
+    assert(dim.w==12 and dim.h==10)
 
     local pct = {'%', h=0.2}
     pico.get.text("ABC", pct)
-    assert(pct.w*100//1==36 and pct.h*100//1==20)
+    assert(pico.equal(pct.w, 0.24) and pico.equal(pct.h, 0.20))
 
     local p = {'%', h=0.2};
     pico.get.text("ABC", p);
-    assert(p.w*100//1==36 and p.h*100//1==20);
+    assert(pico.equal(p.w, 0.24) and pico.equal(p.h, 0.20));
 end
 
 -- numbers

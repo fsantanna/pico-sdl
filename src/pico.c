@@ -13,7 +13,7 @@
 
 #define REALM_C
 #include "realm.hc"
-#include "tiny_ttf.h"
+#include "pixel_operator_ttf.h"
 #include "pico.h"
 
 #define PICO_COLORS_C

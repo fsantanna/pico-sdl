@@ -8,21 +8,21 @@ int main (void) {
     {
         Pico_Rel_Dim d = { '!', {0, 10}, NULL };
         Pico_Abs_Dim r = pico_get_text("ABC", &d);
-        assert(r.w==17 && r.h==10);
+        assert(r.w==12 && r.h==10);
     }
     // pico_get_text: pct mode, NULL up (world 100x100, h=0.1 -> 10px)
     {
         Pico_Rel_Dim d = { '%', {0, 0.1}, NULL };
         Pico_Abs_Dim r = pico_get_text("ABC", &d);
-        assert(r.w==17 && r.h==10);
+        assert(r.w==12 && r.h==10);
     }
     // pico_get_text: pct mode with up (up 50x50, h=0.2 -> 10px in up)
     {
         Pico_Rel_Rect up = { '%', {0, 0, 0.5, 0.5}, PICO_ANCHOR_NW, NULL };
         Pico_Rel_Dim d = { '%', {0, 0.2}, &up };
         Pico_Abs_Dim r = pico_get_text("ABC", &d);
-        assert(r.w==17 && r.h==10);
-        assert(d.w==0.34f && d.h==0.2f);
+        assert(r.w==12 && r.h==10);
+        assert(d.w==0.24f && d.h==0.2f);
     }
 
     {
