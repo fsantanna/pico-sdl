@@ -156,7 +156,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 > pico.output.draw.rect { '!', x=20, y=20, w=30, h=30 }
 </pre>
 </td><td>
-<img src="img/guide-03-01-XX.png" width="200">
+<img src="img/guide-03-01-02.png" width="200">
 </td></tr>
 </table>
 
@@ -200,7 +200,7 @@ the `color` attribute:
 > pico.output.draw.rect { '!', x=50, y=50, w=50, h=50 }
 </pre>
 </td><td>
-<img src="img/guide-03-02-XX.png" width="200">
+<img src="img/guide-03-02-02.png" width="200">
 </td></tr>
 </table>
 
@@ -225,7 +225,7 @@ Colors can also be specified as numbers or tables:
   pico.output.draw.pixel { '!', x=74, y=74 }
 </pre>
 </td><td>
-<img src="img/guide-03-02-XX.png" width="200">
+<img src="img/guide-03-02-03.png" width="200">
 </td></tr>
 </table>
 
@@ -237,7 +237,7 @@ Let's restart `pico-lua` for the next examples:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="img/guide-03-02-XX.png" width="200">
+<img src="img/guide-03-02-04.png" width="200">
 </td></tr>
 </table>
 
@@ -250,13 +250,12 @@ To draw a text, we call `pico.output.draw.text`:
 > pico.output.draw.text("Hello", {'!', x=50, y=50, h=10})
 </pre>
 </td><td>
-<img src="img/guide-03-03-XX.png" width="200">
+<img src="img/guide-03-03-01.png" width="200">
 </td></tr>
 </table>
 
-- TODO: font
-
-The text appears in red, centered at the bottom of the screen.
+The first text uses the built-in default font, while the second switches to
+DejaVu Sans via `pico.set.draw { font=... }`.
 
 Note that `pico-lua` preserves the correct text aspect ratio when width `w` is
 omitted.
@@ -269,7 +268,7 @@ To draw an [image](open.png), we call `pico.output.draw.image`:
 > pico.output.draw.image('open.png', {'!', x=50, y=50})
 </pre>
 </td><td>
-<img src="img/guide-03-03-XX.png" width="200">
+<img src="img/guide-03-03-02.png" width="200">
 </td></tr>
 </table>
 
@@ -288,7 +287,7 @@ ratio.
   PI = {
       {_,_,_,o,o,o,o,_,_,_},
       {_,o,o,o,o,o,o,o,o,_},
-      {_,o,x,x,x,x,x,x,o,_}
+      {_,o,x,x,x,x,x,x,o,_},
       {o,o,o,x,o,o,x,o,o,o},
       {o,o,o,x,o,o,x,o,o,o},
       {o,o,o,x,o,o,x,o,o,o},
@@ -300,7 +299,7 @@ ratio.
 > pico.output.draw.pixmap(PI, {'%', x=0.5, y=0.5, w=1, h=1})
 </pre>
 </td><td>
-<img src="img/guide-03-03-XX.png" width="200">
+<img src="img/guide-03-03-03.png" width="200">
 </td></tr>
 </table>
 
