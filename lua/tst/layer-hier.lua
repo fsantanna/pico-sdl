@@ -36,7 +36,7 @@ pico.set.layer("root")
 pico.output.present()
 pico.check("layer-hier-02")
 
-pico.layer.buffer("root", "buf", {w=2, h=2}, {
+pico.layer.pixmap("root", "buf", {w=2, h=2}, {
     {{r=255, g=0,   b=0,   a=255}, {r=0, g=255, b=0,   a=255}},
     {{r=0,   g=0,   b=255, a=255}, {r=255, g=255, b=0, a=255}},
 })

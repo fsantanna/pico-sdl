@@ -30,8 +30,6 @@ tests: pico_native.so
 	$(TST) tst/anchor.lua
 	$(TST) tst/blend_pct.lua
 	$(TST) tst/blend_raw.lua
-	$(TST) tst/buffer_pct.lua
-	$(TST) tst/buffer_raw.lua
 	$(TST) tst/clear_alpha.lua
 	$(TST) tst/clip_pct.lua
 	$(TST) tst/clip_raw.lua
@@ -56,6 +54,8 @@ tests: pico_native.so
 	#$(TST) tst/move.lua
 	#$(TST) tst/navigate.lua
 	$(TST) tst/pixels.lua
+	$(TST) tst/pixmap_pct.lua
+	$(TST) tst/pixmap_raw.lua
 	$(TST) tst/pos.lua
 	$(TST) tst/quit.lua
 	$(TST) tst/rect.lua

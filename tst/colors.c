@@ -233,7 +233,7 @@ int main (void) {
     {
         pico_set_show_color(NULL, PICO_COLOR_WHITE);
         pico_output_clear();
-        Pico_Color buffer[] = {
+        Pico_Color pixmap[] = {
             pico_color_alpha(PICO_COLOR_RED, 0xFF),
             pico_color_alpha(PICO_COLOR_RED, 0x80),
             PICO_COLOR_TRANSPARENT,
@@ -241,8 +241,8 @@ int main (void) {
         Pico_Rel_Rect r = {
             '%', {0.5, 0.5, 0, 0}, PICO_ANCHOR_C, NULL
         };
-        pico_output_draw_buffer(
-            "alpha", (Pico_Abs_Dim){3,1}, buffer, &r
+        pico_output_draw_pixmap(
+            "alpha", (Pico_Abs_Dim){3,1}, pixmap, &r
         );
         _pico_check("colors-07");
     }
