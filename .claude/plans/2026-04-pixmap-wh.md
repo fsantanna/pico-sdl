@@ -27,23 +27,48 @@ Same for `pico.layer.pixmap` (creator).
 - `pico.output.draw.pixmap (name?, pixmap, rect)` — relaxed Rect
 - `pico.layer.pixmap (mode?, up, key, dim, pixmap)` — relaxed Dim
 
-## 4. Implementation pointers (C)
+## 4. Implementation pointers — REVISED after re-investigation
 
-- `src/pico.c`:
-    - `pico_output_draw_pixmap` (or `_buffer` if not yet renamed)
-    - `pico_layer_pixmap`
-    - mirror the natural-size logic from `pico_output_draw_image`
-- `src/pico.h`:
-    - check signature of `pico_get_image` for Dim mutation pattern
-- Lua side (`lua/pico.c`) — likely no change if it just forwards
+**C-side aspect derivation ALREADY WORKS.** No C fix needed.
+
+- `src/aux.hc` `_f3` (lines 5-17): correct per-axis logic
+    - both 0 → natural size
+    - w==0 → w = h * ratio.w / ratio.h
+    - h==0 → h = w * ratio.h / ratio.w
+- `src/layers.hc` `_pico_output_draw_layer` (lines ~176-210):
+    - `dp = &layer->view.dim` when ANY axis is 0
+    - then `_sdl_rect(rect, NULL, dp)` → calls `_f3` for per-axis derivation
+- `src/pico.c` `pico_output_draw_image` (lines 1196-1205):
+    - explicit `_sdl_dim` path (writes back rect->w/h before drawing)
+- `src/pico.c` `pico_output_draw_pixmap` (lines 1184-1194):
+    - implicit path via `_pico_output_draw_layer` → `_sdl_rect` → `_f3`
+    - both paths end up in same `_f3` logic; no divergence
+
+**Real gap: Lua side only.**
+
+- `lua/pico.c` `l_output_draw_pixmap` (line ~1389):
+    - missing `L_dim_default_wh(L, 3)` before `C_rel_rect(L, 3)`
+    - `C_checkfieldnum` errors on nil w/h
+- `lua/pico.c` `l_output_draw_layer` (lines 1411-1413) already does this — copy pattern
+- `pico.layer.pixmap` (creator) — layer dims fixed by design, no fix needed
 
 ## 5. Tests
 
-- `lua/tst/pixmap_raw.lua`: add cases
-    - omit `h` → derived from `w` and rows/cols
-    - omit `w` → derived from `h`
-    - omit both → natural `cols x rows` raw pixels
-- `lua/tst/pixmap_pct.lua`: same in `'%'` mode
+- `lua/tst/pixmap_raw.lua`: existing cases switched to omit `w`/`h`
+    - both blocks now omit `w` and `h` (natural size, visual preserved)
+    - fails today: Lua `C_rel_rect` rejects nil w/h
+- `lua/tst/pixmap_pct.lua`: same in `'%'` mode (also done)
+- C aspect cases added (one axis omitted), asr key `pixmap-03`:
+    - `tst/pixmap_raw.c`: `w=6, h=0` on 3x3 → expect 6x6 render
+    - `tst/pixmap_pct.c`: `w=0, h=0.6` on 3x3 → expect 6x6 cells
+    - exercises the C-side fix (replace `||` with per-axis logic)
+- C distort cases added (regression guard), asr key `pixmap-04`:
+    - `tst/pixmap_raw.c`: `w=6, h=3` on 3x3 → x-stretched (cols ×2, rows ×1)
+    - `tst/pixmap_pct.c`: `w=0.6, h=0.3` on 3x3 → x-stretched
+    - integer scaling, scale-mode independent
+    - distort already works today (both axes nonzero); guards no regression
+- Lua aspect+distort cases added in both `_raw` and `_pct` (asr `-03`, `-04`)
+- All new asr to be generated after impl lands (`make gen` / `pico.gen`)
 - `lua/tst/guide.lua` line 109: revert to `{'!', x=50, y=50, w=80}`
   (drop the `h=80` workaround) once feature lands
 
@@ -62,16 +87,24 @@ Same for `pico.layer.pixmap` (creator).
 - [ ] Q3: Buffer copy semantics — already `Pixmap is copied` per
       api.md. Confirm aspect derivation happens before copy.
 
-## 8. Steps
+## 8. Steps — REVISED (scope shrunk after re-investigation)
 
-- [ ] 8.1 Read `pico_output_draw_image` natural-size code
-- [ ] 8.2 Mirror in `pico_output_draw_pixmap`
-- [ ] 8.3 Mirror in `pico_layer_pixmap`
-- [ ] 8.4 Add Lua-side tests
-- [ ] 8.5 `make tests` + `cd lua && make tests` pass
-- [ ] 8.6 Update api.md
-- [ ] 8.7 Update guide.md §3.3 + revert guide.lua workaround
-- [ ] 8.8 Regenerate `lua/tst/asr/guide-03-03-03.png`
+- [x] 8.1 Modify Lua tests to omit `w`/`h` (pixmap_raw.lua, pixmap_pct.lua)
+- [x] 8.2 Add C aspect cases (pixmap_raw.c, pixmap_pct.c) — pass already
+- [x] 8.2b Add Lua aspect + distort cases
+- [x] 8.2c Add C distort cases
+- [x] 8.3 Re-read `_pico_output_draw_layer` / `_sdl_rect` / `_f3`:
+        C aspect derivation already works. No C fix needed.
+- [x] 8.4 Lua: added `L_dim_default_wh(L, 3)` in `l_output_draw_pixmap`
+        (lua/pico.c:1389, mirrors `l_output_draw_layer` pattern)
+- [ ] 8.5 ~~C: fix `||`~~ NOT NEEDED (false alarm)
+- [ ] 8.6 ~~Mirror in `pico_layer_pixmap`~~ NOT NEEDED (layer dims fixed)
+- [ ] 8.7 Generate asr/ for new C tests (`make gen T=pixmap_raw/pct`)
+- [ ] 8.8 Generate asr/ for new Lua tests (lua/tst/asr/)
+- [ ] 8.9 `make tests` + `cd lua && make tests` pass
+- [ ] 8.10 Update api.md (note partial Rect support for pixmap)
+- [ ] 8.11 Update guide.md §3.3 + revert guide.lua `h=80` workaround
+- [ ] 8.12 Regenerate `lua/tst/asr/guide-03-03-03.png` if needed
 
 ## 9. Workaround until shipped
 

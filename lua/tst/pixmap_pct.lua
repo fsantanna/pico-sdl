@@ -29,7 +29,7 @@ do
     }
 
     print("centered 3x3 on black - 1dir/1baixo")
-    local r = {'%', x=0.5, y=0.5, w=0, h=0}
+    local r = {'%', x=0.5, y=0.5}
     pico.output.clear()
     pico.output.draw.pixmap("buf1", pixmap, r)
     pico.check("pixmap-01")
@@ -53,7 +53,7 @@ do
     print("bottomright 9x1 on white")
     pico.set.show { color='white' }
     pico.output.clear()
-    local r = {'%', x=1, y=1, w=0, h=0, anchor='SE'}
+    local r = {'%', x=1, y=1, anchor='SE'}
     pico.output.draw.pixmap("buf2", pixmap, r)
     pico.check("pixmap-02")
 end
