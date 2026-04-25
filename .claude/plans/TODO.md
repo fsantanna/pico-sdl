@@ -76,9 +76,11 @@
 
 19. Default DejaVu font
     - Consider replacing Tiny font
+      (WIP on branch `2026-04-font-pixel-operator` — see
+      `.claude/plans/2026-04-pixel-operator.md` on that branch)
     - Decide default font size
     - Predefined font options (tiny, dejavu, etc)
-    - Test other fonts
+    - Test other fonts (done — see `done/2026-04-dejavu-font.md`)
 
 21. `pico_get_image/text` should accept ref parameter
     - See `lua/tst/image_pct` commented tests
