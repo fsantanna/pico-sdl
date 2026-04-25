@@ -48,7 +48,7 @@ To initialize `pico-lua`, we pass `true` to `pico.init`:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="img/guide-02-01-01.png" width="400">
+<img src="../tst/asr/guide-02-01-01.png" width="400">
 </td></tr>
 </table>
 
@@ -78,7 +78,7 @@ To configure the window and the world view, we use `pico.set.window` and
   }
 </pre>
 </td><td>
-<img src="img/guide-02-02-01.png" width="200">
+<img src="../tst/asr/guide-02-02-01.png" width="200">
 </td></tr>
 </table>
 
@@ -96,7 +96,7 @@ dimensions at the same time:
 > pico.set.dim { '!', w=200, h=200 }
 </pre>
 </td><td>
-<img src="img/guide-02-02-01.png" width="200">
+<img src="../tst/asr/guide-02-02-01.png" width="200">
 </td></tr>
 </table>
 
@@ -123,7 +123,7 @@ Then, we can restart `pico-lua` by calling `pico.init(true)` again:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="img/guide-02-03-01.png" width="200">
+<img src="../tst/asr/guide-02-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -142,7 +142,7 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 > pico.output.draw.pixel { '!', x=50, y=50 }
 </pre>
 </td><td>
-<img src="img/guide-03-01-01.png" width="200">
+<img src="../tst/asr/guide-03-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -156,7 +156,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 > pico.output.draw.rect { '!', x=20, y=20, w=30, h=30 }
 </pre>
 </td><td>
-<img src="img/guide-03-01-02.png" width="200">
+<img src="../tst/asr/guide-03-01-02.png" width="200">
 </td></tr>
 </table>
 
@@ -181,7 +181,7 @@ To clear the screen, we call `pico.output.clear`:
 > pico.output.clear()
 </pre>
 </td><td>
-<img src="img/guide-03-02-01.png" width="200">
+<img src="../tst/asr/guide-02-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -200,7 +200,7 @@ the `color` attribute:
 > pico.output.draw.rect { '!', x=50, y=50, w=50, h=50 }
 </pre>
 </td><td>
-<img src="img/guide-03-02-02.png" width="200">
+<img src="../tst/asr/guide-03-02-02.png" width="200">
 </td></tr>
 </table>
 
@@ -225,7 +225,7 @@ Colors can also be specified as numbers or tables:
   pico.output.draw.pixel { '!', x=73, y=73 }
 </pre>
 </td><td>
-<img src="img/guide-03-02-03.png" width="200">
+<img src="../tst/asr/guide-03-02-03.png" width="200">
 </td></tr>
 </table>
 
@@ -237,7 +237,7 @@ Let's restart `pico-lua` for the next examples:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="img/guide-03-02-04.png" width="200">
+<img src="../tst/asr/guide-02-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -252,7 +252,7 @@ To draw a text, we call `pico.output.draw.text`:
 > pico.output.draw.text("World", {'%', x=0.5, y=0.66, h=0.1})
 </pre>
 </td><td>
-<img src="img/guide-03-03-01.png" width="200">
+<img src="../tst/asr/guide-03-03-01.png" width="200">
 </td></tr>
 </table>
 
@@ -270,7 +270,7 @@ To draw an [image](img/open.png), we call `pico.output.draw.image`:
 > pico.output.draw.image('doc/img/open.png', {'!', x=50, y=50})
 </pre>
 </td><td>
-<img src="img/guide-03-03-02.png" width="200">
+<img src="../tst/asr/guide-03-03-02.png" width="200">
 </td></tr>
 </table>
 
@@ -301,7 +301,7 @@ ratio.
 > pico.output.draw.pixmap(PI, {'%', x=0.5, y=0.5, w=1, h=1})
 </pre>
 </td><td>
-<img src="img/guide-03-03-03.png" width="200">
+<img src="../tst/asr/guide-03-03-03.png" width="200">
 </td></tr>
 </table>
 
