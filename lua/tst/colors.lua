@@ -198,4 +198,18 @@ do
     pico.check("colors-07")
 end
 
+do
+    print("pixmap with mixed color formats")
+    pico.set.show { color='white' }
+    pico.output.clear()
+    local pixmap = {
+        { 'red',                 0x00FF00, { r=0,   g=0,   b=255 } },
+        { {'%', r=1, g=1, b=0},  'cyan',   {'!', r=255, g=0, b=255} },
+        { 0x000000,              'black',  pico.color.alpha('red', 0x80) },
+    }
+    local r = {'%', x=0.5, y=0.5, w=0, h=0}
+    pico.output.draw.pixmap("mixed", pixmap, r)
+    pico.check("colors-08")
+end
+
 pico.init(false)

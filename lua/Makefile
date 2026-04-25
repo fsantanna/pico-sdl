@@ -2,6 +2,7 @@ XVFB = SDL_AUDIODRIVER=dummy xvfb-run -a
 LUA = LUA_CPATH="../pico/?.so;" LUA_PATH="../?/init.lua;../?.lua;"
 TST = PICO_CHECK_ASR=1 $(LUA) $(XVFB) ./pico-lua
 INT = PICO_CHECK_INT=1 PICO_CHECK_ASR= $(LUA) ./pico-lua
+GEN = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= $(LUA) ./pico-lua
 
 .PHONY: tests install uninstall clean
 
@@ -22,6 +23,10 @@ todo: pico_native.so
 
 int: pico_native.so
 	$(INT) tst/$(T).lua
+
+gen:
+	$(GEN) tst/$(T).lua
+	cp ../tst/out/$(T)-*.png ../tst/asr/
 
 tests: pico_native.so
 	@echo "Running tests..."

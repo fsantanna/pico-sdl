@@ -12,18 +12,18 @@ do
     -- .x.
     local pixmap = {
         {
-            { r=0x00, g=0x00, b=0x00, a=0xFF },
-            { r=0xFF, g=0xFF, b=0x00, a=0xFF },
-            { r=0x00, g=0x00, b=0x00, a=0xFF },
+            'black',                                -- string
+            0xFFFF00,                               -- hex number
+            { r=0x00, g=0x00, b=0x00, a=0xFF },     -- implicit absolute
         },
         {
-            { r=0xFF, g=0x00, b=0x00, a=0xFF },
-            { r=0x00, g=0xFF, b=0x00, a=0xFF },
-            { r=0x00, g=0x00, b=0xFF, a=0xFF },
+            {'!', r=0xFF, g=0x00, b=0x00},          -- '!' table
+            'green',                                -- string
+            {'%', r=0,    g=0,    b=1   },          -- '%' table
         },
         {
             pico.color.alpha('black', 0),
-            { r=0x00, g=0xFF, b=0xFF, a=0xFF },
+            0x00FFFF,                               -- hex number
             pico.color.alpha('black', 0),
         },
     }
@@ -38,14 +38,14 @@ end
 do
     local pixmap = {
         {
-            { r=0x00, g=0x00, b=0x00, a=0xFF },
-            { r=0xFF, g=0xFF, b=0x00, a=0xFF },
-            { r=0x00, g=0x00, b=0x00, a=0xFF },
-            { r=0xFF, g=0x00, b=0x00, a=0xFF },
-            { r=0x00, g=0xFF, b=0x00, a=0xFF },
-            { r=0x00, g=0x00, b=0xFF, a=0xFF },
+            'black',
+            0xFFFF00,
+            { r=0x00, g=0x00, b=0x00 },             -- default a=0xFF
+            {'!', r=0xFF, g=0x00, b=0x00},
+            'green',
+            {'%', r=0, g=0, b=1},
             pico.color.alpha('black', 0),
-            { r=0x00, g=0xFF, b=0xFF, a=0xFF },
+            0x00FFFF,
             pico.color.alpha('black', 0),
         }
     }
