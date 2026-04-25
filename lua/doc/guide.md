@@ -243,21 +243,22 @@ Let's restart `pico-lua` for the next examples:
 
 ### 3.3. Text, Image and Pixmap
 
-To draw a text, we call `pico.output.draw.text`:
+To draw text, we call `pico.output.draw.text`:
 
 <table>
 <tr><td><pre>
-> pico.output.draw.text("Hello", {'%', x=0.5, y=0.33, h=0.1})
+> pico.output.draw.text("Hello", {'!', x=50, y=33, h=30})
 > pico.set.draw { font='../../DejaVuSans.ttf' }
-> pico.output.draw.text("World", {'%', x=0.5, y=0.66, h=0.1})
+> pico.output.draw.text("Hello", {'!', x=50, y=66, h=30})
 </pre>
 </td><td>
 <img src="../tst/asr/guide-03-03-01.png" width="200">
 </td></tr>
 </table>
 
-The first text uses the built-in default font, while the second switches to
-DejaVu Sans via `pico.set.draw { font=... }`.
+We first draw `Hello` at the top using the built-in default font.
+Then, we switch the font with `pico.set.draw`, and draw `Hello` again at the
+bottom.
 
 Note that `pico-lua` preserves the correct text aspect ratio when width `w` is
 omitted.
@@ -267,17 +268,17 @@ To draw an [image](img/open.png), we call `pico.output.draw.image`:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.output.draw.image('doc/img/open.png', {'!', x=50, y=50})
+> pico.output.draw.image('../../res/open.png', {'!', x=50, y=50})
 </pre>
 </td><td>
 <img src="../tst/asr/guide-03-03-02.png" width="200">
 </td></tr>
 </table>
 
-*(You may need to save the [image](img/open.png) on your machine.)*
+*(You may need to save the [image](../../res/open.png) on your machine.)*
 
-For images, we can omit width `w` and height `h` to use original dimensions and
-ratio.
+For images, we can omit both width `w` and height `h` to preserve original
+dimensions and aspect ratio.
 
 `pico-lua` also supports pixmaps, which are arrays of colored pixels:
 
@@ -298,7 +299,7 @@ ratio.
       {_,o,o,o,o,o,o,o,o,_},
       {_,_,_,o,o,o,o,_,_,_},
   }
-> pico.output.draw.pixmap(PI, {'%', x=0.5, y=0.5, w=1, h=1})
+> pico.output.draw.pixmap("pi", PI, {'!', x=50, y=50, w=80})
 </pre>
 </td><td>
 <img src="../tst/asr/guide-03-03-03.png" width="200">
