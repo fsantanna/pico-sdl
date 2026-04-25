@@ -216,12 +216,10 @@ static void C_pixmap_fill (lua_State* L, int i, Pico_Abs_Dim dim,
         if (lua_type(L, -1) != LUA_TTABLE) {
             luaL_error(L, "expected table at row %d", row);
         }
+        int top = lua_gettop(L) + 1;
         for (int col=1; col<=dim.w; col++) {
             lua_geti(L, -1, col);               // T | T[row] | T[col]
-            if (lua_type(L, -1) != LUA_TTABLE) {
-                luaL_error(L, "expected color at position [%d,%d]", row, col);
-            }
-            buf[(row-1)*dim.w + (col-1)] = C_color_t(L, lua_gettop(L));
+            buf[(row-1)*dim.w + (col-1)] = C_color_tis(L, top);
             lua_pop(L, 1);                      // T | T[row]
         }
         lua_pop(L, 1);                          // T

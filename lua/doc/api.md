@@ -141,7 +141,7 @@ In alphabetical order:
         - **pico.output.draw.pixels**: Draws multiple pixels.
             - `pico.output.draw.pixels (ps: {Pos})`
         - **pico.output.draw.pixmap**: Draws a pixmap of colored pixels.
-            - `pico.output.draw.pixmap (pixmap: {{Color}}, rect: Rect)`
+            - `pico.output.draw.pixmap (name: string, pixmap: {{Color}}, rect: Rect)`
         - **pico.output.draw.poly**: Draws polygon.
             - `pico.output.draw.poly (ps: {Pos})`
         - **pico.output.draw.rect**: Draws rectangle.
