@@ -26,7 +26,7 @@ pico.set.layer("root")
 pico.output.present()
 pico.check("layer-hier-01")
 
-pico.layer.image("root", "img", "open.png")
+pico.layer.image("root", "img", "../../res/open.png")
 pico.set.layer("img")
 pico.set.view({
     target = {'%', x=0.7, y=0.7, w=0.4, h=0.4, anchor='C'},

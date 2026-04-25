@@ -12,7 +12,7 @@ int main (void) {
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_draw_color(NULL, pico_color_alpha(pico_get_draw_color(NULL), a));
-            pico_output_draw_image("open.png", &r);
+            pico_output_draw_image("../res/open.png", &r);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-01");

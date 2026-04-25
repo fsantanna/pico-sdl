@@ -41,7 +41,7 @@ pico.output.clear()
 
 -- pico.set.draw.font: DejaVuSans.ttf
 do
-    pico.set.draw{font="../../DejaVuSans.ttf"}
+    pico.set.draw{font="../../res/DejaVuSans.ttf"}
 
     local r = {'!', x=10, y=10, w=0, h=10, anchor='NW'}
     pico.output.draw.text("hg - gh", r)

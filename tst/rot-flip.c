@@ -7,7 +7,7 @@ int main (void) {
     pico_set_show_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
     // Create a layer from image for rotation/flip tests
-    pico_layer_image(NULL, "img", "open.png");
+    pico_layer_image(NULL, "img", "../res/open.png");
 
     // ROTATION - center anchor
     {

@@ -10,7 +10,7 @@ do
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.draw { color=pico.color.alpha(pico.get.draw().color, a) }
-        pico.output.draw.image("open.png", r)
+        pico.output.draw.image("../../res/open.png", r)
         pico.input.delay(10)
         if a == 120 then
             pico.check("blend_pct-01")

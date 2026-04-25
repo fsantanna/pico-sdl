@@ -29,7 +29,7 @@ int main (void) {
     pico_output_present();
     _pico_check("layer-hier-01");
 
-    pico_layer_image("root", "img", "open.png");
+    pico_layer_image("root", "img", "../res/open.png");
     pico_set_layer("img");
     pico_set_view_dst(NULL, (Pico_Rel_Rect){'%', {0.7, 0.7, 0.4, 0.4}, PICO_ANCHOR_C, NULL});
 
