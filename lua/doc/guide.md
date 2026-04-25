@@ -222,7 +222,7 @@ Colors can also be specified as numbers or tables:
 > pico.set.draw {       -- percent mode '%' (0.0-1.0)
     color={ '%', r=0, g=0.5, b=0, a=0.5 }
   }
-  pico.output.draw.pixel { '!', x=74, y=74 }
+  pico.output.draw.pixel { '!', x=73, y=73 }
 </pre>
 </td><td>
 <img src="img/guide-03-02-03.png" width="200">
@@ -247,7 +247,9 @@ To draw a text, we call `pico.output.draw.text`:
 
 <table>
 <tr><td><pre>
-> pico.output.draw.text("Hello", {'!', x=50, y=50, h=10})
+> pico.output.draw.text("Hello", {'%', x=0.5, y=0.33, h=0.1})
+> pico.set.draw { font='../../DejaVuSans.ttf' }
+> pico.output.draw.text("World", {'%', x=0.5, y=0.66, h=0.1})
 </pre>
 </td><td>
 <img src="img/guide-03-03-01.png" width="200">
@@ -260,12 +262,12 @@ DejaVu Sans via `pico.set.draw { font=... }`.
 Note that `pico-lua` preserves the correct text aspect ratio when width `w` is
 omitted.
 
-To draw an [image](open.png), we call `pico.output.draw.image`:
+To draw an [image](img/open.png), we call `pico.output.draw.image`:
 
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.output.draw.image('open.png', {'!', x=50, y=50})
+> pico.output.draw.image('doc/img/open.png', {'!', x=50, y=50})
 </pre>
 </td><td>
 <img src="img/guide-03-03-02.png" width="200">
