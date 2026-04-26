@@ -78,14 +78,15 @@ Same for `pico.layer.pixmap` (creator).
 - `lua/doc/guide.md` §3.3 pixmap: example uses only `w=80`, paragraph
   describes auto-h behavior (parallel to image's "omit w/h" wording)
 
-## 7. Open questions
+## 7. Open questions — RESOLVED
 
-- [ ] Q1: Natural size unit — is `1 cell = 1 logical pixel` correct?
-      Or scale to fill view by default?
-- [ ] Q2: For `pico.layer.pixmap` with omitted dim, what's the layer's
-      pixel size? Same natural rule (`cols x rows`)?
-- [ ] Q3: Buffer copy semantics — already `Pixmap is copied` per
-      api.md. Confirm aspect derivation happens before copy.
+- [x] Q1: Natural size = `&layer->view.dim` = `cols × rows` logical
+      pixels (per `_f3` in `src/aux.hc`). Confirmed.
+- [x] Q2: `pico.layer.pixmap` (creator) — layer dims fixed by design;
+      no partial-dim support needed. Out of scope.
+- [x] Q3: Buffer copy semantics — pixmap is copied at layer creation
+      (`pico_layer_pixmap_mode`). Aspect derivation happens at draw
+      time in `_f3`, AFTER the copy. No interaction.
 
 ## 8. Steps — REVISED (scope shrunk after re-investigation)
 
@@ -97,14 +98,19 @@ Same for `pico.layer.pixmap` (creator).
         C aspect derivation already works. No C fix needed.
 - [x] 8.4 Lua: added `L_dim_default_wh(L, 3)` in `l_output_draw_pixmap`
         (lua/pico.c:1389, mirrors `l_output_draw_layer` pattern)
-- [ ] 8.5 ~~C: fix `||`~~ NOT NEEDED (false alarm)
-- [ ] 8.6 ~~Mirror in `pico_layer_pixmap`~~ NOT NEEDED (layer dims fixed)
-- [ ] 8.7 Generate asr/ for new C tests (`make gen T=pixmap_raw/pct`)
-- [ ] 8.8 Generate asr/ for new Lua tests (lua/tst/asr/)
-- [ ] 8.9 `make tests` + `cd lua && make tests` pass
-- [ ] 8.10 Update api.md (note partial Rect support for pixmap)
-- [ ] 8.11 Update guide.md §3.3 + revert guide.lua `h=80` workaround
-- [ ] 8.12 Regenerate `lua/tst/asr/guide-03-03-03.png` if needed
+- [x] 8.5 ~~C: fix `||`~~ NOT NEEDED (false alarm)
+- [x] 8.6 ~~Mirror in `pico_layer_pixmap`~~ NOT NEEDED (layer dims fixed)
+- [x] 8.7 Lua tests aligned to mirror C tests (same pos, bg, pixmap)
+- [x] 8.8 Tests pass (`make test T=pixmap_raw/pct` C and Lua)
+- [ ] 8.9 Generate/promote asr/ for new tests
+        (`tst/asr/pixmap-03.png`, `tst/asr/pixmap-04.png`,
+         `lua/tst/asr/pixmap-03.png`, `lua/tst/asr/pixmap-04.png`)
+- [ ] 8.10 Update `lua/doc/api.md` `pico.output.draw.pixmap` entry
+        (note partial Rect support, mirror image's wording)
+- [ ] 8.11 Update `lua/doc/guide.md` §3.3 example to use only `w=80`
+        + revert `lua/tst/guide.lua` line 109 `h=80` workaround
+- [ ] 8.12 Regenerate `lua/tst/asr/guide-03-03-03.png` if guide.lua
+        change affects it
 
 ## 9. Workaround until shipped
 
