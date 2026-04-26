@@ -248,7 +248,7 @@ To draw text, we call `pico.output.draw.text`:
 <table>
 <tr><td><pre>
 > pico.output.draw.text("Hello", {'!', x=50, y=33, h=30})
-> pico.set.draw { font='../../res/DejaVuSans.ttf' }
+> pico.set.draw { font='DejaVuSans.ttf' }
 > pico.output.draw.text("Hello", {'!', x=50, y=66, h=30})
 </pre>
 </td><td>
@@ -256,9 +256,10 @@ To draw text, we call `pico.output.draw.text`:
 </td></tr>
 </table>
 
-We first draw `Hello` at the top using the built-in default font.
-Then, we switch the font with `pico.set.draw`, and draw `Hello` again at the
-bottom.
+*(You may need to save the [font](../../res/DejaVuSans.ttf) on your machine.)*
+
+We first draw `Hello` at the top using the default built-in font.
+Then, we switch the font and draw `Hello` again at the bottom.
 
 Note that `pico-lua` preserves the correct text aspect ratio when width `w` is
 omitted.
@@ -268,7 +269,7 @@ To draw an [image](../../res/open.png), we call `pico.output.draw.image`:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.output.draw.image('../../res/open.png', {'!', x=50, y=50})
+> pico.output.draw.image('open.png', {'!', x=50, y=50})
 </pre>
 </td><td>
 <img src="../tst/asr/guide-03-03-02.png" width="200">
