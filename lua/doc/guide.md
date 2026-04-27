@@ -307,6 +307,13 @@ dimensions and aspect ratio.
 </td></tr>
 </table>
 
+The table `PI` determines the color of each pixel to draw.
+We use single-char color variables to ease visualizing: the Greek letter `pi`,
+on top of blue circle, on top of a black background.
+
+Note that pixmaps require a string identifier as first parameter for proper
+caching.
+
 Internally, `pico-lua` caches texts, images and pixmaps such that they are
 reused on subsequent redraws.
 We will detail caching in [#Layers](#8-layers).
