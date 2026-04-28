@@ -381,3 +381,36 @@ offset each rectangle from the same coordinate:
 - the **red** rectangle places its `NW` corner at `(0.5,0.5)`
 - the **green** one places its center `C` there
 - the **blue** one places its `SE` corner there
+
+### 4.1. Tiles
+
+The tile mode `'#'` uses discrete sized blocks as references for positions and
+dimensions:
+
+<table>
+<tr><td><pre>
+> pico.init(false) ; pico.init(true)
+> pico.set {
+    view = {
+        dim  = { '#', w=5, h=5 },
+        tile = { w=20, h=20 },
+    },
+    window = {
+        dim = { '#', w=40, h=40 },
+    },
+  }
+> pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
+> pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }
+</pre>
+</td><td>
+<img src="../tst/asr/guide-04-01-01.png" width="200">
+</td></tr>
+</table>
+
+In the example, we set each tile to `20x20` and create a world of `5x5` tiles.
+Note that the window can also be specified in tiles.
+
+We then draw two rectangles using the tile mode `'#'`:
+- The first is centered at `(3,3)` occupying `1x1` tile (`20x20` pixels).
+- The second uses anchor `NE`, to properly occupy the top right of the screen
+  with `2x1` tiles (`40x20` pixels).

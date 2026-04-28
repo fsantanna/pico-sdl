@@ -127,4 +127,19 @@ pico.set.draw { color=pico.color.alpha('blue',  0x80) }
 pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
 pico.check("guide-04-00-01")
 
+-- §4.1: tile mode (5x5 tiles of 20x20 px; 40x40 tile window)
+pico.init(false)
+pico.init(true)
+pico.set.window { title="guide-04-01-01" }
+pico.set.view {
+    dim  = { '#', w=5, h=5 },
+    tile = { w=20, h=20 },
+}
+pico.set.window {
+    dim = { '#', w=40, h=40 },
+}
+pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
+pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }
+pico.check("guide-04-01-01")
+
 pico.init(false)
