@@ -109,4 +109,22 @@ local PI = {
 pico.output.draw.pixmap("pi", PI, {'!', x=50, y=50, w=80})
 pico.check("guide-03-03-03")
 
+-------------------------------------------------------------------------------
+-- Section 4: Positioning: Modes & Anchors
+-------------------------------------------------------------------------------
+
+-- §4: pixel + three rects with different anchors (50% alpha)
+pico.init(false)
+pico.init(true)
+pico.set.window { title="guide-05-02-01" }
+pico.set.draw { color='white' }
+pico.output.draw.pixel { '%', x=0.5, y=0.5 }
+pico.set.draw { color=pico.color.alpha('red',   0x80) }
+pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW' }
+pico.set.draw { color=pico.color.alpha('green', 0x80) }
+pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
+pico.set.draw { color=pico.color.alpha('blue',  0x80) }
+pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
+pico.check("guide-05-02-01")
+
 pico.init(false)

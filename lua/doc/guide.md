@@ -3,14 +3,7 @@
 1.  [Introduction](#1-introduction)
 2.  [Initialization](#2-initialization)
 3.  [Basic Drawing](#3-basic-drawing)
-4.  [Graphics State](#4-graphics-state)
-5.  [Positioning: Mode & Anchor](#5-positioning-mode--anchor)
-6.  [Advanced View](#6-advanced-view)
-7.  [Events](#7-events)
-8.  [Layers](#8-layers)
-9.  [Expert Mode](#9-expert-mode)
-10. [Auxiliary Functions](#10-auxiliary-functions)
-11. [Extras](#11-extras)
+4.  [Positioning: Modes & Anchors](#4-positioning-modes--anchors)
 
 ## 1. Introduction
 
@@ -86,7 +79,7 @@ After the two commands, the window title changes and the grid disappears, since
 the pixel size is now `1x1`.
 
 The character `'!'` indicates a dimension in "raw mode", which we will discuss
-in [#Positioning Mode](#5-positioning-mode--anchor).
+in [#Positioning Modes](#4-positioning-modes--anchors).
 
 You could also use the simpler `pico.set.dim` to set the window and view
 dimensions at the same time:
@@ -317,3 +310,68 @@ caching.
 Internally, `pico-lua` caches texts, images and pixmaps such that they are
 reused on subsequent redraws.
 We will detail caching in [#Layers](#8-layers).
+
+## 4. Positioning: Modes & Anchors
+
+The positioning **mode** determines the unit used in world coordinates:
+
+- `'!'` - Raw: world pixel coordinates
+            (from `0` to world `w/h`)
+- `'%'` - Percentage: coordinates relative to world `w/h`
+            (from `0.0` to `1.0`)
+- `'#'` - Tile: grid coordinates based on tile and world `w/h`
+            (from `0` to `w/h`)
+
+The mode is set at index `1` in tables representing positions, dimensions, and
+rectangles:
+
+- `{ '%', x=0.5, y=0.5 }`:          a centered relative position
+- `{ '!', w=20, h=30 }`:            a raw dimension
+- `{ '#', x=4, y=4, w=2, h=1 }`:    a rectangle covering 2 tiles horizontally
+
+The positioning **anchor** determines the reference point **within** the shape:
+
+```
++-----------+
+|NW   N   NE|
+| W   C   E |
+|SW   S   SE|
++-----------+
+```
+
+The anchor is set at field `anchor` in tables representing positions:
+
+- `{ '%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='SW' }`
+
+When drawing, the anchor position is pinned to the given coordinate.
+As shown in the previous examples, by default, `pico-lua` uses the center
+anchor `'C'`.
+
+Let's draw a pixel and three rectangles, all at the same position, but using
+different anchors:
+
+<table>
+<tr><td><pre>
+> pico.init(false) ; pico.init(true)
+> pico.set.draw { color='white' }
+> pico.output.draw.pixel { '%', x=0.5, y=0.5 }
+> pico.set.draw { color=pico.color.alpha('red', 0x80) }
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW' }
+> pico.set.draw { color=pico.color.alpha('green', 0x80) }
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
+> pico.set.draw { color=pico.color.alpha('blue', 0x80) }
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
+</pre>
+</td><td>
+<img src="../tst/asr/guide-05-02-01.png" width="200">
+</td></tr>
+</table>
+
+The pixel represents the reference position `%(0.5,0.5)` used by the three
+rectangles.
+The `0x80` alpha makes the overlapping regions reveal how the pinned anchors
+offset each rectangle from the same coordinate:
+
+- the **red** rectangle places its `NW` corner at `(0.5,0.5)`
+- the **green** one places its center `C` there
+- the **blue** one places its `SE` corner there
