@@ -5,6 +5,8 @@
 
 require 'pico.check'
 
+--[=[
+
 -------------------------------------------------------------------------------
 -- Section 2: Initialization
 -------------------------------------------------------------------------------
@@ -141,5 +143,45 @@ pico.set.window {
 pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
 pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }
 pico.check("guide-04-01-01")
+
+-------------------------------------------------------------------------------
+-- Section 5: Advanced Views
+-------------------------------------------------------------------------------
+
+-- §5.1: target moves world to a smaller bottom-right region
+pico.init(false); ]=] pico.init(true)
+pico.set.window { title="guide-05-01-01" }
+pico.output.draw.image('../../res/open.png',
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+pico.set.view { target = {'%', x=0.8, y=0.8, w=0.3, h=0.2} }
+pico.check("guide-05-01-01")
+
+-- §5.2: source crops a region of the world to a small target
+pico.set.window { title="guide-05-02-01" }
+pico.set.view {
+    source = {'%', x=0.5, y=0.5, w=0.4, h=0.4},
+}
+pico.check("guide-05-02-01")
+
+-- §5.3: clip restricts drawing to a small center region
+pico.init(false); pico.init(true)
+pico.set.window { title="guide-05-03-01" }
+pico.set.view { clip = {'%', x=0.5, y=0.5, w=0.25, h=0.25} }
+pico.output.draw.image('../../res/open.png',
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+pico.check("guide-05-03-01")
+
+-- §5.4.a: source crop -> 2x zoom
+pico.init(false); pico.init(true)
+pico.set.window { title="guide-05-04-01" }
+pico.output.draw.image('../../res/open.png',
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+pico.set.view { source = {'%', x=0.5, y=0.5, w=0.5, h=0.5} }
+pico.check("guide-05-04-01")
+
+-- §5.4.b: shift source offset -> scroll
+pico.set.window { title="guide-05-04-02" }
+pico.set.view { source = {'%', x=0.6, y=0.5, w=0.5, h=0.5} }
+pico.check("guide-05-04-02")
 
 pico.init(false)
