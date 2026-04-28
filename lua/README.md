@@ -43,14 +43,12 @@ The following example draws an `X` on screen gradually with instant feedback:
 
 ```lua
 pico.init(true)
-pico.set {
-    window = {
-        title = "Draws an X",        -- window title
-        dim   = {'!', w=160, h=160}, -- physical screen size
-    },
-    view = {
-        dim = {'!', w=16,  h=16},    -- logical screen size (10x10 pixel size)
-    }
+pico.set.window {
+    title = "Draws an X",        -- window title
+    dim   = {'!', w=160, h=160}, -- physical screen size
+}
+pico.set.view {
+    dim = {'!', w=16,  h=16},    -- logical screen size (10x10 pixel size)
 }
 pico.output.clear()
 for i = 0, 15 do

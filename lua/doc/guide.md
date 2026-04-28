@@ -390,14 +390,12 @@ dimensions:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set {
-    view = {
-        dim  = { '#', w=5, h=5 },
-        tile = { w=20, h=20 },
-    },
-    window = {
-        dim = { '#', w=40, h=40 },
-    },
+> pico.set.view {
+    tile = { w=20, h=20 },     -- tile size (20x20 physical)
+    dim  = { '#', w=5, h=5 },  -- world size in tiles (5x5 logical)
+  }
+> pico.set.window {
+    dim = { '#', w=40, h=40 }, -- window size (40x40 x 20x20 tiles)
   }
 > pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
 > pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }

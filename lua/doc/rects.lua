@@ -1,10 +1,8 @@
 pico.init(true)
 
-pico.set {
-    expert = true,
-    window = { dim={'!', w=200, h=200}, title="2x Rects" },
-    view   = { dim={'!', w=10,  h=10}  },
-}
+pico.set.expert(true)
+pico.set.window { dim={'!', w=200, h=200}, title="2x Rects" }
+pico.set.view   { dim={'!', w=10,  h=10}  }
 pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0xCC) }
 
 local k = {'!', x=4, y=4}        -- arrow-key pixel (centered)
