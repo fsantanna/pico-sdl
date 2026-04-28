@@ -157,7 +157,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
 
 Unlike most graphics libraries, `pico-lua` **centers** objects by default,
-which we will discuss in [#Anchors](#52-anchors).
+which we will discuss in [#Anchors](#4-positioning-modes--anchors).
 With the aid of the tick marks, we can see that the rectangle is actually
 centered at the given position.
 
@@ -441,7 +441,7 @@ window:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-01-01.png" width="200">
+<img src="../tst/asr/guide-05-00-01.png" width="200">
 </td></tr>
 </table>
 
@@ -458,7 +458,7 @@ The `source` property selects which region of the world is visible:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-02-01.png" width="200">
+<img src="../tst/asr/guide-05-00-02.png" width="200">
 </td></tr>
 </table>
 
@@ -478,14 +478,14 @@ sub-region of the world:
 > pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-03-01.png" width="200">
+<img src="../tst/asr/guide-05-00-03.png" width="200">
 </td></tr>
 </table>
 
 We restrict to a small region (`25%`) in the center of the world.
 Then, we draw the image centered, which is clipped to fit the specified area.
 
-### 5.4. Zoom & Scroll
+### 5.1. Zoom & Scroll
 
 When `source` is combined with the default full-window target, the selected
 region is stretched to fill the entire window:
@@ -499,7 +499,7 @@ region is stretched to fill the entire window:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-04-01.png" width="200">
+<img src="../tst/asr/guide-05-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -515,7 +515,7 @@ Now, applying an offset to current position creates a scrolling effect:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-04-02.png" width="200">
+<img src="../tst/asr/guide-05-01-02.png" width="200">
 </td></tr>
 </table>
 
