@@ -322,8 +322,8 @@ The positioning **mode** determines the unit used in world coordinates:
 - `'#'` - Tile: grid coordinates based on tile and world `w/h`
             (from `0` to `w/h`)
 
-The percentage mode `'%'` is the recommended default, since it is independent
-of world dimensions and adapts naturally to resizes.
+The percentage mode `'%'` is preferable, since it is independent of world
+dimensions and adapts naturally to resizes.
 For instance, `{ '%', x=0.5, y=0.5 }` always points to the center of the
 world, regardless of its size.
 
@@ -369,7 +369,7 @@ different anchors:
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-02-01.png" width="200">
+<img src="../tst/asr/guide-04-00-01.png" width="200">
 </td></tr>
 </table>
 
