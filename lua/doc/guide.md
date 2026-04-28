@@ -322,6 +322,11 @@ The positioning **mode** determines the unit used in world coordinates:
 - `'#'` - Tile: grid coordinates based on tile and world `w/h`
             (from `0` to `w/h`)
 
+The percentage mode `'%'` is the recommended default, since it is independent
+of world dimensions and adapts naturally to resizes.
+For instance, `{ '%', x=0.5, y=0.5 }` always points to the center of the
+world, regardless of its size.
+
 The mode is set at index `1` in tables representing positions, dimensions, and
 rectangles:
 
@@ -339,13 +344,14 @@ The positioning **anchor** determines the reference point **within** the shape:
 +-----------+
 ```
 
-The anchor is set at field `anchor` in tables representing positions:
-
-- `{ '%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='SW' }`
-
 When drawing, the anchor position is pinned to the given coordinate.
 As shown in the previous examples, by default, `pico-lua` uses the center
 anchor `'C'`.
+
+The anchor is set at field `anchor` in tables representing positions:
+
+- `{ '%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='SW' }`:
+    the rectangle's *southwest* corner pinned at center of the screen
 
 Let's draw a pixel and three rectangles, all at the same position, but using
 different anchors:
