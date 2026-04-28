@@ -482,13 +482,27 @@ sub-region of the world:
 </td></tr>
 </table>
 
-We restrict to a small region (`25%`) in the center of the world.
+We restrict drawing to a small region (`25%`) in the center of the world.
 Then, we draw the image centered, which is clipped to fit the specified area.
 
 ### 5.1. Zoom & Scroll
 
-When `source` is combined with the default full-window target, the selected
-region is stretched to fill the entire window:
+We can manipulate the `source` view property to implement not only zooming, as
+illustrated above, but also scrolling effects.
+
+Let's restart with a centered image:
+
+<table>
+<tr><td><pre>
+> pico.init(false) ; pico.init(true)
+> pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+</pre>
+</td><td>
+<img src="../tst/asr/guide-05-01-01.png" width="200">
+</td></tr>
+</table>
+
+Next, we crop the view in half (`w=h=0.5`) to get a `2x` zoom in:
 
 <table>
 <tr><td><pre>
@@ -499,25 +513,39 @@ region is stretched to fill the entire window:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-01-01.png" width="200">
-</td></tr>
-</table>
-
-Cropping the source to half (`w=0.5`,`h=0.5`) and starting from its center
-(`x=0.5`,`y=0.5`) results in a 2x zoom.
-
-Now, applying an offset to current position creates a scrolling effect:
-
-<table>
-<tr><td><pre>
-> pico.set.view {
-    source = { '%', x=0.6, y=0.5, w=0.5, h=0.5 },
-  }
-</pre>
-</td><td>
 <img src="../tst/asr/guide-05-01-02.png" width="200">
 </td></tr>
 </table>
 
-A positive `x=0.1` offset (from `0.5` to `0.6`) crops the left side of the
-source, which still targets the whole window, resulting in a left scroll.
+Likewise, when we double the source (`w=h=2`), we get a `1/2` zoom out:
+
+<table>
+<tr><td><pre>
+> pico.set.view {
+    source = { '%', x=0.5, y=0.5, w=2, h=2 },
+  }
+</pre>
+</td><td>
+<img src="../tst/asr/guide-05-01-03.png" width="200">
+</td></tr>
+</table>
+
+We can apply the same reasoning to create a scroll effect when we manipulate
+the source `x` and `y` fields:
+
+<table>
+<tr><td><pre>
+> pico.set.view {
+    source = { '%', x=0.8, y=0.2, w=2, h=2 },
+  }
+</pre>
+</td><td>
+<img src="../tst/asr/guide-05-01-04.png" width="200">
+</td></tr>
+</table>
+
+A positive `x=0.3` offset (from `0.5` to `0.8`) crops the left side of the
+source, which still targets the whole window, resulting in a scroll left.
+
+A negative `y=-0.3` offset (from `0.5` to `0.2`) crops the bottom of the
+source, resulting in a scroll down.

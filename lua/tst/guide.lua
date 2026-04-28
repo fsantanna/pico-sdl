@@ -169,17 +169,28 @@ pico.output.draw.image('../../res/open.png',
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 pico.check("guide-05-00-03")
 
--- §5.1.a: source crop -> 2x zoom
+-- §5.1.a: restart with centered image
 pico.init(false); pico.init(true)
 pico.set.window { title="guide-05-01-01" }
 pico.output.draw.image('../../res/open.png',
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-pico.set.view { source = {'%', x=0.5, y=0.5, w=0.5, h=0.5} }
 pico.check("guide-05-01-01")
 
--- §5.1.b: shift source offset -> scroll
+-- §5.1.b: source crop (w=h=0.5) -> 2x zoom in
 pico.set.window { title="guide-05-01-02" }
-pico.set.view { source = {'%', x=0.6, y=0.5, w=0.5, h=0.5} }
+pico.output.draw.image('../../res/open.png',
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+pico.set.view { source = {'%', x=0.5, y=0.5, w=0.5, h=0.5} }
 pico.check("guide-05-01-02")
+
+-- §5.1.c: source double (w=h=2) -> 1/2 zoom out
+pico.set.window { title="guide-05-01-03" }
+pico.set.view { source = {'%', x=0.5, y=0.5, w=2, h=2} }
+pico.check("guide-05-01-03")
+
+-- §5.1.d: shift source offset -> scroll
+pico.set.window { title="guide-05-01-04" }
+pico.set.view { source = {'%', x=0.8, y=0.2, w=2, h=2} }
+pico.check("guide-05-01-04")
 
 pico.init(false)
