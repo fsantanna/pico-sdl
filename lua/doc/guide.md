@@ -412,3 +412,119 @@ We then draw two rectangles using the tile mode `'#'`:
 - The first is centered at `(3,3)` occupying `1x1` tile (`20x20` pixels).
 - The second uses anchor `NE`, to properly occupy the top right of the screen
   with `2x1` tiles (`40x20` pixels).
+
+## 6. Advanced View
+
+The view controls how the logical world maps to the physical window:
+
+- `pico.set.window` controls the **physical** window
+- `pico.set.view` controls the **logical** world
+
+Next, we discuss some advanced properties for `pico.set.view`:
+
+| Property | Description             |
+|----------|-------------------------|
+| `target` | world to window mapping |
+| `source` | visible world region    |
+| `clip`   | world clipping region   |
+
+### 6.1. Target
+
+The `target` property controls where on the physical window the world is
+rendered:
+
+<table>
+<tr><td><pre>
+> pico.output.clear()
+> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.set.view {
+    target = { '%', x=0.66, y=0.66, w=0.4, h=0.3 },
+  }
+</pre>
+</td><td>
+<img src="img/guide-06-01-01.png" width="200">
+</td></tr>
+</table>
+
+The visible effect is to move the world to fit a smaller target window at the
+bottom-right of the screen, with a slight distortion, since the new `w/h`
+changed the aspect ratio.
+
+### 6.2. Source
+
+The `source` property selects which region of the logical world is visible:
+
+<table>
+<tr><td><pre>
+> pico.init(false) ; pico.init(true)
+> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.set.view {
+    source = { '%', x=0.5, y=0.6, w=0.3, h=0.3 },
+    target = { '%', x=0.5, y=0.5, w=0.3, h=0.3 },
+  }
+</pre>
+</td><td>
+<img src="img/guide-06-02-01.png" width="200">
+</td></tr>
+</table>
+
+We crop a small piece (`30%`) of the center-bottom of the world to target the
+center of the window, keeping the same aspect ratio.
+
+### 6.3. Clip
+
+The `clip` property restricts the effect of drawing operations to a sub-region
+of the world:
+
+<table>
+<tr><td><pre>
+> pico.init(false) ; pico.init(true)
+> pico.set.view {
+    clip = { '%', x=0.5, y=0.5, w=0.25, h=0.25 },
+  }
+> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+</pre>
+</td><td>
+<img src="img/guide-06-03-01.png" width="200">
+</td></tr>
+</table>
+
+We restrict to a small region (`25%`) in the center of the world.
+Then, we draw the image centered, which is clipped to fit the specified area.
+
+### 6.4. Zoom & Scroll
+
+When `source` is combined with the default full-window target, the selected
+region is stretched to fill the entire window:
+
+<table>
+<tr><td><pre>
+> pico.init(false) ; pico.init(true)
+> pico.output.draw.image("img/open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.set.view {
+    source = { '%', x=0.5, y=0.5, w=0.5, h=0.5 },
+  }
+</pre>
+</td><td>
+<img src="img/guide-06-04-01.png" width="200">
+</td></tr>
+</table>
+
+Cropping the source to half (`w=0.5`,`h=0.5`) and starting from its center
+(`x=0.5`,`y=0.5`) results in a 2x zoom.
+
+Now, applying an offset to current position creates a scrolling effect:
+
+<table>
+<tr><td><pre>
+> pico.set.view {
+    source = { '%', x=0.6, y=0.5, w=0.5, h=0.5 },
+  }
+</pre>
+</td><td>
+<img src="img/guide-06-04-02.png" width="200">
+</td></tr>
+</table>
+
+A positive `x=0.1` offset (from `0.5` to `0.6`) crops the left side of the
+source, which still targets the whole window, resulting in a left scroll.
