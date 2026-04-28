@@ -51,6 +51,7 @@ static struct { // exposed global state
     } expert;
     Pico_Layer* layer;
     struct {
+        Pico_Color   color;
         Pico_Abs_Dim dim;
         int          fs;
     } win;
@@ -280,8 +281,9 @@ void pico_init (int on) {
             .expert = {0, 0, -1, 0},
             .layer  = &G.root,
             .win    = {
-                .dim = PICO_DIM_PHY,
-                .fs  = 0,
+                .color = {0x77, 0x77, 0x77, 0xFF},
+                .dim   = PICO_DIM_PHY,
+                .fs    = 0,
             },
         };
 
@@ -535,11 +537,17 @@ Pico_Abs_Dim pico_get_view_tile (const char* layer) {
 void pico_get_window (Pico_Window* win) {
     _pico_guard();
     *win = (Pico_Window) {
+        .color = S.win.color,
         .dim   = S.win.dim,
         .fs    = S.win.fs,
         .show  = SDL_GetWindowFlags(G.win) & SDL_WINDOW_SHOWN,
         .title = SDL_GetWindowTitle(G.win),
     };
+}
+
+Pico_Color pico_get_window_color (void) {
+    _pico_guard();
+    return S.win.color;
 }
 
 Pico_Abs_Dim pico_get_window_dim (void) {
@@ -743,13 +751,20 @@ void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile) {
 
 void pico_set_window (Pico_Window win) {
     _pico_guard();
-    pico_set_window_title(win.title);
+    pico_set_window_color(win.color);
     pico_set_window_fs(win.fs);
     if (!win.fs) {
         Pico_Rel_Dim rel = {'!', {win.dim.w, win.dim.h}, NULL};
         pico_set_window_dim(&rel);
     }
     pico_set_window_show(win.show);
+    pico_set_window_title(win.title);
+}
+
+void pico_set_window_color (Pico_Color color) {
+    _pico_guard();
+    S.win.color = color;
+    _pico_output_present(0);
 }
 
 void pico_set_window_dim (Pico_Rel_Dim* dim) {
@@ -1506,7 +1521,10 @@ static void _pico_output_present (int force) {
     _layer_traverse(&G.root);
 
     SDL_SetRenderTarget(G.ren, NULL);
-    SDL_SetRenderDrawColor(G.ren, 0x77,0x77,0x77,0x77);
+    SDL_SetRenderDrawColor (
+        G.ren,
+        S.win.color.r, S.win.color.g, S.win.color.b, S.win.color.a
+    );
     SDL_RenderClear(G.ren);
 
     // Clip src/dst rectangles to their respective bounds

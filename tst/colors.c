@@ -3,7 +3,8 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Colors Test" });
+    pico_set_window_title("Colors Test");
+    pico_set_window_dim(&(Pico_Rel_Dim){ '!', {640,480}, NULL });
     pico_set_view_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
 
     Pico_Anchor C = PICO_ANCHOR_C;
@@ -245,6 +246,59 @@ int main (void) {
             "alpha", (Pico_Abs_Dim){3,1}, pixmap, &r
         );
         _pico_check("colors-07");
+    }
+
+    // window letterbox color: shrink dst to expose letterbox area
+    {
+        {
+            pico_set_show_color(NULL, (Pico_Color){0, 0, 0, 0xFF});
+            pico_set_view_dst (
+                NULL,
+                (Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE, NULL}
+            );
+        }
+        puts("window color default: gray {0x77,0x77,0x77,0xFF}");
+        {
+            Pico_Color c = pico_get_window_color();
+            assert(c.r==0x77 && c.g==0x77 && c.b==0x77 && c.a==0xFF);
+            pico_output_clear();
+            pico_set_draw_color(NULL, PICO_COLOR_WHITE);
+            pico_output_draw_rect (
+                &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, C, NULL}
+            );
+            _pico_check("colors-08");
+        }
+        puts("window color: red letterbox");
+        {
+            pico_set_window_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
+            Pico_Color c = pico_get_window_color();
+            assert(c.r==0xFF && c.g==0x00 && c.b==0x00 && c.a==0xFF);
+            pico_output_clear();
+            pico_output_draw_rect (
+                &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, C, NULL}
+            );
+            _pico_check("colors-09");
+        }
+        puts("window color: green via bulk Pico_Window");
+        {
+            Pico_Window w;
+            pico_get_window(&w);
+            w.color = (Pico_Color){0x00, 0xFF, 0x00, 0xFF};
+            pico_set_window(w);
+            Pico_Color c = pico_get_window_color();
+            assert(c.r==0x00 && c.g==0xFF && c.b==0x00 && c.a==0xFF);
+            pico_output_clear();
+            pico_output_draw_rect (
+                &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, C, NULL}
+            );
+            _pico_check("colors-10");
+        }
+        puts("window color: alpha preserved by storage");
+        {
+            pico_set_window_color((Pico_Color){0x00, 0x00, 0xFF, 0x80});
+            Pico_Color c = pico_get_window_color();
+            assert(c.a == 0x80);
+        }
     }
 
     pico_init(0);

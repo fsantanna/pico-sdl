@@ -130,6 +130,7 @@ typedef struct {
 } Pico_Layer_View;
 
 typedef struct {
+    Pico_Color   color;
     Pico_Abs_Dim dim;
     int          fs;
     int          show;
@@ -498,6 +499,7 @@ Pico_Abs_Dim  pico_get_view_tile (const char* layer);
 /// @param win output struct populated with window state
 /// @sa pico_set_window
 void         pico_get_window       (Pico_Window* win);
+Pico_Color   pico_get_window_color (void);
 Pico_Abs_Dim pico_get_window_dim   (void);
 int          pico_get_window_fs    (void);
 int          pico_get_window_show  (void);
@@ -572,6 +574,7 @@ void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile);
 /// @param win new window state
 /// @sa pico_get_window
 void pico_set_window       (Pico_Window win);
+void pico_set_window_color (Pico_Color color);
 void pico_set_window_dim   (Pico_Rel_Dim* dim);
 void pico_set_window_fs    (int fs);
 void pico_set_window_show  (int on);
