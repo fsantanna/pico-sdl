@@ -166,7 +166,7 @@ centered at the given position.
 Note that `pico-lua` retains both shapes on the screen.
 
 Other drawing operations include `pico.output.draw.line`,
-`pico.output.draw.polygon`, and `pico.output.draw.oval`.
+`pico.output.draw.poly`, and `pico.output.draw.oval`.
 
 ### 3.2. Colors
 
@@ -183,7 +183,7 @@ To clear the screen, we call `pico.output.clear`:
 
 Now the pixel and rectangle are gone.
 
-By default `pico-lua`, uses black to clear the screen and white to draw shapes.
+By default, `pico-lua` uses black to clear the screen and white to draw shapes.
 
 To pick different colors, we use `pico.set.show` and `pico.set.draw` passing
 the `color` attribute:
@@ -675,7 +675,7 @@ Finally, close the window (e.g., `ALT+F4`) to escape from the loop.
 
 ## 7. Layers
 
-Layers are independent views, in which you can draw shapes in separate, and
+Layers are independent views, in which you can draw shapes separately, and
 then compose them to form complex scenes.
 
 The main logical world is itself a layer, as well as images, texts, buffers,
@@ -726,7 +726,7 @@ Then, we compose the flag twice, with different arguments.
 
 ### 7.3. Flip & Rotate
 
-To flip and rotate a layers, we can use `pico.set.view` while targeting it.
+To flip and rotate layers, we can use `pico.set.show` while targeting them.
 
 First, let's rotate the flag and draw it at the top-right:
 
