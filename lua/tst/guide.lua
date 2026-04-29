@@ -246,24 +246,28 @@ pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
 pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 pico.check("guide-07-02-01")
 
--- §7.2.b: rotate flag, draw at top-right
+-- §7.2.b: rotate + flip flag, draw at top-right
 pico.set.window { title="guide-07-02-02" }
 pico.set.layer("flag")
-pico.set.show { rotate={angle=30, anchor='C'} }
+pico.set.show {
+    rotate = {angle=30, anchor='C'},
+    flip   = 'horizontal',
+}
 pico.set.layer()
 pico.output.clear()
 pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 pico.check("guide-07-02-02")
 
--- §7.2.c: reset rotation, flip horizontally, draw at bottom-left
+-- §7.2.c: dim flag with alpha (reset transforms), draw enlarged-centered
 pico.set.window { title="guide-07-02-03" }
 pico.set.layer("flag")
 pico.set.show {
     rotate = {angle=0},
-    flip   = 'horizontal',
+    flip   = 'none',
+    alpha  = 0x80,
 }
 pico.set.layer()
-pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
+pico.output.draw.layer("flag", {'%', x=0.5, y=0.5, w=0.6})
 pico.check("guide-07-02-03")
 
 -- §7.3: sub-layers cropping each stripe of the flag

@@ -704,14 +704,15 @@ At this point, nothing appears on the screen yet, since we did not update the
 main world view.
 
 We identify the layer as `"flag"` and then set it as the current drawing layer.
-Then, we paint the layer with the colors.
+Then, we paint inside the layer with the colors.
 
-Note that we pass `nil` as the first argument to `pico.layer.empty`, which
-represents its parent layer discussed in [#Hierarchy](#74-hierarchy).
+Note that the first argument to `pico.layer.empty` (`nil` in the example)
+represents the optional implicit parent layer to be discussed in
+[#Hierarchy](#74-hierarchy).
 
 ### 7.2. Compositing
 
-To composite layers, we use `pico.output.draw.layer` on a "parent" layer:
+To composite layers, we use `pico.output.draw.layer` on the current layer:
 
 <table>
 <tr><td><pre>
@@ -728,14 +729,15 @@ We first use `pico.set.layer()`, with no arguments, to target the world layer.
 Then, we compose the flag twice, with different arguments.
 
 We can also flip and rotate layers when compositing them, by setting their
-`pico.set.show` fields.
-
-First, let's rotate the flag and draw it at the top-right:
+`pico.set.show` fields:
 
 <table>
 <tr><td><pre>
 > pico.set.layer("flag")
-> pico.set.show { rotate={angle=30, anchor='C'} }
+> pico.set.show {
+    rotate = {angle=30, anchor='C'},
+    flip   = 'horizontal',
+  }
 > pico.set.layer()
 > pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 </pre>
@@ -746,27 +748,28 @@ First, let's rotate the flag and draw it at the top-right:
 
 The `rotate` table takes an `angle` in degrees and an `anchor` for the pivot
 point.
+The `flip` field receives `"horizontal"` to reverse the stripe order.
 
-Now, let's reset the rotation, flip horizontally, and draw the flag at the
-bottom-left:
+We can also dim layers by lowering their `alpha`:
 
 <table>
 <tr><td><pre>
 > pico.set.layer("flag")
 > pico.set.show {
     rotate = {angle=0},
-    flip = 'horizontal',
+    flip   = 'none',
+    alpha  = 0x80,
   }
 > pico.set.layer()
-> pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
+> pico.output.draw.layer("flag", {'%', x=0.5, y=0.5, w=0.6})
 </pre>
 </td><td>
 <img src="../tst/asr/guide-07-02-03.png" width="200">
 </td></tr>
 </table>
 
-The `flip` field receives `"horizontal"` to reverse the stripe order, which is
-visible in the rendered flag.
+The `alpha` field receives a value from `0` (fully transparent) to `0xFF`
+(fully opaque), modulating the layer's pixels when composited.
 
 ### 7.3. Sub-Layers
 
