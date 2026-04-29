@@ -844,6 +844,8 @@ static int l_get_video (lua_State* L) {
     lua_newtable(L);                        // T
 
     lua_newtable(L);                        // T | dim
+    lua_pushliteral(L, "!");
+    lua_rawseti(L, -2, 1);
     lua_pushinteger(L, vid.dim.w);
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, vid.dim.h);
@@ -867,6 +869,8 @@ static int l_get_view (lua_State* L) {
     lua_newtable(L);                    // T
 
     lua_newtable(L);                    // T | dim
+    lua_pushliteral(L, "!");
+    lua_rawseti(L, -2, 1);
     lua_pushinteger(L, view.dim.w);
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, view.dim.h);
@@ -898,7 +902,12 @@ static int l_get_window (lua_State* L) {
 
     lua_newtable(L);                    // T
 
+    L_push_color(L, win.color);         // T | color
+    lua_setfield(L, -2, "color");       // T
+
     lua_newtable(L);                    // T | dim
+    lua_pushliteral(L, "!");
+    lua_rawseti(L, -2, 1);
     lua_pushinteger(L, win.dim.w);
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, win.dim.h);
@@ -1060,26 +1069,24 @@ static int l_set_video (lua_State* L) {
 static int l_set_view (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
+    Pico_Rel_Dim*  xdim  = NULL;
+    Pico_Abs_Dim*  xtile = NULL;
     Pico_Rel_Rect* xdst  = NULL;
-    Pico_Rel_Dim*  xwld  = NULL;
     Pico_Rel_Rect* xsrc  = NULL;
     Pico_Rel_Rect* xclip = NULL;
 
-    lua_getfield(L, 1, "target");           // T | dst
-    if (!lua_isnil(L, -1)) {
-        xdst = C_rel_rect(L, lua_gettop(L));
-    }
-    lua_pop(L, 1);                          // T
-
     lua_getfield(L, 1, "dim");              // T | dim
     if (!lua_isnil(L, -1)) {
-        xwld = C_rel_dim(L, lua_gettop(L));
+        xdim = C_rel_dim(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
 
-    lua_getfield(L, 1, "source");           // T | src
+    Pico_Abs_Dim tile;
+    lua_getfield(L, 1, "tile");             // T | tile
     if (!lua_isnil(L, -1)) {
-        xsrc = C_rel_rect(L, lua_gettop(L));
+        tile.w = C_checkfieldnum(L, lua_gettop(L), "w");
+        tile.h = C_checkfieldnum(L, lua_gettop(L), "h");
+        xtile = &tile;
     }
     lua_pop(L, 1);                          // T
 
@@ -1089,18 +1096,20 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    Pico_Abs_Dim* xtile = NULL;
-    Pico_Abs_Dim tile_dim;
-    lua_getfield(L, 1, "tile");             // T | tile
+    lua_getfield(L, 1, "target");           // T | dst
     if (!lua_isnil(L, -1)) {
-        tile_dim.w = C_checkfieldnum(L, lua_gettop(L), "w");
-        tile_dim.h = C_checkfieldnum(L, lua_gettop(L), "h");
-        xtile = &tile_dim;
+        xdst = C_rel_rect(L, lua_gettop(L));
+    }
+    lua_pop(L, 1);                          // T
+
+    lua_getfield(L, 1, "source");           // T | src
+    if (!lua_isnil(L, -1)) {
+        xsrc = C_rel_rect(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
 
     if (xtile != NULL) { pico_set_view_tile(NULL, *xtile); }
-    if (xwld  != NULL) { pico_set_view_dim (NULL, xwld);   }
+    if (xdim  != NULL) { pico_set_view_dim (NULL, xdim);   }
     if (xclip != NULL) { pico_set_view_clip(NULL, *xclip); }
     if (xdst  != NULL) { pico_set_view_dst (NULL, *xdst);  }
     if (xsrc  != NULL) { pico_set_view_src (NULL, *xsrc);  }
@@ -1110,10 +1119,19 @@ static int l_set_view (lua_State* L) {
 static int l_set_window (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
+    Pico_Color*   xcolor = NULL;
     Pico_Rel_Dim* xdim   = NULL;
     int           xfs    = -1;
     int           xshow  = -1;
     const char*   xtitle = NULL;
+
+    lua_getfield(L, 1, "color");            // T | color
+    Pico_Color color;
+    if (!lua_isnil(L, -1)) {
+        color = C_color_tis(L, lua_gettop(L));
+        xcolor = &color;
+    }
+    lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "dim");              // T | dim
     if (!lua_isnil(L, -1)) {
@@ -1139,10 +1157,11 @@ static int l_set_window (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    if (xtitle != NULL) { pico_set_window_title(xtitle); }
-    if (xfs    != -1)   { pico_set_window_fs   (xfs);    }
-    if (xdim   != NULL) { pico_set_window_dim  (xdim);   }
-    if (xshow  != -1)   { pico_set_window_show (xshow);  }
+    if (xcolor != NULL) { pico_set_window_color(*xcolor); }
+    if (xdim   != NULL) { pico_set_window_dim  (xdim);    }
+    if (xfs    != -1)   { pico_set_window_fs   (xfs);     }
+    if (xshow  != -1)   { pico_set_window_show (xshow);   }
+    if (xtitle != NULL) { pico_set_window_title(xtitle);  }
     return 0;
 }
 

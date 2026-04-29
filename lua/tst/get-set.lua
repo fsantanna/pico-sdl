@@ -81,5 +81,29 @@ do
     }
 end
 
+-- window roundtrip: get -> set -> get must be idempotent
+print("window roundtrip")
+do
+    pico.set.window { color={'!', r=0x12, g=0x34, b=0x56, a=0x78} }
+    local w1 = pico.get.window()
+    pico.set.window(w1)
+    local w2 = pico.get.window()
+    assert(w2.dim.w   == w1.dim.w   and w2.dim.h == w1.dim.h)
+    assert(w2.color.r == w1.color.r and w2.color.g == w1.color.g)
+    assert(w2.color.b == w1.color.b and w2.color.a == w1.color.a)
+end
+
+-- view roundtrip: get -> set -> get must be idempotent
+print("view roundtrip")
+do
+    local v1 = pico.get.view()
+    pico.set.view(v1)
+    local v2 = pico.get.view()
+    assert(v2.dim.w == v1.dim.w and v2.dim.h == v1.dim.h)
+    assert(v2.target[1] == v1.target[1])
+    assert(v2.source[1] == v1.source[1])
+    assert(v2.clip[1]   == v1.clip[1])
+end
+
 print("OK")
 pico.init(false)
