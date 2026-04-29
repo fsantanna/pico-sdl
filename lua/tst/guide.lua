@@ -239,24 +239,24 @@ pico.output.draw.rect { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' }
 pico.set.draw { color={ r=0xCE, g=0x11, b=0x26 } }
 pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
 
--- §7.2: composite flag twice on the world
+-- §7.2.a: composite flag twice on the world
 pico.set.window { title="guide-07-02-01" }
 pico.set.layer()
 pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
 pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 pico.check("guide-07-02-01")
 
--- §7.3.a: rotate flag, draw at top-right
-pico.set.window { title="guide-07-03-01" }
+-- §7.2.b: rotate flag, draw at top-right
+pico.set.window { title="guide-07-02-02" }
 pico.set.layer("flag")
 pico.set.show { rotate={angle=30, anchor='C'} }
 pico.set.layer()
 pico.output.clear()
 pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
-pico.check("guide-07-03-01")
+pico.check("guide-07-02-02")
 
--- §7.3.b: reset rotation, flip horizontally, draw at bottom-left
-pico.set.window { title="guide-07-03-02" }
+-- §7.2.c: reset rotation, flip horizontally, draw at bottom-left
+pico.set.window { title="guide-07-02-03" }
 pico.set.layer("flag")
 pico.set.show {
     rotate = {angle=0},
@@ -264,10 +264,10 @@ pico.set.show {
 }
 pico.set.layer()
 pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
-pico.check("guide-07-03-02")
+pico.check("guide-07-02-03")
 
--- §7.4: sub-layers cropping each stripe of the flag
-pico.set.window { title="guide-07-04-01" }
+-- §7.3: sub-layers cropping each stripe of the flag
+pico.set.window { title="guide-07-03-01" }
 pico.layer.sub(nil, "blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15})
 pico.layer.sub(nil, "yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15})
 pico.layer.sub(nil, "red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15})
@@ -275,6 +275,6 @@ pico.output.clear()
 pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
 pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
 pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
-pico.check("guide-07-04-01")
+pico.check("guide-07-03-01")
 
 pico.init(false)

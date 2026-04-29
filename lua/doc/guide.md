@@ -727,9 +727,8 @@ To composite layers, we use `pico.output.draw.layer` on a "parent" layer:
 We first use `pico.set.layer()`, with no arguments, to target the world layer.
 Then, we compose the flag twice, with different arguments.
 
-### 7.3. Flip & Rotate
-
-To flip and rotate layers, we can use `pico.set.show` while targeting them.
+We can also flip and rotate layers when compositing them, by setting their
+`pico.set.show` fields.
 
 First, let's rotate the flag and draw it at the top-right:
 
@@ -741,7 +740,7 @@ First, let's rotate the flag and draw it at the top-right:
 > pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-07-03-01.png" width="200">
+<img src="../tst/asr/guide-07-02-02.png" width="200">
 </td></tr>
 </table>
 
@@ -762,14 +761,14 @@ bottom-left:
 > pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-07-03-02.png" width="200">
+<img src="../tst/asr/guide-07-02-03.png" width="200">
 </td></tr>
 </table>
 
 The `flip` field receives `"horizontal"` to reverse the stripe order, which is
 visible in the rendered flag.
 
-### 7.4. Sub-Layers
+### 7.3. Sub-Layers
 
 A sub-layer points to a region within a parent layer, with both sharing the
 actual pixel contents.
@@ -792,7 +791,7 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 > pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-07-04-01.png" width="200">
+<img src="../tst/asr/guide-07-03-01.png" width="200">
 </td></tr>
 </table>
 
