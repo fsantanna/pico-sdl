@@ -6,6 +6,7 @@
 4.  [Positioning: Modes & Anchors](#4-positioning-modes--anchors)
 5.  [Advanced Views](#5-advanced-views)
 6.  [Events](#6-events)
+8.  [Layers](#8-layers)
 
 ## 1. Introduction
 
@@ -671,3 +672,133 @@ events internally.
 
 Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
 Finally, close the window (e.g., `ALT+F4`) to escape from the loop.
+
+## 8. Layers
+
+Layers are independent views, in which you can draw shapes in separate, and
+then compose them to form complex scenes.
+
+The main logical world is itself a layer, as well as images, texts, buffers,
+and videos.
+Therefore, all discussed [#view properties](#6-advanced-view) also apply to
+layers.
+
+### 8.1. Creating Layers
+
+We use `pico.layer.empty` to create a fresh layer, and `pico.set.layer` to
+redirect further drawing operations to it:
+
+```lua
+> pico.init(false) ; pico.init(true)
+> pico.layer.empty("flag", {w=300, h=200})
+> pico.set.layer("flag")
+> pico.set.draw { color={ r=0x00, g=0x2B, b=0x7F } }
+  pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
+  pico.set.draw { color={ r=0xFC, g=0xD1, b=0x16 } }
+  pico.output.draw.rect { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' }
+  pico.set.draw { color={ r=0xCE, g=0x11, b=0x26 } }
+  pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
+```
+
+We identify the layer as `"flag"` and then set it as the current drawing layer.
+Then, we paint the layer with the colors.
+
+At this point, nothing appears on the screen yet, since we did not update the
+main world view.
+
+### 8.2. Compositing
+
+To composite layers, we use `pico.output.draw.layer` on a "parent" layer:
+
+<table>
+<tr><td><pre>
+> pico.set.layer()      -- back to main world
+> pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
+> pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
+</pre>
+</td><td>
+<img src="img/guide-08-02-01.png" width="200">
+</td></tr>
+</table>
+
+We first use `pico.set.layer()`, with no arguments, to target the world layer.
+Then, we clear it and compose the flag twice, with different arguments.
+
+### 8.3. Flip & Rotate
+
+To flip and rotate a layers, we can use `pico.set.view` while targeting it.
+
+First, let's rotate the flag and draw it at the top-right:
+
+<table>
+<tr><td><pre>
+> pico.set.layer("flag")
+> pico.set.show { rotate={angle=30, anchor='C'} }
+> pico.set.layer()
+> pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
+</pre>
+</td><td>
+<img src="img/guide-08-03-01.png" width="200">
+</td></tr>
+</table>
+
+The `rotate` table takes an `angle` in degrees and an `anchor` for the pivot
+point.
+
+Now, let's reset the rotation, flip horizontally, and draw the flag at the
+bottom-left:
+
+<table>
+<tr><td><pre>
+> pico.set.layer("flag")
+> pico.set.show {
+    rotate = {angle=0},
+    flip = 'horizontal',
+  }
+> pico.set.layer()
+> pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
+</pre>
+</td><td>
+<img src="img/guide-08-03-02.png" width="200">
+</td></tr>
+</table>
+
+The `flip` field receives `"horizontal"` to reverse the stripe order, which can
+be stated visually.
+
+### 8.4. Sub-Layers
+
+A sub-layer points to a region within a parent layer, with both sharing the
+actual pixel contents.
+
+Sub-layers are useful to isolate individual frames from sprite sheets in games,
+which we will discuss in [#Animations](#93-animations).
+
+We call `pico.layer.sub` to crop a region of a parent layer.
+
+In the next example, we want to isolate each stripe of the flag as a sub layer:
+
+<table>
+<tr><td><pre>
+> pico.layer.sub("blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15})
+> pico.layer.sub("yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15})
+> pico.layer.sub("red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15})
+> pico.output.clear()
+> pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
+> pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
+> pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
+</pre>
+</td><td>
+<img src="img/guide-08-04-01.png" width="200">
+</td></tr>
+</table>
+
+Each sub-layer crops a square from each stripe of the flag (blue, yellow, red),
+and then draws each on the screen.
+
+The first parameter to `pico.layer.sub` identifies the sub-layer for further
+operations.
+Drawing a sub-layer works exactly like drawing a regular layer with
+`pico.output.draw.layer`.
+
+
