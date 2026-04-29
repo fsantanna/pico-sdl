@@ -6,7 +6,7 @@
 4.  [Positioning: Modes & Anchors](#4-positioning-modes--anchors)
 5.  [Advanced Views](#5-advanced-views)
 6.  [Events](#6-events)
-8.  [Layers](#8-layers)
+7.  [Layers](#7-layers)
 
 ## 1. Introduction
 
@@ -17,7 +17,7 @@ It is designed around 4 groups of APIs:
 - `pico.input.*`: handle events, such as time passing and key presses.
 - `pico.get.*` and `pico.set.*`: manage internal library state,
     such as current drawing color, and window dimensions.
-- `pico.layer.*`: structure visuals in hierarquical scenes.
+- `pico.layer.*`: structure visuals in hierarchical scenes.
 
 This guide is an interactive walk-through of `pico-lua`.
 It is not meant to be exhaustive.
@@ -312,7 +312,7 @@ caching.
 
 Internally, `pico-lua` caches texts, images and pixmaps such that they are
 reused on subsequent redraws.
-We will detail caching in [#Layers](#8-layers).
+We will detail caching in [#Layers](#7-layers).
 
 ## 4. Positioning: Modes & Anchors
 
@@ -673,17 +673,17 @@ events internally.
 Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
 Finally, close the window (e.g., `ALT+F4`) to escape from the loop.
 
-## 8. Layers
+## 7. Layers
 
 Layers are independent views, in which you can draw shapes in separate, and
 then compose them to form complex scenes.
 
 The main logical world is itself a layer, as well as images, texts, buffers,
 and videos.
-Therefore, all discussed [#view properties](#6-advanced-view) also apply to
+Therefore, all discussed [#view properties](#5-advanced-views) also apply to
 layers.
 
-### 8.1. Creating Layers
+### 7.1. Creating Layers
 
 We use `pico.layer.empty` to create a fresh layer, and `pico.set.layer` to
 redirect further drawing operations to it:
@@ -706,7 +706,7 @@ Then, we paint the layer with the colors.
 At this point, nothing appears on the screen yet, since we did not update the
 main world view.
 
-### 8.2. Compositing
+### 7.2. Compositing
 
 To composite layers, we use `pico.output.draw.layer` on a "parent" layer:
 
@@ -717,14 +717,14 @@ To composite layers, we use `pico.output.draw.layer` on a "parent" layer:
 > pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 </pre>
 </td><td>
-<img src="img/guide-08-02-01.png" width="200">
+<img src="../tst/asr/guide-07-02-01.png" width="200">
 </td></tr>
 </table>
 
 We first use `pico.set.layer()`, with no arguments, to target the world layer.
-Then, we clear it and compose the flag twice, with different arguments.
+Then, we compose the flag twice, with different arguments.
 
-### 8.3. Flip & Rotate
+### 7.3. Flip & Rotate
 
 To flip and rotate a layers, we can use `pico.set.view` while targeting it.
 
@@ -738,7 +738,7 @@ First, let's rotate the flag and draw it at the top-right:
 > pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 </pre>
 </td><td>
-<img src="img/guide-08-03-01.png" width="200">
+<img src="../tst/asr/guide-07-03-01.png" width="200">
 </td></tr>
 </table>
 
@@ -759,14 +759,14 @@ bottom-left:
 > pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
 </pre>
 </td><td>
-<img src="img/guide-08-03-02.png" width="200">
+<img src="../tst/asr/guide-07-03-02.png" width="200">
 </td></tr>
 </table>
 
-The `flip` field receives `"horizontal"` to reverse the stripe order, which can
-be stated visually.
+The `flip` field receives `"horizontal"` to reverse the stripe order, which is
+visible in the rendered flag.
 
-### 8.4. Sub-Layers
+### 7.4. Sub-Layers
 
 A sub-layer points to a region within a parent layer, with both sharing the
 actual pixel contents.
@@ -789,7 +789,7 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 > pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
 </pre>
 </td><td>
-<img src="img/guide-08-04-01.png" width="200">
+<img src="../tst/asr/guide-07-04-01.png" width="200">
 </td></tr>
 </table>
 
