@@ -690,7 +690,7 @@ redirect further drawing operations to it:
 
 ```lua
 > pico.init(false) ; pico.init(true)
-> pico.layer.empty("flag", {w=300, h=200})
+> pico.layer.empty(nil, "flag", {w=300, h=200})
 > pico.set.layer("flag")
 > pico.set.draw { color={ r=0x00, g=0x2B, b=0x7F } }
   pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
@@ -780,9 +780,9 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 
 <table>
 <tr><td><pre>
-> pico.layer.sub("blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15})
-> pico.layer.sub("yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15})
-> pico.layer.sub("red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15})
+> pico.layer.sub(nil, "blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15})
+> pico.layer.sub(nil, "yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15})
+> pico.layer.sub(nil, "red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15})
 > pico.output.clear()
 > pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
 > pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
