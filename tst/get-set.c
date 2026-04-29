@@ -110,6 +110,37 @@ int main (void) {
         });
     }
 
+    // window roundtrip: get -> set -> get must be idempotent
+    puts("window roundtrip");
+    {
+        pico_set_window_color((Pico_Color){0x12, 0x34, 0x56, 0x78});
+        Pico_Window w1;
+        pico_get_window(&w1);
+        pico_set_window(w1);
+        Pico_Window w2;
+        pico_get_window(&w2);
+        assert(w2.dim.w   == w1.dim.w   && w2.dim.h == w1.dim.h);
+        assert(w2.fs      == w1.fs);
+        assert(w2.color.r == w1.color.r);
+        assert(w2.color.g == w1.color.g);
+        assert(w2.color.b == w1.color.b);
+        assert(w2.color.a == w1.color.a);
+    }
+
+    // view roundtrip: get -> set -> get must be idempotent
+    puts("view roundtrip");
+    {
+        Pico_Layer_View v1;
+        pico_get_view(NULL, &v1);
+        pico_set_view(NULL, v1);
+        Pico_Layer_View v2;
+        pico_get_view(NULL, &v2);
+        assert(v2.dim.w == v1.dim.w && v2.dim.h == v1.dim.h);
+        assert(v2.dst.mode == v1.dst.mode);
+        assert(v2.src.mode == v1.src.mode);
+        assert(v2.clip.mode == v1.clip.mode);
+    }
+
     puts("OK");
     pico_init(0);
     return 0;

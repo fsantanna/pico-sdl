@@ -53,9 +53,17 @@ All tasks done. All C and Lua tests pass. Baselines generated and
 committed. Affected pre-existing visual baselines (`view-target`,
 `keep`, `layer-hier` etc.) regenerated for opaque-`0xFF` letterbox.
 
-## Known follow-up (out of scope)
+## Follow-up: bulk roundtrip fix
 
-`pico.set.window(pico.get.window())` roundtrip is broken in Lua: the
-get-side emits `dim={w,h}` without `[1]` mode, but `C_rel_dim`
-requires it (`C_mode(asr=1)`). Affects all bulk roundtrips — not
-specific to window-color. Worth a separate ticket.
+`l_set_window` and `l_set_view` previously parsed `dim` via
+`C_rel_dim` (requires `[1]` mode), causing `pico.set.x(pico.get.x())`
+to error with "invalid mode at index 1".
+
+Fixed by mirroring C bulk semantics: parse `dim` as `Pico_Abs_Dim`
+(direct `w`/`h` extraction, no mode); construct `Pico_Rel_Dim{'!', ...}`
+internally before calling the per-field setter — same pattern used
+by C `pico_set_window` / `pico_set_view`.
+
+Tests (C + Lua) appended to `tst/get-set.c` and `lua/tst/get-set.lua`
+under `window roundtrip` and `view roundtrip`. C always passed; Lua
+now passes after the fix.
