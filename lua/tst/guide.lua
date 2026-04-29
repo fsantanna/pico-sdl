@@ -218,10 +218,63 @@ end
 pico.check("guide-06-01-02")
 
 -- §6.3: image (pico.input.loop omitted; would block tests)
-pico.init(false); pico.init(true)
+pico.output.clear()
 pico.set.window { title="guide-06-03-01" }
 pico.output.draw.image('../../res/open.png',
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 pico.check("guide-06-03-01")
+
+-------------------------------------------------------------------------------
+-- Section 7: Layers
+-------------------------------------------------------------------------------
+
+-- §7.1: create the "flag" layer (no check; nothing on screen yet)
+pico.output.clear()
+pico.layer.empty(nil, "flag", {w=300, h=200})
+pico.set.layer("flag")
+pico.set.draw { color={ r=0x00, g=0x2B, b=0x7F } }
+pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
+pico.set.draw { color={ r=0xFC, g=0xD1, b=0x16 } }
+pico.output.draw.rect { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' }
+pico.set.draw { color={ r=0xCE, g=0x11, b=0x26 } }
+pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
+
+-- §7.2: composite flag twice on the world
+pico.set.window { title="guide-07-02-01" }
+pico.set.layer()
+pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
+pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
+pico.check("guide-07-02-01")
+
+-- §7.3.a: rotate flag, draw at top-right
+pico.set.window { title="guide-07-03-01" }
+pico.set.layer("flag")
+pico.set.show { rotate={angle=30, anchor='C'} }
+pico.set.layer()
+pico.output.clear()
+pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
+pico.check("guide-07-03-01")
+
+-- §7.3.b: reset rotation, flip horizontally, draw at bottom-left
+pico.set.window { title="guide-07-03-02" }
+pico.set.layer("flag")
+pico.set.show {
+    rotate = {angle=0},
+    flip   = 'horizontal',
+}
+pico.set.layer()
+pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
+pico.check("guide-07-03-02")
+
+-- §7.4: sub-layers cropping each stripe of the flag
+pico.set.window { title="guide-07-04-01" }
+pico.layer.sub(nil, "blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15})
+pico.layer.sub(nil, "yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15})
+pico.layer.sub(nil, "red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15})
+pico.output.clear()
+pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
+pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
+pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
+pico.check("guide-07-04-01")
 
 pico.init(false)

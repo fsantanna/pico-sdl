@@ -658,7 +658,7 @@ Let's draw a centered image and use the key bindings to explore it:
 
 <table>
 <tr><td><pre>
-> pico.init(false) ; pico.init(true)
+> pico.output.clear()
 > pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.input.loop()
 </pre>
@@ -689,7 +689,7 @@ We use `pico.layer.empty` to create a fresh layer, and `pico.set.layer` to
 redirect further drawing operations to it:
 
 ```lua
-> pico.init(false) ; pico.init(true)
+> pico.output.clear()
 > pico.layer.empty(nil, "flag", {w=300, h=200})
 > pico.set.layer("flag")
 > pico.set.draw { color={ r=0x00, g=0x2B, b=0x7F } }
