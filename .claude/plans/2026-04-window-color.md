@@ -29,11 +29,11 @@ property used for the area outside `root.tex` (letterbox/border).
 - [x] `lua/` bindings
     - [x] `l_get_window`: emit `color` field via `L_push_color`
     - [x] `l_set_window`: accept `color` (nil-aware) via `C_color_tis`
-- [x] tests (C, written; need impl + asr/ baselines)
-    - [x] appended to `tst/colors.c` as `colors-08/09/10` + default assertion
-    - [x] `lua/tst/colors.lua` appended `colors-09/10/11` + alpha-storage assert
-    - [x] `tst/asr/colors-08..10.png` generated (user)
-    - [ ] generate `lua/tst/asr/colors-09..11.png` after lua build
+- [x] tests (all written, all baselines generated, all pass)
+    - [x] appended to `tst/colors.c` as `colors-08/09/10` + default + alpha-storage assertions
+    - [x] `lua/tst/colors.lua` appended `colors-08/09/10` + alpha-storage assert
+    - [x] `tst/asr/colors-08..10.png` generated
+    - [x] `lua/tst/asr/colors-08..10.png` generated
 - [x] `valgrind.supp`
     - [x] updated `src:pico.c:244` -> `src:pico.c:245`
 
@@ -47,21 +47,15 @@ property used for the area outside `root.tex` (letterbox/border).
 - **Naming**: `pico_get/set_window_color` (consistent with existing
   `draw.color` / `show.color`).
 
-## Baselines to regenerate (after impl)
+## Status: complete
 
-Existing visual tests render with the old alpha-`0x77` blended gray;
-the new opaque `0xFF` will differ in the letterbox area:
+All tasks done. All C and Lua tests pass. Baselines generated and
+committed. Affected pre-existing visual baselines (`view-target`,
+`keep`, `layer-hier` etc.) regenerated for opaque-`0xFF` letterbox.
 
-- `tst/asr/view-target-01.png`
-- `tst/asr/view-target-02.png`
-- `tst/asr/view-target-04.png`
-- `tst/asr/keep-*.png` (any with shrunk dst)
-- `tst/asr/layer-hier-*.png` (any with shrunk dst)
+## Known follow-up (out of scope)
 
-New baselines to generate:
-
-- `tst/asr/colors-08.png` (default gray)
-- `tst/asr/colors-09.png` (red letterbox)
-- `tst/asr/colors-10.png` (green letterbox via bulk)
-
-Run `make gen T=<app>` for each, manually verify, then commit.
+`pico.set.window(pico.get.window())` roundtrip is broken in Lua: the
+get-side emits `dim={w,h}` without `[1]` mode, but `C_rel_dim`
+requires it (`C_mode(asr=1)`). Affects all bulk roundtrips — not
+specific to window-color. Worth a separate ticket.
