@@ -700,11 +700,14 @@ redirect further drawing operations to it:
   pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
 ```
 
+At this point, nothing appears on the screen yet, since we did not update the
+main world view.
+
 We identify the layer as `"flag"` and then set it as the current drawing layer.
 Then, we paint the layer with the colors.
 
-At this point, nothing appears on the screen yet, since we did not update the
-main world view.
+Note that we pass `nil` as the first argument to `pico.layer.empty`, which
+represents its parent layer discussed in [#Hierarchy](#74-hierarchy).
 
 ### 7.2. Compositing
 
