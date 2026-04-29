@@ -193,4 +193,35 @@ pico.set.window { title="guide-05-01-04" }
 pico.set.view { source = {'%', x=0.8, y=0.2, w=2, h=2} }
 pico.check("guide-05-01-04")
 
+-------------------------------------------------------------------------------
+-- Section 6: Events
+-------------------------------------------------------------------------------
+
+-- §6.1.a: 3 pixels at distinct horizontal positions (delays omitted in tests)
+pico.init(false); pico.init(true)
+pico.set.window { title="guide-06-01-01" }
+pico.output.draw.pixel { '%', x=0.25, y=0.5 }
+pico.output.draw.pixel { '%', x=0.50, y=0.5 }
+pico.output.draw.pixel { '%', x=0.75, y=0.5 }
+pico.check("guide-06-01-01")
+
+-- §6.1.b: circle drawn pixel-by-pixel
+pico.output.clear()
+pico.set.window { title="guide-06-01-02" }
+for i=1, 400 do
+    local rad = i * math.pi / 180
+    pico.output.draw.pixel { '%',
+        x = 0.5 + 0.3*math.cos(rad),
+        y = 0.5 + 0.3*math.sin(rad),
+    }
+end
+pico.check("guide-06-01-02")
+
+-- §6.3: image (pico.input.loop omitted; would block tests)
+pico.init(false); pico.init(true)
+pico.set.window { title="guide-06-03-01" }
+pico.output.draw.image('../../res/open.png',
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+pico.check("guide-06-03-01")
+
 pico.init(false)

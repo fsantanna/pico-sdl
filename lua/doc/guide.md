@@ -5,7 +5,7 @@
 3.  [Basic Drawing](#3-basic-drawing)
 4.  [Positioning: Modes & Anchors](#4-positioning-modes--anchors)
 5.  [Advanced Views](#5-advanced-views)
-7.  [Events](#7-events)
+6.  [Events](#6-events)
 
 ## 1. Introduction
 
@@ -551,26 +551,26 @@ source, which still targets the whole window, resulting in a scroll left.
 A negative `y=-0.3` offset (from `0.5` to `0.2`) crops the bottom of the
 source, resulting in a scroll down.
 
-## 7. Events
+## 6. Events
 
 In addition to output and drawing operations, `pico-lua` also provides
 functions to handle time and user input.
 
-### 7.1. Delay
+### 6.1. Delay
 
 A call to `pico.input.delay(ms)` pauses execution for the specified time:
 
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.output.draw.pixel { '!', x=25, y=50 } -- copy/paste next lines all at once
+> pico.output.draw.pixel { '%', x=0.25, y=0.5 } -- copy/paste next lines all at once
   pico.input.delay(1000)
-  pico.output.draw.pixel { '!', x=50, y=50 }
+  pico.output.draw.pixel { '%', x=0.50, y=0.5 }
   pico.input.delay(1000)
-  pico.output.draw.pixel { '!', x=75, y=50 }
+  pico.output.draw.pixel { '%', x=0.75, y=0.5 }
 </pre>
 </td><td>
-<img src="img/guide-07-01-01.png" width="200">
+<img src="../tst/asr/guide-06-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -586,21 +586,21 @@ Here, we draw a circle pixel by pixel:
 > pico.output.clear()
 > for i=1, 400 do
     local rad = i * math.pi / 180
-    pico.output.draw.pixel { '!',
-      x = 50 + 30*math.cos(rad),
-      y = 50 + 30*math.sin(rad),
+    pico.output.draw.pixel { '%',
+      x = 0.5 + 0.3*math.cos(rad),
+      y = 0.5 + 0.3*math.sin(rad),
     }
     pico.input.delay(10)
   end
 </pre>
 </td><td>
-<img src="img/guide-07-01-02.png" width="200">
+<img src="../tst/asr/guide-06-01-02.png" width="200">
 </td></tr>
 </table>
 
 On each step, we draw a single pixel and delay execution for a short period.
 
-### 7.2. Event
+### 6.2. Event
 
 To create interactive applications, we use `pico.input.event` to wait for input
 events.
@@ -645,7 +645,7 @@ When a timeout expires without an event, `nil` is returned:
 > print(e2) -- nil, after 5000 if no keys pressed
 ```
 
-### 7.3. Default Key Bindings
+### 6.3. Default Key Bindings
 
 By default, `pico-lua` provides key bindings to zoom and scroll the current
 view:
@@ -658,14 +658,11 @@ Let's draw a centered image and use the key bindings to explore it:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.output.draw.image (
-    "img/open.png",
-    {'%', x=0.5, y=0.5, w=0.5, h=0.5}
-  )
+> pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.input.loop()
 </pre>
 </td><td>
-<img src="img/guide-07-03-01.png" width="200">
+<img src="../tst/asr/guide-06-03-01.png" width="200">
 </td></tr>
 </table>
 
