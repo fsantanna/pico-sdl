@@ -490,11 +490,13 @@ Then, we draw the image centered, which is clipped to fit the specified area.
 We can manipulate the `source` view property to implement not only zooming, as
 illustrated above, but also scrolling effects.
 
-Let's restart with a centered image:
+Let's restart with a centered image over a black window background matching the
+world black background when we zoom out:
 
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
+> pico.set.window { color='black' } -- (typically grey to distinguish from world)
 > pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
@@ -506,8 +508,6 @@ Next, we crop the view in half (`w=h=0.5`) to get a `2x` zoom in:
 
 <table>
 <tr><td><pre>
-> pico.init(false) ; pico.init(true)
-> pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.set.view {
     source = { '%', x=0.5, y=0.5, w=0.5, h=0.5 },
   }

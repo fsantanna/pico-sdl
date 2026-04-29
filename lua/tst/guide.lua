@@ -169,9 +169,9 @@ pico.output.draw.image('../../res/open.png',
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 pico.check("guide-05-00-03")
 
--- §5.1.a: restart with centered image
+-- §5.1.a: restart with centered image and black window background
 pico.init(false); pico.init(true)
-pico.set.window { title="guide-05-01-01" }
+pico.set.window { title="guide-05-01-01", color='black' }
 pico.output.draw.image('../../res/open.png',
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 pico.check("guide-05-01-01")
