@@ -55,15 +55,43 @@ committed. Affected pre-existing visual baselines (`view-target`,
 
 ## Follow-up: bulk roundtrip fix
 
-`l_set_window` and `l_set_view` previously parsed `dim` via
-`C_rel_dim` (requires `[1]` mode), causing `pico.set.x(pico.get.x())`
-to error with "invalid mode at index 1".
+### Problem
 
-Fixed by mirroring C bulk semantics: parse `dim` as `Pico_Abs_Dim`
-(direct `w`/`h` extraction, no mode); construct `Pico_Rel_Dim{'!', ...}`
-internally before calling the per-field setter — same pattern used
-by C `pico_set_window` / `pico_set_view`.
+`pico.set.window(pico.get.window())` errored with "invalid mode at
+index 1". Same for view. Get-side emitted `dim={w,h}` (no mode);
+set-side parsed via `C_rel_dim` which requires `[1]` mode marker.
 
-Tests (C + Lua) appended to `tst/get-set.c` and `lua/tst/get-set.lua`
-under `window roundtrip` and `view roundtrip`. C always passed; Lua
-now passes after the fix.
+C roundtrip was always fine — uses typed structs, not stringly-typed
+mode tables.
+
+### First attempt (reverted): force `'!'` in set
+
+Made `l_set_window` / `l_set_view` parse `dim` as `Pico_Abs_Dim`
+(direct `w`/`h`, ignore `[1]`); built `Pico_Rel_Dim{'!', ...}`
+internally.
+
+Broke `cv.lua:274` which used `dim={'#', w=4, h=4}` (tile mode) in
+the bulk setter — silently fell to `'!'` and gave 4×4 absolute
+instead of 4 tiles × 4 tiles = 16×16.
+
+Even though `Pico_Window.dim` and `Pico_Layer_View.dim` are
+`Pico_Abs_Dim` in the struct, `pico_set_view_dim` accepts rel modes
+(`'!'`, `'#'`, `'w'`) and converts; the Lua bulk setter must too.
+
+### Final fix (option A): asymmetric
+
+| side | behavior |
+|------|----------|
+| set  | keeps `C_rel_dim` — accepts `'!'`, `'%'`, `'#'`, `'w'` modes |
+| get  | emits `dim={'!', w, h}` with explicit `[1]='!'` mode marker |
+
+Roundtrip `set(get(x))` survives `C_rel_dim` (`'!'`+`w`+`h` is valid).
+Rel modes still work in `set` for users who pass them explicitly.
+
+Applied to `l_get_window` (dim), `l_get_view` (dim + tile),
+`l_get_video` (dim). Pattern matches pre-existing `l_get_image`.
+
+### Tests
+
+`tst/get-set.c` and `lua/tst/get-set.lua`: `window roundtrip` +
+`view roundtrip` blocks. C always passed; Lua now passes.
