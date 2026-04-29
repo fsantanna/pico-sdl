@@ -116,7 +116,7 @@ In alphabetical order:
         - `pico.layer.video ([mode,] up: string?, key: string?, path: string)`
     - **pico.layer.sub**: Creates a sub-layer from a source layer.
         - `pico.layer.sub ([mode,] up: string?, key: string, src: string, crop: Rect)`
-        - Parent must exist and cannot be a sub-layer itself.
+        - Source must exist and cannot be a sub-layer itself.
 - **pico.output**
     - **pico.output.clear**: Clears screen.
         - `pico.output.clear ()`
