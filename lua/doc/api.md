@@ -114,9 +114,8 @@ In alphabetical order:
           height: integer, text: string)`
     - **pico.layer.video**: Creates a layer from a video file.
         - `pico.layer.video ([mode,] up: string?, key: string?, path: string)`
-    - **pico.layer.sub**: Creates a sub-layer from a crop region of a parent.
-        - `pico.layer.sub ([mode,] up: string?, key: string,
-          parent: string, crop: Rect)`
+    - **pico.layer.sub**: Creates a sub-layer from a source layer.
+        - `pico.layer.sub ([mode,] up: string?, key: string, src: string, crop: Rect)`
         - Parent must exist and cannot be a sub-layer itself.
 - **pico.output**
     - **pico.output.clear**: Clears screen.

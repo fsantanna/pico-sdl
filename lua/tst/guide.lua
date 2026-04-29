@@ -250,8 +250,8 @@ pico.check("guide-07-02-01")
 pico.set.window { title="guide-07-02-02" }
 pico.set.layer("flag")
 pico.set.show {
-    rotate = {angle=30, anchor='C'},
     flip   = 'horizontal',
+    rotate = {angle=30, anchor='C'},
 }
 pico.set.layer()
 pico.output.clear()

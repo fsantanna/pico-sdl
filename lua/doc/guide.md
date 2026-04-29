@@ -81,8 +81,8 @@ To configure the window and the world view, we use `pico.set.window` and
 After the two commands, the window title changes and the grid disappears, since
 the pixel size is now `1x1`.
 
-The character `'!'` indicates a dimension in "raw mode", which we will discuss
-in [#Positioning Modes](#4-positioning-modes--anchors).
+The character `'!'` indicates a dimension in "raw mode", which we discuss in
+[#Positioning Modes](#4-positioning-modes--anchors).
 
 You could also use the simpler `pico.set.dim` to set the window and view
 dimensions at the same time:
@@ -159,7 +159,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
 
 Unlike most graphics libraries, `pico-lua` **centers** objects by default,
-which we will discuss in [#Anchors](#4-positioning-modes--anchors).
+which we discuss in [#Anchors](#4-positioning-modes--anchors).
 With the aid of the tick marks, we can see that the rectangle is actually
 centered at the given position.
 
@@ -312,7 +312,7 @@ caching.
 
 Internally, `pico-lua` caches texts, images and pixmaps such that they are
 reused on subsequent redraws.
-We will detail caching in [#Layers](#7-layers).
+We detail caching in [#Layers](#7-layers).
 
 ## 4. Positioning: Modes & Anchors
 
@@ -735,8 +735,8 @@ We can also flip and rotate layers when compositing them, by setting their
 <tr><td><pre>
 > pico.set.layer("flag")
 > pico.set.show {
-    rotate = {angle=30, anchor='C'},
     flip   = 'horizontal',
+    rotate = {angle=30, anchor='C'},
   }
 > pico.set.layer()
 > pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
@@ -746,11 +746,12 @@ We can also flip and rotate layers when compositing them, by setting their
 </td></tr>
 </table>
 
+In the example, the `flip` field receives `'horizontal'` to reverse the stripe
+order.
 The `rotate` table takes an `angle` in degrees and an `anchor` for the pivot
 point.
-The `flip` field receives `"horizontal"` to reverse the stripe order.
 
-We can also dim layers by lowering their `alpha`:
+We can also set the transparency of layers by lowering their `alpha` field:
 
 <table>
 <tr><td><pre>
@@ -768,19 +769,19 @@ We can also dim layers by lowering their `alpha`:
 </td></tr>
 </table>
 
-The `alpha` field receives a value from `0` (fully transparent) to `0xFF`
-(fully opaque), modulating the layer's pixels when composited.
+Following the general conventions for alpha,
+    `0x00` is fully transparent, while
+    `0xFF` is fully opaque.
 
 ### 7.3. Sub-Layers
 
-A sub-layer points to a region within a parent layer, with both sharing the
+A sub-layer points to a region within a source layer, with both sharing the
 actual pixel contents.
 
 Sub-layers are useful to isolate individual frames from sprite sheets in games,
-which we will discuss in [#Animations](#93-animations).
+which we discuss in [#Animations](#93-animations).
 
-We call `pico.layer.sub` to crop a region of a parent layer.
-
+We call `pico.layer.sub` to crop a region of a source layer.
 In the next example, we want to isolate each stripe of the flag as a sub layer:
 
 <table>
@@ -801,9 +802,6 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 Each sub-layer crops a square from each stripe of the flag (blue, yellow, red),
 and then draws each on the screen.
 
-The first parameter to `pico.layer.sub` identifies the sub-layer for further
-operations.
-Drawing a sub-layer works exactly like drawing a regular layer with
-`pico.output.draw.layer`.
-
-
+A sub-layer uses the same APIs as layers.
+For instance, the second argument to `pico.layer.sub` identifies the sub-layer
+for further operations.
