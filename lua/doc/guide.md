@@ -620,13 +620,13 @@ Let's create a simple loop to explore the possibilities:
   end
 ```
 
-The first returned value `e` is a table with a `tag` field that identifies the
-event type.
-The second value `ms` is the time elapsed between two event occurrences.
+The call to `pico.input.event` returns two values:
+
+- `e` is a table with a `tag` field that identifies the event type
+- `ms` is the time elapsed between two event occurrences
 
 You may interact with the window by pressing keys, using the mouse, resizing
 the window, and so on.
-
 To escape the loop, press the `Escape` key.
 
 Event types (*tags*) include `'key.dn'`, `'mouse.button.dn'`,
@@ -671,5 +671,3 @@ events internally.
 
 Now, try `CTRL` pressing `+` to zoom in and the arrow keys to scroll around.
 Finally, close the window (e.g., `ALT+F4`) to escape from the loop.
-
-
