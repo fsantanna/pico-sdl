@@ -26,12 +26,14 @@ property used for the area outside `root.tex` (letterbox/border).
     - [x] implement `pico_get_window_color`
     - [x] implement `pico_set_window_color` (calls `_pico_output_present(0)`)
     - [x] propagate `color` in `pico_get_window` / `pico_set_window`
-- [ ] `lua/` bindings
-    - [ ] expose `window.color` getter/setter
+- [x] `lua/` bindings
+    - [x] `l_get_window`: emit `color` field via `L_push_color`
+    - [x] `l_set_window`: accept `color` (nil-aware) via `C_color_tis`
 - [x] tests (C, written; need impl + asr/ baselines)
     - [x] appended to `tst/colors.c` as `colors-08/09/10` + default assertion
-    - [ ] `lua/tst/` lua test
-    - [ ] generate `tst/asr/colors-08..10.png` after impl
+    - [x] `lua/tst/colors.lua` appended `colors-09/10/11` + alpha-storage assert
+    - [x] `tst/asr/colors-08..10.png` generated (user)
+    - [ ] generate `lua/tst/asr/colors-09..11.png` after lua build
 - [x] `valgrind.supp`
     - [x] updated `src:pico.c:244` -> `src:pico.c:245`
 

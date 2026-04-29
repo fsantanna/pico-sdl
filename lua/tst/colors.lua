@@ -209,7 +209,50 @@ do
     }
     local r = {'%', x=0.5, y=0.5, w=0, h=0}
     pico.output.draw.pixmap("mixed", pixmap, r)
-    pico.check("colors-08")
+    pico.check("colors-0X")
+end
+
+-- window letterbox color: shrink dst to expose letterbox area
+do
+    do
+        pico.set.show { color='black' }
+        pico.set.view { target={'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'} }
+    end
+    do
+        print("window color default: gray {0x77,0x77,0x77,0xFF}")
+        local w = pico.get.window()
+        assert(w.color.r==0x77 and w.color.g==0x77 and w.color.b==0x77 and w.color.a==0xFF)
+        pico.output.clear()
+        pico.set.draw { color='white' }
+        pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
+        pico.check("colors-08")
+    end
+    do
+        print("window color: red letterbox")
+        pico.set.window { color={'!', r=0xFF, g=0, b=0, a=0xFF} }
+        local w = pico.get.window()
+        assert(w.color.r==0xFF and w.color.g==0 and w.color.b==0 and w.color.a==0xFF)
+        pico.output.clear()
+        pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
+        pico.check("colors-09")
+    end
+    do
+        print("window color: green via bulk")
+        local w = pico.get.window()
+        w.color = {'!', r=0, g=0xFF, b=0, a=0xFF}
+        pico.set.window { color=w.color }
+        local g = pico.get.window()
+        assert(g.color.r==0 and g.color.g==0xFF and g.color.b==0 and g.color.a==0xFF)
+        pico.output.clear()
+        pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
+        pico.check("colors-10")
+    end
+    do
+        print("window color: alpha preserved by storage")
+        pico.set.window { color={'!', r=0, g=0, b=0xFF, a=0x80} }
+        local w = pico.get.window()
+        assert(w.color.a == 0x80)
+    end
 end
 
 pico.init(false)

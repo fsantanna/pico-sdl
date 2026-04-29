@@ -898,6 +898,9 @@ static int l_get_window (lua_State* L) {
 
     lua_newtable(L);                    // T
 
+    L_push_color(L, win.color);         // T | color
+    lua_setfield(L, -2, "color");       // T
+
     lua_newtable(L);                    // T | dim
     lua_pushinteger(L, win.dim.w);
     lua_setfield(L, -2, "w");
@@ -1110,10 +1113,19 @@ static int l_set_view (lua_State* L) {
 static int l_set_window (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    Pico_Rel_Dim* xdim   = NULL;
-    int           xfs    = -1;
-    int           xshow  = -1;
-    const char*   xtitle = NULL;
+    Pico_Color    xcolor;
+    int           xxcolor = 0;
+    Pico_Rel_Dim* xdim    = NULL;
+    int           xfs     = -1;
+    int           xshow   = -1;
+    const char*   xtitle  = NULL;
+
+    lua_getfield(L, 1, "color");            // T | color
+    if (!lua_isnil(L, -1)) {
+        xcolor = C_color_tis(L, lua_gettop(L));
+        xxcolor = 1;
+    }
+    lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "dim");              // T | dim
     if (!lua_isnil(L, -1)) {
@@ -1139,6 +1151,7 @@ static int l_set_window (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
+    if (xxcolor)        { pico_set_window_color(xcolor); }
     if (xtitle != NULL) { pico_set_window_title(xtitle); }
     if (xfs    != -1)   { pico_set_window_fs   (xfs);    }
     if (xdim   != NULL) { pico_set_window_dim  (xdim);   }
