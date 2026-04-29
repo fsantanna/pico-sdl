@@ -844,6 +844,8 @@ static int l_get_video (lua_State* L) {
     lua_newtable(L);                        // T
 
     lua_newtable(L);                        // T | dim
+    lua_pushliteral(L, "!");
+    lua_rawseti(L, -2, 1);
     lua_pushinteger(L, vid.dim.w);
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, vid.dim.h);
@@ -867,6 +869,8 @@ static int l_get_view (lua_State* L) {
     lua_newtable(L);                    // T
 
     lua_newtable(L);                    // T | dim
+    lua_pushliteral(L, "!");
+    lua_rawseti(L, -2, 1);
     lua_pushinteger(L, view.dim.w);
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, view.dim.h);
@@ -902,6 +906,8 @@ static int l_get_window (lua_State* L) {
     lua_setfield(L, -2, "color");       // T
 
     lua_newtable(L);                    // T | dim
+    lua_pushliteral(L, "!");
+    lua_rawseti(L, -2, 1);
     lua_pushinteger(L, win.dim.w);
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, win.dim.h);
@@ -1069,14 +1075,9 @@ static int l_set_view (lua_State* L) {
     Pico_Rel_Rect* xsrc  = NULL;
     Pico_Rel_Rect* xclip = NULL;
 
-    Pico_Rel_Dim dim;
     lua_getfield(L, 1, "dim");              // T | dim
     if (!lua_isnil(L, -1)) {
-        dim = (Pico_Rel_Dim){'!', {
-            C_checkfieldnum(L, lua_gettop(L), "w"),
-            C_checkfieldnum(L, lua_gettop(L), "h"),
-        }, NULL};
-        xdim = &dim;
+        xdim = C_rel_dim(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
 
@@ -1133,13 +1134,8 @@ static int l_set_window (lua_State* L) {
     lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "dim");              // T | dim
-    Pico_Rel_Dim dim;
     if (!lua_isnil(L, -1)) {
-        dim = (Pico_Rel_Dim){'!', {
-            C_checkfieldnum(L, lua_gettop(L), "w"),
-            C_checkfieldnum(L, lua_gettop(L), "h"),
-        }, NULL};
-        xdim = &dim;
+        xdim = C_rel_dim(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
 
