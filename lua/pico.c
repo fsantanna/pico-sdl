@@ -1098,6 +1098,7 @@ static int l_set_view (lua_State* L) {
 
     lua_getfield(L, 1, "target");           // T | dst
     if (!lua_isnil(L, -1)) {
+        L_dim_default_wh(L, lua_gettop(L));
         xdst = C_rel_rect(L, lua_gettop(L));
     }
     lua_pop(L, 1);                          // T
