@@ -11,6 +11,8 @@ require 'pico.check'
 
 -- §2.1: open
 pico.init(true)
+
+--[[
 pico.set.window { title="guide-02-01-01" }
 pico.check("guide-02-01-01")
 
@@ -280,5 +282,27 @@ pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
 pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
 pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
 pico.check("guide-07-03-01")
+
+-- §7.4: hierarchy -- root has image (top) and panel (bottom); panel has 2 texts
+pico.init(false); pico.init(true)
+]]
+pico.set.window { title="guide-07-04-01" }
+pico.layer.image("root", "pic", "../../res/open.png")
+pico.set.layer("pic")
+pico.set.view  { target = {'%', x=0.5, y=0.25, w=0.5, h=0.5} }
+pico.layer.empty("root", "panel", {w=100, h=50})
+pico.set.layer("panel")
+pico.set.show  { color={r=0, g=0, b=0, a=0} }
+pico.output.clear()
+pico.set.view  { target = {'%', x=0.5, y=0.75, w=0.5, h=0.5} }
+pico.layer.text("panel", "hello", 30, "Hello")
+pico.set.layer("hello")
+pico.set.view  { target = {'%', x=0.5, y=0.3, w=0, h=0.4} }
+pico.layer.text("panel", "world", 30, "World")
+pico.set.layer("world")
+pico.set.view  { target = {'%', x=0.5, y=0.7, w=0, h=0.4} }
+pico.set.layer()
+pico.output.clear()
+pico.check("guide-07-04-01")
 
 pico.init(false)
