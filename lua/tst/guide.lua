@@ -297,10 +297,10 @@ pico.output.clear()
 pico.set.view  { target = {'%', x=0.5, y=0.75, w=0.5, h=0.5} }
 pico.layer.text("panel", "hello", 30, "Hello")
 pico.set.layer("hello")
-pico.set.view  { target = {'%', x=0.5, y=0.3, w=0, h=0.4} }
+pico.set.view  { target = {'%', x=0.5, y=0.3, h=0.4} }
 pico.layer.text("panel", "world", 30, "World")
 pico.set.layer("world")
-pico.set.view  { target = {'%', x=0.5, y=0.7, w=0, h=0.4} }
+pico.set.view  { target = {'%', x=0.5, y=0.7, h=0.4} }
 pico.set.layer()
 pico.output.clear()
 pico.check("guide-07-04-01")

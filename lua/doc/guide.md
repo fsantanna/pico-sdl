@@ -820,18 +820,18 @@ A child layer can itself become a parent, building a tree:
 > pico.init(false) ; pico.init(true)
 > pico.layer.image("root", "pic", "open.png")
 > pico.set.layer("pic")
-> pico.set.view  { target = {'%', x=0.5, y=0.25, w=0.5, h=0.5} }
+> pico.set.view  { target = {'%', x=0.25, y=0.25, w=0.4, h=0.4} }
 > pico.layer.empty("root", "panel", {w=100, h=50})
 > pico.set.layer("panel")
 > pico.set.show  { color={r=0, g=0, b=0, a=0} }
 > pico.output.clear()
-> pico.set.view  { target = {'%', x=0.5, y=0.75, w=0.5, h=0.5} }
+> pico.set.view  { target = {'%', x=0.75, y=0.75, w=0.4, h=0.4} }
 > pico.layer.text("panel", "hello", 30, "Hello")
 > pico.set.layer("hello")
-> pico.set.view  { target = {'%', x=0.5, y=0.3, w=0, h=0.4} }
+> pico.set.view  { target = {'%', x=0.5, y=0.3, h=0.4} }
 > pico.layer.text("panel", "world", 30, "World")
 > pico.set.layer("world")
-> pico.set.view  { target = {'%', x=0.5, y=0.7, w=0, h=0.4} }
+> pico.set.view  { target = {'%', x=0.5, y=0.7, h=0.4} }
 > pico.set.layer()
 > pico.output.clear()
 </pre>
