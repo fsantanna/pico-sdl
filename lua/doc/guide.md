@@ -822,10 +822,10 @@ pico.set.view {                     -- position "me" within "up"
 }
 ```
 
-<img src="../../tst/asr/guide-07-04-01.png" width="200" align="right">
-
 After we create the layer, we set the target region within its parent.
 In the example, the child layer `me` is centered inside parent layer `up`.
+
+<img src="../../tst/asr/guide-07-04-01.png" width="200" align="right">
 
 Suppose we want to draw the layout in the figure in the right:
 The root layer `R` contains the image layer `I` and panel layer `P`, which
