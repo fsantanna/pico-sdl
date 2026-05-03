@@ -1006,18 +1006,23 @@ static int l_set_mouse (lua_State* L) {
 static int l_set_show (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    Pico_Layer_Show show;
-    pico_get_show(NULL, &show);
+    lua_getfield(L, 1, "keep");             // T | keep
+    if (!lua_isnil(L, -1)) {
+        pico_set_show_keep(NULL, lua_toboolean(L, -1));
+    }
+    lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "alpha");            // T | alpha
     if (!lua_isnil(L, -1)) {
-        show.alpha = (unsigned char) luaL_checkinteger(L, -1);
+        pico_set_show_alpha(NULL,
+            (unsigned char) luaL_checkinteger(L, -1));
     }
     lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "color");            // T | color
     if (!lua_isnil(L, -1)) {
-        show.color = C_color_tis(L, lua_gettop(L));
+        Pico_Color c = C_color_tis(L, lua_gettop(L));
+        pico_set_show_color(NULL, c);
     }
     lua_pop(L, 1);                          // T
 
@@ -1027,34 +1032,30 @@ static int l_set_show (lua_State* L) {
         int fi = lua_gettop(L);
         L_reg_get(L, "flips", fi);              // T | flip | *val*
         int ok;
-        show.flip = lua_tointegerx(L, -1, &ok);
+        PICO_FLIP flip = lua_tointegerx(L, -1, &ok);
         if (!ok) {
             luaL_error(L, "invalid flip \"%s\"", s);
         }
         lua_pop(L, 1);                          // T | flip
+        pico_set_show_flip(NULL, flip);
     }
     lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "grid");             // T | grid
     if (!lua_isnil(L, -1)) {
-        show.grid = lua_toboolean(L, -1);
-    }
-    lua_pop(L, 1);                          // T
-
-    lua_getfield(L, 1, "keep");             // T | keep
-    if (!lua_isnil(L, -1)) {
-        show.keep = lua_toboolean(L, -1);
+        pico_set_show_grid(NULL, lua_toboolean(L, -1));
     }
     lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "rotate");           // T | rot
     if (!lua_isnil(L, -1)) {
-        show.rotate.angle = C_checkfieldnum(L, lua_gettop(L), "angle");
-        show.rotate.anchor = C_anchor(L, lua_gettop(L));
+        Pico_Rot rot;
+        rot.angle  = C_checkfieldnum(L, lua_gettop(L), "angle");
+        rot.anchor = C_anchor(L, lua_gettop(L));
+        pico_set_show_rotate(NULL, rot);
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_show(NULL, show);
     return 0;
 }
 
