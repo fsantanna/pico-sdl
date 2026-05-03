@@ -648,8 +648,15 @@ void pico_set_mouse (Pico_Rel_Pos* pos) {
 
 void pico_set_show (const char* layer, Pico_Layer_Show show) {
     _pico_guard();
-    _pico_layer_null(layer)->show = show;
-    _pico_output_present(0);
+    Pico_Layer* L = _pico_layer_null(layer);
+    if (L->type != PICO_LAYER_ROOT && L->type != PICO_LAYER_SUB) {
+        pico_set_show_keep(layer, show.keep);
+    }
+    pico_set_show_alpha (layer, show.alpha);
+    pico_set_show_color (layer, show.color);
+    pico_set_show_flip  (layer, show.flip);
+    pico_set_show_grid  (layer, show.grid);
+    pico_set_show_rotate(layer, show.rotate);
 }
 
 void pico_set_show_alpha (const char* layer, unsigned char alpha) {
@@ -660,7 +667,17 @@ void pico_set_show_alpha (const char* layer, unsigned char alpha) {
 
 void pico_set_show_color (const char* layer, Pico_Color color) {
     _pico_guard();
-    _pico_layer_null(layer)->show.color = color;
+    Pico_Layer* L = _pico_layer_null(layer);
+    Pico_Color old_c = L->show.color;
+    L->show.color = color;
+    if (!L->show.keep) {
+        assert(L->type != PICO_LAYER_ROOT);
+        assert(L->type != PICO_LAYER_SUB);
+        SDL_SetRenderTarget(G.ren, L->tex);
+        SDL_SetRenderDrawColor(G.ren, color.r, color.g, color.b, color.a);
+        SDL_RenderClear(G.ren);
+        SDL_SetRenderTarget(G.ren, S.layer->tex);
+    }
     _pico_output_present(0);
 }
 

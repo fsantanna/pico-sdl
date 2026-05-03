@@ -98,7 +98,8 @@ static void _layer_traverse (Pico_Layer* UP) {
         SDL_SetRenderTarget(G.ren, UP->tex);
         _pico_output_draw_layer(CUR, NULL);
 
-        if (!CUR->show.keep) {  // post-composite clear
+        // post-composite clear: allows drawing bw presents
+        if (!CUR->show.keep) {
             SDL_SetRenderTarget(G.ren, CUR->tex);
             Pico_Color c = CUR->show.color;
             SDL_SetRenderDrawColor(G.ren, c.r, c.g, c.b, c.a);
