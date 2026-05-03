@@ -825,28 +825,40 @@ pico.set.view {                     -- position "me" within "up"
 After we create the layer, we set the target region within its parent.
 In the example, the child layer `me` is centered inside parent layer `up`.
 
-<img src="../../tst/asr/guide-07-04-01.png" width="200">
+Now, suppose we want to draw the layout in the figure in the right:
+The root layer `R` contains the image layer `I` and panel layer `P`, which
+contains the text layers `T1` and `T2`.
+
+<img src="../../tst/asr/guide-07-04-01.png" width="200" align="right">
+
+The next example implements this layout:
+
+- `root`: predefined layer in `pico-lua`, representing the world
+- `I`: created with `pico.layer.image` with `root` as parent
+- `P`: created with `pico.layer.empty` with `root` as parent
+    - `T1`: created with `pico.layer.text` with `P` as parent
+    - `T2`: created with `pico.layer.text` with `P` as parent
 
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
 > do
-    pico.layer.image("root", "pic", "open.png")
-    pico.set.layer("pic")
+    pico.layer.image("root", "I", "open.png")
+    pico.set.layer("I")
     pico.set.view { target = {'%', x=0.3, y=0.3, w=0.4} }
   end
 > do
-    pico.layer.empty("root", "panel", {w=100, h=50})
-    pico.set.layer("panel")
+    pico.layer.empty("root", "P", {w=100, h=50})
+    pico.set.layer("P")
     pico.set.show { color='silver' }
     pico.set.view { target = {'%', x=0.7, y=0.7, w=0.4} }
 >   do
-        pico.layer.text("panel", "hello", 20, "Hello")
+        pico.layer.text("P", "T1", 20, "Hello")
         pico.set.layer("hello")
         pico.set.view { target = {'%', x=0.5, y=0.3, h=0.6} }
     end
 >   do
-        pico.layer.text("panel", "world", 20, "World!")
+        pico.layer.text("P", "T2", 20, "World!")
         pico.set.layer("world")
         pico.set.view { target = {'%', x=0.5, y=0.7, h=0.4} }
     end
@@ -859,8 +871,5 @@ In the example, the child layer `me` is centered inside parent layer `up`.
 </td></tr>
 </table>
 
-The `"pic"` image is attached to `"root"`, and the `"panel"` empty layer is
-also attached to `"root"`.
-The two texts (`"hello"` and `"world"`) are attached to `"panel"`, so they
-appear on it instead of directly on the world.
-Neither needs an explicit `draw.layer` call — the tree composites itself.
+After the scene is composed, we simply switch to the `root` layer, and call
+`pico.output.present` to update the screen.
