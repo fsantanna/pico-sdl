@@ -5,7 +5,7 @@ pico.set.window { title="guide-hier-01" }
 pico.output.clear()
 
 pico.set.draw { color='white', style='stroke' }
-pico.output.draw.rect { '%', x=0.5,  y=0.5,  w=0.99, h=0.99 }   -- R
+pico.output.draw.rect { '%', x=0.5,  y=0.5,  w=1,    h=1    }   -- R
 pico.output.draw.rect { '%', x=0.25, y=0.25, w=0.4,  h=0.3  }   -- I
 pico.output.draw.rect { '%', x=0.7,  y=0.7,  w=0.5,  h=0.4  }   -- P
 pico.output.draw.rect { '%', x=0.7,  y=0.6,  w=0.25, h=0.15 }   -- T1
