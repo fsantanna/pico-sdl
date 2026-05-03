@@ -290,7 +290,7 @@ pico.set.window { title="guide-07-04-01" }
 do
     pico.layer.image("root", "pic", "../../res/open.png")
     pico.set.layer("pic")
-    pico.set.view  { target = {'%', x=0.3, y=0.3, w=0.4} }
+    pico.set.view { target = {'%', x=0.3, y=0.3, w=0.4} }
 end
 do
     pico.layer.empty("root", "panel", {w=100, h=50})
@@ -300,16 +300,16 @@ do
     do
         pico.layer.text("panel", "hello", 20, "Hello")
         pico.set.layer("hello")
-        pico.set.view  { target = {'%', x=0.5, y=0.3, h=0.6} }
+        pico.set.view { target = {'%', x=0.5, y=0.3, h=0.6} }
     end
     do
         pico.layer.text("panel", "world", 20, "World!")
         pico.set.layer("world")
-        pico.set.view  { target = {'%', x=0.5, y=0.7, h=0.4} }
+        pico.set.view { target = {'%', x=0.5, y=0.7, h=0.4} }
     end
 end
 pico.set.layer()
 pico.output.present()
-pico.check("guide-07-04-01")
+pico.check("guide-07-04-02")
 
 pico.init(false)

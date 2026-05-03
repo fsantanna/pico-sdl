@@ -808,12 +808,24 @@ for further operations.
 
 ### 7.4. Hierarchy
 
-So far we attached every new layer with `up=nil` and composited them manually
-with `pico.output.draw.layer`.
-We can instead pass a parent name as `up`: the layer is then attached to the
-hierarchy and auto-composites on every frame.
+Layers in `pico-lua` can form a tree hierarchy, such that calls to
+`pico.output.present` redraws the whole scene automatically.
 
-A child layer can itself become a parent, building a tree:
+When creating a layer (e.g., `me`), we can pass another layer (e.g., `up`) to
+become its parent:
+
+```
+pico.layer.empty("up", "me", ...)   -- "up" is parent of "me"
+pico.set.layer("me")                -- setup "me"
+pico.set.view {                     -- position "me" within "up"
+    target = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
+}
+```
+
+After we create the layer, we set the target region within its parent.
+In the example, the child layer `me` is centered inside parent layer `up`.
+
+<img src="../tst/asr/guide-07-04-01.png" width="200">
 
 <table>
 <tr><td><pre>
@@ -821,29 +833,29 @@ A child layer can itself become a parent, building a tree:
 > do
     pico.layer.image("root", "pic", "open.png")
     pico.set.layer("pic")
-    pico.set.view  { target = {'%', x=0.3, y=0.3, w=0.4} }
+    pico.set.view { target = {'%', x=0.3, y=0.3, w=0.4} }
   end
 > do
     pico.layer.empty("root", "panel", {w=100, h=50})
     pico.set.layer("panel")
-    pico.set.show  { color='silver' }
-    pico.set.view  { target = {'%', x=0.7, y=0.7, w=0.4} }
+    pico.set.show { color='silver' }
+    pico.set.view { target = {'%', x=0.7, y=0.7, w=0.4} }
 >   do
         pico.layer.text("panel", "hello", 20, "Hello")
         pico.set.layer("hello")
-        pico.set.view  { target = {'%', x=0.5, y=0.3, h=0.6} }
+        pico.set.view { target = {'%', x=0.5, y=0.3, h=0.6} }
     end
 >   do
         pico.layer.text("panel", "world", 20, "World!")
         pico.set.layer("world")
-        pico.set.view  { target = {'%', x=0.5, y=0.7, h=0.4} }
+        pico.set.view { target = {'%', x=0.5, y=0.7, h=0.4} }
     end
   end
 > pico.set.layer()
 > pico.output.present()
 </pre>
 </td><td>
-<img src="../tst/asr/guide-07-04-01.png" width="200">
+<img src="../tst/asr/guide-07-04-02.png" width="200">
 </td></tr>
 </table>
 

@@ -18,6 +18,6 @@ pico.output.draw.text('I',  {'%', x=0.25, y=0.25, h=0.15, anchor='C' })
 pico.output.draw.text('T1', {'%', x=0.7,  y=0.6,  h=0.1,  anchor='C' })
 pico.output.draw.text('T2', {'%', x=0.7,  y=0.8,  h=0.1,  anchor='C' })
 
-pico.check("guide-hier-01")
+pico.check("guide-07-04-01")
 
 pico.init(false)
