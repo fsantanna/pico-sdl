@@ -818,22 +818,29 @@ A child layer can itself become a parent, building a tree:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.layer.image("root", "pic", "open.png")
-> pico.set.layer("pic")
-> pico.set.view  { target = {'%', x=0.25, y=0.25, w=0.4, h=0.4} }
-> pico.layer.empty("root", "panel", {w=100, h=50})
-> pico.set.layer("panel")
-> pico.set.show  { color={r=0, g=0, b=0, a=0} }
-> pico.output.clear()
-> pico.set.view  { target = {'%', x=0.75, y=0.75, w=0.4, h=0.4} }
-> pico.layer.text("panel", "hello", 30, "Hello")
-> pico.set.layer("hello")
-> pico.set.view  { target = {'%', x=0.5, y=0.3, h=0.4} }
-> pico.layer.text("panel", "world", 30, "World")
-> pico.set.layer("world")
-> pico.set.view  { target = {'%', x=0.5, y=0.7, h=0.4} }
+> do
+    pico.layer.image("root", "pic", "open.png")
+    pico.set.layer("pic")
+    pico.set.view  { target = {'%', x=0.3, y=0.3, w=0.4} }
+  end
+> do
+    pico.layer.empty("root", "panel", {w=100, h=50})
+    pico.set.layer("panel")
+    pico.set.show  { color='silver' }
+    pico.set.view  { target = {'%', x=0.7, y=0.7, w=0.4} }
+>   do
+        pico.layer.text("panel", "hello", 20, "Hello")
+        pico.set.layer("hello")
+        pico.set.view  { target = {'%', x=0.5, y=0.3, h=0.6} }
+    end
+>   do
+        pico.layer.text("panel", "world", 20, "World!")
+        pico.set.layer("world")
+        pico.set.view  { target = {'%', x=0.5, y=0.7, h=0.4} }
+    end
+  end
 > pico.set.layer()
-> pico.output.clear()
+> pico.output.present()
 </pre>
 </td><td>
 <img src="../tst/asr/guide-07-04-01.png" width="200">
