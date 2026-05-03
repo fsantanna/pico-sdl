@@ -44,7 +44,7 @@ To initialize `pico-lua`, we pass `true` to `pico.init`:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="../tst/asr/guide-02-01-01.png" width="400">
+<img src="../../tst/asr/guide-02-01-01.png" width="400">
 </td></tr>
 </table>
 
@@ -74,7 +74,7 @@ To configure the window and the world view, we use `pico.set.window` and
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-02-02-01.png" width="200">
+<img src="../../tst/asr/guide-02-02-01.png" width="200">
 </td></tr>
 </table>
 
@@ -92,7 +92,7 @@ dimensions at the same time:
 > pico.set.dim { '!', w=200, h=200 }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-02-02-01.png" width="200">
+<img src="../../tst/asr/guide-02-02-01.png" width="200">
 </td></tr>
 </table>
 
@@ -119,7 +119,7 @@ Then, we can restart `pico-lua` by calling `pico.init(true)` again:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="../tst/asr/guide-02-01-01.png" width="200">
+<img src="../../tst/asr/guide-02-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -138,7 +138,7 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 > pico.output.draw.pixel { '!', x=50, y=50 }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-03-01-01.png" width="200">
+<img src="../../tst/asr/guide-03-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -152,7 +152,7 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 > pico.output.draw.rect { '!', x=20, y=20, w=30, h=30 }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-03-01-02.png" width="200">
+<img src="../../tst/asr/guide-03-01-02.png" width="200">
 </td></tr>
 </table>
 
@@ -177,7 +177,7 @@ To clear the screen, we call `pico.output.clear`:
 > pico.output.clear()
 </pre>
 </td><td>
-<img src="../tst/asr/guide-02-01-01.png" width="200">
+<img src="../../tst/asr/guide-02-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -196,7 +196,7 @@ the `color` attribute:
 > pico.output.draw.rect { '!', x=50, y=50, w=50, h=50 }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-03-02-02.png" width="200">
+<img src="../../tst/asr/guide-03-02-02.png" width="200">
 </td></tr>
 </table>
 
@@ -221,7 +221,7 @@ Colors can also be specified as numbers or tables:
   pico.output.draw.pixel { '!', x=73, y=73 }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-03-02-03.png" width="200">
+<img src="../../tst/asr/guide-03-02-03.png" width="200">
 </td></tr>
 </table>
 
@@ -233,7 +233,7 @@ Let's restart `pico-lua` for the next examples:
 > pico.init(true)
 </pre>
 </td><td>
-<img src="../tst/asr/guide-02-01-01.png" width="200">
+<img src="../../tst/asr/guide-02-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -248,7 +248,7 @@ To draw text, we call `pico.output.draw.text`:
 > pico.output.draw.text("Hello", {'!', x=50, y=66, h=30})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-03-03-01.png" width="200">
+<img src="../../tst/asr/guide-03-03-01.png" width="200">
 </td></tr>
 </table>
 
@@ -268,7 +268,7 @@ To draw an [image](../../res/open.png), we call `pico.output.draw.image`:
 > pico.output.draw.image("open.png", {'!', x=50, y=50})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-03-03-02.png" width="200">
+<img src="../../tst/asr/guide-03-03-02.png" width="200">
 </td></tr>
 </table>
 
@@ -299,7 +299,7 @@ dimensions and aspect ratio.
 > pico.output.draw.pixmap("pi", PI, {'!', x=50, y=50, w=80})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-03-03-03.png" width="200">
+<img src="../../tst/asr/guide-03-03-03.png" width="200">
 </td></tr>
 </table>
 
@@ -372,7 +372,7 @@ different anchors:
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-04-00-01.png" width="200">
+<img src="../../tst/asr/guide-04-00-01.png" width="200">
 </td></tr>
 </table>
 
@@ -404,7 +404,7 @@ dimensions:
 > pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-04-01-01.png" width="200">
+<img src="../../tst/asr/guide-04-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -443,7 +443,7 @@ window:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-00-01.png" width="200">
+<img src="../../tst/asr/guide-05-00-01.png" width="200">
 </td></tr>
 </table>
 
@@ -460,7 +460,7 @@ The `source` property selects which region of the world is visible:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-00-02.png" width="200">
+<img src="../../tst/asr/guide-05-00-02.png" width="200">
 </td></tr>
 </table>
 
@@ -480,7 +480,7 @@ sub-region of the world:
 > pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-00-03.png" width="200">
+<img src="../../tst/asr/guide-05-00-03.png" width="200">
 </td></tr>
 </table>
 
@@ -502,7 +502,7 @@ world black background when we zoom out:
 > pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-01-01.png" width="200">
+<img src="../../tst/asr/guide-05-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -515,7 +515,7 @@ Next, we crop the view in half (`w=h=0.5`) to get a `2x` zoom in:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-01-02.png" width="200">
+<img src="../../tst/asr/guide-05-01-02.png" width="200">
 </td></tr>
 </table>
 
@@ -528,7 +528,7 @@ Likewise, when we double the source (`w=h=2`), we get a `1/2` zoom out:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-01-03.png" width="200">
+<img src="../../tst/asr/guide-05-01-03.png" width="200">
 </td></tr>
 </table>
 
@@ -542,7 +542,7 @@ the source `x` and `y` fields:
   }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-05-01-04.png" width="200">
+<img src="../../tst/asr/guide-05-01-04.png" width="200">
 </td></tr>
 </table>
 
@@ -571,7 +571,7 @@ A call to `pico.input.delay(ms)` pauses execution for the specified time:
   pico.output.draw.pixel { '%', x=0.75, y=0.5 }
 </pre>
 </td><td>
-<img src="../tst/asr/guide-06-01-01.png" width="200">
+<img src="../../tst/asr/guide-06-01-01.png" width="200">
 </td></tr>
 </table>
 
@@ -595,7 +595,7 @@ Here, we draw a circle pixel by pixel:
   end
 </pre>
 </td><td>
-<img src="../tst/asr/guide-06-01-02.png" width="200">
+<img src="../../tst/asr/guide-06-01-02.png" width="200">
 </td></tr>
 </table>
 
@@ -663,7 +663,7 @@ Let's draw a centered image and use the key bindings to explore it:
 > pico.input.loop()
 </pre>
 </td><td>
-<img src="../tst/asr/guide-06-03-01.png" width="200">
+<img src="../../tst/asr/guide-06-03-01.png" width="200">
 </td></tr>
 </table>
 
@@ -721,7 +721,7 @@ To composite layers, we use `pico.output.draw.layer` on the current layer:
 > pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-07-02-01.png" width="200">
+<img src="../../tst/asr/guide-07-02-01.png" width="200">
 </td></tr>
 </table>
 
@@ -742,7 +742,7 @@ We can also flip and rotate layers when compositing them, by setting their
 > pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-07-02-02.png" width="200">
+<img src="../../tst/asr/guide-07-02-02.png" width="200">
 </td></tr>
 </table>
 
@@ -765,7 +765,7 @@ We can also set the transparency of layers by lowering their `alpha` field:
 > pico.output.draw.layer("flag", {'%', x=0.5, y=0.5, w=0.6})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-07-02-03.png" width="200">
+<img src="../../tst/asr/guide-07-02-03.png" width="200">
 </td></tr>
 </table>
 
@@ -795,7 +795,7 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 > pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
 </pre>
 </td><td>
-<img src="../tst/asr/guide-07-03-01.png" width="200">
+<img src="../../tst/asr/guide-07-03-01.png" width="200">
 </td></tr>
 </table>
 
@@ -825,7 +825,7 @@ pico.set.view {                     -- position "me" within "up"
 After we create the layer, we set the target region within its parent.
 In the example, the child layer `me` is centered inside parent layer `up`.
 
-<img src="../tst/asr/guide-07-04-01.png" width="200">
+<img src="../../tst/asr/guide-07-04-01.png" width="200">
 
 <table>
 <tr><td><pre>
@@ -855,7 +855,7 @@ In the example, the child layer `me` is centered inside parent layer `up`.
 > pico.output.present()
 </pre>
 </td><td>
-<img src="../tst/asr/guide-07-04-02.png" width="200">
+<img src="../../tst/asr/guide-07-04-02.png" width="200">
 </td></tr>
 </table>
 
