@@ -668,9 +668,8 @@ void pico_set_show_alpha (const char* layer, unsigned char alpha) {
 void pico_set_show_color (const char* layer, Pico_Color color) {
     _pico_guard();
     Pico_Layer* L = _pico_layer_null(layer);
-    Pico_Color old_c = L->show.color;
     L->show.color = color;
-    if (!L->show.keep) {
+    if (!L->show.keep && L->hier.up!=NULL) {
         assert(L->type != PICO_LAYER_ROOT);
         assert(L->type != PICO_LAYER_SUB);
         SDL_SetRenderTarget(G.ren, L->tex);
