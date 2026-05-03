@@ -825,19 +825,19 @@ pico.set.view {                     -- position "me" within "up"
 After we create the layer, we set the target region within its parent.
 In the example, the child layer `me` is centered inside parent layer `up`.
 
-Now, suppose we want to draw the layout in the figure in the right:
+Suppose we want to draw the layout in the figure in the right:
 The root layer `R` contains the image layer `I` and panel layer `P`, which
 contains the text layers `T1` and `T2`.
 
-<img src="../../tst/asr/guide-07-04-01.png" width="200" align="right">
-
-The next example implements this layout:
+The next code listing implements this layout:
 
 - `root`: predefined layer in `pico-lua`, representing the world
 - `I`: created with `pico.layer.image` with `root` as parent
 - `P`: created with `pico.layer.empty` with `root` as parent
     - `T1`: created with `pico.layer.text` with `P` as parent
     - `T2`: created with `pico.layer.text` with `P` as parent
+
+<img src="../../tst/asr/guide-07-04-01.png" width="200" align="right">
 
 <table>
 <tr><td><pre>
@@ -871,5 +871,5 @@ The next example implements this layout:
 </td></tr>
 </table>
 
-After the scene is composed, we simply switch to the `root` layer, and call
-`pico.output.present` to update the screen.
+After the scene is composed, we simply switch to the `root` layer and call
+`pico.output.present` to update the screen all at once.
