@@ -1025,3 +1025,106 @@ In this example, we only handle `mouse.motion` and `key.dn` events:
 - for the keyboard, we update `k.x` or `k.y` depending on `e.key`.
 
 Then, the loop iterates to redraw the scene and wait for the next event.
+
+### 9.3. Animations
+
+The next example creates two time-based animations that require to set
+`pico.set.expert` with FPS.
+
+We want the characters to move along the rectangular paths, in opposite
+directions, and at different speeds.
+The animation in the left is based on the sprite sheet in the right:
+
+<table>
+<tr><td align="center">
+<img src="img/2-anims.gif" width="200">
+</td><td align="center">
+<img src="img/walk.png" width="100" style="image-rendering:pixelated">
+<br>
+<small>
+    Credits:
+        <a href="https://opengameart.org/content/simple-character-base-16x16">
+            OpenGameArt.org
+        </a>
+</small>
+</td></tr>
+</table>
+
+The complete source code is [here](anims.lua) (`~75` lines of code).
+
+Run the program:
+
+```
+$ pico-lua anims.lua
+```
+
+Now, let's discuss the implementation.
+The overall structure is always the same:
+
+```lua
+-- (omitted initialization - do not execute)
+
+pico.set.expert(true, 20)
+
+local f1, x1, y1 = walk('clock',   0, 0)    -- clockwise (faster)
+local f2, x2, y2 = walk('counter', 0, 0)    -- counter clockwise
+
+local step = 0
+
+while true do                               -- main loop
+    pico.output.clear()                     -- redraw the scene
+    pico.output.draw.rect {
+        '%', x=0.3, y=0.3, w=0.4, h=0.4     -- rect path (top-left)
+    }
+    pico.output.draw.rect {
+        '%', x=0.6, y=0.6, w=0.4, h=0.4     -- rect path (bottom-right)
+    }
+    pico.output.draw.layer (
+        f1, {'%', x=x1, y=y1, w=0.15}       -- clockwise sprite
+    )
+    pico.output.draw.layer (
+        f2, {'%', x=x2, y=y2, w=0.15}       -- counter sprite
+    )
+    pico.output.present()
+
+    local e = pico.input.event('quit')      -- handle events
+    if e then
+        break
+    end
+
+    step = step + 1                         -- handle animations
+    f1, x1, y1 = walk('clock',   step*2, step)
+    f2, x2, y2 = walk('counter', step,   step)
+end
+```
+
+Now, we set FPS to `20` to animate the sprites every `50ms`.
+
+The function `walk` (see the full source) receives a clock direction and the
+current step, returning the sprite and positions to apply.
+
+The main loop redraws the whole scene (rectangle paths and sprites) and awaits
+the next clock tick.
+In this example, `pico.input.event` either awakes from a `'quit'` event, which
+escapes the main loop, or after `50ms`, which applies the next animation step.
+
+In the omitted initialization, we use [#sub-layers](#84-sub-layers) to crop the
+`4x4` sprite sheet above:
+
+```lua
+local frames = pico.layer.images (
+    "walk", "img/walk.png", {'#', w=4, h=4})
+
+local dirs = {
+    down  = { 1,  2,  3,  4},   -- walk-01 -> walk-04
+    up    = { 5,  6,  7,  8},
+    right = { 9, 10, 11, 12},
+    left  = {13, 14, 15, 16},
+}
+```
+
+This splits the sprite sheet into layers `"walk-01"` to `"walk-16"`:
+walk down (`01-04`), up (`05-08`), right (`09-12`), left (`13-16`).
+
+Then, at each loop step, the call to `walk` decodes the current state and
+returns the appropriate `'walk-XX'` layer.
