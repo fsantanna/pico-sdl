@@ -105,6 +105,20 @@ In alphabetical order:
     - **pico.layer.image**: Creates a layer from an image file.
         - `pico.layer.image ([mode,] up: string?, key: string?, path: string)`
         - If `key` is omitted, uses `"/image/<path>"` as layer name.
+    - **pico.layer.images**: Creates sub-layer images from a reference
+        "sprite sheet" image.
+        - `pico.layer.images ([mode,] up: string?, key: string, path: string, t: table) -> {string}`
+            - `t`:
+                - **Grid**: `{ '#', w: integer, h: integer, [n: integer], [key: string] }`
+                    - generates sub-layers `"<key>-01"`, `"<key>-02"`, ...
+                        - the inner `key` overrides the outer `key` prefix
+                    - uses left-to-right order
+                    - `n` limits the count (default `w*h`)
+                - **Explicit**: `{ '!', [name1: Rect, name2: Rect, ...] }`
+                    - generates sub-layers `"<key>-<name>"` for each given
+                        `name=crop` pair
+            - Each sub-layer attaches to the same `up` parent as the image.
+        - Returns the list of generated sub-layer names.
     - **pico.layer.pixmap**: Creates a layer from a pixmap.
         - `pico.layer.pixmap ([mode,] up: string?, key: string,
           dim: Dim, pixmap: {{Color}})`
