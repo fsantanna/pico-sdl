@@ -961,7 +961,7 @@ The call to `pico.set.expert` serves two purposes:
 If the `FPS` argument is omitted, `pico.input.event` only awakes from events,
 but never from timeouts.
 
-### 9.2. A Simple Example
+### 8.2. A Simple Example
 
 The next example tracks the position of two pixels on a `10x10` screen:
 
