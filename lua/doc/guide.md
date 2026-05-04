@@ -957,3 +957,71 @@ The call to `pico.set.expert` serves two purposes:
 2. Sets the FPS rate to `40`, making `pico.input.event` awake every `25ms`.
     If an event occurs in the meantime, say after `10ms`, then `e` is set and
     the next call to `pico.input.event` resumes after only `15ms` (`25-10`).
+
+If the `FPS` argument is omitted, `pico.input.event` only awakes from events,
+but never from timeouts.
+
+### 9.2. A Simple Example
+
+The next example tracks the position of two pixels on a `10x10` screen:
+
+- one follows the mouse, wherever it moves to;
+- the other responds to the arrow keys.
+
+<img src="img/2-rects.gif" align="right" width="200">
+
+The complete source code is [here](rects.lua) (`~40` lines of code).
+
+Run the program:
+
+```
+$ pico-lua rects.lua
+```
+
+Now, let's discuss the implementation:
+
+```lua
+-- (omitted initialization - do not execute)
+
+pico.set.expert(true)               -- no timeouts
+
+local k = {'!', x=4, y=4}           -- key pixel
+local m = {'!', x=5, y=5}           -- mouse pixel
+
+while true do                       -- main loop
+    pico.output.clear()             -- redraw scene
+    pico.set.draw { color='red' }
+    pico.output.draw.pixel(m)
+    pico.set.draw { color='blue' }
+    pico.output.draw.pixel(k)
+    pico.output.present()
+
+    local e = pico.input.event()    -- handle events
+    assert(e, "no FPS set here")
+    if e.tag == 'mouse.motion' then
+        m = pico.get.mouse '!'
+    elseif e.tag == 'key.dn' then
+        if     e.key == 'Up'    then k.y = k.y - 1
+        elseif e.key == 'Down'  then k.y = k.y + 1
+        elseif e.key == 'Left'  then k.x = k.x - 1
+        elseif e.key == 'Right' then k.x = k.x + 1
+        end
+    end
+end
+```
+
+Since this example does not contain time-based animations, we do not set FPS in
+`pico.set.expert`, so `pico.input.event` awaits until an event occurs.
+
+The tables `m` and `k` represent the pixels controlled by the mouse and
+keyboard, respectively.
+They use the raw mode `'!'` and start centered at `(4,4)` and `(5,5)`.
+
+The main loop first draws their initial positions and awaits
+`pico.input.event`.
+In this example, we only handle `mouse.motion` and `key.dn` events:
+
+- for the mouse, we update `m.x` and `m.y` based on the received event `e`;
+- for the keyboard, we update `k.x` or `k.y` depending on `e.key`.
+
+Then, the loop iterates to redraw the scene and wait for the next event.

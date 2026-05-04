@@ -3,16 +3,18 @@ pico.init(true)
 pico.set.expert(true)
 pico.set.window { dim={'!', w=200, h=200}, title="2x Rects" }
 pico.set.view   { dim={'!', w=10,  h=10}  }
-pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0xCC) }
+
+local R = pico.color.alpha('red',  0xCC)
+local B = pico.color.alpha('blue', 0xCC)
 
 local k = {'!', x=4, y=4}        -- arrow-key pixel (centered)
 local m = {'!', x=5, y=5}        -- mouse pixel
 
 while true do
     pico.output.clear()
-    pico.set.draw { color='red' }
+    pico.set.draw { color=R }
     pico.output.draw.pixel(m)
-    pico.set.draw { color='blue' }
+    pico.set.draw { color=B }
     pico.output.draw.pixel(k)
     pico.output.present()
 
@@ -21,7 +23,7 @@ while true do
         if e.tag == 'quit' then
             break
         elseif e.tag == 'mouse.motion' then
-            m.x, m.y = e.x, e.y
+            m = pico.get.mouse '!'
         elseif e.tag == 'key.dn' then
             if     e.key == 'Up'    then k.y = k.y - 1
             elseif e.key == 'Down'  then k.y = k.y + 1
