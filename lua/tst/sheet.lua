@@ -66,9 +66,10 @@ pico.output.draw.rect(
     {'%', x=0.5, y=0, w=0.5, h=1, anchor='NW'})
 pico.output.screenshot("../../tst/out/sheet-grid.png")
 
-local names = pico.layer.images(nil, "grid",
-    "../../tst/out/sheet-grid.png",
-    {'#', w=2, h=1})
+local names = pico.layer.images (
+    nil, "grid", "../../tst/out/sheet-grid.png",
+    {'#', w=2, h=1}
+)
 assert(#names == 2)
 assert(names[1] == "grid-01")
 assert(names[2] == "grid-02")
@@ -83,14 +84,15 @@ pico.check("sheet-03")
 
 -- Test 4: pico.layer.images (explicit form)
 print("Test 4: explicit form")
-local names2 = pico.layer.images(nil, "expl",
-    "../../tst/out/sheet-grid.png", {
-    '!',
-    left  = {'%', x=0, y=0, w=0.5, h=1,
-             anchor='NW'},
-    right = {'%', x=0.5, y=0, w=0.5, h=1,
-             anchor='NW'},
-})
+local names2 = pico.layer.images (
+    nil, "expl", "../../tst/out/sheet-grid.png", {
+        '!',
+        left  = {'%', x=0, y=0, w=0.5, h=1,
+                 anchor='NW'},
+        right = {'%', x=0.5, y=0, w=0.5, h=1,
+                 anchor='NW'},
+    }
+)
 assert(#names2 == 2)
 table.sort(names2)
 assert(names2[1] == "expl-left")
@@ -99,9 +101,11 @@ assert(names2[2] == "expl-right")
 pico.set.show { color='black' }
 pico.output.clear()
 pico.output.draw.layer("expl-left",
-    {'%', x=0.25, y=0.5, w=0.5, h=1, anchor='C'})
+    {'%', x=0.25, y=0.5, w=0.5, h=1, anchor='C'}
+)
 pico.output.draw.layer("expl-right",
-    {'%', x=0.75, y=0.5, w=0.5, h=1, anchor='C'})
+    {'%', x=0.75, y=0.5, w=0.5, h=1, anchor='C'}
+)
 pico.check("sheet-04")
 
 pico.init(false)

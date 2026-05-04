@@ -6,7 +6,8 @@ pico.set.draw { style='stroke' }
 -- 4x4 sprite sheet -> subs "walk-01" to "walk-16"
 
 local frames = pico.layer.images (
-    "walk", "img/walk.png", {'#', w=4, h=4})
+    nil, "walk", "img/walk.png", {'#', w=4, h=4}
+)
 
 local dirs = {
     down  = { 1,  2,  3,  4},   -- walk-01 -> walk-04

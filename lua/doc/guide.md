@@ -1026,7 +1026,7 @@ In this example, we only handle `mouse.motion` and `key.dn` events:
 
 Then, the loop iterates to redraw the scene and wait for the next event.
 
-### 9.3. Animations
+### 8.3. Animations
 
 The next example creates two time-based animations that require to set
 `pico.set.expert` with FPS.
@@ -1108,12 +1108,13 @@ the next clock tick.
 In this example, `pico.input.event` either awakes from a `'quit'` event, which
 escapes the main loop, or after `50ms`, which applies the next animation step.
 
-In the omitted initialization, we use [#sub-layers](#84-sub-layers) to crop the
+In the omitted initialization, we use [#sub-layers](#73-sub-layers) to crop the
 `4x4` sprite sheet above:
 
 ```lua
 local frames = pico.layer.images (
-    "walk", "img/walk.png", {'#', w=4, h=4})
+    nil, "walk", "img/walk.png", {'#', w=4, h=4}
+)
 
 local dirs = {
     down  = { 1,  2,  3,  4},   -- walk-01 -> walk-04
