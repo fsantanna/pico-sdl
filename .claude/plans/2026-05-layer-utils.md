@@ -149,6 +149,17 @@ layer-targeted functions.
   an `up` chain that points at a layer-derived rect?
   Current proposal: yes, for symmetry with `get`.
 
+## Backlog (out-of-scope follow-ups)
+
+- Introduce a `Mode` type in `lua/doc/api.md`:
+    - **Mode**: `'!'` pixels | `'%'` percentage | `'#'` tiles | `'w'` window
+- Reuse `Mode` across Pos / Rect / Dim / Mouse type definitions
+  (currently each inlines its own subset; Pos/Rect/Dim wrongly omit `'w'`).
+- Then mark per-operation exceptions where a narrower set applies
+  (e.g. layer creators use `'!'|'%'|'#'|'='`, Color uses `'!'|'%'`).
+- Once `layer` arg lands, reword `(omit for current layer)` clauses to
+  disambiguate "current layer" vs "layer arg".
+
 ## Progress
 
 - [ ] C signatures updated
