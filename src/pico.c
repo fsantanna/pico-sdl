@@ -1598,7 +1598,8 @@ static void _pico_output_present (int force) {
 
 void pico_output_present (void) {
     _pico_guard();
-    assert(S.layer==&G.root && "can only present from main layer");
+    pico_set_layer(NULL);
+    //assert(S.layer==&G.root && "can only present from main layer");
     _pico_output_present(1);
 }
 
