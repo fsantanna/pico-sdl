@@ -914,3 +914,46 @@ the screen yet, since we have not called `pico.output.present`:
 </table>
 
 Now, both the rectangles appear at the same time.
+
+### 8.1. Application Main Loop
+
+Typical games and graphical applications need to deal continually with moving
+objects, input from users, and also the passage of time.
+These applications follow the same structure of a continuous "main loop":
+    poll user events,
+    update the state of objects,
+    redraw the whole scene (a frame), and
+    repeat at a given *FPS rate* (frames per second).
+
+This is what a main loop in `pico-lua` looks like:
+
+```
+-- (this is just a sketch - do not execute)
+
+pico.set.expert(true, 40)           -- 40 FPS
+
+while true do                       -- main loop
+    pico.output.clear()
+    pico.output.*()                 -- scene redrawing
+    pico.output.present()
+
+    local e,dt = pico.input.event() -- event / timeout awaiting
+
+    if e then
+        (normal lua code)           -- event handler (keys, mouse)
+    else
+        (normal lua code)           -- timeout handler (animations, collisions)
+    end
+end
+```
+
+The call to `pico.set.expert` serves two purposes:
+
+1. Disables automatic screen update that would happen after every single draw
+   call.
+    Now, all redrawing between `clear` and `present` appears as a single frame.
+    Even with hundreds of objects, the screen update is instantaneous.
+
+2. Sets the FPS rate to `40`, making `pico.input.event` awake every `25ms`.
+    If an event occurs in the meantime, say after `10ms`, then `e` is set and
+    the next call to `pico.input.event` resumes after only `15ms` (`25-10`).
