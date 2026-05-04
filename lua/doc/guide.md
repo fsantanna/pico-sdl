@@ -873,3 +873,44 @@ The next code listing implements this layout:
 
 After the scene is composed, we simply switch to the `root` layer and call
 `pico.output.present` to update the screen all at once.
+
+## 9. Expert Mode
+
+By default, each drawing operation in `pico-lua` becomes immediately visible on
+the screen.
+
+However, to keep visual objects in perfect sync, most games and non-trivial
+applications require to draw them simultaneously on every frame.
+
+With `pico.set.expert`, drawing operations are buffered until an explicit
+call to `pico.output.present`, which updates the screen with all objects at
+once:
+
+<table>
+<tr><td><pre>
+> pico.init(false) ; pico.init(true)
+> pico.set.expert(true)
+> pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
+> pico.input.delay(1000) -- artificial delay
+> pico.output.draw.rect { '!', x=66, y=66, w=40, h=40 }
+> pico.input.delay(1000) -- artificial delay
+</pre>
+</td><td>
+<img src="img/guide-09-00-01.png" width="200">
+</td></tr>
+</table>
+
+Even though, the code above takes at least `2s` to complete, at this point,
+nothing appears on the screen, since we have not yet called
+`pico.output.present`:
+
+<table>
+<tr><td><pre>
+> pico.output.present()
+</pre>
+</td><td>
+<img src="img/guide-09-00-02.png" width="200">
+</td></tr>
+</table>
+
+Now, both the rectangles appear at the same time.
