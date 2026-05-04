@@ -414,6 +414,8 @@ const char* pico_get_layer (void) {
 
 Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
     _pico_guard();
+    assert((mode=='!' || mode=='%' || mode=='#' || mode=='w'));
+    assert((mode!='w' || rect==NULL));
 
     SDL_Point phy;
     Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);

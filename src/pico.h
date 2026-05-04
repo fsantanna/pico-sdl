@@ -451,7 +451,7 @@ Pico_Keyboard pico_get_keyboard (void);
 
 /// @brief Gets the mouse state.
 /// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window)
-/// @param rect optional target rect for inverse transform (NULL for global coordinates, supports up chain)
+/// @param rect optional target rect for inverse transform
 /// @return mouse state with position and button flags
 /// @sa pico_set_mouse
 Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect);

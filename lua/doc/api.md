@@ -24,6 +24,7 @@ In alphabetical order:
         '!', x: integer, y: integer,
         left: boolean, right: boolean, middle: boolean }`
 - **Flip**: `'none'` | `'horizontal'` | `'vertical'` | `'both'`
+- **Mouse**: `{ ['!'|'%'|'#'|'w'], x: number, y: number, left: boolean, right: boolean, middle: boolean }`
 - **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
 - **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
 - **Rotation**: `{ angle: integer, anchor: Anchor }`
@@ -63,10 +64,9 @@ In alphabetical order:
         - `pico.get.layer () -> string?`
         - Returns `nil` for main layer
     - **pico.get.mouse**: Gets mouse position and button state.
-        - `pico.get.mouse ([mode: string]) -> Mouse`
-        - Returns `{mode, x=N, y=N, left=bool, right=bool, middle=bool}`
-        - Mode: `'!'` pixels, `'%'` percentage, `'#'` tiles, `'w'` window
-          (default from `pico.set.mouse`)
+        - `pico.get.mouse (mode: string [, rect: Rect]) -> Mouse`
+        - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles, `'w'` window
+        - `rect`: reference frame
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
     - **pico.get.text**: Gets text dimensions.
