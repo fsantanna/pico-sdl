@@ -1221,22 +1221,10 @@ static int l_layer_pixmap (lua_State* L) {
     const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
     const char* key = luaL_checkstring(L, i+1);
     luaL_checktype(L, i+2, LUA_TTABLE);
-    luaL_checktype(L, i+3, LUA_TTABLE);
 
-    Pico_Abs_Dim dim = {
-        (int) C_checkfieldnum(L, i+2, "w"),
-        (int) C_checkfieldnum(L, i+2, "h"),
-    };
-
-    Pico_Abs_Dim buf_dim = C_pixmap_dim(L, i+3);
-    if (buf_dim.w != dim.w || buf_dim.h != dim.h) {
-        return luaL_error(L,
-            "pixmap size %dx%d doesn't match dim %dx%d",
-            buf_dim.w, buf_dim.h, dim.w, dim.h);
-    }
-
-    Pico_Color buf[buf_dim.h][buf_dim.w];
-    C_pixmap_fill(L, i+3, buf_dim, (Pico_Color*)buf);
+    Pico_Abs_Dim dim = C_pixmap_dim(L, i+2);
+    Pico_Color buf[dim.h][dim.w];
+    C_pixmap_fill(L, i+2, dim, (Pico_Color*)buf);
 
     pico_layer_pixmap_mode(m, up, key, dim, (Pico_Color*)buf);
     return 0;

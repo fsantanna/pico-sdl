@@ -120,9 +120,7 @@ In alphabetical order:
             - Each sub-layer attaches to the same `up` parent as the image.
         - Returns the list of generated sub-layer names.
     - **pico.layer.pixmap**: Creates a layer from a pixmap.
-        - `pico.layer.pixmap ([mode,] up: string?, key: string,
-          dim: Dim, pixmap: {{Color}})`
-        - Pixmap is copied; pointer-based caching not possible.
+        - `pico.layer.pixmap ([mode,] up: string?, key: string, pixmap: {{Color}})`
     - **pico.layer.text**: Creates a layer from text.
         - `pico.layer.text ([mode,] up: string?, key: string,
           height: integer, text: string)`
