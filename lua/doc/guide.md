@@ -7,6 +7,7 @@
 5.  [Advanced Views](#5-advanced-views)
 6.  [Events](#6-events)
 7.  [Layers](#7-layers)
+8.  [Expert Mode](#8-expert-mode)
 
 ## 1. Introduction
 
@@ -874,10 +875,10 @@ The next code listing implements this layout:
 After the scene is composed, we simply switch to the `root` layer and call
 `pico.output.present` to update the screen all at once.
 
-## 9. Expert Mode
+## 8. Expert Mode
 
-By default, each drawing operation in `pico-lua` becomes immediately visible on
-the screen.
+By default, each drawing operation in the root layer becomes immediately
+visible on the screen.
 
 However, to keep visual objects in perfect sync, most games and non-trivial
 applications require to draw them simultaneously on every frame.
@@ -890,26 +891,25 @@ once:
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
 > pico.set.expert(true)
-> pico.output.draw.rect { '!', x=33, y=33, w=40, h=40 }
+> pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.4, h=0.4 }
 > pico.input.delay(1000) -- artificial delay
-> pico.output.draw.rect { '!', x=66, y=66, w=40, h=40 }
+> pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.4, h=0.4 }
 > pico.input.delay(1000) -- artificial delay
 </pre>
 </td><td>
-<img src="img/guide-09-00-01.png" width="200">
+<img src="../../tst/asr/guide-02-01-01.png" width="200">
 </td></tr>
 </table>
 
-Even though, the code above takes at least `2s` to complete, at this point,
-nothing appears on the screen, since we have not yet called
-`pico.output.present`:
+Although the code above takes at least `2s` to complete, nothing appears on
+the screen yet, since we have not called `pico.output.present`:
 
 <table>
 <tr><td><pre>
 > pico.output.present()
 </pre>
 </td><td>
-<img src="img/guide-09-00-02.png" width="200">
+<img src="../../tst/asr/guide-08-00-02.png" width="200">
 </td></tr>
 </table>
 

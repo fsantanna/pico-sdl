@@ -312,4 +312,21 @@ pico.set.layer()
 pico.output.present()
 pico.check("guide-07-04-02")
 
+-------------------------------------------------------------------------------
+-- Section 8: Expert Mode
+-------------------------------------------------------------------------------
+
+-- §8.a: expert mode buffers draws (delays omitted in tests)
+pico.init(false); pico.init(true)
+pico.set.window { title="guide-08-00-01" }
+pico.set.expert(true)
+pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.4, h=0.4 }
+pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.4, h=0.4 }
+pico.check("guide-02-01-01")
+
+-- §8.b: present flushes buffered draws
+pico.set.window { title="guide-08-00-02" }
+pico.output.present()
+pico.check("guide-08-00-02")
+
 pico.init(false)
