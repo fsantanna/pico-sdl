@@ -14,8 +14,8 @@ int main (void) {
         Pico_Abs_Dim cur = pico_get_window_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 1, cur.h * 1}, NULL };
         pico_set_window_dim(&dim);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         _pico_check("size_pct-01");
     }
     {
@@ -23,8 +23,8 @@ int main (void) {
         Pico_Abs_Dim cur = pico_get_window_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
         pico_set_window_dim(&dim);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         _pico_check("size_pct-02");
     }
     {
@@ -32,8 +32,8 @@ int main (void) {
         Pico_Abs_Dim cur = pico_get_window_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 0.25, cur.h * 0.25}, NULL };
         pico_set_window_dim(&dim);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         _pico_check("size_pct-03");
     }
     {
@@ -41,8 +41,8 @@ int main (void) {
         Pico_Abs_Dim cur = pico_get_window_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
         pico_set_window_dim(&dim);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         _pico_check("size_pct-04");
     }
 
@@ -50,15 +50,15 @@ int main (void) {
     {
         puts("full");
         pico_set_window_fs(1);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         //_pico_check("size_pct-05");
     }
     {
         puts("normal");
         pico_set_window_fs(0);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         _pico_check("size_pct-06");
     }
 
@@ -67,41 +67,41 @@ int main (void) {
     {
         puts("normal");
         Pico_Abs_Dim cur;
-        cur = pico_get_scene_dim(NULL);
+        cur = pico_get_scene_dim("root");
         Pico_Rel_Dim dim = { '!', {cur.w * 1, cur.h * 1}, NULL };
-        pico_set_scene_dim(NULL, &dim);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_set_scene_dim("root", &dim);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         _pico_check("size_pct-07");
     }
     {
         puts("double");
         Pico_Abs_Dim cur;
-        cur = pico_get_scene_dim(NULL);
+        cur = pico_get_scene_dim("root");
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
-        pico_set_scene_dim(NULL, &dim);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_set_scene_dim("root", &dim);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         _pico_check("size_pct-08");
     }
     {
         puts("half");
         Pico_Abs_Dim cur;
-        cur = pico_get_scene_dim(NULL);
+        cur = pico_get_scene_dim("root");
         Pico_Rel_Dim dim = { '!', {cur.w * 0.25, cur.h * 0.25}, NULL };
-        pico_set_scene_dim(NULL, &dim);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_set_scene_dim("root", &dim);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         _pico_check("size_pct-09");
     }
     {
         puts("normal");
         Pico_Abs_Dim cur;
-        cur = pico_get_scene_dim(NULL);
+        cur = pico_get_scene_dim("root");
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
-        pico_set_scene_dim(NULL, &dim);
-        pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_set_scene_dim("root", &dim);
+        pico_output_clear("root");
+        pico_output_draw_rect("root", &r);
         _pico_check("size_pct-10");
     }
 

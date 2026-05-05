@@ -197,75 +197,95 @@ void pico_input_loop (void);
 /// @{
 
 /// @brief Clears screen with color set by @ref pico_set_effect_color.
-void pico_output_clear (void);
+/// @param layer layer key (must exist)
+void pico_output_clear (const char* layer);
 
 /// @brief Draws an RGBA pixmap.
-/// @param key layer key for caching (required)
+/// @param layer layer key to draw onto (must exist)
+/// @param key cache key for the pixmap (required)
 /// @param dim pixmap dimensions in pixels
 /// @param pixmap the RGBA pixel data
 /// @param rect drawing rectangle (mode determines coordinate interpretation)
 /// @sa pico_output_draw_image
-void pico_output_draw_pixmap (const char* key, Pico_Abs_Dim dim,
+void pico_output_draw_pixmap (const char* layer, const char* key,
+                              Pico_Abs_Dim dim,
                               const Pico_Color pixmap[],
                               const Pico_Rel_Rect* rect);
 
 /// @brief Draws an image.
+/// @param layer layer key to draw onto (must exist)
 /// @param path path to the image file
 /// @param rect target position and dimension (mode determines coordinates)
 /// @sa pico_output_draw_pixmap
-void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect);
+void pico_output_draw_image (const char* layer, const char* path,
+                             Pico_Rel_Rect* rect);
 
 /// @brief Draws a line.
+/// @param layer layer key to draw onto (must exist)
 /// @param p1 first endpoint position (mode determines coordinates)
 /// @param p2 second endpoint position (mode determines coordinates)
-void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2);
+void pico_output_draw_line (const char* layer, Pico_Rel_Pos* p1,
+                            Pico_Rel_Pos* p2);
 
 /// @brief Draws a single pixel.
+/// @param layer layer key to draw onto (must exist)
 /// @param pos drawing position (mode determines coordinates)
-void pico_output_draw_pixel (Pico_Rel_Pos* pos);
+void pico_output_draw_pixel (const char* layer, Pico_Rel_Pos* pos);
 
 /// @brief Draws a batch of pixels.
+/// @param layer layer key to draw onto (must exist)
 /// @param n number of positions
 /// @param ps array of positions (mode determines coordinates)
-void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
+void pico_output_draw_pixels (const char* layer, int n,
+                              const Pico_Rel_Pos* ps);
 
-/// @brief Draws a layer onto the current layer.
-/// @param key layer key (must exist)
+/// @brief Draws a layer onto another layer.
+/// @param layer layer key to draw onto (must exist)
+/// @param key layer key to draw (must exist)
 /// @param rect target position and dimension (mode determines coordinates)
-void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect);
+void pico_output_draw_layer (const char* layer, const char* key,
+                             Pico_Rel_Rect* rect);
 
 /// @brief Draws a rectangle.
+/// @param layer layer key to draw onto (must exist)
 /// @param rect rectangle to draw (mode determines coordinates)
-void pico_output_draw_rect (Pico_Rel_Rect* rect);
+void pico_output_draw_rect (const char* layer, Pico_Rel_Rect* rect);
 
 /// @brief Draws a triangle.
+/// @param layer layer key to draw onto (must exist)
 /// @param p1 first vertex position (mode determines coordinates)
 /// @param p2 second vertex position (mode determines coordinates)
 /// @param p3 third vertex position (mode determines coordinates)
-void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3);
+void pico_output_draw_tri (const char* layer, Pico_Rel_Pos* p1,
+                           Pico_Rel_Pos* p2, Pico_Rel_Pos* p3);
 
 /// @brief Draws an ellipse.
+/// @param layer layer key to draw onto (must exist)
 /// @param rect bounding rectangle (mode determines coordinates)
-void pico_output_draw_oval (Pico_Rel_Rect* rect);
+void pico_output_draw_oval (const char* layer, Pico_Rel_Rect* rect);
 
 /// @brief Draws a polygon.
+/// @param layer layer key to draw onto (must exist)
 /// @param n number of vertices
 /// @param ps array of vertex positions (mode determines coordinates)
-void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps);
+void pico_output_draw_poly (const char* layer, int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws text (shared caching by text content).
+/// @param layer layer key to draw onto (must exist)
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
-void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect);
+void pico_output_draw_text (const char* layer, const char* text,
+                            Pico_Rel_Rect* rect);
 
 /// @brief Draws text with explicit realm mode and layer key.
+/// @param layer layer key to draw onto (must exist)
 /// @param mode realm mode ('!' exclusive, '=' shared,
 ///             '~' replace)
 /// @param key layer key
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
 void pico_output_draw_text_mode (
-    int mode,
+    const char* layer, int mode,
     const char* key, const char* text,
     Pico_Rel_Rect* rect
 );
@@ -286,7 +306,8 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
 /// @param path path to the Y4M video file
 /// @param rect target position and dimension
 /// @return 1 if frame drawn, or 0 at EOF
-int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect);
+int pico_output_draw_video (const char* layer, const char* path,
+                            Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file
@@ -301,7 +322,7 @@ void pico_output_sound (const char* path);
 // GET
 
 /// @brief Gets the entire draw state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @param layer layer key (required, non-NULL)
 /// @param draw output struct populated with draw state
 /// @sa pico_set_pencil
 void        pico_get_pencil       (const char* layer, Pico_Layer_Pencil* draw);
@@ -321,13 +342,8 @@ int pico_get_expert (int* fps);
 /// @return absolute dimensions (missing w or h filled based on aspect ratio)
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 
-/// @brief Gets current layer key.
-/// @return layer key (NULL = main layer)
-/// @sa pico_set_layer
-const char* pico_get_layer (void);
-
 /// @brief Gets the entire show state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @param layer layer key (required, non-NULL)
 /// @param show output struct populated with show state
 /// @sa pico_set_effect
 void          pico_get_effect          (const char* layer, Pico_Layer_Effect* show);
@@ -484,7 +500,7 @@ Pico_Abs_Dim pico_get_text_mode (
 );
 
 /// @brief Gets the entire view state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @param layer layer key (required, non-NULL)
 /// @param view output struct populated with view state
 /// @sa pico_set_scene
 void          pico_get_scene      (const char* layer, Pico_Layer_Scene* view);
@@ -514,7 +530,7 @@ const char*  pico_get_window_title (void);
 void pico_set_dim (Pico_Rel_Dim* dim);
 
 /// @brief Sets the entire draw state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @param layer layer key (required, non-NULL)
 /// @param draw new draw state
 /// @sa pico_get_pencil
 void pico_set_pencil       (const char* layer, Pico_Layer_Pencil draw);
@@ -529,18 +545,13 @@ void pico_set_pencil_style (const char* layer, PICO_STYLE style);
 /// @sa pico_get_expert
 int pico_set_expert (int on, int fps);
 
-/// @brief Switches the current render-target layer.
-/// @param key layer key (NULL = main layer)
-/// @sa pico_get_layer
-void pico_set_layer (const char* key);
-
 /// @brief Warps the mouse cursor to the given relative position.
 /// @param pos target position (mode, x, y, anchor, up chain)
 /// @sa pico_get_mouse
 void pico_set_mouse (Pico_Rel_Pos* pos);
 
 /// @brief Sets the entire show state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @param layer layer key (required, non-NULL)
 /// @param show new show state
 /// @sa pico_get_effect
 void pico_set_effect          (const char* layer, Pico_Layer_Effect show);
@@ -559,7 +570,7 @@ void pico_set_effect_rotate   (const char* layer, Pico_Rot rotate);
 int pico_set_video (const char* key, int frame);
 
 /// @brief Sets the entire view state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @param layer layer key (required, non-NULL)
 /// @param view new view state
 /// @sa pico_get_scene
 void pico_set_scene      (const char* layer, Pico_Layer_Scene view);

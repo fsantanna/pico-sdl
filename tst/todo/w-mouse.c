@@ -2,10 +2,10 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){'!', {10, 10}, NULL});
+    pico_set_scene_dim("root", &(Pico_Rel_Dim){'!', {10, 10}, NULL});
 
-    pico_output_clear();
-    pico_set_pencil_color(NULL, pico_color_alpha(pico_get_pencil_color(NULL), 0x80));
+    pico_output_clear("root");
+    pico_set_pencil_color("root", pico_color_alpha(pico_get_pencil_color(NULL), 0x80));
 
     // Each position drawn 3 times with NW/C/SE anchors
 #if 1
@@ -16,16 +16,16 @@ int main (void) {
         float y = py[i];
 
         // Red — NW anchor
-        pico_set_pencil_color(NULL, PICO_COLOR_RED);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_NW, NULL});
+        pico_set_pencil_color("root", PICO_COLOR_RED);
+        pico_output_draw_pixel("root", &(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_NW, NULL});
 
         // Green — C anchor
-        pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_C, NULL});
+        pico_set_pencil_color("root", PICO_COLOR_GREEN);
+        pico_output_draw_pixel("root", &(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_C, NULL});
 
         // Blue — SE anchor
-        pico_set_pencil_color(NULL, PICO_COLOR_BLUE);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_SE, NULL});
+        pico_set_pencil_color("root", PICO_COLOR_BLUE);
+        pico_output_draw_pixel("root", &(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_SE, NULL});
     }
 #endif
 
@@ -38,16 +38,16 @@ int main (void) {
         float y = wy[i];
 
         // Red — NW anchor
-        pico_set_pencil_color(NULL, PICO_COLOR_RED);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW, NULL});
+        pico_set_pencil_color("root", PICO_COLOR_RED);
+        pico_output_draw_pixel("root", &(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW, NULL});
 
         // Green — C anchor
-        pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_C, NULL});
+        pico_set_pencil_color("root", PICO_COLOR_GREEN);
+        pico_output_draw_pixel("root", &(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_C, NULL});
 
         // Blue — SE anchor
-        pico_set_pencil_color(NULL, PICO_COLOR_BLUE);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_SE, NULL});
+        pico_set_pencil_color("root", PICO_COLOR_BLUE);
+        pico_output_draw_pixel("root", &(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_SE, NULL});
     }
 #endif
 

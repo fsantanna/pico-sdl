@@ -9,40 +9,40 @@ int main(void) {
     Pico_Pos pt = {50, 50};  // Center of 100x100 world
     Pico_Rect rect = {pt.x, pt.y, 30, 30};
 
-    pico_output_clear();
-    pico_output_draw_rect(rect);
+    pico_output_clear("root");
+    pico_output_draw_rect("root", rect);
     puts("RECT");
     _pico_check("scale-01");
 
     pico_set_scale((Pico_Pct){150,150});
-    pico_output_clear();
-    pico_output_draw_rect(rect);
+    pico_output_clear("root");
+    pico_output_draw_rect("root", rect);
     puts("RECT - scale up");
     _pico_check("scale-02");
 
     pico_set_scale((Pico_Pct){50,50});
-    pico_output_clear();
-    pico_output_draw_rect(rect);
+    pico_output_clear("root");
+    pico_output_draw_rect("root", rect);
     puts("RECT - scale dn");
     _pico_check("scale-03");
 
     pico_set_anchor_pos((Pico_Anchor){PICO_RIGHT, PICO_BOTTOM});
 
-    pico_output_clear();
+    pico_output_clear("root");
     pico_set_scale((Pico_Pct){100,100});
-    pico_output_draw_rect(rect);
+    pico_output_draw_rect("root", rect);
     puts("RECT (bottom-right)");
     _pico_check("scale-04");
 
     pico_set_scale((Pico_Pct){150,150});
-    pico_output_clear();
-    pico_output_draw_rect(rect);
+    pico_output_clear("root");
+    pico_output_draw_rect("root", rect);
     puts("RECT (bottom-right) - scale up");
     _pico_check("scale-05");
 
     pico_set_scale((Pico_Pct){50,50});
-    pico_output_clear();
-    pico_output_draw_rect(rect);
+    pico_output_clear("root");
+    pico_output_draw_rect("root", rect);
     puts("RECT (bottom-right) - scale dn");
     _pico_check("scale-06");
     

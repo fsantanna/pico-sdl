@@ -7,20 +7,20 @@ int main() {
     Pico_Rel_Dim phy = { '!', {200,200}, NULL };
     Pico_Rel_Dim log = { '!', { 20, 20}, NULL };
     pico_set_window_dim(&phy);
-    pico_set_scene_dim(NULL, &log);
+    pico_set_scene_dim("root", &log);
 
     Pico_Rel_Rect r = { '!', { 10-2, 10-2, 4, 4 }, PICO_ANCHOR_NW, NULL };
 
     puts("pos_vs_rect");
     for (int y=r.y-1; y<=r.y+r.h; y++) {
         for (int x=r.x-1; x<=r.x+r.w; x++) {
-            pico_output_clear();
-            pico_set_pencil_color(NULL, (Pico_Color){255,255,255, 0xFF});
-            pico_output_draw_rect(&r);
+            pico_output_clear("root");
+            pico_set_pencil_color("root", (Pico_Color){255,255,255, 0xFF});
+            pico_output_draw_rect("root", &r);
 
             Pico_Rel_Pos p = { '!', {x, y}, PICO_ANCHOR_NW, NULL };
-            pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
-            pico_output_draw_pixel(&p);
+            pico_set_pencil_color("root", (Pico_Color){255,0,0, 0xFF});
+            pico_output_draw_pixel("root", &p);
 
             int in = pico_vs_pos_rect("root", &p, &r);
             //puts(in ? "in" : "out");
@@ -56,13 +56,13 @@ int main() {
     puts("rect_vs_rect");
     for (int y=r.y-r.h; y<=r.y+r.h; y++) {
         for (int x=r.x-r.w; x<=r.x+r.w; x++) {
-            pico_output_clear();
-            pico_set_pencil_color(NULL, (Pico_Color){255,255,255, 0xFF});
-            pico_output_draw_rect(&r);
+            pico_output_clear("root");
+            pico_set_pencil_color("root", (Pico_Color){255,255,255, 0xFF});
+            pico_output_draw_rect("root", &r);
 
             Pico_Rel_Rect r2 = { '!', {x,y,4,4}, PICO_ANCHOR_NW, NULL };
-            pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
-            pico_output_draw_rect(&r2);
+            pico_set_pencil_color("root", (Pico_Color){255,0,0, 0xFF});
+            pico_output_draw_rect("root", &r2);
 
             int in = pico_vs_rect_rect("root", &r2, &r);
             //puts(in ? "overlap" : "naw");

@@ -31,7 +31,6 @@ typedef struct {
 } Pico_Layer_Sub;
 
 static Pico_Layer* _pico_layer_name (const char* name);
-static Pico_Layer* _pico_layer_null (const char* name);
 
 static Pico_Layer* _pico_layer_pixmap (
     int mode, const char* key, Pico_Abs_Dim dim,
@@ -41,10 +40,10 @@ static Pico_Layer* _pico_layer_image (
     int mode, const char* key, const char* path
 );
 static Pico_Layer* _pico_layer_text (
-    int mode, const char* key, int height, const char* text
+    Pico_Layer* L, int mode, const char* key, int height, const char* text
 );
 static void _pico_output_draw_layer (
-    Pico_Layer* layer, Pico_Rel_Rect* rect
+    Pico_Layer* parent, Pico_Layer* layer, Pico_Rel_Rect* rect
 );
 
 #endif // PICO_LAYERS_HC
@@ -56,14 +55,6 @@ static Pico_Layer* _pico_layer_name (const char* name) {
     Pico_Layer* L = (Pico_Layer*) realm_get(G.realm, strlen(name)+1, name);
     pico_assert(L!=NULL && "layer does not exist");
     return L;
-}
-
-static Pico_Layer* _pico_layer_null (const char* name) {
-    if (name == NULL) {
-        return S.layer;
-    } else {
-        return _pico_layer_name(name);
-    }
 }
 
 static void _layer_attach (const char* up, const char* dn) {
@@ -82,11 +73,9 @@ static void _layer_attach (const char* up, const char* dn) {
     }
 }
 
-static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
+static void _pico_output_draw_layer (Pico_Layer*, Pico_Layer*, Pico_Rel_Rect*);
 
 static void _layer_traverse (Pico_Layer* UP) {
-    Pico_Layer* old = S.layer;
-    S.layer = UP;
     const char* cur = UP->hier.dn.fst;
     while (cur != NULL) {
         Pico_Layer* CUR = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
@@ -96,7 +85,7 @@ static void _layer_traverse (Pico_Layer* UP) {
         _layer_traverse(CUR);
 
         SDL_SetRenderTarget(G.ren, UP->tex);
-        _pico_output_draw_layer(CUR, NULL);
+        _pico_output_draw_layer(UP, CUR, NULL);
 
         // post-composite clear: allows drawing bw presents
         if (!CUR->scene.keep) {
@@ -107,7 +96,6 @@ static void _layer_traverse (Pico_Layer* UP) {
         }
         cur = CUR->hier.nxt;
     }
-    S.layer = old;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -143,15 +131,15 @@ static Pico_Layer* _pico_layer_image (
 }
 
 static Pico_Layer* _pico_layer_text (
-    int mode, const char* key, int height, const char* text
+    Pico_Layer* L, int mode, const char* key, int height, const char* text
 ) {
     assert(text!=NULL && text[0]!='\0' && "text required");
 
     const char* str;
     char* str_buf = NULL;
     if (key == NULL) {
-        const char* font = S.layer->pencil.font;
-        Pico_Color clr = S.layer->pencil.color;
+        const char* font = L->pencil.font;
+        Pico_Color clr = L->pencil.color;
         const char* font_str = font ? font : "null";
         int buflen = strlen("/text/") + strlen(font_str) + 1
             + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
@@ -163,7 +151,7 @@ static Pico_Layer* _pico_layer_text (
         str = key;
     }
 
-    _alloc_text_t ctx = { height, text };
+    _alloc_text_t ctx = { height, text, L->pencil.font, L->pencil.color };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(str)+1, str,
         _free_layer, _alloc_layer_text, &ctx
@@ -175,9 +163,9 @@ static Pico_Layer* _pico_layer_text (
 ///////////////////////////////////////////////////////////////////////////////
 
 static void _pico_output_draw_layer (
-    Pico_Layer* layer, Pico_Rel_Rect* rect
+    Pico_Layer* parent, Pico_Layer* layer, Pico_Rel_Rect* rect
 ) {
-    // blit layer onto current render target
+    // blit layer onto parent's render target
     if (rect == NULL) {
         rect = &layer->scene.dst;
     }
@@ -185,7 +173,7 @@ static void _pico_output_draw_layer (
     if (rect->w == 0 || rect->h == 0) {
         dp = &layer->scene.dim;
     }
-    SDL_FRect rf = _sdl_rect(S.layer, rect, NULL, dp);
+    SDL_FRect rf = _sdl_rect(parent, rect, NULL, dp);
     SDL_Rect dst = _abs_rect(&rf);
 
     Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ? &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
@@ -195,7 +183,7 @@ static void _pico_output_draw_layer (
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-    SDL_SetTextureAlphaMod(layer->tex, S.layer->pencil.color.a*layer->effect.alpha/255);
+    SDL_SetTextureAlphaMod(layer->tex, parent->pencil.color.a*layer->effect.alpha/255);
     SDL_Point center = {
         dst.w * layer->effect.rotate.anchor.x,
         dst.h * layer->effect.rotate.anchor.y

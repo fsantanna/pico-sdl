@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={100,100}, .fs=0, .show=1, .title="pixels" });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {5, 5}, NULL });
+    pico_set_scene_dim("root", &(Pico_Rel_Dim){ '!', {5, 5}, NULL });
 
     {
         Pico_Rel_Pos pixels[9] = {
@@ -19,8 +19,8 @@ int main (void) {
             { '!', {3, 3}, PICO_ANCHOR_NW, NULL }
         };
         for (int i=1; i<=9; i++) {
-            pico_output_clear();
-            pico_output_draw_pixels(i, pixels);
+            pico_output_clear("root");
+            pico_output_draw_pixels("root", i, pixels);
             printf("%d pixels\n", i);
             pico_input_delay(10);
         }
@@ -34,7 +34,7 @@ int main (void) {
             { '%', {0, 1}, PICO_ANCHOR_SW, NULL },
             { '%', {1, 1}, PICO_ANCHOR_SE, NULL },
         };
-        pico_output_draw_pixels(4, pixels);
+        pico_output_draw_pixels("root", 4, pixels);
         _pico_check("pixels-02");
     }
 

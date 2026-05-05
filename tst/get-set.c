@@ -5,62 +5,62 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Get-Set" });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
+    pico_set_scene_dim("root", &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
 
     // color_clear
     puts("color_clear");
     {
-        pico_set_effect_color(NULL, PICO_COLOR_RED);
-        Pico_Color c = pico_get_effect_color(NULL);
+        pico_set_effect_color("root", PICO_COLOR_RED);
+        Pico_Color c = pico_get_effect_color("root");
         assert(c.r == 255 && c.g == 0 && c.b == 0);
-        pico_set_effect_color(NULL, PICO_COLOR_BLUE);
-        c = pico_get_effect_color(NULL);
+        pico_set_effect_color("root", PICO_COLOR_BLUE);
+        c = pico_get_effect_color("root");
         assert(c.r == 0 && c.g == 0 && c.b == 255);
-        pico_set_effect_color(NULL, PICO_COLOR_BLACK);
-        c = pico_get_effect_color(NULL);
+        pico_set_effect_color("root", PICO_COLOR_BLACK);
+        c = pico_get_effect_color("root");
         assert(c.r == 0 && c.g == 0 && c.b == 0);
     }
 
     // color_draw
     puts("color_draw");
     {
-        pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
-        Pico_Color c = pico_get_pencil_color(NULL);
+        pico_set_pencil_color("root", PICO_COLOR_GREEN);
+        Pico_Color c = pico_get_pencil_color("root");
         assert(c.r == 0 && c.g == 255 && c.b == 0);
-        pico_set_pencil_color(NULL, PICO_COLOR_YELLOW);
-        c = pico_get_pencil_color(NULL);
+        pico_set_pencil_color("root", PICO_COLOR_YELLOW);
+        c = pico_get_pencil_color("root");
         assert(c.r == 255 && c.g == 255 && c.b == 0);
-        pico_set_pencil_color(NULL, PICO_COLOR_WHITE);
-        c = pico_get_pencil_color(NULL);
+        pico_set_pencil_color("root", PICO_COLOR_WHITE);
+        c = pico_get_pencil_color("root");
         assert(c.r == 255 && c.g == 255 && c.b == 255);
     }
 
     // draw_style
     puts("draw_style");
     {
-        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
-        assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
-        pico_set_pencil_style(NULL, PICO_STYLE_STROKE);
-        assert(pico_get_pencil_style(NULL) == PICO_STYLE_STROKE);
-        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
-        assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
+        pico_set_pencil_style("root", PICO_STYLE_FILL);
+        assert(pico_get_pencil_style("root") == PICO_STYLE_FILL);
+        pico_set_pencil_style("root", PICO_STYLE_STROKE);
+        assert(pico_get_pencil_style("root") == PICO_STYLE_STROKE);
+        pico_set_pencil_style("root", PICO_STYLE_FILL);
+        assert(pico_get_pencil_style("root") == PICO_STYLE_FILL);
     }
 
     // draw (bulk setter/getter)
     puts("draw bulk");
     {
-        pico_set_pencil(NULL, (Pico_Layer_Pencil){
+        pico_set_pencil("root", (Pico_Layer_Pencil){
             .color=PICO_COLOR_RED, .font="test.ttf", .style=PICO_STYLE_STROKE
         });
 
         Pico_Layer_Pencil gd;
-        pico_get_pencil(NULL, &gd);
+        pico_get_pencil("root", &gd);
         assert(gd.color.r == 255 && gd.color.g == 0 && gd.color.b == 0);
         assert(strcmp(gd.font, "test.ttf") == 0);
         assert(gd.style == PICO_STYLE_STROKE);
 
         // restore
-        pico_set_pencil(NULL, (Pico_Layer_Pencil){
+        pico_set_pencil("root", (Pico_Layer_Pencil){
             .color={0xFF,0xFF,0xFF,0xFF}, .font=NULL, .style=PICO_STYLE_FILL
         });
     }
@@ -68,35 +68,35 @@ int main (void) {
     // show (individual setters)
     puts("show individual");
     {
-        pico_set_effect_alpha(NULL, 0x80);
-        assert(pico_get_effect_alpha(NULL) == 0x80);
-        pico_set_effect_alpha(NULL, 0xFF);
+        pico_set_effect_alpha("root", 0x80);
+        assert(pico_get_effect_alpha("root") == 0x80);
+        pico_set_effect_alpha("root", 0xFF);
 
-        pico_set_effect_grid(NULL, 1);
-        assert(pico_get_effect_grid(NULL) == 1);
-        pico_set_effect_grid(NULL, 0);
-        assert(pico_get_effect_grid(NULL) == 0);
+        pico_set_effect_grid("root", 1);
+        assert(pico_get_effect_grid("root") == 1);
+        pico_set_effect_grid("root", 0);
+        assert(pico_get_effect_grid("root") == 0);
 
-        pico_set_effect_flip(NULL, PICO_FLIP_HORIZONTAL);
-        assert(pico_get_effect_flip(NULL) == PICO_FLIP_HORIZONTAL);
-        pico_set_effect_flip(NULL, PICO_FLIP_NONE);
+        pico_set_effect_flip("root", PICO_FLIP_HORIZONTAL);
+        assert(pico_get_effect_flip("root") == PICO_FLIP_HORIZONTAL);
+        pico_set_effect_flip("root", PICO_FLIP_NONE);
 
         Pico_Rot rot = {45, PICO_ANCHOR_C};
-        pico_set_effect_rotate(NULL, rot);
-        Pico_Rot got = pico_get_effect_rotate(NULL);
+        pico_set_effect_rotate("root", rot);
+        Pico_Rot got = pico_get_effect_rotate("root");
         assert(got.angle == 45);
-        pico_set_effect_rotate(NULL, (Pico_Rot){0, PICO_ANCHOR_C});
+        pico_set_effect_rotate("root", (Pico_Rot){0, PICO_ANCHOR_C});
     }
 
     // show (bulk setter/getter)
     puts("show bulk");
     {
-        pico_set_effect(NULL, (Pico_Layer_Effect){
+        pico_set_effect("root", (Pico_Layer_Effect){
             .alpha=0x40, .color=PICO_COLOR_RED, .flip=PICO_FLIP_VERTICAL, .grid=1, .rotate={90, PICO_ANCHOR_C}
         });
 
         Pico_Layer_Effect gs;
-        pico_get_effect(NULL, &gs);
+        pico_get_effect("root", &gs);
         assert(gs.alpha == 0x40);
         assert(gs.color.r == 255 && gs.color.g == 0 && gs.color.b == 0);
         assert(gs.flip == PICO_FLIP_VERTICAL);
@@ -104,7 +104,7 @@ int main (void) {
         assert(gs.rotate.angle == 90);
 
         // restore
-        pico_set_effect(NULL, (Pico_Layer_Effect){
+        pico_set_effect("root", (Pico_Layer_Effect){
             .alpha=0xFF, .color={0,0,0,0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .rotate={0, PICO_ANCHOR_C}
         });
     }
@@ -130,10 +130,10 @@ int main (void) {
     puts("view roundtrip");
     {
         Pico_Layer_Scene v1;
-        pico_get_scene(NULL, &v1);
-        pico_set_scene(NULL, v1);
+        pico_get_scene("root", &v1);
+        pico_set_scene("root", v1);
         Pico_Layer_Scene v2;
-        pico_get_scene(NULL, &v2);
+        pico_get_scene("root", &v2);
         assert(v2.dim.w == v1.dim.w && v2.dim.h == v1.dim.h);
         assert(v2.dst.mode == v1.dst.mode);
         assert(v2.src.mode == v1.src.mode);

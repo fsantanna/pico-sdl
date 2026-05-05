@@ -8,12 +8,12 @@ void check (const char* out, const char* asr) {
 
 int main (void) {
     pico_init(1);
-    pico_output_clear();
+    pico_output_clear("root");
 
     {
         puts("entire screen - 01");
         Pico_Rel_Rect r = { '!', {10, 10, 20, 20}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect("root", &r);
         const char* f = pico_output_screenshot(NULL, NULL);
         assert(f != NULL);
         check(f, "asr/shot-01.png");
@@ -22,9 +22,9 @@ int main (void) {
 
     {
         puts("entire screen - 02");
-        pico_set_pencil_color(NULL, (Pico_Color){200, 0, 0, 0xFF});
+        pico_set_pencil_color("root", (Pico_Color){200, 0, 0, 0xFF});
         Pico_Rel_Rect r = { '!', {30, 30, 10, 10}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect("root", &r);
         const char* f = pico_output_screenshot("out/shot-02.png", NULL);
         assert(!strcmp(f, "out/shot-02.png"));
         check(f, "asr/shot-02.png");
@@ -32,9 +32,9 @@ int main (void) {
 
     {
         puts("part of screen (raw)");
-        pico_set_pencil_color(NULL, (Pico_Color){0, 200, 0, 0xFF});
+        pico_set_pencil_color("root", (Pico_Color){0, 200, 0, 0xFF});
         Pico_Rel_Rect r = { '!', {40, 5, 10, 10}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect("root", &r);
         Pico_Rel_Rect clip = { '!', {0, 0, 250, 150}, PICO_ANCHOR_NW, NULL };
         const char* f = pico_output_screenshot(NULL, &clip);
         assert(f != NULL);
@@ -44,8 +44,8 @@ int main (void) {
 
     {
         puts("part of screen (pct)");
-        pico_set_pencil_color(NULL, (Pico_Color){0, 0, 200, 0xFF});
-        pico_output_draw_rect (
+        pico_set_pencil_color("root", (Pico_Color){0, 0, 200, 0xFF});
+        pico_output_draw_rect ("root",
             &(Pico_Rel_Rect) { '!', {50, 50, 10, 10}, PICO_ANCHOR_NW, NULL }
         );
         const char* f = pico_output_screenshot(NULL,

@@ -2,59 +2,33 @@ require 'pico.check'
 
 pico.init(true)
 
--- get_layer returns nil (main layer)
-print("get_layer returns nil initially")
-local layer = pico.get.layer()
-assert(layer == "root")
-
--- set_layer(nil) switches to main
-print("set_layer(nil) keeps main layer")
-pico.set.layer(nil)
-layer = pico.get.layer()
-assert(layer == "root")
-
 -- create bg layer (32x32)
-print("create and switch to layer")
+print("create background layer")
 pico.layer.empty('!', nil, "background", {w=32, h=32})
-pico.set.layer("background")
-layer = pico.get.layer()
-assert(layer == "background")
 
 -- create ui layer (48x48)
-print("switch to another layer")
+print("create ui layer")
 pico.layer.empty('!', nil, "ui", {w=48, h=48})
-pico.set.layer("ui")
-layer = pico.get.layer()
-assert(layer == "ui")
 
 -- draw on bg layer (red background)
-print("draw on layer (no auto-present)")
-pico.set.layer("background")
-pico.set.effect { color={'!', r=0x80, g=0x00, b=0x00} }
-pico.output.clear()
-pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
-pico.set.layer()
+print("draw on background layer directly")
+pico.set.effect("background", { color={'!', r=0x80, g=0x00, b=0x00} })
+pico.output.clear("background")
+pico.set.pencil("background", { color='white' })
+pico.output.draw.rect("background", {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
 pico.output.clear()
 pico.output.draw.layer("background", {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'})
 pico.check("layers-01")
 
 -- draw on ui layer (blue background)
 print("draw on ui layer")
-pico.set.layer("ui")
-pico.set.effect { color={'!', r=0x00, g=0x00, b=0x80} }
-pico.output.clear()
-pico.set.pencil { color='green' }
-pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
-pico.set.layer(nil)
+pico.set.effect("ui", { color={'!', r=0x00, g=0x00, b=0x80} })
+pico.output.clear("ui")
+pico.set.pencil("ui", { color='green' })
+pico.output.draw.rect("ui", {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
 pico.output.clear()
 pico.output.draw.layer("ui", {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'})
 pico.check("layers-02")
-
--- switch back to main
-print("switch back to main")
-pico.set.layer(nil)
-layer = pico.get.layer()
-assert(layer == "root")
 
 -- composite layers onto main
 print("draw layers onto main")
@@ -64,8 +38,8 @@ pico.output.draw.layer("background", {'%', x=1.0/3, y=1.0/3, h=1.0/3, anchor='C'
 pico.output.draw.layer("ui", {'%', x=2.0/3, y=2.0/3, w=1.0/3, anchor='C'})
 pico.check("layers-03")
 
--- present works on main
-print("present works on main")
+-- present works
+print("present works")
 pico.output.present()
 
 pico.init(false)

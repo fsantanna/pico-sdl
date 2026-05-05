@@ -4,13 +4,13 @@
 int main (void) {
     pico_init(1);
     pico_set_window_dim(&(Pico_Rel_Dim){ '!', {160, 160}, NULL });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {16, 16}, NULL });
-    pico_output_clear();
+    pico_set_scene_dim("root", &(Pico_Rel_Dim){ '!', {16, 16}, NULL });
+    pico_output_clear("root");
     for (int i=0; i<16; i++) {
-        pico_output_draw_pixel (
+        pico_output_draw_pixel ("root",
             &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_NW, NULL }
         );
-        pico_output_draw_pixel (
+        pico_output_draw_pixel ("root",
             &(Pico_Rel_Pos) { '!', {15-i, i}, PICO_ANCHOR_NW, NULL }
         );
         pico_input_delay(10);

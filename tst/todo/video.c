@@ -29,8 +29,8 @@ int main (void) {
     int win_w = info.dim.w * scale;
     int win_h = info.dim.h * scale + BAR_H * 2;
     pico_set_window((Pico_Window){ .dim={win_w,win_h}, .fs=0, .show=1, .title="Video Player" });
-    pico_set_effect_grid(NULL, 0);
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL});
+    pico_set_effect_grid("root", 0);
+    pico_set_scene_dim("root", &(Pico_Rel_Dim){'!', {win_w, win_h}, NULL});
 
     pico_layer_video(NULL, "vid", VIDEO_PATH);
 
@@ -56,11 +56,11 @@ int main (void) {
         pico_set_video("vid", frame);
 
         /* Draw video */
-        pico_set_effect_color(NULL, 
+        pico_set_effect_color("root", 
             (Pico_Color){0x20, 0x20, 0x20, 0xFF}
         );
-        pico_output_clear();
-        pico_output_draw_layer(
+        pico_output_clear("root");
+        pico_output_draw_layer("root", 
             "vid",
             &(Pico_Rel_Rect){
                 '!',
@@ -71,10 +71,10 @@ int main (void) {
         );
 
         /* Draw seek bar background */
-        pico_set_pencil_color(NULL, 
+        pico_set_pencil_color("root", 
             (Pico_Color){0x40, 0x40, 0x40, 0xFF}
         );
-        pico_output_draw_rect(
+        pico_output_draw_rect("root", 
             &(Pico_Rel_Rect){
                 '!',
                 {0, win_h - BAR_H * 2, win_w, BAR_H},
@@ -85,10 +85,10 @@ int main (void) {
         /* Draw seek bar progress */
         float pct = (float)frame / (total - 1);
         int bar_w = (int)(pct * win_w);
-        pico_set_pencil_color(NULL, 
+        pico_set_pencil_color("root", 
             (Pico_Color){0x00, 0xAA, 0xFF, 0xFF}
         );
-        pico_output_draw_rect(
+        pico_output_draw_rect("root", 
             &(Pico_Rel_Rect){
                 '!',
                 {0, win_h - BAR_H * 2, bar_w, BAR_H},
@@ -103,10 +103,10 @@ int main (void) {
                 "frame %d/%d  speed %.1fx%s",
                 frame, total - 1, speed,
                 paused ? "  [PAUSED]" : "");
-            pico_set_pencil_color(NULL, 
+            pico_set_pencil_color("root", 
                 (Pico_Color){0xFF, 0xFF, 0xFF, 0xFF}
             );
-            pico_output_draw_text(
+            pico_output_draw_text("root", 
                 label,
                 &(Pico_Rel_Rect){
                     '!',

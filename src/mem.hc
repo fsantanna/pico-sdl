@@ -23,6 +23,8 @@ typedef struct {
 typedef struct {
     int height;
     const char* text;
+    const char* font;
+    Pico_Color color;
 } _alloc_text_t;
 
 typedef struct {
@@ -181,9 +183,11 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
     return data;
 }
 
-static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
-    SDL_Color c = { S.layer->pencil.color.r, S.layer->pencil.color.g, S.layer->pencil.color.b, 0xFF };
-    TTF_Font* ttf = _font_get(S.layer->pencil.font, height);
+static SDL_Texture* _tex_text (
+    int height, const char* text, const char* font, Pico_Color color, Pico_Abs_Dim* dim
+) {
+    SDL_Color c = { color.r, color.g, color.b, 0xFF };
+    TTF_Font* ttf = _font_get(font, height);
     SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
@@ -196,7 +200,7 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
 static void* _alloc_layer_text (int n, const void* key, void* ctx) {
     _alloc_text_t* c = (_alloc_text_t*)ctx;
     Pico_Abs_Dim dim;
-    SDL_Texture* tex = _tex_text(c->height, c->text, &dim);
+    SDL_Texture* tex = _tex_text(c->height, c->text, c->font, c->color, &dim);
     return _layer_new (
         1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, tex, dim

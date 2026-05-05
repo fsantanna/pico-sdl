@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window_title("Image - Size - Crop");
-    pico_set_effect_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
+    pico_set_effect_color("root", (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
     // pico_get_image: pct mode, NULL up (world 100x100, image 48x48)
     {
@@ -48,37 +48,37 @@ int main (void) {
 
     {
         puts("show original centered");
-        pico_output_clear();
+        pico_output_clear("root");
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0, 0}, PICO_ANCHOR_C, NULL };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_pct-01");
     }
     {
         puts("show big centered");
-        pico_output_clear();
+        pico_output_clear("root");
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 1.0, 1.0}, PICO_ANCHOR_C, NULL };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_pct-02");
     }
     {
         puts("show small centered");
-        pico_output_clear();
+        pico_output_clear("root");
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.2, 0.2}, PICO_ANCHOR_C, NULL };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_pct-03");
     }
     {
         puts("show w-half proportional");
-        pico_output_clear();
+        pico_output_clear("root");
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.5, 0}, PICO_ANCHOR_C, NULL };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_pct-04");
     }
     {
         puts("show w-half h-quart distorted");
-        pico_output_clear();
+        pico_output_clear("root");
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.5, 0.25}, PICO_ANCHOR_C, NULL };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_pct-05");
     }
 

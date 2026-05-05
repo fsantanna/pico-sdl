@@ -6,7 +6,7 @@ int main (void) {
     Pico_Rel_Dim phy = { '!', {200, 200}, NULL };
     Pico_Rel_Dim log = { '!', {100, 100}, NULL };
     pico_set_window_dim(&phy);
-    pico_set_scene_dim(NULL, &log);
+    pico_set_scene_dim("root", &log);
 
     // pico_vs_pos_rect - abs
     {

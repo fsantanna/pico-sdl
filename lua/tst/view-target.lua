@@ -42,15 +42,13 @@ end
 do
     print("target: explicit layer")
     pico.layer.empty(nil, "bg", {w=32, h=32})
-    pico.set.layer("bg")
-    pico.set.scene {
+    pico.set.scene("bg", {
         target = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
-    }
-    pico.set.effect { color={r=0x80, g=0x00, b=0x00} }
-    pico.output.clear()
-    pico.set.pencil { color='white' }
-    pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.set.layer(nil)
+    })
+    pico.set.effect("bg", { color={r=0x80, g=0x00, b=0x00} })
+    pico.output.clear("bg")
+    pico.set.pencil("bg", { color='white' })
+    pico.output.draw.rect("bg", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.effect { color='black' }
     pico.output.clear()
     pico.output.draw.layer("bg")
@@ -61,13 +59,11 @@ end
 do
     print("target: h only, w inferred")
     pico.layer.empty(nil, "bg2", {w=80, h=40})
-    pico.set.layer("bg2")
-    pico.set.scene {
+    pico.set.scene("bg2", {
         target = {'%', x=0.5, y=0.5, h=0.4}
-    }
-    pico.set.effect { color={r=0x80, g=0x00, b=0x00} }
-    pico.output.clear()
-    pico.set.layer(nil)
+    })
+    pico.set.effect("bg2", { color={r=0x80, g=0x00, b=0x00} })
+    pico.output.clear("bg2")
     pico.set.effect { color='black' }
     pico.output.clear()
     pico.output.draw.layer("bg2")
@@ -77,11 +73,9 @@ end
 -- 06: target w only, h=0 -> h inferred from 2:1 layer aspect
 do
     print("target: w only, h inferred")
-    pico.set.layer("bg2")
-    pico.set.scene {
+    pico.set.scene("bg2", {
         target = {'%', x=0.5, y=0.5, w=0.4, h=0}
-    }
-    pico.set.layer(nil)
+    })
     pico.output.clear()
     pico.output.draw.layer("bg2")
     pico.check("view-target-06")
@@ -90,11 +84,9 @@ end
 -- 07: target w=h=0 -> full layer dim
 do
     print("target: w=h=0, full layer dim")
-    pico.set.layer("bg2")
-    pico.set.scene {
+    pico.set.scene("bg2", {
         target = {'%', x=0, y=0, w=0, anchor='NW'}
-    }
-    pico.set.layer(nil)
+    })
     pico.output.clear()
     pico.output.draw.layer("bg2")
     pico.check("view-target-07")

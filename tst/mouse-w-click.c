@@ -9,18 +9,16 @@ int main (void) {
 
     /* Draw btn into layer A. */
     pico_layer_empty(NULL, "A", (Pico_Abs_Dim){120, 50}, NULL);
-    pico_set_layer("A");
-    pico_set_effect_color(NULL, PICO_COLOR_NAVY);
-    pico_output_clear();
-    pico_set_pencil_color(NULL, PICO_COLOR_WHITE);
-    pico_output_draw_rect(&btn);
-    pico_set_layer(NULL);
+    pico_set_effect_color("A", PICO_COLOR_NAVY);
+    pico_output_clear("A");
+    pico_set_pencil_color("A", PICO_COLOR_WHITE);
+    pico_output_draw_rect("A", &btn);
 
     /* Composite layer A distorted at SE, 35%x35% of screen. */
     Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE, NULL };
-    pico_set_effect_color(NULL, PICO_COLOR_BLACK);
-    pico_output_clear();
-    pico_output_draw_layer("A", &r);
+    pico_set_effect_color("root", PICO_COLOR_BLACK);
+    pico_output_clear("root");
+    pico_output_draw_layer("root", "A", &r);
 
     btn.up = &r;
 
@@ -34,8 +32,8 @@ int main (void) {
 
     assert(pico_vs_pos_rect("root", &pos, &btn));
 
-    pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
-    pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW, NULL });
+    pico_set_pencil_color("root", PICO_COLOR_GREEN);
+    pico_output_draw_pixel("root", &(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW, NULL });
     _pico_check("mouse-w-click-01");
 
     pico_init(0);

@@ -14,23 +14,23 @@ void push_key (SDL_Keycode key) {
 
 int main() {
     pico_init(1);
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {1000, 1000}, NULL });
+    pico_set_scene_dim("root", &(Pico_Rel_Dim){ '!', {1000, 1000}, NULL });
 
     // draw
     {
         // X at center
-        pico_output_draw_line(
+        pico_output_draw_line("root", 
             &(Pico_Rel_Pos){ '%', {0.45, 0.45}, PICO_ANCHOR_C, NULL },
             &(Pico_Rel_Pos){ '%', {0.55, 0.55}, PICO_ANCHOR_C, NULL }
         );
-        pico_output_draw_line(
+        pico_output_draw_line("root", 
             &(Pico_Rel_Pos){ '%', {0.55, 0.45}, PICO_ANCHOR_C, NULL },
             &(Pico_Rel_Pos){ '%', {0.45, 0.55}, PICO_ANCHOR_C, NULL }
         );
 
         // RECT at center
-        pico_set_pencil_style(NULL, PICO_STYLE_STROKE);
-        pico_output_draw_rect(
+        pico_set_pencil_style("root", PICO_STYLE_STROKE);
+        pico_output_draw_rect("root", 
             &(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.25, 0.25}, PICO_ANCHOR_C, NULL }
         );
     }

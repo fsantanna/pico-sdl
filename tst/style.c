@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Style" });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
+    pico_set_scene_dim("root", &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
 
     // shapes used across tests
     Pico_Rel_Rect rect = {
@@ -31,47 +31,47 @@ int main (void) {
 
     puts("default fill");
     {
-        pico_output_clear();
-        pico_set_pencil_color(NULL, (Pico_Color){255, 255, 255, 0xFF});
-        pico_output_draw_rect(&rect);
-        pico_output_draw_oval(&oval);
-        pico_output_draw_tri(&t1, &t2, &t3);
-        pico_output_draw_poly(4, poly);
+        pico_output_clear("root");
+        pico_set_pencil_color("root", (Pico_Color){255, 255, 255, 0xFF});
+        pico_output_draw_rect("root", &rect);
+        pico_output_draw_oval("root", &oval);
+        pico_output_draw_tri("root", &t1, &t2, &t3);
+        pico_output_draw_poly("root", 4, poly);
         _pico_check("style-01");
     }
 
     puts("stroke");
     {
-        pico_output_clear();
-        pico_set_pencil_style(NULL, PICO_STYLE_STROKE);
-        pico_set_pencil_color(NULL, (Pico_Color){255, 255, 255, 0xFF});
-        pico_output_draw_rect(&rect);
-        pico_output_draw_oval(&oval);
-        pico_output_draw_tri(&t1, &t2, &t3);
-        pico_output_draw_poly(4, poly);
+        pico_output_clear("root");
+        pico_set_pencil_style("root", PICO_STYLE_STROKE);
+        pico_set_pencil_color("root", (Pico_Color){255, 255, 255, 0xFF});
+        pico_output_draw_rect("root", &rect);
+        pico_output_draw_oval("root", &oval);
+        pico_output_draw_tri("root", &t1, &t2, &t3);
+        pico_output_draw_poly("root", 4, poly);
         _pico_check("style-02");
     }
 
     puts("back to fill");
     {
-        pico_output_clear();
-        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
-        pico_set_pencil_color(NULL, (Pico_Color){255, 255, 255, 0xFF});
-        pico_output_draw_rect(&rect);
-        pico_output_draw_oval(&oval);
-        pico_output_draw_tri(&t1, &t2, &t3);
-        pico_output_draw_poly(4, poly);
+        pico_output_clear("root");
+        pico_set_pencil_style("root", PICO_STYLE_FILL);
+        pico_set_pencil_color("root", (Pico_Color){255, 255, 255, 0xFF});
+        pico_output_draw_rect("root", &rect);
+        pico_output_draw_oval("root", &oval);
+        pico_output_draw_tri("root", &t1, &t2, &t3);
+        pico_output_draw_poly("root", 4, poly);
         _pico_check("style-03");
     }
 
     puts("get style");
     {
-        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
-        assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
-        pico_set_pencil_style(NULL, PICO_STYLE_STROKE);
-        assert(pico_get_pencil_style(NULL) == PICO_STYLE_STROKE);
-        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
-        assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
+        pico_set_pencil_style("root", PICO_STYLE_FILL);
+        assert(pico_get_pencil_style("root") == PICO_STYLE_FILL);
+        pico_set_pencil_style("root", PICO_STYLE_STROKE);
+        assert(pico_get_pencil_style("root") == PICO_STYLE_STROKE);
+        pico_set_pencil_style("root", PICO_STYLE_FILL);
+        assert(pico_get_pencil_style("root") == PICO_STYLE_FILL);
     }
 
     pico_init(0);

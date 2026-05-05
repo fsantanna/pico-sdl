@@ -60,9 +60,6 @@ In alphabetical order:
     - **pico.get.keyboard**: Gets keyboard modifier state.
         - `pico.get.keyboard () ->
           { key: string, ctrl: boolean, shift: boolean, alt: boolean }`
-    - **pico.get.layer**: Gets current layer name.
-        - `pico.get.layer () -> string?`
-        - Returns `nil` for main layer
     - **pico.get.mouse**: Gets mouse position and button state.
         - `pico.get.mouse (mode: string [, rect: Rect]) -> Mouse`
         - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles, `'w'` window
@@ -183,9 +180,6 @@ In alphabetical order:
         - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
     - **pico.set.window**: Sets window configuration.
         - `pico.set.window (cfg: { [color: Color], [dim: Dim], [fullscreen: boolean], [show: boolean], [title: string] })`
-    - **pico.set.layer**: Switches to a layer.
-        - `pico.set.layer (name: string?)`
-        - `nil` switches to main layer
     - **pico.set.mouse**: Sets mouse cursor position.
         - `pico.set.mouse (pos: Pos)`
 - **pico.vs**

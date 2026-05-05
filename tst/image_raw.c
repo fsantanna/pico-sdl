@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window_title("Image - Size - Crop");
-    pico_set_effect_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
+    pico_set_effect_color("root", (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
     // pico_get_image
     {
@@ -32,67 +32,65 @@ int main (void) {
     {
         puts("show top-left from center");
         Pico_Rel_Rect r = { '!', {50,50, 0,0}, PICO_ANCHOR_NW, NULL };
-        pico_output_clear();
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_clear("root");
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_raw-01");
     }
     {
         puts("show small centered");
         Pico_Rel_Rect r = { '!', {50-5,50-5, 10,10}, PICO_ANCHOR_NW, NULL };
-        pico_output_clear();
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_clear("root");
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_raw-02");
     }
     {
         puts("show small/medium distorted");
         Pico_Rel_Rect r = { '!', {50-5,50-10, 10,20}, PICO_ANCHOR_NW, NULL };
-        pico_output_clear();
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_clear("root");
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_raw-03");
     }
     {
         puts("show medium normal");
-        pico_output_clear();
+        pico_output_clear("root");
         Pico_Rel_Rect r = { '!', {50-10,50-10, 20,0}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_raw-04");
     }
     {
         puts("show small normal");
-        pico_output_clear();
+        pico_output_clear("root");
         Pico_Rel_Rect r = { '!', {50-5,50-5, 0,10}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_raw-05");
     }
     {
         puts("show big centered");
-        pico_output_clear();
+        pico_output_clear("root");
         Pico_Rel_Rect r = { '!', {50-24,50-24, 0,0}, PICO_ANCHOR_NW, NULL };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("root", "../res/open.png", &r);
         _pico_check("image_raw-06");
     }
 
     // CROP
     {
         puts("show big croped");
-        pico_output_clear();
+        pico_output_clear("root");
         pico_layer_image(NULL, "crop", "../res/open.png");
-        pico_set_layer("crop");
-        pico_set_scene_src(NULL, (Pico_Rel_Rect){'!', {9, 9, 30, 30},
+        pico_set_scene_src("crop", (Pico_Rel_Rect){'!', {9, 9, 30, 30},
                 PICO_ANCHOR_NW, NULL});
-        pico_set_layer(NULL);
         Pico_Rel_Rect r1 = {
             '!', {50-24, 50-24, 0, 0}, PICO_ANCHOR_NW, NULL
         };
-        pico_output_draw_layer("crop", &r1);
+        pico_output_draw_layer("root", "crop", &r1);
         _pico_check("image_raw-07");
 
         puts("show medium normal");
-        pico_output_clear();
+        pico_output_clear("root");
         Pico_Rel_Rect r2 = {
             '!', {50-10, 50-10, 20, 0}, PICO_ANCHOR_NW, NULL
         };
-        pico_output_draw_image("../res/open.png", &r2);
+        pico_output_draw_image("root", "../res/open.png", &r2);
         _pico_check("image_raw-08");
     }
 

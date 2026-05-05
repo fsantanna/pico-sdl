@@ -29,8 +29,8 @@ int main(void) {
         init_drop(&drops[i]);
     }
 
-    pico_set_effect_color(NULL, (Pico_Color){20, 20, 40, 0xFF});
-    pico_set_pencil_color(NULL, (Pico_Color){100, 100, 255, 0xFF});
+    pico_set_effect_color("root", (Pico_Color){20, 20, 40, 0xFF});
+    pico_set_pencil_color("root", (Pico_Color){100, 100, 255, 0xFF});
 
     while (1) {
         Pico_Event e;
@@ -39,7 +39,7 @@ int main(void) {
             break;
         }
 
-        pico_output_clear();
+        pico_output_clear("root");
 
         for (int i = 0; i < DROP_COUNT; i++) {
             Drop* drop = &drops[i];
@@ -52,7 +52,7 @@ int main(void) {
                 if (drop->r.y >= 1.0) {
                     init_drop(drop);
                 } else {
-                    pico_output_draw_rect(&drop->r);
+                    pico_output_draw_rect("root", &drop->r);
                 }
             }
         }

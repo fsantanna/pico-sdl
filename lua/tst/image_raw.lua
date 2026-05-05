@@ -75,11 +75,9 @@ do
     print "show big croped"
     pico.output.clear()
     pico.layer.image('!', nil, "crop", "../../res/open.png")
-    pico.set.layer("crop")
-    pico.set.scene {
+    pico.set.scene("crop", {
         source = {'!', x=9, y=9, w=30, h=30, anchor='NW'}
-    }
-    pico.set.layer()
+    })
     local r1 = {'!', x=50-24, y=50-24, w=0, h=0, anchor='NW'}
     pico.output.draw.layer("crop", r1)
     pico.check("image_raw-07")

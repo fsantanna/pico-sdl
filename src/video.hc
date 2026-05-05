@@ -169,7 +169,7 @@ Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
         Pico_Rel_Dim rel = {
             rect->mode, {rect->w, rect->h}, rect->up
         };
-        _sdl_dim(S.layer, &rel, NULL, &info.dim);
+        _sdl_dim(&G.root, &rel, NULL, &info.dim);
         rect->w = rel.w;
         rect->h = rel.h;
     }
@@ -238,7 +238,9 @@ int pico_set_video (const char* key, int frame) {
     return 1;
 }
 
-int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect) {
+int pico_output_draw_video (const char* layer, const char* path,
+                            Pico_Rel_Rect* rect) {
+    Pico_Layer* L = _pico_layer_name(layer);
     Pico_Layer_Video* vs = _pico_layer_video('=', path, path);
     pico_assert(vs != NULL);
 
@@ -254,7 +256,10 @@ int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect) {
     }
 
     /* Draw */
-    _pico_output_draw_layer(&vs->base, rect);
+    SDL_SetRenderTarget(G.ren, L->tex);
+    Pico_Abs_Rect clip = pico_cv_rect_rel_abs(L->name, &L->scene.clip, NULL);
+    SDL_RenderSetClipRect(G.ren, &clip);
+    _pico_output_draw_layer(L, &vs->base, rect);
     return 1;
 }
 

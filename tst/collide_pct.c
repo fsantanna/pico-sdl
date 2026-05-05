@@ -7,20 +7,20 @@ int main() {
     Pico_Rel_Dim phy = { '!', {200,200}, NULL };
     Pico_Rel_Dim log = { '!', { 20, 20}, NULL };
     pico_set_window_dim(&phy);
-    pico_set_scene_dim(NULL, &log);
+    pico_set_scene_dim("root", &log);
 
     Pico_Rel_Rect r = { '%', {0.5,0.5, 0.5,0.5}, PICO_ANCHOR_C, NULL };
 
     puts("pos_vs_rect");
     for (float y=-1; y<=10; y+=1) {
         for (float x=-1; x<=10; x+=1) {
-            pico_output_clear();
-            pico_set_pencil_color(NULL, (Pico_Color){255,255,255, 0xFF});
-            pico_output_draw_rect(&r);
+            pico_output_clear("root");
+            pico_set_pencil_color("root", (Pico_Color){255,255,255, 0xFF});
+            pico_output_draw_rect("root", &r);
 
             Pico_Rel_Pos p = { '%', {x/10.0,y/10.0}, PICO_ANCHOR_C, &r };
-            pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
-            pico_output_draw_pixel(&p);
+            pico_set_pencil_color("root", (Pico_Color){255,0,0, 0xFF});
+            pico_output_draw_pixel("root", &p);
 
             int in = pico_vs_pos_rect("root", &p, &r);
             //puts(in ? "in" : "out");
@@ -49,13 +49,13 @@ int main() {
     puts("rect_vs_rect - same anchor");
     for (float y=-25; y<=125; y+=10) {
         for (float x=-25; x<=125; x+=10) {
-            pico_output_clear();
-            pico_set_pencil_color(NULL, (Pico_Color){255,255,255, 0xFF});
-            pico_output_draw_rect(&r);
+            pico_output_clear("root");
+            pico_set_pencil_color("root", (Pico_Color){255,255,255, 0xFF});
+            pico_output_draw_rect("root", &r);
 
             Pico_Rel_Rect r2 = { '%', {x/100.0,y/100.0, 0.5,0.5}, PICO_ANCHOR_C, &r };
-            pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
-            pico_output_draw_rect(&r2);
+            pico_set_pencil_color("root", (Pico_Color){255,0,0, 0xFF});
+            pico_output_draw_rect("root", &r2);
 
             int in = pico_vs_rect_rect("root", &r2, &r);
             //puts(in ? "overlap" : "naw");
@@ -84,13 +84,13 @@ int main() {
     puts("rect_vs_rect - diff anchor");
     for (float y=-5; y<=10; y+=1) {
         for (float x=-5; x<=10; x+=1) {
-            pico_output_clear();
-            pico_set_pencil_color(NULL, (Pico_Color){255,255,255, 0xFF});
-            pico_output_draw_rect(&r);
+            pico_output_clear("root");
+            pico_set_pencil_color("root", (Pico_Color){255,255,255, 0xFF});
+            pico_output_draw_rect("root", &r);
 
             Pico_Rel_Rect r2 = { '%', {x/10.0,y/10.0, 0.5,0.5}, PICO_ANCHOR_NW, &r };
-            pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
-            pico_output_draw_rect(&r2);
+            pico_set_pencil_color("root", (Pico_Color){255,0,0, 0xFF});
+            pico_output_draw_rect("root", &r2);
 
             int in = pico_vs_rect_rect("root", &r2, &r);
             //puts(in ? "overlap" : "naw");
