@@ -66,7 +66,7 @@ In alphabetical order:
     - **pico.get.mouse**: Gets mouse position and button state.
         - `pico.get.mouse (mode: string [, rect: Rect]) -> Mouse`
         - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles, `'w'` window
-        - `rect`: reference frame
+        - `rect`: reference frame (omit for current layer)
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
     - **pico.get.text**: Gets text dimensions.
@@ -188,6 +188,8 @@ In alphabetical order:
         - `nil` switches to main layer
     - **pico.set.mouse**: Sets mouse cursor position.
         - `pico.set.mouse (pos: Pos)`
+        - `pos.mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles, `'w'` window
+        - `pos.up`: reference frame (omit for current layer)
 - **pico.vs**
     - **pico.vs.pos_rect**: Collision between position and rectangle.
         - `pico.vs.pos_rect (pos: Pos, rect: Rect) -> boolean`
