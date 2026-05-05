@@ -258,12 +258,12 @@ void pico_init (int on) {
                 .effect = { .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=1, .rotate={0, PICO_ANCHOR_C} },
                 .hier = { NULL, NULL, {NULL,NULL} },
                 .scene = {
+                    .keep = -1,
                     .dim  = PICO_DIM_LOG,
                     .tile = {0, 0},
                     .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
                     .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
                     .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-                    .keep = -1,
                 },
             },
             .ren = NULL,        // needs G.win

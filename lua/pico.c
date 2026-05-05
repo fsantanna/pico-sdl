@@ -1592,17 +1592,17 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
-    { "pencil",   l_get_pencil   },
-    { "image",    l_get_image  },
-    { "keyboard", l_get_keyboard },
-    { "layer",    l_get_layer  },
-    { "mouse",    l_get_mouse  },
-    { "now",      l_get_now    },
     { "effect",   l_get_effect   },
-    { "text",     l_get_text   },
-    { "video",    l_get_video  },
-    { "scene",    l_get_scene   },
-    { "window",   l_get_window },
+    { "image",    l_get_image    },
+    { "keyboard", l_get_keyboard },
+    { "layer",    l_get_layer    },
+    { "mouse",    l_get_mouse    },
+    { "now",      l_get_now      },
+    { "pencil",   l_get_pencil   },
+    { "scene",    l_get_scene    },
+    { "text",     l_get_text     },
+    { "video",    l_get_video    },
+    { "window",   l_get_window   },
     { NULL, NULL }
 };
 
@@ -1610,13 +1610,13 @@ static const luaL_Reg ll_get[] = {
 
 static const luaL_Reg ll_set[] = {
     { "dim",    l_set_dim    },
-    { "pencil", l_set_pencil   },
+    { "effect", l_set_effect },
     { "expert", l_set_expert },
     { "layer",  l_set_layer  },
     { "mouse",  l_set_mouse  },
-    { "effect", l_set_effect   },
+    { "pencil", l_set_pencil },
+    { "scene",  l_set_scene  },
     { "video",  l_set_video  },
-    { "scene",  l_set_scene   },
     { "window", l_set_window },
     { NULL, NULL }
 };

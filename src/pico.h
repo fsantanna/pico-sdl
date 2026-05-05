@@ -121,12 +121,12 @@ typedef struct {
 } Pico_Layer_Effect;
 
 typedef struct {
+    int           keep;
     Pico_Abs_Dim  dim;
     Pico_Abs_Dim  tile;
     Pico_Rel_Rect dst;
     Pico_Rel_Rect src;
     Pico_Rel_Rect clip;
-    int           keep;
 } Pico_Layer_Scene;
 
 typedef struct {

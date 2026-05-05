@@ -102,11 +102,12 @@ static Pico_Layer* _layer_new (
             .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .rotate={0, PICO_ANCHOR_C}
         },
         .scene = {
-            .dim=dim, .tile={0, 0},
-            .dst={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .keep=keep,
+            .keep = keep,
+            .dim  = dim,
+            .tile = {0, 0},
+            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
         },
     };
     assert(data->name != NULL);
