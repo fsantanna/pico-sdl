@@ -169,7 +169,7 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
         &(Pico_Abs_Rect){0, 0, c->par->scene.dim.w, c->par->scene.dim.h}
     );
     Pico_Layer* data = _layer_new (
-        1, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
+        -1, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
         (const char*)key, c->par->tex,
         (Pico_Abs_Dim){abs.w, abs.h}
     );

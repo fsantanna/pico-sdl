@@ -890,8 +890,10 @@ static int l_get_scene (lua_State* L) {
     L_push_rel_rect(L, &view.clip);     // T | clip
     lua_setfield(L, -2, "clip");        // T
 
-    lua_pushboolean(L, view.keep);      // T | keep
-    lua_setfield(L, -2, "keep");        // T
+    if (view.keep != -1) {
+        lua_pushboolean(L, view.keep);  // T | keep
+        lua_setfield(L, -2, "keep");    // T
+    }
 
     return 1;
 }

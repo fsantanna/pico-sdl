@@ -263,7 +263,7 @@ void pico_init (int on) {
                     .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
                     .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
                     .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-                    .keep = 0,
+                    .keep = -1,
                 },
             },
             .ren = NULL,        // needs G.win
