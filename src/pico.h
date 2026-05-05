@@ -587,103 +587,116 @@ void pico_set_window_title (const char* title);
 /// @{
 
 /// @brief Converts a relative dimension to absolute coordinates.
+/// @param layer layer key (must exist)
 /// @param dim relative dimension to convert
-/// @param base reference rectangle (NULL uses world dimensions)
+/// @param base reference rectangle (NULL uses layer scene dimensions)
 /// @return absolute dimension in logical pixels
 /// @sa pico_cv_rect_rel_abs
-Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
+Pico_Abs_Dim pico_cv_dim_rel_abs (const char* layer, Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
 
 /// @brief Converts an absolute dimension to relative coordinates.
+/// @param layer layer key (must exist)
 /// @param fr absolute dimension to convert
 /// @param to relative dimension template (mode, up must be set)
-/// @param base reference rectangle (NULL uses world dimensions)
+/// @param base reference rectangle (NULL uses layer scene dimensions)
 void pico_cv_dim_abs_rel (
-    const Pico_Abs_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
+    const char* layer, const Pico_Abs_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts a relative dimension to another relative mode.
+/// @param layer layer key (must exist)
 /// @param fr relative dimension to convert
 /// @param to relative dimension template (mode, up must be set)
-/// @param base reference rectangle (NULL uses world dimensions)
+/// @param base reference rectangle (NULL uses layer scene dimensions)
 void pico_cv_dim_rel_rel (
-    Pico_Rel_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
+    const char* layer, Pico_Rel_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts a relative position to absolute coordinates.
+/// @param layer layer key (must exist)
 /// @param pos relative position to convert
-/// @param base reference rectangle to use as basis (NULL uses world dimensions)
+/// @param base reference rectangle to use as basis (NULL uses layer scene dimensions)
 /// @return absolute position in logical pixels
 /// @sa pico_cv_rect_rel_abs
-Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
+Pico_Abs_Pos pico_cv_pos_rel_abs (const char* layer, const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative position to window (physical) coordinates.
+/// @param layer layer key (must exist)
 /// @param pos relative position to convert
-/// @param base reference rectangle (NULL uses world dimensions)
+/// @param base reference rectangle (NULL uses layer scene dimensions)
 /// @return physical pixel point in window coordinates
-SDL_Point pico_cv_pos_rel_win (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
+SDL_Point pico_cv_pos_rel_win (const char* layer, const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
 
 /// @brief Converts window (physical) coordinates to a relative position.
+/// @param layer layer key (must exist)
 /// @param phy physical pixel point in window coordinates
 /// @param to relative position template (mode, anchor, up must be set)
-/// @param base reference rectangle (NULL uses world dimensions)
-void pico_cv_pos_win_rel (SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base);
+/// @param base reference rectangle (NULL uses layer scene dimensions)
+void pico_cv_pos_win_rel (const char* layer, SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative rectangle to absolute coordinates.
+/// @param layer layer key (must exist)
 /// @param rect relative rectangle to convert
-/// @param base reference rectangle to use as basis (NULL uses world dimensions)
+/// @param base reference rectangle to use as basis (NULL uses layer scene dimensions)
 /// @return absolute rectangle in logical pixels
 /// @sa pico_cv_pos_rel_abs
-Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base);
+Pico_Abs_Rect pico_cv_rect_rel_abs (const char* layer, const Pico_Rel_Rect* rect, Pico_Abs_Rect* base);
 
 /// @brief Converts an absolute position to relative coordinates.
+/// @param layer layer key (must exist)
 /// @param fr absolute position to convert
 /// @param to relative position template (mode, anchor, up must be set)
-/// @param base reference rectangle (NULL uses world dimensions)
+/// @param base reference rectangle (NULL uses layer scene dimensions)
 /// @sa pico_cv_pos_rel_abs
 void pico_cv_pos_abs_rel (
-    const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
+    const char* layer, const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts a relative position to another relative mode.
+/// @param layer layer key (must exist)
 /// @param fr relative position to convert
 /// @param to relative position template (mode, anchor, up must be set)
-/// @param base reference rectangle (NULL uses world dimensions)
+/// @param base reference rectangle (NULL uses layer scene dimensions)
 /// @sa pico_cv_pos_abs_rel
 void pico_cv_pos_rel_rel (
-    const Pico_Rel_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
+    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts an absolute rectangle to relative coordinates.
+/// @param layer layer key (must exist)
 /// @param fr absolute rectangle to convert
 /// @param to relative rectangle template (mode, anchor, up must be set)
-/// @param base reference rectangle (NULL uses world dimensions)
+/// @param base reference rectangle (NULL uses layer scene dimensions)
 /// @sa pico_cv_rect_rel_abs
 void pico_cv_rect_abs_rel (
-    const Pico_Abs_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
+    const char* layer, const Pico_Abs_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts a relative rectangle to another relative mode.
+/// @param layer layer key (must exist)
 /// @param fr relative rectangle to convert
 /// @param to relative rectangle template (mode, anchor, up must be set)
-/// @param base reference rectangle (NULL uses world dimensions)
+/// @param base reference rectangle (NULL uses layer scene dimensions)
 /// @sa pico_cv_rect_abs_rel
 void pico_cv_rect_rel_rel (
-    const Pico_Rel_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
+    const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
 );
 
 /// @brief Checks if a point is inside a rectangle.
+/// @param layer layer key (must exist)
 /// @param pos point to test (mode determines coordinates)
 /// @param rect rectangle to test against (mode determines coordinates)
 /// @return 1 if pos is inside rect, or 0 otherwise
 /// @sa pico_vs_rect_rect
-int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
+int pico_vs_pos_rect (const char* layer, Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
 
 /// @brief Checks if two rectangles overlap.
+/// @param layer layer key (must exist)
 /// @param r1 first rectangle (mode determines coordinates)
 /// @param r2 second rectangle (mode determines coordinates)
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_vs_pos_rect
-int pico_vs_rect_rect (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2);
+int pico_vs_rect_rect (const char* layer, Pico_Rel_Rect* r1, Pico_Rel_Rect* r2);
 
 /// @brief Makes a color darker by the specified percentage.
 /// @param clr the original color

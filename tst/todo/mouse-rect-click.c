@@ -36,11 +36,11 @@ int main (void) {
         printf(">>> w %4.0f %4.0f | %% %5.3f %5.3f", win.x, win.y, pct.x, pct.y);
 
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
-        if (pico_vs_pos_rect(&pos, &btn1)) {
+        if (pico_vs_pos_rect("root", &pos, &btn1)) {
             printf(" | click 1");
-        } else if (pico_vs_pos_rect(&pos, &btn2)) {
+        } else if (pico_vs_pos_rect("root", &pos, &btn2)) {
             printf(" | click 2");
-        } else if (pico_vs_pos_rect(&pos, &btn3)) {
+        } else if (pico_vs_pos_rect("root", &pos, &btn3)) {
             printf(" | click 3");
         }
         printf("\n");

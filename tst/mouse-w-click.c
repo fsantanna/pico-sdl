@@ -32,7 +32,7 @@ int main (void) {
     Pico_Mouse pct = pico_get_mouse('%', &r);
     Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, &r };
 
-    assert(pico_vs_pos_rect(&pos, &btn));
+    assert(pico_vs_pos_rect("root", &pos, &btn));
 
     pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
     pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW, NULL });

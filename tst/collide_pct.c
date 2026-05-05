@@ -22,7 +22,7 @@ int main() {
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
             pico_output_draw_pixel(&p);
 
-            int in = pico_vs_pos_rect(&p, &r);
+            int in = pico_vs_pos_rect("root", &p, &r);
             //puts(in ? "in" : "out");
 
             if (x==-1 && y==-1) {
@@ -57,7 +57,7 @@ int main() {
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
             pico_output_draw_rect(&r2);
 
-            int in = pico_vs_rect_rect(&r2, &r);
+            int in = pico_vs_rect_rect("root", &r2, &r);
             //puts(in ? "overlap" : "naw");
 
             if (x==-25 && y==-25) {
@@ -92,7 +92,7 @@ int main() {
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
             pico_output_draw_rect(&r2);
 
-            int in = pico_vs_rect_rect(&r2, &r);
+            int in = pico_vs_rect_rect("root", &r2, &r);
             //puts(in ? "overlap" : "naw");
 
             if (x==-5 && y==-5) {

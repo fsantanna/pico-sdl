@@ -518,7 +518,7 @@ static int l_cv_dim (lua_State* L) {
     if (!has_to) {
         // rel -> abs
         Pico_Rel_Dim* fr = C_rel_dim(L, 1);
-        Pico_Abs_Dim abs = pico_cv_dim_rel_abs(fr, base);
+        Pico_Abs_Dim abs = pico_cv_dim_rel_abs("root", fr, base);
         lua_newtable(L);                    // . | abs: {}
         lua_pushinteger(L, abs.w);          // . | abs | w
         lua_setfield(L, -2, "w");           // . | abs
@@ -534,10 +534,10 @@ static int l_cv_dim (lua_State* L) {
         Pico_Rel_Dim* to = _C_tpl_dim(L, 2);    // fr | to | . | *ud* (holds mallocs)
         if (fr_is_rel) {
             Pico_Rel_Dim* fr = C_rel_dim(L, 1);
-            pico_cv_dim_rel_rel(fr, to, base);
+            pico_cv_dim_rel_rel("root", fr, to, base);
         } else {
             Pico_Abs_Dim fr = C_abs_dim(L, 1);
-            pico_cv_dim_abs_rel(&fr, to, base);
+            pico_cv_dim_abs_rel("root", &fr, to, base);
         }
 
         lua_pushnumber(L, to->w);           // fr | to | . | ud | w
@@ -555,7 +555,7 @@ static int l_cv_pos (lua_State* L) {
     if (!has_to) {
         // rel -> abs
         Pico_Rel_Pos* fr = C_rel_pos(L, 1);
-        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(fr, base);
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs("root", fr, base);
         lua_newtable(L);                    // . | abs: {}
         lua_pushinteger(L, abs.x);          // . | abs | x
         lua_setfield(L, -2, "x");           // . | abs
@@ -571,10 +571,10 @@ static int l_cv_pos (lua_State* L) {
         Pico_Rel_Pos* to = _C_tpl_pos(L, 2);    // fr | to | . | *ud* (holds mallocs)
         if (fr_is_rel) {
             Pico_Rel_Pos* fr = C_rel_pos(L, 1);
-            pico_cv_pos_rel_rel(fr, to, base);
+            pico_cv_pos_rel_rel("root", fr, to, base);
         } else {
             Pico_Abs_Pos fr = C_abs_pos(L, 1);
-            pico_cv_pos_abs_rel(&fr, to, base);
+            pico_cv_pos_abs_rel("root", &fr, to, base);
         }
 
         lua_pushnumber(L, to->x);           // fr | to | . | ud | x
@@ -592,7 +592,7 @@ static int l_cv_rect (lua_State* L) {
     if (!has_to) {
         // rel -> abs
         Pico_Rel_Rect* fr = C_rel_rect(L, 1);
-        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(fr, base);
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs("root", fr, base);
         lua_newtable(L);                    // . | abs: {}
         lua_pushinteger(L, abs.x);          // . | abs | x
         lua_setfield(L, -2, "x");           // . | abs
@@ -612,10 +612,10 @@ static int l_cv_rect (lua_State* L) {
         Pico_Rel_Rect* to = _C_tpl_rect(L, 2);      // fr | to | . | *ud* (holds mallocs)
         if (fr_is_rel) {
             Pico_Rel_Rect* fr = C_rel_rect(L, 1);
-            pico_cv_rect_rel_rel(fr, to, base);
+            pico_cv_rect_rel_rel("root", fr, to, base);
         } else {
             Pico_Abs_Rect fr = C_abs_rect(L, 1);
-            pico_cv_rect_abs_rel(&fr, to, base);
+            pico_cv_rect_abs_rel("root", &fr, to, base);
         }
 
         lua_pushnumber(L, to->x);           // fr | to | . | ud | x
@@ -639,7 +639,7 @@ static int l_vs_pos_rect (lua_State* L) {
     Pico_Rel_Pos*  pos  = C_rel_pos(L, 1);
     Pico_Rel_Rect* rect = C_rel_rect(L, 2);
 
-    int ret = pico_vs_pos_rect(pos, rect);
+    int ret = pico_vs_pos_rect("root", pos, rect);
     lua_pushboolean(L, ret);
     return 1;
 }
@@ -651,7 +651,7 @@ static int l_vs_rect_rect (lua_State* L) {
     Pico_Rel_Rect* r1 = C_rel_rect(L, 1);
     Pico_Rel_Rect* r2 = C_rel_rect(L, 2);
 
-    int ret = pico_vs_rect_rect(r1, r2);
+    int ret = pico_vs_rect_rect("root", r1, r2);
     lua_pushboolean(L, ret);
     return 1;
 }

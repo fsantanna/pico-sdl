@@ -169,7 +169,7 @@ Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
         Pico_Rel_Dim rel = {
             rect->mode, {rect->w, rect->h}, rect->up
         };
-        _sdl_dim(&rel, NULL, &info.dim);
+        _sdl_dim(S.layer, &rel, NULL, &info.dim);
         rect->w = rel.w;
         rect->h = rel.h;
     }
