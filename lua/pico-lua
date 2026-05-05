@@ -22,5 +22,12 @@ LUA=lua5.4
 DIR=$(dirname -- "$1")  # /a/b/c
 EXE=$(basename -- "$1") # x.lua
 
+VALGRIND="valgrind -q --leak-check=no --track-origins=yes \
+            --suppressions=$PICO/valgrind.supp --error-exitcode=1"
+
 cd $DIR/
-$LUA -lpico $EXE
+if [ -n "$PICO_TESTS" ]; then
+    $VALGRIND $LUA -lpico $EXE
+else
+    $LUA -lpico $EXE
+fi

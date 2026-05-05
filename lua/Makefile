@@ -1,6 +1,6 @@
 XVFB = SDL_AUDIODRIVER=dummy xvfb-run -a
 LUA = LUA_CPATH="../pico/?.so;" LUA_PATH="../?/init.lua;../?.lua;"
-TST = PICO_CHECK_ASR=1 $(LUA) $(XVFB) ./pico-lua
+TST = PICO_TESTS=1 PICO_CHECK_ASR=1 $(LUA) $(XVFB) ./pico-lua
 INT = PICO_CHECK_INT=1 PICO_CHECK_ASR= $(LUA) ./pico-lua
 GEN = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= $(LUA) ./pico-lua
 
@@ -78,6 +78,7 @@ tests: pico_native.so
 	$(TST) tst/tiles.lua
 	$(TST) tst/video.lua
 	$(TST) tst/view-target.lua
+	$(TST) tst/view-target-up-gc.lua
 	$(TST) tst/view_raw.lua
 	$(TST) tst/vs.lua
 	@echo ""
