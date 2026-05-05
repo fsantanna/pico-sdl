@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['clip_0',['clip',['../structPico__Layer__View.html#a4869ed4a9613bbd8a2ad4c0708a899c4',1,'Pico_Layer_View']]],
-  ['color_1',['color',['../structPico__Layer__Draw.html#ad23668654b8e99256f9ca593d36254a6',1,'Pico_Layer_Draw::color'],['../structPico__Layer__Show.html#a8906beff47566f99f6a69047aefe6c12',1,'Pico_Layer_Show::color'],['../structPico__Window.html#a2bffd8ceabc6a7d2ab4ea867f809515c',1,'Pico_Window::color']]],
+  ['clip_0',['clip',['../structPico__Layer__Scene.html#afbd644eceea25d2e88b33d6ba056d51f',1,'Pico_Layer_Scene']]],
+  ['color_1',['color',['../structPico__Layer__Pencil.html#aa45421f5e43b738342c7c68dc1b04006',1,'Pico_Layer_Pencil::color'],['../structPico__Layer__Effect.html#a8b12300a7fc3c3432eadad8ad2aecf9b',1,'Pico_Layer_Effect::color'],['../structPico__Window.html#a2bffd8ceabc6a7d2ab4ea867f809515c',1,'Pico_Window::color']]],
   ['ctrl_2',['ctrl',['../structPico__Keyboard.html#a977218dc707219ccfdf79107acba4229',1,'Pico_Keyboard']]]
 ];

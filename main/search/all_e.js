@@ -5,7 +5,7 @@ var searchData=
   ['sdl_5ffdim_2',['SDL_FDim',['../structSDL__FDim.html',1,'']]],
   ['shift_3',['shift',['../structPico__Keyboard.html#aeb5dc86b4afaeba9b1ac88bbe8faf5d5',1,'Pico_Keyboard']]],
   ['show_4',['show',['../structPico__Window.html#af5b49f0bb3840a3de55e7b352d7608cb',1,'Pico_Window']]],
-  ['src_5',['src',['../structPico__Layer__View.html#a448c95c82b85414f411d1ba6b9e85fc6',1,'Pico_Layer_View']]],
+  ['src_5',['src',['../structPico__Layer__Scene.html#a80f5a06503c30d64eeabbbdd76dd8a45',1,'Pico_Layer_Scene']]],
   ['state_6',['State',['../group__State.html',1,'']]],
-  ['style_7',['style',['../structPico__Layer__Draw.html#a3a8179d9cc8a7b0a5ab99d7e58f632ab',1,'Pico_Layer_Draw']]]
+  ['style_7',['style',['../structPico__Layer__Pencil.html#a6cf7a4fe13637787d04484928efd7fe4',1,'Pico_Layer_Pencil']]]
 ];
