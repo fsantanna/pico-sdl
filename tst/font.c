@@ -38,8 +38,8 @@ int main (void) {
 
     pico_output_clear();
 
-    // pico_set_draw_font: DejaVuSans.ttf
-    pico_set_draw_font(NULL, "../res/DejaVuSans.ttf");
+    // pico_set_pencil_font: DejaVuSans.ttf
+    pico_set_pencil_font(NULL, "../res/DejaVuSans.ttf");
     {
         Pico_Rel_Rect r = { '!', {10,10, 0,10}, PICO_ANCHOR_NW, NULL };
         pico_output_draw_text("hg - gh", &r);

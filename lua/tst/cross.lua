@@ -2,7 +2,7 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.window { dim={'!', w=160, h=160} }
-pico.set.view { dim={'!', w=16, h=16} }
+pico.set.scene { dim={'!', w=16, h=16} }
 pico.output.clear()
 
 for i = 0, 15 do

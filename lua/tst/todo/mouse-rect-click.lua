@@ -9,9 +9,9 @@ local btn3 = {'%', x=0.75, y=0.50, w=0.15, h=0.30, anc='C'}
 
 pico.layer.empty('!', nil, "A", {w=120, h=50})
 pico.set.layer("A")
-pico.set.show { color='navy' }
+pico.set.effect { color='navy' }
 pico.output.clear()
-pico.set.draw { color='white' }
+pico.set.pencil { color='white' }
 pico.output.draw.rect(btn1)
 pico.output.draw.rect(btn2)
 pico.output.draw.rect(btn3)
@@ -19,7 +19,7 @@ pico.set.layer()
 
 -- Draw layer at bottom-right, 35%x35% of screen (distorted)
 local r = {'%', x=0.99, y=0.99, w=0.35, h=0.35, anchor='SE'}
-pico.set.show { color='black' }
+pico.set.effect { color='black' }
 pico.output.clear()
 pico.output.draw.layer("A", r)
 

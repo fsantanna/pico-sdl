@@ -7,7 +7,7 @@ int main (void) {
     {
         Pico_Dim phy, log;
         phy = pico_get_window_dim();
-        log = pico_get_view_dim(NULL);
+        log = pico_get_scene_dim(NULL);
         assert(phy.w==500 && phy.h==500);
         assert(log.w==100 && log.h==100);
     }
@@ -32,7 +32,7 @@ int main (void) {
 
     puts("shows white screen");
     {
-        pico_set_show_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
+        pico_set_effect_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_clear();
         pico_input_delay(2000);
     }
@@ -46,8 +46,8 @@ int main (void) {
 
     puts("shows oval -> pixel -> rect");
     {
-        pico_set_show_color(NULL, (Pico_Color){0x00,0x00,0x00, 0xFF});
-        pico_set_draw_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
+        pico_set_effect_color(NULL, (Pico_Color){0x00,0x00,0x00, 0xFF});
+        pico_set_pencil_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_clear();
         {
             Pico_Pos_Pct p = { 0.5,0.5, PICO_ANCHOR_C, NULL };
@@ -89,7 +89,7 @@ int main (void) {
 
     puts("disables grid");
     {
-        pico_set_view_raw(0, -1, NULL, NULL, NULL, NULL, NULL);
+        pico_set_scene_raw(0, -1, NULL, NULL, NULL, NULL, NULL);
         pico_input_delay(2000);
     }
 
@@ -117,9 +117,9 @@ int main (void) {
         pico_set_dim_world(log);
         Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
         pico_output_clear();
-        pico_set_draw_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
+        pico_set_pencil_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
-        pico_set_draw_color(NULL, (Pico_Color){0xFF,0x00,0x00, 0xFF});
+        pico_set_pencil_color(NULL, (Pico_Color){0xFF,0x00,0x00, 0xFF});
         pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
         pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
         pico_input_delay(250);
@@ -131,14 +131,14 @@ int main (void) {
         pico_set_dim_world(log);
         Pico_Pos ct = pico_pos((Pico_Pct){50, 50});
         pico_output_clear();
-        pico_set_draw_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
+        pico_set_pencil_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
-        pico_set_draw_color(NULL, (Pico_Color){0xFF,0x00,0x00, 0xFF});
+        pico_set_pencil_color(NULL, (Pico_Color){0xFF,0x00,0x00, 0xFF});
         pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
         pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
         pico_input_delay(250);
     }
-    pico_set_draw_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
+    pico_set_pencil_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
     // PAN
 

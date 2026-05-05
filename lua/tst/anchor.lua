@@ -4,7 +4,7 @@ pico.init(true)
 local phy = {'!', w=200, h=200}
 local log = {'!', w=10, h=10}
 pico.set.window { title="Anchoring...", dim=phy }
-pico.set.view { dim=log }
+pico.set.scene { dim=log }
 
 -- PIXELS
 do

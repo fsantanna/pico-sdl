@@ -2,7 +2,7 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.window { title="Style", dim={'!', w=640, h=480} }
-pico.set.view { dim={'!', w=64, h=48} }
+pico.set.scene { dim={'!', w=64, h=48} }
 
 local rect = {'!', x=5, y=5, w=25, h=18, anchor='NW'}
 local oval = {'!', x=34, y=5, w=25, h=18, anchor='NW'}
@@ -19,7 +19,7 @@ local poly = {
 do
     print("default fill")
     pico.output.clear()
-    pico.set.draw { color='white' }
+    pico.set.pencil { color='white' }
     pico.output.draw.rect(rect)
     pico.output.draw.oval(oval)
     pico.output.draw.tri(t1, t2, t3)
@@ -30,7 +30,7 @@ end
 do
     print("stroke")
     pico.output.clear()
-    pico.set.draw { style='stroke', color='white' }
+    pico.set.pencil { style='stroke', color='white' }
     pico.output.draw.rect(rect)
     pico.output.draw.oval(oval)
     pico.output.draw.tri(t1, t2, t3)
@@ -41,7 +41,7 @@ end
 do
     print("back to fill")
     pico.output.clear()
-    pico.set.draw { style='fill', color='white' }
+    pico.set.pencil { style='fill', color='white' }
     pico.output.draw.rect(rect)
     pico.output.draw.oval(oval)
     pico.output.draw.tri(t1, t2, t3)

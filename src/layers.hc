@@ -12,9 +12,9 @@ typedef struct Pico_Layer {
     PICO_LAYER            type;
     char*                 name;     // NULL for main layer
     SDL_Texture*          tex;
-    Pico_Layer_Draw       draw;
-    Pico_Layer_Show       show;
-    Pico_Layer_View       view;
+    Pico_Layer_Pencil     pencil;
+    Pico_Layer_Effect     effect;
+    Pico_Layer_Scene      scene;
     struct {
         const char* up;             // parent id; NULL = root or detached
         const char* nxt;            // next sibling under same up
@@ -27,7 +27,7 @@ typedef struct Pico_Layer {
 
 typedef struct {
     Pico_Layer   base;
-    Pico_Abs_Dim sup;     // snapshot of source view.dim
+    Pico_Abs_Dim sup;     // snapshot of source scene.dim
 } Pico_Layer_Sub;
 
 static Pico_Layer* _pico_layer_name (const char* name);
@@ -99,9 +99,9 @@ static void _layer_traverse (Pico_Layer* UP) {
         _pico_output_draw_layer(CUR, NULL);
 
         // post-composite clear: allows drawing bw presents
-        if (!CUR->show.keep) {
+        if (!CUR->scene.keep) {
             SDL_SetRenderTarget(G.ren, CUR->tex);
-            Pico_Color c = CUR->show.color;
+            Pico_Color c = CUR->effect.color;
             SDL_SetRenderDrawColor(G.ren, c.r, c.g, c.b, c.a);
             SDL_RenderClear(G.ren);
         }
@@ -150,8 +150,8 @@ static Pico_Layer* _pico_layer_text (
     const char* str;
     char* str_buf = NULL;
     if (key == NULL) {
-        const char* font = S.layer->draw.font;
-        Pico_Color clr = S.layer->draw.color;
+        const char* font = S.layer->pencil.font;
+        Pico_Color clr = S.layer->pencil.color;
         const char* font_str = font ? font : "null";
         int buflen = strlen("/text/") + strlen(font_str) + 1
             + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
@@ -179,32 +179,32 @@ static void _pico_output_draw_layer (
 ) {
     // blit layer onto current render target
     if (rect == NULL) {
-        rect = &layer->view.dst;
+        rect = &layer->scene.dst;
     }
     Pico_Abs_Dim* dp = NULL;
     if (rect->w == 0 || rect->h == 0) {
-        dp = &layer->view.dim;
+        dp = &layer->scene.dim;
     }
     SDL_FRect rf = _sdl_rect(rect, NULL, dp);
     SDL_Rect dst = _abs_rect(&rf);
 
-    Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ? &((Pico_Layer_Sub*)layer)->sup : &layer->view.dim;
+    Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ? &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
     Pico_Abs_Rect src = pico_cv_rect_rel_abs (
-        &layer->view.src,
+        &layer->scene.src,
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-    SDL_SetTextureAlphaMod(layer->tex, S.layer->draw.color.a*layer->show.alpha/255);
+    SDL_SetTextureAlphaMod(layer->tex, S.layer->pencil.color.a*layer->effect.alpha/255);
     SDL_Point center = {
-        dst.w * layer->show.rotate.anchor.x,
-        dst.h * layer->show.rotate.anchor.y
+        dst.w * layer->effect.rotate.anchor.x,
+        dst.h * layer->effect.rotate.anchor.y
     };
     SDL_RenderCopyEx(G.ren, layer->tex, &src, &dst,
-                     layer->show.rotate.angle, &center,
-                     layer->show.flip);
+                     layer->effect.rotate.angle, &center,
+                     layer->effect.flip);
 
-    if (layer->show.grid) {
-        _show_tile(&layer->view, dst);
+    if (layer->effect.grid) {
+        _show_tile(&layer->scene, dst);
     }
 
     _pico_output_present(0);

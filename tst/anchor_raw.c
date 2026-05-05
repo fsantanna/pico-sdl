@@ -5,7 +5,7 @@ int main (void) {
     pico_init(1);
     Pico_Rel_Dim log = { '!', { 10, 10}, NULL };
     pico_set_window((Pico_Window){ .dim={200,200}, .fs=0, .show=1, .title="Anchoring Abs..." });
-    pico_set_view_dim(NULL, &log);
+    pico_set_scene_dim(NULL, &log);
 
     // PIXELS
     {

@@ -14,8 +14,8 @@ end
 
 do
     print("gray background")
-    pico.set.view { clip=r1 }
-    pico.set.show { color={'!', r=0xCC, g=0xCC, b=0xCC} }
+    pico.set.scene { clip=r1 }
+    pico.set.effect { color={'!', r=0xCC, g=0xCC, b=0xCC} }
     pico.output.clear()
     pico.check("clip-02")
 end
@@ -23,7 +23,7 @@ end
 do
     print("red centered under gray")
     local r2 = {'%', x=0.5, y=0.5, w=0.5, h=0.5, up=r1}
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.rect(r2)
     pico.check("clip-03")
 end
@@ -31,7 +31,7 @@ end
 do
     print("blue centered under gray")
     local p3 = {'%', x=0.5, y=0.5, up=r1}
-    pico.set.draw { color='blue' }
+    pico.set.pencil { color='blue' }
     pico.output.draw.pixel(p3)
     pico.check("clip-04")
 end
@@ -39,7 +39,7 @@ end
 do
     print("yellow clipped under gray bottom right")
     local r4 = {'%', x=1, y=1, w=0.5, h=0.5, up=r1}
-    pico.set.draw { color='yellow' }
+    pico.set.pencil { color='yellow' }
     pico.output.draw.rect(r4)
     pico.check("clip-05")
 end

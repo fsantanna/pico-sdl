@@ -110,16 +110,15 @@ typedef struct {
     Pico_Color    color;
     const char*   font;
     PICO_STYLE    style;
-} Pico_Layer_Draw;
+} Pico_Layer_Pencil;
 
 typedef struct {
     unsigned char alpha;
     Pico_Color    color;
     PICO_FLIP     flip;
     int           grid;
-    int           keep;
     Pico_Rot      rotate;
-} Pico_Layer_Show;
+} Pico_Layer_Effect;
 
 typedef struct {
     Pico_Abs_Dim  dim;
@@ -127,7 +126,8 @@ typedef struct {
     Pico_Rel_Rect dst;
     Pico_Rel_Rect src;
     Pico_Rel_Rect clip;
-} Pico_Layer_View;
+    int           keep;
+} Pico_Layer_Scene;
 
 typedef struct {
     Pico_Color   color;
@@ -196,7 +196,7 @@ void pico_input_loop (void);
 /// @brief Draw primitives, play sounds, etc.
 /// @{
 
-/// @brief Clears screen with color set by @ref pico_set_show_color.
+/// @brief Clears screen with color set by @ref pico_set_effect_color.
 void pico_output_clear (void);
 
 /// @brief Draws an RGBA pixmap.
@@ -303,11 +303,11 @@ void pico_output_sound (const char* path);
 /// @brief Gets the entire draw state of a layer.
 /// @param layer layer key (NULL = current layer)
 /// @param draw output struct populated with draw state
-/// @sa pico_set_draw
-void        pico_get_draw       (const char* layer, Pico_Layer_Draw* draw);
-Pico_Color  pico_get_draw_color (const char* layer);
-const char* pico_get_draw_font  (const char* layer);
-PICO_STYLE  pico_get_draw_style (const char* layer);
+/// @sa pico_set_pencil
+void        pico_get_pencil       (const char* layer, Pico_Layer_Pencil* draw);
+Pico_Color  pico_get_pencil_color (const char* layer);
+const char* pico_get_pencil_font  (const char* layer);
+PICO_STYLE  pico_get_pencil_style (const char* layer);
 
 /// @brief Gets the state of expert mode.
 /// @param fps optional pointer to receive fps value (NULL to ignore)
@@ -329,14 +329,13 @@ const char* pico_get_layer (void);
 /// @brief Gets the entire show state of a layer.
 /// @param layer layer key (NULL = current layer)
 /// @param show output struct populated with show state
-/// @sa pico_set_show
-void          pico_get_show          (const char* layer, Pico_Layer_Show* show);
-unsigned char pico_get_show_alpha    (const char* layer);
-Pico_Color    pico_get_show_color    (const char* layer);
-PICO_FLIP     pico_get_show_flip     (const char* layer);
-int           pico_get_show_grid     (const char* layer);
-int           pico_get_show_keep     (const char* layer);
-Pico_Rot      pico_get_show_rotate   (const char* layer);
+/// @sa pico_set_effect
+void          pico_get_effect          (const char* layer, Pico_Layer_Effect* show);
+unsigned char pico_get_effect_alpha    (const char* layer);
+Pico_Color    pico_get_effect_color    (const char* layer);
+PICO_FLIP     pico_get_effect_flip     (const char* layer);
+int           pico_get_effect_grid     (const char* layer);
+Pico_Rot      pico_get_effect_rotate   (const char* layer);
 
 /// @brief Gets video properties.
 /// @param path path to the Y4M video file
@@ -487,13 +486,14 @@ Pico_Abs_Dim pico_get_text_mode (
 /// @brief Gets the entire view state of a layer.
 /// @param layer layer key (NULL = current layer)
 /// @param view output struct populated with view state
-/// @sa pico_set_view
-void          pico_get_view      (const char* layer, Pico_Layer_View* view);
-Pico_Rel_Rect pico_get_view_clip (const char* layer);
-Pico_Abs_Dim  pico_get_view_dim  (const char* layer);
-Pico_Rel_Rect pico_get_view_dst  (const char* layer);
-Pico_Rel_Rect pico_get_view_src  (const char* layer);
-Pico_Abs_Dim  pico_get_view_tile (const char* layer);
+/// @sa pico_set_scene
+void          pico_get_scene      (const char* layer, Pico_Layer_Scene* view);
+Pico_Rel_Rect pico_get_scene_clip (const char* layer);
+Pico_Abs_Dim  pico_get_scene_dim  (const char* layer);
+Pico_Rel_Rect pico_get_scene_dst  (const char* layer);
+int           pico_get_scene_keep (const char* layer);
+Pico_Rel_Rect pico_get_scene_src  (const char* layer);
+Pico_Abs_Dim  pico_get_scene_tile (const char* layer);
 
 /// @brief Gets the entire window state.
 /// @param win output struct populated with window state
@@ -510,17 +510,17 @@ const char*  pico_get_window_title (void);
 /// @brief Sets both window and world to the same dimensions.
 /// @param dim dimensions for both window and world
 /// @sa pico_set_window
-/// @sa pico_set_view_dim
+/// @sa pico_set_scene_dim
 void pico_set_dim (Pico_Rel_Dim* dim);
 
 /// @brief Sets the entire draw state of a layer.
 /// @param layer layer key (NULL = current layer)
 /// @param draw new draw state
-/// @sa pico_get_draw
-void pico_set_draw       (const char* layer, Pico_Layer_Draw draw);
-void pico_set_draw_color (const char* layer, Pico_Color color);
-void pico_set_draw_font  (const char* layer, const char* path);
-void pico_set_draw_style (const char* layer, PICO_STYLE style);
+/// @sa pico_get_pencil
+void pico_set_pencil       (const char* layer, Pico_Layer_Pencil draw);
+void pico_set_pencil_color (const char* layer, Pico_Color color);
+void pico_set_pencil_font  (const char* layer, const char* path);
+void pico_set_pencil_style (const char* layer, PICO_STYLE style);
 
 /// @brief Toggles expert mode (manual present, frame pacing).
 /// @param on 1 to enable, 0 to disable
@@ -542,14 +542,13 @@ void pico_set_mouse (Pico_Rel_Pos* pos);
 /// @brief Sets the entire show state of a layer.
 /// @param layer layer key (NULL = current layer)
 /// @param show new show state
-/// @sa pico_get_show
-void pico_set_show          (const char* layer, Pico_Layer_Show show);
-void pico_set_show_alpha    (const char* layer, unsigned char alpha);
-void pico_set_show_color    (const char* layer, Pico_Color color);
-void pico_set_show_flip     (const char* layer, PICO_FLIP flip);
-void pico_set_show_grid     (const char* layer, int on);
-void pico_set_show_keep     (const char* layer, int on);
-void pico_set_show_rotate   (const char* layer, Pico_Rot rotate);
+/// @sa pico_get_effect
+void pico_set_effect          (const char* layer, Pico_Layer_Effect show);
+void pico_set_effect_alpha    (const char* layer, unsigned char alpha);
+void pico_set_effect_color    (const char* layer, Pico_Color color);
+void pico_set_effect_flip     (const char* layer, PICO_FLIP flip);
+void pico_set_effect_grid     (const char* layer, int on);
+void pico_set_effect_rotate   (const char* layer, Pico_Rot rotate);
 
 /// @brief Syncs a video layer to a target frame.
 /// Supports forward and backward seeking.
@@ -562,13 +561,14 @@ int pico_set_video (const char* key, int frame);
 /// @brief Sets the entire view state of a layer.
 /// @param layer layer key (NULL = current layer)
 /// @param view new view state
-/// @sa pico_get_view
-void pico_set_view      (const char* layer, Pico_Layer_View view);
-void pico_set_view_clip (const char* layer, Pico_Rel_Rect clip);
-void pico_set_view_dim  (const char* layer, Pico_Rel_Dim* dim);
-void pico_set_view_dst  (const char* layer, Pico_Rel_Rect dst);
-void pico_set_view_src  (const char* layer, Pico_Rel_Rect src);
-void pico_set_view_tile (const char* layer, Pico_Abs_Dim tile);
+/// @sa pico_get_scene
+void pico_set_scene      (const char* layer, Pico_Layer_Scene view);
+void pico_set_scene_clip (const char* layer, Pico_Rel_Rect clip);
+void pico_set_scene_dim  (const char* layer, Pico_Rel_Dim* dim);
+void pico_set_scene_dst  (const char* layer, Pico_Rel_Rect dst);
+void pico_set_scene_keep (const char* layer, int on);
+void pico_set_scene_src  (const char* layer, Pico_Rel_Rect src);
+void pico_set_scene_tile (const char* layer, Pico_Abs_Dim tile);
 
 /// @brief Sets the entire window state.
 /// @param win new window state

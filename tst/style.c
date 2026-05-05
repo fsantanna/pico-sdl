@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Style" });
-    pico_set_view_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
+    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
 
     // shapes used across tests
     Pico_Rel_Rect rect = {
@@ -32,7 +32,7 @@ int main (void) {
     puts("default fill");
     {
         pico_output_clear();
-        pico_set_draw_color(NULL, (Pico_Color){255, 255, 255, 0xFF});
+        pico_set_pencil_color(NULL, (Pico_Color){255, 255, 255, 0xFF});
         pico_output_draw_rect(&rect);
         pico_output_draw_oval(&oval);
         pico_output_draw_tri(&t1, &t2, &t3);
@@ -43,8 +43,8 @@ int main (void) {
     puts("stroke");
     {
         pico_output_clear();
-        pico_set_draw_style(NULL, PICO_STYLE_STROKE);
-        pico_set_draw_color(NULL, (Pico_Color){255, 255, 255, 0xFF});
+        pico_set_pencil_style(NULL, PICO_STYLE_STROKE);
+        pico_set_pencil_color(NULL, (Pico_Color){255, 255, 255, 0xFF});
         pico_output_draw_rect(&rect);
         pico_output_draw_oval(&oval);
         pico_output_draw_tri(&t1, &t2, &t3);
@@ -55,8 +55,8 @@ int main (void) {
     puts("back to fill");
     {
         pico_output_clear();
-        pico_set_draw_style(NULL, PICO_STYLE_FILL);
-        pico_set_draw_color(NULL, (Pico_Color){255, 255, 255, 0xFF});
+        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
+        pico_set_pencil_color(NULL, (Pico_Color){255, 255, 255, 0xFF});
         pico_output_draw_rect(&rect);
         pico_output_draw_oval(&oval);
         pico_output_draw_tri(&t1, &t2, &t3);
@@ -66,12 +66,12 @@ int main (void) {
 
     puts("get style");
     {
-        pico_set_draw_style(NULL, PICO_STYLE_FILL);
-        assert(pico_get_draw_style(NULL) == PICO_STYLE_FILL);
-        pico_set_draw_style(NULL, PICO_STYLE_STROKE);
-        assert(pico_get_draw_style(NULL) == PICO_STYLE_STROKE);
-        pico_set_draw_style(NULL, PICO_STYLE_FILL);
-        assert(pico_get_draw_style(NULL) == PICO_STYLE_FILL);
+        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
+        assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
+        pico_set_pencil_style(NULL, PICO_STYLE_STROKE);
+        assert(pico_get_pencil_style(NULL) == PICO_STYLE_STROKE);
+        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
+        assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
     }
 
     pico_init(0);

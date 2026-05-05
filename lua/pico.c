@@ -692,9 +692,9 @@ static int l_color_alpha (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_get_draw (lua_State* L) {
-    Pico_Layer_Draw draw;
-    pico_get_draw(NULL, &draw);
+static int l_get_pencil (lua_State* L) {
+    Pico_Layer_Pencil draw;
+    pico_get_pencil(NULL, &draw);
 
     lua_newtable(L);                    // T
 
@@ -771,9 +771,9 @@ static int l_get_now (lua_State* L) {
     return 1;                       // [ms]
 }
 
-static int l_get_show (lua_State* L) {
-    Pico_Layer_Show show;
-    pico_get_show(NULL, &show);
+static int l_get_effect (lua_State* L) {
+    Pico_Layer_Effect show;
+    pico_get_effect(NULL, &show);
 
     lua_newtable(L);                    // T
 
@@ -790,9 +790,6 @@ static int l_get_show (lua_State* L) {
 
     lua_pushboolean(L, show.grid);      // T | grid
     lua_setfield(L, -2, "grid");        // T
-
-    lua_pushboolean(L, show.keep);      // T | keep
-    lua_setfield(L, -2, "keep");        // T
 
     lua_newtable(L);                    // T | rot
     lua_pushinteger(L, show.rotate.angle);
@@ -862,9 +859,9 @@ static int l_get_video (lua_State* L) {
     return 1;
 }
 
-static int l_get_view (lua_State* L) {
-    Pico_Layer_View view;
-    pico_get_view(NULL, &view);
+static int l_get_scene (lua_State* L) {
+    Pico_Layer_Scene view;
+    pico_get_scene(NULL, &view);
 
     lua_newtable(L);                    // T
 
@@ -892,6 +889,9 @@ static int l_get_view (lua_State* L) {
 
     L_push_rel_rect(L, &view.clip);     // T | clip
     lua_setfield(L, -2, "clip");        // T
+
+    lua_pushboolean(L, view.keep);      // T | keep
+    lua_setfield(L, -2, "keep");        // T
 
     return 1;
 }
@@ -935,11 +935,11 @@ static int l_set_dim (lua_State* L) {
     return 0;
 }
 
-static int l_set_draw (lua_State* L) {
+static int l_set_pencil (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    Pico_Layer_Draw draw;
-    pico_get_draw(NULL, &draw);
+    Pico_Layer_Pencil draw;
+    pico_get_pencil(NULL, &draw);
 
     lua_getfield(L, 1, "color");            // T | color
     if (!lua_isnil(L, -1)) {
@@ -967,7 +967,7 @@ static int l_set_draw (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_draw(NULL, draw);
+    pico_set_pencil(NULL, draw);
     return 0;
 }
 
@@ -1003,18 +1003,12 @@ static int l_set_mouse (lua_State* L) {
     return 0;
 }
 
-static int l_set_show (lua_State* L) {
+static int l_set_effect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
-
-    lua_getfield(L, 1, "keep");             // T | keep
-    if (!lua_isnil(L, -1)) {
-        pico_set_show_keep(NULL, lua_toboolean(L, -1));
-    }
-    lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "alpha");            // T | alpha
     if (!lua_isnil(L, -1)) {
-        pico_set_show_alpha(NULL,
+        pico_set_effect_alpha(NULL,
             (unsigned char) luaL_checkinteger(L, -1));
     }
     lua_pop(L, 1);                          // T
@@ -1022,7 +1016,7 @@ static int l_set_show (lua_State* L) {
     lua_getfield(L, 1, "color");            // T | color
     if (!lua_isnil(L, -1)) {
         Pico_Color c = C_color_tis(L, lua_gettop(L));
-        pico_set_show_color(NULL, c);
+        pico_set_effect_color(NULL, c);
     }
     lua_pop(L, 1);                          // T
 
@@ -1037,13 +1031,13 @@ static int l_set_show (lua_State* L) {
             luaL_error(L, "invalid flip \"%s\"", s);
         }
         lua_pop(L, 1);                          // T | flip
-        pico_set_show_flip(NULL, flip);
+        pico_set_effect_flip(NULL, flip);
     }
     lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "grid");             // T | grid
     if (!lua_isnil(L, -1)) {
-        pico_set_show_grid(NULL, lua_toboolean(L, -1));
+        pico_set_effect_grid(NULL, lua_toboolean(L, -1));
     }
     lua_pop(L, 1);                          // T
 
@@ -1052,7 +1046,7 @@ static int l_set_show (lua_State* L) {
         Pico_Rot rot;
         rot.angle  = C_checkfieldnum(L, lua_gettop(L), "angle");
         rot.anchor = C_anchor(L, lua_gettop(L));
-        pico_set_show_rotate(NULL, rot);
+        pico_set_effect_rotate(NULL, rot);
     }
     lua_pop(L, 1);                          // T
 
@@ -1067,7 +1061,7 @@ static int l_set_video (lua_State* L) {
     return 1;
 }
 
-static int l_set_view (lua_State* L) {
+static int l_set_scene (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
     Pico_Rel_Dim*  xdim  = NULL;
@@ -1075,6 +1069,12 @@ static int l_set_view (lua_State* L) {
     Pico_Rel_Rect* xdst  = NULL;
     Pico_Rel_Rect* xsrc  = NULL;
     Pico_Rel_Rect* xclip = NULL;
+
+    lua_getfield(L, 1, "keep");             // T | keep
+    if (!lua_isnil(L, -1)) {
+        pico_set_scene_keep(NULL, lua_toboolean(L, -1));
+    }
+    lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "dim");              // T | dim
     if (!lua_isnil(L, -1)) {
@@ -1110,11 +1110,11 @@ static int l_set_view (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    if (xtile != NULL) { pico_set_view_tile(NULL, *xtile); }
-    if (xdim  != NULL) { pico_set_view_dim (NULL, xdim);   }
-    if (xclip != NULL) { pico_set_view_clip(NULL, *xclip); }
-    if (xdst  != NULL) { pico_set_view_dst (NULL, *xdst);  }
-    if (xsrc  != NULL) { pico_set_view_src (NULL, *xsrc);  }
+    if (xtile != NULL) { pico_set_scene_tile(NULL, *xtile); }
+    if (xdim  != NULL) { pico_set_scene_dim (NULL, xdim);   }
+    if (xclip != NULL) { pico_set_scene_clip(NULL, *xclip); }
+    if (xdst  != NULL) { pico_set_scene_dst (NULL, *xdst);  }
+    if (xsrc  != NULL) { pico_set_scene_src (NULL, *xsrc);  }
     return 0;
 }
 
@@ -1590,16 +1590,16 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
-    { "draw",     l_get_draw   },
+    { "pencil",   l_get_pencil   },
     { "image",    l_get_image  },
     { "keyboard", l_get_keyboard },
     { "layer",    l_get_layer  },
     { "mouse",    l_get_mouse  },
     { "now",      l_get_now    },
-    { "show",     l_get_show   },
+    { "effect",   l_get_effect   },
     { "text",     l_get_text   },
     { "video",    l_get_video  },
-    { "view",     l_get_view   },
+    { "scene",    l_get_scene   },
     { "window",   l_get_window },
     { NULL, NULL }
 };
@@ -1608,13 +1608,13 @@ static const luaL_Reg ll_get[] = {
 
 static const luaL_Reg ll_set[] = {
     { "dim",    l_set_dim    },
-    { "draw",   l_set_draw   },
+    { "pencil", l_set_pencil   },
     { "expert", l_set_expert },
     { "layer",  l_set_layer  },
     { "mouse",  l_set_mouse  },
-    { "show",   l_set_show   },
+    { "effect", l_set_effect   },
     { "video",  l_set_video  },
-    { "view",   l_set_view   },
+    { "scene",  l_set_scene   },
     { "window", l_set_window },
     { NULL, NULL }
 };

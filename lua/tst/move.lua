@@ -4,12 +4,12 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.window { title="Moving Around", dim={'!', w=640, h=360} }
-pico.set.view { dim={'!', w=64, h=18} }
+pico.set.scene { dim={'!', w=64, h=18} }
 math.randomseed(0)
 
 local pos = {'!', x=32, y=9}
 for i = 0, 99 do
-    pico.set.draw { color={r=0xFF, g=0xFF, b=0xFF} }
+    pico.set.pencil { color={r=0xFF, g=0xFF, b=0xFF} }
     pico.output.draw.pixel(pos)
 
     pico.input.delay(10)

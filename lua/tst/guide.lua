@@ -21,7 +21,7 @@ pico.set.window {
     title = "guide-02-02-01",
     dim   = { '!', w=200, h=200 },
 }
-pico.set.view {
+pico.set.scene {
     dim = { '!', w=200, h=200 },
 }
 pico.check("guide-02-02-01")
@@ -58,17 +58,17 @@ pico.check("guide-02-01-01")
 
 -- §3.2.b: yellow background, red rect
 pico.set.window { title="guide-03-02-02" }
-pico.set.show { color='yellow' }
-pico.set.draw { color='red'    }
+pico.set.effect { color='yellow' }
+pico.set.pencil { color='red'    }
 pico.output.clear()
 pico.output.draw.rect { '!', x=50, y=50, w=50, h=50 }
 pico.check("guide-03-02-02")
 
 -- §3.2.c: silver pixel (0xCCCCCC) + green pixel (percent mode with alpha)
 pico.set.window { title="guide-03-02-03" }
-pico.set.draw { color = 0xCCCCCC }
+pico.set.pencil { color = 0xCCCCCC }
 pico.output.draw.pixel { '!', x=26, y=26 }
-pico.set.draw { color={ '%', r=0, g=0.5, b=0, a=0.5 } }
+pico.set.pencil { color={ '%', r=0, g=0.5, b=0, a=0.5 } }
 pico.output.draw.pixel { '!', x=73, y=73 }
 pico.check("guide-03-02-03")
 
@@ -81,7 +81,7 @@ pico.check("guide-02-01-01")
 -- §3.3.a: two texts, second uses DejaVu
 pico.set.window { title="guide-03-03-01" }
 pico.output.draw.text("Hello", {'!', x=50, y=33, h=30})
-pico.set.draw { font='../../res/DejaVuSans.ttf' }
+pico.set.pencil { font='../../res/DejaVuSans.ttf' }
 pico.output.draw.text("Hello", {'!', x=50, y=66, h=30})
 pico.check("guide-03-03-01")
 
@@ -119,13 +119,13 @@ pico.check("guide-03-03-03")
 pico.init(false)
 pico.init(true)
 pico.set.window { title="guide-04-00-01" }
-pico.set.draw { color='white' }
+pico.set.pencil { color='white' }
 pico.output.draw.pixel { '%', x=0.5, y=0.5 }
-pico.set.draw { color=pico.color.alpha('red',   0x80) }
+pico.set.pencil { color=pico.color.alpha('red',   0x80) }
 pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW' }
-pico.set.draw { color=pico.color.alpha('green', 0x80) }
+pico.set.pencil { color=pico.color.alpha('green', 0x80) }
 pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
-pico.set.draw { color=pico.color.alpha('blue',  0x80) }
+pico.set.pencil { color=pico.color.alpha('blue',  0x80) }
 pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
 pico.check("guide-04-00-01")
 
@@ -133,7 +133,7 @@ pico.check("guide-04-00-01")
 pico.init(false)
 pico.init(true)
 pico.set.window { title="guide-04-01-01" }
-pico.set.view {
+pico.set.scene {
     dim  = { '#', w=5, h=5 },
     tile = { w=20, h=20 },
 }
@@ -153,12 +153,12 @@ pico.init(false); pico.init(true)
 pico.set.window { title="guide-05-00-01" }
 pico.output.draw.image('../../res/open.png',
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-pico.set.view { target = {'%', x=0.8, y=0.8, w=0.3, h=0.2} }
+pico.set.scene { target = {'%', x=0.8, y=0.8, w=0.3, h=0.2} }
 pico.check("guide-05-00-01")
 
 -- §5: source crops a region of the world (continues from previous state)
 pico.set.window { title="guide-05-00-02" }
-pico.set.view {
+pico.set.scene {
     source = {'%', x=0.5, y=0.5, w=0.4, h=0.4},
 }
 pico.check("guide-05-00-02")
@@ -166,7 +166,7 @@ pico.check("guide-05-00-02")
 -- §5: clip restricts drawing to a small center region
 pico.init(false); pico.init(true)
 pico.set.window { title="guide-05-00-03" }
-pico.set.view { clip = {'%', x=0.5, y=0.5, w=0.25, h=0.25} }
+pico.set.scene { clip = {'%', x=0.5, y=0.5, w=0.25, h=0.25} }
 pico.output.draw.image('../../res/open.png',
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 pico.check("guide-05-00-03")
@@ -182,17 +182,17 @@ pico.check("guide-05-01-01")
 pico.set.window { title="guide-05-01-02" }
 pico.output.draw.image('../../res/open.png',
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-pico.set.view { source = {'%', x=0.5, y=0.5, w=0.5, h=0.5} }
+pico.set.scene { source = {'%', x=0.5, y=0.5, w=0.5, h=0.5} }
 pico.check("guide-05-01-02")
 
 -- §5.1.c: source double (w=h=2) -> 1/2 zoom out
 pico.set.window { title="guide-05-01-03" }
-pico.set.view { source = {'%', x=0.5, y=0.5, w=2, h=2} }
+pico.set.scene { source = {'%', x=0.5, y=0.5, w=2, h=2} }
 pico.check("guide-05-01-03")
 
 -- §5.1.d: shift source offset -> scroll
 pico.set.window { title="guide-05-01-04" }
-pico.set.view { source = {'%', x=0.8, y=0.2, w=2, h=2} }
+pico.set.scene { source = {'%', x=0.8, y=0.2, w=2, h=2} }
 pico.check("guide-05-01-04")
 
 -------------------------------------------------------------------------------
@@ -234,11 +234,11 @@ pico.check("guide-06-03-01")
 pico.output.clear()
 pico.layer.empty(nil, "flag", {w=300, h=200})
 pico.set.layer("flag")
-pico.set.draw { color={ r=0x00, g=0x2B, b=0x7F } }
+pico.set.pencil { color={ r=0x00, g=0x2B, b=0x7F } }
 pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
-pico.set.draw { color={ r=0xFC, g=0xD1, b=0x16 } }
+pico.set.pencil { color={ r=0xFC, g=0xD1, b=0x16 } }
 pico.output.draw.rect { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' }
-pico.set.draw { color={ r=0xCE, g=0x11, b=0x26 } }
+pico.set.pencil { color={ r=0xCE, g=0x11, b=0x26 } }
 pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
 
 -- §7.2.a: composite flag twice on the world
@@ -251,7 +251,7 @@ pico.check("guide-07-02-01")
 -- §7.2.b: rotate + flip flag, draw at top-right
 pico.set.window { title="guide-07-02-02" }
 pico.set.layer("flag")
-pico.set.show {
+pico.set.effect {
     flip   = 'horizontal',
     rotate = {angle=30, anchor='C'},
 }
@@ -263,7 +263,7 @@ pico.check("guide-07-02-02")
 -- §7.2.c: dim flag with alpha (reset transforms), draw enlarged-centered
 pico.set.window { title="guide-07-02-03" }
 pico.set.layer("flag")
-pico.set.show {
+pico.set.effect {
     rotate = {angle=0},
     flip   = 'none',
     alpha  = 0x80,
@@ -290,22 +290,22 @@ pico.set.window { title="guide-07-04-01" }
 do
     pico.layer.image("root", "pic", "../../res/open.png")
     pico.set.layer("pic")
-    pico.set.view { target = {'%', x=0.3, y=0.3, w=0.4} }
+    pico.set.scene { target = {'%', x=0.3, y=0.3, w=0.4} }
 end
 do
     pico.layer.empty("root", "panel", {w=100, h=50})
     pico.set.layer("panel")
-    pico.set.show { color='silver' }
-    pico.set.view { target = {'%', x=0.7, y=0.7, w=0.4} }
+    pico.set.effect { color='silver' }
+    pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
     do
         pico.layer.text("panel", "hello", 20, "Hello")
         pico.set.layer("hello")
-        pico.set.view { target = {'%', x=0.5, y=0.3, h=0.6} }
+        pico.set.scene { target = {'%', x=0.5, y=0.3, h=0.6} }
     end
     do
         pico.layer.text("panel", "world", 20, "World!")
         pico.set.layer("world")
-        pico.set.view { target = {'%', x=0.5, y=0.7, h=0.4} }
+        pico.set.scene { target = {'%', x=0.5, y=0.7, h=0.4} }
     end
 end
 pico.set.layer()

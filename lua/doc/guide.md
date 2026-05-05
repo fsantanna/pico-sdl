@@ -62,7 +62,7 @@ You may click the image to zoom in.
 ### 2.2. Configure
 
 To configure the window and the world view, we use `pico.set.window` and
-`pico.set.view`:
+`pico.set.scene`:
 
 <table>
 <tr><td><pre>
@@ -70,7 +70,7 @@ To configure the window and the world view, we use `pico.set.window` and
     title = "Hello!",
     dim   = { '!', w=200, h=200 },
   }
-> pico.set.view {
+> pico.set.scene {
     dim = { '!', w=200, h=200 },
   }
 </pre>
@@ -186,13 +186,13 @@ Now the pixel and rectangle are gone.
 
 By default, `pico-lua` uses black to clear the screen and white to draw shapes.
 
-To pick different colors, we use `pico.set.show` and `pico.set.draw` passing
+To pick different colors, we use `pico.set.effect` and `pico.set.pencil` passing
 the `color` attribute:
 
 <table>
 <tr><td><pre>
-> pico.set.show { color='yellow' }  -- background
-> pico.set.draw { color='red'    }  -- shapes
+> pico.set.effect { color='yellow' }  -- background
+> pico.set.pencil { color='red'    }  -- shapes
 > pico.output.clear()
 > pico.output.draw.rect { '!', x=50, y=50, w=50, h=50 }
 </pre>
@@ -211,12 +211,12 @@ Colors can also be specified as numbers or tables:
 
 <table>
 <tr><td><pre>
-> pico.set.draw {       -- 0xRRGGBB[AA]
+> pico.set.pencil {       -- 0xRRGGBB[AA]
     color = 0xCCCCCC
   }
   pico.output.draw.pixel { '!', x=26, y=26 }
 
-> pico.set.draw {       -- percent mode '%' (0.0-1.0)
+> pico.set.pencil {       -- percent mode '%' (0.0-1.0)
     color={ '%', r=0, g=0.5, b=0, a=0.5 }
   }
   pico.output.draw.pixel { '!', x=73, y=73 }
@@ -245,7 +245,7 @@ To draw text, we call `pico.output.draw.text`:
 <table>
 <tr><td><pre>
 > pico.output.draw.text("Hello", {'!', x=50, y=33, h=30})
-> pico.set.draw { font='DejaVuSans.ttf' }
+> pico.set.pencil { font='DejaVuSans.ttf' }
 > pico.output.draw.text("Hello", {'!', x=50, y=66, h=30})
 </pre>
 </td><td>
@@ -363,13 +363,13 @@ different anchors:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.draw { color='white' }
+> pico.set.pencil { color='white' }
 > pico.output.draw.pixel { '%', x=0.5, y=0.5 }
-> pico.set.draw { color=pico.color.alpha('red', 0x80) }
+> pico.set.pencil { color=pico.color.alpha('red', 0x80) }
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW' }
-> pico.set.draw { color=pico.color.alpha('green', 0x80) }
+> pico.set.pencil { color=pico.color.alpha('green', 0x80) }
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
-> pico.set.draw { color=pico.color.alpha('blue', 0x80) }
+> pico.set.pencil { color=pico.color.alpha('blue', 0x80) }
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
 </pre>
 </td><td>
@@ -394,7 +394,7 @@ dimensions:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.view {
+> pico.set.scene {
     tile = { w=20, h=20 },     -- tile size (20x20 physical)
     dim  = { '#', w=5, h=5 },  -- world size in tiles (5x5 logical)
   }
@@ -422,9 +422,9 @@ We then draw two rectangles using the tile mode `'#'`:
 The view controls how the logical world maps to the physical window:
 
 - `pico.set.window` controls the **physical** window
-- `pico.set.view` controls the **logical** world
+- `pico.set.scene` controls the **logical** world
 
-Next, we discuss some advanced properties for `pico.set.view`:
+Next, we discuss some advanced properties for `pico.set.scene`:
 
 | Property | Description             |
 |----------|-------------------------|
@@ -439,7 +439,7 @@ window:
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
 > pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-> pico.set.view {
+> pico.set.scene {
     target = { '%', x=0.8, y=0.8, w=0.3, h=0.2 },
   }
 </pre>
@@ -456,7 +456,7 @@ The `source` property selects which region of the world is visible:
 
 <table>
 <tr><td><pre>
-> pico.set.view {
+> pico.set.scene {
     source = { '%', x=0.5, y=0.5, w=0.4, h=0.4 },
   }
 </pre>
@@ -475,7 +475,7 @@ sub-region of the world:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.view {
+> pico.set.scene {
     clip = { '%', x=0.5, y=0.5, w=0.25, h=0.25 },
   }
 > pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
@@ -511,7 +511,7 @@ Next, we crop the view in half (`w=h=0.5`) to get a `2x` zoom in:
 
 <table>
 <tr><td><pre>
-> pico.set.view {
+> pico.set.scene {
     source = { '%', x=0.5, y=0.5, w=0.5, h=0.5 },
   }
 </pre>
@@ -524,7 +524,7 @@ Likewise, when we double the source (`w=h=2`), we get a `1/2` zoom out:
 
 <table>
 <tr><td><pre>
-> pico.set.view {
+> pico.set.scene {
     source = { '%', x=0.5, y=0.5, w=2, h=2 },
   }
 </pre>
@@ -538,7 +538,7 @@ the source `x` and `y` fields:
 
 <table>
 <tr><td><pre>
-> pico.set.view {
+> pico.set.scene {
     source = { '%', x=0.8, y=0.2, w=2, h=2 },
   }
 </pre>
@@ -693,11 +693,11 @@ redirect further drawing operations to it:
 > pico.output.clear()
 > pico.layer.empty(nil, "flag", {w=300, h=200})
 > pico.set.layer("flag")
-> pico.set.draw { color={ r=0x00, g=0x2B, b=0x7F } }
+> pico.set.pencil { color={ r=0x00, g=0x2B, b=0x7F } }
   pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
-  pico.set.draw { color={ r=0xFC, g=0xD1, b=0x16 } }
+  pico.set.pencil { color={ r=0xFC, g=0xD1, b=0x16 } }
   pico.output.draw.rect { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' }
-  pico.set.draw { color={ r=0xCE, g=0x11, b=0x26 } }
+  pico.set.pencil { color={ r=0xCE, g=0x11, b=0x26 } }
   pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
 ```
 
@@ -730,12 +730,12 @@ We first use `pico.set.layer()`, with no arguments, to target the world layer.
 Then, we compose the flag twice, with different arguments.
 
 We can also flip and rotate layers when compositing them, by setting their
-`pico.set.show` fields:
+`pico.set.effect` fields:
 
 <table>
 <tr><td><pre>
 > pico.set.layer("flag")
-> pico.set.show {
+> pico.set.effect {
     flip   = 'horizontal',
     rotate = {angle=30, anchor='C'},
   }
@@ -757,7 +757,7 @@ We can also set the transparency of layers by lowering their `alpha` field:
 <table>
 <tr><td><pre>
 > pico.set.layer("flag")
-> pico.set.show {
+> pico.set.effect {
     rotate = {angle=0},
     flip   = 'none',
     alpha  = 0x80,
@@ -818,7 +818,7 @@ become its parent:
 ```
 pico.layer.empty("up", "me", ...)   -- "up" is parent of "me"
 pico.set.layer("me")                -- setup "me"
-pico.set.view {                     -- position "me" within "up"
+pico.set.scene {                     -- position "me" within "up"
     target = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 }
 ```
@@ -846,22 +846,22 @@ The next code listing implements this layout:
 > do
     pico.layer.image("root", "I", "open.png")
     pico.set.layer("I")
-    pico.set.view { target = {'%', x=0.3, y=0.3, w=0.4} }
+    pico.set.scene { target = {'%', x=0.3, y=0.3, w=0.4} }
   end
 > do
     pico.layer.empty("root", "P", {w=100, h=50})
     pico.set.layer("P")
-    pico.set.show { color='silver' }
-    pico.set.view { target = {'%', x=0.7, y=0.7, w=0.4} }
+    pico.set.effect { color='silver' }
+    pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
 >   do
         pico.layer.text("P", "T1", 20, "Hello")
         pico.set.layer("hello")
-        pico.set.view { target = {'%', x=0.5, y=0.3, h=0.6} }
+        pico.set.scene { target = {'%', x=0.5, y=0.3, h=0.6} }
     end
 >   do
         pico.layer.text("P", "T2", 20, "World!")
         pico.set.layer("world")
-        pico.set.view { target = {'%', x=0.5, y=0.7, h=0.4} }
+        pico.set.scene { target = {'%', x=0.5, y=0.7, h=0.4} }
     end
   end
 > pico.set.layer()
@@ -990,9 +990,9 @@ local m = {'!', x=5, y=5}           -- mouse pixel
 
 while true do                       -- main loop
     pico.output.clear()             -- redraw scene
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.pixel(m)
-    pico.set.draw { color='blue' }
+    pico.set.pencil { color='blue' }
     pico.output.draw.pixel(k)
     pico.output.present()
 

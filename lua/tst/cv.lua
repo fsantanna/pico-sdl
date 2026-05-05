@@ -50,7 +50,7 @@ do
 end
 
 local log = {'!', w=100, h=100}
-pico.set.view { dim=log }
+pico.set.scene { dim=log }
 
 print "pico.cv.pos [log]: pct->raw (rel_abs)"
 do
@@ -271,7 +271,7 @@ do
 end
 
 -- tile mode: 4x4 grid of 4x4 tiles = 16x16 logical
-pico.set.view { dim={'#', w=4, h=4}, tile={w=4, h=4} }
+pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
 
 print "pico.cv.dim [tile]: rel->abs (rel_abs)"
 do
@@ -287,7 +287,7 @@ do
 end
 
 -- reset to 100x100 for inverse tests
-pico.set.view { dim={'!', w=100, h=100} }
+pico.set.scene { dim={'!', w=100, h=100} }
 
 print "pico.cv.dim [log]: abs->rel (abs_rel)"
 do

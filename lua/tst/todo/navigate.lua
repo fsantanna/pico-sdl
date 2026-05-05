@@ -1,7 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.view {
+pico.set.scene {
     world = {w=1000, h=1000}
 }
 
@@ -18,7 +18,7 @@ do
     )
 
     -- RECT at center
-    pico.set.draw { style='stroke' }
+    pico.set.pencil { style='stroke' }
     pico.output.draw.rect({'C', x=0.5, y=0.5, w=0.25, h=0.25})
 end
 

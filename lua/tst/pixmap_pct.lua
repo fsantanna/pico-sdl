@@ -4,7 +4,7 @@ pico.init(true)
 local phy = {'!', w=100, h=100}
 local log = {'!', w=10, h=10}
 pico.set.window { title="Pixmap", dim=phy }
-pico.set.view { dim=log }
+pico.set.scene { dim=log }
 
 -- .x.
 -- xxx
@@ -51,7 +51,7 @@ do
     }
 
     print("bottomright 9x1 on white")
-    pico.set.show { color='white' }
+    pico.set.effect { color='white' }
     pico.output.clear()
     local r = {'%', x=1, y=1, anchor='SE'}
     pico.output.draw.pixmap("buf2", pixmap, r)
@@ -60,7 +60,7 @@ end
 
 do
     print("aspect: h=0.6 only on 3x3 -> 6x6 cells")
-    pico.set.show { color='black' }
+    pico.set.effect { color='black' }
     pico.output.clear()
     local r = {'%', x=0.1, y=0.1, h=0.6, anchor='NW'}
     pico.output.draw.pixmap("buf3", pixmap, r)
@@ -69,7 +69,7 @@ end
 
 do
     print("distort: w=0.6, h=0.3 -> x-stretched")
-    pico.set.show { color='white' }
+    pico.set.effect { color='white' }
     pico.output.clear()
     local r = {'%', x=0.1, y=0.1, w=0.6, h=0.3, anchor='NW'}
     pico.output.draw.pixmap("buf4", pixmap, r)

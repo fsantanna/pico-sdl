@@ -3,7 +3,7 @@ pico.init(true)
 local phy = {'!', w=200, h=200}
 local log = {'!', w=100, h=100}
 pico.set.window { dim=phy }
-pico.set.view { dim=log }
+pico.set.scene { dim=log }
 
 print "pico.vs.pos_rect (raw)"
 do

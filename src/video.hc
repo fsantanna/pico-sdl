@@ -100,9 +100,9 @@ static int _y4m_read_frame (Pico_Layer_Video* vs) {
 static void _y4m_update_texture (Pico_Layer_Video* vs) {
     SDL_UpdateYUVTexture(
         vs->base.tex, NULL,
-        vs->plane.y, vs->base.view.dim.w,
-        vs->plane.u, vs->base.view.dim.w / 2,
-        vs->plane.v, vs->base.view.dim.w / 2
+        vs->plane.y, vs->base.scene.dim.w,
+        vs->plane.u, vs->base.scene.dim.w / 2,
+        vs->plane.v, vs->base.scene.dim.w / 2
     );
 }
 
@@ -156,7 +156,7 @@ Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
     pico_assert(vs != NULL);
 
     Pico_Video info = {
-        .dim   = vs->base.view.dim,
+        .dim   = vs->base.scene.dim,
         .fps   = vs->fps,
         .frame = (vs->frame.cur < 0) ? 0
                                       : vs->frame.cur,

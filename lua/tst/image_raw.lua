@@ -2,7 +2,7 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.window { title="Image - Size - Crop" }
-pico.set.show { color='white' }
+pico.set.effect { color='white' }
 
 -- pico.get.image
 do
@@ -76,7 +76,7 @@ do
     pico.output.clear()
     pico.layer.image('!', nil, "crop", "../../res/open.png")
     pico.set.layer("crop")
-    pico.set.view {
+    pico.set.scene {
         source = {'!', x=9, y=9, w=30, h=30, anchor='NW'}
     }
     pico.set.layer()

@@ -6,18 +6,19 @@ require 'pico.check'
 
 pico.init(true)
 
-pico.set.show { color='black' }
+pico.set.effect { color='black' }
 pico.output.clear()
 
 pico.layer.empty("root", "L", {w=8, h=8})
 
 pico.set.layer("L")
-pico.set.view({
+pico.set.scene({
     target = {'%', x=0.3, y=0.3, w=0.4, h=0.4, anchor='C'},
+    keep = true,
 })
-pico.set.show { keep=true, color='white' }
+pico.set.effect { color='white' }
 pico.output.clear()
-pico.set.draw { color='red' }
+pico.set.pencil { color='red' }
 pico.output.draw.rect(
     {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'}
 )
@@ -28,7 +29,7 @@ pico.check("layer-hier-01")
 
 pico.layer.image("root", "img", "../../res/open.png")
 pico.set.layer("img")
-pico.set.view({
+pico.set.scene({
     target = {'%', x=0.7, y=0.7, w=0.4, h=0.4, anchor='C'},
 })
 
@@ -41,7 +42,7 @@ pico.layer.pixmap("root", "buf", {
     {{r=0,   g=0,   b=255, a=255}, {r=255, g=255, b=0, a=255}},
 })
 pico.set.layer("buf")
-pico.set.view({
+pico.set.scene({
     target = {'%', x=0.7, y=0.3, w=0.4, h=0.4, anchor='C'},
 })
 
@@ -49,10 +50,10 @@ pico.set.layer("root")
 pico.output.present()
 pico.check("layer-hier-03")
 
-pico.set.draw { color='green' }
+pico.set.pencil { color='green' }
 pico.layer.text("root", "txt", 10, "hello")
 pico.set.layer("txt")
-pico.set.view({
+pico.set.scene({
     target = {'%', x=0.3, y=0.7, w=0.4, h=0.4, anchor='C'},
 })
 
@@ -65,9 +66,9 @@ pico.check("layer-hier-04")
 -- transparent overlay with yellow background
 pico.layer.empty("root", "over", {w=500, h=500})
 pico.set.layer("over")
-pico.set.show { color={r=0xFF, g=0xFF, b=0x00}, alpha=0x80 }
+pico.set.effect { color={r=0xFF, g=0xFF, b=0x00}, alpha=0x80 }
 pico.output.clear()
-pico.set.view({
+pico.set.scene({
     target = {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'},
 })
 pico.set.layer("root")
@@ -80,14 +81,14 @@ pico.check("layer-hier-05")
 pico.layer.sub("over", "blue", "buf",
     {'!', x=0, y=1, w=1, h=1, anchor='NW'})
 pico.set.layer("blue")
-pico.set.view({
+pico.set.scene({
     target = {'%', x=0.20, y=0.9, w=0.10, h=0.10, anchor='C'},
 })
 
 pico.layer.sub("over", "green", "buf",
     {'!', x=1, y=0, w=1, h=1, anchor='NW'})
 pico.set.layer("green")
-pico.set.view({
+pico.set.scene({
     target = {'%', x=0.40, y=0.9, w=0.10, h=0.10, anchor='C'},
 })
 

@@ -29,8 +29,8 @@ int main(void) {
         init_drop(&drops[i]);
     }
 
-    pico_set_show_color(NULL, (Pico_Color){20, 20, 40, 0xFF});
-    pico_set_draw_color(NULL, (Pico_Color){100, 100, 255, 0xFF});
+    pico_set_effect_color(NULL, (Pico_Color){20, 20, 40, 0xFF});
+    pico_set_pencil_color(NULL, (Pico_Color){100, 100, 255, 0xFF});
 
     while (1) {
         Pico_Event e;

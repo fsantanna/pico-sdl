@@ -95,17 +95,18 @@ static Pico_Layer* _layer_new (
         .type = type,
         .name = strdup(key),
         .tex  = tex,
-        .draw = {
+        .pencil = {
             .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL
         },
-        .show = {
-            .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .keep=keep, .rotate={0, PICO_ANCHOR_C}
+        .effect = {
+            .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .rotate={0, PICO_ANCHOR_C}
         },
-        .view = {
+        .scene = {
             .dim=dim, .tile={0, 0},
             .dst={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .src={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
             .clip={'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .keep=keep,
         },
     };
     assert(data->name != NULL);
@@ -144,7 +145,7 @@ static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
         (const char*)key, _tex_create(dim), dim
     );
     if (arg->tile != NULL) {
-        lay->view.tile = *arg->tile;
+        lay->scene.tile = *arg->tile;
     }
     return lay;
 }
@@ -165,22 +166,22 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
     _alloc_sub_t* c = (_alloc_sub_t*)ctx;
     Pico_Abs_Rect abs = pico_cv_rect_rel_abs(
         &c->crop,
-        &(Pico_Abs_Rect){0, 0, c->par->view.dim.w, c->par->view.dim.h}
+        &(Pico_Abs_Rect){0, 0, c->par->scene.dim.w, c->par->scene.dim.h}
     );
     Pico_Layer* data = _layer_new (
         1, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
         (const char*)key, c->par->tex,
         (Pico_Abs_Dim){abs.w, abs.h}
     );
-    data->view.src = c->crop;
-    data->view.src.up = &c->par->view.src;
-    ((Pico_Layer_Sub*)data)->sup = c->par->view.dim;
+    data->scene.src = c->crop;
+    data->scene.src.up = &c->par->scene.src;
+    ((Pico_Layer_Sub*)data)->sup = c->par->scene.dim;
     return data;
 }
 
 static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
-    SDL_Color c = { S.layer->draw.color.r, S.layer->draw.color.g, S.layer->draw.color.b, 0xFF };
-    TTF_Font* ttf = _font_get(S.layer->draw.font, height);
+    SDL_Color c = { S.layer->pencil.color.r, S.layer->pencil.color.g, S.layer->pencil.color.b, 0xFF };
+    TTF_Font* ttf = _font_get(S.layer->pencil.font, height);
     SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);

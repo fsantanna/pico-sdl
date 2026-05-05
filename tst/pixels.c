@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={100,100}, .fs=0, .show=1, .title="pixels" });
-    pico_set_view_dim(NULL, &(Pico_Rel_Dim){ '!', {5, 5}, NULL });
+    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {5, 5}, NULL });
 
     {
         Pico_Rel_Pos pixels[9] = {

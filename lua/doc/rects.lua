@@ -2,7 +2,7 @@ pico.init(true)
 
 pico.set.expert(true)
 pico.set.window { dim={'!', w=200, h=200}, title="2x Rects" }
-pico.set.view   { dim={'!', w=10,  h=10}  }
+pico.set.scene  { dim={'!', w=10,  h=10}  }
 
 local R = pico.color.alpha('red',  0xCC)
 local B = pico.color.alpha('blue', 0xCC)
@@ -12,9 +12,9 @@ local m = {'!', x=5, y=5}        -- mouse pixel
 
 while true do
     pico.output.clear()
-    pico.set.draw { color=R }
+    pico.set.pencil { color=R }
     pico.output.draw.pixel(m)
-    pico.set.draw { color=B }
+    pico.set.pencil { color=B }
     pico.output.draw.pixel(k)
     pico.output.present()
 

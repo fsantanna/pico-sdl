@@ -64,8 +64,8 @@ end
 print("WORLD")
 do
     print("normal")
-    local view = pico.get.view()
-    pico.set.view { dim={'!', w=view.dim.w*1, h=view.dim.h*1} }
+    local view = pico.get.scene()
+    pico.set.scene { dim={'!', w=view.dim.w*1, h=view.dim.h*1} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-07")
@@ -73,8 +73,8 @@ end
 
 do
     print("double")
-    local view = pico.get.view()
-    pico.set.view { dim={'!', w=view.dim.w*2, h=view.dim.h*2} }
+    local view = pico.get.scene()
+    pico.set.scene { dim={'!', w=view.dim.w*2, h=view.dim.h*2} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-08")
@@ -82,8 +82,8 @@ end
 
 do
     print("half")
-    local view = pico.get.view()
-    pico.set.view { dim={'!', w=view.dim.w*0.25, h=view.dim.h*0.25} }
+    local view = pico.get.scene()
+    pico.set.scene { dim={'!', w=view.dim.w*0.25, h=view.dim.h*0.25} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-09")
@@ -91,8 +91,8 @@ end
 
 do
     print("normal")
-    local view = pico.get.view()
-    pico.set.view { dim={'!', w=view.dim.w*2, h=view.dim.h*2} }
+    local view = pico.get.scene()
+    pico.set.scene { dim={'!', w=view.dim.w*2, h=view.dim.h*2} }
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-10")

@@ -25,7 +25,7 @@ do
         title = "Hello!",
         dim   = { '!', w=200, h=200 },
     }
-    pico.set.view {
+    pico.set.scene {
         grid = false,
         dim  = { '!', w=200, h=200 },
     }
@@ -85,7 +85,7 @@ do
     pico.output.clear()
     pico.output.draw.rect({'!', x=20, y=20, w=30, h=30})
     pico.output.draw.image('img/open.png', {'!', x=70, y=20, w=20, h=20})
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
     shot("guide-04-01-01")
     pico.init(false)
@@ -96,9 +96,9 @@ do
     pico.output.clear()
     pico.output.draw.rect({'!', x=20, y=20, w=30, h=30})
     pico.output.draw.image('img/open.png', {'!', x=70, y=20, w=20, h=20})
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
-    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
+    pico.set.pencil { color=pico.color.alpha(pico.get.pencil().color, 0x88) }
     pico.output.draw.oval({'!', x=50, y=80, w=35, h=15})
     shot("guide-04-02-01")
     pico.init(false)
@@ -110,11 +110,11 @@ do
     pico.output.draw.rect({'!', x=20, y=20, w=30, h=30})
     pico.output.draw.image('img/open.png',
         {'!', x=70, y=20, w=20, h=20})
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.text("Hello", {'!', x=50, y=80, h=10})
-    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
+    pico.set.pencil { color=pico.color.alpha(pico.get.pencil().color, 0x88) }
     pico.output.draw.oval({'!', x=50, y=80, w=35, h=15})
-    pico.set.draw {
+    pico.set.pencil {
         color = pico.color.alpha('blue', 0xFF),
         style = 'stroke',
     }
@@ -130,16 +130,16 @@ end
 do
     pico.init(true)
     pico.output.clear()
-    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
-    pico.set.draw { color='red' }
+    pico.set.pencil { color=pico.color.alpha(pico.get.pencil().color, 0x88) }
+    pico.set.pencil { color='red' }
     shot("guide-05-00-01")
     pico.init(false)
 end
 
 do
     pico.init(true)
-    pico.set.draw { color='red' }
-    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
+    pico.set.pencil { color='red' }
+    pico.set.pencil { color=pico.color.alpha(pico.get.pencil().color, 0x88) }
     pico.output.clear()
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
     shot("guide-05-01-01")
@@ -148,15 +148,15 @@ end
 
 do
     pico.init(true)
-    pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0x88) }
+    pico.set.pencil { color=pico.color.alpha(pico.get.pencil().color, 0x88) }
     pico.output.clear()
-    pico.set.draw { color='white' }
+    pico.set.pencil { color='white' }
     pico.output.draw.pixel({'%', x=0.5, y=0.5})
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW'})
-    pico.set.draw { color='green' }
+    pico.set.pencil { color='green' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C'})
-    pico.set.draw { color='blue' }
+    pico.set.pencil { color='blue' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE'})
     shot("guide-05-02-01")
     pico.init(false)
@@ -164,7 +164,7 @@ end
 
 do
     pico.init(true)
-    pico.set.view {
+    pico.set.scene {
         dim  = { '#', w=5, h=5 },
         tile = { w=20, h=20 },
     }
@@ -188,7 +188,7 @@ do
     pico.output.clear()
     pico.output.draw.image('img/open.png',
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.set.view {
+    pico.set.scene {
         target = {'%', x=0.66, y=0.66, w=0.4, h=0.3},
     }
     shot("guide-06-01-01")
@@ -201,7 +201,7 @@ do
     pico.output.clear()
     pico.output.draw.image('img/open.png',
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.set.view {
+    pico.set.scene {
         source = {'%', x=0.5, y=0.6, w=0.3, h=0.3},
         target = {'%', x=0.5, y=0.5, w=0.3, h=0.3},
     }
@@ -213,7 +213,7 @@ end
 do
     pico.init(true)
     pico.output.clear()
-    pico.set.view {
+    pico.set.scene {
         clip = {'%', x=0.5, y=0.5, w=0.25, h=0.25},
     }
     pico.output.draw.image('img/open.png',
@@ -228,7 +228,7 @@ do
     pico.output.clear()
     pico.output.draw.image('img/open.png',
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.set.view {
+    pico.set.scene {
         source = { '%', x=0.5, y=0.5, w=0.5, h=0.5 },
     }
     shot("guide-06-04-01")
@@ -241,7 +241,7 @@ do
     pico.output.clear()
     pico.output.draw.image('img/open.png',
         {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.set.view {
+    pico.set.scene {
         source = { '%', x=0.6, y=0.5, w=0.5, h=0.5 },
     }
     shot("guide-06-04-02")
@@ -298,17 +298,17 @@ do
     pico.init(true)
     pico.layer.empty("bg", {w=100, h=100})
     pico.set.layer("bg")
-    pico.set.draw { color='blue' }
+    pico.set.pencil { color='blue' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.8, h=0.8})
     pico.set.layer(nil)
     pico.output.clear()
     pico.layer.empty("flag", {w=300, h=200})
     pico.set.layer("flag")
-    pico.set.draw { color={r=0x00, g=0x2B, b=0x7F} }
+    pico.set.pencil { color={r=0x00, g=0x2B, b=0x7F} }
     pico.output.draw.rect {'%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW'}
-    pico.set.draw { color={r=0xFC, g=0xD1, b=0x16} }
+    pico.set.pencil { color={r=0xFC, g=0xD1, b=0x16} }
     pico.output.draw.rect {'%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW'}
-    pico.set.draw { color={r=0xCE, g=0x11, b=0x26} }
+    pico.set.pencil { color={r=0xCE, g=0x11, b=0x26} }
     pico.output.draw.rect {'%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW'}
     pico.set.layer()
     pico.output.clear()
@@ -318,14 +318,14 @@ do
 
     -- 8.3 step 1: rotate 30°, draw at NE
     pico.set.layer("flag")
-    pico.set.show { rotate = {angle=30, anchor='C'} }
+    pico.set.effect { rotate = {angle=30, anchor='C'} }
     pico.set.layer()
     pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
     shot("guide-08-03-01")
 
     -- 8.3 step 2: reset rotation, flip horizontal, draw at SW
     pico.set.layer("flag")
-    pico.set.show {
+    pico.set.effect {
         rotate = {angle=0},
         flip = "horizontal",
     }
@@ -376,7 +376,7 @@ end
 do
     pico.init(true)
     pico.output.clear()
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
     shot("guide-11-01-01")
     pico.init(false)
@@ -386,7 +386,7 @@ end
 do
     pico.init(true)
     pico.output.clear()
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
     pico.output.screenshot("img/guide-11-01-02.png",
         {'%', x=0.5, y=0.5, w=0.25, h=0.25})

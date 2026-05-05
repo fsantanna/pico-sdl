@@ -8,7 +8,7 @@ local phy  = {'!', w=160, h=160}
 local log  = {'#', w=4, h=4}
 local tile = {w=4, h=4}
 pico.set.window { title="Tiles", dim=phy }
-pico.set.view { dim=log, tile=tile }
+pico.set.scene { dim=log, tile=tile }
 
 -- 4x4 pixel white tile
 local white = {}

@@ -53,8 +53,8 @@ In alphabetical order:
     - **pico.cv.rect**: Converts relative rectangle to absolute.
         - `pico.cv.rect (rect: Rect [, base: Rect]) -> Rect`
 - **pico.get**
-    - **pico.get.draw**: Gets draw configuration.
-        - `pico.get.draw () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
+    - **pico.get.pencil**: Gets pencil configuration.
+        - `pico.get.pencil () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
     - **pico.get.image**: Gets image dimensions.
         - `pico.get.image (path: string [, dim: Dim]) -> Dim`
     - **pico.get.keyboard**: Gets keyboard modifier state.
@@ -73,10 +73,10 @@ In alphabetical order:
         - `pico.get.text (text: string, dim: Dim) -> Dim`
     - **pico.get.video**: Gets video information.
         - `pico.get.video (path: string [, rect: Rect]) -> Video`
-    - **pico.get.show**: Gets show configuration.
-        - `pico.get.show () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, keep: boolean, rotate: Rotation }`
-    - **pico.get.view**: Gets view configuration.
-        - `pico.get.view () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect }`
+    - **pico.get.effect**: Gets effect configuration.
+        - `pico.get.effect () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, rotate: Rotation }`
+    - **pico.get.scene**: Gets scene configuration.
+        - `pico.get.scene () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect, keep: boolean }`
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { color: Color, dim: Dim, fullscreen: boolean, show: boolean, title: string }`
 - **pico.init**: Initializes and finalizes pico.
@@ -168,18 +168,18 @@ In alphabetical order:
 - **pico.set**
     - **pico.set.dim**: Sets both window and world to the same dimensions.
         - `pico.set.dim (dim: Dim)`
-    - **pico.set.draw**: Sets draw configuration.
-        - `pico.set.draw (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
+    - **pico.set.pencil**: Sets pencil configuration.
+        - `pico.set.pencil (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
     - **pico.set.expert**: Toggles expert mode.
         - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
         - fps: `nil`/`false` = wait forever, `true` = as fast as possible, `N>0` = fixed FPS
         - Returns frame period in ms: `-1` = block forever, `0` = immediate, `N>0` = frame period
-    - **pico.set.show**: Sets show configuration.
-        - `pico.set.show (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [keep: boolean], [rotate: Rotation] })`
+    - **pico.set.effect**: Sets effect configuration.
+        - `pico.set.effect (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [rotate: Rotation] })`
     - **pico.set.video**: Sets video frame.
         - `pico.set.video (name: string, frame: integer) -> boolean`
-    - **pico.set.view**: Sets view configuration.
-        - `pico.set.view (cfg: { [dim: Dim], [source: Rect], [clip: Rect], [target: Rect], [tile: Tile] })`
+    - **pico.set.scene**: Sets scene configuration.
+        - `pico.set.scene (cfg: { [dim: Dim], [source: Rect], [clip: Rect], [target: Rect], [tile: Tile], [keep: boolean] })`
         - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
     - **pico.set.window**: Sets window configuration.
         - `pico.set.window (cfg: { [color: Color], [dim: Dim], [fullscreen: boolean], [show: boolean], [title: string] })`

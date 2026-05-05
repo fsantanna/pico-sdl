@@ -6,7 +6,7 @@ pico.set.window { title="View Target" }
 -- 01: target = bottom-right quadrant, draw centered rect
 do
     print("target: bottom-right quadrant")
-    pico.set.view {
+    pico.set.scene {
         target = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
     }
     pico.output.clear()
@@ -21,7 +21,7 @@ do
     local r1 = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
     pico.output.draw.rect(r1)
     local r2 = {'%', x=0.5, y=0.5, w=0.5, h=0.5, up=r1}
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.rect(r2)
     pico.check("view-target-02")
 end
@@ -29,11 +29,11 @@ end
 -- 03: reset target, draw same — should fill full window
 do
     print("target: reset to full window")
-    pico.set.view {
+    pico.set.scene {
         target = {'%', x=0.5, y=0.5, w=1, h=1}
     }
     pico.output.clear()
-    pico.set.draw { color='white' }
+    pico.set.pencil { color='white' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.check("view-target-03")
 end
@@ -43,15 +43,15 @@ do
     print("target: explicit layer")
     pico.layer.empty(nil, "bg", {w=32, h=32})
     pico.set.layer("bg")
-    pico.set.view {
+    pico.set.scene {
         target = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
     }
-    pico.set.show { color={r=0x80, g=0x00, b=0x00} }
+    pico.set.effect { color={r=0x80, g=0x00, b=0x00} }
     pico.output.clear()
-    pico.set.draw { color='white' }
+    pico.set.pencil { color='white' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.layer(nil)
-    pico.set.show { color='black' }
+    pico.set.effect { color='black' }
     pico.output.clear()
     pico.output.draw.layer("bg")
     pico.check("view-target-04")
@@ -62,13 +62,13 @@ do
     print("target: h only, w inferred")
     pico.layer.empty(nil, "bg2", {w=80, h=40})
     pico.set.layer("bg2")
-    pico.set.view {
+    pico.set.scene {
         target = {'%', x=0.5, y=0.5, h=0.4}
     }
-    pico.set.show { color={r=0x80, g=0x00, b=0x00} }
+    pico.set.effect { color={r=0x80, g=0x00, b=0x00} }
     pico.output.clear()
     pico.set.layer(nil)
-    pico.set.show { color='black' }
+    pico.set.effect { color='black' }
     pico.output.clear()
     pico.output.draw.layer("bg2")
     pico.check("view-target-05")
@@ -78,7 +78,7 @@ end
 do
     print("target: w only, h inferred")
     pico.set.layer("bg2")
-    pico.set.view {
+    pico.set.scene {
         target = {'%', x=0.5, y=0.5, w=0.4, h=0}
     }
     pico.set.layer(nil)
@@ -91,7 +91,7 @@ end
 do
     print("target: w=h=0, full layer dim")
     pico.set.layer("bg2")
-    pico.set.view {
+    pico.set.scene {
         target = {'%', x=0, y=0, w=0, anchor='NW'}
     }
     pico.set.layer(nil)

@@ -47,7 +47,7 @@ pico.set.window {
     title = "Draws an X",        -- window title
     dim   = {'!', w=160, h=160}, -- physical screen size
 }
-pico.set.view {
+pico.set.scene {
     dim = {'!', w=16,  h=16},    -- logical screen size (10x10 pixel size)
 }
 pico.output.clear()

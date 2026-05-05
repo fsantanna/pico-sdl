@@ -5,7 +5,7 @@ pico.init(true)
 local phy = {'!', w=200, h=200}
 local log = {'!', w=20, h=20}
 pico.set.window { dim=phy }
-pico.set.view { dim=log }
+pico.set.scene { dim=log }
 
 local r = {'!', x=10-2, y=10-2, w=4, h=4, anchor='NW'}
 
@@ -13,11 +13,11 @@ print("pos_vs_rect")
 for y = r.y-1, r.y+r.h do
     for x = r.x-1, r.x+r.w do
         pico.output.clear()
-        pico.set.draw { color='white' }
+        pico.set.pencil { color='white' }
         pico.output.draw.rect(r)
 
         local p = {'!', x=x, y=y, anchor='NW'}
-        pico.set.draw { color='red' }
+        pico.set.pencil { color='red' }
         pico.output.draw.pixel(p)
 
         local on = pico.vs.pos_rect(p, r)
@@ -55,11 +55,11 @@ print("rect_vs_rect")
 for y = r.y-r.h, r.y+r.h do
     for x = r.x-r.w, r.x+r.w do
         pico.output.clear()
-        pico.set.draw { color='white' }
+        pico.set.pencil { color='white' }
         pico.output.draw.rect(r)
 
         local r2 = {'!', x=x, y=y, w=4, h=4, anchor='NW'}
-        pico.set.draw { color='red' }
+        pico.set.pencil { color='red' }
         pico.output.draw.rect(r2)
 
         local overlap = pico.vs.rect_rect(r2, r)

@@ -2,7 +2,7 @@ require 'pico.check'
 
 pico.init(true)
 pico.set.window { title="pixels", dim={'!', w=100, h=100} }
-pico.set.view { dim={'!', w=5, h=5} }
+pico.set.scene { dim={'!', w=5, h=5} }
 
 do
     local pixels = {

@@ -2,8 +2,8 @@ pico.init(true)
 
 pico.set.expert(true)
 pico.set.window { dim={'!', w=200, h=200}, title="2x Rects" }
-pico.set.view   { dim={'!', w=10,  h=10}  }
-pico.set.draw { color=pico.color.alpha(pico.get.draw().color, 0xCC) }
+pico.set.scene   { dim={'!', w=10,  h=10}  }
+pico.set.pencil { color=pico.color.alpha(pico.get.pencil().color, 0xCC) }
 
 local k = {'!', x=4, y=4}
 local m = {'!', x=5, y=5}
@@ -40,9 +40,9 @@ local moves = {
 os.execute("mkdir -p img/anim")
 for step = 0, #moves do
     pico.output.clear()
-    pico.set.draw { color='red' }
+    pico.set.pencil { color='red' }
     pico.output.draw.pixel(m)
-    pico.set.draw { color='blue' }
+    pico.set.pencil { color='blue' }
     pico.output.draw.pixel(k)
     pico.output.present()
     pico.output.screenshot(string.format("img/anim/frame-%03d.png", step))

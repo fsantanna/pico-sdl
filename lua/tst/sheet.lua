@@ -5,20 +5,20 @@ pico.init(true)
 -- Create a 4x4 "sprite sheet" layer with colored quadrants
 pico.layer.empty('!', nil, "sheet", {w=4, h=4})
 pico.set.layer("sheet")
-pico.set.show { color='black' }
+pico.set.effect { color='black' }
 pico.output.clear()
 
 -- Top-left: red
-pico.set.draw { color='red' }
+pico.set.pencil { color='red' }
 pico.output.draw.rect({'!', x=0, y=0, w=2, h=2, anchor='NW'})
 -- Top-right: green
-pico.set.draw { color='green' }
+pico.set.pencil { color='green' }
 pico.output.draw.rect({'!', x=2, y=0, w=2, h=2, anchor='NW'})
 -- Bottom-left: blue
-pico.set.draw { color='blue' }
+pico.set.pencil { color='blue' }
 pico.output.draw.rect({'!', x=0, y=2, w=2, h=2, anchor='NW'})
 -- Bottom-right: white
-pico.set.draw { color='white' }
+pico.set.pencil { color='white' }
 pico.output.draw.rect({'!', x=2, y=2, w=2, h=2, anchor='NW'})
 
 pico.set.layer(nil)
@@ -42,7 +42,7 @@ pico.layer.sub('!', nil, "br", "sheet",
     {'!', x=2, y=2, w=2, h=2, anchor='NW'})
 
 -- Draw sub-layers swapped: TL->BR, TR->BL, BL->TR, BR->TL
-pico.set.show { color='black' }
+pico.set.effect { color='black' }
 pico.output.clear()
 pico.output.draw.layer("tl",
     {'%', x=0.75, y=0.75, w=0.5, h=0.5, anchor='C'})
@@ -56,12 +56,12 @@ pico.check("sheet-02")
 
 -- Test 3: pico.layer.images (grid form)
 print("Test 3: grid form")
-pico.set.show { color='black' }
+pico.set.effect { color='black' }
 pico.output.clear()
-pico.set.draw { color='red' }
+pico.set.pencil { color='red' }
 pico.output.draw.rect(
     {'%', x=0, y=0, w=0.5, h=1, anchor='NW'})
-pico.set.draw { color='green' }
+pico.set.pencil { color='green' }
 pico.output.draw.rect(
     {'%', x=0.5, y=0, w=0.5, h=1, anchor='NW'})
 pico.output.screenshot("../../tst/out/sheet-grid.png")
@@ -74,7 +74,7 @@ assert(#names == 2)
 assert(names[1] == "grid-01")
 assert(names[2] == "grid-02")
 
-pico.set.show { color='black' }
+pico.set.effect { color='black' }
 pico.output.clear()
 pico.output.draw.layer("grid-01",
     {'%', x=0.75, y=0.5, w=0.5, h=1, anchor='C'})
@@ -98,7 +98,7 @@ table.sort(names2)
 assert(names2[1] == "expl-left")
 assert(names2[2] == "expl-right")
 
-pico.set.show { color='black' }
+pico.set.effect { color='black' }
 pico.output.clear()
 pico.output.draw.layer("expl-left",
     {'%', x=0.25, y=0.5, w=0.5, h=1, anchor='C'}

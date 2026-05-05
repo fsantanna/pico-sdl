@@ -67,9 +67,9 @@ int main (void) {
     {
         puts("normal");
         Pico_Abs_Dim cur;
-        cur = pico_get_view_dim(NULL);
+        cur = pico_get_scene_dim(NULL);
         Pico_Rel_Dim dim = { '!', {cur.w * 1, cur.h * 1}, NULL };
-        pico_set_view_dim(NULL, &dim);
+        pico_set_scene_dim(NULL, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-07");
@@ -77,9 +77,9 @@ int main (void) {
     {
         puts("double");
         Pico_Abs_Dim cur;
-        cur = pico_get_view_dim(NULL);
+        cur = pico_get_scene_dim(NULL);
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
-        pico_set_view_dim(NULL, &dim);
+        pico_set_scene_dim(NULL, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-08");
@@ -87,9 +87,9 @@ int main (void) {
     {
         puts("half");
         Pico_Abs_Dim cur;
-        cur = pico_get_view_dim(NULL);
+        cur = pico_get_scene_dim(NULL);
         Pico_Rel_Dim dim = { '!', {cur.w * 0.25, cur.h * 0.25}, NULL };
-        pico_set_view_dim(NULL, &dim);
+        pico_set_scene_dim(NULL, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-09");
@@ -97,9 +97,9 @@ int main (void) {
     {
         puts("normal");
         Pico_Abs_Dim cur;
-        cur = pico_get_view_dim(NULL);
+        cur = pico_get_scene_dim(NULL);
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2}, NULL };
-        pico_set_view_dim(NULL, &dim);
+        pico_set_scene_dim(NULL, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_pct-10");
