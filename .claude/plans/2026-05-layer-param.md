@@ -284,25 +284,38 @@ numbers in `pico_init`.
 
 ## Order of work
 
-1. Add layer arg to internal `aux.hc` helpers and pass through
-   public `pico_cv_*`. Compile.
-2. Add layer arg to output funcs; replace `S.layer->pencil`
-   reads with the resolved layer; push/pop SDL render target
-   per call.
+1. ✅ DONE — aux.hc internal helpers gain `Pico_Layer*` arg;
+   `pico_cv_*` and `pico_vs_*` gain `const char* layer` arg;
+   threaded through every caller (S.layer placeholder where
+   the actual layer hasn't yet been refactored in).
+2. Output funcs gain non-NULL `const char* layer` first arg;
+   resolve `L = _pico_layer_name(layer)`, set SDL render target
+   to `L->tex` and clip to `L->scene.clip`; replace
+   `S.layer->pencil/effect.*` reads with `L->*`.
+   Pulled in from former step 4:
+   - `_pico_output_draw_layer` gains `Pico_Layer* parent` arg;
+     alpha mod uses `parent->pencil.color.a`.
+   - `_pico_layer_text` gains `Pico_Layer* L` arg; cache key
+     uses `L->pencil.font/color`.
 3. Update state getters/setters: replace `_pico_layer_null`
    with `_pico_layer_name`.
-4. Refactor `_layer_traverse`, `_pico_layer_text`,
-   `_pico_output_draw_layer` to take params instead of
-   `S.layer`.
-5. Drop root-only assertions; rework expert keys.
+4. Refactor `_layer_traverse` to use a local var instead of
+   `S.layer` save/restore (the other parts of original step 4
+   were folded into step 2).
+5. Drop root-only assertions; rework expert keys (always operate
+   on `&G.root`); replace `_pico_output_present`'s
+   `S.layer != &G.root` check with an internal "inside output
+   fn" flag.
 6. Delete `pico_set_layer`, `pico_get_layer`,
-   `_pico_layer_null`, `S.layer`.
+   `_pico_layer_null`, `S.layer`. Sweep any remaining
+   `S.layer->name` placeholders left from step 1.
 7. Update Lua bindings; default missing layer to `"root"`.
 8. Rewrite `tst/layers.c`; sweep other tests for `(NULL, ...)`.
 9. Update doxygen comments + README.
 10. Run `make tests`, `make gen` baselines, `make test`,
     Lua tests. Update `valgrind.supp` line ref.
 
-## TODO: implementation
+## TODO: step 2
 
-## NEXT: step 1 — aux.hc internal helpers gain layer arg
+## NEXT: output funcs gain mandatory non-NULL layer arg; pull
+parent/text-cache-key params out of `S.layer`
