@@ -213,7 +213,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:gadb552b2a6761380d5c1f74a5e402a8eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switches the current render-target layer.  <br /></td></tr>
 <tr class="separator:gadb552b2a6761380d5c1f74a5e402a8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabea09b22d11492ff21c9a30744de0193" id="r_gabea09b22d11492ff21c9a30744de0193"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gabea09b22d11492ff21c9a30744de0193">pico_set_mouse</a> (<a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *pos)</td></tr>
-<tr class="memdesc:gabea09b22d11492ff21c9a30744de0193"><td class="mdescLeft">&#160;</td><td class="mdescRight">Warps the mouse cursor to the given relative position.  <br /></td></tr>
+<tr class="memdesc:gabea09b22d11492ff21c9a30744de0193"><td class="mdescLeft">&#160;</td><td class="mdescRight">Warps the mouse cursor to the given relative position. Symmetric to pico_get_mouse: a Pos returned by <code>pico_get_mouse</code> (any mode) round-trips through <code>pico_set_mouse</code>.  <br /></td></tr>
 <tr class="separator:gabea09b22d11492ff21c9a30744de0193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga39a2b56819617cd7ec4769cba0a1ede5" id="r_ga39a2b56819617cd7ec4769cba0a1ede5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga39a2b56819617cd7ec4769cba0a1ede5">pico_set_effect</a> (const char *layer, <a class="el" href="structPico__Layer__Effect.html">Pico_Layer_Effect</a> show)</td></tr>
 <tr class="memdesc:ga39a2b56819617cd7ec4769cba0a1ede5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the entire show state of a layer.  <br /></td></tr>
@@ -535,7 +535,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>mouse state with position and button flags </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__State.html#gabea09b22d11492ff21c9a30744de0193" title="Warps the mouse cursor to the given relative position.">pico_set_mouse</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__State.html#gabea09b22d11492ff21c9a30744de0193" title="Warps the mouse cursor to the given relative position. Symmetric to pico_get_mouse: a Pos returned by...">pico_set_mouse</a> </dd></dl>
 
 </div>
 </div>
@@ -1953,10 +1953,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Warps the mouse cursor to the given relative position. </p>
+<p>Warps the mouse cursor to the given relative position. Symmetric to pico_get_mouse: a Pos returned by <code>pico_get_mouse</code> (any mode) round-trips through <code>pico_set_mouse</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">pos</td><td>target position (mode, x, y, anchor, up chain) </td></tr>
+    <tr><td class="paramname">pos</td><td>target position; <code>pos-&gt;mode</code> is one of '!' pixels, '' percentage, '#' tiles, 'w' window. <code>pos-&gt;up</code> provides an optional reference-frame chain (NULL = current layer). </td></tr>
   </table>
   </dd>
 </dl>
