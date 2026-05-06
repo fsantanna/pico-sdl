@@ -546,8 +546,13 @@ void pico_set_pencil_style (const char* layer, PICO_STYLE style);
 int pico_set_expert (int on, int fps);
 
 /// @brief Warps the mouse cursor to the given relative position.
-/// @param pos target position (mode, x, y, anchor, up chain)
+/// Symmetric to @ref pico_get_mouse: a Pos returned by `pico_get_mouse`
+/// (any mode) round-trips through `pico_set_mouse`.
+/// @param pos target position; `pos->mode` is one of '!' pixels,
+///        '%' percentage, '#' tiles, 'w' window. `pos->up` provides
+///        an optional reference-frame chain (NULL = current layer).
 /// @sa pico_get_mouse
+
 void pico_set_mouse (Pico_Rel_Pos* pos);
 
 /// @brief Sets the entire show state of a layer.
