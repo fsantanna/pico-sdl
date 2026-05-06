@@ -1,0 +1,10 @@
+- lua/doc/api.md
+    - layer params missing: 1st arg/idx
+- lua/pico.c
+    - l_cv_*, l_vs_*
+        - "root" args (should be omitted or explicit)
+        - use LC_layer_arg_1(L)
+    - l_output_draw_{pixmap,image,layer,text,video}
+        - why not LC_layer_arg_1?
+        - (like others: l_output_draw_*
+
