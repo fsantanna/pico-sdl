@@ -38,22 +38,23 @@ static float C_checkfieldnum (lua_State* L, int i, const char* k) {
 // If first arg is a string, returns it as layer name and removes it from
 // the stack (shifting remaining args). Otherwise returns "root".
 static const char* LC_layer_arg_1 (lua_State* L) {
-    if (lua_gettop(L) >= 1 && lua_type(L, 1) == LUA_TSTRING) {
-        const char* layer = lua_tostring(L, 1);
+    const char* layer = "root";
+    if (lua_type(L,1) == LUA_TSTRING) {
+        layer = lua_tostring(L, 1);
         lua_remove(L, 1);
-        return layer;
     }
-    return "root";
+    return layer;
 }
 
 // Returns table[ti][1] as layer name if string, else "root".
 // Leaves the table at ti unchanged. The returned pointer remains valid
 // while the table is on the stack.
-static const char* LC_layer_idx_1 (lua_State* L, int ti) {
-    lua_geti(L, ti, 1);                     // T | T[1]
+static const char* LC_layer_idx_1 (lua_State* L, int i) {
+    assert(i > 0);
     const char* layer = "root";
-    if (lua_type(L, -1) == LUA_TSTRING) {
-        layer = lua_tostring(L, -1);
+    lua_geti(L, i, 1);                     // T | T[1]
+    if (!lua_isnil(L,-1)) {
+        layer = luaL_checkstring(L, -1);
     }
     lua_pop(L, 1);                          // T
     return layer;
