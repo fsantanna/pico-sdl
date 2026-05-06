@@ -12,9 +12,9 @@ pico.layer.empty('!', nil, "ui", {w=48, h=48})
 
 -- draw on bg layer (red background)
 print("draw on background layer directly")
-pico.set.effect("background", { color={'!', r=0x80, g=0x00, b=0x00} })
+pico.set.effect { "background", color={'!', r=0x80, g=0x00, b=0x00} }
 pico.output.clear("background")
-pico.set.pencil("background", { color='white' })
+pico.set.pencil { "background", color='white' }
 pico.output.draw.rect("background", {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
 pico.output.clear()
 pico.output.draw.layer("background", {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'})
@@ -22,9 +22,9 @@ pico.check("layers-01")
 
 -- draw on ui layer (blue background)
 print("draw on ui layer")
-pico.set.effect("ui", { color={'!', r=0x00, g=0x00, b=0x80} })
+pico.set.effect { "ui", color={'!', r=0x00, g=0x00, b=0x80} }
 pico.output.clear("ui")
-pico.set.pencil("ui", { color='green' })
+pico.set.pencil { "ui", color='green' }
 pico.output.draw.rect("ui", {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
 pico.output.clear()
 pico.output.draw.layer("ui", {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'})

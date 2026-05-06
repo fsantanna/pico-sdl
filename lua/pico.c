@@ -6,17 +6,6 @@
 
 static const char KEY;
 
-// If first arg is a string, returns it as layer name and removes it from
-// the stack (shifting remaining args). Otherwise returns "root".
-static const char* L_layer_arg (lua_State* L) {
-    if (lua_gettop(L) >= 1 && lua_type(L, 1) == LUA_TSTRING) {
-        const char* layer = lua_tostring(L, 1);
-        lua_remove(L, 1);
-        return layer;
-    }
-    return "root";
-}
-
 static void L_reg_get (lua_State* L, const char* t, int i) {
     assert(i > 0);
     lua_pushlightuserdata(L, (void*)&KEY);  // ... | K
@@ -42,6 +31,32 @@ static float C_checkfieldnum (lua_State* L, int i, const char* k) {
     }
     lua_pop(L, 1);                      // T
     return v;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// If first arg is a string, returns it as layer name and removes it from
+// the stack (shifting remaining args). Otherwise returns "root".
+static const char* LC_layer_arg_1 (lua_State* L) {
+    if (lua_gettop(L) >= 1 && lua_type(L, 1) == LUA_TSTRING) {
+        const char* layer = lua_tostring(L, 1);
+        lua_remove(L, 1);
+        return layer;
+    }
+    return "root";
+}
+
+// Returns table[ti][1] as layer name if string, else "root".
+// Leaves the table at ti unchanged. The returned pointer remains valid
+// while the table is on the stack.
+static const char* LC_layer_idx_1 (lua_State* L, int ti) {
+    lua_geti(L, ti, 1);                     // T | T[1]
+    const char* layer = "root";
+    if (lua_type(L, -1) == LUA_TSTRING) {
+        layer = lua_tostring(L, -1);
+    }
+    lua_pop(L, 1);                          // T
+    return layer;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -704,7 +719,7 @@ static int l_color_alpha (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_get_pencil (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     Pico_Layer_Pencil draw;
     pico_get_pencil(layer, &draw);
 
@@ -774,7 +789,7 @@ static int l_get_now (lua_State* L) {
 }
 
 static int l_get_effect (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     Pico_Layer_Effect show;
     pico_get_effect(layer, &show);
 
@@ -863,7 +878,7 @@ static int l_get_video (lua_State* L) {
 }
 
 static int l_get_scene (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     Pico_Layer_Scene view;
     pico_get_scene(layer, &view);
 
@@ -942,8 +957,8 @@ static int l_set_dim (lua_State* L) {
 }
 
 static int l_set_pencil (lua_State* L) {
-    const char* layer = L_layer_arg(L);
     luaL_checktype(L, 1, LUA_TTABLE);       // T
+    const char* layer = LC_layer_idx_1(L, 1);
 
     Pico_Layer_Pencil draw;
     pico_get_pencil(layer, &draw);
@@ -1002,8 +1017,8 @@ static int l_set_mouse (lua_State* L) {
 }
 
 static int l_set_effect (lua_State* L) {
-    const char* layer = L_layer_arg(L);
     luaL_checktype(L, 1, LUA_TTABLE);       // T
+    const char* layer = LC_layer_idx_1(L, 1);
 
     lua_getfield(L, 1, "alpha");            // T | alpha
     if (!lua_isnil(L, -1)) {
@@ -1061,8 +1076,8 @@ static int l_set_video (lua_State* L) {
 }
 
 static int l_set_scene (lua_State* L) {
-    const char* layer = L_layer_arg(L);
     luaL_checktype(L, 1, LUA_TTABLE);       // T
+    const char* layer = LC_layer_idx_1(L, 1);
 
     Pico_Rel_Dim*  xdim  = NULL;
     Pico_Abs_Dim*  xtile = NULL;
@@ -1382,7 +1397,7 @@ static int l_input_loop (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_output_clear (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     pico_output_clear(layer);
     return 0;
 }
@@ -1446,7 +1461,7 @@ static int l_output_draw_layer (lua_State* L) {
 }
 
 static int l_output_draw_line (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     luaL_checktype(L, 1, LUA_TTABLE);       // p1 | p2
     luaL_checktype(L, 2, LUA_TTABLE);
 
@@ -1458,7 +1473,7 @@ static int l_output_draw_line (lua_State* L) {
 }
 
 static int l_output_draw_oval (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     luaL_checktype(L, 1, LUA_TTABLE);
     Pico_Rel_Rect* rect = C_rel_rect(L, 1);
     pico_output_draw_oval(layer, rect);
@@ -1466,7 +1481,7 @@ static int l_output_draw_oval (lua_State* L) {
 }
 
 static int l_output_draw_pixel (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     luaL_checktype(L, 1, LUA_TTABLE);
     Pico_Rel_Pos* pos = C_rel_pos(L, 1);
     pico_output_draw_pixel(layer, pos);
@@ -1474,7 +1489,7 @@ static int l_output_draw_pixel (lua_State* L) {
 }
 
 static int l_output_draw_pixels (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     luaL_checktype(L, 1, LUA_TTABLE);       // pixels={{...}}
     lua_len(L, 1);                          // pxs | n
     int n = lua_tointeger(L, -1);
@@ -1493,7 +1508,7 @@ static int l_output_draw_pixels (lua_State* L) {
 }
 
 static int l_output_draw_poly (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     luaL_checktype(L, 1, LUA_TTABLE);       // pts={{...}}
     lua_len(L, 1);                          // pts | n
     int n = lua_tointeger(L, -1);
@@ -1513,7 +1528,7 @@ static int l_output_draw_poly (lua_State* L) {
 }
 
 static int l_output_draw_rect (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     luaL_checktype(L, 1, LUA_TTABLE);
     Pico_Rel_Rect* rect = C_rel_rect(L, 1);
     pico_output_draw_rect(layer, rect);
@@ -1536,7 +1551,7 @@ static int l_output_draw_text (lua_State* L) {
 }
 
 static int l_output_draw_tri (lua_State* L) {
-    const char* layer = L_layer_arg(L);
+    const char* layer = LC_layer_arg_1(L);
     luaL_checktype(L, 1, LUA_TTABLE);       // p1 | p2 | p3
     luaL_checktype(L, 2, LUA_TTABLE);
     luaL_checktype(L, 3, LUA_TTABLE);

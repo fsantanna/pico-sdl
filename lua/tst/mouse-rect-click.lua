@@ -8,9 +8,9 @@ local btn2 = {'%', x=0.50, y=0.50, w=0.15, h=0.30, anc='C'}
 local btn3 = {'%', x=0.75, y=0.50, w=0.15, h=0.30, anc='C'}
 
 pico.layer.empty('!', nil, "A", {w=120, h=50})
-pico.set.effect("A", { color='navy' })
+pico.set.effect { "A", color='navy' }
 pico.output.clear("A")
-pico.set.pencil("A", { color='white' })
+pico.set.pencil { "A", color='white' }
 pico.output.draw.rect("A", btn1)
 pico.output.draw.rect("A", btn2)
 pico.output.draw.rect("A", btn3)

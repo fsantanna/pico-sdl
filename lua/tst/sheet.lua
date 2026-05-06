@@ -4,20 +4,20 @@ pico.init(true)
 
 -- Create a 4x4 "sprite sheet" layer with colored quadrants
 pico.layer.empty('!', nil, "sheet", {w=4, h=4})
-pico.set.effect("sheet", { color='black' })
+pico.set.effect { "sheet", color='black' }
 pico.output.clear("sheet")
 
 -- Top-left: red
-pico.set.pencil("sheet", { color='red' })
+pico.set.pencil { "sheet", color='red' }
 pico.output.draw.rect("sheet", {'!', x=0, y=0, w=2, h=2, anchor='NW'})
 -- Top-right: green
-pico.set.pencil("sheet", { color='green' })
+pico.set.pencil { "sheet", color='green' }
 pico.output.draw.rect("sheet", {'!', x=2, y=0, w=2, h=2, anchor='NW'})
 -- Bottom-left: blue
-pico.set.pencil("sheet", { color='blue' })
+pico.set.pencil { "sheet", color='blue' }
 pico.output.draw.rect("sheet", {'!', x=0, y=2, w=2, h=2, anchor='NW'})
 -- Bottom-right: white
-pico.set.pencil("sheet", { color='white' })
+pico.set.pencil { "sheet", color='white' }
 pico.output.draw.rect("sheet", {'!', x=2, y=2, w=2, h=2, anchor='NW'})
 
 -- Shot 1: draw full layer (normal quadrants)

@@ -68,10 +68,10 @@ pico.set.effect { grid=false }
 do
     print("layer A: 4x4 tiles, grid on")
     pico.layer.empty(nil, "layerA", {w=16, h=16})
-    pico.set.effect("layerA", { grid=true })
-    pico.set.scene("layerA", { dim={'#', w=4, h=4}, tile={w=4, h=4} })
+    pico.set.effect { "layerA", grid=true }
+    pico.set.scene { "layerA", dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear("layerA")
-    pico.set.pencil("layerA", { color='red' })
+    pico.set.pencil { "layerA", color='red' }
     pico.output.draw.rect("layerA", {'#', x=1, y=1, w=2, h=2, anchor='NW'})
 end
 
@@ -79,10 +79,10 @@ end
 do
     print("layer B: 8x4 non-square tiles, grid on")
     pico.layer.empty(nil, "layerB", {w=16, h=16})
-    pico.set.effect("layerB", { grid=true })
-    pico.set.scene("layerB", { dim={'#', w=8, h=4}, tile={w=2, h=4} })
+    pico.set.effect { "layerB", grid=true }
+    pico.set.scene { "layerB", dim={'#', w=8, h=4}, tile={w=2, h=4} }
     pico.output.clear("layerB")
-    pico.set.pencil("layerB", { color='green' })
+    pico.set.pencil { "layerB", color='green' }
     pico.output.draw.rect("layerB", {'#', x=5, y=2, w=2, h=1, anchor='NW'})
 end
 
@@ -90,10 +90,10 @@ end
 do
     print("layer C: 4x4 tiles, grid off")
     pico.layer.empty(nil, "layerC", {w=16, h=16})
-    pico.set.effect("layerC", { grid=false })
-    pico.set.scene("layerC", { dim={'#', w=4, h=4}, tile={w=4, h=4} })
+    pico.set.effect { "layerC", grid=false }
+    pico.set.scene { "layerC", dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear("layerC")
-    pico.set.pencil("layerC", { color='blue' })
+    pico.set.pencil { "layerC", color='blue' }
     pico.output.draw.rect("layerC", {'#', x=3, y=3, w=1, h=1, anchor='NW'})
 end
 
