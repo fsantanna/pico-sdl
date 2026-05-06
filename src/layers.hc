@@ -85,8 +85,6 @@ static void _layer_attach (const char* up, const char* dn) {
 static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
 
 static void _layer_traverse (Pico_Layer* UP) {
-    Pico_Layer* old = S.layer;
-    S.layer = UP;
     const char* cur = UP->hier.dn.fst;
     while (cur != NULL) {
         Pico_Layer* CUR = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
@@ -96,7 +94,7 @@ static void _layer_traverse (Pico_Layer* UP) {
         _layer_traverse(CUR);
 
         SDL_SetRenderTarget(G.ren, UP->tex);
-        _pico_output_draw_layer(CUR, NULL);
+        _pico_output_draw_layer(UP, CUR, NULL);
 
         // post-composite clear: allows drawing bw presents
         if (!CUR->scene.keep) {
@@ -107,7 +105,6 @@ static void _layer_traverse (Pico_Layer* UP) {
         }
         cur = CUR->hier.nxt;
     }
-    S.layer = old;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
