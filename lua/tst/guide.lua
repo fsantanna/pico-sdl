@@ -11,8 +11,6 @@ require 'pico.check'
 
 -- §2.1: open
 pico.init(true)
-
---[[
 pico.set.window { title="guide-02-01-01" }
 pico.check("guide-02-01-01")
 
@@ -233,11 +231,11 @@ pico.check("guide-06-03-01")
 -- §7.1: create the "flag" layer (no check; nothing on screen yet)
 pico.output.clear()
 pico.layer.empty(nil, "flag", {w=300, h=200})
-pico.set.pencil("flag", { color={ r=0x00, g=0x2B, b=0x7F } })
+pico.set.pencil { "flag", color={ r=0x00, g=0x2B, b=0x7F } }
 pico.output.draw.rect("flag", { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' })
-pico.set.pencil("flag", { color={ r=0xFC, g=0xD1, b=0x16 } })
+pico.set.pencil { "flag", color={ r=0xFC, g=0xD1, b=0x16 } }
 pico.output.draw.rect("flag", { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' })
-pico.set.pencil("flag", { color={ r=0xCE, g=0x11, b=0x26 } })
+pico.set.pencil { "flag", color={ r=0xCE, g=0x11, b=0x26 } }
 pico.output.draw.rect("flag", { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' })
 
 -- §7.2.a: composite flag twice on the world
@@ -248,21 +246,23 @@ pico.check("guide-07-02-01")
 
 -- §7.2.b: rotate + flip flag, draw at top-right
 pico.set.window { title="guide-07-02-02" }
-pico.set.effect("flag", {
+pico.set.effect {
+    "flag",
     flip   = 'horizontal',
     rotate = {angle=30, anchor='C'},
-})
+}
 pico.output.clear()
 pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 pico.check("guide-07-02-02")
 
 -- §7.2.c: dim flag with alpha (reset transforms), draw enlarged-centered
 pico.set.window { title="guide-07-02-03" }
-pico.set.effect("flag", {
+pico.set.effect {
+    "flag",
     rotate = {angle=0},
     flip   = 'none',
     alpha  = 0x80,
-})
+}
 pico.output.draw.layer("flag", {'%', x=0.5, y=0.5, w=0.6})
 pico.check("guide-07-02-03")
 
@@ -279,23 +279,22 @@ pico.check("guide-07-03-01")
 
 -- §7.4: hierarchy -- root has image (top) and panel (bottom); panel has 2 texts
 pico.init(false); pico.init(true)
-]]
 pico.set.window { title="guide-07-04-01" }
 do
     pico.layer.image("root", "pic", "../../res/open.png")
-    pico.set.scene("pic", { target = {'%', x=0.3, y=0.3, w=0.4} })
+    pico.set.scene { "pic", target = {'%', x=0.3, y=0.3, w=0.4} }
 end
 do
     pico.layer.empty("root", "panel", {w=100, h=50})
-    pico.set.effect("panel", { color='silver' })
-    pico.set.scene("panel", { target = {'%', x=0.7, y=0.7, w=0.4} })
+    pico.set.effect { "panel", color='silver' }
+    pico.set.scene  { "panel", target = {'%', x=0.7, y=0.7, w=0.4} }
     do
         pico.layer.text("panel", "hello", 20, "Hello")
-        pico.set.scene("hello", { target = {'%', x=0.5, y=0.3, h=0.6} })
+        pico.set.scene { "hello", target = {'%', x=0.5, y=0.3, h=0.6} }
     end
     do
         pico.layer.text("panel", "world", 20, "World!")
-        pico.set.scene("world", { target = {'%', x=0.5, y=0.7, h=0.4} })
+        pico.set.scene { "world", target = {'%', x=0.5, y=0.7, h=0.4} }
     end
 end
 pico.output.present()

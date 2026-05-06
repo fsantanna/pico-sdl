@@ -313,33 +313,146 @@ numbers in `pico_init`.
    `S.layer->name` placeholders left from step 1.
    Also deleted Lua `l_get_layer`, `l_set_layer`.
 7. ✅ DONE — Update Lua bindings; all getter/setter/output funcs use "root".
-8. ✅ PARTIAL — Rewrote `tst/layers.c`; swept most tests for `(NULL, ...)`.
-   Remaining tests need manual refactor (still use removed `pico_set_layer`):
-   - tile-grid.c, sheet.c, mouse-w-click.c, layer-hier.c, keep.c
-   - mouse-rect-click.c, image_raw.c, rot-flip.c, view-target.c
-   - video.c, layer-empty-tile.c
-9. ✅ PARTIAL — Updated pico.h doxygen "(NULL = current layer)" to
-   "(required, non-NULL)". Removed pico.get.layer/pico.set.layer from
-   lua/doc/api.md. lua/doc/guide.md needs more substantial rewrite.
-10. ✅ PARTIAL — Updated valgrind.supp line ref (245→252).
-    Core library compiles; Lua bindings compile.
-    Tests need baselines regenerated after remaining test refactors.
+8. ✅ DONE — `tst/layers.c` rewritten; all tests swept clean of
+   `pico_set_layer`/`pico_get_layer`/NULL-first-arg state calls.
+9. ✅ DONE — pico.h doxygen updated; `(NULL = current layer)` →
+   `(required, non-NULL)`; further trimmed to plain
+   `layer key` after `(must exist)` strip. lua/doc/api.md and
+   lua/doc/guide.md rewritten — no more `pico.set.layer` /
+   `pico.get.layer` references.
+10. ✅ DONE — valgrind.supp line ref updated (245→252).
+    Core library + Lua bindings compile; C and Lua tests pass.
 
 ## STATUS: Implementation complete
 
-All steps done:
+All 10 steps done:
 - Core API: state setters/getters, output funcs all require explicit layer arg
 - Removed: pico_set_layer, pico_get_layer, _pico_layer_null, S.layer
 - Internal cleanup: _pico_present_if_root helper for layer-aware auto-present
-- _show_grid label rendering: refactored to use SDL_RenderCopy directly on window
-- C tests rewritten (layers.c) and swept (`(NULL, ...)` → `("root", ...)`)
-- 11 test files refactored to remove pico_set_layer pattern
+- _show_grid label rendering refactored to use SDL_RenderCopy directly on window
+- C tests rewritten (layers.c) and swept; no remaining pico_set_layer or
+  NULL-first-arg state calls in tst/ or lua/tst/
 - Lua bindings: optional first layer string arg via L_layer_arg helper
 - Lua tests rewritten to match new API
-- Doxygen "(NULL = current layer)" → "(required, non-NULL)"
-- valgrind.supp line ref updated
-- Test baselines regenerated for visual differences
+- Doxygen `(NULL = current layer)` → `(required, non-NULL)`; further
+  trimmed via `(must exist)` strip
+- lua/doc/api.md and lua/doc/guide.md rewritten — no more
+  `pico.set.layer` / `pico.get.layer` references
+- valgrind.supp line ref updated (245→252)
 
-## Notes:
-- lua/doc/guide.md has not been rewritten; still references old set.layer API
-- Some baselines may need re-regeneration on different machines
+## Notes
+- Some visual baselines may need re-regeneration on different machines via
+  `make gen T=<app>`
+
+## Follow-up: layer at table[1] for Lua state setters
+
+### Goal
+
+Move the layer key from a positional argument **before** the table to
+**inside** the table at index 1, for the three Lua state setters:
+
+| current                                            | proposed                          |
+|----------------------------------------------------|-----------------------------------|
+| `pico.set.pencil("flag", { color=... })`           | `pico.set.pencil { "flag", color=... }` |
+| `pico.set.effect("flag", { flip='horizontal' })`   | `pico.set.effect { "flag", flip='horizontal' }` |
+| `pico.set.scene("flag", { target={'%',...} })`     | `pico.set.scene { "flag", target={'%',...} }` |
+
+Defaults to `"root"` when index 1 is missing or not a string —
+exactly as before with the positional form.
+
+### Rationale
+
+- Single-table calls drop the extra parens / commas — easier to scan.
+- The whole spec (layer + named fields) becomes one cohesive table.
+- Index 1 is unused on these state tables today (only positional/rect
+  tables put `'%'`/`'!'` mode there).
+
+### Scope (only these three)
+
+Only the bulk Lua setters that take a config table are affected:
+
+| binding             | file/lines           |
+|---------------------|----------------------|
+| `l_set_pencil`      | lua/pico.c:944-979   |
+| `l_set_effect`      | lua/pico.c:1004-1053 |
+| `l_set_scene`       | lua/pico.c:1063-...  |
+
+Out of scope:
+- **Getters** (`l_get_pencil/effect/scene`) — no input table, layer
+  stays as positional arg via `L_layer_arg`.
+- **Granular setters** (`set.pencil.color`, `set.effect.alpha`, etc.)
+  — take a value, not a table; layer stays positional.
+- **Output funcs** (`pico.output.draw.*`) — table at arg 2 already
+  has mode at `[1]`; layer stays as positional first arg.
+
+### Implementation
+
+In each of `l_set_pencil`, `l_set_effect`, `l_set_scene` replace the
+current opening:
+
+```c
+const char* layer = L_layer_arg(L);
+luaL_checktype(L, 1, LUA_TTABLE);
+```
+
+with a new helper that reads layer from `T[1]` rather than from
+the stack:
+
+```c
+luaL_checktype(L, 1, LUA_TTABLE);
+const char* layer = L_layer_at1(L, 1);   // new helper
+```
+
+`L_layer_at1` (new, lua/pico.c near `L_layer_arg`):
+- `lua_geti(L, ti, 1)` — fetch `T[1]`
+- if string: copy, `lua_pop(L, 1)`, return string
+- else: `lua_pop(L, 1)`, return `"root"`
+
+Note: keep `T[1]` in the table during the rest of parsing (other
+field reads use `lua_getfield` so the integer key is harmless).
+
+### Test/doc migration
+
+| target                              | change                                  |
+|-------------------------------------|-----------------------------------------|
+| `lua/tst/*.lua` — affected files    | `pico.set.X("L", {...})` → `pico.set.X { "L", ... }` (sed-friendly) |
+| `lua/doc/api.md`                    | update three signatures + examples      |
+| `lua/doc/guide.md` §7.1, §7.2, §7.4 | update worked examples to new style     |
+
+Sweep command (preview):
+
+```bash
+grep -nE 'pico\.set\.(pencil|effect|scene)\("' lua/tst/*.lua lua/doc/*.md
+```
+
+### Verification
+
+```bash
+cd lua/ && make tests          # all Lua tests pass
+make tests                     # C tests unaffected
+```
+
+No C-side change. No baseline regen needed (visual output identical).
+
+## Reusing `pico_set_layer` / `pico_get_layer` names — do not
+
+The names should stay retired:
+
+| reason       | detail                                                      |
+|--------------|-------------------------------------------------------------|
+| state vibe   | `set_layer`/`get_layer` read as "current layer" mutators;   |
+|              | reusing them reintroduces the mental model we removed       |
+| no real gap  | every layer op now takes `layer` explicitly; nothing needs  |
+|              | a generic name                                              |
+| ambiguous    | "set a layer" could mean create/destroy/swap/rename/select  |
+|              | — too vague to commit to one shape                          |
+
+If layer-management APIs are added later, prefer specific names that
+describe the action:
+
+- `pico_layer_exists(key)`           — existence check
+- `pico_layer_destroy(key)`          — explicit teardown
+- `pico_layer_list(...)`             — enumeration
+- `pico_layer_rename(old, new)`      — rename
+- `pico_layer_attach(parent, child)` — hierarchy edits
+- `pico_layer_detach(child)`         — hierarchy edits

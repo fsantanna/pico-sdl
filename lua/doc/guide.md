@@ -686,26 +686,24 @@ layers.
 
 ### 7.1. Creating Layers
 
-We use `pico.layer.empty` to create a fresh layer, and `pico.set.layer` to
-redirect further drawing operations to it:
+We use `pico.layer.empty` to create a fresh layer and then pass its identifier
+to further API calls:
 
 ```lua
 > pico.output.clear()
 > pico.layer.empty(nil, "flag", {w=300, h=200})
-> pico.set.layer("flag")
-> pico.set.pencil { color={ r=0x00, g=0x2B, b=0x7F } }
-  pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
-  pico.set.pencil { color={ r=0xFC, g=0xD1, b=0x16 } }
-  pico.output.draw.rect { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' }
-  pico.set.pencil { color={ r=0xCE, g=0x11, b=0x26 } }
-  pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
+> pico.set.pencil { "flag", color={ r=0x00, g=0x2B, b=0x7F } }
+  pico.output.draw.rect("flag", { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' })
+  pico.set.pencil { "flag", color={ r=0xFC, g=0xD1, b=0x16 } }
+  pico.output.draw.rect("flag", { '%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW' })
+  pico.set.pencil { "flag", color={ r=0xCE, g=0x11, b=0x26 } }
+  pico.output.draw.rect("flag", { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' })
 ```
+
+We identify the new layer as `flag` and pass it to state and drawing calls.
 
 At this point, nothing appears on the screen yet, since we did not update the
 main world view.
-
-We identify the layer as `"flag"` and then set it as the current drawing layer.
-Then, we paint inside the layer with the colors.
 
 Note that the first argument to `pico.layer.empty` (`nil` in the example)
 represents the optional implicit parent layer to be discussed in
@@ -713,11 +711,10 @@ represents the optional implicit parent layer to be discussed in
 
 ### 7.2. Compositing
 
-To composite layers, we use `pico.output.draw.layer` on the current layer:
+To composite layers on the screen, we use `pico.output.draw.layer`:
 
 <table>
 <tr><td><pre>
-> pico.set.layer()      -- back to main world
 > pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
 > pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 </pre>
@@ -726,20 +723,17 @@ To composite layers, we use `pico.output.draw.layer` on the current layer:
 </td></tr>
 </table>
 
-We first use `pico.set.layer()`, with no arguments, to target the world layer.
-Then, we compose the flag twice, with different arguments.
+We compose the flag twice, with different arguments.
+By default, a composite targets the world view.
 
-We can also flip and rotate layers when compositing them, by setting their
-`pico.set.effect` fields:
+We can also use `pico.set.effect` to flip and rotate layers:
 
 <table>
 <tr><td><pre>
-> pico.set.layer("flag")
-> pico.set.effect {
+> pico.set.effect { "flag",
     flip   = 'horizontal',
     rotate = {angle=30, anchor='C'},
   }
-> pico.set.layer()
 > pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 </pre>
 </td><td>
@@ -756,13 +750,11 @@ We can also set the transparency of layers by lowering their `alpha` field:
 
 <table>
 <tr><td><pre>
-> pico.set.layer("flag")
-> pico.set.effect {
+> pico.set.effect { "flag",
     rotate = {angle=0},
     flip   = 'none',
     alpha  = 0x80,
   }
-> pico.set.layer()
 > pico.output.draw.layer("flag", {'%', x=0.5, y=0.5, w=0.6})
 </pre>
 </td><td>
@@ -817,8 +809,7 @@ become its parent:
 
 ```
 pico.layer.empty("up", "me", ...)   -- "up" is parent of "me"
-pico.set.layer("me")                -- setup "me"
-pico.set.scene {                     -- position "me" within "up"
+pico.set.scene {  "me",             -- position "me" within "up"
     target = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 }
 ```
@@ -845,26 +836,21 @@ The next code listing implements this layout:
 > pico.init(false) ; pico.init(true)
 > do
     pico.layer.image("root", "I", "open.png")
-    pico.set.layer("I")
-    pico.set.scene { target = {'%', x=0.3, y=0.3, w=0.4} }
+    pico.set.scene { "I", target = {'%', x=0.3, y=0.3, w=0.4} }
   end
 > do
     pico.layer.empty("root", "P", {w=100, h=50})
-    pico.set.layer("P")
-    pico.set.effect { color='silver' }
-    pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
+    pico.set.effect { "P", color='silver' }
+    pico.set.scene  { "P", target = {'%', x=0.7, y=0.7, w=0.4} }
 >   do
         pico.layer.text("P", "T1", 20, "Hello")
-        pico.set.layer("hello")
-        pico.set.scene { target = {'%', x=0.5, y=0.3, h=0.6} }
+        pico.set.scene { "hello", target = {'%', x=0.5, y=0.3, h=0.6} }
     end
 >   do
         pico.layer.text("P", "T2", 20, "World!")
-        pico.set.layer("world")
-        pico.set.scene { target = {'%', x=0.5, y=0.7, h=0.4} }
+        pico.set.scene { "world", target = {'%', x=0.5, y=0.7, h=0.4} }
     end
   end
-> pico.set.layer()
 > pico.output.present()
 </pre>
 </td><td>
@@ -872,8 +858,8 @@ The next code listing implements this layout:
 </td></tr>
 </table>
 
-After the scene is composed, we simply switch to the `root` layer and call
-`pico.output.present` to update the screen all at once.
+After the scene is composed, we simply call `pico.output.present` to update
+the screen all at once.
 
 ## 8. Expert Mode
 
