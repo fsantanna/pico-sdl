@@ -1469,8 +1469,8 @@ static void _show_grid (Pico_Layer* L) {
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Layer* txt = _pico_layer_text(&G.root, '=', NULL, H, lbl);
-            SDL_Rect dst = { x-txt->scene.dim.w/2, 10-txt->scene.dim.h/2,
-                             txt->scene.dim.w, txt->scene.dim.h };
+            int w = H * txt->scene.dim.w / txt->scene.dim.h;
+            SDL_Rect dst = { x-w/2, 10-H/2, w, H };
             SDL_RenderCopy(G.ren, txt->tex, NULL, &dst);
         }
 
@@ -1480,8 +1480,8 @@ static void _show_grid (Pico_Layer* L) {
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Layer* txt = _pico_layer_text(&G.root, '=', NULL, H, lbl);
-            SDL_Rect dst = { 10-txt->scene.dim.w/2, y-txt->scene.dim.h/2,
-                             txt->scene.dim.w, txt->scene.dim.h };
+            int w = H * txt->scene.dim.w / txt->scene.dim.h;
+            SDL_Rect dst = { 10-w/2, y-H/2, w, H };
             SDL_RenderCopy(G.ren, txt->tex, NULL, &dst);
         }
 

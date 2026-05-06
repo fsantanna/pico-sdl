@@ -343,6 +343,11 @@ All 10 steps done:
 ## Notes
 - Some visual baselines may need re-regeneration on different machines via
   `make gen T=<app>`
+- `_show_grid` label dst must scale text textures to fixed `H=10` height
+  with aspect-correct width (`w = H * tex.w / tex.h`) — not native texture
+  dims. Old code went through `pico_output_draw_text` which aspect-filled
+  to H=10 via `pico_get_text`; using native dims produced larger labels
+  and broke `font-03/04` baselines.
 
 ## Follow-up: layer at table[1] for Lua state setters
 
