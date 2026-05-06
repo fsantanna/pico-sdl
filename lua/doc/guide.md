@@ -704,7 +704,7 @@ redirect further drawing operations to it:
 At this point, nothing appears on the screen yet, since we did not update the
 main world view.
 
-We identify the layer as `"flag"` and then set it as the current drawing layer.
+We identify the layer as `flag` and then set it as the current drawing layer.
 Then, we paint inside the layer with the colors.
 
 Note that the first argument to `pico.layer.empty` (`nil` in the example)
@@ -713,7 +713,7 @@ represents the optional implicit parent layer to be discussed in
 
 ### 7.2. Compositing
 
-To composite layers, we use `pico.output.draw.layer` on the current layer:
+To compose a layer on top of the current layer, we call `pico.output.draw.layer`:
 
 <table>
 <tr><td><pre>
