@@ -15,7 +15,7 @@ typedef struct {
 
 void init_drop (Drop* drop) {
     drop->delay = rand() % MAX_DELAY;
-    drop->r = (Pico_Rel_Rect){ '%', {(float)rand() / RAND_MAX, -DROP_HEIGHT, DROP_WIDTH, DROP_HEIGHT}, PICO_ANCHOR_S, NULL };
+    drop->r = (Pico_Rel_Rect){ '%', {(float)rand() / RAND_MAX, -DROP_HEIGHT, DROP_WIDTH, DROP_HEIGHT}, PICO_ANCHOR_S };
 }
 
 int main(void) {

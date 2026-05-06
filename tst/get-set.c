@@ -5,7 +5,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Get-Set" });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
+    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48} });
 
     // color_clear
     puts("color_clear");

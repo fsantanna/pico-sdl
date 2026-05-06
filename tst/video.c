@@ -32,7 +32,7 @@ int main (void) {
         pico_set_layer(NULL);
         pico_output_clear();
         pico_output_draw_layer("vid",
-            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         _pico_check("video-01");
     }
@@ -44,7 +44,7 @@ int main (void) {
         assert(ok == 1);
         pico_output_clear();
         pico_output_draw_layer("vid",
-            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         _pico_check("video-02");
     }
@@ -56,7 +56,7 @@ int main (void) {
         assert(ok == 1);
         pico_output_clear();
         pico_output_draw_layer("vid",
-            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         _pico_check("video-03");
     }
@@ -68,7 +68,7 @@ int main (void) {
         assert(ok == 1);
         pico_output_clear();
         pico_output_draw_layer("vid",
-            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         _pico_check("video-04");
     }
@@ -92,7 +92,7 @@ int main (void) {
         puts("draw_video: first call");
         pico_output_clear();
         int ok = pico_output_draw_video("video.y4m",
-            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C, NULL }
+            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         assert(ok == 1);
         _pico_check("video-05");

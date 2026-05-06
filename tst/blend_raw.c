@@ -4,14 +4,14 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,360}, .fs=0, .show=1, .title="Blend" });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){'!', {64, 36}, NULL});
+    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){'!', {64, 36}});
 
     {
         puts("pixel dimming");
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0,a});
-            pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {32,18}, PICO_ANCHOR_NW, NULL});
+            pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {32,18}, PICO_ANCHOR_NW});
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_raw-01");
@@ -21,7 +21,7 @@ int main (void) {
     {
         puts("text dimming");
         Pico_Abs_Dim dim = pico_get_text("SOME TEXT", &(Pico_Rel_Dim){'!',{0,10},NULL});
-        Pico_Rel_Rect r = {'!', {32-dim.w/2, 18-5, 0, 10}, PICO_ANCHOR_NW, NULL};
+        Pico_Rel_Rect r = {'!', {32-dim.w/2, 18-5, 0, 10}, PICO_ANCHOR_NW};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0,a});
@@ -34,7 +34,7 @@ int main (void) {
     }
     {
         puts("rect dimming");
-        Pico_Rel_Rect r = {'!', {32-30, 18-6, 60, 12}, PICO_ANCHOR_NW, NULL};
+        Pico_Rel_Rect r = {'!', {32-30, 18-6, 60, 12}, PICO_ANCHOR_NW};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0,a});
@@ -47,7 +47,7 @@ int main (void) {
     }
     {
         puts("oval dimming");
-        Pico_Rel_Rect r = {'!', {32-30, 18-6, 60, 12}, PICO_ANCHOR_NW, NULL};
+        Pico_Rel_Rect r = {'!', {32-30, 18-6, 60, 12}, PICO_ANCHOR_NW};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0,a});
@@ -60,9 +60,9 @@ int main (void) {
     }
     {
         puts("tri dimming");
-        Pico_Rel_Pos p1 = {'!', { 2, 12}, PICO_ANCHOR_NW, NULL};
-        Pico_Rel_Pos p2 = {'!', { 2, 24}, PICO_ANCHOR_NW, NULL};
-        Pico_Rel_Pos p3 = {'!', {62, 24}, PICO_ANCHOR_NW, NULL};
+        Pico_Rel_Pos p1 = {'!', { 2, 12}, PICO_ANCHOR_NW};
+        Pico_Rel_Pos p2 = {'!', { 2, 24}, PICO_ANCHOR_NW};
+        Pico_Rel_Pos p3 = {'!', {62, 24}, PICO_ANCHOR_NW};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0,a});
@@ -75,8 +75,8 @@ int main (void) {
     }
     {
         puts("line dimming");
-        Pico_Rel_Pos p1 = {'!', {12, 12}, PICO_ANCHOR_NW, NULL};
-        Pico_Rel_Pos p2 = {'!', {52, 24}, PICO_ANCHOR_NW, NULL};
+        Pico_Rel_Pos p1 = {'!', {12, 12}, PICO_ANCHOR_NW};
+        Pico_Rel_Pos p2 = {'!', {52, 24}, PICO_ANCHOR_NW};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0,a});
@@ -90,9 +90,9 @@ int main (void) {
     {
         puts("poly dimming");
         Pico_Rel_Pos poly[] = {
-            {'!', { 5,  5}, PICO_ANCHOR_NW, NULL},
-            {'!', {59, 10}, PICO_ANCHOR_NW, NULL},
-            {'!', {20, 31}, PICO_ANCHOR_NW, NULL},
+            {'!', { 5,  5}, PICO_ANCHOR_NW},
+            {'!', {59, 10}, PICO_ANCHOR_NW},
+            {'!', {20, 31}, PICO_ANCHOR_NW},
         };
 
         for (int a=255; a>0; a-=5) {

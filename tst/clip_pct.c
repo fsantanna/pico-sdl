@@ -7,7 +7,7 @@ int main (void) {
 
     puts("rect at 30%");
     pico_output_clear();
-    Pico_Rel_Rect r1 = { '%', {0.3,0.3, 0.5,0.5}, PICO_ANCHOR_C, NULL };
+    Pico_Rel_Rect r1 = { '%', {0.3,0.3, 0.5,0.5}, PICO_ANCHOR_C };
     pico_output_draw_rect(&r1);
     _pico_check("clip-01");     // same as raw
 

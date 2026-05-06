@@ -4,9 +4,9 @@ int main (void) {
     pico_init(1);
 
     /* Layer 120x50 with 3 centered buttons equally spaced */
-    Pico_Rel_Rect btn1 = { '%', {0.25, 0.50, 0.15, 0.30}, PICO_ANCHOR_C, NULL };
-    Pico_Rel_Rect btn2 = { '%', {0.50, 0.50, 0.15, 0.30}, PICO_ANCHOR_C, NULL };
-    Pico_Rel_Rect btn3 = { '%', {0.75, 0.50, 0.15, 0.30}, PICO_ANCHOR_C, NULL };
+    Pico_Rel_Rect btn1 = { '%', {0.25, 0.50, 0.15, 0.30}, PICO_ANCHOR_C };
+    Pico_Rel_Rect btn2 = { '%', {0.50, 0.50, 0.15, 0.30}, PICO_ANCHOR_C };
+    Pico_Rel_Rect btn3 = { '%', {0.75, 0.50, 0.15, 0.30}, PICO_ANCHOR_C };
 
     pico_layer_empty(NULL, "A", (Pico_Abs_Dim){120, 50}, NULL);
     pico_set_layer("A");
@@ -19,7 +19,7 @@ int main (void) {
     pico_set_layer(NULL);
 
     /* Draw layer at bottom-right, 35%x35% of screen (distorted) */
-    Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE, NULL };
+    Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE };
     pico_set_effect_color(NULL, PICO_COLOR_BLACK);
     pico_output_clear();
     pico_output_draw_layer("A", &r);
@@ -35,7 +35,7 @@ int main (void) {
         Pico_Mouse pct = pico_get_mouse('%', &r);
         printf(">>> w %4.0f %4.0f | %% %5.3f %5.3f", win.x, win.y, pct.x, pct.y);
 
-        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW };
         if (pico_vs_pos_rect(&pos, &btn1)) {
             printf(" | click 1");
         } else if (pico_vs_pos_rect(&pos, &btn2)) {

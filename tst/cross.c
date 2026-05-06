@@ -3,15 +3,15 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window_dim(&(Pico_Rel_Dim){ '!', {160, 160}, NULL });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {16, 16}, NULL });
+    pico_set_window_dim(&(Pico_Rel_Dim){ '!', {160, 160} });
+    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {16, 16} });
     pico_output_clear();
     for (int i=0; i<16; i++) {
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_NW, NULL }
+            &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_NW }
         );
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {15-i, i}, PICO_ANCHOR_NW, NULL }
+            &(Pico_Rel_Pos) { '!', {15-i, i}, PICO_ANCHOR_NW }
         );
         pico_input_delay(10);
         switch (i) {

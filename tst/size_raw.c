@@ -7,13 +7,13 @@ int main (void) {
 
     Pico_Abs_Dim phy = PICO_DIM_PHY;
     Pico_Abs_Dim log = PICO_DIM_LOG;
-    Pico_Rel_Rect r = { '!', {50-25, 50-25, 50, 50}, PICO_ANCHOR_NW, NULL };
+    Pico_Rel_Rect r = { '!', {50-25, 50-25, 50, 50}, PICO_ANCHOR_NW };
 
     // phy: normal -> double -> half -> normal
     puts("WINDOW");
     {
         puts("normal");
-        Pico_Rel_Dim dim = { '!', {phy.w, phy.h}, NULL };
+        Pico_Rel_Dim dim = { '!', {phy.w, phy.h} };
         pico_set_window_dim(&dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -21,7 +21,7 @@ int main (void) {
     }
     {
         puts("double");
-        Pico_Rel_Dim dim = { '!', {phy.w*2, phy.h*2}, NULL };
+        Pico_Rel_Dim dim = { '!', {phy.w*2, phy.h*2} };
         pico_set_window_dim(&dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -29,7 +29,7 @@ int main (void) {
     }
     {
         puts("half");
-        Pico_Rel_Dim dim = { '!', {phy.w/2, phy.h/2}, NULL };
+        Pico_Rel_Dim dim = { '!', {phy.w/2, phy.h/2} };
         pico_set_window_dim(&dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -37,7 +37,7 @@ int main (void) {
     }
     {
         puts("normal");
-        Pico_Rel_Dim dim = { '!', {phy.w, phy.h}, NULL };
+        Pico_Rel_Dim dim = { '!', {phy.w, phy.h} };
         pico_set_window_dim(&dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -64,7 +64,7 @@ int main (void) {
     puts("WORLD");
     {
         puts("normal");
-        Pico_Rel_Dim dim = { '!', {log.w, log.h}, NULL };
+        Pico_Rel_Dim dim = { '!', {log.w, log.h} };
         pico_set_scene_dim(NULL, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);
@@ -72,25 +72,25 @@ int main (void) {
     }
     {
         puts("double");
-        Pico_Rel_Dim dim = { '!', {log.w*2, log.h*2}, NULL };
+        Pico_Rel_Dim dim = { '!', {log.w*2, log.h*2} };
         pico_set_scene_dim(NULL, &dim);
         pico_output_clear();
-        Pico_Rel_Rect r = { '!', {log.w-25, log.h-25, 50, 50}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect r = { '!', {log.w-25, log.h-25, 50, 50}, PICO_ANCHOR_NW };
         pico_output_draw_rect(&r);
         _pico_check("size_raw-08");
     }
     {
         puts("half");
-        Pico_Rel_Dim dim = { '!', {log.w/2, log.h/2}, NULL };
+        Pico_Rel_Dim dim = { '!', {log.w/2, log.h/2} };
         pico_set_scene_dim(NULL, &dim);
         pico_output_clear();
-        Pico_Rel_Rect r = { '!', {log.w/4-25, log.w/4-25, 50, 50}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect r = { '!', {log.w/4-25, log.w/4-25, 50, 50}, PICO_ANCHOR_NW };
         pico_output_draw_rect(&r);
         _pico_check("size_raw-09");
     }
     {
         puts("normal");
-        Pico_Rel_Dim dim = { '!', {log.w, log.h}, NULL };
+        Pico_Rel_Dim dim = { '!', {log.w, log.h} };
         pico_set_scene_dim(NULL, &dim);
         pico_output_clear();
         pico_output_draw_rect(&r);

@@ -261,9 +261,9 @@ void pico_init (int on) {
                     .keep = -1,
                     .dim  = PICO_DIM_LOG,
                     .tile = {0, 0},
-                    .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-                    .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-                    .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+                    .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+                    .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+                    .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
                 },
             },
             .ren = NULL,        // needs G.win
@@ -722,7 +722,7 @@ void pico_set_scene_clip (const char* layer, Pico_Rel_Rect clip) {
 
 void pico_set_scene_dim (const char* layer, Pico_Rel_Dim* dim) {
     _pico_guard();
-    assert(dim->mode!='%' && dim->up==NULL);
+    assert(dim->mode != '%');
     Pico_Layer* L = _pico_layer_null(layer);
     Pico_Abs_Dim di = pico_cv_dim_rel_abs(dim, NULL);
     L->scene.dim = di;
@@ -769,7 +769,7 @@ void pico_set_window (Pico_Window win) {
     pico_set_window_color(win.color);
     pico_set_window_fs(win.fs);
     if (!win.fs) {
-        Pico_Rel_Dim rel = {'!', {win.dim.w, win.dim.h}, NULL};
+        Pico_Rel_Dim rel = {'!', {win.dim.w, win.dim.h}};
         pico_set_window_dim(&rel);
     }
     pico_set_window_show(win.show);
@@ -785,7 +785,7 @@ void pico_set_window_color (Pico_Color color) {
 void pico_set_window_dim (Pico_Rel_Dim* dim) {
     _pico_guard();
     assert(!S.win.fs);
-    assert(dim->mode!='%' && dim->up==NULL);
+    assert(dim->mode != '%');
     Pico_Abs_Dim di = pico_cv_dim_rel_abs (
         dim, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
     );
@@ -917,7 +917,6 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
     assert(key!=NULL      && "sub-layer key required");
     assert(parent!=NULL   && "parent key required");
     assert(crop!=NULL     && "crop rect required");
-    assert(crop->up==NULL && "crop must not have up chain");
 
     Pico_Layer* par = (Pico_Layer*)realm_get(
         G.realm, strlen(parent)+1, parent);
@@ -974,7 +973,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
             if (G.fsing) {
                 G.fsing = 0;
             } else {
-                Pico_Rel_Dim phy = { '!', {pico->window.w, pico->window.h}, NULL };
+                Pico_Rel_Dim phy = { '!', {pico->window.w, pico->window.h} };
                 pico_set_window_dim(&phy);
             }
             break;
@@ -990,7 +989,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 }
                 case SDLK_MINUS: {
                     assert(S.layer == &G.root);
-                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
+                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.w += 0.1;
                     pct.h += 0.1;
@@ -1001,7 +1000,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 }
                 case SDLK_EQUALS: {
                     assert(S.layer == &G.root);
-                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
+                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.w -= 0.1;
                     pct.h -= 0.1;
@@ -1012,7 +1011,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 }
                 case SDLK_LEFT: {
                     assert(S.layer == &G.root);
-                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
+                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.x -= 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
@@ -1022,7 +1021,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 }
                 case SDLK_RIGHT: {
                     assert(S.layer == &G.root);
-                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
+                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.x += 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
@@ -1032,7 +1031,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 }
                 case SDLK_UP: {
                     assert(S.layer == &G.root);
-                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
+                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.y -= 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
@@ -1042,7 +1041,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 }
                 case SDLK_DOWN: {
                     assert(S.layer == &G.root);
-                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C, NULL};
+                    Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.y += 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
@@ -1417,8 +1416,8 @@ static void _show_grid (void) {
             for (int i=0; i<S.win.dim.w; i+=(S.win.dim.w/S.layer->scene.dim.w)) {
                 if (i == 0) continue;
                 pico_output_draw_line (
-                    &(Pico_Rel_Pos){ '!', {i,0}, PICO_ANCHOR_NW, NULL },
-                    &(Pico_Rel_Pos){ '!', {i, S.win.dim.h}, PICO_ANCHOR_NW, NULL }
+                    &(Pico_Rel_Pos){ '!', {i,0}, PICO_ANCHOR_NW },
+                    &(Pico_Rel_Pos){ '!', {i, S.win.dim.h}, PICO_ANCHOR_NW }
                 );
             }
         }
@@ -1426,8 +1425,8 @@ static void _show_grid (void) {
             for (int j=0; j<S.win.dim.h; j+=(S.win.dim.h/S.layer->scene.dim.h)) {
                 if (j == 0) continue;
                 pico_output_draw_line (
-                    &(Pico_Rel_Pos){ '!', {0,j}, PICO_ANCHOR_NW, NULL },
-                    &(Pico_Rel_Pos){ '!', {S.win.dim.w,j}, PICO_ANCHOR_NW, NULL }
+                    &(Pico_Rel_Pos){ '!', {0,j}, PICO_ANCHOR_NW },
+                    &(Pico_Rel_Pos){ '!', {S.win.dim.w,j}, PICO_ANCHOR_NW }
                 );
             }
         }
@@ -1452,11 +1451,11 @@ static void _show_grid (void) {
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Abs_Dim dim = pico_get_text (
                 lbl,
-                &(Pico_Rel_Dim){ '!', {0, H}, NULL }
+                &(Pico_Rel_Dim){ '!', {0, H} }
             );
             pico_output_draw_text (
                 lbl,
-                &(Pico_Rel_Rect){ '!', {x-dim.w/2, 10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW, NULL }
+                &(Pico_Rel_Rect){ '!', {x-dim.w/2, 10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
             );
         }
 
@@ -1467,10 +1466,10 @@ static void _show_grid (void) {
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Abs_Dim dim = pico_get_text(
                 lbl,
-                &(Pico_Rel_Dim){ '!', {0, H}, NULL });
+                &(Pico_Rel_Dim){ '!', {0, H} });
             pico_output_draw_text (
                 lbl,
-                &(Pico_Rel_Rect){ '!', {10-dim.w/2, y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW, NULL }
+                &(Pico_Rel_Rect){ '!', {10-dim.w/2, y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
             );
         }
     }
@@ -1493,23 +1492,23 @@ static void _show_tile (Pico_Layer_Scene* view, SDL_Rect dst) {
     if (dx > 0) {
         for (int i=dx; i<dst.w; i+=dx) {
             pico_output_draw_line (
-                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW, NULL },
-                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW, NULL }
+                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
+                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
             );
         }
     }
     if (dy > 0) {
         for (int j=dy; j<dst.h; j+=dy) {
             pico_output_draw_line (
-                &(Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW, NULL },
-                &(Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW, NULL }
+                &(Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
+                &(Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
             );
         }
     }
 
     // surrounding rect
     pico_output_draw_rect (
-        &(Pico_Rel_Rect){ '!', {dst.x, dst.y, dst.w, dst.h}, PICO_ANCHOR_NW, NULL }
+        &(Pico_Rel_Rect){ '!', {dst.x, dst.y, dst.w, dst.h}, PICO_ANCHOR_NW }
     );
 
     pico_set_pencil_color(NULL, x_clr);

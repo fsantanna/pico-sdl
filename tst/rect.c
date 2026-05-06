@@ -8,14 +8,14 @@ int main (void) {
     {
         puts("centered rect");
         pico_output_clear();
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL });
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
         _pico_check("rect-01");
     }
 
     {
         puts("rect at 30%");
         pico_output_clear();
-        Pico_Rel_Rect r1 = { '%', {0.3, 0.3, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Rect r1 = { '%', {0.3, 0.3, 0.5, 0.5}, PICO_ANCHOR_C };
         pico_output_draw_rect(&r1);
 
         puts("red centered under white");
@@ -30,7 +30,7 @@ int main (void) {
         puts("rect at 50% anchored by bottom-right");
         pico_output_clear();
 
-        Pico_Rel_Rect r1 = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_SE, NULL };
+        Pico_Rel_Rect r1 = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_SE };
         pico_set_pencil_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_draw_rect(&r1);
 
@@ -46,7 +46,7 @@ int main (void) {
         puts("rect at 50% anchored by bottom-right");
         pico_output_clear();
 
-        Pico_Rel_Rect r1 = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Rect r1 = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C };
         pico_set_pencil_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_draw_rect(&r1);
 
@@ -62,7 +62,7 @@ int main (void) {
         puts("rect at 50%");
         pico_output_clear();
 
-        Pico_Rel_Rect r1 = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Rect r1 = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C };
         pico_set_pencil_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_draw_rect(&r1);
 

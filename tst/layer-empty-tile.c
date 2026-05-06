@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
 
-    Pico_Rel_Dim phy = { '!', {480, 480}, NULL };
+    Pico_Rel_Dim phy = { '!', {480, 480} };
     pico_set_dim(&phy);
     pico_set_effect_grid(NULL, 0);
 
@@ -18,11 +18,11 @@ int main (void) {
         pico_set_effect_grid(NULL, 1);
         pico_output_clear();
         pico_set_pencil_color(NULL, PICO_COLOR_RED);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {1, 1, 1, 1}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {1, 1, 1, 1}, PICO_ANCHOR_NW });
         pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {6, 4, 4, 2}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {6, 4, 4, 2}, PICO_ANCHOR_NW });
         pico_set_pencil_color(NULL, PICO_COLOR_BLUE);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {20, 15, 1, 1}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {20, 15, 1, 1}, PICO_ANCHOR_NW });
         pico_set_layer(NULL);
     }
 
@@ -30,7 +30,7 @@ int main (void) {
     {
         puts("draw map 1:1");
         pico_output_clear();
-        pico_output_draw_layer("map", &(Pico_Rel_Rect){ '!', {0, 0, 320, 240}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_layer("map", &(Pico_Rel_Rect){ '!', {0, 0, 320, 240}, PICO_ANCHOR_NW });
         _pico_check("layer-empty-tile-01");
     }
 
@@ -38,7 +38,7 @@ int main (void) {
     {
         puts("draw map scaled");
         pico_output_clear();
-        pico_output_draw_layer("map", &(Pico_Rel_Rect){ '!', {0, 0, 480, 360}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_layer("map", &(Pico_Rel_Rect){ '!', {0, 0, 480, 360}, PICO_ANCHOR_NW });
         _pico_check("layer-empty-tile-02");
     }
 
@@ -49,7 +49,7 @@ int main (void) {
         pico_set_layer("fx");
         pico_output_clear();
         pico_set_pencil_color(NULL, PICO_COLOR_YELLOW);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '!', {8, 8, 48, 48}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_rect(&(Pico_Rel_Rect){ '!', {8, 8, 48, 48}, PICO_ANCHOR_NW });
         pico_set_layer(NULL);
     }
 
@@ -57,8 +57,8 @@ int main (void) {
     {
         puts("draw map + fx");
         pico_output_clear();
-        pico_output_draw_layer("map", &(Pico_Rel_Rect){ '!', {0,   0, 320, 240}, PICO_ANCHOR_NW, NULL });
-        pico_output_draw_layer("fx",  &(Pico_Rel_Rect){ '!', {340, 0, 128, 128}, PICO_ANCHOR_NW, NULL });
+        pico_output_draw_layer("map", &(Pico_Rel_Rect){ '!', {0,   0, 320, 240}, PICO_ANCHOR_NW });
+        pico_output_draw_layer("fx",  &(Pico_Rel_Rect){ '!', {340, 0, 128, 128}, PICO_ANCHOR_NW });
         _pico_check("layer-empty-tile-03");
     }
 

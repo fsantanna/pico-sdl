@@ -4,12 +4,12 @@
 int main() {
     pico_init(1);
 
-    Pico_Rel_Dim phy = { '!', {200,200}, NULL };
-    Pico_Rel_Dim log = { '!', { 20, 20}, NULL };
+    Pico_Rel_Dim phy = { '!', {200,200} };
+    Pico_Rel_Dim log = { '!', { 20, 20} };
     pico_set_window_dim(&phy);
     pico_set_scene_dim(NULL, &log);
 
-    Pico_Rel_Rect r = { '!', { 10-2, 10-2, 4, 4 }, PICO_ANCHOR_NW, NULL };
+    Pico_Rel_Rect r = { '!', { 10-2, 10-2, 4, 4 }, PICO_ANCHOR_NW };
 
     puts("pos_vs_rect");
     for (int y=r.y-1; y<=r.y+r.h; y++) {
@@ -18,7 +18,7 @@ int main() {
             pico_set_pencil_color(NULL, (Pico_Color){255,255,255, 0xFF});
             pico_output_draw_rect(&r);
 
-            Pico_Rel_Pos p = { '!', {x, y}, PICO_ANCHOR_NW, NULL };
+            Pico_Rel_Pos p = { '!', {x, y}, PICO_ANCHOR_NW };
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
             pico_output_draw_pixel(&p);
 
@@ -60,7 +60,7 @@ int main() {
             pico_set_pencil_color(NULL, (Pico_Color){255,255,255, 0xFF});
             pico_output_draw_rect(&r);
 
-            Pico_Rel_Rect r2 = { '!', {x,y,4,4}, PICO_ANCHOR_NW, NULL };
+            Pico_Rel_Rect r2 = { '!', {x,y,4,4}, PICO_ANCHOR_NW };
             pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 0xFF});
             pico_output_draw_rect(&r2);
 

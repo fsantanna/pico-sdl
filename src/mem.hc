@@ -105,9 +105,9 @@ static Pico_Layer* _layer_new (
             .keep = keep,
             .dim  = dim,
             .tile = {0, 0},
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C, NULL},
+            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
         },
     };
     assert(data->name != NULL);

@@ -3,14 +3,14 @@
 
 int main (void) {
     pico_init(1);
-    Pico_Rel_Dim log = { '!', { 10, 10}, NULL };
+    Pico_Rel_Dim log = { '!', { 10, 10} };
     pico_set_window((Pico_Window){ .dim={200,200}, .fs=0, .show=1, .title="Anchoring Abs..." });
     pico_set_scene_dim(NULL, &log);
 
     // PIXELS
     {
         puts("centered pixel - 1dir/1baixo");
-        Pico_Rel_Pos p = { '!', {5,5}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Pos p = { '!', {5,5}, PICO_ANCHOR_C };
         pico_output_clear();
         pico_output_draw_pixel(&p);
         _pico_check("anchor-01");
@@ -18,7 +18,7 @@ int main (void) {
 
     {
         puts("centered pixel - 1dir/1baixo");
-        Pico_Rel_Pos p = { '!', {5,5}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Pos p = { '!', {5,5}, PICO_ANCHOR_NW };
         pico_output_clear();
         pico_output_draw_pixel(&p);
         _pico_check("anchor-02");
@@ -26,7 +26,7 @@ int main (void) {
 
     {
         puts("centered pixel - 1esq/1cima");
-        Pico_Rel_Pos p = { '!', {5,5}, PICO_ANCHOR_SE, NULL };
+        Pico_Rel_Pos p = { '!', {5,5}, PICO_ANCHOR_SE };
         pico_output_clear();
         pico_output_draw_pixel(&p);
         _pico_check("anchor-03");
@@ -35,7 +35,7 @@ int main (void) {
     // RECTS
     {
         puts("centered rect - exact");
-        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_C };
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("anchor-04");
@@ -43,7 +43,7 @@ int main (void) {
 
     {
         puts("topleft centered - 1lin/1col");
-        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_NW };
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("anchor-05");
@@ -51,7 +51,7 @@ int main (void) {
 
     {
         puts("bottomright centered - 1lin/1col");
-        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_SE, NULL };
+        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_SE };
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("anchor-06");
@@ -59,7 +59,7 @@ int main (void) {
 
     {
         puts("rightmiddle centered - 1col");
-        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_E, NULL };
+        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, PICO_ANCHOR_E };
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("anchor-07");
@@ -67,7 +67,7 @@ int main (void) {
 
     {
         puts("anchor 25%25% 20%20% - 1lin/1col");
-        Pico_Rel_Rect r = { '!', {2, 2, 4, 4}, {.x=0.2,.y=0.2}, NULL };
+        Pico_Rel_Rect r = { '!', {2, 2, 4, 4}, {.x=0.2,.y=0.2} };
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("anchor-08");
@@ -76,7 +76,7 @@ int main (void) {
     // RECTS out of [0,10]
     {
         puts("anchor -25%-25% centered - touching border");
-        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, {.x=-0.25,.y=-0.25}, NULL };
+        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, {.x=-0.25,.y=-0.25} };
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("anchor-09");
@@ -84,7 +84,7 @@ int main (void) {
 
     {
         puts("anchor 125%125% centered - touching border");
-        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, {.x=1.25,.y=1.25}, NULL };
+        Pico_Rel_Rect r = { '!', {5, 5, 4, 4}, {.x=1.25,.y=1.25} };
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("anchor-10");

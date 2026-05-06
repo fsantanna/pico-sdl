@@ -5,7 +5,7 @@ int main (void) {
     pico_init(1);
 
     // 4x4 grid of 4x4 pixel tiles = 16x16 logical world
-    Pico_Rel_Dim log  = { '#', {4, 4}, NULL };
+    Pico_Rel_Dim log  = { '#', {4, 4} };
     Pico_Abs_Dim tile = { 4, 4 };
     pico_set_window((Pico_Window){ .dim={160,160}, .fs=0, .show=1, .title="Tile" });
     pico_set_scene_tile(NULL, tile); pico_set_scene_dim(NULL, &log);
@@ -20,7 +20,7 @@ int main (void) {
     {
         puts("tile (1,1) NW anchor");
         pico_output_clear();
-        Pico_Rel_Rect r = { '#', {1, 1, 1, 1}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect r = { '#', {1, 1, 1, 1}, PICO_ANCHOR_NW };
         pico_output_draw_pixmap("tile", (Pico_Abs_Dim){4,4}, white, &r);
         _pico_check("tiles-01");
     }
@@ -29,7 +29,7 @@ int main (void) {
     {
         puts("tile (2,2) C anchor");
         pico_output_clear();
-        Pico_Rel_Rect r = { '#', {2, 2, 1, 1}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Rect r = { '#', {2, 2, 1, 1}, PICO_ANCHOR_C };
         pico_output_draw_pixmap("tile", (Pico_Abs_Dim){4,4}, white, &r);
         _pico_check("tiles-02");
     }
@@ -38,7 +38,7 @@ int main (void) {
     {
         puts("2x2 tiles (1,1) NW anchor");
         pico_output_clear();
-        Pico_Rel_Rect r = { '#', {1, 1, 2, 2}, PICO_ANCHOR_NW, NULL };
+        Pico_Rel_Rect r = { '#', {1, 1, 2, 2}, PICO_ANCHOR_NW };
         pico_output_draw_pixmap("tile", (Pico_Abs_Dim){4,4}, white, &r);
         _pico_check("tiles-03");
     }
@@ -47,7 +47,7 @@ int main (void) {
     {
         puts("2x2 tiles (2.5,2.5) C anchor");
         pico_output_clear();
-        Pico_Rel_Rect r = { '#', {2.5, 2.5, 2, 2}, PICO_ANCHOR_C, NULL };
+        Pico_Rel_Rect r = { '#', {2.5, 2.5, 2, 2}, PICO_ANCHOR_C };
         pico_output_draw_pixmap("tile", (Pico_Abs_Dim){4,4}, white, &r);
         _pico_check("tiles-04");
     }
@@ -56,7 +56,7 @@ int main (void) {
     // phy (0,0) -> log (0,0) -> tile (1,1)
     {
         puts("mouse tile (1,1)");
-        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {0, 0}, PICO_ANCHOR_NW, NULL });
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {0, 0}, PICO_ANCHOR_NW });
         Pico_Mouse pos = pico_get_mouse('#', NULL);
         assert(pos.x==1 && pos.y==1);
     }
@@ -65,7 +65,7 @@ int main (void) {
     // 160 phy / 16 log = 10x scale, so phy 40 = log 4
     {
         puts("mouse tile (2,2)");
-        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {40, 40}, PICO_ANCHOR_NW, NULL });
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {40, 40}, PICO_ANCHOR_NW });
         Pico_Mouse pos = pico_get_mouse('#', NULL);
         assert(pos.x==2 && pos.y==2);
     }
@@ -73,7 +73,7 @@ int main (void) {
     // phy (80,120) -> log (8,12) -> tile (3,4)
     {
         puts("mouse tile (3,4)");
-        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {80, 120}, PICO_ANCHOR_NW, NULL });
+        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {80, 120}, PICO_ANCHOR_NW });
         Pico_Mouse pos = pico_get_mouse('#', NULL);
         assert(pos.x==3 && pos.y==4);
     }

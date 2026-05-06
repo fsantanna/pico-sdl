@@ -5,7 +5,7 @@
 int main (void) {
     pico_init(1);
 
-    Pico_Rel_Rect btn = { '%', {0.5, 0.5, 0.15, 0.30}, PICO_ANCHOR_C, NULL };
+    Pico_Rel_Rect btn = { '%', {0.5, 0.5, 0.15, 0.30}, PICO_ANCHOR_C };
 
     /* Draw btn into layer A. */
     pico_layer_empty(NULL, "A", (Pico_Abs_Dim){120, 50}, NULL);
@@ -17,7 +17,7 @@ int main (void) {
     pico_set_layer(NULL);
 
     /* Composite layer A distorted at SE, 35%x35% of screen. */
-    Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE, NULL };
+    Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE };
     pico_set_effect_color(NULL, PICO_COLOR_BLACK);
     pico_output_clear();
     pico_output_draw_layer("A", &r);
@@ -28,14 +28,14 @@ int main (void) {
        snaps through the screen log grid (5 win px / log px) to a cell that
        lies above btn's top edge (381.25 win). Collision and rendering
        disagree even with btn.up = &r. */
-    pico_set_mouse(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW, NULL });
+    pico_set_mouse(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW });
     Pico_Mouse pct = pico_get_mouse('%', &r);
     Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, &r };
 
     assert(pico_vs_pos_rect(&pos, &btn));
 
     pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
-    pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW, NULL });
+    pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW });
     _pico_check("mouse-w-click-01");
 
     pico_init(0);

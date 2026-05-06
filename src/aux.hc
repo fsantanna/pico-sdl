@@ -1,9 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-// rel hierarchy resolution: _f1 (recursive up), _f2 (%), _f3 (aspect ratio)
+// _f_rat: fill missing w/h from aspect ratio
+// _f_pct: resolve a '%' rect onto a base SDL_FRect
 ///////////////////////////////////////////////////////////////////////////////
 
-static SDL_FDim _f3 (float w, float h, const Pico_Abs_Dim* ratio) {
-    if (ratio!=NULL && (w==0 || h==0)) {
+static SDL_FDim _f_rat (float w, float h, const Pico_Abs_Dim* ratio) {
+    if (ratio == NULL) {
+        // no ratio to use
+    } else if (w!=0 && h!=0) {
+        // forced w,h
+    } else {
+        // calculate w,h based on h,w & ratio
+        assert(ratio!=NULL && (w==0 || h==0));
         if (w == 0 && h == 0) {
             w = ratio->w;
             h = ratio->h;
@@ -16,32 +23,17 @@ static SDL_FDim _f3 (float w, float h, const Pico_Abs_Dim* ratio) {
     return (SDL_FDim) { w, h };
 }
 
-static SDL_FRect _f2 (
-    SDL_FRect   dn,
-    Pico_Anchor anc,
-    SDL_FRect   up,
-    const Pico_Abs_Dim* ratio
-) {
-    SDL_FDim d = _f3(dn.w*up.w, dn.h*up.h, ratio);
-    return (SDL_FRect) {
-        up.x + dn.x*up.w - anc.x*d.w,
-        up.y + dn.y*up.h - anc.y*d.h,
-        d.w, d.h,
-    };
-}
-
-static SDL_FRect _f1 (
+static SDL_FRect _f_pct (
     const Pico_Rel_Rect* r,
     SDL_FRect base,
     const Pico_Abs_Dim* ratio
 ) {
-    if (r == NULL) {
-        return base;
-    } else {
-        SDL_FRect abs = { r->x, r->y, r->w, r->h };
-        SDL_FRect tmp = _f1(r->up, base, NULL);
-        return _f2(abs, r->anchor, tmp, ratio);
-    }
+    SDL_FDim d = _f_rat(r->w*base.w, r->h*base.h, ratio);
+    return (SDL_FRect) {
+        base.x + r->x*base.w - r->anchor.x*d.w,
+        base.y + r->y*base.h - r->anchor.y*d.h,
+        d.w, d.h,
+    };
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -109,38 +101,34 @@ static SDL_FDim _sdl_dim (
     const Pico_Abs_Rect* base,
     const Pico_Abs_Dim*  ratio
 ) {
-    SDL_FRect r0;
-    if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (dim->mode == 'w') ? S.win.dim.w : S.layer->scene.dim.w,
-            (dim->mode == 'w') ? S.win.dim.h : S.layer->scene.dim.h,
-        };
-    } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
-    }
-    SDL_FRect r1 = _f1(dim->up, r0, NULL);
     SDL_FDim ret;
     switch (dim->mode) {
         case 'w': {
-            ret = _f3(dim->w, dim->h, ratio);
+            ret = _f_rat(dim->w, dim->h, ratio);
             if (dim->w == 0) dim->w = ret.w;
             if (dim->h == 0) dim->h = ret.h;
             ret = _dim_win_to_wld(ret);
             break;
         }
         case '!':
-            ret = _f3(dim->w, dim->h, ratio);
+            ret = _f_rat(dim->w, dim->h, ratio);
             if (dim->w == 0) dim->w = ret.w;
             if (dim->h == 0) dim->h = ret.h;
             break;
-        case '%':
-            ret = _f3(dim->w * r1.w, dim->h * r1.h, ratio);
-            if (dim->w == 0) dim->w = ret.w / r1.w;
-            if (dim->h == 0) dim->h = ret.h / r1.h;
+        case '%': {
+            SDL_FDim d;
+            if (base == NULL) {
+                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+            } else {
+                d = (SDL_FDim) { base->w, base->h };
+            }
+            ret = _f_rat(dim->w * d.w, dim->h * d.h, ratio);
+            if (dim->w == 0) dim->w = ret.w / d.w;
+            if (dim->h == 0) dim->h = ret.h / d.h;
             break;
+        }
         case '#':
-            ret = _f3(dim->w * S.layer->scene.tile.w, dim->h * S.layer->scene.tile.h, ratio);
+            ret = _f_rat(dim->w * S.layer->scene.tile.w, dim->h * S.layer->scene.tile.h, ratio);
             if (dim->w == 0) dim->w = ret.w / S.layer->scene.tile.w;
             if (dim->h == 0) dim->h = ret.h / S.layer->scene.tile.h;
             break;
@@ -154,43 +142,45 @@ static SDL_FPoint _sdl_pos (
     const Pico_Rel_Pos*  pos,
     const Pico_Abs_Rect* base
 ) {
-    SDL_FPoint ret;
-    SDL_FRect r0;
+    SDL_FPoint p;
     if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (pos->mode == 'w') ? S.win.dim.w : S.layer->scene.dim.w,
-            (pos->mode == 'w') ? S.win.dim.h : S.layer->scene.dim.h,
-        };
+        p = (SDL_FPoint) { 0, 0 };
     } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
+        p = (SDL_FPoint) { base->x, base->y };
     }
-    SDL_FRect r1 = _f1(pos->up, r0, NULL);
+    SDL_FPoint ret;
     switch (pos->mode) {
         case 'w': {
             ret = (SDL_FPoint) {
-                r1.x + pos->x - pos->anchor.x,
-                r1.y + pos->y - pos->anchor.y,
+                p.x + pos->x - pos->anchor.x,
+                p.y + pos->y - pos->anchor.y,
             };
             ret = _pos_win_to_wld(ret);
             break;
         }
         case '!':
             ret = (SDL_FPoint) {
-                r1.x + pos->x - pos->anchor.x,
-                r1.y + pos->y - pos->anchor.y,
+                p.x + pos->x - pos->anchor.x,
+                p.y + pos->y - pos->anchor.y,
             };
             break;
-        case '%':
+        case '%': {
+            SDL_FDim d;
+            if (base == NULL) {
+                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+            } else {
+                d = (SDL_FDim) { base->w, base->h };
+            }
             ret = (SDL_FPoint) {
-                r1.x + pos->x*r1.w - pos->anchor.x,
-                r1.y + pos->y*r1.h - pos->anchor.y,
+                p.x + pos->x*d.w - pos->anchor.x,
+                p.y + pos->y*d.h - pos->anchor.y,
             };
             break;
+        }
         case '#':
             ret = (SDL_FPoint) {
-                r1.x + (pos->x - 1 + pos->anchor.x)*S.layer->scene.tile.w,
-                r1.y + (pos->y - 1 + pos->anchor.y)*S.layer->scene.tile.h,
+                p.x + (pos->x - 1 + pos->anchor.x)*S.layer->scene.tile.w,
+                p.y + (pos->y - 1 + pos->anchor.y)*S.layer->scene.tile.h,
             };
             break;
         default:
@@ -204,50 +194,52 @@ static SDL_FRect _sdl_rect (
     const Pico_Abs_Rect* base,
     const Pico_Abs_Dim*  ratio
 ) {
-    SDL_FRect ret;
-    SDL_FRect r0;
+    SDL_FPoint p;
     if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (rect->mode == 'w') ? S.win.dim.w : S.layer->scene.dim.w,
-            (rect->mode == 'w') ? S.win.dim.h : S.layer->scene.dim.h,
-        };
+        p = (SDL_FPoint) { 0, 0 };
     } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
+        p = (SDL_FPoint) { base->x, base->y };
     }
-    SDL_FRect r1 = _f1(rect->up, r0, NULL);
+    SDL_FRect ret;
     switch (rect->mode) {
         case 'w': {
-            SDL_FDim d = _f3(rect->w, rect->h, ratio);
+            SDL_FDim d = _f_rat(rect->w, rect->h, ratio);
             ret = (SDL_FRect) {
-                r1.x + rect->x - rect->anchor.x*d.w,
-                r1.y + rect->y - rect->anchor.y*d.h,
+                p.x + rect->x - rect->anchor.x*d.w,
+                p.y + rect->y - rect->anchor.y*d.h,
                 d.w, d.h
             };
             ret = _rect_win_to_wld(ret);
             break;
         }
         case '!': {
-            SDL_FDim d = _f3(rect->w, rect->h, ratio);
+            SDL_FDim d = _f_rat(rect->w, rect->h, ratio);
             ret = (SDL_FRect) {
-                r1.x + rect->x - rect->anchor.x*d.w,
-                r1.y + rect->y - rect->anchor.y*d.h,
+                p.x + rect->x - rect->anchor.x*d.w,
+                p.y + rect->y - rect->anchor.y*d.h,
                 d.w, d.h
             };
             break;
         }
-        case '%':
-            ret = _f1(rect, r0, ratio);
+        case '%': {
+            SDL_FDim d;
+            if (base == NULL) {
+                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+            } else {
+                d = (SDL_FDim) { base->w, base->h };
+            }
+            ret = _f_pct(rect, (SDL_FRect){ p.x, p.y, d.w, d.h }, ratio);
             break;
+        }
         case '#': {
-            SDL_FDim d = _f3 (
+            SDL_FDim d = _f_rat (
                 rect->w * S.layer->scene.tile.w,
                 rect->h * S.layer->scene.tile.h,
                 ratio
             );
             ret = (SDL_FRect) {
-                r1.x + (rect->x - 1 + rect->anchor.x)*S.layer->scene.tile.w - rect->anchor.x*d.w,
-                r1.y + (rect->y - 1 + rect->anchor.y)*S.layer->scene.tile.h - rect->anchor.y*d.h,
+                p.x + (rect->x - 1 + rect->anchor.x)*S.layer->scene.tile.w - rect->anchor.x*d.w,
+                p.y + (rect->y - 1 + rect->anchor.y)*S.layer->scene.tile.h - rect->anchor.y*d.h,
                 d.w,
                 d.h
             };
@@ -264,17 +256,6 @@ static SDL_FRect _sdl_rect (
 ///////////////////////////////////////////////////////////////////////////////
 
 static void _rel_dim (SDL_FDim flt, Pico_Rel_Dim* to, const Pico_Abs_Rect* base) {
-    SDL_FRect r0;
-    if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (to->mode == 'w') ? S.win.dim.w : S.layer->scene.dim.w,
-            (to->mode == 'w') ? S.win.dim.h : S.layer->scene.dim.h,
-        };
-    } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
-    }
-    SDL_FRect r1 = _f1(to->up, r0, NULL);
     switch (to->mode) {
         case 'w': {
             SDL_FDim wflt = _dim_wld_to_win(flt);
@@ -286,10 +267,17 @@ static void _rel_dim (SDL_FDim flt, Pico_Rel_Dim* to, const Pico_Abs_Rect* base)
             to->w = flt.w;
             to->h = flt.h;
             break;
-        case '%':
-            to->w = flt.w / r1.w;
-            to->h = flt.h / r1.h;
+        case '%': {
+            SDL_FDim d;
+            if (base == NULL) {
+                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+            } else {
+                d = (SDL_FDim) { base->w, base->h };
+            }
+            to->w = flt.w / d.w;
+            to->h = flt.h / d.h;
             break;
+        }
         case '#':
             to->w = flt.w / S.layer->scene.tile.w;
             to->h = flt.h / S.layer->scene.tile.h;
@@ -300,36 +288,37 @@ static void _rel_dim (SDL_FDim flt, Pico_Rel_Dim* to, const Pico_Abs_Rect* base)
 }
 
 static void _rel_pos (SDL_FPoint flt, Pico_Rel_Pos* to, const Pico_Abs_Rect* base) {
-    SDL_FRect r0;
+    SDL_FPoint p;
     if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (to->mode == 'w') ? S.win.dim.w : S.layer->scene.dim.w,
-            (to->mode == 'w') ? S.win.dim.h : S.layer->scene.dim.h,
-        };
+        p = (SDL_FPoint) { 0, 0 };
     } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
+        p = (SDL_FPoint) { base->x, base->y };
     }
-    Pico_Rel_Rect* up = (Pico_Rel_Rect*) to->up;
-    SDL_FRect r1 = _f1(up, r0, NULL);
     switch (to->mode) {
         case 'w': {
             SDL_FPoint wflt = _pos_wld_to_win(flt);
-            to->x = wflt.x - r1.x + to->anchor.x;
-            to->y = wflt.y - r1.y + to->anchor.y;
+            to->x = wflt.x - p.x + to->anchor.x;
+            to->y = wflt.y - p.y + to->anchor.y;
             break;
         }
         case '!':
-            to->x = flt.x - r1.x + to->anchor.x;
-            to->y = flt.y - r1.y + to->anchor.y;
+            to->x = flt.x - p.x + to->anchor.x;
+            to->y = flt.y - p.y + to->anchor.y;
             break;
-        case '%':
-            to->x = (flt.x - r1.x + to->anchor.x) / r1.w;
-            to->y = (flt.y - r1.y + to->anchor.y) / r1.h;
+        case '%': {
+            SDL_FDim d;
+            if (base == NULL) {
+                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+            } else {
+                d = (SDL_FDim) { base->w, base->h };
+            }
+            to->x = (flt.x - p.x + to->anchor.x) / d.w;
+            to->y = (flt.y - p.y + to->anchor.y) / d.h;
             break;
+        }
         case '#':
-            to->x = (flt.x - r1.x) / S.layer->scene.tile.w + 1 - to->anchor.x;
-            to->y = (flt.y - r1.y) / S.layer->scene.tile.h + 1 - to->anchor.y;
+            to->x = (flt.x - p.x) / S.layer->scene.tile.w + 1 - to->anchor.x;
+            to->y = (flt.y - p.y) / S.layer->scene.tile.h + 1 - to->anchor.y;
             break;
         default:
             assert(0 && "invalid mode");
@@ -337,44 +326,46 @@ static void _rel_pos (SDL_FPoint flt, Pico_Rel_Pos* to, const Pico_Abs_Rect* bas
 }
 
 static void _rel_rect (SDL_FRect flt, Pico_Rel_Rect* to, const Pico_Abs_Rect* base) {
-    SDL_FRect r0;
+    SDL_FPoint p;
     if (base == NULL) {
-        r0 = (SDL_FRect) {
-            0, 0,
-            (to->mode == 'w') ? S.win.dim.w : S.layer->scene.dim.w,
-            (to->mode == 'w') ? S.win.dim.h : S.layer->scene.dim.h,
-        };
+        p = (SDL_FPoint) { 0, 0 };
     } else {
-        r0 = (SDL_FRect) { base->x, base->y, base->w, base->h };
+        p = (SDL_FPoint) { base->x, base->y };
     }
-    SDL_FRect r1 = _f1(to->up, r0, NULL);
     switch (to->mode) {
         case 'w': {
             SDL_FRect wflt = _rect_wld_to_win(flt);
             to->w = wflt.w;
             to->h = wflt.h;
-            to->x = wflt.x - r1.x + to->anchor.x * to->w;
-            to->y = wflt.y - r1.y + to->anchor.y * to->h;
+            to->x = wflt.x - p.x + to->anchor.x * to->w;
+            to->y = wflt.y - p.y + to->anchor.y * to->h;
             break;
         }
         case '!':
             to->w = flt.w;
             to->h = flt.h;
-            to->x = flt.x - r1.x + to->anchor.x * to->w;
-            to->y = flt.y - r1.y + to->anchor.y * to->h;
+            to->x = flt.x - p.x + to->anchor.x * to->w;
+            to->y = flt.y - p.y + to->anchor.y * to->h;
             break;
-        case '%':
-            to->w = flt.w / r1.w;
-            to->h = flt.h / r1.h;
-            to->x = (flt.x - r1.x + to->anchor.x * flt.w) / r1.w;
-            to->y = (flt.y - r1.y + to->anchor.y * flt.h) / r1.h;
+        case '%': {
+            SDL_FDim d;
+            if (base == NULL) {
+                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+            } else {
+                d = (SDL_FDim) { base->w, base->h };
+            }
+            to->w = flt.w / d.w;
+            to->h = flt.h / d.h;
+            to->x = (flt.x - p.x + to->anchor.x * flt.w) / d.w;
+            to->y = (flt.y - p.y + to->anchor.y * flt.h) / d.h;
             break;
+        }
         case '#':
             to->w = flt.w / (float)S.layer->scene.tile.w;
             to->h = flt.h / (float)S.layer->scene.tile.h;
-            to->x = (flt.x - r1.x) / S.layer->scene.tile.w + 1
+            to->x = (flt.x - p.x) / S.layer->scene.tile.w + 1
                     - to->anchor.x + to->anchor.x * to->w;
-            to->y = (flt.y - r1.y) / S.layer->scene.tile.h + 1
+            to->y = (flt.y - p.y) / S.layer->scene.tile.h + 1
                     - to->anchor.y + to->anchor.y * to->h;
             break;
         default:

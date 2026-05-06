@@ -63,7 +63,6 @@ typedef struct Pico_Rel_Rect {
         float w, h;
     };
     Pico_Anchor anchor;
-    struct Pico_Rel_Rect* up;
 } Pico_Rel_Rect;
 
 typedef struct {
@@ -71,7 +70,6 @@ typedef struct {
     struct {
         float w, h;
     };
-    struct Pico_Rel_Rect* up;
 } Pico_Rel_Dim;
 
 typedef struct {
@@ -80,7 +78,6 @@ typedef struct {
         float x, y;
     };
     Pico_Anchor anchor;
-    struct Pico_Rel_Rect* up;
 } Pico_Rel_Pos;
 
 typedef enum {
@@ -538,8 +535,7 @@ void pico_set_layer (const char* key);
 /// Symmetric to @ref pico_get_mouse: a Pos returned by `pico_get_mouse`
 /// (any mode) round-trips through `pico_set_mouse`.
 /// @param pos target position; `pos->mode` is one of '!' pixels,
-///        '%' percentage, '#' tiles, 'w' window. `pos->up` provides
-///        an optional reference-frame chain (NULL = current layer).
+///        '%' percentage, '#' tiles, 'w' window.
 /// @sa pico_get_mouse
 void pico_set_mouse (Pico_Rel_Pos* pos);
 

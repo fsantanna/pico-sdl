@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Style" });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48}, NULL });
+    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48} });
 
     // shapes used across tests
     Pico_Rel_Rect rect = {
@@ -23,10 +23,10 @@ int main (void) {
         '!', {30, 43}, PICO_ANCHOR_NW, NULL
     };
     Pico_Rel_Pos poly[] = {
-        {'!', {34, 26}, PICO_ANCHOR_NW, NULL},
-        {'!', {59, 30}, PICO_ANCHOR_NW, NULL},
-        {'!', {50, 43}, PICO_ANCHOR_NW, NULL},
-        {'!', {38, 43}, PICO_ANCHOR_NW, NULL},
+        {'!', {34, 26}, PICO_ANCHOR_NW},
+        {'!', {59, 30}, PICO_ANCHOR_NW},
+        {'!', {50, 43}, PICO_ANCHOR_NW},
+        {'!', {38, 43}, PICO_ANCHOR_NW},
     };
 
     puts("default fill");
