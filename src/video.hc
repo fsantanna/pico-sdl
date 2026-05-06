@@ -149,8 +149,9 @@ void pico_layer_video_mode (
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
+Pico_Video pico_get_video (const char* layer, const char* path, Pico_Rel_Rect* rect) {
     _pico_guard();
+    Pico_Layer* L = _pico_layer_null(layer);
     Pico_Layer_Video* vs =
         _pico_layer_video('=', path, path);
     pico_assert(vs != NULL);
@@ -169,7 +170,7 @@ Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
         Pico_Rel_Dim rel = {
             rect->mode, {rect->w, rect->h}, rect->up
         };
-        _sdl_dim(&rel, NULL, &info.dim);
+        _sdl_dim(L, &rel, NULL, &info.dim);
         rect->w = rel.w;
         rect->h = rel.h;
     }
@@ -238,7 +239,8 @@ int pico_set_video (const char* key, int frame) {
     return 1;
 }
 
-int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect) {
+int pico_output_draw_video (const char* layer, const char* path, Pico_Rel_Rect* rect) {
+    Pico_Layer* dst = _pico_layer_null(layer);
     Pico_Layer_Video* vs = _pico_layer_video('=', path, path);
     pico_assert(vs != NULL);
 
@@ -254,7 +256,7 @@ int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect) {
     }
 
     /* Draw */
-    _pico_output_draw_layer(&vs->base, rect);
+    _pico_output_draw_layer(dst, &vs->base, rect);
     return 1;
 }
 

@@ -197,74 +197,89 @@ void pico_input_loop (void);
 /// @{
 
 /// @brief Clears screen with color set by @ref pico_set_effect_color.
-void pico_output_clear (void);
+/// @param layer layer key (NULL = current layer)
+void pico_output_clear (const char* layer);
 
 /// @brief Draws an RGBA pixmap.
+/// @param layer layer key (NULL = current layer)
 /// @param key layer key for caching (required)
 /// @param dim pixmap dimensions in pixels
 /// @param pixmap the RGBA pixel data
 /// @param rect drawing rectangle (mode determines coordinate interpretation)
 /// @sa pico_output_draw_image
-void pico_output_draw_pixmap (const char* key, Pico_Abs_Dim dim,
+void pico_output_draw_pixmap (const char* layer,
+                              const char* key, Pico_Abs_Dim dim,
                               const Pico_Color pixmap[],
                               const Pico_Rel_Rect* rect);
 
 /// @brief Draws an image.
+/// @param layer layer key (NULL = current layer)
 /// @param path path to the image file
 /// @param rect target position and dimension (mode determines coordinates)
 /// @sa pico_output_draw_pixmap
-void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect);
+void pico_output_draw_image (const char* layer, const char* path, Pico_Rel_Rect* rect);
 
 /// @brief Draws a line.
+/// @param layer layer key (NULL = current layer)
 /// @param p1 first endpoint position (mode determines coordinates)
 /// @param p2 second endpoint position (mode determines coordinates)
-void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2);
+void pico_output_draw_line (const char* layer, Pico_Rel_Pos* p1, Pico_Rel_Pos* p2);
 
 /// @brief Draws a single pixel.
+/// @param layer layer key (NULL = current layer)
 /// @param pos drawing position (mode determines coordinates)
-void pico_output_draw_pixel (Pico_Rel_Pos* pos);
+void pico_output_draw_pixel (const char* layer, Pico_Rel_Pos* pos);
 
 /// @brief Draws a batch of pixels.
+/// @param layer layer key (NULL = current layer)
 /// @param n number of positions
 /// @param ps array of positions (mode determines coordinates)
-void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
+void pico_output_draw_pixels (const char* layer, int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws a layer onto the current layer.
-/// @param key layer key (must exist)
+/// @param layer destination layer key (NULL = current layer)
+/// @param key source layer key (must exist)
 /// @param rect target position and dimension (mode determines coordinates)
-void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect);
+void pico_output_draw_layer (const char* layer, const char* key, Pico_Rel_Rect* rect);
 
 /// @brief Draws a rectangle.
+/// @param layer layer key (NULL = current layer)
 /// @param rect rectangle to draw (mode determines coordinates)
-void pico_output_draw_rect (Pico_Rel_Rect* rect);
+void pico_output_draw_rect (const char* layer, Pico_Rel_Rect* rect);
 
 /// @brief Draws a triangle.
+/// @param layer layer key (NULL = current layer)
 /// @param p1 first vertex position (mode determines coordinates)
 /// @param p2 second vertex position (mode determines coordinates)
 /// @param p3 third vertex position (mode determines coordinates)
-void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3);
+void pico_output_draw_tri (const char* layer, Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3);
 
 /// @brief Draws an ellipse.
+/// @param layer layer key (NULL = current layer)
 /// @param rect bounding rectangle (mode determines coordinates)
-void pico_output_draw_oval (Pico_Rel_Rect* rect);
+void pico_output_draw_oval (const char* layer, Pico_Rel_Rect* rect);
 
 /// @brief Draws a polygon.
+/// @param layer layer key (NULL = current layer)
 /// @param n number of vertices
 /// @param ps array of vertex positions (mode determines coordinates)
-void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps);
+void pico_output_draw_poly (const char* layer, int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws text (shared caching by text content).
+/// @param layer layer key (NULL = current layer)
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
-void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect);
+void pico_output_draw_text (const char* layer, const char* text, Pico_Rel_Rect* rect);
 
 /// @brief Draws text with explicit realm mode and layer key.
+/// @param layer layer key (NULL = current layer)
 /// @param mode realm mode ('!' exclusive, '=' shared,
 ///             '~' replace)
 /// @param key layer key
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
 void pico_output_draw_text_mode (
+    const char* layer,
     int mode,
     const char* key, const char* text,
     Pico_Rel_Rect* rect
@@ -283,10 +298,11 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
 
 /// @brief Draws a video frame (all-in-one).
 /// Auto-syncs to elapsed time internally.
+/// @param layer layer key (NULL = current layer)
 /// @param path path to the Y4M video file
 /// @param rect target position and dimension
 /// @return 1 if frame drawn, or 0 at EOF
-int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect);
+int pico_output_draw_video (const char* layer, const char* path, Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file
@@ -316,10 +332,11 @@ PICO_STYLE  pico_get_pencil_style (const char* layer);
 int pico_get_expert (int* fps);
 
 /// @brief Gets the dimensions of the given image.
+/// @param layer layer key (NULL = current layer)
 /// @param path image filepath
 /// @param dim optional dim with w/h to complete (NULL returns raw dimensions)
 /// @return absolute dimensions (missing w or h filled based on aspect ratio)
-Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
+Pico_Abs_Dim pico_get_image (const char* layer, const char* path, Pico_Rel_Dim* dim);
 
 /// @brief Gets current layer key.
 /// @return layer key (NULL = main layer)
@@ -338,12 +355,13 @@ int           pico_get_effect_grid     (const char* layer);
 Pico_Rot      pico_get_effect_rotate   (const char* layer);
 
 /// @brief Gets video properties.
+/// @param layer layer key (NULL = current layer)
 /// @param path path to the Y4M video file
 /// @param rect optional rect with w/h to complete (NULL ok)
 /// @return video properties (dim, fps, frame, done)
 /// @sa pico_set_video
 /// @sa pico_get_image
-Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
+Pico_Video pico_get_video (const char* layer, const char* path, Pico_Rel_Rect* rect);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -412,20 +430,24 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a layer from text (exclusive mode).
+/// @param layer layer key for font/color source (NULL = current layer)
 /// @param key layer key (must not be NULL or start with '/')
 /// @param height text height in pixels
 /// @param text the text to render
-/// @note Uses current font and draw color
-void pico_layer_text (const char* up, const char* key,
+/// @note Uses font and draw color of @p layer
+void pico_layer_text (const char* layer,
+    const char* up, const char* key,
     int height, const char* text);
 
 /// @brief Creates a layer from text.
+/// @param layer layer key for font/color source (NULL = current layer)
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param key layer key (must not be NULL or start with '/')
 /// @param height text height in pixels
 /// @param text the text to render
-/// @note Uses current font and draw color
-void pico_layer_text_mode (int mode, const char* up, const char* key,
+/// @note Uses font and draw color of @p layer
+void pico_layer_text_mode (const char* layer,
+    int mode, const char* up, const char* key,
     int height, const char* text);
 
 /// @brief Creates a video layer from a Y4M file (exclusive mode).
@@ -449,26 +471,29 @@ void pico_layer_video_mode (int mode,
 Pico_Keyboard pico_get_keyboard (void);
 
 /// @brief Gets the mouse state.
+/// @param layer layer key (NULL = current layer)
 /// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window)
 /// @param rect optional target rect for inverse transform
 /// @return mouse state with position and button flags
 /// @sa pico_set_mouse
-Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect);
+Pico_Mouse pico_get_mouse (const char* layer, char mode, Pico_Rel_Rect* rect);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds
 Uint32 pico_get_now (void);
 
 /// @brief Gets the dimensions of the given text (shared caching).
+/// @param layer layer key (NULL = current layer)
 /// @param text text to measure
 /// @param dim dim with h for font size (mode '!' or '%'),
 ///            w filled in
 /// @return absolute dimensions
 /// @sa pico_get_text_mode
-Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
+Pico_Abs_Dim pico_get_text (const char* layer, const char* text, Pico_Rel_Dim* dim);
 
 /// @brief Gets text dimensions with explicit realm mode and
 ///        layer key.
+/// @param layer layer key (NULL = current layer)
 /// @param mode realm mode ('!' exclusive, '=' shared,
 ///             '~' replace)
 /// @param key layer key
@@ -478,6 +503,7 @@ Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
 /// @return absolute dimensions
 /// @sa pico_get_text
 Pico_Abs_Dim pico_get_text_mode (
+    const char* layer,
     int mode,
     const char* key, const char* text,
     Pico_Rel_Dim* dim
@@ -537,11 +563,12 @@ void pico_set_layer (const char* key);
 /// @brief Warps the mouse cursor to the given relative position.
 /// Symmetric to @ref pico_get_mouse: a Pos returned by `pico_get_mouse`
 /// (any mode) round-trips through `pico_set_mouse`.
+/// @param layer layer key (NULL = current layer)
 /// @param pos target position; `pos->mode` is one of '!' pixels,
 ///        '%' percentage, '#' tiles, 'w' window. `pos->up` provides
 ///        an optional reference-frame chain (NULL = current layer).
 /// @sa pico_get_mouse
-void pico_set_mouse (Pico_Rel_Pos* pos);
+void pico_set_mouse (const char* layer, Pico_Rel_Pos* pos);
 
 /// @brief Sets the entire show state of a layer.
 /// @param layer layer key (NULL = current layer)
@@ -591,103 +618,122 @@ void pico_set_window_title (const char* title);
 /// @{
 
 /// @brief Converts a relative dimension to absolute coordinates.
+/// @param layer layer key (NULL = current layer)
 /// @param dim relative dimension to convert
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @return absolute dimension in logical pixels
 /// @sa pico_cv_rect_rel_abs
-Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
+Pico_Abs_Dim pico_cv_dim_rel_abs (const char* layer, Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
 
 /// @brief Converts an absolute dimension to relative coordinates.
+/// @param layer layer key (NULL = current layer)
 /// @param fr absolute dimension to convert
 /// @param to relative dimension template (mode, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 void pico_cv_dim_abs_rel (
+    const char* layer,
     const Pico_Abs_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts a relative dimension to another relative mode.
+/// @param layer layer key (NULL = current layer)
 /// @param fr relative dimension to convert
 /// @param to relative dimension template (mode, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 void pico_cv_dim_rel_rel (
+    const char* layer,
     Pico_Rel_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts a relative position to absolute coordinates.
+/// @param layer layer key (NULL = current layer)
 /// @param pos relative position to convert
 /// @param base reference rectangle to use as basis (NULL uses world dimensions)
 /// @return absolute position in logical pixels
 /// @sa pico_cv_rect_rel_abs
-Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
+Pico_Abs_Pos pico_cv_pos_rel_abs (const char* layer, const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative position to window (physical) coordinates.
+/// @param layer layer key (NULL = current layer)
 /// @param pos relative position to convert
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @return physical pixel point in window coordinates
-SDL_Point pico_cv_pos_rel_win (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
+SDL_Point pico_cv_pos_rel_win (const char* layer, const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
 
 /// @brief Converts window (physical) coordinates to a relative position.
+/// @param layer layer key (NULL = current layer)
 /// @param phy physical pixel point in window coordinates
 /// @param to relative position template (mode, anchor, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
-void pico_cv_pos_win_rel (SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base);
+void pico_cv_pos_win_rel (const char* layer, SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative rectangle to absolute coordinates.
+/// @param layer layer key (NULL = current layer)
 /// @param rect relative rectangle to convert
 /// @param base reference rectangle to use as basis (NULL uses world dimensions)
 /// @return absolute rectangle in logical pixels
 /// @sa pico_cv_pos_rel_abs
-Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base);
+Pico_Abs_Rect pico_cv_rect_rel_abs (const char* layer, const Pico_Rel_Rect* rect, Pico_Abs_Rect* base);
 
 /// @brief Converts an absolute position to relative coordinates.
+/// @param layer layer key (NULL = current layer)
 /// @param fr absolute position to convert
 /// @param to relative position template (mode, anchor, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @sa pico_cv_pos_rel_abs
 void pico_cv_pos_abs_rel (
+    const char* layer,
     const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts a relative position to another relative mode.
+/// @param layer layer key (NULL = current layer)
 /// @param fr relative position to convert
 /// @param to relative position template (mode, anchor, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @sa pico_cv_pos_abs_rel
 void pico_cv_pos_rel_rel (
+    const char* layer,
     const Pico_Rel_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts an absolute rectangle to relative coordinates.
+/// @param layer layer key (NULL = current layer)
 /// @param fr absolute rectangle to convert
 /// @param to relative rectangle template (mode, anchor, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @sa pico_cv_rect_rel_abs
 void pico_cv_rect_abs_rel (
+    const char* layer,
     const Pico_Abs_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
 );
 
 /// @brief Converts a relative rectangle to another relative mode.
+/// @param layer layer key (NULL = current layer)
 /// @param fr relative rectangle to convert
 /// @param to relative rectangle template (mode, anchor, up must be set)
 /// @param base reference rectangle (NULL uses world dimensions)
 /// @sa pico_cv_rect_abs_rel
 void pico_cv_rect_rel_rel (
+    const char* layer,
     const Pico_Rel_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
 );
 
 /// @brief Checks if a point is inside a rectangle.
+/// @param layer layer key (NULL = current layer)
 /// @param pos point to test (mode determines coordinates)
 /// @param rect rectangle to test against (mode determines coordinates)
 /// @return 1 if pos is inside rect, or 0 otherwise
 /// @sa pico_vs_rect_rect
-int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
+int pico_vs_pos_rect (const char* layer, Pico_Rel_Pos* pos, Pico_Rel_Rect* rect);
 
 /// @brief Checks if two rectangles overlap.
+/// @param layer layer key (NULL = current layer)
 /// @param r1 first rectangle (mode determines coordinates)
 /// @param r2 second rectangle (mode determines coordinates)
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_vs_pos_rect
-int pico_vs_rect_rect (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2);
+int pico_vs_rect_rect (const char* layer, Pico_Rel_Rect* r1, Pico_Rel_Rect* r2);
 
 /// @brief Makes a color darker by the specified percentage.
 /// @param clr the original color
