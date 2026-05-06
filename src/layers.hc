@@ -41,10 +41,10 @@ static Pico_Layer* _pico_layer_image (
     int mode, const char* key, const char* path
 );
 static Pico_Layer* _pico_layer_text (
-    int mode, const char* key, int height, const char* text
+    Pico_Layer* L, int mode, const char* key, int height, const char* text
 );
 static void _pico_output_draw_layer (
-    Pico_Layer* layer, Pico_Rel_Rect* rect
+    Pico_Layer* dst, Pico_Layer* src, Pico_Rel_Rect* rect
 );
 
 #endif // PICO_LAYERS_HC
@@ -82,7 +82,7 @@ static void _layer_attach (const char* up, const char* dn) {
     }
 }
 
-static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
+static void _pico_output_draw_layer (Pico_Layer*, Pico_Layer*, Pico_Rel_Rect*);
 
 static void _layer_traverse (Pico_Layer* UP) {
     const char* cur = UP->hier.dn.fst;
@@ -140,15 +140,16 @@ static Pico_Layer* _pico_layer_image (
 }
 
 static Pico_Layer* _pico_layer_text (
-    int mode, const char* key, int height, const char* text
+    Pico_Layer* L, int mode, const char* key, int height, const char* text
 ) {
+    assert(L != NULL);
     assert(text!=NULL && text[0]!='\0' && "text required");
 
     const char* str;
     char* str_buf = NULL;
     if (key == NULL) {
-        const char* font = S.layer->pencil.font;
-        Pico_Color clr = S.layer->pencil.color;
+        const char* font = L->pencil.font;
+        Pico_Color clr = L->pencil.color;
         const char* font_str = font ? font : "null";
         int buflen = strlen("/text/") + strlen(font_str) + 1
             + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
@@ -160,7 +161,7 @@ static Pico_Layer* _pico_layer_text (
         str = key;
     }
 
-    _alloc_text_t ctx = { height, text };
+    _alloc_text_t ctx = { L, height, text };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(str)+1, str,
         _free_layer, _alloc_layer_text, &ctx
@@ -172,36 +173,38 @@ static Pico_Layer* _pico_layer_text (
 ///////////////////////////////////////////////////////////////////////////////
 
 static void _pico_output_draw_layer (
-    Pico_Layer* layer, Pico_Rel_Rect* rect
+    Pico_Layer* dst, Pico_Layer* src, Pico_Rel_Rect* rect
 ) {
-    // blit layer onto current render target
+    assert(dst != NULL);
+    assert(src != NULL);
+    // blit src onto current render target (dst is the destination context)
     if (rect == NULL) {
-        rect = &layer->scene.dst;
+        rect = &src->scene.dst;
     }
     Pico_Abs_Dim* dp = NULL;
     if (rect->w == 0 || rect->h == 0) {
-        dp = &layer->scene.dim;
+        dp = &src->scene.dim;
     }
-    SDL_FRect rf = _sdl_rect(rect, NULL, dp);
-    SDL_Rect dst = _abs_rect(&rf);
+    SDL_FRect rf = _sdl_rect(dst, rect, NULL, dp);
+    SDL_Rect xdst = _abs_rect(&rf);
 
-    Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ? &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs (
-        &layer->scene.src,
+    Pico_Abs_Dim* sup = (src->type == PICO_LAYER_SUB) ? &((Pico_Layer_Sub*)src)->sup : &src->scene.dim;
+    Pico_Abs_Rect xsrc = pico_cv_rect_rel_abs (
+        src->name, &src->scene.src,
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-    SDL_SetTextureAlphaMod(layer->tex, S.layer->pencil.color.a*layer->effect.alpha/255);
+    SDL_SetTextureAlphaMod(src->tex, dst->pencil.color.a*src->effect.alpha/255);
     SDL_Point center = {
-        dst.w * layer->effect.rotate.anchor.x,
-        dst.h * layer->effect.rotate.anchor.y
+        xdst.w * src->effect.rotate.anchor.x,
+        xdst.h * src->effect.rotate.anchor.y
     };
-    SDL_RenderCopyEx(G.ren, layer->tex, &src, &dst,
-                     layer->effect.rotate.angle, &center,
-                     layer->effect.flip);
+    SDL_RenderCopyEx(G.ren, src->tex, &xsrc, &xdst,
+                     src->effect.rotate.angle, &center,
+                     src->effect.flip);
 
-    if (layer->effect.grid) {
-        _show_tile(&layer->scene, dst);
+    if (src->effect.grid) {
+        _show_tile(src, &src->scene, xdst);
     }
 
     _pico_output_present(0);
