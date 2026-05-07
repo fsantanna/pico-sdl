@@ -24,20 +24,22 @@ pico.output.clear()
 pico.output.draw.layer("A", r)
 pico.check("mouse-rect-click-01")
 
-btn1.up = r
-btn2.up = r
-btn3.up = r
+-- re-express buttons within r (layer's composite rect) for collision
+-- against mouse sampled in scene coords
+local b1 = pico.xin.rect(r, btn1)
+local b2 = pico.xin.rect(r, btn2)
+local b3 = pico.xin.rect(r, btn3)
 
 -- no collision
 print("no collision (394,355)")
 do
     pico.set.mouse({'w', x=394, y=355})
-    local pct = pico.get.mouse('%', r)
-    local pos = {'%', x=pct.x, y=pct.y, up=r}
+    local pct = pico.get.mouse('%')
+    local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos_rect(pos, btn1))
-    assert(not pico.vs.pos_rect(pos, btn2))
-    assert(not pico.vs.pos_rect(pos, btn3))
+    assert(not pico.vs.pos_rect(pos, b1))
+    assert(not pico.vs.pos_rect(pos, b2))
+    assert(not pico.vs.pos_rect(pos, b3))
     pico.set.pencil { color='red' }
     pico.output.draw.pixel({'w', x=394, y=355})
     pico.check("mouse-rect-click-02")
@@ -47,12 +49,12 @@ end
 print("click 3 (457,431)")
 do
     pico.set.mouse({'w', x=457, y=431})
-    local pct = pico.get.mouse('%', r)
-    local pos = {'%', x=pct.x, y=pct.y, up=r}
+    local pct = pico.get.mouse('%')
+    local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos_rect(pos, btn1))
-    assert(not pico.vs.pos_rect(pos, btn2))
-    assert(    pico.vs.pos_rect(pos, btn3))
+    assert(not pico.vs.pos_rect(pos, b1))
+    assert(not pico.vs.pos_rect(pos, b2))
+    assert(    pico.vs.pos_rect(pos, b3))
     pico.set.pencil { color='green' }
     pico.output.draw.pixel({'w', x=457, y=431})
     pico.check("mouse-rect-click-03")
@@ -62,12 +64,12 @@ end
 print("click 1 (362,405)")
 do
     pico.set.mouse({'w', x=362, y=405})
-    local pct = pico.get.mouse('%', r)
-    local pos = {'%', x=pct.x, y=pct.y, up=r}
+    local pct = pico.get.mouse('%')
+    local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(    pico.vs.pos_rect(pos, btn1))
-    assert(not pico.vs.pos_rect(pos, btn2))
-    assert(not pico.vs.pos_rect(pos, btn3))
+    assert(    pico.vs.pos_rect(pos, b1))
+    assert(not pico.vs.pos_rect(pos, b2))
+    assert(not pico.vs.pos_rect(pos, b3))
     pico.set.pencil { color='green' }
     pico.output.draw.pixel({'w', x=362, y=405})
     pico.check("mouse-rect-click-04")
@@ -77,12 +79,12 @@ end
 print("click 2 (419,392)")
 do
     pico.set.mouse({'w', x=419, y=392})
-    local pct = pico.get.mouse('%', r)
-    local pos = {'%', x=pct.x, y=pct.y, up=r}
+    local pct = pico.get.mouse('%')
+    local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos_rect(pos, btn1))
-    assert(    pico.vs.pos_rect(pos, btn2))
-    assert(not pico.vs.pos_rect(pos, btn3))
+    assert(not pico.vs.pos_rect(pos, b1))
+    assert(    pico.vs.pos_rect(pos, b2))
+    assert(not pico.vs.pos_rect(pos, b3))
     pico.set.pencil { color='green' }
     pico.output.draw.pixel({'w', x=419, y=392})
     pico.check("mouse-rect-click-05")

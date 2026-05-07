@@ -544,6 +544,64 @@ static int l_cv_rect (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static void L_push_anchor (lua_State* L, Pico_Anchor a) {
+    lua_newtable(L);
+    lua_pushnumber(L, a.x); lua_setfield(L, -2, "x");
+    lua_pushnumber(L, a.y); lua_setfield(L, -2, "y");
+}
+
+static void L_push_mode (lua_State* L, char mode) {
+    char m[2] = { mode, '\0' };
+    lua_pushstring(L, m);
+    lua_seti(L, -2, 1);
+}
+
+static int l_in_rect (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // out | in
+    luaL_checktype(L, 2, LUA_TTABLE);
+    Pico_Rel_Rect* out = C_rel_rect(L, 1);
+    Pico_Rel_Rect* in  = C_rel_rect(L, 2);
+    Pico_Rel_Rect ret = pico_in_rect(out, in);
+    lua_newtable(L);
+    L_push_mode(L, ret.mode);
+    lua_pushnumber(L, ret.x); lua_setfield(L, -2, "x");
+    lua_pushnumber(L, ret.y); lua_setfield(L, -2, "y");
+    lua_pushnumber(L, ret.w); lua_setfield(L, -2, "w");
+    lua_pushnumber(L, ret.h); lua_setfield(L, -2, "h");
+    L_push_anchor(L, ret.anchor); lua_setfield(L, -2, "anchor");
+    return 1;
+}
+
+static int l_in_pos (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // out | in
+    luaL_checktype(L, 2, LUA_TTABLE);
+    Pico_Rel_Rect* out = C_rel_rect(L, 1);
+    Pico_Rel_Pos*  in  = C_rel_pos(L, 2);
+    Pico_Rel_Pos ret = pico_in_pos(out, in);
+    lua_newtable(L);
+    L_push_mode(L, ret.mode);
+    lua_pushnumber(L, ret.x); lua_setfield(L, -2, "x");
+    lua_pushnumber(L, ret.y); lua_setfield(L, -2, "y");
+    L_push_anchor(L, ret.anchor); lua_setfield(L, -2, "anchor");
+    return 1;
+}
+
+static int l_in_dim (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TTABLE);       // out | in
+    luaL_checktype(L, 2, LUA_TTABLE);
+    L_dim_default_wh(L, 2);
+    Pico_Rel_Rect* out = C_rel_rect(L, 1);
+    Pico_Rel_Dim*  in  = C_rel_dim(L, 2);
+    Pico_Rel_Dim ret = pico_in_dim(out, in);
+    lua_newtable(L);
+    L_push_mode(L, ret.mode);
+    lua_pushnumber(L, ret.w); lua_setfield(L, -2, "w");
+    lua_pushnumber(L, ret.h); lua_setfield(L, -2, "h");
+    return 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 static int l_vs_pos_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // pos | rect
     luaL_checktype(L, 2, LUA_TTABLE);
@@ -1487,6 +1545,13 @@ static const luaL_Reg ll_cv[] = {
     { NULL, NULL }
 };
 
+static const luaL_Reg ll_in[] = {
+    { "dim",  l_in_dim  },
+    { "pos",  l_in_pos  },
+    { "rect", l_in_rect },
+    { NULL, NULL }
+};
+
 static const luaL_Reg ll_vs[] = {
     { "pos_rect",  l_vs_pos_rect  },
     { "rect_rect", l_vs_rect_rect },
@@ -1587,6 +1652,9 @@ int luaopen_pico_native (lua_State* L) {
 
     luaL_newlib(L, ll_cv);                  // pico | cv
     lua_setfield(L, -2, "cv");              // pico
+
+    luaL_newlib(L, ll_in);                  // pico | xin
+    lua_setfield(L, -2, "xin");             // pico
 
     luaL_newlib(L, ll_vs);                  // pico | vs
     lua_setfield(L, -2, "vs");              // pico
