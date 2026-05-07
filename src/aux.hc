@@ -42,9 +42,9 @@ static SDL_FRect _f_pct (
 
 static SDL_FDim _dim_win_to_wld (SDL_FDim win) {
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->scene.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.win.dim.w, G.win.dim.h}
     );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->scene.src, NULL);
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
     return (SDL_FDim) {
         win.w * src.w / (float)dst.w, win.h * src.h / (float)dst.h
     };
@@ -52,9 +52,9 @@ static SDL_FDim _dim_win_to_wld (SDL_FDim win) {
 
 static SDL_FDim _dim_wld_to_win (SDL_FDim wld) {
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->scene.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.win.dim.w, G.win.dim.h}
     );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->scene.src, NULL);
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
     return (SDL_FDim) {
         wld.w * dst.w / (float)src.w, wld.h * dst.h / (float)src.h
     };
@@ -62,9 +62,9 @@ static SDL_FDim _dim_wld_to_win (SDL_FDim wld) {
 
 static SDL_FPoint _pos_win_to_wld (SDL_FPoint win) {
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->scene.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.win.dim.w, G.win.dim.h}
     );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->scene.src, NULL);
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
     float rx = (win.x - dst.x) / (float)dst.w;
     float ry = (win.y - dst.y) / (float)dst.h;
     return (SDL_FPoint) { src.x + rx*src.w, src.y + ry*src.h };
@@ -72,9 +72,9 @@ static SDL_FPoint _pos_win_to_wld (SDL_FPoint win) {
 
 static SDL_FPoint _pos_wld_to_win (SDL_FPoint wld) {
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &S.layer->scene.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.win.dim.w, G.win.dim.h}
     );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&S.layer->scene.src, NULL);
+    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
     float rx = (wld.x - src.x) / (float)src.w;
     float ry = (wld.y - src.y) / (float)src.h;
     return (SDL_FPoint) { dst.x + rx*dst.w, dst.y + ry*dst.h };
@@ -118,7 +118,7 @@ static SDL_FDim _sdl_dim (
         case '%': {
             SDL_FDim d;
             if (base == NULL) {
-                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+                d = (SDL_FDim) { G.layer->scene.dim.w, G.layer->scene.dim.h };
             } else {
                 d = (SDL_FDim) { base->w, base->h };
             }
@@ -128,9 +128,9 @@ static SDL_FDim _sdl_dim (
             break;
         }
         case '#':
-            ret = _f_rat(dim->w * S.layer->scene.tile.w, dim->h * S.layer->scene.tile.h, ratio);
-            if (dim->w == 0) dim->w = ret.w / S.layer->scene.tile.w;
-            if (dim->h == 0) dim->h = ret.h / S.layer->scene.tile.h;
+            ret = _f_rat(dim->w * G.layer->scene.tile.w, dim->h * G.layer->scene.tile.h, ratio);
+            if (dim->w == 0) dim->w = ret.w / G.layer->scene.tile.w;
+            if (dim->h == 0) dim->h = ret.h / G.layer->scene.tile.h;
             break;
         default:
             assert(0 && "invalid mode");
@@ -167,7 +167,7 @@ static SDL_FPoint _sdl_pos (
         case '%': {
             SDL_FDim d;
             if (base == NULL) {
-                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+                d = (SDL_FDim) { G.layer->scene.dim.w, G.layer->scene.dim.h };
             } else {
                 d = (SDL_FDim) { base->w, base->h };
             }
@@ -179,8 +179,8 @@ static SDL_FPoint _sdl_pos (
         }
         case '#':
             ret = (SDL_FPoint) {
-                p.x + (pos->x - 1 + pos->anchor.x)*S.layer->scene.tile.w,
-                p.y + (pos->y - 1 + pos->anchor.y)*S.layer->scene.tile.h,
+                p.x + (pos->x - 1 + pos->anchor.x)*G.layer->scene.tile.w,
+                p.y + (pos->y - 1 + pos->anchor.y)*G.layer->scene.tile.h,
             };
             break;
         default:
@@ -224,7 +224,7 @@ static SDL_FRect _sdl_rect (
         case '%': {
             SDL_FDim d;
             if (base == NULL) {
-                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+                d = (SDL_FDim) { G.layer->scene.dim.w, G.layer->scene.dim.h };
             } else {
                 d = (SDL_FDim) { base->w, base->h };
             }
@@ -233,13 +233,13 @@ static SDL_FRect _sdl_rect (
         }
         case '#': {
             SDL_FDim d = _f_rat (
-                rect->w * S.layer->scene.tile.w,
-                rect->h * S.layer->scene.tile.h,
+                rect->w * G.layer->scene.tile.w,
+                rect->h * G.layer->scene.tile.h,
                 ratio
             );
             ret = (SDL_FRect) {
-                p.x + (rect->x - 1 + rect->anchor.x)*S.layer->scene.tile.w - rect->anchor.x*d.w,
-                p.y + (rect->y - 1 + rect->anchor.y)*S.layer->scene.tile.h - rect->anchor.y*d.h,
+                p.x + (rect->x - 1 + rect->anchor.x)*G.layer->scene.tile.w - rect->anchor.x*d.w,
+                p.y + (rect->y - 1 + rect->anchor.y)*G.layer->scene.tile.h - rect->anchor.y*d.h,
                 d.w,
                 d.h
             };
@@ -270,7 +270,7 @@ static void _rel_dim (SDL_FDim flt, Pico_Rel_Dim* to, const Pico_Abs_Rect* base)
         case '%': {
             SDL_FDim d;
             if (base == NULL) {
-                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+                d = (SDL_FDim) { G.layer->scene.dim.w, G.layer->scene.dim.h };
             } else {
                 d = (SDL_FDim) { base->w, base->h };
             }
@@ -279,8 +279,8 @@ static void _rel_dim (SDL_FDim flt, Pico_Rel_Dim* to, const Pico_Abs_Rect* base)
             break;
         }
         case '#':
-            to->w = flt.w / S.layer->scene.tile.w;
-            to->h = flt.h / S.layer->scene.tile.h;
+            to->w = flt.w / G.layer->scene.tile.w;
+            to->h = flt.h / G.layer->scene.tile.h;
             break;
         default:
             assert(0 && "invalid mode");
@@ -308,7 +308,7 @@ static void _rel_pos (SDL_FPoint flt, Pico_Rel_Pos* to, const Pico_Abs_Rect* bas
         case '%': {
             SDL_FDim d;
             if (base == NULL) {
-                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+                d = (SDL_FDim) { G.layer->scene.dim.w, G.layer->scene.dim.h };
             } else {
                 d = (SDL_FDim) { base->w, base->h };
             }
@@ -317,8 +317,8 @@ static void _rel_pos (SDL_FPoint flt, Pico_Rel_Pos* to, const Pico_Abs_Rect* bas
             break;
         }
         case '#':
-            to->x = (flt.x - p.x) / S.layer->scene.tile.w + 1 - to->anchor.x;
-            to->y = (flt.y - p.y) / S.layer->scene.tile.h + 1 - to->anchor.y;
+            to->x = (flt.x - p.x) / G.layer->scene.tile.w + 1 - to->anchor.x;
+            to->y = (flt.y - p.y) / G.layer->scene.tile.h + 1 - to->anchor.y;
             break;
         default:
             assert(0 && "invalid mode");
@@ -350,7 +350,7 @@ static void _rel_rect (SDL_FRect flt, Pico_Rel_Rect* to, const Pico_Abs_Rect* ba
         case '%': {
             SDL_FDim d;
             if (base == NULL) {
-                d = (SDL_FDim) { S.layer->scene.dim.w, S.layer->scene.dim.h };
+                d = (SDL_FDim) { G.layer->scene.dim.w, G.layer->scene.dim.h };
             } else {
                 d = (SDL_FDim) { base->w, base->h };
             }
@@ -361,11 +361,11 @@ static void _rel_rect (SDL_FRect flt, Pico_Rel_Rect* to, const Pico_Abs_Rect* ba
             break;
         }
         case '#':
-            to->w = flt.w / (float)S.layer->scene.tile.w;
-            to->h = flt.h / (float)S.layer->scene.tile.h;
-            to->x = (flt.x - p.x) / S.layer->scene.tile.w + 1
+            to->w = flt.w / (float)G.layer->scene.tile.w;
+            to->h = flt.h / (float)G.layer->scene.tile.h;
+            to->x = (flt.x - p.x) / G.layer->scene.tile.w + 1
                     - to->anchor.x + to->anchor.x * to->w;
-            to->y = (flt.y - p.y) / S.layer->scene.tile.h + 1
+            to->y = (flt.y - p.y) / G.layer->scene.tile.h + 1
                     - to->anchor.y + to->anchor.y * to->h;
             break;
         default:

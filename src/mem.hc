@@ -180,8 +180,8 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
 }
 
 static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
-    SDL_Color c = { S.layer->pencil.color.r, S.layer->pencil.color.g, S.layer->pencil.color.b, 0xFF };
-    TTF_Font* ttf = _font_get(S.layer->pencil.font, height);
+    SDL_Color c = { G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, 0xFF };
+    TTF_Font* ttf = _font_get(G.layer->pencil.font, height);
     SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);

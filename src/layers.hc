@@ -76,8 +76,8 @@ static void _layer_attach (const char* up, const char* dn) {
 static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
 
 static void _layer_traverse (Pico_Layer* UP) {
-    Pico_Layer* old = S.layer;
-    S.layer = UP;
+    Pico_Layer* old = G.layer;
+    G.layer = UP;
     const char* cur = UP->hier.dn.fst;
     while (cur != NULL) {
         Pico_Layer* CUR = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
@@ -98,7 +98,7 @@ static void _layer_traverse (Pico_Layer* UP) {
         }
         cur = CUR->hier.nxt;
     }
-    S.layer = old;
+    G.layer = old;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -141,8 +141,8 @@ static Pico_Layer* _pico_layer_text (
     const char* str;
     char* str_buf = NULL;
     if (key == NULL) {
-        const char* font = S.layer->pencil.font;
-        Pico_Color clr = S.layer->pencil.color;
+        const char* font = G.layer->pencil.font;
+        Pico_Color clr = G.layer->pencil.color;
         const char* font_str = font ? font : "null";
         int buflen = strlen("/text/") + strlen(font_str) + 1
             + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
@@ -185,7 +185,7 @@ static void _pico_output_draw_layer (
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-    SDL_SetTextureAlphaMod(layer->tex, S.layer->pencil.color.a*layer->effect.alpha/255);
+    SDL_SetTextureAlphaMod(layer->tex, G.layer->pencil.color.a*layer->effect.alpha/255);
     SDL_Point center = {
         dst.w * layer->effect.rotate.anchor.x,
         dst.h * layer->effect.rotate.anchor.y
