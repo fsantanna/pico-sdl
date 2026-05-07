@@ -170,7 +170,7 @@ void pico_cv_rect_rel_rel (
 // IN: compose child onto parent, return flat rel
 ///////////////////////////////////////////////////////////////////////////////
 
-Pico_Rel_Rect pico_in_rect (const Pico_Rel_Rect* in, const Pico_Rel_Rect* out) {
+Pico_Rel_Rect pico_in_rect (const Pico_Rel_Rect* out, const Pico_Rel_Rect* in) {
     Pico_Abs_Rect out_abs = pico_cv_rect_rel_abs(out, NULL);
     Pico_Abs_Rect in_abs  = pico_cv_rect_rel_abs(in, &out_abs);
     Pico_Rel_Rect ret = { .mode = in->mode, .anchor = in->anchor };
@@ -178,7 +178,7 @@ Pico_Rel_Rect pico_in_rect (const Pico_Rel_Rect* in, const Pico_Rel_Rect* out) {
     return ret;
 }
 
-Pico_Rel_Pos pico_in_pos (const Pico_Rel_Pos* in, const Pico_Rel_Rect* out) {
+Pico_Rel_Pos pico_in_pos (const Pico_Rel_Rect* out, const Pico_Rel_Pos* in) {
     Pico_Abs_Rect out_abs = pico_cv_rect_rel_abs(out, NULL);
     Pico_Abs_Pos  in_abs  = pico_cv_pos_rel_abs(in, &out_abs);
     Pico_Rel_Pos ret = { .mode = in->mode, .anchor = in->anchor };
@@ -186,7 +186,7 @@ Pico_Rel_Pos pico_in_pos (const Pico_Rel_Pos* in, const Pico_Rel_Rect* out) {
     return ret;
 }
 
-Pico_Rel_Dim pico_in_dim (const Pico_Rel_Dim* in, const Pico_Rel_Rect* out) {
+Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in) {
     Pico_Abs_Rect out_abs = pico_cv_rect_rel_abs(out, NULL);
     Pico_Rel_Dim  in_copy = *in;
     Pico_Abs_Dim  in_abs  = pico_cv_dim_rel_abs(&in_copy, &out_abs);
