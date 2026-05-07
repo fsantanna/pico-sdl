@@ -298,13 +298,13 @@ do
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
     do
-        pico.layer.text("panel", "hello", 20, "Hello")
-        pico.set.layer("hello")
+        pico.layer.text("panel", "H", 20, "Hello")
+        pico.set.layer("H")
         pico.set.scene { target = {'%', x=0.5, y=0.3, h=0.6} }
     end
     do
-        pico.layer.text("panel", "world", 20, "World!")
-        pico.set.layer("world")
+        pico.layer.text("panel", "W", 20, "World!")
+        pico.set.layer("W")
         pico.set.scene { target = {'%', x=0.5, y=0.7, h=0.4} }
     end
 end
