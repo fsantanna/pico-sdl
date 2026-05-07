@@ -217,9 +217,16 @@ clause's `src:pico.c:N` to the new `SDL_Init` line in
 - [x] Make `pico.set.layer()` / `pico.set.layer(nil)` an error (`l_set_layer` uses `luaL_checkstring`)
 - [x] Migrate `pico_set_layer(NULL)` / `pico.set.layer(nil|())` test sites to `"world"`
 - [ ] ~~Drop `base`/`layer` param from CV/VS/mouse helpers~~ — **deferred** per Decision 5; only migrate non-NULL callers to NULL where possible
-- [ ] Add `window` (window target) at init
+- [x] Merge `S` into `G` (single struct); rename `G.win` (SDL ptr) → `G.window.win`; `G.ren` → `G.window.ren`; `G.fsing`/`G.presenting` → `G.window.ing.fs`/`.ing.out`; old `S.win` (color/dim/fs) → `G.window.pub`
+- [x] Add `PICO_LAYER_WINDOW` enum + `Pico_Layer layer;` field inside `G.window` struct, init in `pico_init`
+- [ ] Realm-register `&G.window.layer` as `"window"`; `_layer_attach("window","world")`
+- [ ] Window resize handler — sync `G.window.layer.scene.dim`
+- [ ] New tests for predefined `"window"` layer
+- [ ] Migrate `G.window.pub.{color,dim,fs}` reads/writes to layer fields (`G.window.layer.effect.color` / `.scene.dim` / `G.window.pub.fs` for the SDL state)
+- [ ] Trim public `Pico_Window` typedef; adapt `pico_get_window`/`pico_set_window`; adapt Lua `l_get_window`/`l_set_window`
 - [ ] Migrate screenshot non-NULL `base` (`src/pico.c:1658`) to use `window` layer
-- [ ] Reject reserved names in layer creators (`world`, `window`)
+- [ ] Retire bespoke world→window blit in `_pico_output_present`; start `_layer_traverse` from `&G.window.layer`
+- [ ] Rename `PICO_EVENT_WIN_RESIZE` → `PICO_EVENT_WINDOW_RESIZE`; tag `"win.resize"` → `"window.resize"`
 - [ ] Delete `'w'` mode branches in `aux.hc`
 - [ ] Delete `_*_win_to_wld` / `_*_wld_to_win` (6 helpers)
 - [ ] Delete `pico_cv_pos_rel_win` / `pico_cv_pos_win_rel`
@@ -227,6 +234,13 @@ clause's `src:pico.c:N` to the new `SDL_Init` line in
 - [ ] Regenerate `asr/` for visual tests
 - [ ] Add 5 new tests
 - [ ] Update `valgrind.supp:sdl-init` line `N`
+
+### Open questions (deferred discussion)
+
+- **Do we need both `PICO_LAYER_WORLD` and `PICO_LAYER_WINDOW` enum values?** They're only used for assert-style "is this the special root?" checks (`pico.c:717,795` reject WORLD from clear-on-effect-color and from `set.scene.keep`); WINDOW has the same singleton-root semantics. Three options:
+    - (a) keep both — symmetric with PLAIN/VIDEO/SUB, precise messages
+    - (b) merge into one `PICO_LAYER_ROOT` for "predefined top-of-tree singleton" — same semantics for both window & world; tell them apart by `tex==NULL` or pointer compare when needed
+    - (c) drop entirely — pointer-compare `L == &G.world` everywhere
 
 ## Next iteration: Step B+D combined (world rename + NULL → realm error)
 
@@ -355,6 +369,14 @@ Pass criteria:
 - Lua wrapper `l_set_layer` was simplified twice in the same step:
   first to drop the NULL fast-path (`luaL_checkstring`), then to
   expose `pico_set_layer`'s return value (`lua_pushstring; return 1`).
+- G/S merge done as a separate pass (substep #6 brought forward).
+  Resolution of the `.win` field-name clash chose to rename the SDL
+  handle: `G.win` (SDL_Window*) → `G.window.win` (later regrouped
+  into `G.window.{win,ren,layer,ing,pub}` sub-struct).
+- `G.window` was further refactored (user direction) to group all
+  window-lifecycle state: `win` (SDL handle), `ren` (renderer),
+  `layer` (Pico_Layer), `ing` (in-progress flags `fs`/`out`), `pub`
+  (cached `{color,dim,fs}` exposed via `pico_get_window`).
 
 ## Next iteration: Architectural shift — `window` as the new root
 
