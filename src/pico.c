@@ -41,12 +41,17 @@ static struct {
     int           presenting;
     SDL_Window*   sdl;
     Pico_Layer*   layer;            // current render target
-    struct { int on, fps, ms, t0; } expert;
+    struct {
+        int on;
+        int fps;
+        int ms;
+        int t0;
+    }             expert;
     struct {
         Pico_Color   color;
         Pico_Abs_Dim dim;
         int          fs;
-    } win;
+    }             win;
 } G = { 0 };
 
 ///////////////////////////////////////////////////////////////////////////////
