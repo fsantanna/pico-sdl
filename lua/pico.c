@@ -967,8 +967,9 @@ static int l_set_expert (lua_State* L) {
 
 static int l_set_layer (lua_State* L) {
     const char* name = luaL_checkstring(L, 1);
-    pico_set_layer(name);
-    return 0;
+    const char* old = pico_set_layer(name);
+    lua_pushstring(L, old);
+    return 1;
 }
 
 static int l_set_mouse (lua_State* L) {

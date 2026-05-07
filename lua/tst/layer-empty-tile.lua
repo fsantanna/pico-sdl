@@ -10,7 +10,7 @@ pico.set.effect { grid=false }
 do
     print("layer map: 20x15 tiles of 16x16")
     pico.layer.empty(nil, "map", {w=20, h=15}, {w=16, h=16})
-    pico.set.layer("map")
+    local old = pico.set.layer("map")
     pico.set.effect { grid=true }
     pico.output.clear()
     pico.set.pencil { color='red' }
@@ -19,7 +19,7 @@ do
     pico.output.draw.rect {'#', x=6, y=4, w=4, h=2, anchor='NW'}
     pico.set.pencil { color='blue' }
     pico.output.draw.rect {'#', x=20, y=15, w=1, h=1, anchor='NW'}
-    pico.set.layer("world")
+    pico.set.layer(old)
 end
 
 -- Test 1: draw layer "map" 1:1 on main
@@ -42,11 +42,11 @@ end
 do
     print("layer fx: plain pixel layer (no tile)")
     pico.layer.empty(nil, "fx", {w=64, h=64})
-    pico.set.layer("fx")
+    local old = pico.set.layer("fx")
     pico.output.clear()
     pico.set.pencil { color='yellow' }
     pico.output.draw.rect {'!', x=8, y=8, w=48, h=48, anchor='NW'}
-    pico.set.layer("world")
+    pico.set.layer(old)
 end
 
 -- Test 3: draw both layers
