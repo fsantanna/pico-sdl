@@ -13,7 +13,7 @@ do
     pico.output.clear()
     pico.set.layer("img")
     pico.set.effect { rotate = { angle=0, anchor='C' } }
-    pico.set.layer()
+    pico.set.layer("world")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-01")
@@ -23,7 +23,7 @@ do
     pico.output.clear()
     pico.set.layer("img")
     pico.set.effect { rotate = { angle=45, anchor='C' } }
-    pico.set.layer()
+    pico.set.layer("world")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-02")
@@ -33,7 +33,7 @@ do
     pico.output.clear()
     pico.set.layer("img")
     pico.set.effect { rotate = { angle=90, anchor='C' } }
-    pico.set.layer()
+    pico.set.layer("world")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-03")
@@ -43,7 +43,7 @@ do
     pico.output.clear()
     pico.set.layer("img")
     pico.set.effect { rotate = { angle=180, anchor='C' } }
-    pico.set.layer()
+    pico.set.layer("world")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-04")
@@ -55,7 +55,7 @@ do
     pico.output.clear()
     pico.set.layer("img")
     pico.set.effect { rotate = { angle=45, anchor='NW' } }
-    pico.set.layer()
+    pico.set.layer("world")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-05")
@@ -65,7 +65,7 @@ end
 do
     pico.set.layer("img")
     pico.set.effect { rotate = { angle=0, anchor='C' } }
-    pico.set.layer()
+    pico.set.layer("world")
 end
 
 -- FLIP - horizontal
@@ -74,7 +74,7 @@ do
     pico.output.clear()
     pico.set.layer("img")
     pico.set.effect { flip = "horizontal" }
-    pico.set.layer()
+    pico.set.layer("world")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-06")
@@ -84,7 +84,7 @@ do
     pico.output.clear()
     pico.set.layer("img")
     pico.set.effect { flip = "vertical" }
-    pico.set.layer()
+    pico.set.layer("world")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-07")
@@ -94,7 +94,7 @@ do
     pico.output.clear()
     pico.set.layer("img")
     pico.set.effect { flip = "both" }
-    pico.set.layer()
+    pico.set.layer("world")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-08")
@@ -106,7 +106,7 @@ do
     pico.output.clear()
     pico.set.layer("img")
     pico.set.effect { rotate = { angle=45, anchor='C' }, flip = "horizontal" }
-    pico.set.layer()
+    pico.set.layer("world")
     local r = {'!', x=50, y=50, w=48, h=48, anchor='C'}
     pico.output.draw.layer("img", r)
     pico.check("rot-flip-09")
@@ -120,7 +120,7 @@ do
         pico.output.clear()
         pico.set.layer("img")
         pico.set.effect { rotate = { angle=angle, anchor='C' } }
-        pico.set.layer()
+        pico.set.layer("world")
         pico.output.draw.layer("img", r)
         if angle == 180 then
             pico.check("rot-flip-10")
@@ -137,7 +137,7 @@ do
         pico.output.clear()
         pico.set.layer("img")
         pico.set.effect { rotate = { angle=angle, anchor={x=1.1, y=1.1} } }
-        pico.set.layer()
+        pico.set.layer("world")
         pico.output.draw.layer("img", r)
         if angle == 180 then
             pico.check("rot-flip-11")
@@ -154,7 +154,7 @@ do
         pico.output.clear()
         pico.set.layer("img")
         pico.set.effect { rotate = { angle=angle, anchor={x=-0.1, y=-0.1} } }
-        pico.set.layer()
+        pico.set.layer("world")
         pico.output.draw.layer("img", r)
         if angle == 180 then
             pico.check("rot-flip-12")

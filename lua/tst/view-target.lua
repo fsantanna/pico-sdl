@@ -50,7 +50,7 @@ do
     pico.output.clear()
     pico.set.pencil { color='white' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.set.layer(nil)
+    pico.set.layer("world")
     pico.set.effect { color='black' }
     pico.output.clear()
     pico.output.draw.layer("bg")
@@ -67,7 +67,7 @@ do
     }
     pico.set.effect { color={r=0x80, g=0x00, b=0x00} }
     pico.output.clear()
-    pico.set.layer(nil)
+    pico.set.layer("world")
     pico.set.effect { color='black' }
     pico.output.clear()
     pico.output.draw.layer("bg2")
@@ -81,7 +81,7 @@ do
     pico.set.scene {
         target = {'%', x=0.5, y=0.5, w=0.4, h=0}
     }
-    pico.set.layer(nil)
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.layer("bg2")
     pico.check("view-target-06")
@@ -94,7 +94,7 @@ do
     pico.set.scene {
         target = {'%', x=0, y=0, w=0, anchor='NW'}
     }
-    pico.set.layer(nil)
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.layer("bg2")
     pico.check("view-target-07")

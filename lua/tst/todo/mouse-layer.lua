@@ -8,7 +8,7 @@ pico.set.layer("A")
 pico.set.effect { color='red' }
 pico.output.clear()
 pico.output.draw.oval({'%', x=0.3, y=0.6, w=0.5, h=0.5, anc='C'})
-pico.set.layer()
+pico.set.layer("world")
 
 -- Draw layer distorted 2:1 on main
 local r = {'%', x=0.6, y=0.3, w=0.8, h=0.4, anc='C'}

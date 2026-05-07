@@ -27,7 +27,7 @@ do
     pico.set.layer("vid")
     local ok = pico.set.video("vid", 0)
     assert(ok == true)
-    pico.set.layer(nil)
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.layer("vid",
         {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'})

@@ -74,7 +74,7 @@ do
     pico.output.clear()
     pico.set.pencil { color='red' }
     pico.output.draw.rect {'#', x=1, y=1, w=2, h=2, anchor='NW'}
-    pico.set.layer(nil)
+    pico.set.layer("world")
 end
 
 -- Layer B: 8x4 non-square tiles, grid enabled
@@ -87,7 +87,7 @@ do
     pico.output.clear()
     pico.set.pencil { color='green' }
     pico.output.draw.rect {'#', x=5, y=2, w=2, h=1, anchor='NW'}
-    pico.set.layer(nil)
+    pico.set.layer("world")
 end
 
 -- Layer C: 4x4 tiles of 4x4 pixels, grid disabled
@@ -100,7 +100,7 @@ do
     pico.output.clear()
     pico.set.pencil { color='blue' }
     pico.output.draw.rect {'#', x=3, y=3, w=1, h=1, anchor='NW'}
-    pico.set.layer(nil)
+    pico.set.layer("world")
 end
 
 -- Test 6: draw all 3 layers side by side on main

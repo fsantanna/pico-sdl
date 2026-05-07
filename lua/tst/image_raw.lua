@@ -79,7 +79,7 @@ do
     pico.set.scene {
         source = {'!', x=9, y=9, w=30, h=30, anchor='NW'}
     }
-    pico.set.layer()
+    pico.set.layer("world")
     local r1 = {'!', x=50-24, y=50-24, w=0, h=0, anchor='NW'}
     pico.output.draw.layer("crop", r1)
     pico.check("image_raw-07")

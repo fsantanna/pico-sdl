@@ -19,7 +19,7 @@ do
     pico.output.draw.rect {'#', x=6, y=4, w=4, h=2, anchor='NW'}
     pico.set.pencil { color='blue' }
     pico.output.draw.rect {'#', x=20, y=15, w=1, h=1, anchor='NW'}
-    pico.set.layer(nil)
+    pico.set.layer("world")
 end
 
 -- Test 1: draw layer "map" 1:1 on main
@@ -46,7 +46,7 @@ do
     pico.output.clear()
     pico.set.pencil { color='yellow' }
     pico.output.draw.rect {'!', x=8, y=8, w=48, h=48, anchor='NW'}
-    pico.set.layer(nil)
+    pico.set.layer("world")
 end
 
 -- Test 3: draw both layers

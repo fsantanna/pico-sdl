@@ -17,7 +17,7 @@ pico.set.pencil { color='white' }
 pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
 
 -- composite overlay on main
-pico.set.layer(nil)
+pico.set.layer("world")
 pico.output.draw.layer("overlay", {'%', x=0.5, y=0.5, w=0.75, h=0.75, anchor='C'})
 pico.check("clear_alpha-01")
 

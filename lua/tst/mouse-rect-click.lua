@@ -15,7 +15,7 @@ pico.set.pencil { color='white' }
 pico.output.draw.rect(btn1)
 pico.output.draw.rect(btn2)
 pico.output.draw.rect(btn3)
-pico.set.layer()
+pico.set.layer("world")
 
 -- Draw layer at bottom-right, 35%x35% of screen (distorted)
 local r = {'%', x=0.99, y=0.99, w=0.35, h=0.35, anchor='SE'}

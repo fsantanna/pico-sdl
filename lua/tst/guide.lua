@@ -243,7 +243,7 @@ pico.output.draw.rect { '%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW' }
 
 -- §7.2.a: composite flag twice on the world
 pico.set.window { title="guide-07-02-01" }
-pico.set.layer()
+pico.set.layer("world")
 pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
 pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 pico.check("guide-07-02-01")
@@ -255,7 +255,7 @@ pico.set.effect {
     flip   = 'horizontal',
     rotate = {angle=30, anchor='C'},
 }
-pico.set.layer()
+pico.set.layer("world")
 pico.output.clear()
 pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 pico.check("guide-07-02-02")
@@ -268,7 +268,7 @@ pico.set.effect {
     flip   = 'none',
     alpha  = 0x80,
 }
-pico.set.layer()
+pico.set.layer("world")
 pico.output.draw.layer("flag", {'%', x=0.5, y=0.5, w=0.6})
 pico.check("guide-07-02-03")
 
@@ -288,12 +288,12 @@ pico.init(false); pico.init(true)
 ]]
 pico.set.window { title="guide-07-04-01" }
 do
-    pico.layer.image("root", "pic", "../../res/open.png")
+    pico.layer.image("world", "pic", "../../res/open.png")
     pico.set.layer("pic")
     pico.set.scene { target = {'%', x=0.3, y=0.3, w=0.4} }
 end
 do
-    pico.layer.empty("root", "panel", {w=100, h=50})
+    pico.layer.empty("world", "panel", {w=100, h=50})
     pico.set.layer("panel")
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
@@ -308,7 +308,7 @@ do
         pico.set.scene { target = {'%', x=0.5, y=0.7, h=0.4} }
     end
 end
-pico.set.layer()
+pico.set.layer("world")
 pico.output.present()
 pico.check("guide-07-04-02")
 

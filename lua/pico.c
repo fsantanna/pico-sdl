@@ -966,10 +966,7 @@ static int l_set_expert (lua_State* L) {
 }
 
 static int l_set_layer (lua_State* L) {
-    const char* name = NULL;
-    if (lua_gettop(L)>=1 && !lua_isnil(L, 1)) {
-        name = luaL_checkstring(L, 1);
-    }
+    const char* name = luaL_checkstring(L, 1);
     pico_set_layer(name);
     return 0;
 }

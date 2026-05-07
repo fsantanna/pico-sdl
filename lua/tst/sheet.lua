@@ -21,7 +21,7 @@ pico.output.draw.rect({'!', x=0, y=2, w=2, h=2, anchor='NW'})
 pico.set.pencil { color='white' }
 pico.output.draw.rect({'!', x=2, y=2, w=2, h=2, anchor='NW'})
 
-pico.set.layer(nil)
+pico.set.layer("world")
 
 -- Shot 1: draw full layer (normal quadrants)
 print("Test 1: full layer")

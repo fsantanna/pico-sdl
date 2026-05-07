@@ -5,13 +5,13 @@ pico.init(true)
 -- get_layer returns nil (main layer)
 print("get_layer returns nil initially")
 local layer = pico.get.layer()
-assert(layer == "root")
+assert(layer == "world")
 
 -- set_layer(nil) switches to main
 print("set_layer(nil) keeps main layer")
-pico.set.layer(nil)
+pico.set.layer("world")
 layer = pico.get.layer()
-assert(layer == "root")
+assert(layer == "world")
 
 -- create bg layer (32x32)
 print("create and switch to layer")
@@ -33,7 +33,7 @@ pico.set.layer("background")
 pico.set.effect { color={'!', r=0x80, g=0x00, b=0x00} }
 pico.output.clear()
 pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
-pico.set.layer()
+pico.set.layer("world")
 pico.output.clear()
 pico.output.draw.layer("background", {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'})
 pico.check("layers-01")
@@ -45,16 +45,16 @@ pico.set.effect { color={'!', r=0x00, g=0x00, b=0x80} }
 pico.output.clear()
 pico.set.pencil { color='green' }
 pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
-pico.set.layer(nil)
+pico.set.layer("world")
 pico.output.clear()
 pico.output.draw.layer("ui", {'%', x=0.5, y=0.5, w=1, h=1, anchor='C'})
 pico.check("layers-02")
 
 -- switch back to main
 print("switch back to main")
-pico.set.layer(nil)
+pico.set.layer("world")
 layer = pico.get.layer()
-assert(layer == "root")
+assert(layer == "world")
 
 -- composite layers onto main
 print("draw layers onto main")

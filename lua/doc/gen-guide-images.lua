@@ -300,7 +300,7 @@ do
     pico.set.layer("bg")
     pico.set.pencil { color='blue' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.8, h=0.8})
-    pico.set.layer(nil)
+    pico.set.layer("world")
     pico.output.clear()
     pico.layer.empty("flag", {w=300, h=200})
     pico.set.layer("flag")
@@ -310,7 +310,7 @@ do
     pico.output.draw.rect {'%', x=0.33, y=0.0, w=0.34, h=1.0, anchor='NW'}
     pico.set.pencil { color={r=0xCE, g=0x11, b=0x26} }
     pico.output.draw.rect {'%', x=0.67, y=0.0, w=0.33, h=1.0, anchor='NW'}
-    pico.set.layer()
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
     pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
@@ -319,7 +319,7 @@ do
     -- 8.3 step 1: rotate 30°, draw at NE
     pico.set.layer("flag")
     pico.set.effect { rotate = {angle=30, anchor='C'} }
-    pico.set.layer()
+    pico.set.layer("world")
     pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
     shot("guide-08-03-01")
 
@@ -329,7 +329,7 @@ do
         rotate = {angle=0},
         flip = "horizontal",
     }
-    pico.set.layer()
+    pico.set.layer("world")
     pico.output.draw.layer("flag", {'%', x=0.25, y=0.80, w=0.2})
     shot("guide-08-03-02")
 

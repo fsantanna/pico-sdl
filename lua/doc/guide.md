@@ -717,7 +717,7 @@ To compose a layer on top of the current layer, we call `pico.output.draw.layer`
 
 <table>
 <tr><td><pre>
-> pico.set.layer()      -- back to main world
+> pico.set.layer("world")      -- back to the world layer
 > pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
 > pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
 </pre>
@@ -726,7 +726,7 @@ To compose a layer on top of the current layer, we call `pico.output.draw.layer`
 </td></tr>
 </table>
 
-We first use `pico.set.layer()`, with no arguments, to target the world layer.
+We first use `pico.set.layer("world")` to target the world layer.
 Then, we compose the flag twice, with different arguments.
 
 We can also flip and rotate layers when compositing them, by setting their
@@ -739,7 +739,7 @@ We can also flip and rotate layers when compositing them, by setting their
     flip   = 'horizontal',
     rotate = {angle=30, anchor='C'},
   }
-> pico.set.layer()
+> pico.set.layer("world")
 > pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
 </pre>
 </td><td>
@@ -762,7 +762,7 @@ We can also set the transparency of layers by lowering their `alpha` field:
     flip   = 'none',
     alpha  = 0x80,
   }
-> pico.set.layer()
+> pico.set.layer("world")
 > pico.output.draw.layer("flag", {'%', x=0.5, y=0.5, w=0.6})
 </pre>
 </td><td>
@@ -844,12 +844,12 @@ The next code listing implements this layout:
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
 > do
-    pico.layer.image("root", "I", "open.png")
+    pico.layer.image("world", "I", "open.png")
     pico.set.layer("I")
     pico.set.scene { target = {'%', x=0.3, y=0.3, w=0.4} }
   end
 > do
-    pico.layer.empty("root", "P", {w=100, h=50})
+    pico.layer.empty("world", "P", {w=100, h=50})
     pico.set.layer("P")
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
@@ -864,7 +864,7 @@ The next code listing implements this layout:
         pico.set.scene { target = {'%', x=0.5, y=0.7, h=0.4} }
     end
   end
-> pico.set.layer()
+> pico.set.layer("world")
 > pico.output.present()
 </pre>
 </td><td>
