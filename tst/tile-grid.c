@@ -12,7 +12,7 @@ int main (void) {
         Pico_Rel_Dim log = { '!', {16, 16} };
         pico_set_effect_grid(1); pico_set_scene_dim(NULL, &log);
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_RED);
+        pico_set_pencil_color(PICO_COLOR_RED);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '!', {4, 4, 8, 8}, PICO_ANCHOR_NW });
         _pico_check("tile-grid-01");
     }
@@ -24,7 +24,7 @@ int main (void) {
         Pico_Abs_Dim tile = { 4, 4 };
         pico_set_effect_grid(1); pico_set_scene_tile(NULL, tile); pico_set_scene_dim(NULL, &log);
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
+        pico_set_pencil_color(PICO_COLOR_GREEN);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {1, 1, 2, 2}, PICO_ANCHOR_NW });
         _pico_check("tile-grid-02");
     }
@@ -36,7 +36,7 @@ int main (void) {
         Pico_Abs_Dim tile = { 2, 2 };
         pico_set_effect_grid(1); pico_set_scene_tile(NULL, tile); pico_set_scene_dim(NULL, &log);
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_BLUE);
+        pico_set_pencil_color(PICO_COLOR_BLUE);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {3, 3, 2, 2}, PICO_ANCHOR_NW });
         _pico_check("tile-grid-03");
     }
@@ -48,7 +48,7 @@ int main (void) {
         Pico_Abs_Dim tile = { 4, 2 };
         pico_set_effect_grid(1); pico_set_scene_tile(NULL, tile); pico_set_scene_dim(NULL, &log);
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_YELLOW);
+        pico_set_pencil_color(PICO_COLOR_YELLOW);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {2, 4, 1, 2}, PICO_ANCHOR_NW });
         _pico_check("tile-grid-04");
     }
@@ -60,7 +60,7 @@ int main (void) {
         Pico_Abs_Dim tile = { 4, 4 };
         pico_set_effect_grid(0); pico_set_scene_tile(NULL, tile); pico_set_scene_dim(NULL, &log);
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_RED);
+        pico_set_pencil_color(PICO_COLOR_RED);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {2, 2, 1, 1}, PICO_ANCHOR_C });
         _pico_check("tile-grid-05");
     }
@@ -80,7 +80,7 @@ int main (void) {
         Pico_Abs_Dim tile = { 4, 4 };
         pico_set_effect_grid(1); pico_set_scene_tile(NULL, tile); pico_set_scene_dim(NULL, &log);
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_RED);
+        pico_set_pencil_color(PICO_COLOR_RED);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {1, 1, 2, 2}, PICO_ANCHOR_NW });
         pico_set_layer(NULL);
     }
@@ -94,7 +94,7 @@ int main (void) {
         Pico_Abs_Dim tile = { 2, 4 };
         pico_set_effect_grid(1); pico_set_scene_tile(NULL, tile); pico_set_scene_dim(NULL, &log);
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
+        pico_set_pencil_color(PICO_COLOR_GREEN);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {5, 2, 2, 1}, PICO_ANCHOR_NW });
         pico_set_layer(NULL);
     }
@@ -108,7 +108,7 @@ int main (void) {
         Pico_Abs_Dim tile = { 4, 4 };
         pico_set_effect_grid(0); pico_set_scene_tile(NULL, tile); pico_set_scene_dim(NULL, &log);
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_BLUE);
+        pico_set_pencil_color(PICO_COLOR_BLUE);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {3, 3, 1, 1}, PICO_ANCHOR_NW });
         pico_set_layer(NULL);
     }

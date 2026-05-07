@@ -380,24 +380,24 @@ void pico_quit (void) {
 // GET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_get_pencil (const char* layer, Pico_Layer_Pencil* pencil) {
+void pico_get_pencil (Pico_Layer_Pencil* pencil) {
     _pico_guard();
-    *pencil = _pico_layer_null(layer)->pencil;
+    *pencil = S.layer->pencil;
 }
 
-Pico_Color pico_get_pencil_color (const char* layer) {
+Pico_Color pico_get_pencil_color (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->pencil.color;
+    return S.layer->pencil.color;
 }
 
-const char* pico_get_pencil_font (const char* layer) {
+const char* pico_get_pencil_font (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->pencil.font;
+    return S.layer->pencil.font;
 }
 
-PICO_STYLE pico_get_pencil_style (const char* layer) {
+PICO_STYLE pico_get_pencil_style (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->pencil.style;
+    return S.layer->pencil.style;
 }
 
 int pico_get_expert (int* fps) {
@@ -614,24 +614,24 @@ void pico_set_dim (Pico_Rel_Dim* dim) {
     pico_set_scene_dim(NULL, dim);
 }
 
-void pico_set_pencil (const char* layer, Pico_Layer_Pencil pencil) {
+void pico_set_pencil (Pico_Layer_Pencil pencil) {
     _pico_guard();
-    _pico_layer_null(layer)->pencil = pencil;
+    S.layer->pencil = pencil;
 }
 
-void pico_set_pencil_color (const char* layer, Pico_Color color) {
+void pico_set_pencil_color (Pico_Color color) {
     _pico_guard();
-    _pico_layer_null(layer)->pencil.color = color;
+    S.layer->pencil.color = color;
 }
 
-void pico_set_pencil_font (const char* layer, const char* path) {
+void pico_set_pencil_font (const char* path) {
     _pico_guard();
-    _pico_layer_null(layer)->pencil.font = path;
+    S.layer->pencil.font = path;
 }
 
-void pico_set_pencil_style (const char* layer, PICO_STYLE style) {
+void pico_set_pencil_style (PICO_STYLE style) {
     _pico_guard();
-    _pico_layer_null(layer)->pencil.style = style;
+    S.layer->pencil.style = style;
 }
 
 int pico_set_expert (int on, int fps) {
@@ -1437,8 +1437,8 @@ void pico_output_draw_tri (
 static void _show_grid (void) {
     if (!S.layer->effect.grid) return;
 
-    Pico_Color x_clr = pico_get_pencil_color(NULL);
-    pico_set_pencil_color(NULL, (Pico_Color){0x77, 0x77, 0x77, 0x77});
+    Pico_Color x_clr = pico_get_pencil_color();
+    pico_set_pencil_color((Pico_Color){0x77, 0x77, 0x77, 0x77});
 
     // grid lines
     {
@@ -1467,7 +1467,7 @@ static void _show_grid (void) {
 
     // metric labels
     {
-        pico_set_pencil_color(NULL, (Pico_Color){0x77, 0x77, 0x77, 0xFF});
+        pico_set_pencil_color((Pico_Color){0x77, 0x77, 0x77, 0xFF});
         int H = 10;
         Pico_Abs_Rect src = pico_cv_rect_rel_abs (
                 &S.layer->scene.src,
@@ -1504,17 +1504,17 @@ static void _show_grid (void) {
         }
     }
 
-    pico_set_pencil_color(NULL, x_clr);
+    pico_set_pencil_color(x_clr);
 }
 
 static void _show_tile (Pico_Layer_Scene* view, SDL_Rect dst) {
     if (view->tile.w<=0 || view->tile.h<=0) return;
 
-    Pico_Color x_clr   = pico_get_pencil_color(NULL);
-    PICO_STYLE x_style = pico_get_pencil_style(NULL);
+    Pico_Color x_clr   = pico_get_pencil_color();
+    PICO_STYLE x_style = pico_get_pencil_style();
 
-    pico_set_pencil_color(NULL, (Pico_Color){0xFF, 0xFF, 0xFF, 0xAA});
-    pico_set_pencil_style(NULL, PICO_STYLE_STROKE);
+    pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0xFF, 0xAA});
+    pico_set_pencil_style(PICO_STYLE_STROKE);
 
     // grid
     int dx = dst.w * view->tile.w / view->dim.w;
@@ -1541,8 +1541,8 @@ static void _show_tile (Pico_Layer_Scene* view, SDL_Rect dst) {
         &(Pico_Rel_Rect){ '!', {dst.x, dst.y, dst.w, dst.h}, PICO_ANCHOR_NW }
     );
 
-    pico_set_pencil_color(NULL, x_clr);
-    pico_set_pencil_style(NULL, x_style);
+    pico_set_pencil_color(x_clr);
+    pico_set_pencil_style(x_style);
 }
 
 static void _pico_output_present (int force) {

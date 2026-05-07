@@ -670,7 +670,7 @@ static int l_color_alpha (lua_State* L) {
 
 static int l_get_pencil (lua_State* L) {
     Pico_Layer_Pencil draw;
-    pico_get_pencil(NULL, &draw);
+    pico_get_pencil(&draw);
 
     lua_newtable(L);                    // T
 
@@ -917,7 +917,7 @@ static int l_set_pencil (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
     Pico_Layer_Pencil draw;
-    pico_get_pencil(NULL, &draw);
+    pico_get_pencil(&draw);
 
     lua_getfield(L, 1, "color");            // T | color
     if (!lua_isnil(L, -1)) {
@@ -945,7 +945,7 @@ static int l_set_pencil (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_set_pencil(NULL, draw);
+    pico_set_pencil(draw);
     return 0;
 }
 

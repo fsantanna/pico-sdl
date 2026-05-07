@@ -297,14 +297,13 @@ void pico_output_sound (const char* path);
 
 // GET
 
-/// @brief Gets the entire pencil state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @brief Gets the entire pencil state of the current layer.
 /// @param pencil output struct populated with pencil state
 /// @sa pico_set_pencil
-void        pico_get_pencil       (const char* layer, Pico_Layer_Pencil* pencil);
-Pico_Color  pico_get_pencil_color (const char* layer);
-const char* pico_get_pencil_font  (const char* layer);
-PICO_STYLE  pico_get_pencil_style (const char* layer);
+void        pico_get_pencil       (Pico_Layer_Pencil* pencil);
+Pico_Color  pico_get_pencil_color (void);
+const char* pico_get_pencil_font  (void);
+PICO_STYLE  pico_get_pencil_style (void);
 
 /// @brief Gets the state of expert mode.
 /// @param fps optional pointer to receive fps value (NULL to ignore)
@@ -509,14 +508,13 @@ const char*  pico_get_window_title (void);
 /// @sa pico_set_scene_dim
 void pico_set_dim (Pico_Rel_Dim* dim);
 
-/// @brief Sets the entire pencil state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @brief Sets the entire pencil state of the current layer.
 /// @param pencil new pencil state
 /// @sa pico_get_pencil
-void pico_set_pencil       (const char* layer, Pico_Layer_Pencil pencil);
-void pico_set_pencil_color (const char* layer, Pico_Color color);
-void pico_set_pencil_font  (const char* layer, const char* path);
-void pico_set_pencil_style (const char* layer, PICO_STYLE style);
+void pico_set_pencil       (Pico_Layer_Pencil pencil);
+void pico_set_pencil_color (Pico_Color color);
+void pico_set_pencil_font  (const char* path);
+void pico_set_pencil_style (PICO_STYLE style);
 
 /// @brief Toggles expert mode (manual present, frame pacing).
 /// @param on 1 to enable, 0 to disable

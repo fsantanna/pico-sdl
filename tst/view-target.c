@@ -23,7 +23,7 @@ int main (void) {
         Pico_Rel_Rect r1 = {'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C};
         pico_output_draw_rect(&r1);
         Pico_Rel_Rect r2 = pico_in_rect(&r1, &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
-        pico_set_pencil_color(NULL, (Pico_Color){0xFF, 0x00, 0x00, 0xFF});
+        pico_set_pencil_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
         pico_output_draw_rect(&r2);
         _pico_check("view-target-02");
     }
@@ -33,7 +33,7 @@ int main (void) {
         puts("target: reset to full window");
         pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C});
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_WHITE);
+        pico_set_pencil_color(PICO_COLOR_WHITE);
         pico_output_draw_rect(
             &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
         );
@@ -48,7 +48,7 @@ int main (void) {
         pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
         pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
         pico_output_clear();
-        pico_set_pencil_color(NULL, PICO_COLOR_WHITE);
+        pico_set_pencil_color(PICO_COLOR_WHITE);
         pico_output_draw_rect(
             &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
         );

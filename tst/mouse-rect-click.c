@@ -14,7 +14,7 @@ int main (void) {
     pico_set_layer("A");
     pico_set_effect_color(PICO_COLOR_NAVY);
     pico_output_clear();
-    pico_set_pencil_color(NULL, PICO_COLOR_WHITE);
+    pico_set_pencil_color(PICO_COLOR_WHITE);
     pico_output_draw_rect(&btn1);
     pico_output_draw_rect(&btn2);
     pico_output_draw_rect(&btn3);
@@ -43,7 +43,7 @@ int main (void) {
         assert(!pico_vs_pos_rect(&pos, &b1));
         assert(!pico_vs_pos_rect(&pos, &b2));
         assert(!pico_vs_pos_rect(&pos, &b3));
-        pico_set_pencil_color(NULL, PICO_COLOR_RED);
+        pico_set_pencil_color(PICO_COLOR_RED);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {394, 355}, PICO_ANCHOR_C });
         _pico_check("mouse-rect-click-02");
     }
@@ -58,7 +58,7 @@ int main (void) {
         assert(!pico_vs_pos_rect(&pos, &b1));
         assert(!pico_vs_pos_rect(&pos, &b2));
         assert( pico_vs_pos_rect(&pos, &b3));
-        pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
+        pico_set_pencil_color(PICO_COLOR_GREEN);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {457, 431}, PICO_ANCHOR_C });
         _pico_check("mouse-rect-click-03");
     }
@@ -73,7 +73,7 @@ int main (void) {
         assert( pico_vs_pos_rect(&pos, &b1));
         assert(!pico_vs_pos_rect(&pos, &b2));
         assert(!pico_vs_pos_rect(&pos, &b3));
-        pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
+        pico_set_pencil_color(PICO_COLOR_GREEN);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {362, 405}, PICO_ANCHOR_C });
         _pico_check("mouse-rect-click-04");
     }
@@ -88,7 +88,7 @@ int main (void) {
         assert(!pico_vs_pos_rect(&pos, &b1));
         assert( pico_vs_pos_rect(&pos, &b2));
         assert(!pico_vs_pos_rect(&pos, &b3));
-        pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
+        pico_set_pencil_color(PICO_COLOR_GREEN);
         pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {419, 392}, PICO_ANCHOR_C });
         _pico_check("mouse-rect-click-05");
     }

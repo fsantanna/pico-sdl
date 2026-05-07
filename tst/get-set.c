@@ -24,43 +24,43 @@ int main (void) {
     // color_pencil
     puts("color_pencil");
     {
-        pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
-        Pico_Color c = pico_get_pencil_color(NULL);
+        pico_set_pencil_color(PICO_COLOR_GREEN);
+        Pico_Color c = pico_get_pencil_color();
         assert(c.r == 0 && c.g == 255 && c.b == 0);
-        pico_set_pencil_color(NULL, PICO_COLOR_YELLOW);
-        c = pico_get_pencil_color(NULL);
+        pico_set_pencil_color(PICO_COLOR_YELLOW);
+        c = pico_get_pencil_color();
         assert(c.r == 255 && c.g == 255 && c.b == 0);
-        pico_set_pencil_color(NULL, PICO_COLOR_WHITE);
-        c = pico_get_pencil_color(NULL);
+        pico_set_pencil_color(PICO_COLOR_WHITE);
+        c = pico_get_pencil_color();
         assert(c.r == 255 && c.g == 255 && c.b == 255);
     }
 
     // pencil_style
     puts("pencil_style");
     {
-        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
-        assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
-        pico_set_pencil_style(NULL, PICO_STYLE_STROKE);
-        assert(pico_get_pencil_style(NULL) == PICO_STYLE_STROKE);
-        pico_set_pencil_style(NULL, PICO_STYLE_FILL);
-        assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
+        pico_set_pencil_style(PICO_STYLE_FILL);
+        assert(pico_get_pencil_style() == PICO_STYLE_FILL);
+        pico_set_pencil_style(PICO_STYLE_STROKE);
+        assert(pico_get_pencil_style() == PICO_STYLE_STROKE);
+        pico_set_pencil_style(PICO_STYLE_FILL);
+        assert(pico_get_pencil_style() == PICO_STYLE_FILL);
     }
 
     // pencil (bulk setter/getter)
     puts("pencil bulk");
     {
-        pico_set_pencil(NULL, (Pico_Layer_Pencil){
+        pico_set_pencil((Pico_Layer_Pencil){
             .color=PICO_COLOR_RED, .font="test.ttf", .style=PICO_STYLE_STROKE
         });
 
         Pico_Layer_Pencil gd;
-        pico_get_pencil(NULL, &gd);
+        pico_get_pencil(&gd);
         assert(gd.color.r == 255 && gd.color.g == 0 && gd.color.b == 0);
         assert(strcmp(gd.font, "test.ttf") == 0);
         assert(gd.style == PICO_STYLE_STROKE);
 
         // restore
-        pico_set_pencil(NULL, (Pico_Layer_Pencil){
+        pico_set_pencil((Pico_Layer_Pencil){
             .color={0xFF,0xFF,0xFF,0xFF}, .font=NULL, .style=PICO_STYLE_FILL
         });
     }

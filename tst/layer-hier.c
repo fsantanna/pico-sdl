@@ -20,7 +20,7 @@ int main (void) {
     pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {0.3, 0.3, 0.4, 0.4}, PICO_ANCHOR_C});
     pico_set_effect_color(PICO_COLOR_WHITE);
     pico_output_clear();
-    pico_set_pencil_color(NULL, PICO_COLOR_RED);
+    pico_set_pencil_color(PICO_COLOR_RED);
     pico_output_draw_rect(
         &(Pico_Rel_Rect){'%', {.5, .5, 0.5, 0.5}, PICO_ANCHOR_C}
     );
@@ -49,7 +49,7 @@ int main (void) {
     pico_output_present();
     _pico_check("layer-hier-03");
 
-    pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
+    pico_set_pencil_color(PICO_COLOR_GREEN);
     pico_layer_text("root", "txt", 10, "hello");
     pico_set_layer("txt");
     pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {0.3, 0.7, 0.4, 0.4}, PICO_ANCHOR_C});
