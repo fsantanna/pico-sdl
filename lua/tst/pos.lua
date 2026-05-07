@@ -18,7 +18,7 @@ do
     pico.output.draw.rect(r1)
 
     print("red centered under white")
-    local r2 = {'%', x=0.5, y=0.5, w=0.5, h=0.5, up=r1}
+    local r2 = pico.xin.rect(r1, {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.pencil { color='red' }
     pico.output.draw.rect(r2)
 
@@ -34,7 +34,7 @@ do
     pico.output.draw.rect(r1)
 
     print("red anchored by top-left under 0% of white")
-    local r2 = {'%', x=0, y=0, w=0.5, h=0.5, anchor='NW', up=r1}
+    local r2 = pico.xin.rect(r1, {'%', x=0, y=0, w=0.5, h=0.5, anchor='NW'})
     pico.set.pencil { color='red' }
     pico.output.draw.rect(r2)
 
@@ -68,7 +68,7 @@ do
     pico.output.draw.rect(r1)
 
     print("red anchored by top-left under -10% of white")
-    local r2 = {'%', x=-0.1, y=-0.1, w=0.5, h=0.5, anchor='NW', up=r1}
+    local r2 = pico.xin.rect(r1, {'%', x=-0.1, y=-0.1, w=0.5, h=0.5, anchor='NW'})
     pico.set.pencil { color='red' }
     pico.output.draw.rect(r2)
 
@@ -84,7 +84,7 @@ do
     pico.output.draw.rect(r1)
 
     print("red anchored by top-left under 110% of white (symmetric to previous)")
-    local r2 = {'%', x=1.1, y=1.1, w=0.5, h=0.5, anchor='SE', up=r1}
+    local r2 = pico.xin.rect(r1, {'%', x=1.1, y=1.1, w=0.5, h=0.5, anchor='SE'})
     pico.set.pencil { color='red' }
     pico.output.draw.rect(r2)
 

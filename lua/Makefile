@@ -52,6 +52,7 @@ tests: pico_native.so
 	$(TST) tst/guide-hier.lua
 	$(TST) tst/image_pct.lua
 	$(TST) tst/image_raw.lua
+	$(TST) tst/in.lua
 	$(TST) tst/init.lua
 	$(TST) tst/layer-empty-tile.lua
 	$(TST) tst/layer-hier.lua

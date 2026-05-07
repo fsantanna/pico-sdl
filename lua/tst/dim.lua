@@ -25,7 +25,7 @@ for i = 0, 125, 25 do
     pico.set.pencil { color='white' }
     pico.output.draw.rect(r)
 
-    local rr = {'%', x=0.5, y=0.5, w=i/100.0, h=i/100.0, up=r}
+    local rr = pico.xin.rect(r, {'%', x=0.5, y=0.5, w=i/100.0, h=i/100.0})
     pico.set.pencil { color=pico.color.alpha('red', 150) }
     pico.output.draw.rect(rr)
 

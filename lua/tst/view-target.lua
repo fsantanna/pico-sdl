@@ -20,7 +20,7 @@ do
     pico.output.clear()
     local r1 = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
     pico.output.draw.rect(r1)
-    local r2 = {'%', x=0.5, y=0.5, w=0.5, h=0.5, up=r1}
+    local r2 = pico.xin.rect(r1, {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.pencil { color='red' }
     pico.output.draw.rect(r2)
     pico.check("view-target-02")

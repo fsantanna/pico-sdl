@@ -16,7 +16,7 @@ for y = -1, 10 do
         pico.set.pencil { color='white' }
         pico.output.draw.rect(r)
 
-        local p = {'%', x=x/10.0, y=y/10.0, up=r}
+        local p = pico.xin.pos(r, {'%', x=x/10.0, y=y/10.0})
         pico.set.pencil { color='red' }
         pico.output.draw.pixel(p)
 
@@ -51,7 +51,7 @@ for y = -25, 125, 10 do
         pico.set.pencil { color='white' }
         pico.output.draw.rect(r)
 
-        local r2 = {'%', x=x/100.0, y=y/100.0, w=0.5, h=0.5, up=r}
+        local r2 = pico.xin.rect(r, {'%', x=x/100.0, y=y/100.0, w=0.5, h=0.5})
         pico.set.pencil { color='red' }
         pico.output.draw.rect(r2)
 
@@ -86,7 +86,7 @@ for y = -5, 10 do
         pico.set.pencil { color='white' }
         pico.output.draw.rect(r)
 
-        local r2 = {'%', x=x/10.0, y=y/10.0, w=0.5, h=0.5, anchor='NW', up=r}
+        local r2 = pico.xin.rect(r, {'%', x=x/10.0, y=y/10.0, w=0.5, h=0.5, anchor='NW'})
         pico.set.pencil { color='red' }
         pico.output.draw.rect(r2)
 

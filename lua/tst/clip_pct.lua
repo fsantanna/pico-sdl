@@ -22,7 +22,7 @@ end
 
 do
     print("red centered under gray")
-    local r2 = {'%', x=0.5, y=0.5, w=0.5, h=0.5, up=r1}
+    local r2 = pico.xin.rect(r1, {'%', x=0.5, y=0.5, w=0.5, h=0.5})
     pico.set.pencil { color='red' }
     pico.output.draw.rect(r2)
     pico.check("clip-03")
@@ -30,7 +30,7 @@ end
 
 do
     print("blue centered under gray")
-    local p3 = {'%', x=0.5, y=0.5, up=r1}
+    local p3 = pico.xin.pos(r1, {'%', x=0.5, y=0.5})
     pico.set.pencil { color='blue' }
     pico.output.draw.pixel(p3)
     pico.check("clip-04")
@@ -38,7 +38,7 @@ end
 
 do
     print("yellow clipped under gray bottom right")
-    local r4 = {'%', x=1, y=1, w=0.5, h=0.5, up=r1}
+    local r4 = pico.xin.rect(r1, {'%', x=1, y=1, w=0.5, h=0.5})
     pico.set.pencil { color='yellow' }
     pico.output.draw.rect(r4)
     pico.check("clip-05")
