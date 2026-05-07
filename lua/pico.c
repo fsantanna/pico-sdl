@@ -228,58 +228,38 @@ static void C_pixmap_fill (lua_State* L, int i, Pico_Abs_Dim dim,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Rel_Rect* C_rel_rect (lua_State* L, int i) {
+static Pico_Rel_Rect C_rel_rect (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
-
-    char mode = C_mode(L, i, 1);
-    Pico_Anchor anc = C_anchor(L, i);
-
-    Pico_Rel_Rect* r = lua_newuserdata(L, sizeof(Pico_Rel_Rect));
-    *r = (Pico_Rel_Rect) {                  // T | [ud] | ud
-        .mode = mode,
+    return (Pico_Rel_Rect) {
+        .mode = C_mode(L, i, 1),
         .x = C_checkfieldnum(L, i, "x"),
         .y = C_checkfieldnum(L, i, "y"),
         .w = C_checkfieldnum(L, i, "w"),
         .h = C_checkfieldnum(L, i, "h"),
-        .anchor = anc,
+        .anchor = C_anchor(L, i),
     };
-
-    return r;                               // T | *ud*
 }
 
-static Pico_Rel_Dim* C_rel_dim (lua_State* L, int i) {
+static Pico_Rel_Dim C_rel_dim (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
-
-    char mode = C_mode(L, i, 1);
-
-    Pico_Rel_Dim* d = lua_newuserdata(L, sizeof(Pico_Rel_Dim));
-    *d = (Pico_Rel_Dim) {                   // T | ud
-        .mode = mode,
+    return (Pico_Rel_Dim) {
+        .mode = C_mode(L, i, 1),
         .w = C_checkfieldnum(L, i, "w"),
         .h = C_checkfieldnum(L, i, "h"),
     };
-
-    return d;                               // T | *ud*
 }
 
-static Pico_Rel_Pos* C_rel_pos (lua_State* L, int i) {
+static Pico_Rel_Pos C_rel_pos (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
-
-    char mode = C_mode(L, i, 1);
-    Pico_Anchor anc = C_anchor(L, i);
-
-    Pico_Rel_Pos* p = lua_newuserdata(L, sizeof(Pico_Rel_Pos));
-    *p = (Pico_Rel_Pos) {                   // T | [ud] | ud
-        .mode = mode,
+    return (Pico_Rel_Pos) {
+        .mode = C_mode(L, i, 1),
         .x = C_checkfieldnum(L, i, "x"),
         .y = C_checkfieldnum(L, i, "y"),
-        .anchor = anc,
+        .anchor = C_anchor(L, i),
     };
-
-    return p;                               // T | *ud*
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -305,13 +285,12 @@ static void L_image_get_dim (lua_State* L, int i, const char* path) {
     luaL_checktype(L, i, LUA_TTABLE);               // rel
     L_dim_default_wh(L, i);
 
-    Pico_Rel_Dim* dim = C_rel_dim(L, i);            // rel | ud
-    Pico_Abs_Dim abs = pico_get_image(path, dim);
-    lua_pop(L, 1);                                  // rel
+    Pico_Rel_Dim dim = C_rel_dim(L, i);
+    Pico_Abs_Dim abs = pico_get_image(path, &dim);
 
-    lua_pushnumber(L, dim->w);
+    lua_pushnumber(L, dim.w);
     lua_setfield(L, i, "w");
-    lua_pushnumber(L, dim->h);
+    lua_pushnumber(L, dim.h);
     lua_setfield(L, i, "h");
 
     lua_newtable(L);                                // rel | abs
@@ -423,8 +402,8 @@ static int l_cv_dim (lua_State* L) {
 
     if (!has_to) {
         // rel -> abs
-        Pico_Rel_Dim* fr = C_rel_dim(L, 1);
-        Pico_Abs_Dim abs = pico_cv_dim_rel_abs(fr, base);
+        Pico_Rel_Dim fr = C_rel_dim(L, 1);
+        Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&fr, base);
         lua_newtable(L);                    // . | abs: {}
         lua_pushinteger(L, abs.w);          // . | abs | w
         lua_setfield(L, -2, "w");           // . | abs
@@ -439,8 +418,8 @@ static int l_cv_dim (lua_State* L) {
 
         Pico_Rel_Dim to = { .mode = C_mode(L, 2, 1) };
         if (fr_is_rel) {
-            Pico_Rel_Dim* fr = C_rel_dim(L, 1);
-            pico_cv_dim_rel_rel(fr, &to, base);
+            Pico_Rel_Dim fr = C_rel_dim(L, 1);
+            pico_cv_dim_rel_rel(&fr, &to, base);
         } else {
             Pico_Abs_Dim fr = C_abs_dim(L, 1);
             pico_cv_dim_abs_rel(&fr, &to, base);
@@ -460,8 +439,8 @@ static int l_cv_pos (lua_State* L) {
 
     if (!has_to) {
         // rel -> abs
-        Pico_Rel_Pos* fr = C_rel_pos(L, 1);
-        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(fr, base);
+        Pico_Rel_Pos fr = C_rel_pos(L, 1);
+        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&fr, base);
         lua_newtable(L);                    // . | abs: {}
         lua_pushinteger(L, abs.x);          // . | abs | x
         lua_setfield(L, -2, "x");           // . | abs
@@ -479,8 +458,8 @@ static int l_cv_pos (lua_State* L) {
             .anchor = C_anchor(L, 2),
         };
         if (fr_is_rel) {
-            Pico_Rel_Pos* fr = C_rel_pos(L, 1);
-            pico_cv_pos_rel_rel(fr, &to, base);
+            Pico_Rel_Pos fr = C_rel_pos(L, 1);
+            pico_cv_pos_rel_rel(&fr, &to, base);
         } else {
             Pico_Abs_Pos fr = C_abs_pos(L, 1);
             pico_cv_pos_abs_rel(&fr, &to, base);
@@ -500,8 +479,8 @@ static int l_cv_rect (lua_State* L) {
 
     if (!has_to) {
         // rel -> abs
-        Pico_Rel_Rect* fr = C_rel_rect(L, 1);
-        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(fr, base);
+        Pico_Rel_Rect fr = C_rel_rect(L, 1);
+        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&fr, base);
         lua_newtable(L);                    // . | abs: {}
         lua_pushinteger(L, abs.x);          // . | abs | x
         lua_setfield(L, -2, "x");           // . | abs
@@ -523,8 +502,8 @@ static int l_cv_rect (lua_State* L) {
             .anchor = C_anchor(L, 2),
         };
         if (fr_is_rel) {
-            Pico_Rel_Rect* fr = C_rel_rect(L, 1);
-            pico_cv_rect_rel_rel(fr, &to, base);
+            Pico_Rel_Rect fr = C_rel_rect(L, 1);
+            pico_cv_rect_rel_rel(&fr, &to, base);
         } else {
             Pico_Abs_Rect fr = C_abs_rect(L, 1);
             pico_cv_rect_abs_rel(&fr, &to, base);
@@ -559,9 +538,9 @@ static void L_push_mode (lua_State* L, char mode) {
 static int l_in_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // out | in
     luaL_checktype(L, 2, LUA_TTABLE);
-    Pico_Rel_Rect* out = C_rel_rect(L, 1);
-    Pico_Rel_Rect* in  = C_rel_rect(L, 2);
-    Pico_Rel_Rect ret = pico_in_rect(out, in);
+    Pico_Rel_Rect out = C_rel_rect(L, 1);
+    Pico_Rel_Rect in  = C_rel_rect(L, 2);
+    Pico_Rel_Rect ret = pico_in_rect(&out, &in);
     lua_newtable(L);
     L_push_mode(L, ret.mode);
     lua_pushnumber(L, ret.x); lua_setfield(L, -2, "x");
@@ -575,9 +554,9 @@ static int l_in_rect (lua_State* L) {
 static int l_in_pos (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // out | in
     luaL_checktype(L, 2, LUA_TTABLE);
-    Pico_Rel_Rect* out = C_rel_rect(L, 1);
-    Pico_Rel_Pos*  in  = C_rel_pos(L, 2);
-    Pico_Rel_Pos ret = pico_in_pos(out, in);
+    Pico_Rel_Rect out = C_rel_rect(L, 1);
+    Pico_Rel_Pos  in  = C_rel_pos(L, 2);
+    Pico_Rel_Pos ret = pico_in_pos(&out, &in);
     lua_newtable(L);
     L_push_mode(L, ret.mode);
     lua_pushnumber(L, ret.x); lua_setfield(L, -2, "x");
@@ -590,9 +569,9 @@ static int l_in_dim (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // out | in
     luaL_checktype(L, 2, LUA_TTABLE);
     L_dim_default_wh(L, 2);
-    Pico_Rel_Rect* out = C_rel_rect(L, 1);
-    Pico_Rel_Dim*  in  = C_rel_dim(L, 2);
-    Pico_Rel_Dim ret = pico_in_dim(out, in);
+    Pico_Rel_Rect out = C_rel_rect(L, 1);
+    Pico_Rel_Dim  in  = C_rel_dim(L, 2);
+    Pico_Rel_Dim ret = pico_in_dim(&out, &in);
     lua_newtable(L);
     L_push_mode(L, ret.mode);
     lua_pushnumber(L, ret.w); lua_setfield(L, -2, "w");
@@ -606,10 +585,10 @@ static int l_vs_pos_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // pos | rect
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    Pico_Rel_Pos*  pos  = C_rel_pos(L, 1);
-    Pico_Rel_Rect* rect = C_rel_rect(L, 2);
+    Pico_Rel_Pos  pos  = C_rel_pos(L, 1);
+    Pico_Rel_Rect rect = C_rel_rect(L, 2);
 
-    int ret = pico_vs_pos_rect(pos, rect);
+    int ret = pico_vs_pos_rect(&pos, &rect);
     lua_pushboolean(L, ret);
     return 1;
 }
@@ -618,10 +597,10 @@ static int l_vs_rect_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // r1 | r2
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    Pico_Rel_Rect* r1 = C_rel_rect(L, 1);
-    Pico_Rel_Rect* r2 = C_rel_rect(L, 2);
+    Pico_Rel_Rect r1 = C_rel_rect(L, 1);
+    Pico_Rel_Rect r2 = C_rel_rect(L, 2);
 
-    int ret = pico_vs_rect_rect(r1, r2);
+    int ret = pico_vs_rect_rect(&r1, &r2);
     lua_pushboolean(L, ret);
     return 1;
 }
@@ -727,8 +706,8 @@ static int l_get_mouse (lua_State* L) {
         mouse = pico_get_mouse(s[0], NULL);     // mode
     } else {
         luaL_checktype(L, 2, LUA_TTABLE);       // mode | rect
-        Pico_Rel_Rect* rect = C_rel_rect(L, 2);
-        mouse = pico_get_mouse(s[0], rect);
+        Pico_Rel_Rect rect = C_rel_rect(L, 2);
+        mouse = pico_get_mouse(s[0], &rect);
     }
     lua_newtable(L);                            // ... | mouse
     L_set_mouse(L, lua_gettop(L), &mouse);
@@ -780,13 +759,12 @@ static int l_get_text (lua_State* L) {
     luaL_checktype(L, 2, LUA_TTABLE);
     L_dim_default_wh(L, 2);
 
-    Pico_Rel_Dim* dim = C_rel_dim(L, 2);            // text | dim | ud
-    Pico_Abs_Dim abs = pico_get_text(text, dim);
-    lua_pop(L, 1);                                  // text | dim
+    Pico_Rel_Dim dim = C_rel_dim(L, 2);
+    Pico_Abs_Dim abs = pico_get_text(text, &dim);
 
-    lua_pushnumber(L, dim->w);
+    lua_pushnumber(L, dim.w);
     lua_setfield(L, 2, "w");
-    lua_pushnumber(L, dim->h);
+    lua_pushnumber(L, dim.h);
     lua_setfield(L, 2, "h");
 
     lua_newtable(L);                                // text | dim | abs
@@ -800,13 +778,14 @@ static int l_get_text (lua_State* L) {
 static int l_get_video (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);  // path | [rect]
 
-    Pico_Rel_Rect* rect = NULL;
+    Pico_Rel_Rect rect, *xrect=NULL;
     if (lua_gettop(L)>=2 && !lua_isnil(L,2)) {
         L_dim_default_wh(L, 2);
         rect = C_rel_rect(L, 2);
+        xrect = &rect;
     }
 
-    Pico_Video vid = pico_get_video(path, rect);
+    Pico_Video vid = pico_get_video(path, xrect);
 
     lua_newtable(L);                        // T
 
@@ -902,8 +881,8 @@ static int l_get_window (lua_State* L) {
 
 static int l_set_dim (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
-    Pico_Rel_Dim* xdim = C_rel_dim(L, 1);
-    pico_set_dim(xdim);
+    Pico_Rel_Dim xdim = C_rel_dim(L, 1);
+    pico_set_dim(&xdim);
     return 0;
 }
 
@@ -970,8 +949,8 @@ static int l_set_layer (lua_State* L) {
 
 static int l_set_mouse (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);          // pos
-    Pico_Rel_Pos* pos = C_rel_pos(L, 1);
-    pico_set_mouse(pos);
+    Pico_Rel_Pos pos = C_rel_pos(L, 1);
+    pico_set_mouse(&pos);
     return 0;
 }
 
@@ -1036,11 +1015,11 @@ static int l_set_video (lua_State* L) {
 static int l_set_scene (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    Pico_Rel_Dim*  xdim  = NULL;
-    Pico_Abs_Dim*  xtile = NULL;
-    Pico_Rel_Rect* xdst  = NULL;
-    Pico_Rel_Rect* xsrc  = NULL;
-    Pico_Rel_Rect* xclip = NULL;
+    Pico_Rel_Dim  dim,  *xdim=NULL;
+    Pico_Abs_Dim  tile, *xtile=NULL;
+    Pico_Rel_Rect dst,  *xdst=NULL;
+    Pico_Rel_Rect src,  *xsrc=NULL;
+    Pico_Rel_Rect clip, *xclip=NULL;
 
     lua_getfield(L, 1, "keep");             // T | keep
     if (!lua_isnil(L, -1)) {
@@ -1050,11 +1029,11 @@ static int l_set_scene (lua_State* L) {
 
     lua_getfield(L, 1, "dim");              // T | dim
     if (!lua_isnil(L, -1)) {
-        xdim = C_rel_dim(L, lua_gettop(L));
+        dim = C_rel_dim(L, lua_gettop(L));
+        xdim = &dim;
     }
     lua_pop(L, 1);                          // T
 
-    Pico_Abs_Dim tile;
     lua_getfield(L, 1, "tile");             // T | tile
     if (!lua_isnil(L, -1)) {
         tile.w = C_checkfieldnum(L, lua_gettop(L), "w");
@@ -1065,20 +1044,23 @@ static int l_set_scene (lua_State* L) {
 
     lua_getfield(L, 1, "clip");             // T | clip
     if (!lua_isnil(L, -1)) {
-        xclip = C_rel_rect(L, lua_gettop(L));
+        clip = C_rel_rect(L, lua_gettop(L));
+        xclip = &clip;
     }
     lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "target");           // T | dst
     if (!lua_isnil(L, -1)) {
         L_dim_default_wh(L, lua_gettop(L));
-        xdst = C_rel_rect(L, lua_gettop(L));
+        dst = C_rel_rect(L, lua_gettop(L));
+        xdst = &dst;
     }
     lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "source");           // T | src
     if (!lua_isnil(L, -1)) {
-        xsrc = C_rel_rect(L, lua_gettop(L));
+        src = C_rel_rect(L, lua_gettop(L));
+        xsrc = &src;
     }
     lua_pop(L, 1);                          // T
 
@@ -1093,11 +1075,12 @@ static int l_set_scene (lua_State* L) {
 static int l_set_window (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    Pico_Color*   xcolor = NULL;
-    Pico_Rel_Dim* xdim   = NULL;
-    int           xfs    = -1;
-    int           xshow  = -1;
-    const char*   xtitle = NULL;
+    Pico_Color* xcolor = NULL;
+    int         xfs    = -1;
+    int         xshow  = -1;
+    const char* xtitle = NULL;
+
+    Pico_Rel_Dim  dim, *xdim=NULL;
 
     lua_getfield(L, 1, "color");            // T | color
     Pico_Color color;
@@ -1109,7 +1092,8 @@ static int l_set_window (lua_State* L) {
 
     lua_getfield(L, 1, "dim");              // T | dim
     if (!lua_isnil(L, -1)) {
-        xdim = C_rel_dim(L, lua_gettop(L));
+        dim = C_rel_dim(L, lua_gettop(L));
+        xdim = &dim;
     }
     lua_pop(L, 1);                          // T
 
@@ -1242,8 +1226,8 @@ static int l_layer_sub (lua_State* L) {
     const char* parent = luaL_checkstring(L, i+2);
     luaL_checktype(L, i+3, LUA_TTABLE);
     L_dim_default_wh(L, i+3);
-    Pico_Rel_Rect* crop = C_rel_rect(L, i+3);
-    pico_layer_sub_mode(m, up, key, parent, crop);
+    Pico_Rel_Rect crop = C_rel_rect(L, i+3);
+    pico_layer_sub_mode(m, up, key, parent, &crop);
     return 0;
 }
 
@@ -1368,8 +1352,8 @@ static int l_output_draw_pixmap (lua_State* L) {
     C_pixmap_fill(L, 2, dim, (Pico_Color*)buf);
 
     L_dim_default_wh(L, 3);
-    Pico_Rel_Rect* rect = C_rel_rect(L, 3);
-    pico_output_draw_pixmap(name, dim, (Pico_Color*)buf, rect);
+    Pico_Rel_Rect rect = C_rel_rect(L, 3);
+    pico_output_draw_pixmap(name, dim, (Pico_Color*)buf, &rect);
     return 0;
 }
 
@@ -1380,21 +1364,22 @@ static int l_output_draw_image (lua_State* L) {
     const char* path = lua_tostring(L, 1);
     L_image_get_dim(L, 2, path);
 
-    Pico_Rel_Rect* rect = C_rel_rect(L, 2);
-    pico_output_draw_image(path, rect);
+    Pico_Rel_Rect rect = C_rel_rect(L, 2);
+    pico_output_draw_image(path, &rect);
     return 0;
 }
 
 static int l_output_draw_layer (lua_State* L) {
     const char* name = luaL_checkstring(L, 1);  // name | [rect]
 
-    Pico_Rel_Rect* rect = NULL;
+    Pico_Rel_Rect rect, *xrect=NULL;
     if (lua_istable(L, 2)) {
         L_dim_default_wh(L, 2);
         rect = C_rel_rect(L, 2);
+        xrect = &rect;
     }
 
-    pico_output_draw_layer(name, rect);
+    pico_output_draw_layer(name, xrect);
     return 0;
 }
 
@@ -1402,24 +1387,24 @@ static int l_output_draw_line (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // p1 | p2
     luaL_checktype(L, 2, LUA_TTABLE);
 
-    Pico_Rel_Pos* p1 = C_rel_pos(L, 1);
-    Pico_Rel_Pos* p2 = C_rel_pos(L, 2);
+    Pico_Rel_Pos p1 = C_rel_pos(L, 1);
+    Pico_Rel_Pos p2 = C_rel_pos(L, 2);
 
-    pico_output_draw_line(p1, p2);
+    pico_output_draw_line(&p1, &p2);
     return 0;
 }
 
 static int l_output_draw_oval (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);
-    Pico_Rel_Rect* rect = C_rel_rect(L, 1);
-    pico_output_draw_oval(rect);
+    Pico_Rel_Rect rect = C_rel_rect(L, 1);
+    pico_output_draw_oval(&rect);
     return 0;
 }
 
 static int l_output_draw_pixel (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);
-    Pico_Rel_Pos* pos = C_rel_pos(L, 1);
-    pico_output_draw_pixel(pos);
+    Pico_Rel_Pos pos = C_rel_pos(L, 1);
+    pico_output_draw_pixel(&pos);
     return 0;
 }
 
@@ -1433,8 +1418,8 @@ static int l_output_draw_pixels (lua_State* L) {
         if (lua_type(L, -1) != LUA_TTABLE) {
             return luaL_error(L, "expected position at index %d", i);
         }
-        Pico_Rel_Pos* p = C_rel_pos(L, lua_gettop(L));
-        pxs[i-1] = *p;
+        Pico_Rel_Pos p = C_rel_pos(L, lua_gettop(L));
+        pxs[i-1] = p;
         lua_pop(L, 1);                      // pxs | n
     }
     pico_output_draw_pixels(n, pxs);
@@ -1452,8 +1437,8 @@ static int l_output_draw_poly (lua_State* L) {
         if (lua_type(L, k) != LUA_TTABLE) {
             return luaL_error(L, "expected point at index %d", i);
         }
-        Pico_Rel_Pos* p = C_rel_pos(L, k);
-        poly[i-1] = *p;
+        Pico_Rel_Pos p = C_rel_pos(L, k);
+        poly[i-1] = p;
         lua_pop(L, 1);                      // pts | n
     }
     pico_output_draw_poly(n, poly);
@@ -1462,8 +1447,8 @@ static int l_output_draw_poly (lua_State* L) {
 
 static int l_output_draw_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);
-    Pico_Rel_Rect* rect = C_rel_rect(L, 1);
-    pico_output_draw_rect(rect);
+    Pico_Rel_Rect rect = C_rel_rect(L, 1);
+    pico_output_draw_rect(&rect);
     return 0;
 }
 
@@ -1471,8 +1456,8 @@ static int l_output_draw_text (lua_State* L) {
     const char* text = luaL_checkstring(L, 1);  // text | rect
     luaL_checktype(L, 2, LUA_TTABLE);
     L_dim_default_wh(L, 2);
-    Pico_Rel_Rect* rect = C_rel_rect(L, 2);
-    pico_output_draw_text(text, rect);
+    Pico_Rel_Rect rect = C_rel_rect(L, 2);
+    pico_output_draw_text(text, &rect);
     return 0;
 }
 
@@ -1481,11 +1466,11 @@ static int l_output_draw_tri (lua_State* L) {
     luaL_checktype(L, 2, LUA_TTABLE);
     luaL_checktype(L, 3, LUA_TTABLE);
 
-    Pico_Rel_Pos* p1 = C_rel_pos(L, 1);
-    Pico_Rel_Pos* p2 = C_rel_pos(L, 2);
-    Pico_Rel_Pos* p3 = C_rel_pos(L, 3);
+    Pico_Rel_Pos p1 = C_rel_pos(L, 1);
+    Pico_Rel_Pos p2 = C_rel_pos(L, 2);
+    Pico_Rel_Pos p3 = C_rel_pos(L, 3);
 
-    pico_output_draw_tri(p1, p2, p3);
+    pico_output_draw_tri(&p1, &p2, &p3);
     return 0;
 }
 
@@ -1493,8 +1478,8 @@ static int l_output_draw_video (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);  // path | rect
     luaL_checktype(L, 2, LUA_TTABLE);
     L_dim_default_wh(L, 2);
-    Pico_Rel_Rect* rect = C_rel_rect(L, 2);
-    int ok = pico_output_draw_video(path, rect);
+    Pico_Rel_Rect rect = C_rel_rect(L, 2);
+    int ok = pico_output_draw_video(path, &rect);
     lua_pushboolean(L, ok);
     return 1;
 }
@@ -1510,12 +1495,13 @@ static int l_output_screenshot (lua_State* L) {
         path = lua_tostring(L, 1);
     }
 
-    Pico_Rel_Rect* rect = NULL;
+    Pico_Rel_Rect rect, *xrect=NULL;
     if (lua_gettop(L) >= 2 && lua_istable(L, 2)) {
         rect = C_rel_rect(L, 2);
+        xrect = &rect;
     }
 
-    const char* ret = pico_output_screenshot(path, rect);
+    const char* ret = pico_output_screenshot(path, xrect);
     assert(ret != NULL);
     lua_pushstring(L, ret);
     return 1;
