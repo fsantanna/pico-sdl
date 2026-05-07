@@ -524,8 +524,9 @@ int pico_set_expert (int on, int fps);
 
 /// @brief Switches the current render-target layer.
 /// @param key layer key (NULL = main layer)
+/// @return previous layer name (NULL if previous was main)
 /// @sa pico_get_layer
-void pico_set_layer (const char* key);
+const char* pico_set_layer (const char* key);
 
 /// @brief Warps the mouse cursor to the given relative position.
 /// Symmetric to @ref pico_get_mouse: a Pos returned by `pico_get_mouse`

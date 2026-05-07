@@ -653,8 +653,9 @@ int pico_set_expert (int on, int fps) {
     return S.expert.ms;
 }
 
-void pico_set_layer (const char* key) {
+const char* pico_set_layer (const char* key) {
     _pico_guard();
+    const char* old = S.layer->name;
     if (key == NULL) {
         S.layer = &G.root;
     } else {
@@ -670,6 +671,7 @@ void pico_set_layer (const char* key) {
     SDL_SetRenderTarget(G.ren, S.layer->tex);
     Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->scene.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
+    return old;
 }
 
 void pico_set_mouse (Pico_Rel_Pos* pos) {

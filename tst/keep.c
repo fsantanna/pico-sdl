@@ -13,7 +13,7 @@ int main (void) {
     pico_layer_empty("root", "left",  (Pico_Abs_Dim){32, 36}, NULL);
     pico_layer_empty("root", "right", (Pico_Abs_Dim){32, 36}, NULL);
 
-    pico_set_layer("left");
+    const char* old = pico_set_layer("left");
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.25, 0.5, 0.5, 1}, PICO_ANCHOR_C});
 
     pico_set_layer("right");
@@ -32,7 +32,7 @@ int main (void) {
     pico_output_draw_rect(&(Pico_Rel_Rect){'%', {0.5, 0.5, 0.8, 0.8}, PICO_ANCHOR_C});
 
     // composite frame 1: both red
-    pico_set_layer(NULL);
+    pico_set_layer(old);
     pico_output_present();
     _pico_check("keep-01");
 
