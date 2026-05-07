@@ -16,9 +16,9 @@ int main (void) {
         _pico_check("view-target-01");
     }
 
-    // 02: same target, r2 with up=r1
+    // 02: same target, r2 nested inside r1
     {
-        puts("target: up chain");
+        puts("target: r2 inside r1");
         pico_output_clear();
         Pico_Rel_Rect r1 = {'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C};
         pico_output_draw_rect(&r1);

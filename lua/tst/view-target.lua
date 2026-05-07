@@ -14,9 +14,9 @@ do
     pico.check("view-target-01")
 end
 
--- 02: same target, r2 with up=r1
+-- 02: same target, r2 nested inside r1
 do
-    print("target: up chain")
+    print("target: r2 inside r1")
     pico.output.clear()
     local r1 = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
     pico.output.draw.rect(r1)
