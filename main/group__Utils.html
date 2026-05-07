@@ -114,6 +114,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga9155824b4a13d2274c9b51822d40e4ba" id="r_ga9155824b4a13d2274c9b51822d40e4ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#ga9155824b4a13d2274c9b51822d40e4ba">pico_cv_rect_rel_rel</a> (const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *fr, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *to, <a class="el" href="group__Types.html#gafa8ee2d1293bf5984ac00fc05dc1c079">Pico_Abs_Rect</a> *base)</td></tr>
 <tr class="memdesc:ga9155824b4a13d2274c9b51822d40e4ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a relative rectangle to another relative mode.  <br /></td></tr>
 <tr class="separator:ga9155824b4a13d2274c9b51822d40e4ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga00a3e3c4dcf4a3405484c56b826e588f" id="r_ga00a3e3c4dcf4a3405484c56b826e588f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#ga00a3e3c4dcf4a3405484c56b826e588f">pico_in_rect</a> (const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *out, const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *in)</td></tr>
+<tr class="memdesc:ga00a3e3c4dcf4a3405484c56b826e588f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Composes a child rect onto a parent rect. Returns a flat rect (no chain) that resolves to the same absolute coords as <code>in</code> interpreted relative to <code>out</code>. Mode and anchor of <code>in</code> are preserved; numeric x/y/w/h are re-expressed within the current scene.  <br /></td></tr>
+<tr class="separator:ga00a3e3c4dcf4a3405484c56b826e588f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafeb3a104177b8ad1ddddef6c4679ba3a" id="r_gafeb3a104177b8ad1ddddef6c4679ba3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#gafeb3a104177b8ad1ddddef6c4679ba3a">pico_in_pos</a> (const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *out, const <a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *in)</td></tr>
+<tr class="memdesc:gafeb3a104177b8ad1ddddef6c4679ba3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Composes a child position onto a parent rect. Mode and anchor of <code>in</code> are preserved.  <br /></td></tr>
+<tr class="separator:gafeb3a104177b8ad1ddddef6c4679ba3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaeed4deb3983379b35c28198f080374cb" id="r_gaeed4deb3983379b35c28198f080374cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Rel__Dim.html">Pico_Rel_Dim</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#gaeed4deb3983379b35c28198f080374cb">pico_in_dim</a> (const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *out, const <a class="el" href="structPico__Rel__Dim.html">Pico_Rel_Dim</a> *in)</td></tr>
+<tr class="memdesc:gaeed4deb3983379b35c28198f080374cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Composes a child dimension onto a parent rect. Mode of <code>in</code> is preserved.  <br /></td></tr>
+<tr class="separator:gaeed4deb3983379b35c28198f080374cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga62cec9ae5611818e2deb4e10f3ed583d" id="r_ga62cec9ae5611818e2deb4e10f3ed583d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#ga62cec9ae5611818e2deb4e10f3ed583d">pico_vs_pos_rect</a> (<a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *pos, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
 <tr class="memdesc:ga62cec9ae5611818e2deb4e10f3ed583d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is inside a rectangle.  <br /></td></tr>
 <tr class="separator:ga62cec9ae5611818e2deb4e10f3ed583d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -790,6 +799,120 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#gad4710f1f939f66540990c1fc7f94f00c" title="Converts an absolute rectangle to relative coordinates.">pico_cv_rect_abs_rel</a> </dd></dl>
+
+</div>
+</div>
+<a id="gaeed4deb3983379b35c28198f080374cb" name="gaeed4deb3983379b35c28198f080374cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaeed4deb3983379b35c28198f080374cb">&#9670;&#160;</a></span>pico_in_dim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structPico__Rel__Dim.html">Pico_Rel_Dim</a> pico_in_dim </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structPico__Rel__Dim.html">Pico_Rel_Dim</a> *&#160;</td>
+          <td class="paramname"><em>in</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Composes a child dimension onto a parent rect. Mode of <code>in</code> is preserved. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>parent rectangle (relative to current scene) </td></tr>
+    <tr><td class="paramname">in</td><td>child dimension (relative to <code>out</code>) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>flat dimension, no parent reference needed </dd></dl>
+
+</div>
+</div>
+<a id="gafeb3a104177b8ad1ddddef6c4679ba3a" name="gafeb3a104177b8ad1ddddef6c4679ba3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafeb3a104177b8ad1ddddef6c4679ba3a">&#9670;&#160;</a></span>pico_in_pos()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> pico_in_pos </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *&#160;</td>
+          <td class="paramname"><em>in</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Composes a child position onto a parent rect. Mode and anchor of <code>in</code> are preserved. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>parent rectangle (relative to current scene) </td></tr>
+    <tr><td class="paramname">in</td><td>child position (relative to <code>out</code>) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>flat position, no parent reference needed </dd></dl>
+
+</div>
+</div>
+<a id="ga00a3e3c4dcf4a3405484c56b826e588f" name="ga00a3e3c4dcf4a3405484c56b826e588f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga00a3e3c4dcf4a3405484c56b826e588f">&#9670;&#160;</a></span>pico_in_rect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> pico_in_rect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *&#160;</td>
+          <td class="paramname"><em>in</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Composes a child rect onto a parent rect. Returns a flat rect (no chain) that resolves to the same absolute coords as <code>in</code> interpreted relative to <code>out</code>. Mode and anchor of <code>in</code> are preserved; numeric x/y/w/h are re-expressed within the current scene. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>parent rectangle (relative to current scene) </td></tr>
+    <tr><td class="paramname">in</td><td>child rectangle (relative to <code>out</code>) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>flat rectangle, no parent reference needed </dd></dl>
 
 </div>
 </div>
