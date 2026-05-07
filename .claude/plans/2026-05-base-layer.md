@@ -33,6 +33,7 @@ the world/root becomes a predefined layer (`"WLD"`).
 | 2 | `pico.set.layer()` no-arg         | error / required                    |
 | 3 | layer-creation `up` parameter     | keep explicit (out of scope)        |
 | 4 | NULL layer arg                    | moot — argument removed entirely    |
+| 5 | CV/VS `Pico_Abs_Rect* base` arg   | **keep for now** — real semantic override, not dead code. Proactively migrate non-NULL callers to NULL where a layer can replace the explicit base (e.g. screenshot → WIN). Revisit dropping the param later. |
 
 ## Scope
 
@@ -41,16 +42,16 @@ the world/root becomes a predefined layer (`"WLD"`).
 **State get/set** (`src/pico.c` + `src/pico.h`):
 all of these lose their `const char* layer` first arg.
 
-| group   | functions                                                   |
-|---------|-------------------------------------------------------------|
-| pencil  | get/set: `pencil`, `pencil_color`, `pencil_font`, `pencil_style` |
-| effect  | get/set: `effect`, `effect_alpha`, `effect_color`, `effect_flip`, `effect_grid`, `effect_rotate` |
-| scene   | get/set: `scene`, `scene_clip`, `scene_dim`, `scene_dst`, `scene_keep`, `scene_src`, `scene_tile` |
+| group   | funcs | done | functions                                                   |
+|---------|-------|------|-------------------------------------------------------------|
+| pencil  | 8     | [x]  | get/set: `pencil`, `pencil_color`, `pencil_font`, `pencil_style` |
+| effect  | 12    | [x]  | get/set: `effect`, `effect_alpha`, `effect_color`, `effect_flip`, `effect_grid`, `effect_rotate` |
+| scene   | 14    | [x]  | get/set: `scene`, `scene_clip`, `scene_dim`, `scene_dst`, `scene_keep`, `scene_src`, `scene_tile` |
 
 **CV / VS / mouse** (`src/pico.c` + `src/pico.h`):
-drop the `Pico_Abs_Rect* base` / `const char* layer` extra arg
-from the 15 helpers re-listed in `2026-05-layer-utils.md`
-(the inverse of that plan).
+~15 helpers from `2026-05-layer-utils.md`.
+Per Decision 5, **deferred** — keep `Pico_Abs_Rect* base` for now.
+Mouse migration still happens as part of plan C (`'w'` → `WIN`).
 
 ### B. Predefined layers `WLD` and `WIN`
 
@@ -208,16 +209,32 @@ clause's `src:pico.c:N` to the new `SDL_Init` line in
 
 ## Progress
 
-- [ ] Drop `layer` param from ~24 state get/set
-- [ ] Drop `base`/`layer` param from ~15 CV/VS/mouse helpers
-- [ ] Delete `_pico_layer_null`
+- [x] Drop `layer` param from state get/set — **34 funcs done** (8 pencil + 12 effect + 14 scene)
+- [x] Delete `_pico_layer_null` (brought forward to fix unused-function build error)
+- [ ] ~~Drop `base`/`layer` param from CV/VS/mouse helpers~~ — **deferred** per Decision 5; only migrate non-NULL callers to NULL where possible
 - [ ] Add `WLD` (rename root) and `WIN` (window target) at init
+- [ ] Migrate screenshot non-NULL `base` (`src/pico.c:1658`) to use `WIN` layer
 - [ ] Reject reserved names in layer creators
 - [ ] Make `pico_set_layer(NULL)` / Lua no-arg an error
 - [ ] Delete `'w'` mode branches in `aux.hc`
 - [ ] Delete `_*_win_to_wld` / `_*_wld_to_win` (6 helpers)
 - [ ] Delete `pico_cv_pos_rel_win` / `pico_cv_pos_win_rel`
-- [ ] Migrate failing tests (table above)
+- [ ] Migrate mouse / `'w'` test sites (table above)
+- [ ] Migrate `pico_set_layer(NULL)` / `set.layer()` test sites to `"WLD"`
 - [ ] Regenerate `asr/` for visual tests
 - [ ] Add 5 new tests
 - [ ] Update `valgrind.supp:sdl-init` line `N`
+
+### Notes from execution
+
+- `_pico_layer_null` had to be deleted earlier than planned: once
+  the state get/set sweep removed every caller, GCC's
+  `-Werror=unused-function` blocked the build.
+- Sed sweeps for the state group needed two extra patterns missed
+  on the first pass: function names with a space before `(`
+  (`pico_set_scene_dim (NULL, …)`) and multi-line `(NULL,\n …)`.
+  A whitespace-tolerant Python regex fixed the stragglers.
+- `tst/keep.c:23` was the only state-group call site with a real
+  non-NULL layer arg (`pico_set_scene_keep("right", 1)`); the
+  current layer was already `"right"` on the previous line, so the
+  rewrite to `pico_set_scene_keep(1)` was behavior-preserving.
