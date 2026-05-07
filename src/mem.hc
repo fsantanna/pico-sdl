@@ -175,7 +175,6 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
         (Pico_Abs_Dim){abs.w, abs.h}
     );
     data->scene.src = c->crop;
-    data->scene.src.up = &c->par->scene.src;
     ((Pico_Layer_Sub*)data)->sup = c->par->scene.dim;
     return data;
 }
