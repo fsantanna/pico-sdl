@@ -22,17 +22,20 @@ int main (void) {
     pico_output_clear();
     pico_output_draw_layer("A", &r);
 
-    btn.up = &r;
+    /* btn was drawn in layer A's frame; for collision against a mouse
+       sampled in scene coords, re-express btn within r (the layer's
+       composite rect on screen). */
+    Pico_Rel_Rect btn_in_r = pico_in_rect(&r, &btn);
 
     /* Win pixel (400,382) is inside btn in r-% (continuous), but 'w' draw
        snaps through the screen log grid (5 win px / log px) to a cell that
        lies above btn's top edge (381.25 win). Collision and rendering
-       disagree even with btn.up = &r. */
+       disagree even with btn re-expressed inside r. */
     pico_set_mouse(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW });
-    Pico_Mouse pct = pico_get_mouse('%', &r);
-    Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW, &r };
+    Pico_Mouse pct = pico_get_mouse('%', NULL);
+    Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW };
 
-    assert(pico_vs_pos_rect(&pos, &btn));
+    assert(pico_vs_pos_rect(&pos, &btn_in_r));
 
     pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
     pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW });
