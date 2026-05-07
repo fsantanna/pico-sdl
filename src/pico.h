@@ -671,6 +671,30 @@ void pico_cv_rect_rel_rel (
     const Pico_Rel_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
 );
 
+/// @brief Composes a child rect onto a parent rect.
+/// Returns a flat rect (no chain) that resolves to the same absolute
+/// coords as `in` interpreted relative to `out`. Mode and anchor of
+/// `in` are preserved; numeric x/y/w/h are re-expressed within the
+/// current scene.
+/// @param in child rectangle (relative to `out`)
+/// @param out parent rectangle (relative to current scene)
+/// @return flat rectangle, no parent reference needed
+Pico_Rel_Rect pico_in_rect (const Pico_Rel_Rect* in, const Pico_Rel_Rect* out);
+
+/// @brief Composes a child position onto a parent rect.
+/// Mode and anchor of `in` are preserved.
+/// @param in child position (relative to `out`)
+/// @param out parent rectangle (relative to current scene)
+/// @return flat position, no parent reference needed
+Pico_Rel_Pos pico_in_pos (const Pico_Rel_Pos* in, const Pico_Rel_Rect* out);
+
+/// @brief Composes a child dimension onto a parent rect.
+/// Mode of `in` is preserved.
+/// @param in child dimension (relative to `out`)
+/// @param out parent rectangle (relative to current scene)
+/// @return flat dimension, no parent reference needed
+Pico_Rel_Dim pico_in_dim (const Pico_Rel_Dim* in, const Pico_Rel_Rect* out);
+
 /// @brief Checks if a point is inside a rectangle.
 /// @param pos point to test (mode determines coordinates)
 /// @param rect rectangle to test against (mode determines coordinates)
