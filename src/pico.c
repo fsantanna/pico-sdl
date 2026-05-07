@@ -380,9 +380,9 @@ void pico_quit (void) {
 // GET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_get_pencil (const char* layer, Pico_Layer_Pencil* draw) {
+void pico_get_pencil (const char* layer, Pico_Layer_Pencil* pencil) {
     _pico_guard();
-    *draw = _pico_layer_null(layer)->pencil;
+    *pencil = _pico_layer_null(layer)->pencil;
 }
 
 Pico_Color pico_get_pencil_color (const char* layer) {
@@ -476,9 +476,9 @@ Uint32 pico_get_now (void) {
     return SDL_GetTicks();
 }
 
-void pico_get_effect (Pico_Layer_Effect* show) {
+void pico_get_effect (Pico_Layer_Effect* effect) {
     _pico_guard();
-    *show = S.layer->effect;
+    *effect = S.layer->effect;
 }
 
 unsigned char pico_get_effect_alpha (void) {
@@ -614,9 +614,9 @@ void pico_set_dim (Pico_Rel_Dim* dim) {
     pico_set_scene_dim(NULL, dim);
 }
 
-void pico_set_pencil (const char* layer, Pico_Layer_Pencil draw) {
+void pico_set_pencil (const char* layer, Pico_Layer_Pencil pencil) {
     _pico_guard();
-    _pico_layer_null(layer)->pencil = draw;
+    _pico_layer_null(layer)->pencil = pencil;
 }
 
 void pico_set_pencil_color (const char* layer, Pico_Color color) {
@@ -679,13 +679,13 @@ void pico_set_mouse (Pico_Rel_Pos* pos) {
     SDL_PumpEvents();
 }
 
-void pico_set_effect (const char* layer, Pico_Layer_Effect show) {
+void pico_set_effect (const char* layer, Pico_Layer_Effect effect) {
     _pico_guard();
-    pico_set_effect_alpha (layer, show.alpha);
-    pico_set_effect_color (layer, show.color);
-    pico_set_effect_flip  (layer, show.flip);
-    pico_set_effect_grid  (layer, show.grid);
-    pico_set_effect_rotate(layer, show.rotate);
+    pico_set_effect_alpha (layer, effect.alpha);
+    pico_set_effect_color (layer, effect.color);
+    pico_set_effect_flip  (layer, effect.flip);
+    pico_set_effect_grid  (layer, effect.grid);
+    pico_set_effect_rotate(layer, effect.rotate);
 }
 
 void pico_set_effect_alpha (const char* layer, unsigned char alpha) {

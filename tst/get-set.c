@@ -21,8 +21,8 @@ int main (void) {
         assert(c.r == 0 && c.g == 0 && c.b == 0);
     }
 
-    // color_draw
-    puts("color_draw");
+    // color_pencil
+    puts("color_pencil");
     {
         pico_set_pencil_color(NULL, PICO_COLOR_GREEN);
         Pico_Color c = pico_get_pencil_color(NULL);
@@ -35,8 +35,8 @@ int main (void) {
         assert(c.r == 255 && c.g == 255 && c.b == 255);
     }
 
-    // draw_style
-    puts("draw_style");
+    // pencil_style
+    puts("pencil_style");
     {
         pico_set_pencil_style(NULL, PICO_STYLE_FILL);
         assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
@@ -46,8 +46,8 @@ int main (void) {
         assert(pico_get_pencil_style(NULL) == PICO_STYLE_FILL);
     }
 
-    // draw (bulk setter/getter)
-    puts("draw bulk");
+    // pencil (bulk setter/getter)
+    puts("pencil bulk");
     {
         pico_set_pencil(NULL, (Pico_Layer_Pencil){
             .color=PICO_COLOR_RED, .font="test.ttf", .style=PICO_STYLE_STROKE
@@ -65,8 +65,8 @@ int main (void) {
         });
     }
 
-    // show (individual setters)
-    puts("show individual");
+    // effect (individual setters)
+    puts("effect individual");
     {
         pico_set_effect_alpha(NULL, 0x80);
         assert(pico_get_effect_alpha() == 0x80);
@@ -88,8 +88,8 @@ int main (void) {
         pico_set_effect_rotate(NULL, (Pico_Rot){0, PICO_ANCHOR_C});
     }
 
-    // show (bulk setter/getter)
-    puts("show bulk");
+    // effect (bulk setter/getter)
+    puts("effect bulk");
     {
         pico_set_effect(NULL, (Pico_Layer_Effect){
             .alpha=0x40, .color=PICO_COLOR_RED, .flip=PICO_FLIP_VERTICAL, .grid=1, .rotate={90, PICO_ANCHOR_C}
@@ -126,8 +126,8 @@ int main (void) {
         assert(w2.color.a == w1.color.a);
     }
 
-    // view roundtrip: get -> set -> get must be idempotent
-    puts("view roundtrip");
+    // scene roundtrip: get -> set -> get must be idempotent
+    puts("scene roundtrip");
     {
         Pico_Layer_Scene v1;
         pico_get_scene(NULL, &v1);

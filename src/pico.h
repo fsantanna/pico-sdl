@@ -297,11 +297,11 @@ void pico_output_sound (const char* path);
 
 // GET
 
-/// @brief Gets the entire draw state of a layer.
+/// @brief Gets the entire pencil state of a layer.
 /// @param layer layer key (NULL = current layer)
-/// @param draw output struct populated with draw state
+/// @param pencil output struct populated with pencil state
 /// @sa pico_set_pencil
-void        pico_get_pencil       (const char* layer, Pico_Layer_Pencil* draw);
+void        pico_get_pencil       (const char* layer, Pico_Layer_Pencil* pencil);
 Pico_Color  pico_get_pencil_color (const char* layer);
 const char* pico_get_pencil_font  (const char* layer);
 PICO_STYLE  pico_get_pencil_style (const char* layer);
@@ -323,10 +323,10 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 /// @sa pico_set_layer
 const char* pico_get_layer (void);
 
-/// @brief Gets the entire show state of the current layer.
-/// @param show output struct populated with show state
+/// @brief Gets the entire effect state of the current layer.
+/// @param effect output struct populated with effect state
 /// @sa pico_set_effect
-void          pico_get_effect          (Pico_Layer_Effect* show);
+void          pico_get_effect          (Pico_Layer_Effect* effect);
 unsigned char pico_get_effect_alpha    (void);
 Pico_Color    pico_get_effect_color    (void);
 PICO_FLIP     pico_get_effect_flip     (void);
@@ -479,11 +479,11 @@ Pico_Abs_Dim pico_get_text_mode (
     Pico_Rel_Dim* dim
 );
 
-/// @brief Gets the entire view state of a layer.
+/// @brief Gets the entire scene state of a layer.
 /// @param layer layer key (NULL = current layer)
-/// @param view output struct populated with view state
+/// @param scene output struct populated with scene state
 /// @sa pico_set_scene
-void          pico_get_scene      (const char* layer, Pico_Layer_Scene* view);
+void          pico_get_scene      (const char* layer, Pico_Layer_Scene* scene);
 Pico_Rel_Rect pico_get_scene_clip (const char* layer);
 Pico_Abs_Dim  pico_get_scene_dim  (const char* layer);
 Pico_Rel_Rect pico_get_scene_dst  (const char* layer);
@@ -509,11 +509,11 @@ const char*  pico_get_window_title (void);
 /// @sa pico_set_scene_dim
 void pico_set_dim (Pico_Rel_Dim* dim);
 
-/// @brief Sets the entire draw state of a layer.
+/// @brief Sets the entire pencil state of a layer.
 /// @param layer layer key (NULL = current layer)
-/// @param draw new draw state
+/// @param pencil new pencil state
 /// @sa pico_get_pencil
-void pico_set_pencil       (const char* layer, Pico_Layer_Pencil draw);
+void pico_set_pencil       (const char* layer, Pico_Layer_Pencil pencil);
 void pico_set_pencil_color (const char* layer, Pico_Color color);
 void pico_set_pencil_font  (const char* layer, const char* path);
 void pico_set_pencil_style (const char* layer, PICO_STYLE style);
@@ -538,11 +538,11 @@ void pico_set_layer (const char* key);
 /// @sa pico_get_mouse
 void pico_set_mouse (Pico_Rel_Pos* pos);
 
-/// @brief Sets the entire show state of a layer.
+/// @brief Sets the entire effect state of a layer.
 /// @param layer layer key (NULL = current layer)
-/// @param show new show state
+/// @param effect new effect state
 /// @sa pico_get_effect
-void pico_set_effect          (const char* layer, Pico_Layer_Effect show);
+void pico_set_effect          (const char* layer, Pico_Layer_Effect effect);
 void pico_set_effect_alpha    (const char* layer, unsigned char alpha);
 void pico_set_effect_color    (const char* layer, Pico_Color color);
 void pico_set_effect_flip     (const char* layer, PICO_FLIP flip);
@@ -557,11 +557,11 @@ void pico_set_effect_rotate   (const char* layer, Pico_Rot rotate);
 /// @sa pico_get_video
 int pico_set_video (const char* key, int frame);
 
-/// @brief Sets the entire view state of a layer.
+/// @brief Sets the entire scene state of a layer.
 /// @param layer layer key (NULL = current layer)
-/// @param view new view state
+/// @param scene new scene state
 /// @sa pico_get_scene
-void pico_set_scene      (const char* layer, Pico_Layer_Scene view);
+void pico_set_scene      (const char* layer, Pico_Layer_Scene scene);
 void pico_set_scene_clip (const char* layer, Pico_Rel_Rect clip);
 void pico_set_scene_dim  (const char* layer, Pico_Rel_Dim* dim);
 void pico_set_scene_dst  (const char* layer, Pico_Rel_Rect dst);
