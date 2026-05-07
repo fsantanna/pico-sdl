@@ -396,6 +396,8 @@ For `world`: every `Pico_Layer` field applies (it's a fully-typical layer). Wind
 
 ### Architecture
 
+#### Layer hierarchy
+
 Before:
 
 ```
@@ -406,28 +408,81 @@ G.world  (PICO_LAYER_WORLD, tex≠NULL, name="world")  ← root
 After:
 
 ```
-G.window (PICO_LAYER_WINDOW, tex=NULL, name="window") ← new root
-  └─ G.world  (PICO_LAYER_WORLD, tex≠NULL, name="world")  ← default child
+G.window.layer  (PICO_LAYER_WINDOW, tex=NULL, name="window") ← new root
+  └─ G.world    (PICO_LAYER_WORLD,  tex≠NULL, name="world")  ← default child
       └─ user layers
 ```
+
+#### Internal state (G), public Pico_Window
+
+Decision 16 (revised): `Pico_Window` is the **public** type. Inside
+`G`, the window slot is an **anonymous struct** that *contains* a
+`Pico_Window` by value as `.pub`, plus the private fields
+`.layer` and `.sdl`. This:
+
+- exposes only `{fs, show, title}` to API users (everything in the public type),
+- keeps `Pico_Layer` and `SDL_Window*` private (reachable only via `G.window`).
+
+Decision 17 (revised): also **merge `S` into `G`**. The G/S split was
+soft (everything is `static`-global); one struct + sub-groupings is
+simpler. `S.win.{color,dim,fs}` and `S.layer` and `S.expert` all
+move under `G`.
+
+```c
+// public — pico.h
+typedef struct {
+    int         fs;
+    int         show;
+    const char* title;
+} Pico_Window;
+
+// internal — pico.c
+static struct {
+    int           init;
+    int           fsing;
+    realm_t*      realm;
+    SDL_Renderer* ren;
+    int           presenting;
+
+    struct {                       // anonymous: G.window.*
+        Pico_Window pub;           // embedded public type by value
+        Pico_Layer  layer;         // private
+        SDL_Window* sdl;           // private (was G.win)
+    } window;
+
+    Pico_Layer    world;
+    Pico_Layer*   layer;           // current render target (was S.layer)
+
+    struct { int on, fps, ms, t0; } expert;     // was S.expert
+} G;
+```
+
+Access patterns:
+
+| from | code |
+|---|---|
+| `pico_get_window(out)` | `*out = G.window.pub;` |
+| `pico_set_window(in)` | `G.window.pub = in;` then SDL syncs |
+| `pico_get_window_color()` | `return G.window.layer.effect.color;` |
+| `pico_get_window_dim()` | `return G.window.layer.scene.dim;` |
+| `pico_set_layer(...)` | `G.layer = …;` |
 
 ### A. C source
 
 | file              | place                            | change                                                              |
 |-------------------|----------------------------------|---------------------------------------------------------------------|
 | `src/layers.hc`   | enum `PICO_LAYER`                | add `PICO_LAYER_WINDOW`                                             |
-| `src/pico.h`      | `Pico_Window` typedef            | restructure: `struct Pico_Window { Pico_Layer layer; int fs; int show; const char* title; }`. Drop `Pico_Color color` and `Pico_Abs_Dim dim` from the struct — read them off `layer.effect.color` and `layer.scene.dim`. |
-| `src/pico.c`      | `G` struct                       | replace `Pico_Layer world; SDL_Window* win;` with `Pico_Window window; SDL_Window* sdl_win; Pico_Layer world;` (or similar). Realm key `"window"` resolves to `&G.window.layer`. |
-| `src/pico.c`      | `pico_init` (~282)               | initialize `G.window.layer` (`name="window"`, `tex=NULL`, `scene.dim` from physical window dim, `type=PICO_LAYER_WINDOW`) and `G.window.{fs,show,title}` from SDL state; register `&G.window.layer` in realm; `_layer_attach("window","world")` so world is its child |
-| `src/pico.c`      | `pico_get_window` / `pico_set_window` | adapt to new `Pico_Window` shape: read/write `.layer.effect.color`, `.layer.scene.dim`, `.fs`, `.show`, `.title` |
-| `src/pico.c`      | `S.win.{color,dim,fs}`           | retire — fold `color` and `dim` into `G.window.layer`; `fs` into `G.window.fs`. (`S.win` either disappears or shrinks.) |
-| `src/pico.c`      | `pico_init` (~310)               | `S.layer = &G.world` (unchanged: world is still the default current after init) |
-| `src/pico.c`      | `pico_set_layer`                 | no special-case needed — `SDL_SetRenderTarget(G.ren, S.layer->tex)` already does the right thing when `tex==NULL` (renders to window framebuffer) |
+| `src/pico.h`      | `Pico_Window` typedef            | trim to public-only fields: `struct { int fs; int show; const char* title; }`. Drop `color` and `dim` — they're now layer-managed (`G.window.layer.effect.color`, `G.window.layer.scene.dim`); access via `pico_get_window_color()` / `pico_get_window_dim()` (existing) which now read the layer. |
+| `src/pico.c`      | `G` struct                       | replace `S` and `G` with a single merged `G`: anonymous `window { Pico_Window pub; Pico_Layer layer; SDL_Window* sdl; }`, plus `world`, `layer` (current target), `expert`. Old `G.win` (SDL_Window*) → `G.window.sdl`. Old `S.layer` → `G.layer`. Old `S.expert` → `G.expert`. Old `S.win.{color,dim,fs}` retired (live in the layer / `G.window.pub.fs`). |
+| `src/pico.c`      | `pico_init`                      | initialize `G.window.layer` (`name="window"`, `tex=NULL`, `scene.dim`=PICO_DIM_PHY, `type=PICO_LAYER_WINDOW`), `G.window.pub` (`{fs,show,title}` from SDL state), `G.window.sdl` (the `SDL_CreateWindow` result); register `&G.window.layer` in realm with key `"window"`; `_layer_attach("window","world")` so world is its child |
+| `src/pico.c`      | `pico_get_window` / `pico_set_window` | adapt to trimmed public shape: copy `G.window.pub` for get; assign `G.window.pub` for set, then sync SDL (`SDL_SetWindowFullscreen`/`Title`/`Show`). Color/dim no longer in the struct — separate convenience getters/setters delegate to `G.window.layer`. |
+| `src/pico.c`      | `pico_set_layer`                 | no special-case needed — `SDL_SetRenderTarget(G.ren, G.layer->tex)` already does the right thing when `tex==NULL` (renders to window framebuffer) |
 | `src/pico.c`      | `_pico_output_present` (~1547–1623) | retire the bespoke world→window blit; the scene-graph traverse now naturally composites world (and any sibling/child of window) onto the window framebuffer |
-| `src/pico.c`      | `_layer_traverse` start          | start from `&G.window` (was `&G.world`) for the present walk        |
-| `src/pico.c`      | resize handler                   | when window resizes, update `G.window.scene.dim` to match           |
-| `src/pico.c`      | asserts `S.layer == &G.world`    | keep — world remains the "logical main" for present-/dim-required ops |
+| `src/pico.c`      | `_layer_traverse` start          | start from `&G.window.layer` (was `&G.world`) for the present walk |
+| `src/pico.c`      | resize handler                   | when window resizes, update `G.window.layer.scene.dim` to match     |
+| `src/pico.c`      | asserts `S.layer == &G.world`    | become `G.layer == &G.world` after the S→G merge — world remains the "logical main" for present-/dim-required ops |
 | `src/pico.c:1658` | screenshot non-NULL `base`       | replace with `pico_set_layer("window"); pico_cv_rect_rel_abs(rect, NULL); pico_set_layer(prev);` (eliminates the only non-NULL CV `base` caller in src) |
+| Lua side          | `lua/pico.c` `l_get_window`/`l_set_window` | adapt to trimmed `Pico_Window` shape: drop `color`/`dim` from the table push/parse; the existing `pico.set.window {color=…, dim=…}` table calls become invalid — migrate to `pico.set.layer("window"); pico.set.effect{color=…}; pico.set.scene{dim=…}`, OR keep `pico.set.window` accepting `color`/`dim` as syntactic sugar that delegates to layer state. |
 
 The big content of A is **retiring the present() special-case**.
 Right now `_pico_output_present` does:
