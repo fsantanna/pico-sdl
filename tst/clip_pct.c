@@ -11,7 +11,7 @@ int main (void) {
     pico_output_draw_rect(&r1);
     _pico_check("clip-01");     // same as raw
 
-    pico_set_scene_clip(NULL, r1);
+    pico_set_scene_clip(r1);
     pico_set_effect_color((Pico_Color){0xCC, 0xCC, 0xCC, 0xFF});
     pico_output_clear();
     _pico_check("clip-02");     // same as raw

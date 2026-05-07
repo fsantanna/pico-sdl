@@ -14,7 +14,7 @@ int main (void) {
 
     Pico_Abs_Dim window, world;
     window = pico_get_window_dim();
-    world = pico_get_scene_dim(NULL);
+    world = pico_get_scene_dim();
     assert(window.w==500 && window.h==500);
     assert(world.w==100 && world.h==100);
 
@@ -23,9 +23,9 @@ int main (void) {
     Pico_Rel_Dim dim = { '!', {window.w, window.h} };
     pico_set_dim(&dim);
     Pico_Abs_Dim world2;
-    world2 = pico_get_scene_dim(NULL);
+    world2 = pico_get_scene_dim();
     assert(world2.w==window.w && world2.h==window.h);
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {world.w, world.h} });
+    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {world.w, world.h} });
 
     _pico_check("view_raw-0a");
     pico_set_effect_grid(0);
@@ -38,7 +38,7 @@ int main (void) {
         world.w += 1;
         world.h += 1;
         Pico_Rel_Dim dim = { '!', {world.w, world.h} };
-        pico_set_scene_dim(NULL, &dim);
+        pico_set_scene_dim(&dim);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_WHITE);
         pico_output_draw_rect (
@@ -64,7 +64,7 @@ int main (void) {
     // SCROLL - left/up
     puts("scrolls left/up");
     for (int i=0; i<50; i++) {
-        pico_set_scene_src(NULL, (Pico_Rel_Rect){ '!', {i, i, 100, 100}, PICO_ANCHOR_NW });
+        pico_set_scene_src((Pico_Rel_Rect){ '!', {i, i, 100, 100}, PICO_ANCHOR_NW });
         pico_output_clear();
         pico_output_draw_text("Uma frase bem grande...",
             &(Pico_Rel_Rect){ '!', {10, 50, 0, 10}, PICO_ANCHOR_NW });

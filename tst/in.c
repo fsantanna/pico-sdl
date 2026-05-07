@@ -20,7 +20,7 @@ static int dim_eq (Pico_Abs_Dim a, Pico_Abs_Dim b) {
 int main (void) {
     pico_init(1);
     Pico_Rel_Dim log = { '!', {100, 100} };
-    pico_set_scene_dim(NULL, &log);
+    pico_set_scene_dim(&log);
 
     // RECT IN RECT - ! NW
     {

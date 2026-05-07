@@ -837,7 +837,7 @@ static int l_get_video (lua_State* L) {
 
 static int l_get_scene (lua_State* L) {
     Pico_Layer_Scene view;
-    pico_get_scene(NULL, &view);
+    pico_get_scene(&view);
 
     lua_newtable(L);                    // T
 
@@ -1050,7 +1050,7 @@ static int l_set_scene (lua_State* L) {
 
     lua_getfield(L, 1, "keep");             // T | keep
     if (!lua_isnil(L, -1)) {
-        pico_set_scene_keep(NULL, lua_toboolean(L, -1));
+        pico_set_scene_keep(lua_toboolean(L, -1));
     }
     lua_pop(L, 1);                          // T
 
@@ -1091,11 +1091,11 @@ static int l_set_scene (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    if (xtile != NULL) { pico_set_scene_tile(NULL, *xtile); }
-    if (xdim  != NULL) { pico_set_scene_dim (NULL, xdim);   }
-    if (xclip != NULL) { pico_set_scene_clip(NULL, *xclip); }
-    if (xdst  != NULL) { pico_set_scene_dst (NULL, *xdst);  }
-    if (xsrc  != NULL) { pico_set_scene_src (NULL, *xsrc);  }
+    if (xtile != NULL) { pico_set_scene_tile(*xtile); }
+    if (xdim  != NULL) { pico_set_scene_dim(xdim);   }
+    if (xclip != NULL) { pico_set_scene_clip(*xclip); }
+    if (xdst  != NULL) { pico_set_scene_dst(*xdst);  }
+    if (xsrc  != NULL) { pico_set_scene_src(*xsrc);  }
     return 0;
 }
 

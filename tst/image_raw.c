@@ -78,7 +78,7 @@ int main (void) {
         pico_output_clear();
         pico_layer_image(NULL, "crop", "../res/open.png");
         pico_set_layer("crop");
-        pico_set_scene_src(NULL, (Pico_Rel_Rect){'!', {9, 9, 30, 30},
+        pico_set_scene_src((Pico_Rel_Rect){'!', {9, 9, 30, 30},
                 PICO_ANCHOR_NW});
         pico_set_layer(NULL);
         Pico_Rel_Rect r1 = {

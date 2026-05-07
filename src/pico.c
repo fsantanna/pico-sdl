@@ -532,39 +532,39 @@ Pico_Abs_Dim pico_get_text_mode (
     }
 }
 
-void pico_get_scene (const char* layer, Pico_Layer_Scene* view) {
+void pico_get_scene (Pico_Layer_Scene* view) {
     _pico_guard();
-    *view = _pico_layer_null(layer)->scene;
+    *view = S.layer->scene;
 }
 
-Pico_Rel_Rect pico_get_scene_clip (const char* layer) {
+Pico_Rel_Rect pico_get_scene_clip (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->scene.clip;
+    return S.layer->scene.clip;
 }
 
-Pico_Abs_Dim pico_get_scene_dim (const char* layer) {
+Pico_Abs_Dim pico_get_scene_dim (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->scene.dim;
+    return S.layer->scene.dim;
 }
 
-Pico_Rel_Rect pico_get_scene_dst (const char* layer) {
+Pico_Rel_Rect pico_get_scene_dst (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->scene.dst;
+    return S.layer->scene.dst;
 }
 
-int pico_get_scene_keep (const char* layer) {
+int pico_get_scene_keep (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->scene.keep;
+    return S.layer->scene.keep;
 }
 
-Pico_Rel_Rect pico_get_scene_src (const char* layer) {
+Pico_Rel_Rect pico_get_scene_src (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->scene.src;
+    return S.layer->scene.src;
 }
 
-Pico_Abs_Dim pico_get_scene_tile (const char* layer) {
+Pico_Abs_Dim pico_get_scene_tile (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->scene.tile;
+    return S.layer->scene.tile;
 }
 
 void pico_get_window (Pico_Window* win) {
@@ -611,7 +611,7 @@ void pico_set_dim (Pico_Rel_Dim* dim) {
     _pico_guard();
     assert(S.layer==&G.root && "can only set dim from main layer");
     pico_set_window_dim(dim);
-    pico_set_scene_dim(NULL, dim);
+    pico_set_scene_dim(dim);
 }
 
 void pico_set_pencil (Pico_Layer_Pencil pencil) {
@@ -727,9 +727,9 @@ void pico_set_effect_rotate (Pico_Rot rotate) {
     _pico_output_present(0);
 }
 
-void pico_set_scene (const char* layer, Pico_Layer_Scene view) {
+void pico_set_scene (Pico_Layer_Scene view) {
     _pico_guard();
-    Pico_Layer* L = _pico_layer_null(layer);
+    Pico_Layer* L = S.layer;
     if (L->tex != NULL) {
         SDL_DestroyTexture(L->tex);
     }
@@ -744,16 +744,16 @@ void pico_set_scene (const char* layer, Pico_Layer_Scene view) {
     _pico_output_present(0);
 }
 
-void pico_set_scene_clip (const char* layer, Pico_Rel_Rect clip) {
+void pico_set_scene_clip (Pico_Rel_Rect clip) {
     _pico_guard();
-    _pico_layer_null(layer)->scene.clip = clip;
+    S.layer->scene.clip = clip;
     _pico_output_present(0);
 }
 
-void pico_set_scene_dim (const char* layer, Pico_Rel_Dim* dim) {
+void pico_set_scene_dim (Pico_Rel_Dim* dim) {
     _pico_guard();
     assert(dim->mode != '%');
-    Pico_Layer* L = _pico_layer_null(layer);
+    Pico_Layer* L = S.layer;
     Pico_Abs_Dim di = pico_cv_dim_rel_abs(dim, NULL);
     L->scene.dim = di;
     if (L->tex != NULL) {
@@ -768,29 +768,29 @@ void pico_set_scene_dim (const char* layer, Pico_Rel_Dim* dim) {
     pico_output_clear();
 }
 
-void pico_set_scene_dst (const char* layer, Pico_Rel_Rect dst) {
+void pico_set_scene_dst (Pico_Rel_Rect dst) {
     _pico_guard();
-    _pico_layer_null(layer)->scene.dst = dst;
+    S.layer->scene.dst = dst;
     _pico_output_present(0);
 }
 
-void pico_set_scene_keep (const char* layer, int on) {
+void pico_set_scene_keep (int on) {
     _pico_guard();
-    Pico_Layer* L = _pico_layer_null(layer);
+    Pico_Layer* L = S.layer;
     assert(L->type!=PICO_LAYER_ROOT && "cannot set keep on root");
     assert(L->type!=PICO_LAYER_SUB  && "cannot set keep on sub-layer");
     L->scene.keep = on;
 }
 
-void pico_set_scene_src (const char* layer, Pico_Rel_Rect src) {
+void pico_set_scene_src (Pico_Rel_Rect src) {
     _pico_guard();
-    _pico_layer_null(layer)->scene.src = src;
+    S.layer->scene.src = src;
     _pico_output_present(0);
 }
 
-void pico_set_scene_tile (const char* layer, Pico_Abs_Dim tile) {
+void pico_set_scene_tile (Pico_Abs_Dim tile) {
     _pico_guard();
-    _pico_layer_null(layer)->scene.tile = tile;
+    S.layer->scene.tile = tile;
     _pico_output_present(0);
 }
 
@@ -1025,7 +1025,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.h += 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_scene_src(NULL, r);
+                    pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_EQUALS: {
@@ -1036,7 +1036,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.h -= 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_scene_src(NULL, r);
+                    pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_LEFT: {
@@ -1046,7 +1046,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.x -= 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_scene_src(NULL, r);
+                    pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_RIGHT: {
@@ -1056,7 +1056,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.x += 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_scene_src(NULL, r);
+                    pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_UP: {
@@ -1066,7 +1066,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.y -= 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_scene_src(NULL, r);
+                    pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_DOWN: {
@@ -1076,7 +1076,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     pct.y += 0.1;
                     Pico_Rel_Rect r = S.layer->scene.src;
                     pico_cv_rect_rel_rel(&pct, &r, NULL);
-                    pico_set_scene_src(NULL, r);
+                    pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_g: {

@@ -8,7 +8,7 @@ int main (void) {
     // 01: target = bottom-right quadrant, draw centered rect
     {
         puts("target: bottom-right quadrant");
-        pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
+        pico_set_scene_dst((Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
         pico_output_clear();
         pico_output_draw_rect(
             &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
@@ -31,7 +31,7 @@ int main (void) {
     // 03: reset target, draw same — should fill full window
     {
         puts("target: reset to full window");
-        pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C});
+        pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C});
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_WHITE);
         pico_output_draw_rect(
@@ -45,7 +45,7 @@ int main (void) {
         puts("target: explicit layer");
         pico_layer_empty(NULL, "bg", (Pico_Abs_Dim){32, 32}, NULL);
         pico_set_layer("bg");
-        pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
+        pico_set_scene_dst((Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
         pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_WHITE);
@@ -64,7 +64,7 @@ int main (void) {
         puts("target: h only, w inferred");
         pico_layer_empty(NULL, "bg2", (Pico_Abs_Dim){80, 40}, NULL);
         pico_set_layer("bg2");
-        pico_set_scene_dst(NULL,
+        pico_set_scene_dst(
             (Pico_Rel_Rect){'%', {0.5, 0.5, 0, 0.4}, PICO_ANCHOR_C});
         pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
         pico_output_clear();
@@ -79,7 +79,7 @@ int main (void) {
     {
         puts("target: w only, h inferred");
         pico_set_layer("bg2");
-        pico_set_scene_dst(NULL,
+        pico_set_scene_dst(
             (Pico_Rel_Rect){'%', {0.5, 0.5, 0.4, 0}, PICO_ANCHOR_C});
         pico_set_layer(NULL);
         pico_output_clear();
@@ -91,7 +91,7 @@ int main (void) {
     {
         puts("target: w=h=0, full layer dim");
         pico_set_layer("bg2");
-        pico_set_scene_dst(NULL,
+        pico_set_scene_dst(
             (Pico_Rel_Rect){'%', {0, 0, 0, 0}, PICO_ANCHOR_NW});
         pico_set_layer(NULL);
         pico_output_clear();

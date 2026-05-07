@@ -2,7 +2,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){'!', {10, 10}});
+    pico_set_scene_dim(&(Pico_Rel_Dim){'!', {10, 10}});
 
     pico_output_clear();
     pico_set_pencil_color(pico_color_alpha(pico_get_pencil_color(), 0x80));

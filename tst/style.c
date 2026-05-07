@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Style" });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48} });
+    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {64, 48} });
 
     // shapes used across tests
     Pico_Rel_Rect rect = {

@@ -12,7 +12,7 @@ int main (void) {
     _pico_check("clip-01"); // same as pct
 
     puts("gray background");
-    pico_set_scene_clip(NULL, r1);
+    pico_set_scene_clip(r1);
     pico_set_effect_color((Pico_Color){0xCC, 0xCC, 0xCC, 0xFF});
     pico_output_clear();
     _pico_check("clip-02"); // same as pct

@@ -5,7 +5,7 @@ int main (void) {
     pico_init(1);
     pico_set_window_title("Colors Test");
     pico_set_window_dim(&(Pico_Rel_Dim){ '!', {640,480} });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48} });
+    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {64, 48} });
 
     Pico_Anchor C = PICO_ANCHOR_C;
 
@@ -252,9 +252,7 @@ int main (void) {
     {
         {
             pico_set_effect_color((Pico_Color){0, 0, 0, 0xFF});
-            pico_set_scene_dst (
-                NULL,
-                (Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE}
+            pico_set_scene_dst((Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE}
             );
         }
         puts("window color default: gray {0x77,0x77,0x77,0xFF}");

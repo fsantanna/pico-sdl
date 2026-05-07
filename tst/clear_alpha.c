@@ -4,7 +4,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,360}, .fs=0, .show=1, .title="Clear Alpha" });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){'!', {64, 36}});
+    pico_set_scene_dim(&(Pico_Rel_Dim){'!', {64, 36}});
 
     // red background on main
     pico_set_effect_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});

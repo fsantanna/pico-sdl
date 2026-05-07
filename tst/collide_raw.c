@@ -7,7 +7,7 @@ int main() {
     Pico_Rel_Dim phy = { '!', {200,200} };
     Pico_Rel_Dim log = { '!', { 20, 20} };
     pico_set_window_dim(&phy);
-    pico_set_scene_dim(NULL, &log);
+    pico_set_scene_dim(&log);
 
     Pico_Rel_Rect r = { '!', { 10-2, 10-2, 4, 4 }, PICO_ANCHOR_NW };
 

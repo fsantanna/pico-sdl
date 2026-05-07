@@ -7,7 +7,7 @@ int main (void) {
     pico_set_window((Pico_Window){
         .dim={200,200}, .fs=0, .show=1, .title="Anchoring Pct..."
     });
-    pico_set_scene_dim(NULL, &log);
+    pico_set_scene_dim(&log);
 
     // PIXELS
     {

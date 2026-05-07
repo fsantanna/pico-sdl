@@ -5,7 +5,7 @@
 int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Get-Set" });
-    pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {64, 48} });
+    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {64, 48} });
 
     // color_clear
     puts("color_clear");
@@ -130,10 +130,10 @@ int main (void) {
     puts("scene roundtrip");
     {
         Pico_Layer_Scene v1;
-        pico_get_scene(NULL, &v1);
-        pico_set_scene(NULL, v1);
+        pico_get_scene(&v1);
+        pico_set_scene(v1);
         Pico_Layer_Scene v2;
-        pico_get_scene(NULL, &v2);
+        pico_get_scene(&v2);
         assert(v2.dim.w == v1.dim.w && v2.dim.h == v1.dim.h);
         assert(v2.dst.mode == v1.dst.mode);
         assert(v2.src.mode == v1.src.mode);

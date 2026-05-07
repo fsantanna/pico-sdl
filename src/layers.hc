@@ -31,7 +31,6 @@ typedef struct {
 } Pico_Layer_Sub;
 
 static Pico_Layer* _pico_layer_name (const char* name);
-static Pico_Layer* _pico_layer_null (const char* name);
 
 static Pico_Layer* _pico_layer_pixmap (
     int mode, const char* key, Pico_Abs_Dim dim,
@@ -56,14 +55,6 @@ static Pico_Layer* _pico_layer_name (const char* name) {
     Pico_Layer* L = (Pico_Layer*) realm_get(G.realm, strlen(name)+1, name);
     pico_assert(L!=NULL && "layer does not exist");
     return L;
-}
-
-static Pico_Layer* _pico_layer_null (const char* name) {
-    if (name == NULL) {
-        return S.layer;
-    } else {
-        return _pico_layer_name(name);
-    }
 }
 
 static void _layer_attach (const char* up, const char* dn) {

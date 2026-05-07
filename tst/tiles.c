@@ -8,7 +8,7 @@ int main (void) {
     Pico_Rel_Dim log  = { '#', {4, 4} };
     Pico_Abs_Dim tile = { 4, 4 };
     pico_set_window((Pico_Window){ .dim={160,160}, .fs=0, .show=1, .title="Tile" });
-    pico_set_scene_tile(NULL, tile); pico_set_scene_dim(NULL, &log);
+    pico_set_scene_tile(tile); pico_set_scene_dim(&log);
 
     // 4x4 pixel white tile
     Pico_Color white[16];
