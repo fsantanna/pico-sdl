@@ -211,16 +211,19 @@ clause's `src:pico.c:N` to the new `SDL_Init` line in
 
 - [x] Drop `layer` param from state get/set — **34 funcs done** (8 pencil + 12 effect + 14 scene)
 - [x] Delete `_pico_layer_null` (brought forward to fix unused-function build error)
+- [x] `pico_set_layer` returns previous layer name (`const char*`); 8 C tests + 3 Lua tests adopt the `old = set(X); …; set(old)` pattern
+- [x] Rename root → world: enum `PICO_LAYER_WORLD`, field `G.world`, string `"world"` — applied to `src/`, `tst/*.c`, `lua/`, `lua/doc/guide.md`
+- [x] Make `pico_set_layer(NULL)` an error (NULL fast-path removed; `memcmp` segfaults naturally in `realm_find` — Decision 9, "let it crash")
+- [x] Make `pico.set.layer()` / `pico.set.layer(nil)` an error (`l_set_layer` uses `luaL_checkstring`)
+- [x] Migrate `pico_set_layer(NULL)` / `pico.set.layer(nil|())` test sites to `"world"`
 - [ ] ~~Drop `base`/`layer` param from CV/VS/mouse helpers~~ — **deferred** per Decision 5; only migrate non-NULL callers to NULL where possible
-- [ ] Add `world` (rename root) and `window` (window target) at init
+- [ ] Add `window` (window target) at init
 - [ ] Migrate screenshot non-NULL `base` (`src/pico.c:1658`) to use `window` layer
-- [ ] Reject reserved names in layer creators
-- [ ] Make `pico_set_layer(NULL)` / Lua no-arg an error
+- [ ] Reject reserved names in layer creators (`world`, `window`)
 - [ ] Delete `'w'` mode branches in `aux.hc`
 - [ ] Delete `_*_win_to_wld` / `_*_wld_to_win` (6 helpers)
 - [ ] Delete `pico_cv_pos_rel_win` / `pico_cv_pos_win_rel`
 - [ ] Migrate mouse / `'w'` test sites (table above)
-- [ ] Migrate `pico_set_layer(NULL)` / `set.layer()` test sites to `"world"`
 - [ ] Regenerate `asr/` for visual tests
 - [ ] Add 5 new tests
 - [ ] Update `valgrind.supp:sdl-init` line `N`
@@ -343,3 +346,12 @@ Pass criteria:
   non-NULL layer arg (`pico_set_scene_keep("right", 1)`); the
   current layer was already `"right"` on the previous line, so the
   rewrite to `pico_set_scene_keep(1)` was behavior-preserving.
+- During the world-rename sweep, `lua/tst/guide.lua:306` had a user
+  text layer keyed `"world"` (matching the literal `"World!"`
+  content). After the rename, this collided with the predefined
+  `"world"` slot at realm_put time. Resolved by renaming the user
+  layer to `"World"` (capital W) — case-sensitive realm lookup
+  keeps it distinct.
+- Lua wrapper `l_set_layer` was simplified twice in the same step:
+  first to drop the NULL fast-path (`luaL_checkstring`), then to
+  expose `pico_set_layer`'s return value (`lua_pushstring; return 1`).
