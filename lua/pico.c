@@ -302,35 +302,87 @@ static void L_image_get_dim (lua_State* L, int i, const char* path) {
 
 static void L_push_color (lua_State* L, Pico_Color clr) {
     lua_newtable(L);
-    lua_pushinteger(L, clr.r);
-    lua_setfield(L, -2, "r");
-    lua_pushinteger(L, clr.g);
-    lua_setfield(L, -2, "g");
-    lua_pushinteger(L, clr.b);
-    lua_setfield(L, -2, "b");
-    lua_pushinteger(L, clr.a);
-    lua_setfield(L, -2, "a");
+    int i = lua_gettop(L);
+    {
+        lua_pushinteger(L, clr.r);
+        lua_setfield(L, i, "r");
+        lua_pushinteger(L, clr.g);
+        lua_setfield(L, i, "g");
+        lua_pushinteger(L, clr.b);
+        lua_setfield(L, i, "b");
+        lua_pushinteger(L, clr.a);
+        lua_setfield(L, i, "a");
+    }
 }
 
 static void L_push_rel_rect (lua_State* L, Pico_Rel_Rect* r) {
     lua_newtable(L);
-    char mode[2] = { r->mode, '\0' };
-    lua_pushstring(L, mode);
-    lua_rawseti(L, -2, 1);
-    lua_pushnumber(L, r->x);
-    lua_setfield(L, -2, "x");
-    lua_pushnumber(L, r->y);
-    lua_setfield(L, -2, "y");
-    lua_pushnumber(L, r->w);
-    lua_setfield(L, -2, "w");
-    lua_pushnumber(L, r->h);
-    lua_setfield(L, -2, "h");
+    int i = lua_gettop(L);
+    {
+        char mode[2] = { r->mode, '\0' };
+        lua_pushstring(L, mode);
+        lua_rawseti(L, i, 1);
+    }
+    {
+        lua_pushnumber(L, r->x);
+        lua_setfield(L, i, "x");
+        lua_pushnumber(L, r->y);
+        lua_setfield(L, i, "y");
+        lua_pushnumber(L, r->w);
+        lua_setfield(L, i, "w");
+        lua_pushnumber(L, r->h);
+        lua_setfield(L, i, "h");
+    }
+    {
+        lua_newtable(L);
+        int j = lua_gettop(L);
+        lua_pushnumber(L, r->anchor.x);
+        lua_setfield(L, j, "x");
+        lua_pushnumber(L, r->anchor.y);
+        lua_setfield(L, j, "y");
+        lua_setfield(L, i, "anchor");
+    }
+}
+
+static void L_push_rel_pos (lua_State* L, Pico_Rel_Pos* p) {
     lua_newtable(L);
-    lua_pushnumber(L, r->anchor.x);
-    lua_setfield(L, -2, "x");
-    lua_pushnumber(L, r->anchor.y);
-    lua_setfield(L, -2, "y");
-    lua_setfield(L, -2, "anchor");
+    int i = lua_gettop(L);
+    {
+        char mode[2] = { p->mode, '\0' };
+        lua_pushstring(L, mode);
+        lua_rawseti(L, i, 1);
+    }
+    {
+        lua_pushnumber(L, p->x);
+        lua_setfield(L, i, "x");
+        lua_pushnumber(L, p->y);
+        lua_setfield(L, i, "y");
+    }
+    {
+        lua_newtable(L);
+        int j = lua_gettop(L);
+        lua_pushnumber(L, p->anchor.x);
+        lua_setfield(L, j, "x");
+        lua_pushnumber(L, p->anchor.y);
+        lua_setfield(L, j, "y");
+        lua_setfield(L, i, "anchor");
+    }
+}
+
+static void L_push_rel_dim (lua_State* L, Pico_Rel_Dim* d) {
+    lua_newtable(L);
+    int i = lua_gettop(L);
+    {
+        char mode[2] = { d->mode, '\0' };
+        lua_pushstring(L, mode);
+        lua_rawseti(L, i, 1);
+    }
+    {
+        lua_pushnumber(L, d->w);
+        lua_setfield(L, i, "w");
+        lua_pushnumber(L, d->h);
+        lua_setfield(L, i, "h");
+    }
 }
 
 static void L_set_keyboard (lua_State* L, int idx, Pico_Keyboard* k) {
@@ -523,31 +575,13 @@ static int l_cv_rect (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static void L_push_anchor (lua_State* L, Pico_Anchor a) {
-    lua_newtable(L);
-    lua_pushnumber(L, a.x); lua_setfield(L, -2, "x");
-    lua_pushnumber(L, a.y); lua_setfield(L, -2, "y");
-}
-
-static void L_push_mode (lua_State* L, char mode) {
-    char m[2] = { mode, '\0' };
-    lua_pushstring(L, m);
-    lua_seti(L, -2, 1);
-}
-
 static int l_in_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // out | in
     luaL_checktype(L, 2, LUA_TTABLE);
     Pico_Rel_Rect out = C_rel_rect(L, 1);
     Pico_Rel_Rect in  = C_rel_rect(L, 2);
     Pico_Rel_Rect ret = pico_in_rect(&out, &in);
-    lua_newtable(L);
-    L_push_mode(L, ret.mode);
-    lua_pushnumber(L, ret.x); lua_setfield(L, -2, "x");
-    lua_pushnumber(L, ret.y); lua_setfield(L, -2, "y");
-    lua_pushnumber(L, ret.w); lua_setfield(L, -2, "w");
-    lua_pushnumber(L, ret.h); lua_setfield(L, -2, "h");
-    L_push_anchor(L, ret.anchor); lua_setfield(L, -2, "anchor");
+    L_push_rel_rect(L, &ret);
     return 1;
 }
 
@@ -557,11 +591,7 @@ static int l_in_pos (lua_State* L) {
     Pico_Rel_Rect out = C_rel_rect(L, 1);
     Pico_Rel_Pos  in  = C_rel_pos(L, 2);
     Pico_Rel_Pos ret = pico_in_pos(&out, &in);
-    lua_newtable(L);
-    L_push_mode(L, ret.mode);
-    lua_pushnumber(L, ret.x); lua_setfield(L, -2, "x");
-    lua_pushnumber(L, ret.y); lua_setfield(L, -2, "y");
-    L_push_anchor(L, ret.anchor); lua_setfield(L, -2, "anchor");
+    L_push_rel_pos(L, &ret);
     return 1;
 }
 
@@ -572,10 +602,7 @@ static int l_in_dim (lua_State* L) {
     Pico_Rel_Rect out = C_rel_rect(L, 1);
     Pico_Rel_Dim  in  = C_rel_dim(L, 2);
     Pico_Rel_Dim ret = pico_in_dim(&out, &in);
-    lua_newtable(L);
-    L_push_mode(L, ret.mode);
-    lua_pushnumber(L, ret.w); lua_setfield(L, -2, "w");
-    lua_pushnumber(L, ret.h); lua_setfield(L, -2, "h");
+    L_push_rel_dim(L, &ret);
     return 1;
 }
 
