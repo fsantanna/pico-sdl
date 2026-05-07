@@ -749,7 +749,7 @@ static int l_get_now (lua_State* L) {
 
 static int l_get_effect (lua_State* L) {
     Pico_Layer_Effect show;
-    pico_get_effect(NULL, &show);
+    pico_get_effect(&show);
 
     lua_newtable(L);                    // T
 

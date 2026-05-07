@@ -323,16 +323,15 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 /// @sa pico_set_layer
 const char* pico_get_layer (void);
 
-/// @brief Gets the entire show state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @brief Gets the entire show state of the current layer.
 /// @param show output struct populated with show state
 /// @sa pico_set_effect
-void          pico_get_effect          (const char* layer, Pico_Layer_Effect* show);
-unsigned char pico_get_effect_alpha    (const char* layer);
-Pico_Color    pico_get_effect_color    (const char* layer);
-PICO_FLIP     pico_get_effect_flip     (const char* layer);
-int           pico_get_effect_grid     (const char* layer);
-Pico_Rot      pico_get_effect_rotate   (const char* layer);
+void          pico_get_effect          (Pico_Layer_Effect* show);
+unsigned char pico_get_effect_alpha    (void);
+Pico_Color    pico_get_effect_color    (void);
+PICO_FLIP     pico_get_effect_flip     (void);
+int           pico_get_effect_grid     (void);
+Pico_Rot      pico_get_effect_rotate   (void);
 
 /// @brief Gets video properties.
 /// @param path path to the Y4M video file

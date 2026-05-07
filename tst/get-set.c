@@ -11,13 +11,13 @@ int main (void) {
     puts("color_clear");
     {
         pico_set_effect_color(NULL, PICO_COLOR_RED);
-        Pico_Color c = pico_get_effect_color(NULL);
+        Pico_Color c = pico_get_effect_color();
         assert(c.r == 255 && c.g == 0 && c.b == 0);
         pico_set_effect_color(NULL, PICO_COLOR_BLUE);
-        c = pico_get_effect_color(NULL);
+        c = pico_get_effect_color();
         assert(c.r == 0 && c.g == 0 && c.b == 255);
         pico_set_effect_color(NULL, PICO_COLOR_BLACK);
-        c = pico_get_effect_color(NULL);
+        c = pico_get_effect_color();
         assert(c.r == 0 && c.g == 0 && c.b == 0);
     }
 
@@ -69,21 +69,21 @@ int main (void) {
     puts("show individual");
     {
         pico_set_effect_alpha(NULL, 0x80);
-        assert(pico_get_effect_alpha(NULL) == 0x80);
+        assert(pico_get_effect_alpha() == 0x80);
         pico_set_effect_alpha(NULL, 0xFF);
 
         pico_set_effect_grid(NULL, 1);
-        assert(pico_get_effect_grid(NULL) == 1);
+        assert(pico_get_effect_grid() == 1);
         pico_set_effect_grid(NULL, 0);
-        assert(pico_get_effect_grid(NULL) == 0);
+        assert(pico_get_effect_grid() == 0);
 
         pico_set_effect_flip(NULL, PICO_FLIP_HORIZONTAL);
-        assert(pico_get_effect_flip(NULL) == PICO_FLIP_HORIZONTAL);
+        assert(pico_get_effect_flip() == PICO_FLIP_HORIZONTAL);
         pico_set_effect_flip(NULL, PICO_FLIP_NONE);
 
         Pico_Rot rot = {45, PICO_ANCHOR_C};
         pico_set_effect_rotate(NULL, rot);
-        Pico_Rot got = pico_get_effect_rotate(NULL);
+        Pico_Rot got = pico_get_effect_rotate();
         assert(got.angle == 45);
         pico_set_effect_rotate(NULL, (Pico_Rot){0, PICO_ANCHOR_C});
     }
@@ -96,7 +96,7 @@ int main (void) {
         });
 
         Pico_Layer_Effect gs;
-        pico_get_effect(NULL, &gs);
+        pico_get_effect(&gs);
         assert(gs.alpha == 0x40);
         assert(gs.color.r == 255 && gs.color.g == 0 && gs.color.b == 0);
         assert(gs.flip == PICO_FLIP_VERTICAL);

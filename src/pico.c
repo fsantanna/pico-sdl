@@ -476,34 +476,34 @@ Uint32 pico_get_now (void) {
     return SDL_GetTicks();
 }
 
-void pico_get_effect (const char* layer, Pico_Layer_Effect* show) {
+void pico_get_effect (Pico_Layer_Effect* show) {
     _pico_guard();
-    *show = _pico_layer_null(layer)->effect;
+    *show = S.layer->effect;
 }
 
-unsigned char pico_get_effect_alpha (const char* layer) {
+unsigned char pico_get_effect_alpha (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->effect.alpha;
+    return S.layer->effect.alpha;
 }
 
-Pico_Color pico_get_effect_color (const char* layer) {
+Pico_Color pico_get_effect_color (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->effect.color;
+    return S.layer->effect.color;
 }
 
-PICO_FLIP pico_get_effect_flip (const char* layer) {
+PICO_FLIP pico_get_effect_flip (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->effect.flip;
+    return S.layer->effect.flip;
 }
 
-int pico_get_effect_grid (const char* layer) {
+int pico_get_effect_grid (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->effect.grid;
+    return S.layer->effect.grid;
 }
 
-Pico_Rot pico_get_effect_rotate (const char* layer) {
+Pico_Rot pico_get_effect_rotate (void) {
     _pico_guard();
-    return _pico_layer_null(layer)->effect.rotate;
+    return S.layer->effect.rotate;
 }
 
 Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
