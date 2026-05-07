@@ -6,16 +6,16 @@
 int main (void) {
     pico_init(1);
 
-    // get_layer returns NULL (main layer)
-    puts("get_layer returns NULL initially");
+    // get_layer returns "world" initially
+    puts("get_layer returns world initially");
     const char* layer = pico_get_layer();
-    assert(!strcmp(layer,"root"));
+    assert(!strcmp(layer,"world"));
 
-    // set_layer(NULL) switches to main
-    puts("set_layer(NULL) keeps main layer");
-    pico_set_layer(NULL);
+    // set_layer("world") is idempotent
+    puts("set_layer(world) keeps world layer");
+    pico_set_layer("world");
     layer = pico_get_layer();
-    assert(!strcmp(layer,"root"));
+    assert(!strcmp(layer,"world"));
 
     // create bg layer (32x32)
     puts("create and switch to layer");
@@ -37,7 +37,7 @@ int main (void) {
     pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
     pico_output_clear();
     pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
-    pico_set_layer(NULL);
+    pico_set_layer("world");
     pico_output_clear();
     pico_output_draw_layer("background", &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C });
     _pico_check("layers-01");
@@ -49,16 +49,16 @@ int main (void) {
     pico_output_clear();
     pico_set_pencil_color((Pico_Color){0x00, 0xFF, 0x00, 0xFF});
     pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
-    pico_set_layer(NULL);
+    pico_set_layer("world");
     pico_output_clear();
     pico_output_draw_layer("ui", &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C });
     _pico_check("layers-02");
 
-    // switch back to main
-    puts("switch back to main");
-    pico_set_layer(NULL);
+    // switch back to world
+    puts("switch back to world");
+    pico_set_layer("world");
     layer = pico_get_layer();
-    assert(!strcmp(layer,"root"));
+    assert(!strcmp(layer,"world"));
 
     // composite layers onto main
     puts("draw layers onto main");
@@ -68,8 +68,8 @@ int main (void) {
     pico_output_draw_layer("ui", &(Pico_Rel_Rect){ '%', {2.0/3, 2.0/3, 1.0/3, 1.0/3}, PICO_ANCHOR_C });
     _pico_check("layers-03");
 
-    // present works on main
-    puts("present works on main");
+    // present works on world
+    puts("present works on world");
     pico_output_present();
 
     // pico_layer_empty reuse (content preserved)
@@ -81,7 +81,7 @@ int main (void) {
     pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
     pico_output_draw_rect(&(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
     pico_layer_empty_mode('=', NULL, "reuse", (Pico_Abs_Dim){64, 64}, NULL);
-    pico_set_layer(NULL);
+    pico_set_layer("world");
     pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
     pico_output_clear();
     pico_output_draw_layer("reuse", &(Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C});
@@ -103,7 +103,7 @@ int main (void) {
 
     // draw pixmap layer
     puts("draw pixmap layer");
-    pico_set_layer(NULL);
+    pico_set_layer("world");
     pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
     pico_output_clear();
     pico_output_draw_layer("mybuf", &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});

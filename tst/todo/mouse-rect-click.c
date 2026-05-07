@@ -16,7 +16,7 @@ int main (void) {
     pico_output_draw_rect(&btn1);
     pico_output_draw_rect(&btn2);
     pico_output_draw_rect(&btn3);
-    pico_set_layer(NULL);
+    pico_set_layer("world");
 
     /* Draw layer at bottom-right, 35%x35% of screen (distorted) */
     Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE };

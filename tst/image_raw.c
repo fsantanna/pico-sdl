@@ -80,7 +80,7 @@ int main (void) {
         pico_set_layer("crop");
         pico_set_scene_src((Pico_Rel_Rect){'!', {9, 9, 30, 30},
                 PICO_ANCHOR_NW});
-        pico_set_layer(NULL);
+        pico_set_layer("world");
         Pico_Rel_Rect r1 = {
             '!', {50-24, 50-24, 0, 0}, PICO_ANCHOR_NW
         };

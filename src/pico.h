@@ -318,7 +318,7 @@ int pico_get_expert (int* fps);
 Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
 
 /// @brief Gets current layer key.
-/// @return layer key (NULL = main layer)
+/// @return layer key
 /// @sa pico_set_layer
 const char* pico_get_layer (void);
 
@@ -523,8 +523,8 @@ void pico_set_pencil_style (PICO_STYLE style);
 int pico_set_expert (int on, int fps);
 
 /// @brief Switches the current render-target layer.
-/// @param key layer key (NULL = main layer)
-/// @return previous layer name (NULL if previous was main)
+/// @param key layer key
+/// @return previous layer name
 /// @sa pico_get_layer
 const char* pico_set_layer (const char* key);
 

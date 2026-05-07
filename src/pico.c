@@ -36,7 +36,7 @@ static struct { // internal global state
     int           init;
     int           fsing;
     realm_t*      realm;
-    Pico_Layer    root;
+    Pico_Layer    world;
     SDL_Renderer* ren;
     int           presenting;
     SDL_Window*   win;
@@ -279,9 +279,9 @@ void pico_init (int on) {
             .init  = 0,
             .fsing = 0,
             .realm = realm_open(PICO_HASH_BUK),
-            .root  = {
-                .type = PICO_LAYER_ROOT,
-                .name = "root",
+            .world   = {
+                .type = PICO_LAYER_WORLD,
+                .name = "world",
                 .tex  = NULL,   // needs G.ren
                 .pencil = { .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL },
                 .effect = { .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=1, .rotate={0, PICO_ANCHOR_C} },
@@ -309,7 +309,7 @@ void pico_init (int on) {
 
         S = (typeof(S)) {
             .expert = {0, 0, -1, 0},
-            .layer  = &G.root,
+            .layer  = &G.world,
             .win    = {
                 .color = {0x77, 0x77, 0x77, 0xFF},
                 .dim   = PICO_DIM_PHY,
@@ -317,8 +317,8 @@ void pico_init (int on) {
             },
         };
 
-        // realm_get("root") resolves
-        realm_put(G.realm, '!', strlen("root")+1, "root", NULL, NULL, &G.root);
+        // realm_get("world") resolves
+        realm_put(G.realm, '!', strlen("world")+1, "world", NULL, NULL, &G.world);
 
         // create ren after win
         {
@@ -335,10 +335,10 @@ void pico_init (int on) {
 
         // create tex after ren
         {
-            G.root.tex = _tex_create(PICO_DIM_LOG);
-            SDL_SetTextureBlendMode(G.root.tex, SDL_BLENDMODE_NONE);
-            SDL_SetRenderTarget(G.ren, G.root.tex);
-            Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.root.scene.clip, NULL);
+            G.world.tex = _tex_create(PICO_DIM_LOG);
+            SDL_SetTextureBlendMode(G.world.tex, SDL_BLENDMODE_NONE);
+            SDL_SetRenderTarget(G.ren, G.world.tex);
+            Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.world.scene.clip, NULL);
             SDL_RenderSetClipRect(G.ren, &r);
             pico_output_clear();
         }
@@ -357,8 +357,8 @@ void pico_init (int on) {
 
         Mix_CloseAudio();
         TTF_Quit();
-        if (G.root.tex != NULL) {
-            SDL_DestroyTexture(G.root.tex);
+        if (G.world.tex != NULL) {
+            SDL_DestroyTexture(G.world.tex);
         }
         if (G.ren != NULL) {
             SDL_DestroyRenderer(G.ren);
@@ -609,7 +609,7 @@ const char* pico_get_window_title (void) {
 
 void pico_set_dim (Pico_Rel_Dim* dim) {
     _pico_guard();
-    assert(S.layer==&G.root && "can only set dim from main layer");
+    assert(S.layer==&G.world && "can only set dim from world layer");
     pico_set_window_dim(dim);
     pico_set_scene_dim(dim);
 }
@@ -649,24 +649,20 @@ int pico_set_expert (int on, int fps) {
         }
         S.expert.t0 = SDL_GetTicks();
     }
-    G.root.effect.grid = 0;
+    G.world.effect.grid = 0;
     return S.expert.ms;
 }
 
 const char* pico_set_layer (const char* key) {
     _pico_guard();
     const char* old = S.layer->name;
-    if (key == NULL) {
-        S.layer = &G.root;
-    } else {
-        Pico_Layer* data = (Pico_Layer*)realm_get (
-            G.realm, strlen(key)+1, key
-        );
-        pico_assert(data!=NULL && "layer does not exist");
-        //pico_assert(data->type!=PICO_LAYER_SUB &&
-        //    "cannot set render target to sub-layer");
-        S.layer = data;
-    }
+    Pico_Layer* data = (Pico_Layer*)realm_get (
+        G.realm, strlen(key)+1, key
+    );
+    pico_assert(data!=NULL && "layer does not exist");
+    //pico_assert(data->type!=PICO_LAYER_SUB &&
+    //    "cannot set render target to sub-layer");
+    S.layer = data;
 
     SDL_SetRenderTarget(G.ren, S.layer->tex);
     Pico_Abs_Rect r = pico_cv_rect_rel_abs(&S.layer->scene.clip, NULL);
@@ -701,7 +697,7 @@ void pico_set_effect_color (Pico_Color color) {
     Pico_Layer* L = S.layer;
     L->effect.color = color;
     if (!L->scene.keep && L->hier.up!=NULL) {
-        assert(L->type != PICO_LAYER_ROOT);
+        assert(L->type != PICO_LAYER_WORLD);
         assert(L->type != PICO_LAYER_SUB);
         SDL_SetRenderTarget(G.ren, L->tex);
         SDL_SetRenderDrawColor(G.ren, color.r, color.g, color.b, color.a);
@@ -737,7 +733,7 @@ void pico_set_scene (Pico_Layer_Scene view) {
     }
     L->scene = view;
     L->tex = _tex_create(view.dim);
-    SDL_BlendMode mode = (L == &G.root) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
+    SDL_BlendMode mode = (L == &G.world) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
     SDL_SetTextureBlendMode(L->tex, mode);
     SDL_SetRenderTarget(G.ren, L->tex);
     Pico_Abs_Rect r = pico_cv_rect_rel_abs(&L->scene.clip, NULL);
@@ -762,7 +758,7 @@ void pico_set_scene_dim (Pico_Rel_Dim* dim) {
         SDL_DestroyTexture(L->tex);
     }
     L->tex = _tex_create(di);
-    SDL_BlendMode mode = (L == &G.root) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
+    SDL_BlendMode mode = (L == &G.world) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
     SDL_SetTextureBlendMode(L->tex, mode);
     SDL_SetRenderTarget(G.ren, L->tex);
     Pico_Abs_Rect r = pico_cv_rect_rel_abs(&L->scene.clip, NULL);
@@ -779,7 +775,7 @@ void pico_set_scene_dst (Pico_Rel_Rect dst) {
 void pico_set_scene_keep (int on) {
     _pico_guard();
     Pico_Layer* L = S.layer;
-    assert(L->type!=PICO_LAYER_ROOT && "cannot set keep on root");
+    assert(L->type!=PICO_LAYER_WORLD && "cannot set keep on world");
     assert(L->type!=PICO_LAYER_SUB  && "cannot set keep on sub-layer");
     L->scene.keep = on;
 }
@@ -1020,7 +1016,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_MINUS: {
-                    assert(S.layer == &G.root);
+                    assert(S.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.w += 0.1;
@@ -1031,7 +1027,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_EQUALS: {
-                    assert(S.layer == &G.root);
+                    assert(S.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.w -= 0.1;
@@ -1042,7 +1038,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_LEFT: {
-                    assert(S.layer == &G.root);
+                    assert(S.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.x -= 0.1;
@@ -1052,7 +1048,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_RIGHT: {
-                    assert(S.layer == &G.root);
+                    assert(S.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.x += 0.1;
@@ -1062,7 +1058,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_UP: {
-                    assert(S.layer == &G.root);
+                    assert(S.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.y -= 0.1;
@@ -1072,7 +1068,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_DOWN: {
-                    assert(S.layer == &G.root);
+                    assert(S.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
                     pico_cv_rect_rel_rel(&S.layer->scene.src, &pct, NULL);
                     pct.y += 0.1;
@@ -1082,8 +1078,8 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_g: {
-                    assert(S.layer == &G.root);
-                    pico_set_effect_grid(!G.root.effect.grid);
+                    assert(S.layer == &G.world);
+                    pico_set_effect_grid(!G.world.effect.grid);
                     return 1;
                 }
                 case SDLK_s: {
@@ -1554,8 +1550,8 @@ static void _pico_output_present (int force) {
         // ok
     } else if (S.expert.on) {
         return;
-    } else if (S.layer != &G.root) {
-        return;  // auto-present only on main layer
+    } else if (S.layer != &G.world) {
+        return;  // auto-present only on world layer
     }
     if (!G.init) {
         return;
@@ -1564,7 +1560,7 @@ static void _pico_output_present (int force) {
     G.presenting = 1;
 
     // composite scene graph onto root.tex
-    _layer_traverse(&G.root);
+    _layer_traverse(&G.world);
 
     SDL_SetRenderTarget(G.ren, NULL);
     SDL_SetRenderDrawColor (
@@ -1606,29 +1602,29 @@ static void _pico_output_present (int force) {
             }
         }
         Pico_Abs_Rect src = pico_cv_rect_rel_abs (
-            &G.root.scene.src,
-            &(Pico_Abs_Rect){0, 0, G.root.scene.dim.w, G.root.scene.dim.h}
+            &G.world.scene.src,
+            &(Pico_Abs_Rect){0, 0, G.world.scene.dim.w, G.world.scene.dim.h}
         );
         Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-            &G.root.scene.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
+            &G.world.scene.dst, &(Pico_Abs_Rect){0, 0, S.win.dim.w, S.win.dim.h}
         );
         aux(&dst, &src, S.win.dim.w, S.win.dim.h);
-        aux(&src, &dst, G.root.scene.dim.w, G.root.scene.dim.h);
-        SDL_RenderCopy(G.ren, G.root.tex, &src, &dst);
+        aux(&src, &dst, G.world.scene.dim.w, G.world.scene.dim.h);
+        SDL_RenderCopy(G.ren, G.world.tex, &src, &dst);
     }
 
     _show_grid();
     SDL_RenderPresent(G.ren);
 
     G.presenting = 0;
-    SDL_SetRenderTarget(G.ren, G.root.tex);
-    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.root.scene.clip, NULL);
+    SDL_SetRenderTarget(G.ren, G.world.tex);
+    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.world.scene.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 }
 
 void pico_output_present (void) {
     _pico_guard();
-    assert(S.layer==&G.root && "can only present from main layer");
+    assert(S.layer==&G.world && "can only present from world layer");
     _pico_output_present(1);
 }
 
@@ -1655,7 +1651,7 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect) {
     _pico_guard();
-    assert(S.layer == &G.root);
+    assert(S.layer == &G.world);
     Pico_Abs_Rect phy = {0, 0, S.win.dim.w, S.win.dim.h};
     Pico_Abs_Rect ri = (rect == NULL) ? phy : pico_cv_rect_rel_abs(rect, &phy);
 
@@ -1684,8 +1680,8 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
     free(buf);
     SDL_FreeSurface(sfc);
 
-    SDL_SetRenderTarget(G.ren, G.root.tex);
-    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.root.scene.clip, NULL);
+    SDL_SetRenderTarget(G.ren, G.world.tex);
+    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.world.scene.clip, NULL);
     SDL_RenderSetClipRect(G.ren, &r);
 
     return ret;

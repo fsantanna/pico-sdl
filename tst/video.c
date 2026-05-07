@@ -29,7 +29,7 @@ int main (void) {
         pico_set_layer("vid");
         int ok = pico_set_video("vid", 0);
         assert(ok == 1);
-        pico_set_layer(NULL);
+        pico_set_layer("world");
         pico_output_clear();
         pico_output_draw_layer("vid",
             &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }

@@ -9,7 +9,7 @@ int main (void) {
     pico_set_effect_color(PICO_COLOR_RED);
     pico_output_clear();
     pico_output_draw_oval(&(Pico_Rel_Rect){ '%', {0.3, 0.6, 0.5, 0.5}, PICO_ANCHOR_C });
-    pico_set_layer(NULL);
+    pico_set_layer("world");
 
     /* Draw layer distorted 2:1 on main */
     Pico_Rel_Rect r = { '%', {0.6, 0.3, 0.8, 0.4}, PICO_ANCHOR_C };

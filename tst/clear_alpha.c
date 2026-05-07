@@ -19,7 +19,7 @@ int main (void) {
     pico_output_draw_rect(&(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
 
     // composite overlay on main
-    pico_set_layer(NULL);
+    pico_set_layer("world");
     pico_output_draw_layer("overlay", &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.75, 0.75}, PICO_ANCHOR_C});
     _pico_check("clear_alpha-01");
 

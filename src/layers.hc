@@ -2,7 +2,7 @@
 #define PICO_LAYERS_HC
 
 typedef enum {
-    PICO_LAYER_ROOT,
+    PICO_LAYER_WORLD,
     PICO_LAYER_PLAIN,
     PICO_LAYER_VIDEO,
     PICO_LAYER_SUB,
@@ -10,7 +10,7 @@ typedef enum {
 
 typedef struct Pico_Layer {
     PICO_LAYER            type;
-    char*                 name;     // NULL for main layer
+    char*                 name;     // "world" for the world/root layer
     SDL_Texture*          tex;
     Pico_Layer_Pencil     pencil;
     Pico_Layer_Effect     effect;

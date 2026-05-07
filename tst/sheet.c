@@ -24,7 +24,7 @@ int main (void) {
     pico_set_pencil_color(PICO_COLOR_WHITE);
     pico_output_draw_rect(&(Pico_Rel_Rect){
         '!', {2,2,2,2}, PICO_ANCHOR_NW});
-    pico_set_layer(NULL);
+    pico_set_layer("world");
 
     // Shot 1: draw full layer (normal quadrants)
     pico_output_clear();
