@@ -414,6 +414,7 @@ const char* pico_get_layer (void) {
 }
 
 Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
+    assert(rect == NULL);
     _pico_guard();
     assert((mode=='!' || mode=='%' || mode=='#' || mode=='w'));
     assert((mode!='w' || rect==NULL));
@@ -432,7 +433,7 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
         m.x = phy.x;
         m.y = phy.y;
     } else {
-        Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW, .up=rect };
+        Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW };
         pico_cv_pos_win_rel(phy, &rel, NULL);
         m.x = rel.x;
         m.y = rel.y;
@@ -490,7 +491,7 @@ Pico_Abs_Dim pico_get_text_mode (
 
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
-        Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h}, rel->up };
+        Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h} };
         SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
         int height = (int)fd_h.h;
         Pico_Layer* layer = _pico_layer_text(mode, key, height, text);
@@ -1225,7 +1226,7 @@ void pico_output_draw_pixmap (
 void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
     _pico_guard();
     Pico_Layer* layer = _pico_layer_image('=', NULL, path);
-    Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h}, rect->up };
+    Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h} };
     Pico_Abs_Dim* orig = (rel.w==0 || rel.h==0) ? &layer->scene.dim : NULL;
     _sdl_dim(&rel, NULL, orig);
     rect->w = rel.w;
@@ -1361,11 +1362,11 @@ void pico_output_draw_text_mode (
     if (text[0] == '\0') return;
 
     assert(rect->h != 0);
-    Pico_Rel_Dim rel_h = { rect->mode, {0, rect->h}, rect->up };
+    Pico_Rel_Dim rel_h = { rect->mode, {0, rect->h} };
     SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
     int height = (int)fd_h.h;
     Pico_Layer* layer = _pico_layer_text(mode, key, height, text);
-    Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h}, rect->up };
+    Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h} };
     Pico_Abs_Dim* orig = (rel.w == 0) ? &layer->scene.dim : NULL;
     _sdl_dim(&rel, NULL, orig);
     rect->w = rel.w;

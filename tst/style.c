@@ -8,19 +8,19 @@ int main (void) {
 
     // shapes used across tests
     Pico_Rel_Rect rect = {
-        '!', {5, 5, 25, 18}, PICO_ANCHOR_NW, NULL
+        '!', {5, 5, 25, 18}, PICO_ANCHOR_NW,
     };
     Pico_Rel_Rect oval = {
-        '!', {34, 5, 25, 18}, PICO_ANCHOR_NW, NULL
+        '!', {34, 5, 25, 18}, PICO_ANCHOR_NW,
     };
     Pico_Rel_Pos t1 = {
-        '!', {5, 26}, PICO_ANCHOR_NW, NULL
+        '!', {5, 26}, PICO_ANCHOR_NW,
     };
     Pico_Rel_Pos t2 = {
-        '!', {5, 43}, PICO_ANCHOR_NW, NULL
+        '!', {5, 43}, PICO_ANCHOR_NW,
     };
     Pico_Rel_Pos t3 = {
-        '!', {30, 43}, PICO_ANCHOR_NW, NULL
+        '!', {30, 43}, PICO_ANCHOR_NW,
     };
     Pico_Rel_Pos poly[] = {
         {'!', {34, 26}, PICO_ANCHOR_NW},
