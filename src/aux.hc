@@ -42,7 +42,7 @@ static SDL_FRect _f_pct (
 
 static SDL_FDim _dim_win_to_wld (SDL_FDim win) {
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.win.dim.w, G.win.dim.h}
+        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.window.pub.dim.w, G.window.pub.dim.h}
     );
     Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
     return (SDL_FDim) {
@@ -52,7 +52,7 @@ static SDL_FDim _dim_win_to_wld (SDL_FDim win) {
 
 static SDL_FDim _dim_wld_to_win (SDL_FDim wld) {
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.win.dim.w, G.win.dim.h}
+        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.window.pub.dim.w, G.window.pub.dim.h}
     );
     Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
     return (SDL_FDim) {
@@ -62,7 +62,7 @@ static SDL_FDim _dim_wld_to_win (SDL_FDim wld) {
 
 static SDL_FPoint _pos_win_to_wld (SDL_FPoint win) {
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.win.dim.w, G.win.dim.h}
+        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.window.pub.dim.w, G.window.pub.dim.h}
     );
     Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
     float rx = (win.x - dst.x) / (float)dst.w;
@@ -72,7 +72,7 @@ static SDL_FPoint _pos_win_to_wld (SDL_FPoint win) {
 
 static SDL_FPoint _pos_wld_to_win (SDL_FPoint wld) {
     Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.win.dim.w, G.win.dim.h}
+        &G.layer->scene.dst, &(Pico_Abs_Rect){0, 0, G.window.pub.dim.w, G.window.pub.dim.h}
     );
     Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
     float rx = (wld.x - src.x) / (float)src.w;

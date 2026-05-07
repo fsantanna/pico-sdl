@@ -83,18 +83,18 @@ static void _layer_traverse (Pico_Layer* UP) {
         Pico_Layer* CUR = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
         assert(CUR != NULL);
 
-        SDL_SetRenderTarget(G.ren, CUR->tex);
+        SDL_SetRenderTarget(G.window.ren, CUR->tex);
         _layer_traverse(CUR);
 
-        SDL_SetRenderTarget(G.ren, UP->tex);
+        SDL_SetRenderTarget(G.window.ren, UP->tex);
         _pico_output_draw_layer(CUR, NULL);
 
         // post-composite clear: allows drawing bw presents
         if (!CUR->scene.keep) {
-            SDL_SetRenderTarget(G.ren, CUR->tex);
+            SDL_SetRenderTarget(G.window.ren, CUR->tex);
             Pico_Color c = CUR->effect.color;
-            SDL_SetRenderDrawColor(G.ren, c.r, c.g, c.b, c.a);
-            SDL_RenderClear(G.ren);
+            SDL_SetRenderDrawColor(G.window.ren, c.r, c.g, c.b, c.a);
+            SDL_RenderClear(G.window.ren);
         }
         cur = CUR->hier.nxt;
     }
@@ -190,7 +190,7 @@ static void _pico_output_draw_layer (
         dst.w * layer->effect.rotate.anchor.x,
         dst.h * layer->effect.rotate.anchor.y
     };
-    SDL_RenderCopyEx(G.ren, layer->tex, &src, &dst,
+    SDL_RenderCopyEx(G.window.ren, layer->tex, &src, &dst,
                      layer->effect.rotate.angle, &center,
                      layer->effect.flip);
 

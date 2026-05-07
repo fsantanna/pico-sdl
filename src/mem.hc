@@ -125,7 +125,7 @@ static void* _alloc_layer_pixmap (int n, const void* key, void* ctx) {
         (void*)c->pixels, c->dim.w, c->dim.h,
         32, 4 * c->dim.w, SDL_PIXELFORMAT_RGBA32
     );
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
     pico_assert(tex != NULL);
     SDL_FreeSurface(sfc);
     return _layer_new (
@@ -153,7 +153,7 @@ static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
 
 static void* _alloc_layer_image (int n, const void* key, void* ctx) {
     const char* path = (const char*)ctx;
-    SDL_Texture* tex = IMG_LoadTexture(G.ren, path);
+    SDL_Texture* tex = IMG_LoadTexture(G.window.ren, path);
     pico_assert(tex != NULL);
     Pico_Abs_Dim dim;
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
@@ -184,7 +184,7 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
     TTF_Font* ttf = _font_get(G.layer->pencil.font, height);
     SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
     pico_assert(sfc != NULL);
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.ren, sfc);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
     pico_assert(tex != NULL);
     *dim = (Pico_Abs_Dim){ sfc->w, sfc->h };
     SDL_FreeSurface(sfc);
@@ -214,7 +214,7 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
     }
 
     SDL_Texture* tex = SDL_CreateTexture(
-        G.ren, SDL_PIXELFORMAT_YV12,
+        G.window.ren, SDL_PIXELFORMAT_YV12,
         SDL_TEXTUREACCESS_STREAMING, w, h
     );
     pico_assert(tex != NULL);
