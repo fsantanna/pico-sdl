@@ -25,7 +25,7 @@ int main (void) {
         pico_set_pencil_color(NULL, (Pico_Color){255,255,255, 0xFF});
         pico_output_draw_rect(&r);
 
-        Pico_Rel_Rect rr = { '%', {0.5,0.5, i/100.0,i/100.0}, PICO_ANCHOR_C, &r };
+        Pico_Rel_Rect rr = pico_in_rect(&r, &(Pico_Rel_Rect){ '%', {0.5,0.5, i/100.0,i/100.0}, PICO_ANCHOR_C });
         pico_set_pencil_color(NULL, (Pico_Color){255,0,0, 150});
         pico_output_draw_rect(&rr);
 

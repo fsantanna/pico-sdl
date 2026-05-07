@@ -66,7 +66,7 @@ int main (void) {
                 '!',
                 {win_w / 2, (win_h - BAR_H * 2) / 2,
                  win_w, win_h - BAR_H * 2},
-                PICO_ANCHOR_C, NULL
+                PICO_ANCHOR_C
             }
         );
 
@@ -78,7 +78,7 @@ int main (void) {
             &(Pico_Rel_Rect){
                 '!',
                 {0, win_h - BAR_H * 2, win_w, BAR_H},
-                PICO_ANCHOR_NW, NULL
+                PICO_ANCHOR_NW
             }
         );
 
@@ -92,7 +92,7 @@ int main (void) {
             &(Pico_Rel_Rect){
                 '!',
                 {0, win_h - BAR_H * 2, bar_w, BAR_H},
-                PICO_ANCHOR_NW, NULL
+                PICO_ANCHOR_NW
             }
         );
 
@@ -111,7 +111,7 @@ int main (void) {
                 &(Pico_Rel_Rect){
                     '!',
                     {2, win_h - BAR_H, 0, BAR_H},
-                    PICO_ANCHOR_NW, NULL
+                    PICO_ANCHOR_NW
                 }
             );
         }

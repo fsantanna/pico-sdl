@@ -82,7 +82,7 @@ int main (void) {
                 PICO_ANCHOR_NW});
         pico_set_layer(NULL);
         Pico_Rel_Rect r1 = {
-            '!', {50-24, 50-24, 0, 0}, PICO_ANCHOR_NW, NULL
+            '!', {50-24, 50-24, 0, 0}, PICO_ANCHOR_NW
         };
         pico_output_draw_layer("crop", &r1);
         _pico_check("image_raw-07");
@@ -90,7 +90,7 @@ int main (void) {
         puts("show medium normal");
         pico_output_clear();
         Pico_Rel_Rect r2 = {
-            '!', {50-10, 50-10, 20, 0}, PICO_ANCHOR_NW, NULL
+            '!', {50-10, 50-10, 20, 0}, PICO_ANCHOR_NW
         };
         pico_output_draw_image("../res/open.png", &r2);
         _pico_check("image_raw-08");
