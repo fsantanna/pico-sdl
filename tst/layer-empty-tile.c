@@ -6,7 +6,7 @@ int main (void) {
 
     Pico_Rel_Dim phy = { '!', {480, 480} };
     pico_set_dim(&phy);
-    pico_set_effect_grid(NULL, 0);
+    pico_set_effect_grid(0);
 
     // Layer "map": 20x15 cols/rows of 16x16 tiles -> 320x240 px texture.
     // view.tile must be set at birth so '#'-mode works without pico_set_scene.
@@ -15,7 +15,7 @@ int main (void) {
         Pico_Abs_Dim tile = { 16, 16 };
         pico_layer_empty(NULL, "map", (Pico_Abs_Dim){20, 15}, &tile);
         pico_set_layer("map");
-        pico_set_effect_grid(NULL, 1);
+        pico_set_effect_grid(1);
         pico_output_clear();
         pico_set_pencil_color(NULL, PICO_COLOR_RED);
         pico_output_draw_rect(&(Pico_Rel_Rect){ '#', {1, 1, 1, 1}, PICO_ANCHOR_NW });

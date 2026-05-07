@@ -10,13 +10,13 @@ int main (void) {
     // color_clear
     puts("color_clear");
     {
-        pico_set_effect_color(NULL, PICO_COLOR_RED);
+        pico_set_effect_color(PICO_COLOR_RED);
         Pico_Color c = pico_get_effect_color();
         assert(c.r == 255 && c.g == 0 && c.b == 0);
-        pico_set_effect_color(NULL, PICO_COLOR_BLUE);
+        pico_set_effect_color(PICO_COLOR_BLUE);
         c = pico_get_effect_color();
         assert(c.r == 0 && c.g == 0 && c.b == 255);
-        pico_set_effect_color(NULL, PICO_COLOR_BLACK);
+        pico_set_effect_color(PICO_COLOR_BLACK);
         c = pico_get_effect_color();
         assert(c.r == 0 && c.g == 0 && c.b == 0);
     }
@@ -68,30 +68,30 @@ int main (void) {
     // effect (individual setters)
     puts("effect individual");
     {
-        pico_set_effect_alpha(NULL, 0x80);
+        pico_set_effect_alpha(0x80);
         assert(pico_get_effect_alpha() == 0x80);
-        pico_set_effect_alpha(NULL, 0xFF);
+        pico_set_effect_alpha(0xFF);
 
-        pico_set_effect_grid(NULL, 1);
+        pico_set_effect_grid(1);
         assert(pico_get_effect_grid() == 1);
-        pico_set_effect_grid(NULL, 0);
+        pico_set_effect_grid(0);
         assert(pico_get_effect_grid() == 0);
 
-        pico_set_effect_flip(NULL, PICO_FLIP_HORIZONTAL);
+        pico_set_effect_flip(PICO_FLIP_HORIZONTAL);
         assert(pico_get_effect_flip() == PICO_FLIP_HORIZONTAL);
-        pico_set_effect_flip(NULL, PICO_FLIP_NONE);
+        pico_set_effect_flip(PICO_FLIP_NONE);
 
         Pico_Rot rot = {45, PICO_ANCHOR_C};
-        pico_set_effect_rotate(NULL, rot);
+        pico_set_effect_rotate(rot);
         Pico_Rot got = pico_get_effect_rotate();
         assert(got.angle == 45);
-        pico_set_effect_rotate(NULL, (Pico_Rot){0, PICO_ANCHOR_C});
+        pico_set_effect_rotate((Pico_Rot){0, PICO_ANCHOR_C});
     }
 
     // effect (bulk setter/getter)
     puts("effect bulk");
     {
-        pico_set_effect(NULL, (Pico_Layer_Effect){
+        pico_set_effect((Pico_Layer_Effect){
             .alpha=0x40, .color=PICO_COLOR_RED, .flip=PICO_FLIP_VERTICAL, .grid=1, .rotate={90, PICO_ANCHOR_C}
         });
 
@@ -104,7 +104,7 @@ int main (void) {
         assert(gs.rotate.angle == 90);
 
         // restore
-        pico_set_effect(NULL, (Pico_Layer_Effect){
+        pico_set_effect((Pico_Layer_Effect){
             .alpha=0xFF, .color={0,0,0,0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .rotate={0, PICO_ANCHOR_C}
         });
     }

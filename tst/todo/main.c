@@ -32,7 +32,7 @@ int main (void) {
 
     puts("shows white screen");
     {
-        pico_set_effect_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
+        pico_set_effect_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_clear();
         pico_input_delay(2000);
     }
@@ -46,7 +46,7 @@ int main (void) {
 
     puts("shows oval -> pixel -> rect");
     {
-        pico_set_effect_color(NULL, (Pico_Color){0x00,0x00,0x00, 0xFF});
+        pico_set_effect_color((Pico_Color){0x00,0x00,0x00, 0xFF});
         pico_set_pencil_color(NULL, (Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_clear();
         {

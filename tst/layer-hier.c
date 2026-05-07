@@ -10,7 +10,7 @@
 int main (void) {
     pico_init(1);
 
-    pico_set_effect_color(NULL, PICO_COLOR_BLACK);
+    pico_set_effect_color(PICO_COLOR_BLACK);
     pico_output_clear();
 
     pico_layer_empty("root", "L", (Pico_Abs_Dim){8, 8}, NULL);
@@ -18,7 +18,7 @@ int main (void) {
     pico_set_layer("L");
     pico_set_scene_keep(NULL, 1);
     pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {0.3, 0.3, 0.4, 0.4}, PICO_ANCHOR_C});
-    pico_set_effect_color(NULL, PICO_COLOR_WHITE);
+    pico_set_effect_color(PICO_COLOR_WHITE);
     pico_output_clear();
     pico_set_pencil_color(NULL, PICO_COLOR_RED);
     pico_output_draw_rect(
@@ -63,10 +63,10 @@ int main (void) {
     // transparent overlay with yellow background
     pico_layer_empty("root", "over", (Pico_Abs_Dim){500, 500}, NULL);
     pico_set_layer("over");
-    pico_set_effect_color(NULL, (Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
+    pico_set_effect_color((Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
     pico_output_clear();
     pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C});
-    pico_set_effect_alpha(NULL, 0x80);
+    pico_set_effect_alpha(0x80);
     pico_set_layer("root");
 
     pico_set_layer("root");

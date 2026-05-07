@@ -232,7 +232,7 @@ int main (void) {
 
     puts("color alpha function");
     {
-        pico_set_effect_color(NULL, PICO_COLOR_WHITE);
+        pico_set_effect_color(PICO_COLOR_WHITE);
         pico_output_clear();
         Pico_Color pixmap[] = {
             pico_color_alpha(PICO_COLOR_RED, 0xFF),
@@ -251,7 +251,7 @@ int main (void) {
     // window letterbox color: shrink dst to expose letterbox area
     {
         {
-            pico_set_effect_color(NULL, (Pico_Color){0, 0, 0, 0xFF});
+            pico_set_effect_color((Pico_Color){0, 0, 0, 0xFF});
             pico_set_scene_dst (
                 NULL,
                 (Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE}

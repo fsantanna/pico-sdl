@@ -986,7 +986,7 @@ static int l_set_effect (lua_State* L) {
 
     lua_getfield(L, 1, "alpha");            // T | alpha
     if (!lua_isnil(L, -1)) {
-        pico_set_effect_alpha(NULL,
+        pico_set_effect_alpha(
             (unsigned char) luaL_checkinteger(L, -1));
     }
     lua_pop(L, 1);                          // T
@@ -994,7 +994,7 @@ static int l_set_effect (lua_State* L) {
     lua_getfield(L, 1, "color");            // T | color
     if (!lua_isnil(L, -1)) {
         Pico_Color c = C_color_tis(L, lua_gettop(L));
-        pico_set_effect_color(NULL, c);
+        pico_set_effect_color(c);
     }
     lua_pop(L, 1);                          // T
 
@@ -1009,13 +1009,13 @@ static int l_set_effect (lua_State* L) {
             luaL_error(L, "invalid flip \"%s\"", s);
         }
         lua_pop(L, 1);                          // T | flip
-        pico_set_effect_flip(NULL, flip);
+        pico_set_effect_flip(flip);
     }
     lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "grid");             // T | grid
     if (!lua_isnil(L, -1)) {
-        pico_set_effect_grid(NULL, lua_toboolean(L, -1));
+        pico_set_effect_grid(lua_toboolean(L, -1));
     }
     lua_pop(L, 1);                          // T
 
@@ -1024,7 +1024,7 @@ static int l_set_effect (lua_State* L) {
         Pico_Rot rot;
         rot.angle  = C_checkfieldnum(L, lua_gettop(L), "angle");
         rot.anchor = C_anchor(L, lua_gettop(L));
-        pico_set_effect_rotate(NULL, rot);
+        pico_set_effect_rotate(rot);
     }
     lua_pop(L, 1);                          // T
 

@@ -46,14 +46,14 @@ int main (void) {
         pico_layer_empty(NULL, "bg", (Pico_Abs_Dim){32, 32}, NULL);
         pico_set_layer("bg");
         pico_set_scene_dst(NULL, (Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
-        pico_set_effect_color(NULL, (Pico_Color){0x80, 0x00, 0x00, 0xFF});
+        pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
         pico_output_clear();
         pico_set_pencil_color(NULL, PICO_COLOR_WHITE);
         pico_output_draw_rect(
             &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
         );
         pico_set_layer(NULL);
-        pico_set_effect_color(NULL, (Pico_Color){0x00, 0x00, 0x00, 0xFF});
+        pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
         pico_output_clear();
         pico_output_draw_layer("bg", NULL);
         _pico_check("view-target-04");
@@ -66,10 +66,10 @@ int main (void) {
         pico_set_layer("bg2");
         pico_set_scene_dst(NULL,
             (Pico_Rel_Rect){'%', {0.5, 0.5, 0, 0.4}, PICO_ANCHOR_C});
-        pico_set_effect_color(NULL, (Pico_Color){0x80, 0x00, 0x00, 0xFF});
+        pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
         pico_output_clear();
         pico_set_layer(NULL);
-        pico_set_effect_color(NULL, (Pico_Color){0x00, 0x00, 0x00, 0xFF});
+        pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
         pico_output_clear();
         pico_output_draw_layer("bg2", NULL);
         _pico_check("view-target-05");

@@ -12,7 +12,7 @@ int main (void) {
     _pico_check("clip-01");     // same as raw
 
     pico_set_scene_clip(NULL, r1);
-    pico_set_effect_color(NULL, (Pico_Color){0xCC, 0xCC, 0xCC, 0xFF});
+    pico_set_effect_color((Pico_Color){0xCC, 0xCC, 0xCC, 0xFF});
     pico_output_clear();
     _pico_check("clip-02");     // same as raw
 

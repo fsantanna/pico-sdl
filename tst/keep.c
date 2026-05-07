@@ -6,7 +6,7 @@ int main (void) {
     pico_init(1);
     pico_set_window((Pico_Window){ .dim={640,360}, .fs=0, .show=1, .title="Keep" });
     pico_set_scene_dim(NULL, &(Pico_Rel_Dim){'!', {64, 36}});
-    pico_set_effect_grid(NULL, 0);
+    pico_set_effect_grid(0);
     pico_output_clear();
 
     // two empty layers side by side

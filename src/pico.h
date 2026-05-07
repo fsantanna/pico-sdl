@@ -538,16 +538,15 @@ void pico_set_layer (const char* key);
 /// @sa pico_get_mouse
 void pico_set_mouse (Pico_Rel_Pos* pos);
 
-/// @brief Sets the entire effect state of a layer.
-/// @param layer layer key (NULL = current layer)
+/// @brief Sets the entire effect state of the current layer.
 /// @param effect new effect state
 /// @sa pico_get_effect
-void pico_set_effect          (const char* layer, Pico_Layer_Effect effect);
-void pico_set_effect_alpha    (const char* layer, unsigned char alpha);
-void pico_set_effect_color    (const char* layer, Pico_Color color);
-void pico_set_effect_flip     (const char* layer, PICO_FLIP flip);
-void pico_set_effect_grid     (const char* layer, int on);
-void pico_set_effect_rotate   (const char* layer, Pico_Rot rotate);
+void pico_set_effect          (Pico_Layer_Effect effect);
+void pico_set_effect_alpha    (unsigned char alpha);
+void pico_set_effect_color    (Pico_Color color);
+void pico_set_effect_flip     (PICO_FLIP flip);
+void pico_set_effect_grid     (int on);
+void pico_set_effect_rotate   (Pico_Rot rotate);
 
 /// @brief Syncs a video layer to a target frame.
 /// Supports forward and backward seeking.

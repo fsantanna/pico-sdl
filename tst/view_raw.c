@@ -28,9 +28,9 @@ int main (void) {
     pico_set_scene_dim(NULL, &(Pico_Rel_Dim){ '!', {world.w, world.h} });
 
     _pico_check("view_raw-0a");
-    pico_set_effect_grid(NULL, 0);
+    pico_set_effect_grid(0);
     _pico_check("view_raw-0b");
-    pico_set_effect_grid(NULL, 1);
+    pico_set_effect_grid(1);
 
     // WORLD - bigger
     puts("shows lower-left X, center rect, center/up-right line");

@@ -679,24 +679,24 @@ void pico_set_mouse (Pico_Rel_Pos* pos) {
     SDL_PumpEvents();
 }
 
-void pico_set_effect (const char* layer, Pico_Layer_Effect effect) {
+void pico_set_effect (Pico_Layer_Effect effect) {
     _pico_guard();
-    pico_set_effect_alpha (layer, effect.alpha);
-    pico_set_effect_color (layer, effect.color);
-    pico_set_effect_flip  (layer, effect.flip);
-    pico_set_effect_grid  (layer, effect.grid);
-    pico_set_effect_rotate(layer, effect.rotate);
+    pico_set_effect_alpha (effect.alpha);
+    pico_set_effect_color (effect.color);
+    pico_set_effect_flip  (effect.flip);
+    pico_set_effect_grid  (effect.grid);
+    pico_set_effect_rotate(effect.rotate);
 }
 
-void pico_set_effect_alpha (const char* layer, unsigned char alpha) {
+void pico_set_effect_alpha (unsigned char alpha) {
     _pico_guard();
-    _pico_layer_null(layer)->effect.alpha = alpha;
+    S.layer->effect.alpha = alpha;
     _pico_output_present(0);
 }
 
-void pico_set_effect_color (const char* layer, Pico_Color color) {
+void pico_set_effect_color (Pico_Color color) {
     _pico_guard();
-    Pico_Layer* L = _pico_layer_null(layer);
+    Pico_Layer* L = S.layer;
     L->effect.color = color;
     if (!L->scene.keep && L->hier.up!=NULL) {
         assert(L->type != PICO_LAYER_ROOT);
@@ -709,21 +709,21 @@ void pico_set_effect_color (const char* layer, Pico_Color color) {
     _pico_output_present(0);
 }
 
-void pico_set_effect_flip (const char* layer, PICO_FLIP flip) {
+void pico_set_effect_flip (PICO_FLIP flip) {
     _pico_guard();
-    _pico_layer_null(layer)->effect.flip = flip;
+    S.layer->effect.flip = flip;
     _pico_output_present(0);
 }
 
-void pico_set_effect_grid (const char* layer, int on) {
+void pico_set_effect_grid (int on) {
     _pico_guard();
-    _pico_layer_null(layer)->effect.grid = on;
+    S.layer->effect.grid = on;
     _pico_output_present(0);
 }
 
-void pico_set_effect_rotate (const char* layer, Pico_Rot rotate) {
+void pico_set_effect_rotate (Pico_Rot rotate) {
     _pico_guard();
-    _pico_layer_null(layer)->effect.rotate = rotate;
+    S.layer->effect.rotate = rotate;
     _pico_output_present(0);
 }
 
@@ -1081,7 +1081,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 }
                 case SDLK_g: {
                     assert(S.layer == &G.root);
-                    pico_set_effect_grid(NULL, !G.root.effect.grid);
+                    pico_set_effect_grid(!G.root.effect.grid);
                     return 1;
                 }
                 case SDLK_s: {
