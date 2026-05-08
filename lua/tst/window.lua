@@ -28,15 +28,28 @@ do
     assert(l.w == 100 and l.h == 100)
 end
 
--- drawing on window uses physical pixel coordinates
--- black background + red 100x100 rect at NW (50, 50)
+-- drawing: window direct red rect (NW-ish) + world blue (SE-ish).
+-- Both in pct mode, centered, 40% × 40%:
+--   red rect on window at (33%, 33%)
+--   blue world target  at (66%, 66%)
+-- The two regions slightly overlap; world composites over red in
+-- the overlap.
 do
-    print("draw on window (physical pixels)")
+    print("window red @33% + world blue @66%")
+
+    -- configure world: blue, target at (66%, 66%)
+    pico.set.layer("world")
+    pico.set.scene { target={'%', x=0.66, y=0.66, w=0.4, h=0.4, anchor='C'} }
+    pico.set.effect { color={'!', r=0x00, g=0x00, b=0xFF} }
+    pico.output.clear()
+
+    -- direct draw on window: gray bg + red rect at (33%, 33%)
     pico.set.layer("window")
-    pico.set.effect { color={'!', r=0x00, g=0x00, b=0x00} }
+    pico.set.effect { color={'!', r=0x80, g=0x80, b=0x80} }
     pico.output.clear()
     pico.set.pencil { color={'!', r=0xFF, g=0x00, b=0x00} }
-    pico.output.draw.rect({'!', x=50, y=50, w=100, h=100, anchor='NW'})
+    pico.output.draw.rect({'%', x=0.33, y=0.33, w=0.4, h=0.4, anchor='C'})
+
     pico.check("window-01")
     pico.set.layer("world")
 end

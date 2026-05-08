@@ -31,17 +31,32 @@ int main (void) {
         assert(l.w == 100 && l.h == 100);
     }
 
-    // drawing on window uses physical pixel coordinates
-    // black background + red 100x100 rect at NW (50, 50)
+    // drawing: window direct red rect (NW-ish) + world blue (SE-ish).
+    // Both in pct mode, centered, 40% × 40%:
+    //   red  rect on window at (33%, 33%)
+    //   blue world dst         at (66%, 66%)
+    // The two regions slightly overlap; world composites over red in
+    // the overlap.
     {
-        puts("draw on window (physical pixels)");
+        puts("window red @33% + world blue @66%");
+
+        // configure world: blue, dst at (66%, 66%)
+        pico_set_layer("world");
+        pico_set_scene_dst (
+            (Pico_Rel_Rect){'%', {0.66, 0.66, 0.4, 0.4}, PICO_ANCHOR_C}
+        );
+        pico_set_effect_color((Pico_Color){0x00, 0x00, 0xFF, 0xFF});
+        pico_output_clear();
+
+        // direct draw on window: gray bg + red rect at (33%, 33%)
         pico_set_layer("window");
-        pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
+        pico_set_effect_color((Pico_Color){0x80, 0x80, 0x80, 0xFF});
         pico_output_clear();
         pico_set_pencil_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
         pico_output_draw_rect (
-            &(Pico_Rel_Rect){'!', {50, 50, 100, 100}, PICO_ANCHOR_NW}
+            &(Pico_Rel_Rect){'%', {0.33, 0.33, 0.4, 0.4}, PICO_ANCHOR_C}
         );
+
         _pico_check("window-01");
         pico_set_layer("world");
     }
