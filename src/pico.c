@@ -394,6 +394,7 @@ void pico_init (int on) {
 
         _layer_attach("window", "world");
         pico_set_layer("world");
+        pico_output_clear();
 
         // prevents WMs to resize window at start
         SDL_PumpEvents();
@@ -810,14 +811,16 @@ void pico_set_scene_dim (Pico_Rel_Dim* dim) {
                 SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND
         )
     );
+
     Pico_Abs_Rect r = pico_cv_rect_rel_abs(&L->scene.clip, NULL);
+    SDL_SetRenderTarget(G.window.ren, L->tex);
+    SDL_RenderSetClipRect(G.window.ren, &r);
+
     if (L == &G.window.layer) {
+        assert(!G.window.pub.fs);
         SDL_SetWindowSize(G.window.win, di.w, di.h);
-        SDL_RenderSetClipRect(G.window.ren, &r);
         _pico_output_present(0);
     } else {
-        SDL_SetRenderTarget(G.window.ren, L->tex);
-        SDL_RenderSetClipRect(G.window.ren, &r);
         pico_output_clear();
     }
 }
