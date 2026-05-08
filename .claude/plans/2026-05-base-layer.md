@@ -245,6 +245,29 @@ clause's `src:pico.c:N` to the new `SDL_Init` line in
     - (b) merge into one `PICO_LAYER_ROOT` for "predefined top-of-tree singleton" — same semantics for both window & world; tell them apart by `tex==NULL` or pointer compare when needed
     - (c) drop entirely — pointer-compare `L == &G.world` everywhere
 
+- **Should `world.scene.keep` remain `-1` (locked)?** — closely related to the enum question above. After the architectural shift (`window` is root, `world` is a child of window), world's specialness is mostly inertia.
+
+    `keep` is consulted in two places:
+
+    | site | logic |
+    |------|------|
+    | `layers.hc:95` post-composite clear | `if (!CUR->scene.keep)` → 0 clears, ≠0 skips |
+    | `pico.c:700` `set_effect_color` shortcut clear | `if (!L->scene.keep && L->hier.up != NULL)` |
+
+    And gated by `pico.c:788` `pico_set_scene_keep` — rejects WORLD and SUB so user can't change either.
+
+    Three values today: `0` = scratch (auto-clear), `1` = persistent (don't, user-changeable), `-1` = persistent + **locked**.
+
+    Today `world.keep = -1` does two jobs: (1) skip auto-clear after composite — was vacuous before (world had no parent), but actually fires now that world is a child of window; (2) forbid user from changing it. After the shift, only (1) has architectural justification — (2) is leftover specialness.
+
+    | option | `world.keep` | user can change? | semantics |
+    |---|---|---|---|
+    | (a) status quo | `-1` | no (asserts) | "world is the main canvas, hands off" |
+    | (b) unlock | `1` | yes | "default persistent, flip to 0 for scratch / accumulation" |
+    | (c) ordinary | `0` | yes | "scratch buffer, redraw each frame" — saves explicit `output.clear()`; behavioral shift |
+
+    Recommendation: **(b)**. Preserves user-visible behavior (no auto-clear), drops the WORLD special-case in `pico_set_scene_keep`, and lets motion-trail use cases flip world to 0 explicitly. Then `-1` narrows to its real meaning: "shares state with another layer or is the root" — i.e., `window` and `sub` only. Strengthens the case for option (c) on the enum question above (drop `PICO_LAYER_WORLD`).
+
 ## Next iteration: Step B+D combined (world rename + NULL → realm error)
 
 User direction: hard rename **everywhere** (string, enum, C field,
