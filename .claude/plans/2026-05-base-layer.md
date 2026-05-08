@@ -219,11 +219,11 @@ clause's `src:pico.c:N` to the new `SDL_Init` line in
 - [ ] ~~Drop `base`/`layer` param from CV/VS/mouse helpers~~ — **deferred** per Decision 5; only migrate non-NULL callers to NULL where possible
 - [x] Merge `S` into `G` (single struct); rename `G.win` (SDL ptr) → `G.window.win`; `G.ren` → `G.window.ren`; `G.fsing`/`G.presenting` → `G.window.ing.fs`/`.ing.out`; old `S.win` (color/dim/fs) → `G.window.pub`
 - [x] Add `PICO_LAYER_WINDOW` enum + `Pico_Layer layer;` field inside `G.window` struct, init in `pico_init`
-- [ ] Realm-register `&G.window.layer` as `"window"`; `_layer_attach("window","world")`
-- [ ] Window resize handler — sync `G.window.layer.scene.dim`
+- [x] Realm-register `&G.window.layer` as `"window"`; `_layer_attach("window","world")`
+- [x] Window resize handler syncs `G.window.layer.scene.dim` (via `pico_set_scene_dim` + inline layer-switch in resize event handler)
+- [x] Migrate `G.window.pub.{color,dim,fs}` reads/writes to layer fields (color/dim → layer.effect/scene; `pub` shrunk to just `{fs}`)
+- [x] Trim public `Pico_Window` typedef to `{fs, show, title}`; remove `pico_get/set_window_color/dim`; `pico_set_scene_dim` special-cases the window layer (`SDL_SetWindowSize` + framebuffer-clip refresh); adapt Lua `l_get_window`/`l_set_window` and migrate Lua tests + docs
 - [ ] New tests for predefined `"window"` layer
-- [ ] Migrate `G.window.pub.{color,dim,fs}` reads/writes to layer fields (`G.window.layer.effect.color` / `.scene.dim` / `G.window.pub.fs` for the SDL state)
-- [ ] Trim public `Pico_Window` typedef; adapt `pico_get_window`/`pico_set_window`; adapt Lua `l_get_window`/`l_set_window`
 - [ ] Migrate screenshot non-NULL `base` (`src/pico.c:1658`) to use `window` layer
 - [ ] Retire bespoke world→window blit in `_pico_output_present`; start `_layer_traverse` from `&G.window.layer`
 - [ ] Rename `PICO_EVENT_WIN_RESIZE` → `PICO_EVENT_WINDOW_RESIZE`; tag `"win.resize"` → `"window.resize"`
@@ -377,6 +377,24 @@ Pass criteria:
   window-lifecycle state: `win` (SDL handle), `ren` (renderer),
   `layer` (Pico_Layer), `ing` (in-progress flags `fs`/`out`), `pub`
   (cached `{color,dim,fs}` exposed via `pico_get_window`).
+- After the public `Pico_Window` was trimmed to `{fs,show,title}`,
+  `G.window.pub` shrank to just `{fs}`. Color/dim live on the
+  `Pico_Layer`'s `effect.color` and `scene.dim`. Programs (C and
+  Lua) read/write window color and dim via `set.layer("window")`
+  +`set.effect`/`set.scene`+`set.layer("world")`. The convenience
+  C functions `pico_get/set_window_color/dim` were removed.
+- `pico_set_scene_dim` got a window-layer special case: it must
+  call `SDL_SetWindowSize` (no texture) and **refresh the
+  framebuffer's clip rect** — otherwise SDL retains the
+  pre-resize clip per render-target and right/bottom strips of
+  the resized window don't get cleared/blitted. Caused
+  `blend_pct-01` and similar visual tests to fail mysteriously
+  with a colored strip on the right.
+- A user-error pattern surfaced: in `colors.lua`, attempting
+  `local w = pico.get.window(); w.color = …; pico.set.window(w)`
+  produced a silent no-op once `Pico_Window` lost `color/dim` —
+  the Lua wrapper just ignores those fields. Tests had to be
+  rewritten to use the layer-switch pattern explicitly.
 
 ## Next iteration: Architectural shift — `window` as the new root
 
