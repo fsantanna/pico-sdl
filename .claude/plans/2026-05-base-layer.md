@@ -27,353 +27,121 @@ the world/root becomes a predefined layer (`"world"`).
 
 ## Decisions (locked)
 
-| # | Question                          | Choice                              |
-|---|-----------------------------------|-------------------------------------|
-| 1 | `window` role                        | drawable render target              |
-| 2 | `pico.set.layer()` no-arg         | error / required                    |
-| 3 | layer-creation `up` parameter     | keep explicit (out of scope)        |
-| 4 | NULL layer arg                    | moot — argument removed entirely    |
-| 5 | CV/VS `Pico_Abs_Rect* base` arg   | **keep for now** — real semantic override, not dead code. Proactively migrate non-NULL callers to NULL where a layer can replace the explicit base (e.g. screenshot → window). Revisit dropping the param later. |
-
-## Scope
-
-### A. Drop the `layer` / `base` parameter
-
-**State get/set** (`src/pico.c` + `src/pico.h`):
-all of these lose their `const char* layer` first arg.
-
-| group   | funcs | done | functions                                                   |
-|---------|-------|------|-------------------------------------------------------------|
-| pencil  | 8     | [x]  | get/set: `pencil`, `pencil_color`, `pencil_font`, `pencil_style` |
-| effect  | 12    | [x]  | get/set: `effect`, `effect_alpha`, `effect_color`, `effect_flip`, `effect_grid`, `effect_rotate` |
-| scene   | 14    | [x]  | get/set: `scene`, `scene_clip`, `scene_dim`, `scene_dst`, `scene_keep`, `scene_src`, `scene_tile` |
-
-**CV / VS / mouse** (`src/pico.c` + `src/pico.h`):
-~15 helpers from `2026-05-layer-utils.md`.
-Per Decision 5, **deferred** — keep `Pico_Abs_Rect* base` for now.
-Mouse migration still happens as part of plan C (`'w'` → `window`).
-
-### B. Predefined layers `world` and `window`
-
-Created in `pico_init`, never destroyable, names reserved:
-
-| name  | type           | tex                       | purpose                        |
-|-------|----------------|---------------------------|--------------------------------|
-| `world` | existing root  | (current `G.root`)        | world/root render target       |
-| `window` | new            | `NULL` → `SDL_SetRenderTarget(ren, NULL)` selects window | physical-pixel target |
-
-`G.root` keeps its struct slot but its `name` becomes `"world"`.
-`pico.set.layer("window")` calls `SDL_SetRenderTarget(NULL)` and uses
-window dim as scene.dim — output and input both work in window
-pixels.
-
-`_pico_layer_name("world" | "window")` resolves the predefined slots;
-user `pico_layer_*` creators must reject these two names.
-
-### C. Remove `'w'` mode and `_win_*` helpers
-
-Mode parser (`src/aux.hc:106-111`, `:153-158`, `:205-212`,
-`:260-264`, `:298-302`, `:336-342`):
-delete the `case 'w'` branches.
-
-Then delete `_dim_win_to_wld` / `_dim_wld_to_win` /
-`_pos_win_to_wld` / `_pos_wld_to_win` /
-`_rect_win_to_wld` / `_rect_wld_to_win`
-(`src/aux.hc:43`, `:53`, `:63`, `:73`, `:83`, `:89`).
-
-Public `pico_cv_pos_rel_win` / `pico_cv_pos_win_rel`
-(`src/pico.c:104-112`):
-delete — callers express the same thing by setting layer = `window`
-and using mode `'!'`.
-
-Mouse: `pico_get_mouse(char mode, …)` keeps mode arg (still wants
-`'!' '%' '#'`) but no longer accepts `'w'` —
-to read window-pixel mouse, set layer = `window` first, mode = `'!'`.
-
-### D. Remove `_pico_layer_null` and `set.layer()` no-arg
-
-`src/layers.hc:61-66`: delete `_pico_layer_null`.
-Remaining call sites (none, after part A) → use
-`_pico_layer_name` directly.
-
-`pico_set_layer(NULL)` becomes an `assert(name != NULL)`;
-`pico.set.layer()` with no Lua arg becomes a `lua_error`.
-
-## Files to modify
-
-| file                         | place                                  | description                                                |
-|------------------------------|----------------------------------------|------------------------------------------------------------|
-| `src/pico.h`                 | state get/set declarations             | drop `const char* layer` first param (~24 funcs)           |
-| `src/pico.h`                 | CV/VS/mouse declarations               | drop `base` / `layer` extra param (~15 funcs)              |
-| `src/pico.h`                 | `pico_cv_pos_rel_win`, `_win_rel`      | delete                                                     |
-| `src/pico.c`                 | matching definitions                   | drop params, replace `_pico_layer_null(L)` with `S.layer`  |
-| `src/pico.c:104-112`         | `pico_cv_pos_*_win`                    | delete                                                     |
-| `src/pico.c` `pico_init`     | layer setup                            | name root `"world"`, create predefined `"window"` slot          |
-| `src/pico.c` `pico_set_layer`| body                                   | special-case `"window"` → `SDL_SetRenderTarget(NULL)`; assert non-NULL |
-| `src/pico.c` `pico_get_mouse`| `'w'` branch                           | delete                                                     |
-| `src/pico.c` `pico_set_mouse`| body                                   | drop `pico_cv_pos_rel_win` call; resolve through `S.layer` |
-| `src/aux.hc:43,53,63,73,83,89`| `_*_win_to_wld`, `_*_wld_to_win`      | delete (6 helpers)                                         |
-| `src/aux.hc:106-342`         | `case 'w'` in `_sdl_*` / `_rel_*`      | delete                                                     |
-| `src/layers.hc:34,61-66`     | `_pico_layer_null`                     | delete decl + body                                         |
-| `src/layers.hc` create funcs | `_pico_layer_pixmap/image/text/sub`    | reject keys `"world"` and `"window"`                            |
-| `lua/pico.c`                 | `l_get_*` / `l_set_*` wrappers         | drop the `NULL` first arg in C calls (~24 sites)           |
-| `lua/pico.c` `l_set_layer`   | body                                   | error if no string arg                                     |
-| `lua/pico.c` `C_mode_opt`    | mode set                               | drop `'w'` from accepted modes                             |
-| `valgrind.supp`              | `sdl-init` clause                      | update `src:pico.c:N` after `pico_init` line shift         |
-
-## Tests
-
-### Will fail (must be migrated)
-
-| file                              | line(s)                            | symptom / fix                                                                          |
-|-----------------------------------|------------------------------------|----------------------------------------------------------------------------------------|
-| `lua/tst/mouse.lua`               | 10,17,24,38,45,52,66,73,94,101,110 | `pico.set.mouse({'w', …})` → `pico.set.layer("window"); pico.set.mouse({'!', …})`         |
-| `lua/tst/mouse-rect-click.lua`    | 36,44,51,59,66,74,81,89            | same — both `set.mouse({'w', …})` and `output.draw.pixel({'w', …})`                    |
-| `lua/tst/mouse-rect-click.lua`    | 18,40,52                           | `pico.set.layer()` (NULL) → `pico.set.layer("world")`                                    |
-| `lua/tst/tiles.lua`               | 10,40,80                           | `set.mouse({'w', …})` → set `window` layer + `'!'`                                        |
-| `lua/tst/cv.lua`                  | 71                                 | `{'w', w=250, h=500}` → use `window` layer + `'!'`                                        |
-| `lua/tst/layers.lua`              | 16,18                              | `pico.set.layer()` → `pico.set.layer("world")`                                           |
-| `lua/tst/todo/mouse-rect-click.lua` | —                                | `pico.get.mouse('w')` → `pico.set.layer("window")` + `pico.get.mouse('!')`                |
-| `lua/tst/todo/mouse-layer.lua`    | —                                  | same as above                                                                          |
-| `tst/mouse-w-click.c`             | 17,34,41                           | rename test to `mouse-win.c`; `'w'` → layer `"window"` + `'!'`; `pico_set_layer(NULL)` → `"world"` |
-| `tst/mouse.c`                     | 157,169,178                        | drop `pico_set_mouse('%')` (already removed); `pico_get_mouse('w', …)` → `window` + `'!'` |
-| `tst/tiles.c`                     | 9,66,76,85                         | same pattern as `mouse.c`                                                              |
-| `tst/cv.c`                        | mode 'w' loop                      | substitute `window` layer iteration                                                       |
-| `tst/layers.c`                    | 16,40,52,59                        | `pico_set_layer(NULL)` → `pico_set_layer("world")`                                       |
-
-### Visual regression — `asr/` regen needed
-
-Run `make gen T=<name>` after manual inspection
-(`make int T=<name>`):
-
-`mouse`, `mouse-rect-click`, `mouse-win` (renamed from
-`mouse-w-click`), `tiles`, `cv`, `layers`, plus any
-`guide-*` checks that reference `'w'` mode or NULL-layer fallback
-(spot-check via `grep -n "'w'\\|layer()" lua/tst/guide.lua`).
-
-### New tests
-
-| file                              | covers                                                                  |
-|-----------------------------------|-------------------------------------------------------------------------|
-| `tst/predef-layers.c`             | `pico_get_layer()` after init = `"world"`; `window` exists; both reserved    |
-| `lua/tst/predef-layers.lua`       | same on Lua side; reject `pico.layer.empty(_,"window", …)`                 |
-| `tst/win-layer-draw.c`            | drawing on `window` produces same pixels as old `'w'`-mode drawing         |
-| `lua/tst/win-layer-draw.lua`      | visual regression of mouse + draw with `window` layer                      |
-| `tst/set-layer-required.c`        | `pico_set_layer(NULL)` asserts; `pico.set.layer()` errors               |
-
-## Verification
-
-```bash
-# 1. C tests
-make tests
-
-# 2. Lua tests
-cd lua/ && make tests && cd ..
-
-# 3. Visual smoke set (after asr/ regen)
-make int T=mouse
-make int T=mouse-rect-click
-make int T=tiles
-make int T=cv
-make int T=layers
-
-# 4. Predefined layers
-pico-lua lua/tst/predef-layers.lua
-make test T=predef-layers
-```
-
-After all changes settle, update `valgrind.supp` `sdl-init`
-clause's `src:pico.c:N` to the new `SDL_Init` line in
-`pico_init`.
-
-## Out of scope
-
-- `up` parameter on layer creators stays (Decision 3).
-- Doc rewrite (api.md, guide) — track in
-  `2026-05-layer-utils.md` "Backlog" (mode table, layer-arg
-  rewording).
-- Any `Mode` type unification in `lua/doc/api.md`.
-
-## Implications summary
-
-- API surface contracts by ~40 parameters
-  (24 state + 15 CV/VS/mouse + 1 implicit `layer` on 1 mouse helper).
-- `'w'` becomes invalid input;
-  six `_win_*` helpers + two public `pico_cv_pos_*_win` deleted.
-- Two layer names (`world`, `window`) are now reserved.
-- All call sites that relied on
-  *"don't switch layer, just pass the name explicitly"*
-  must be rewritten as
-  `set.layer(L); call(); set.layer(prev)` —
-  i.e. callers pay the cost of being explicit about state.
+| #  | Question                                  | Choice                              |
+|----|-------------------------------------------|-------------------------------------|
+| 1  | `window` role                             | drawable render target              |
+| 2  | `pico.set.layer()` no-arg                 | error / required                    |
+| 3  | layer-creation `up` parameter             | keep explicit (out of scope)        |
+| 4  | NULL layer arg                            | moot — argument removed entirely    |
+| 5  | CV/VS `Pico_Abs_Rect* base` arg           | **keep for now** — real semantic override; revisit later |
+| 6  | Hard rename `root`→`world`                | yes — `"root"` stops working        |
+| 7  | C field `G.world` (lowercase)             | matches C convention                |
+| 8  | Enum / string keep uppercase / lowercase  | `PICO_LAYER_WORLD`, `"world"`       |
+| 9  | NULL key check                            | none — `realm_find` segfaults; let it crash |
+| 10 | Lua scope                                 | included (tests + guide.md)         |
+| 11 | Is `window` really a layer?               | yes — degenerate (some fields N/A)  |
+| 12 | What does `set.layer("window")` do?       | `SDL_SetRenderTarget(ren, NULL)` (window framebuffer) |
+| 13 | Does `world` survive?                     | yes — auto-created child of window  |
+| 14 | Predefined enums                          | both `PICO_LAYER_WINDOW` + `PICO_LAYER_WORLD` (open question below) |
+| 15 | Reserve `"window"` against user creators  | inherit `"world"` behavior — realm `'!'` mode |
+| 16 | `Pico_Window` ↔ `Pico_Layer` relation     | composition (`G.window` contains both `Pico_Window pub` and `Pico_Layer layer`) |
+| 17 | `Pico_Window` shape                       | trimmed to `{fs, show, title}`; color/dim live on the layer |
+| 18 | Desktop-as-parent unification             | out of scope (follow-up)            |
 
 ## Progress
 
-- [x] Drop `layer` param from state get/set — **34 funcs done** (8 pencil + 12 effect + 14 scene)
-- [x] Delete `_pico_layer_null` (brought forward to fix unused-function build error)
-- [x] `pico_set_layer` returns previous layer name (`const char*`); 8 C tests + 3 Lua tests adopt the `old = set(X); …; set(old)` pattern
-- [x] Rename root → world: enum `PICO_LAYER_WORLD`, field `G.world`, string `"world"` — applied to `src/`, `tst/*.c`, `lua/`, `lua/doc/guide.md`
-- [x] Make `pico_set_layer(NULL)` an error (NULL fast-path removed; `memcmp` segfaults naturally in `realm_find` — Decision 9, "let it crash")
-- [x] Make `pico.set.layer()` / `pico.set.layer(nil)` an error (`l_set_layer` uses `luaL_checkstring`)
-- [x] Migrate `pico_set_layer(NULL)` / `pico.set.layer(nil|())` test sites to `"world"`
-- [ ] ~~Drop `base`/`layer` param from CV/VS/mouse helpers~~ — **deferred** per Decision 5; only migrate non-NULL callers to NULL where possible
-- [x] Merge `S` into `G` (single struct); rename `G.win` (SDL ptr) → `G.window.win`; `G.ren` → `G.window.ren`; `G.fsing`/`G.presenting` → `G.window.ing.fs`/`.ing.out`; old `S.win` (color/dim/fs) → `G.window.pub`
-- [x] Add `PICO_LAYER_WINDOW` enum + `Pico_Layer layer;` field inside `G.window` struct, init in `pico_init`
-- [x] Realm-register `&G.window.layer` as `"window"`; `_layer_attach("window","world")`
-- [x] Window resize handler syncs `G.window.layer.scene.dim` (via `pico_set_scene_dim` + inline layer-switch in resize event handler)
-- [x] Migrate `G.window.pub.{color,dim,fs}` reads/writes to layer fields (color/dim → layer.effect/scene; `pub` shrunk to just `{fs}`)
-- [x] Trim public `Pico_Window` typedef to `{fs, show, title}`; remove `pico_get/set_window_color/dim`; `pico_set_scene_dim` special-cases the window layer (`SDL_SetWindowSize` + framebuffer-clip refresh); adapt Lua `l_get_window`/`l_set_window` and migrate Lua tests + docs
-- [x] Generalize `pico_output_screenshot` to read the **current** layer (drops `assert(world)`, replaces non-NULL `base` with NULL); `_pico_check` (C) and `pico.check` (Lua) wrap with `set.layer("window")`/restore so existing visual tests still snapshot the window framebuffer; `tst/shot.c` and the Ctrl+S handler also wrap explicitly
-- [x] **Add tests** that exercise `pico_output_screenshot` on **non-window layers** (world, user pixmap/empty/sub/image/text/video) — 7 cases in `tst/shot.c` + `lua/tst/shot.lua`; baselines in `tst/asr/shot-{world,empty,pixmap,sub,image,text,video}.png`.
-- [x] **Fix screenshot for any non-TARGET layer (pixmap / image / text / video)** — first attempt (commit `4e28dba`) made `pixmap`/`image`/`text` textures TARGET-access in `src/mem.hc`, but couldn't help video (STREAMING/YV12 — TARGET requires RGB-family format). Replaced with a single, universal fallback in `src/pico.c:1661` `pico_output_screenshot`: query tex access via `SDL_QueryTexture`; if not TARGET, allocate a temp TARGET tex sized to `L->scene.dim`, `SDL_RenderCopy(L->tex → tmp)` (GPU handles format conversion incl. YV12→RGB), read from `tmp`, destroy. **Reverted** the `mem.hc` changes — pixmap/image/text stay STATIC (smaller VRAM, mipmappable). No layer-creation semantic shift. Both test suites pass with all 7 cases. (`shot-image.png` baseline shifted slightly vs. the TARGET-tex approach because `IMG_LoadTexture` chooses the source format itself, no explicit `RGBA32` convert.)
-- [x] **Issue #113 filed**: drawing on non-writable layers (`pixmap`/`image`/`text`/`video`) silently no-ops because `pico_set_layer` calls `SDL_SetRenderTarget(non-TARGET-tex)` which errors and pico-sdl drops the return code. Tracked separately at <https://github.com/fsantanna/pico-sdl/issues/113>; not addressed here. Existing partial guard via `scene.keep` in `pico_set_effect_color` (`pico.c:700-707`) and the screenshot fallback above are unaffected.
-- [x] **New tests for predefined `"window"` layer** — `tst/window.c` + `lua/tst/window.lua` cover: (1) initial current layer is `"world"`; (2) `set.layer("window")` returns prev `"world"` and switches; (3) dims (window=500×500 physical, world=100×100 logical); (4) draw on window uses physical pixel coords (red 100×100 rect at NW(50,50) on 500×500 black framebuffer — `window-01` baseline). Hooked into both Makefiles. Reserved-name rejection skipped (`assert()` aborts inside same process; existing test infra has no fork pattern — covered indirectly by realm exclusive-key abort).
-- [ ] Retire bespoke world→window blit in `_pico_output_present`; start `_layer_traverse` from `&G.window.layer`
-- [ ] Rename `PICO_EVENT_WIN_RESIZE` → `PICO_EVENT_WINDOW_RESIZE`; tag `"win.resize"` → `"window.resize"`
-- [ ] Delete `'w'` mode branches in `aux.hc`
+- [x] Drop `layer` param from state get/set — 34 funcs (8 pencil + 12 effect + 14 scene)
+- [x] Delete `_pico_layer_null`
+- [x] `pico_set_layer` returns previous layer name; tests adopt `old = set(X); …; set(old)`
+- [x] Hard rename `root` → `world` in `src/`, `tst/*.c`, `lua/`, `lua/doc/guide.md`
+- [x] `pico_set_layer(NULL)` errors (NULL fast-path removed)
+- [x] `pico.set.layer()` / `(nil)` errors via `luaL_checkstring`
+- [x] Migrate test sites to `"world"`
+- [x] Merge `S` into `G`; `G.window.{win,ren,layer,ing,pub}`
+- [x] Add `PICO_LAYER_WINDOW`; register `"window"`; `_layer_attach("window","world")`
+- [x] Window resize syncs `G.window.layer.scene.dim`
+- [x] Trim `Pico_Window` to `{fs,show,title}`; `pico_set_scene_dim` window special-case
+- [x] Generalize `pico_output_screenshot` to current layer + universal blit-through-TARGET fallback in `src/pico.c:1661` (handles pixmap/image/text/static + video/streaming uniformly via `SDL_RenderCopy → temp TARGET → ReadPixels`)
+- [x] 7 screenshot test cases (`tst/shot.c` + `lua/tst/shot.lua`) for world/empty/sub/pixmap/image/text/video; baselines in `tst/asr/shot-{...}.png`
+- [x] Issue [#113](https://github.com/fsantanna/pico-sdl/issues/113) filed: drawing on non-writable layers silently no-ops (SDL error returned + dropped). Tracked separately.
+- [x] Rename `PICO_EVENT_WIN_RESIZE` → `PICO_EVENT_WINDOW_RESIZE`; tag `"win.resize"` → `"window.resize"` (commit `83a698b`)
+- [~] **`tst/window.c` + `lua/tst/window.lua`** — passing cases (1) initial layer is `"world"`, (2) `set.layer("window")` switches and returns `"world"`, (3) dims (window=500×500 phy / world=100×100 log). The (4) "draw on window + world at SE quadrant" case is **redesigned but blocked**: the on-disk `tst/asr/window-01.png` baseline reflects the post-refactor expected output (gray bg + red NW + blue SE); on current code the test fails because the bespoke world→window blit + per-frame fb clear don't preserve direct-window draws. Resolved by either of the two refactor follow-ups below.
+- [ ] **Refactor `_pico_output_present`** — start `_layer_traverse` from `&G.window.layer`, drop bespoke world→window blit. Two prerequisites:
+    - **(a) Port aux clipping into `_pico_output_draw_layer`.** The bespoke blit clips dst to window bounds and propagates the clip into src so over-extending dst rects (`navigate.c`) keep aspect/visible mapping correct. `_pico_output_draw_layer` currently only relies on SDL's automatic dst-clipping, no src compensation. Without this port, navigate/rot-flip/tile-grid/tiles/view-target baselines diverge.
+    - **(b) Decide window-tex strategy.** Today `G.window.layer.tex == NULL` (direct framebuffer). Direct-window draws on framebuffer get wiped by per-frame `SDL_RenderClear` in present. Two options:
+        - **B1: drop the per-frame fb clear in present + clear once at init/resize.** Direct draws survive between presents. **Cost:** non-full-cover world.scene.dst leaves residue from previous frames (breaks 17 baselines). Tests using partial dst would need explicit window-fb clears between sub-tests.
+        - **B2: give window a TARGET tex of window dim.** Direct draws live on window.tex (persist via `keep`). Present composites world onto window.tex, then blits window.tex → fb. **Cost:** extra blit per present (cheap); larger refactor in `mem.hc`/`pico.c`/`screenshot`/`set_layer` (window's `tex==NULL` is special-cased throughout).
+    - Recommendation: **B2 + (a)**. Preserves existing visual semantics; gives direct-window draws a proper home; cleanly retires the bespoke blit.
+- [ ] Delete `'w'` mode branches in `aux.hc` (5 sites); after the refactor lands
 - [ ] Delete `_*_win_to_wld` / `_*_wld_to_win` (6 helpers)
 - [ ] Delete `pico_cv_pos_rel_win` / `pico_cv_pos_win_rel`
-- [ ] Migrate mouse / `'w'` test sites (table above)
-- [ ] Regenerate `asr/` for visual tests
-- [ ] Add 5 new tests
-- [ ] Update `valgrind.supp:sdl-init` line `N`
+- [ ] Migrate mouse / `'w'` test sites
+- [ ] Regenerate `asr/` for any visual tests that shift after the refactor
+- [ ] Add `pico.set.scene_keep` test once world is unlocked (per Open question below)
+- [ ] Update `valgrind.supp:sdl-init` line `N` after `pico_init` line shifts
 
-### Open questions (deferred discussion)
+### Open questions
 
-- **Do we need both `PICO_LAYER_WORLD` and `PICO_LAYER_WINDOW` enum values?** They're only used for assert-style "is this the special root?" checks (`pico.c:717,795` reject WORLD from clear-on-effect-color and from `set.scene.keep`); WINDOW has the same singleton-root semantics. Three options:
+- **Do we need both `PICO_LAYER_WORLD` and `PICO_LAYER_WINDOW` enum values?** Used only for assert-style "is this a special root?" checks. Three options:
     - (a) keep both — symmetric with PLAIN/VIDEO/SUB, precise messages
-    - (b) merge into one `PICO_LAYER_ROOT` for "predefined top-of-tree singleton" — same semantics for both window & world; tell them apart by `tex==NULL` or pointer compare when needed
+    - (b) merge into one `PICO_LAYER_ROOT` — same semantics; tell apart by `tex==NULL` or pointer compare
     - (c) drop entirely — pointer-compare `L == &G.world` everywhere
 
-- **Should `world.scene.keep` remain `-1` (locked)?** — closely related to the enum question above. After the architectural shift (`window` is root, `world` is a child of window), world's specialness is mostly inertia.
+- **Should `world.scene.keep` remain `-1` (locked)?** After the architectural shift, world's specialness is mostly inertia.
 
-    `keep` is consulted in two places:
+    `keep` is consulted at:
 
     | site | logic |
-    |------|------|
-    | `layers.hc:95` post-composite clear | `if (!CUR->scene.keep)` → 0 clears, ≠0 skips |
-    | `pico.c:700` `set_effect_color` shortcut clear | `if (!L->scene.keep && L->hier.up != NULL)` |
+    |------|-------|
+    | `layers.hc:95` post-composite clear | `if (!CUR->scene.keep)` clears |
+    | `pico.c:700` `set_effect_color` shortcut | `if (!L->scene.keep && L->hier.up != NULL)` |
+    | `pico.c:788` `set_scene_keep` gate | rejects WORLD and SUB (user can't change) |
 
-    And gated by `pico.c:788` `pico_set_scene_keep` — rejects WORLD and SUB so user can't change either.
-
-    Three values today: `0` = scratch (auto-clear), `1` = persistent (don't, user-changeable), `-1` = persistent + **locked**.
-
-    Today `world.keep = -1` does two jobs: (1) skip auto-clear after composite — was vacuous before (world had no parent), but actually fires now that world is a child of window; (2) forbid user from changing it. After the shift, only (1) has architectural justification — (2) is leftover specialness.
+    `world.keep = -1` does two jobs: (1) skip auto-clear after composite — fires now that world has a parent; (2) forbid user changes (leftover specialness).
 
     | option | `world.keep` | user can change? | semantics |
     |---|---|---|---|
-    | (a) status quo | `-1` | no (asserts) | "world is the main canvas, hands off" |
-    | (b) unlock | `1` | yes | "default persistent, flip to 0 for scratch / accumulation" |
-    | (c) ordinary | `0` | yes | "scratch buffer, redraw each frame" — saves explicit `output.clear()`; behavioral shift |
+    | (a) status quo | `-1` | no | "world is the main canvas, hands off" |
+    | (b) unlock | `1` | yes | "default persistent, flip to 0 for accumulation" |
+    | (c) ordinary | `0` | yes | "scratch buffer, redraw each frame" — saves explicit `output.clear()` |
 
-    Recommendation: **(b)**. Preserves user-visible behavior (no auto-clear), drops the WORLD special-case in `pico_set_scene_keep`, and lets motion-trail use cases flip world to 0 explicitly. Then `-1` narrows to its real meaning: "shares state with another layer or is the root" — i.e., `window` and `sub` only. Strengthens the case for option (c) on the enum question above (drop `PICO_LAYER_WORLD`).
+    Recommendation: **(b)**. Keeps user-visible behavior, drops the WORLD case in `set_scene_keep`, lets motion-trails opt in. Strengthens the case for option (c) on the enum question (drop `PICO_LAYER_WORLD`).
 
-## Next iteration: Step B+D combined (world rename + NULL → realm error)
+## Failed refactor attempt (2026-05-08)
 
-User direction: hard rename **everywhere** (string, enum, C field,
-comments, vars) AND centralize NULL-as-error in the realm
-(single check site). Step D's `pico_set_layer(NULL)` → error
-fold-in is therefore folded into step B.
+Tried to land the present refactor (line 230 above) in one pass:
 
-### Decisions (added now)
+1. `_pico_output_present`: `_layer_traverse(&G.window.layer)` instead of `&G.world`; dropped bespoke aux-clipped blit; dropped per-frame fb clear; allowed auto-present from window or world
+2. `pico_init`: one-shot fb clear with window's color
+3. `pico_set_scene_dim` window branch: fb clear on resize
+4. `pico_output_present()`: relaxed `world`-only assert to `world || window`
+5. Redesigned `window-01`: red rect on window at NW + world blue at SE quadrant — meant to demonstrate both visible
 
-| #  | Question                              | Choice                                      |
-|----|---------------------------------------|---------------------------------------------|
-| 6  | Hard rename or alias?                 | **hard rename** — `"root"` stops working    |
-| 7  | C field name capitalization           | **`G.world`** (lowercase, matches C convention) |
-| 8  | Enum / string keep uppercase          | `PICO_LAYER_WORLD`, `"world"` (matches public name) |
-| 9  | Single place for NULL key check       | **none added** — let `memcmp(NULL, …)` segfault naturally inside `realm_find`. Stack trace points to the misuse; no need for a polite assert. |
-| 10 | Lua scope                             | **included** — Lua tests + `lua/doc/guide.md` migrate too |
+Result: 17 visual baselines diverged. Two distinct causes:
 
-### A. C source rename + NULL guard
+| cause | tests hit | fix |
+|---|---|---|
+| dropped fb clear → leftover content from prior frames in non-full-cover regions | colors-08–10 (4) | follow-up B1/B2 (above) |
+| `_pico_output_draw_layer` lacks aux-clipping → over-extending dst loses src compensation | navigate-02–07, rot-flip-02/05/09, tile-grid-02–04, tiles-01–04, view-target-01/02 (17) | follow-up (a) (above) |
 
-| file              | place                               | change                                                     |
-|-------------------|-------------------------------------|------------------------------------------------------------|
-| src/layers.hc     | 5                                   | `PICO_LAYER_ROOT,` → `PICO_LAYER_WORLD,`                     |
-| src/pico.c        | `G` struct (~39)                    | rename `Pico_Layer root;` field → `Pico_Layer wld;`        |
-| src/pico.c        | 283                                 | `.type = PICO_LAYER_ROOT` → `PICO_LAYER_WORLD`               |
-| src/pico.c        | 284                                 | `.name = "root"` → `.name = "world"`                         |
-| src/pico.c        | 320–321                             | `realm_put(..., "root", &G.root)` → `..., "world", &G.wld`   |
-| src/pico.c        | ~25 sites (`G.root.* ` / `&G.root`) | bulk replace `G.root` → `G.world`                            |
-| src/pico.c        | 656–673 (`pico_set_layer`)          | drop `if (key == NULL) S.layer = &G.wld;` fast-path; let `realm_get` assert |
-| src/pico.c        | 282–321 init comment                | `// realm_get("root") resolves` → `"world"`                  |
-| src/pico.c        | assert messages mentioning "root"/"main" | freshen wording (`"can only set dim from main layer"` etc.) |
-| src/pico.h        | any doc lines mentioning root       | swap to `world`                                              |
+Reverted. Two prerequisites split out as concrete follow-ups so the next attempt is bounded.
 
-### B. C tests
+## Out-of-scope follow-ups
 
-| file                              | sites                 | change                                                |
-|-----------------------------------|-----------------------|-------------------------------------------------------|
-| tst/keep.c                        | 13, 14                | `"root"` → `"world"`                                    |
-| tst/layer-hier.c                  | 6 (comment), 16, 32, 44, 53, 64 | same                                        |
-| tst/layers.c                      | 12, 16, 18, 40, 52, 59, 61, 84, 106 | string `"root"` → `"world"`; `set_layer(NULL)` → `set_layer("world")` |
-| tst/clear_alpha.c                 | 22                    | `set_layer(NULL)` → `set_layer("world")`                |
-| tst/sheet.c                       | 27                    | same                                                  |
-| tst/video.c                       | 32                    | same                                                  |
-| tst/image_raw.c                   | 83                    | same                                                  |
-| tst/todo/mouse-rect.c             | 12                    | same                                                  |
-| tst/todo/mouse-rect-click.c       | 19                    | same                                                  |
+- `'w'` mode + 6 `_win_*` helpers + `pico_cv_pos_*_win` deletion — gated on the present refactor
+- CV/VS `base` arg removal (Decision 5)
+- Doc rewrite (`api.md`, `guide.md`) — track in `2026-05-layer-utils.md` Backlog
+- **Desktop-as-parent unification** (Decision 18): wire `window.effect.alpha` → `SDL_SetWindowOpacity`; `window.scene.dst` → `SDL_SetWindow{Position,Size}`; fold `Pico_Window.fs` into `scene.dst`. After that, `Pico_Window` collapses to layer + sdl-handle.
 
-### C. Lua tests + guide
+## Historical (compressed)
 
-| file                              | sites                                                   | change                          |
-|-----------------------------------|---------------------------------------------------------|---------------------------------|
-| lua/tst/guide.lua                 | 291, 296                                                | `"root"` → `"world"`              |
-| lua/tst/layers.lua                | 8, 14, 57                                               | `"root"` → `"world"`              |
-| lua/tst/layer-hier.lua            | 12, 26, 30, 36, 40, 49, 54, 60, 67, 74, 76, 95          | `"root"` → `"world"` (×12)        |
-| lua/doc/guide.md                  | 847, 852                                                | `"root"` → `"world"`              |
-| lua/tst/clear_alpha.lua, layer-empty-tile.lua, sheet.lua, video.lua, rot-flip.lua, todo/mouse-layer.lua | various | `pico.set.layer(nil)` / `pico.set.layer()` → `pico.set.layer("world")` |
-| lua/pico.c (`l_set_layer`)        | ~973                                                    | reject nil/no-arg with `luaL_error` (Decision 2 of master plan) |
+### Step B+D: world rename + NULL → realm error
+Hard rename `"root"` → `"world"` everywhere; `pico_set_layer(NULL)` becomes a `realm_find` segfault rather than a polite assert. Fold-in: Lua wrapper `l_set_layer` uses `luaL_checkstring`. Done across `src/`, `tst/*.c`, `lua/`, `lua/doc/guide.md`. See "Notes from execution" for sed pitfalls.
 
-### What remains untouched
+### Architectural shift: `window` as the new root
+Hierarchy: `window (PICO_LAYER_WINDOW, tex=NULL) → world (PICO_LAYER_WORLD, tex=TARGET) → user layers`. `Pico_Window` is the public type (trimmed to `{fs,show,title}`). Internal `G.window` contains both the public struct and private layer/sdl. The G/S merge and most window-as-layer wiring are in. **Pending pieces** are the present refactor (line 230) and consequences (`'w'` mode deletion, etc.).
 
-- `&G.wld` pointer references — pointer semantics unchanged.
-- `up=NULL` on layer creators (Decision 3).
-- `Pico_Abs_Rect* base=NULL` (Decision 5).
-- `font=NULL`, `pico_get_image(path, NULL)`, `pico_input_event(NULL, …)`,
-  and other genuine semantic NULLs — none of these touch realm or layers.
-
-### NULL elimination — explicit answer
-
-This combined step removes **exactly one** NULL-meaning:
-`pico_set_layer(NULL) ≡ "go to root"`.
-After this:
-
-- `pico_set_layer(NULL)` aborts at `realm_find`'s assert.
-- `pico.set.layer(nil)` / `pico.set.layer()` errors at the Lua wrapper.
-
-Other NULLs listed in the master plan stay (`up`, `base`, `font`,
-image-dim override, event-target). These are **not** "current-layer"
-sugar — they encode genuine optionality.
-
-### Why no explicit NULL check?
-
-- `realm_find` already calls `memcmp(e->key, key, n)` — passing `NULL`
-  segfaults at first hash collision (or earlier in `realm_djb2`).
-- Stack trace already points at the caller; an `assert` would just be
-  prettier output, not better diagnostics.
-- Removing `pico_set_layer`'s NULL fast-path still simplifies that
-  function.
-
-### Verification (combined step B+D)
-
-```bash
-# 1. C tests (32 files; 7 touched above; rest unaffected)
-make tests
-
-# 2. Lua tests
-cd lua/ && make tests && cd ..
-
-# 3. Negative test — confirm NULL aborts
-# (manual: pico_set_layer(NULL) should fire realm assert)
-```
-
-Pass criteria:
-- All 32 C tests + Lua test suite pass.
-- `pico_set_layer(NULL)` segfaults inside `realm_find` (let-it-crash).
-- No remaining `"root"` literals in `src/`, `tst/`, `lua/`.
-
-### Notes from execution
+## Notes from execution
 
 - `_pico_layer_null` had to be deleted earlier than planned: once
   the state get/set sweep removed every caller, GCC's
@@ -385,252 +153,39 @@ Pass criteria:
 - `tst/keep.c:23` was the only state-group call site with a real
   non-NULL layer arg (`pico_set_scene_keep("right", 1)`); the
   current layer was already `"right"` on the previous line, so the
-  rewrite to `pico_set_scene_keep(1)` was behavior-preserving.
+  rewrite was behavior-preserving.
 - During the world-rename sweep, `lua/tst/guide.lua:306` had a user
-  text layer keyed `"world"` (matching the literal `"World!"`
-  content). After the rename, this collided with the predefined
-  `"world"` slot at realm_put time. Resolved by renaming the user
-  layer to `"World"` (capital W) — case-sensitive realm lookup
-  keeps it distinct.
+  text layer keyed `"world"` (the literal `"World!"` content).
+  After the rename, this collided with the predefined `"world"`
+  slot at `realm_put` time. Resolved by renaming the user layer to
+  `"World"` (capital W) — case-sensitive realm lookup.
 - Lua wrapper `l_set_layer` was simplified twice in the same step:
-  first to drop the NULL fast-path (`luaL_checkstring`), then to
-  expose `pico_set_layer`'s return value (`lua_pushstring; return 1`).
-- G/S merge done as a separate pass (substep #6 brought forward).
-  Resolution of the `.win` field-name clash chose to rename the SDL
-  handle: `G.win` (SDL_Window*) → `G.window.win` (later regrouped
-  into `G.window.{win,ren,layer,ing,pub}` sub-struct).
-- `G.window` was further refactored (user direction) to group all
-  window-lifecycle state: `win` (SDL handle), `ren` (renderer),
-  `layer` (Pico_Layer), `ing` (in-progress flags `fs`/`out`), `pub`
-  (cached `{color,dim,fs}` exposed via `pico_get_window`).
-- After the public `Pico_Window` was trimmed to `{fs,show,title}`,
-  `G.window.pub` shrank to just `{fs}`. Color/dim live on the
-  `Pico_Layer`'s `effect.color` and `scene.dim`. Programs (C and
-  Lua) read/write window color and dim via `set.layer("window")`
-  +`set.effect`/`set.scene`+`set.layer("world")`. The convenience
-  C functions `pico_get/set_window_color/dim` were removed.
-- `pico_set_scene_dim` got a window-layer special case: it must
-  call `SDL_SetWindowSize` (no texture) and **refresh the
-  framebuffer's clip rect** — otherwise SDL retains the
-  pre-resize clip per render-target and right/bottom strips of
-  the resized window don't get cleared/blitted. Caused
-  `blend_pct-01` and similar visual tests to fail mysteriously
-  with a colored strip on the right.
-- A user-error pattern surfaced: in `colors.lua`, attempting
-  `local w = pico.get.window(); w.color = …; pico.set.window(w)`
-  produced a silent no-op once `Pico_Window` lost `color/dim` —
-  the Lua wrapper just ignores those fields. Tests had to be
-  rewritten to use the layer-switch pattern explicitly.
-
-## Next iteration: Architectural shift — `window` as the new root
-
-User direction (2026-05-07): elevate `window` to a real layer and
-**make it the root** of the hierarchy. `world` keeps its name and
-default-current status, but structurally it becomes a child of
-`window` like any other layer.
-
-### Decisions (added)
-
-| #  | Question                                  | Choice                                  |
-|----|-------------------------------------------|-----------------------------------------|
-| 11 | Is `window` really a layer?               | **yes** — but a degenerate one: many `Pico_Layer` fields don't apply (see § Field applicability below). Holds a layer's worth of state with several no-ops. |
-| 12 | What does `pico_set_layer("window")` do?  | `SDL_SetRenderTarget(G.ren, NULL)` — draws straight to the window framebuffer |
-| 13 | Does `world` survive?                     | **yes** — auto-created child of `window` at `pico_init`; same role as today (default current after init), only structurally now a child rather than the root |
-| 14 | Predefined enum                           | add `PICO_LAYER_WINDOW`; keep `PICO_LAYER_WORLD` |
-| 15 | Reserve `"window"` against user creators  | **inherit current `"world"` behavior** — register with realm mode `'!'`. `pico_layer_*(_, "window", …)` aborts via the same `realm: exclusive key exists` assert that already protects `"world"`. **No explicit creator guards.** Pre-existing `'='`-mode foot-gun (silently returns the predefined slot) is left as-is — same risk for both reserved keys. |
-| 16 | `Pico_Window` ↔ `Pico_Layer` relation     | **contains** (composition, not subtype prefix): `struct Pico_Window { Pico_Layer layer; int fs; int show; const char* title; }`. Realm registers `&G.window.layer`. Explicit C `has-a` over implicit `is-a`. |
-| 17 | Migrate `Pico_Window`'s `color`/`dim`     | move into `G.window.layer`: `color` → `effect.color`, `dim` → `scene.dim`. `fs`/`show`/`title` stay on `Pico_Window` — pure SDL window state. |
-| 18 | Desktop-as-parent unification             | **out of scope** for now. Conceptually, `effect.alpha` ↔ `SDL_SetWindowOpacity`, `scene.dst` ↔ `SDL_SetWindowPosition`+`SDL_SetWindowSize`, `Pico_Window.fs` ↔ `scene.dst = full desktop`. Wiring those is a follow-up; this iteration only models window as a render target. |
-
-### Field applicability for `window`
-
-The window has no parent inside pico (the OS desktop is its conceptual parent, but pico doesn't model that yet — Decision 18). Several `Pico_Layer` fields are no-ops:
-
-| field                   | window | reason                                                |
-|-------------------------|--------|-------------------------------------------------------|
-| `effect.flip`/`rotate`  | N/A    | OS WM doesn't flip/rotate windows                     |
-| `effect.alpha`          | N/A *  | * unless wired to `SDL_SetWindowOpacity` (Decision 18) |
-| `scene.dst`             | N/A *  | * unless wired to `SDL_SetWindow{Position,Size}`       |
-| `scene.src`             | N/A    | can't show only a slice of our window to the OS       |
-| `scene.keep`            | N/A    | no compositor we control                              |
-| `hier.up`               | N/A    | no parent in pico's tree                              |
-| `hier.nxt`              | N/A    | siblings = other apps' windows, outside scope         |
-
-Fields that **do** apply: `name`, `type`, `tex (=NULL)`, `pencil`, `effect.color` (clear color), `effect.grid`, `scene.dim`, `scene.tile`, `scene.clip`, `hier.dn` (child list).
-
-For `world`: every `Pico_Layer` field applies (it's a fully-typical layer). Window is degenerate; world is canonical.
-
-### Architecture
-
-#### Layer hierarchy
-
-Before:
-
-```
-G.world  (PICO_LAYER_WORLD, tex≠NULL, name="world")  ← root
-  └─ user layers
-```
-
-After:
-
-```
-G.window.layer  (PICO_LAYER_WINDOW, tex=NULL, name="window") ← new root
-  └─ G.world    (PICO_LAYER_WORLD,  tex≠NULL, name="world")  ← default child
-      └─ user layers
-```
-
-#### Internal state (G), public Pico_Window
-
-Decision 16 (revised): `Pico_Window` is the **public** type. Inside
-`G`, the window slot is an **anonymous struct** that *contains* a
-`Pico_Window` by value as `.pub`, plus the private fields
-`.layer` and `.sdl`. This:
-
-- exposes only `{fs, show, title}` to API users (everything in the public type),
-- keeps `Pico_Layer` and `SDL_Window*` private (reachable only via `G.window`).
-
-Decision 17 (revised): also **merge `S` into `G`**. The G/S split was
-soft (everything is `static`-global); one struct + sub-groupings is
-simpler. `S.win.{color,dim,fs}` and `S.layer` and `S.expert` all
-move under `G`.
-
-```c
-// public — pico.h
-typedef struct {
-    int         fs;
-    int         show;
-    const char* title;
-} Pico_Window;
-
-// internal — pico.c
-static struct {
-    int           init;
-    int           fsing;
-    realm_t*      realm;
-    SDL_Renderer* ren;
-    int           presenting;
-
-    struct {                       // anonymous: G.window.*
-        Pico_Window pub;           // embedded public type by value
-        Pico_Layer  layer;         // private
-        SDL_Window* sdl;           // private (was G.win)
-    } window;
-
-    Pico_Layer    world;
-    Pico_Layer*   layer;           // current render target (was S.layer)
-
-    struct { int on, fps, ms, t0; } expert;     // was S.expert
-} G;
-```
-
-Access patterns:
-
-| from | code |
-|---|---|
-| `pico_get_window(out)` | `*out = G.window.pub;` |
-| `pico_set_window(in)` | `G.window.pub = in;` then SDL syncs |
-| `pico_get_window_color()` | `return G.window.layer.effect.color;` |
-| `pico_get_window_dim()` | `return G.window.layer.scene.dim;` |
-| `pico_set_layer(...)` | `G.layer = …;` |
-
-### A. C source
-
-| file              | place                            | change                                                              |
-|-------------------|----------------------------------|---------------------------------------------------------------------|
-| `src/layers.hc`   | enum `PICO_LAYER`                | add `PICO_LAYER_WINDOW`                                             |
-| `src/pico.h`      | `Pico_Window` typedef            | trim to public-only fields: `struct { int fs; int show; const char* title; }`. Drop `color` and `dim` — they're now layer-managed (`G.window.layer.effect.color`, `G.window.layer.scene.dim`); access via `pico_get_window_color()` / `pico_get_window_dim()` (existing) which now read the layer. |
-| `src/pico.c`      | `G` struct                       | replace `S` and `G` with a single merged `G`: anonymous `window { Pico_Window pub; Pico_Layer layer; SDL_Window* sdl; }`, plus `world`, `layer` (current target), `expert`. Old `G.win` (SDL_Window*) → `G.window.sdl`. Old `S.layer` → `G.layer`. Old `S.expert` → `G.expert`. Old `S.win.{color,dim,fs}` retired (live in the layer / `G.window.pub.fs`). |
-| `src/pico.c`      | `pico_init`                      | initialize `G.window.layer` (`name="window"`, `tex=NULL`, `scene.dim`=PICO_DIM_PHY, `type=PICO_LAYER_WINDOW`), `G.window.pub` (`{fs,show,title}` from SDL state), `G.window.sdl` (the `SDL_CreateWindow` result); register `&G.window.layer` in realm with key `"window"`; `_layer_attach("window","world")` so world is its child |
-| `src/pico.c`      | `pico_get_window` / `pico_set_window` | adapt to trimmed public shape: copy `G.window.pub` for get; assign `G.window.pub` for set, then sync SDL (`SDL_SetWindowFullscreen`/`Title`/`Show`). Color/dim no longer in the struct — separate convenience getters/setters delegate to `G.window.layer`. |
-| `src/pico.c`      | `pico_set_layer`                 | no special-case needed — `SDL_SetRenderTarget(G.ren, G.layer->tex)` already does the right thing when `tex==NULL` (renders to window framebuffer) |
-| `src/pico.c`      | `_pico_output_present` (~1547–1623) | retire the bespoke world→window blit; the scene-graph traverse now naturally composites world (and any sibling/child of window) onto the window framebuffer |
-| `src/pico.c`      | `_layer_traverse` start          | start from `&G.window.layer` (was `&G.world`) for the present walk |
-| `src/pico.c`      | resize handler                   | when window resizes, update `G.window.layer.scene.dim` to match     |
-| `src/pico.c`      | asserts `S.layer == &G.world`    | become `G.layer == &G.world` after the S→G merge — world remains the "logical main" for present-/dim-required ops |
-| `src/pico.c:1658` | screenshot non-NULL `base`       | replace with `pico_set_layer("window"); pico_cv_rect_rel_abs(rect, NULL); pico_set_layer(prev);` (eliminates the only non-NULL CV `base` caller in src) |
-| Lua side          | `lua/pico.c` `l_get_window`/`l_set_window` | adapt to trimmed `Pico_Window` shape: drop `color`/`dim` from the table push/parse; the existing `pico.set.window {color=…, dim=…}` table calls become invalid — migrate to `pico.set.layer("window"); pico.set.effect{color=…}; pico.set.scene{dim=…}`, OR keep `pico.set.window` accepting `color`/`dim` as syntactic sugar that delegates to layer state. |
-
-The big content of A is **retiring the present() special-case**.
-Right now `_pico_output_present` does:
-
-1. `_layer_traverse(&G.world)` (children → world.tex)
-2. `SDL_SetRenderTarget(NULL); SDL_RenderClear` (window background)
-3. Custom aux-clip + `SDL_RenderCopy(G.world.tex, src, dst)` (world.tex → window framebuffer with src/dst transform)
-4. `SDL_RenderPresent`
-
-After the shift:
-
-1. `_layer_traverse(&G.window)` walks one level deeper:
-   - SetRenderTarget(window.tex=NULL); clear with window color
-   - For each child (including world): `_pico_output_draw_layer(child, NULL)` blits onto window framebuffer using the child's `scene.dst` / `scene.src`
-2. `SDL_RenderPresent`
-
-The aux-clipping in step 3 is **subsumed** by the existing
-`_pico_output_draw_layer` when world's `scene.dst` is set to fill
-window dim. Need to verify edge cases (out-of-bounds src/dst when
-user shifts world's scene); if behavior diverges, port aux-clip
-into `_pico_output_draw_layer`'s code path.
-
-### B. Tests
-
-| file                              | change                                                              |
-|-----------------------------------|---------------------------------------------------------------------|
-| `tst/window-layer.c` (new)        | predefined slot exists; `pico_set_layer("window")` switches; `pico_layer_empty(_, "window", …)` rejected; drawing on window goes to physical pixels |
-| `lua/tst/window-layer.lua` (new)  | mirror                                                              |
-| Existing tests                    | no changes — all use `world` (default current) and any user layers; `window` is opt-in |
-
-### C. Visual regression risk
-
-- Auto-composite walk changes (start from `window` instead of `world`).
-  If `_pico_output_draw_layer` semantics diverge from the bespoke
-  aux-clipping in current `present`, world rendering shifts and
-  many `asr/` images need regeneration.
-- Mitigation: spot-check 2–3 visual tests with non-trivial
-  `scene.dst`/`scene.src` (e.g. `view-target.c`, `clip_pct.c`)
-  before bulk-regenerating.
-
-### B'. Event-name rename `PICO_EVENT_WIN_*` → `PICO_EVENT_WINDOW_*`
-
-Bundled with this iteration since `win` is being phased out as an
-abbreviation. Lua-facing event tags get the same treatment.
-
-| file              | place                                  | change                                   |
-|-------------------|----------------------------------------|------------------------------------------|
-| `src/events.h`    | enum (line 10)                         | `PICO_EVENT_WIN_RESIZE` → `PICO_EVENT_WINDOW_RESIZE` |
-| `src/pico.c`      | 3 sites (1000, 1117, 1133)             | enum-name update                         |
-| `lua/pico.c`      | 1341 (case in event dispatch)          | enum-name update                         |
-| `lua/pico.c`      | 1778 (register integer)                | enum-name update                         |
-| `lua/pico.c`      | 1342, 1779 (Lua-facing event tag)      | `"win.resize"` → `"window.resize"`       |
-| Lua tests + docs  | any handler matching `"win.resize"`    | sweep                                    |
-
-Search guard: `grep -rE 'PICO_EVENT_WIN_|"win\.resize"' src/ lua/ tst/`
-should be empty after the rename.
-
-### D. Out-of-scope follow-ups (still pending)
-
-- `'w'` mode + 6 `_win_*` helpers + `pico_cv_pos_*_win` deletion
-  (plan step C of master plan) — needs `window` layer first; then
-  callers move to `set.layer("window")` + mode `'!'`.
-- CV/VS `base` arg removal (Decision 5) — still deferred.
-- **Desktop-as-parent unification** (Decision 18) — wire
-  `G.window.layer.effect.alpha` → `SDL_SetWindowOpacity`,
-  `G.window.layer.scene.dst` → `SDL_SetWindow{Position,Size}`, and
-  fold `Pico_Window.fs` into `scene.dst = full desktop`. After
-  that, `Pico_Window` collapses to `Pico_Layer + SDL_Window*`.
-
-### Verification
-
-```bash
-make tests
-cd lua/ && make tests && cd ..
-make int T=window-layer
-make int T=view-target
-make int T=clip_pct
-```
-
-Pass criteria:
-- All existing C + Lua tests pass with no `asr/` regen, OR a small
-  documented regen list (max 3–5 visual tests) due to traverse-walk
-  change.
-- New `window-layer` tests assert the predefined slot's existence
-  and behavior.
+  drop the NULL fast-path (`luaL_checkstring`); then expose
+  `pico_set_layer`'s return value (`lua_pushstring; return 1`).
+- G/S merge done as a separate pass. Resolution of the `.win`
+  field-name clash chose to rename the SDL handle: `G.win` →
+  `G.window.win` (later regrouped into
+  `G.window.{win,ren,layer,ing,pub}`).
+- After `Pico_Window` was trimmed, `G.window.pub` shrank to just
+  `{fs}`. Color/dim live on the layer's `effect.color` and
+  `scene.dim`. `pico_get/set_window_color/dim` were removed.
+- `pico_set_scene_dim` window special-case must call
+  `SDL_SetWindowSize` and **refresh the framebuffer's clip rect**
+  — otherwise SDL retains the pre-resize clip per render-target
+  and right/bottom strips don't get cleared/blitted. Caused
+  `blend_pct-01` and similar tests to fail with a colored strip
+  on the right.
+- User-error pattern: `local w = pico.get.window(); w.color = …;
+  pico.set.window(w)` silently no-ops once `Pico_Window` lost
+  `color`/`dim` — the Lua wrapper just ignores those fields.
+  Tests rewritten to use the layer-switch pattern explicitly.
+- Initial pixmap/image/text TARGET-tex fix (commit `4e28dba`) was
+  reverted in favor of the universal blit-through-TARGET fallback
+  in `pico_output_screenshot` (commit `58c54b6`). Single mechanism
+  covers all non-TARGET layer types incl. video (STREAMING/YV12),
+  no `mem.hc` semantic shift, smaller VRAM footprint.
+- Failed refactor attempt (2026-05-08, this session): see dedicated
+  section above. Lesson: the bespoke world→window blit silently
+  carried two responsibilities (aux clipping + per-frame fb reset)
+  that need explicit homes before traverse-from-window can replace
+  it.
