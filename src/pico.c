@@ -759,6 +759,8 @@ void pico_set_scene_dim (Pico_Rel_Dim* dim) {
         // window layer: resize the SDL window; no texture
         assert(!G.window.pub.fs);
         SDL_SetWindowSize(G.window.win, di.w, di.h);
+        Pico_Abs_Rect r = pico_cv_rect_rel_abs(&L->scene.clip, NULL);
+        SDL_RenderSetClipRect(G.window.ren, &r);
         _pico_output_present(0);
     } else {
         if (L->tex != NULL) {
