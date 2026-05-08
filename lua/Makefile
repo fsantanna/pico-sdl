@@ -81,6 +81,7 @@ tests: pico_native.so
 	$(TST) tst/view-target.lua
 	$(TST) tst/view_raw.lua
 	$(TST) tst/vs.lua
+	$(TST) tst/window.lua
 	@echo ""
 	@echo "All tests passed!"
 
