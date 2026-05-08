@@ -1658,7 +1658,23 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
         ret = _path_;
     }
 
-    SDL_SetRenderTarget(G.window.ren, L->tex);
+    SDL_Texture* tex = L->tex;
+    SDL_Texture* tmp = NULL;
+    if (tex != NULL) {
+        int access;
+        SDL_QueryTexture(tex, NULL, &access, NULL, NULL);
+        if (access != SDL_TEXTUREACCESS_TARGET) {
+            tmp = SDL_CreateTexture (
+                G.window.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
+                L->scene.dim.w, L->scene.dim.h
+            );
+            pico_assert(tmp != NULL);
+            SDL_SetRenderTarget(G.window.ren, tmp);
+            SDL_RenderCopy(G.window.ren, tex, NULL, NULL);
+            tex = tmp;
+        }
+    }
+    SDL_SetRenderTarget(G.window.ren, tex);
     pico_input_delay(5);            // TODO: bug if removed
 
     void* buf = malloc(4 * ri.w * ri.h);
@@ -1670,6 +1686,9 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
     pico_assert(IMG_SavePNG(sfc, ret) == 0);
     free(buf);
     SDL_FreeSurface(sfc);
+    if (tmp != NULL) {
+        SDL_DestroyTexture(tmp);
+    }
 
     return ret;
 }

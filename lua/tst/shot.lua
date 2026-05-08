@@ -132,4 +132,15 @@ do
     check(f, "../../tst/asr/shot-text.png")
 end
 
+do
+    print("video layer")
+    pico.layer.video(nil, "vid1", "video.y4m")
+    pico.set.layer("vid1")
+    assert(pico.set.video("vid1", 0) == true)
+    local f = pico.output.screenshot("../../tst/out/shot-video.png")
+    pico.set.layer("world")
+    assert(f == "../../tst/out/shot-video.png")
+    check(f, "../../tst/asr/shot-video.png")
+end
+
 pico.init(false)

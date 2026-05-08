@@ -140,6 +140,17 @@ int main (void) {
         check(f, "asr/shot-text.png");
     }
 
+    {
+        puts("video layer");
+        pico_layer_video(NULL, "vid1", "video.y4m");
+        pico_set_layer("vid1");
+        assert(pico_set_video("vid1", 0) == 1);
+        const char* f = pico_output_screenshot("out/shot-video.png", NULL);
+        pico_set_layer("world");
+        assert(!strcmp(f, "out/shot-video.png"));
+        check(f, "asr/shot-video.png");
+    }
+
     pico_init(0);
     return 0;
 }
