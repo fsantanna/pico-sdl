@@ -35,6 +35,9 @@ extern "C" {
         fprintf(stderr,"%s\n",SDL_GetError()); assert(0 && "SDL ERROR"); \
     }
 
+#define pico_assert_0(x) pico_assert((x) == 0)
+#define pico_assert_X(x) pico_assert((x) != NULL)
+
 typedef struct {
     float w;
     float h;
