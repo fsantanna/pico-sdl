@@ -269,19 +269,83 @@ Pico_Color pico_color_hex (uint32_t hex) {
 void pico_init (int on) {
     if (on) {
         assert(G.init == 0);
-        pico_assert(0 == SDL_Init(SDL_INIT_EVERYTHING));
+
+        realm_t* realm = realm_open(PICO_HASH_BUK);
+        {
+            assert(realm != NULL);
+            realm_enter(realm);
+            realm_put (
+                realm, '!', strlen("window")+1, "window", NULL, NULL, &G.window.layer
+            );
+            realm_put (
+                realm, '!', strlen("world")+1,  "world",  NULL, NULL, &G.world
+            );
+        }
+
+        pico_assert_0(SDL_Init(SDL_INIT_EVERYTHING));
         TTF_Init();
         Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024);
 
+        SDL_Window*   win;
+        SDL_Renderer* ren;
+        SDL_Texture*  phy;
+        SDL_Texture*  log;
+        {
+            // window
+            win = SDL_CreateWindow (
+                PICO_TITLE,
+                SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                PICO_DIM_PHY.w, PICO_DIM_PHY.h,
+                SDL_WINDOW_SHOWN
+            );
+            pico_assert_X(win);
+
+            // renderer
+            ren = SDL_CreateRenderer (
+                win, -1,
+                #ifdef PICO_TESTS
+                    SDL_RENDERER_SOFTWARE
+                #else
+                    SDL_RENDERER_ACCELERATED // |SDL_RENDERER_PRESENTVSYNC
+                #endif
+            );
+            pico_assert_X(ren);
+            pico_assert_0 (
+                SDL_SetRenderDrawBlendMode(ren, SDL_BLENDMODE_BLEND)
+            );
+
+            // textures
+            G.window.ren = ren;
+            phy = _tex_create(PICO_DIM_PHY);
+            pico_assert_0 (
+                SDL_SetTextureBlendMode(phy, SDL_BLENDMODE_NONE)
+            );
+
+            log = _tex_create(PICO_DIM_LOG);
+            pico_assert_0 (
+                SDL_SetTextureBlendMode(log, SDL_BLENDMODE_NONE)
+            );
+        }
+
         G = (typeof(G)) {
-            .init  = 0,
-            .realm = realm_open(PICO_HASH_BUK),
+            .init  = 1,
+            .realm = realm,
             .world = {
                 .type = PICO_LAYER_WORLD,
                 .name = "world",
-                .tex  = NULL,   // needs G.window.ren
-                .pencil = { .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL },
-                .effect = { .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=1, .rotate={0, PICO_ANCHOR_C} },
+                .tex  = log,
+                .pencil = {
+                    .color = {0xFF, 0xFF, 0xFF, 0xFF},
+                    .font  = NULL,
+                    .style = PICO_STYLE_FILL,
+                },
+                .effect = {
+                    .alpha  = 0xFF,
+                    .color  = {0, 0, 0, 0xFF},
+                    .flip   = PICO_FLIP_NONE,
+                    .grid   = 1,
+                    .rotate = {0, PICO_ANCHOR_C},
+                },
                 .hier = { NULL, NULL, {NULL,NULL} },
                 .scene = {
                     .keep = -1,
@@ -292,22 +356,27 @@ void pico_init (int on) {
                     .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
                 },
             },
-            .layer  = &G.world,
+            .layer  = NULL,
             .expert = {0, 0, -1, 0},
             .window = {
-                .win = SDL_CreateWindow (
-                           PICO_TITLE,
-                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                           PICO_DIM_PHY.w, PICO_DIM_PHY.h,
-                           SDL_WINDOW_SHOWN
-                       ),
-                .ren = NULL,    // set after CreateRenderer
+                .win = win,
+                .ren = ren,
                 .layer = {
                     .type = PICO_LAYER_WINDOW,
                     .name = "window",
-                    .tex  = NULL,   // window framebuffer (no texture)
-                    .pencil = { .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL },
-                    .effect = { .alpha=0xFF, .color={0x77, 0x77, 0x77, 0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .rotate={0, PICO_ANCHOR_C} },
+                    .tex  = phy,
+                    .pencil = {
+                        .color = {0xFF, 0xFF, 0xFF, 0xFF},
+                        .font  = NULL,
+                        .style = PICO_STYLE_FILL,
+                    },
+                    .effect = {
+                        .alpha  = 0xFF,
+                        .color  = {0x77, 0x77, 0x77, 0xFF},
+                        .flip   = PICO_FLIP_NONE,
+                        .grid   = 0,
+                        .rotate = {0, PICO_ANCHOR_C},
+                    },
                     .hier = { NULL, NULL, {NULL,NULL} },
                     .scene = {
                         .keep = -1,
@@ -322,37 +391,9 @@ void pico_init (int on) {
                 .pub = { .fs = 0 },
             },
         };
-        assert(G.realm != NULL);
-        pico_assert(G.window.win != NULL);
-        realm_enter(G.realm);
 
-        // realm_get("window") / realm_get("world") resolve
-        realm_put(G.realm, '!', strlen("window")+1, "window", NULL, NULL, &G.window.layer);
-        realm_put(G.realm, '!', strlen("world")+1,  "world",  NULL, NULL, &G.world);
         _layer_attach("window", "world");
-
-        // create ren after win
-        {
-#ifdef PICO_TESTS
-            G.window.ren = SDL_CreateRenderer(G.window.win, -1, SDL_RENDERER_SOFTWARE);
-#else
-            G.window.ren = SDL_CreateRenderer(G.window.win, -1, SDL_RENDERER_ACCELERATED/*|SDL_RENDERER_PRESENTVSYNC*/);
-#endif
-            pico_assert(G.window.ren != NULL);
-            SDL_SetRenderDrawBlendMode(G.window.ren, SDL_BLENDMODE_BLEND);
-        }
-
-        G.init = 1;
-
-        // create tex after ren
-        {
-            G.world.tex = _tex_create(PICO_DIM_LOG);
-            SDL_SetTextureBlendMode(G.world.tex, SDL_BLENDMODE_NONE);
-            SDL_SetRenderTarget(G.window.ren, G.world.tex);
-            Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.world.scene.clip, NULL);
-            SDL_RenderSetClipRect(G.window.ren, &r);
-            pico_output_clear();
-        }
+        pico_set_layer("world");
 
         // prevents WMs to resize window at start
         SDL_PumpEvents();
@@ -368,15 +409,19 @@ void pico_init (int on) {
 
         Mix_CloseAudio();
         TTF_Quit();
-        if (G.world.tex != NULL) {
-            SDL_DestroyTexture(G.world.tex);
-        }
-        if (G.window.ren != NULL) {
-            SDL_DestroyRenderer(G.window.ren);
-        }
-        if (G.window.win != NULL) {
-            SDL_DestroyWindow(G.window.win);
-        }
+
+        assert(G.world.tex != NULL);
+        SDL_DestroyTexture(G.world.tex);
+
+        assert(G.window.layer.tex != NULL);
+        SDL_DestroyTexture(G.window.layer.tex);
+
+        assert(G.window.ren != NULL);
+        SDL_DestroyRenderer(G.window.ren);
+
+        assert(G.window.win != NULL);
+        SDL_DestroyWindow(G.window.win);
+
         SDL_Quit();
     }
 }
@@ -656,7 +701,7 @@ int pico_set_expert (int on, int fps) {
 
 const char* pico_set_layer (const char* key) {
     _pico_guard();
-    const char* old = G.layer->name;
+    const char* old = (G.layer == NULL) ? NULL : G.layer->name;
     Pico_Layer* data = (Pico_Layer*)realm_get (
         G.realm, strlen(key)+1, key
     );
@@ -755,22 +800,23 @@ void pico_set_scene_dim (Pico_Rel_Dim* dim) {
     Pico_Layer* L = G.layer;
     Pico_Abs_Dim di = pico_cv_dim_rel_abs(dim, NULL);
     L->scene.dim = di;
+    assert(L->tex != NULL);
+    SDL_DestroyTexture(L->tex);
+    L->tex = _tex_create(di);
+    pico_assert_0 (
+        SDL_SetTextureBlendMode (
+            L->tex,
+            (L==&G.window.layer || L==&G.world) ?
+                SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND
+        )
+    );
+    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&L->scene.clip, NULL);
     if (L == &G.window.layer) {
-        // window layer: resize the SDL window; no texture
-        assert(!G.window.pub.fs);
         SDL_SetWindowSize(G.window.win, di.w, di.h);
-        Pico_Abs_Rect r = pico_cv_rect_rel_abs(&L->scene.clip, NULL);
         SDL_RenderSetClipRect(G.window.ren, &r);
         _pico_output_present(0);
     } else {
-        if (L->tex != NULL) {
-            SDL_DestroyTexture(L->tex);
-        }
-        L->tex = _tex_create(di);
-        SDL_BlendMode mode = (L == &G.world) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
-        SDL_SetTextureBlendMode(L->tex, mode);
         SDL_SetRenderTarget(G.window.ren, L->tex);
-        Pico_Abs_Rect r = pico_cv_rect_rel_abs(&L->scene.clip, NULL);
         SDL_RenderSetClipRect(G.window.ren, &r);
         pico_output_clear();
     }
@@ -1553,7 +1599,9 @@ static void _pico_output_present (int force) {
     // composite scene graph onto root.tex
     _layer_traverse(&G.world);
 
-    SDL_SetRenderTarget(G.window.ren, NULL);
+    // bespoke world->window blit goes into window.tex (intermediate);
+    // a final RenderCopy then mirrors window.tex onto the framebuffer
+    SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
     SDL_SetRenderDrawColor (
         G.window.ren,
         G.window.layer.effect.color.r, G.window.layer.effect.color.g, G.window.layer.effect.color.b, G.window.layer.effect.color.a
@@ -1605,6 +1653,10 @@ static void _pico_output_present (int force) {
     }
 
     _show_grid();
+
+    // mirror window.tex -> framebuffer
+    SDL_SetRenderTarget(G.window.ren, NULL);
+    SDL_RenderCopy(G.window.ren, G.window.layer.tex, NULL, NULL);
     SDL_RenderPresent(G.window.ren);
 
     G.window.ing.out = 0;
@@ -1658,7 +1710,9 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
         ret = _path_;
     }
 
-    SDL_Texture* tex = L->tex;
+    // window screenshots read the framebuffer directly (SDL forces alpha=255
+    // for fb pixels, matching what the user sees on screen)
+    SDL_Texture* tex = (L == &G.window.layer) ? NULL : L->tex;
     SDL_Texture* tmp = NULL;
     if (tex != NULL) {
         int access;
