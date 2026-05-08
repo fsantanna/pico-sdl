@@ -1,5 +1,29 @@
 # Window TARGET Texture (B2) + Aux-Clipping Port
 
+## Status (2026-05-08)
+
+**Minimal subset landed; full refactor deferred.**
+
+| step | status |
+|---|---|
+| `G.window.layer.tex` allocated as TARGET + destroyed at teardown | ✓ done |
+| `pico_set_scene_dim` recreates `window.tex` on resize (unified if/else) | ✓ done |
+| `_pico_output_present`: bespoke blit retargeted to `window.tex`, then `RenderCopy → fb` mirror | ✓ done |
+| `_show_grid` baked into `window.tex` (was on fb) | ✓ done |
+| `pico_output_screenshot`: window reads fb (alpha=255 fb behavior) | ✓ done |
+| `pico_set_layer` NULL guards `G.layer->name` (init `.layer = NULL`) | ✓ done |
+| Init ends with `pico_output_clear()` (drives one full present) | ✓ done |
+| `pico.h` `pico_assert_0` / `pico_assert_X` macros | ✓ done |
+| Phase A: port aux-clipping into `_pico_output_draw_layer` | **deferred** |
+| Phase B.4: replace bespoke blit with `_layer_traverse(&G.window.layer)` | **deferred** |
+| Phase B.5/6: allow `pico_output_present` from window; auto-present on window | **deferred** |
+| `tst/window.c` window-01 (commented out in Makefiles) | **deferred** until window-as-root |
+
+The full design below stands as the next-step plan; what landed is
+just the texture insertion (the minimum to enable later steps).
+
+Both `make tests` and `cd lua && make tests` are green.
+
 ## Context
 
 This work unblocks plan-line 230 of
