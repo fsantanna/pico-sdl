@@ -1072,7 +1072,9 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_s: {
+                    const char* prev = pico_set_layer("window");
                     pico_output_screenshot(NULL, NULL);
+                    pico_set_layer(prev);
                     return 1;
                 }
             }
@@ -1640,9 +1642,10 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect) {
     _pico_guard();
-    assert(G.layer == &G.world);
-    Pico_Abs_Rect phy = {0, 0, G.window.layer.scene.dim.w, G.window.layer.scene.dim.h};
-    Pico_Abs_Rect ri = (rect == NULL) ? phy : pico_cv_rect_rel_abs(rect, &phy);
+    Pico_Layer* L = G.layer;
+    Pico_Abs_Rect ri = (rect == NULL)
+        ? (Pico_Abs_Rect){0, 0, L->scene.dim.w, L->scene.dim.h}
+        : pico_cv_rect_rel_abs(rect, NULL);
 
     const char* ret;
     if (path != NULL) {
@@ -1655,9 +1658,8 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
         ret = _path_;
     }
 
-    SDL_SetRenderTarget(G.window.ren, NULL);
+    SDL_SetRenderTarget(G.window.ren, L->tex);
     pico_input_delay(5);            // TODO: bug if removed
-    //SDL_RenderPresent(G.window.ren);
 
     void* buf = malloc(4 * ri.w * ri.h);
     assert(buf != NULL);
@@ -1665,13 +1667,9 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
         buf, ri.w, ri.h, 32, 4*ri.w, SDL_PIXELFORMAT_RGBA32
     );
-    pico_assert(IMG_SavePNG(sfc,ret) == 0);
+    pico_assert(IMG_SavePNG(sfc, ret) == 0);
     free(buf);
     SDL_FreeSurface(sfc);
-
-    SDL_SetRenderTarget(G.window.ren, G.world.tex);
-    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.world.scene.clip, NULL);
-    SDL_RenderSetClipRect(G.window.ren, &r);
 
     return ret;
 }

@@ -223,8 +223,9 @@ clause's `src:pico.c:N` to the new `SDL_Init` line in
 - [x] Window resize handler syncs `G.window.layer.scene.dim` (via `pico_set_scene_dim` + inline layer-switch in resize event handler)
 - [x] Migrate `G.window.pub.{color,dim,fs}` reads/writes to layer fields (color/dim → layer.effect/scene; `pub` shrunk to just `{fs}`)
 - [x] Trim public `Pico_Window` typedef to `{fs, show, title}`; remove `pico_get/set_window_color/dim`; `pico_set_scene_dim` special-cases the window layer (`SDL_SetWindowSize` + framebuffer-clip refresh); adapt Lua `l_get_window`/`l_set_window` and migrate Lua tests + docs
-- [ ] New tests for predefined `"window"` layer
-- [ ] Migrate screenshot non-NULL `base` (`src/pico.c:1658`) to use `window` layer
+- [x] Generalize `pico_output_screenshot` to read the **current** layer (drops `assert(world)`, replaces non-NULL `base` with NULL); `_pico_check` (C) and `pico.check` (Lua) wrap with `set.layer("window")`/restore so existing visual tests still snapshot the window framebuffer; `tst/shot.c` and the Ctrl+S handler also wrap explicitly
+- [ ] **Add tests** that exercise `pico_output_screenshot` on **non-window layers** (world, user pixmap/empty/sub) — defer; new test file (e.g. `tst/screenshot-layer.c` + `lua/tst/screenshot-layer.lua`)
+- [ ] New tests for predefined `"window"` layer (slot exists, reserved-name rejection, drawing on window hits physical pixels)
 - [ ] Retire bespoke world→window blit in `_pico_output_present`; start `_layer_traverse` from `&G.window.layer`
 - [ ] Rename `PICO_EVENT_WIN_RESIZE` → `PICO_EVENT_WINDOW_RESIZE`; tag `"win.resize"` → `"window.resize"`
 - [ ] Delete `'w'` mode branches in `aux.hc`

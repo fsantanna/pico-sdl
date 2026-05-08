@@ -15,7 +15,9 @@ local ASR = on("PICO_CHECK_ASR")
 function pico.check (name)
     local out = "../../tst/out/" .. name .. ".png"
     local asr = "../../tst/asr/" .. name .. ".png"
+    local prev = pico.set.layer("window")
     pico.output.screenshot(out)
+    pico.set.layer(prev)
 
     print("Testing: " .. name)
 

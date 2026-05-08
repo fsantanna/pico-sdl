@@ -64,7 +64,9 @@ pico.output.draw.rect(
 pico.set.pencil { color='green' }
 pico.output.draw.rect(
     {'%', x=0.5, y=0, w=0.5, h=1, anchor='NW'})
+pico.set.layer("window")
 pico.output.screenshot("../../tst/out/sheet-grid.png")
+pico.set.layer("world")
 
 local names = pico.layer.images (
     nil, "grid", "../../tst/out/sheet-grid.png",

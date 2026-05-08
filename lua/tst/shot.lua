@@ -19,7 +19,9 @@ pico.output.clear()
 do
     print("entire screen - 01")
     pico.output.draw.rect({'!', x=10, y=10, w=20, h=20, anchor='NW'})
+    pico.set.layer("window")
     local f = pico.output.screenshot()
+    pico.set.layer("world")
     assert(f ~= nil)
     check(f, "../../tst/asr/shot-01.png")
     assert(os.remove(f))
@@ -29,7 +31,9 @@ do
     print("entire screen - 02")
     pico.set.pencil { color={'!', r=200, g=0, b=0} }
     pico.output.draw.rect({'!', x=30, y=30, w=10, h=10, anchor='NW'})
+    pico.set.layer("window")
     local f = pico.output.screenshot("../../tst/out/shot-02.png")
+    pico.set.layer("world")
     assert(f == "../../tst/out/shot-02.png")
     check(f, "../../tst/asr/shot-02.png")
 end
@@ -38,7 +42,9 @@ do
     print("part of screen (raw)")
     pico.set.pencil { color={'!', r=0, g=200, b=0} }
     pico.output.draw.rect({'!', x=40, y=5, w=10, h=10, anchor='NW'})
+    pico.set.layer("window")
     local f = pico.output.screenshot(nil, {'!', x=0, y=0, w=250, h=150, anchor='NW'})
+    pico.set.layer("world")
     assert(f ~= nil)
     check(f, "../../tst/asr/shot-03.png")
     assert(os.remove(f))
@@ -48,7 +54,9 @@ do
     print("part of screen (pct)")
     pico.set.pencil { color={'!', r=0, g=0, b=200} }
     pico.output.draw.rect({'!', x=50, y=50, w=10, h=10, anchor='NW'})
+    pico.set.layer("window")
     local f = pico.output.screenshot(nil, {'%', x=0, y=0, w=0.5, h=0.3, anchor='NW'})
+    pico.set.layer("world")
     assert(f ~= nil)
     check(f, "../../tst/asr/shot-04.png")
     assert(os.remove(f))

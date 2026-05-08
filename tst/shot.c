@@ -14,7 +14,9 @@ int main (void) {
         puts("entire screen - 01");
         Pico_Rel_Rect r = { '!', {10, 10, 20, 20}, PICO_ANCHOR_NW };
         pico_output_draw_rect(&r);
+        pico_set_layer("window");
         const char* f = pico_output_screenshot(NULL, NULL);
+        pico_set_layer("world");
         assert(f != NULL);
         check(f, "asr/shot-01.png");
         assert(remove(f) == 0);
@@ -25,7 +27,9 @@ int main (void) {
         pico_set_pencil_color((Pico_Color){200, 0, 0, 0xFF});
         Pico_Rel_Rect r = { '!', {30, 30, 10, 10}, PICO_ANCHOR_NW };
         pico_output_draw_rect(&r);
+        pico_set_layer("window");
         const char* f = pico_output_screenshot("out/shot-02.png", NULL);
+        pico_set_layer("world");
         assert(!strcmp(f, "out/shot-02.png"));
         check(f, "asr/shot-02.png");
     }
@@ -36,7 +40,9 @@ int main (void) {
         Pico_Rel_Rect r = { '!', {40, 5, 10, 10}, PICO_ANCHOR_NW };
         pico_output_draw_rect(&r);
         Pico_Rel_Rect clip = { '!', {0, 0, 250, 150}, PICO_ANCHOR_NW };
+        pico_set_layer("window");
         const char* f = pico_output_screenshot(NULL, &clip);
+        pico_set_layer("world");
         assert(f != NULL);
         check(f, "asr/shot-03.png");
         assert(remove(f) == 0);
@@ -48,9 +54,11 @@ int main (void) {
         pico_output_draw_rect (
             &(Pico_Rel_Rect) { '!', {50, 50, 10, 10}, PICO_ANCHOR_NW }
         );
+        pico_set_layer("window");
         const char* f = pico_output_screenshot(NULL,
             &(Pico_Rel_Rect) { '%', {0, 0, 0.5, 0.3}, PICO_ANCHOR_NW }
         );
+        pico_set_layer("world");
         assert(f != NULL);
         check(f, "asr/shot-04.png");
         assert(remove(f) == 0);
