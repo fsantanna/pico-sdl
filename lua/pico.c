@@ -880,18 +880,6 @@ static int l_get_window (lua_State* L) {
 
     lua_newtable(L);                    // T
 
-    L_push_color(L, win.color);         // T | color
-    lua_setfield(L, -2, "color");       // T
-
-    lua_newtable(L);                    // T | dim
-    lua_pushliteral(L, "!");
-    lua_rawseti(L, -2, 1);
-    lua_pushinteger(L, win.dim.w);
-    lua_setfield(L, -2, "w");
-    lua_pushinteger(L, win.dim.h);
-    lua_setfield(L, -2, "h");
-    lua_setfield(L, -2, "dim");         // T
-
     lua_pushboolean(L, win.fs);         // T | fs
     lua_setfield(L, -2, "fullscreen");  // T
 
@@ -1100,27 +1088,9 @@ static int l_set_scene (lua_State* L) {
 static int l_set_window (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    Pico_Color* xcolor = NULL;
     int         xfs    = -1;
     int         xshow  = -1;
     const char* xtitle = NULL;
-
-    Pico_Rel_Dim  dim, *xdim=NULL;
-
-    lua_getfield(L, 1, "color");            // T | color
-    Pico_Color color;
-    if (!lua_isnil(L, -1)) {
-        color = C_color_tis(L, lua_gettop(L));
-        xcolor = &color;
-    }
-    lua_pop(L, 1);                          // T
-
-    lua_getfield(L, 1, "dim");              // T | dim
-    if (!lua_isnil(L, -1)) {
-        dim = C_rel_dim(L, lua_gettop(L));
-        xdim = &dim;
-    }
-    lua_pop(L, 1);                          // T
 
     lua_getfield(L, 1, "fullscreen");       // T | fs
     if (!lua_isnil(L, -1)) {
@@ -1140,8 +1110,6 @@ static int l_set_window (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    if (xcolor != NULL) { pico_set_window_color(*xcolor); }
-    if (xdim   != NULL) { pico_set_window_dim  (xdim);    }
     if (xfs    != -1)   { pico_set_window_fs   (xfs);     }
     if (xshow  != -1)   { pico_set_window_show (xshow);   }
     if (xtitle != NULL) { pico_set_window_title(xtitle);  }
