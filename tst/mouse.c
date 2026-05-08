@@ -8,7 +8,11 @@ int main(void) {
 
     puts("phy (500,500) -> log (50,50)");
     {
-        pico_set_window((Pico_Window){ .dim={500,500}, .fs=0, .show=1, .title="Mouse" });
+        pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Mouse" });
+
+        pico_set_layer("window");
+        pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {500, 500} });
+        pico_set_layer("world");
         pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {50, 50} });
 
         // phy (0,0) -> log (0,0)

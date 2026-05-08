@@ -13,7 +13,9 @@ int main (void) {
     pico_set_window_title("View Raw");
 
     Pico_Abs_Dim window, world;
-    window = pico_get_window_dim();
+    pico_set_layer("window");
+    window = pico_get_scene_dim();
+    pico_set_layer("world");
     world = pico_get_scene_dim();
     assert(window.w==500 && window.h==500);
     assert(world.w==100 && world.h==100);

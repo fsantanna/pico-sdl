@@ -7,7 +7,11 @@ int main (void) {
     // 4x4 grid of 4x4 pixel tiles = 16x16 logical world
     Pico_Rel_Dim log  = { '#', {4, 4} };
     Pico_Abs_Dim tile = { 4, 4 };
-    pico_set_window((Pico_Window){ .dim={160,160}, .fs=0, .show=1, .title="Tile" });
+    pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Tile" });
+
+    pico_set_layer("window");
+    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {160, 160} });
+    pico_set_layer("world");
     pico_set_scene_tile(tile); pico_set_scene_dim(&log);
 
     // 4x4 pixel white tile

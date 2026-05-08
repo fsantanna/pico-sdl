@@ -608,11 +608,11 @@ const char* pico_get_window_title (void) {
 
 void pico_set_dim (Pico_Rel_Dim* dim) {
     _pico_guard();
-    assert(G.layer==&G.world && "can only set dim from world layer");
     const char* old = pico_set_layer("window");
     pico_set_scene_dim(dim);
-    pico_set_layer(old);
+    pico_set_layer("world");
     pico_set_scene_dim(dim);
+    pico_set_layer(old);
 }
 
 void pico_set_pencil (Pico_Layer_Pencil pencil) {

@@ -14,7 +14,9 @@ int main (void) {
     {
         puts("normal");
         Pico_Rel_Dim dim = { '!', {phy.w, phy.h} };
-        pico_set_window_dim(&dim);
+        pico_set_layer("window");
+        pico_set_scene_dim(&dim);
+        pico_set_layer("world");
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_raw-01");
@@ -22,7 +24,9 @@ int main (void) {
     {
         puts("double");
         Pico_Rel_Dim dim = { '!', {phy.w*2, phy.h*2} };
-        pico_set_window_dim(&dim);
+        pico_set_layer("window");
+        pico_set_scene_dim(&dim);
+        pico_set_layer("world");
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_raw-02");
@@ -30,7 +34,9 @@ int main (void) {
     {
         puts("half");
         Pico_Rel_Dim dim = { '!', {phy.w/2, phy.h/2} };
-        pico_set_window_dim(&dim);
+        pico_set_layer("window");
+        pico_set_scene_dim(&dim);
+        pico_set_layer("world");
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_raw-03");
@@ -38,7 +44,9 @@ int main (void) {
     {
         puts("normal");
         Pico_Rel_Dim dim = { '!', {phy.w, phy.h} };
-        pico_set_window_dim(&dim);
+        pico_set_layer("window");
+        pico_set_scene_dim(&dim);
+        pico_set_layer("world");
         pico_output_clear();
         pico_output_draw_rect(&r);
         _pico_check("size_raw-04");

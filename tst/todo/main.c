@@ -6,7 +6,9 @@ int main (void) {
     puts("shows dark screen");
     {
         Pico_Dim phy, log;
-        phy = pico_get_window_dim();
+        pico_set_layer("window");
+        phy = pico_get_scene_dim();
+        pico_set_layer("world");
         log = pico_get_scene_dim();
         assert(phy.w==500 && phy.h==500);
         assert(log.w==100 && log.h==100);

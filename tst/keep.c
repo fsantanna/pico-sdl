@@ -4,7 +4,11 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window((Pico_Window){ .dim={640,360}, .fs=0, .show=1, .title="Keep" });
+    pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Keep" });
+
+    pico_set_layer("window");
+    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {640, 360} });
+    pico_set_layer("world");
     pico_set_scene_dim(&(Pico_Rel_Dim){'!', {64, 36}});
     pico_set_effect_grid(0);
     pico_output_clear();

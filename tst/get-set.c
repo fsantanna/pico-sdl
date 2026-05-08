@@ -4,7 +4,11 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_window((Pico_Window){ .dim={640,480}, .fs=0, .show=1, .title="Get-Set" });
+    pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Get-Set" });
+
+    pico_set_layer("window");
+    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {640, 480} });
+    pico_set_layer("world");
     pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {64, 48} });
 
     // color_clear
@@ -112,18 +116,25 @@ int main (void) {
     // window roundtrip: get -> set -> get must be idempotent
     puts("window roundtrip");
     {
-        pico_set_window_color((Pico_Color){0x12, 0x34, 0x56, 0x78});
+        pico_set_layer("window");
+        pico_set_effect_color((Pico_Color){0x12, 0x34, 0x56, 0x78});
+        pico_set_layer("world");
         Pico_Window w1;
         pico_get_window(&w1);
         pico_set_window(w1);
         Pico_Window w2;
         pico_get_window(&w2);
-        assert(w2.dim.w   == w1.dim.w   && w2.dim.h == w1.dim.h);
-        assert(w2.fs      == w1.fs);
-        assert(w2.color.r == w1.color.r);
-        assert(w2.color.g == w1.color.g);
-        assert(w2.color.b == w1.color.b);
-        assert(w2.color.a == w1.color.a);
+        assert(w2.fs == w1.fs);
+        Pico_Color c1;
+        pico_set_layer("window");
+        c1 = pico_get_effect_color();
+        pico_set_layer("world");
+        Pico_Abs_Dim d1;
+        pico_set_layer("window");
+        d1 = pico_get_scene_dim();
+        pico_set_layer("world");
+        assert(c1.r == 0x12 && c1.g == 0x34 && c1.b == 0x56 && c1.a == 0x78);
+        assert(d1.w > 0 && d1.h > 0);
     }
 
     // scene roundtrip: get -> set -> get must be idempotent
