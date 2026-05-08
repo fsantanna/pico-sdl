@@ -3,7 +3,10 @@ require 'pico.check'
 pico.init(true)
 local phy = {'!', w=100, h=100}
 local log = {'!', w=10, h=10}
-pico.set.window { title="Pixmap", dim=phy }
+pico.set.window { title="Pixmap" }
+pico.set.layer("window")
+pico.set.scene { dim=phy }
+pico.set.layer("world")
 pico.set.scene { dim=log }
 
 -- .x.

@@ -9,8 +9,10 @@ local r = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 print("WINDOW")
 do
     print("normal")
-    local win = pico.get.window()
-    pico.set.window { dim={'!', w=win.dim.w*1, h=win.dim.h*1} }
+    pico.set.layer("window")
+    local win = pico.get.scene().dim
+    pico.set.scene { dim={'!', w=win.w*1, h=win.h*1} }
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-01")
@@ -18,8 +20,10 @@ end
 
 do
     print("double")
-    local win = pico.get.window()
-    pico.set.window { dim={'!', w=win.dim.w*2, h=win.dim.h*2} }
+    pico.set.layer("window")
+    local win = pico.get.scene().dim
+    pico.set.scene { dim={'!', w=win.w*2, h=win.h*2} }
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-02")
@@ -27,8 +31,10 @@ end
 
 do
     print("half")
-    local win = pico.get.window()
-    pico.set.window { dim={'!', w=win.dim.w*0.25, h=win.dim.h*0.25} }
+    pico.set.layer("window")
+    local win = pico.get.scene().dim
+    pico.set.scene { dim={'!', w=win.w*0.25, h=win.h*0.25} }
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-03")
@@ -36,8 +42,10 @@ end
 
 do
     print("normal")
-    local win = pico.get.window()
-    pico.set.window { dim={'!', w=win.dim.w*2, h=win.dim.h*2} }
+    pico.set.layer("window")
+    local win = pico.get.scene().dim
+    pico.set.scene { dim={'!', w=win.w*2, h=win.h*2} }
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_pct-04")

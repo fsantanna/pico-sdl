@@ -2,7 +2,10 @@ pico.init(true)
 
 print("phy (500,500) -> log (50,50)")
 do
-    pico.set.window { title="Mouse", dim={'!', w=500, h=500} }
+    pico.set.window { title="Mouse" }
+    pico.set.layer("window")
+    pico.set.scene { dim={'!', w=500, h=500} }
+    pico.set.layer("world")
     pico.set.scene { dim={'!', w=50, h=50} }
 
     -- phy (0,0) -> log (0,0)

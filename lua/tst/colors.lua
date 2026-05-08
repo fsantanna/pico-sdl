@@ -1,7 +1,10 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.window { title="Colors Test", dim={'!', w=640, h=480} }
+pico.set.window { title="Colors Test" }
+pico.set.layer("window")
+pico.set.scene { dim={'!', w=640, h=480} }
+pico.set.layer("world")
 pico.set.scene { dim={'!', w=64, h=48} }
 
 do
@@ -220,8 +223,10 @@ do
     end
     do
         print("window color default: gray {0x77,0x77,0x77,0xFF}")
-        local w = pico.get.window()
-        assert(w.color.r==0x77 and w.color.g==0x77 and w.color.b==0x77 and w.color.a==0xFF)
+        pico.set.layer("window")
+        local c = pico.get.effect().color
+        pico.set.layer("world")
+        assert(c.r==0x77 and c.g==0x77 and c.b==0x77 and c.a==0xFF)
         pico.output.clear()
         pico.set.pencil { color='white' }
         pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
@@ -229,29 +234,33 @@ do
     end
     do
         print("window color: red letterbox")
-        pico.set.window { color={'!', r=0xFF, g=0, b=0, a=0xFF} }
-        local w = pico.get.window()
-        assert(w.color.r==0xFF and w.color.g==0 and w.color.b==0 and w.color.a==0xFF)
+        pico.set.layer("window")
+        pico.set.effect { color={'!', r=0xFF, g=0, b=0, a=0xFF} }
+        local c = pico.get.effect().color
+        pico.set.layer("world")
+        assert(c.r==0xFF and c.g==0 and c.b==0 and c.a==0xFF)
         pico.output.clear()
         pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
         pico.check("colors-09")
     end
     do
         print("window color: green via bulk")
-        local w = pico.get.window()
-        w.color = {'!', r=0, g=0xFF, b=0, a=0xFF}
-        pico.set.window { color=w.color }
-        local g = pico.get.window()
-        assert(g.color.r==0 and g.color.g==0xFF and g.color.b==0 and g.color.a==0xFF)
+        pico.set.layer("window")
+        pico.set.effect { color={'!', r=0, g=0xFF, b=0, a=0xFF} }
+        local c = pico.get.effect().color
+        pico.set.layer("world")
+        assert(c.r==0 and c.g==0xFF and c.b==0 and c.a==0xFF)
         pico.output.clear()
         pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
         pico.check("colors-10")
     end
     do
         print("window color: alpha preserved by storage")
-        pico.set.window { color={'!', r=0, g=0, b=0xFF, a=0x80} }
-        local w = pico.get.window()
-        assert(w.color.a == 0x80)
+        pico.set.layer("window")
+        pico.set.effect { color={'!', r=0, g=0, b=0xFF, a=0x80} }
+        local c = pico.get.effect().color
+        pico.set.layer("world")
+        assert(c.a == 0x80)
     end
 end
 

@@ -17,10 +17,10 @@ pico.set.window { title="guide-02-01-01" }
 pico.check("guide-02-01-01")
 
 -- §2.2: configure window and view
-pico.set.window {
-    title = "guide-02-02-01",
-    dim   = { '!', w=200, h=200 },
-}
+pico.set.window { title = "guide-02-02-01" }
+pico.set.layer("window")
+pico.set.scene { dim={ '!', w=200, h=200 } }
+pico.set.layer("world")
 pico.set.scene {
     dim = { '!', w=200, h=200 },
 }
@@ -137,9 +137,9 @@ pico.set.scene {
     dim  = { '#', w=5, h=5 },
     tile = { w=20, h=20 },
 }
-pico.set.window {
-    dim = { '#', w=40, h=40 },
-}
+pico.set.layer("window")
+pico.set.scene { dim={ '#', w=40, h=40 } }
+pico.set.layer("world")
 pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
 pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }
 pico.check("guide-04-01-01")
@@ -173,7 +173,10 @@ pico.check("guide-05-00-03")
 
 -- §5.1.a: restart with centered image and black window background
 pico.init(false); pico.init(true)
-pico.set.window { title="guide-05-01-01", color='black' }
+pico.set.window { title="guide-05-01-01" }
+pico.set.layer("window")
+pico.set.effect { color='black' }
+pico.set.layer("world")
 pico.output.draw.image('../../res/open.png',
     {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 pico.check("guide-05-01-01")

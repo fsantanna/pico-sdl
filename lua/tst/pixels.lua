@@ -1,7 +1,10 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.window { title="pixels", dim={'!', w=100, h=100} }
+pico.set.window { title="pixels" }
+pico.set.layer("window")
+pico.set.scene { dim={'!', w=100, h=100} }
+pico.set.layer("world")
 pico.set.scene { dim={'!', w=5, h=5} }
 
 do

@@ -3,7 +3,10 @@ local pico = require "pico"
 require "pico.check"
 
 pico.init(true)
-pico.set.window { title="Get-Set", dim={'!', w=640, h=480} }
+pico.set.window { title="Get-Set" }
+pico.set.layer("window")
+pico.set.scene { dim={'!', w=640, h=480} }
+pico.set.layer("world")
 pico.set.scene { dim={'!', w=64, h=48} }
 
 -- color_clear
@@ -84,13 +87,20 @@ end
 -- window roundtrip: get -> set -> get must be idempotent
 print("window roundtrip")
 do
-    pico.set.window { color={'!', r=0x12, g=0x34, b=0x56, a=0x78} }
+    pico.set.layer("window")
+    pico.set.effect { color={'!', r=0x12, g=0x34, b=0x56, a=0x78} }
+    pico.set.layer("world")
     local w1 = pico.get.window()
     pico.set.window(w1)
     local w2 = pico.get.window()
-    assert(w2.dim.w   == w1.dim.w   and w2.dim.h == w1.dim.h)
-    assert(w2.color.r == w1.color.r and w2.color.g == w1.color.g)
-    assert(w2.color.b == w1.color.b and w2.color.a == w1.color.a)
+    assert(w2.fullscreen == w1.fullscreen)
+    assert(w2.title == w1.title)
+    pico.set.layer("window")
+    local c = pico.get.effect().color
+    local d = pico.get.scene().dim
+    pico.set.layer("world")
+    assert(c.r == 0x12 and c.g == 0x34 and c.b == 0x56 and c.a == 0x78)
+    assert(d.w > 0 and d.h > 0)
 end
 
 -- view roundtrip: get -> set -> get must be idempotent

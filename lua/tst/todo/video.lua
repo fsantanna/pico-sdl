@@ -25,10 +25,10 @@ local total = info.fps * 5
 local scale = 30
 local win_w = info.dim.w * scale
 local win_h = info.dim.h * scale + BAR_H * 2
-pico.set.window {
-    title = "Video Player",
-    dim   = { '!', w=win_w, h=win_h},
-}
+pico.set.window { title = "Video Player" }
+pico.set.layer("window")
+pico.set.scene { dim={ '!', w=win_w, h=win_h} }
+pico.set.layer("world")
 pico.set.scene{
     grid = false,
     dim  = {'!', w=win_w, h=win_h},

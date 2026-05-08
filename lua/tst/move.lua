@@ -3,7 +3,10 @@ require 'pico.check'
 -- TODO: math.random() not same as C
 
 pico.init(true)
-pico.set.window { title="Moving Around", dim={'!', w=640, h=360} }
+pico.set.window { title="Moving Around" }
+pico.set.layer("window")
+pico.set.scene { dim={'!', w=640, h=360} }
+pico.set.layer("world")
 pico.set.scene { dim={'!', w=64, h=18} }
 math.randomseed(0)
 

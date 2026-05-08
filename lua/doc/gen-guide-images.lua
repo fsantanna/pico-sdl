@@ -21,10 +21,10 @@ end
 do
     pico.init(true)
     pico.output.clear()
-    pico.set.window {
-        title = "Hello!",
-        dim   = { '!', w=200, h=200 },
-    }
+    pico.set.window { title = "Hello!" }
+    pico.set.layer("window")
+    pico.set.scene { dim={ '!', w=200, h=200 } }
+    pico.set.layer("world")
     pico.set.scene {
         grid = false,
         dim  = { '!', w=200, h=200 },
@@ -168,9 +168,9 @@ do
         dim  = { '#', w=5, h=5 },
         tile = { w=20, h=20 },
     }
-    pico.set.window {
-        dim = { '#', w=40, h=40 },
-    }
+    pico.set.layer("window")
+    pico.set.scene { dim={ '#', w=40, h=40 } }
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.rect {'#', x=3, y=3, w=1, h=1}
     pico.output.draw.rect {'#', x=5, y=1, w=2, h=1, anchor='NE'}

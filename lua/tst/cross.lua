@@ -1,7 +1,9 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.window { dim={'!', w=160, h=160} }
+pico.set.layer("window")
+pico.set.scene { dim={'!', w=160, h=160} }
+pico.set.layer("world")
 pico.set.scene { dim={'!', w=16, h=16} }
 pico.output.clear()
 

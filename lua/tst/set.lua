@@ -1,8 +1,10 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.window { title="Set Test",
-                   dim={'!', w=640, h=480} }
+pico.set.window { title="Set Test" }
+pico.set.layer("window")
+pico.set.scene { dim={'!', w=640, h=480} }
+pico.set.layer("world")
 pico.set.scene { dim={'!', w=64, h=48} }
 
 -- set all: alpha comparison (left=0x80, right=0xFF)

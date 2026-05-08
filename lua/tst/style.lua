@@ -1,7 +1,10 @@
 require 'pico.check'
 
 pico.init(true)
-pico.set.window { title="Style", dim={'!', w=640, h=480} }
+pico.set.window { title="Style" }
+pico.set.layer("window")
+pico.set.scene { dim={'!', w=640, h=480} }
+pico.set.layer("world")
 pico.set.scene { dim={'!', w=64, h=48} }
 
 local rect = {'!', x=5, y=5, w=25, h=18, anchor='NW'}

@@ -1,7 +1,10 @@
 pico.init(true)
 
 pico.set.expert(true)
-pico.set.window { dim={'!', w=200, h=200}, title="2x Rects" }
+pico.set.window { title="2x Rects" }
+pico.set.layer("window")
+pico.set.scene { dim={'!', w=200, h=200} }
+pico.set.layer("world")
 pico.set.scene  { dim={'!', w=10,  h=10}  }
 
 local R = pico.color.alpha('red',  0xCC)

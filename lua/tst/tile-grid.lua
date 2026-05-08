@@ -3,7 +3,10 @@ require 'pico.check'
 pico.init(true)
 
 local phy = {'!', w=480, h=480}
-pico.set.window { title="Grid", dim=phy }
+pico.set.window { title="Grid" }
+pico.set.layer("window")
+pico.set.scene { dim=phy }
+pico.set.layer("world")
 
 -- Test 1: main layer, no tile mode, pixel grid only
 do

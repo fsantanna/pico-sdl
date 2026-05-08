@@ -3,9 +3,10 @@ require 'pico.check'
 pico.init(true)
 pico.set.window { title="Size - Fullscreen" }
 
-local win = pico.get.window()
+pico.set.layer("window")
+local phy = pico.get.scene().dim
+pico.set.layer("world")
 local all = pico.get.scene()
-local phy = win.dim
 local log = all.dim
 phy[1] = '!'
 log[1] = '!'
@@ -17,7 +18,9 @@ local r = {'!', x=50-25, y=50-25, w=50, h=50, anchor='NW'}
 print("WINDOW")
 do
     print("normal")
-    pico.set.window { dim=phy }
+    pico.set.layer("window")
+    pico.set.scene { dim=phy }
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-01")
@@ -26,7 +29,9 @@ end
 do
     print("double")
     local dim = {'!', w=phy.w*2, h=phy.h*2}
-    pico.set.window { dim=dim }
+    pico.set.layer("window")
+    pico.set.scene { dim=dim }
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-02")
@@ -35,7 +40,9 @@ end
 do
     print("half")
     local dim = {'!', w=phy.w/2, h=phy.h/2}
-    pico.set.window { dim=dim }
+    pico.set.layer("window")
+    pico.set.scene { dim=dim }
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-03")
@@ -43,7 +50,9 @@ end
 
 do
     print("normal")
-    pico.set.window { dim=phy }
+    pico.set.layer("window")
+    pico.set.scene { dim=phy }
+    pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.rect(r)
     pico.check("size_raw-04")

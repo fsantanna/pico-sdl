@@ -78,7 +78,7 @@ In alphabetical order:
     - **pico.get.scene**: Gets scene configuration.
         - `pico.get.scene () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect, keep: boolean }`
     - **pico.get.window**: Gets window configuration.
-        - `pico.get.window () -> { color: Color, dim: Dim, fullscreen: boolean, show: boolean, title: string }`
+        - `pico.get.window () -> { fullscreen: boolean, show: boolean, title: string }`
 - **pico.init**: Initializes and finalizes pico.
     - `pico.init (on: boolean)`
 - **pico.input**
@@ -182,7 +182,7 @@ In alphabetical order:
         - `pico.set.scene (cfg: { [dim: Dim], [source: Rect], [clip: Rect], [target: Rect], [tile: Tile], [keep: boolean] })`
         - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
     - **pico.set.window**: Sets window configuration.
-        - `pico.set.window (cfg: { [color: Color], [dim: Dim], [fullscreen: boolean], [show: boolean], [title: string] })`
+        - `pico.set.window (cfg: { [fullscreen: boolean], [show: boolean], [title: string] })`
     - **pico.set.layer**: Switches to a layer.
         - `pico.set.layer (name: string?)`
         - `nil` switches to main layer

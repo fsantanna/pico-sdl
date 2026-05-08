@@ -499,7 +499,9 @@ world black background when we zoom out:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.window { color='black' } -- (typically grey to distinguish from world)
+> pico.set.layer("window")             -- (typically grey to distinguish from world)
+> pico.set.effect { color='black' }
+> pico.set.layer("world")
 > pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>

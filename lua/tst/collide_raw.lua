@@ -4,7 +4,9 @@ pico.init(true)
 
 local phy = {'!', w=200, h=200}
 local log = {'!', w=20, h=20}
-pico.set.window { dim=phy }
+pico.set.layer("window")
+pico.set.scene { dim=phy }
+pico.set.layer("world")
 pico.set.scene { dim=log }
 
 local r = {'!', x=10-2, y=10-2, w=4, h=4, anchor='NW'}

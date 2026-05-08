@@ -9,9 +9,10 @@ local win = pico.get.window()
 assert(win.title == "Test Title", "title mismatch: " .. tostring(win.title))
 pico.set.window { title="View Raw" }
 
-local win = pico.get.window()
+pico.set.layer("window")
+local window = pico.get.scene().dim
+pico.set.layer("world")
 local all = pico.get.scene()
-local window = win.dim
 local world = all.dim
 assert(window.w == 500 and window.h == 500)
 assert(world.w == 100 and world.h == 100)
