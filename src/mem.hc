@@ -121,13 +121,12 @@ static Pico_Layer* _layer_new (
 
 static void* _alloc_layer_pixmap (int n, const void* key, void* ctx) {
     _alloc_pixmap_t* c = (_alloc_pixmap_t*)ctx;
-    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom(
-        (void*)c->pixels, c->dim.w, c->dim.h,
-        32, 4 * c->dim.w, SDL_PIXELFORMAT_RGBA32
+    SDL_Texture* tex = SDL_CreateTexture(
+        G.window.ren, SDL_PIXELFORMAT_RGBA32,
+        SDL_TEXTUREACCESS_TARGET, c->dim.w, c->dim.h
     );
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
     pico_assert(tex != NULL);
-    SDL_FreeSurface(sfc);
+    SDL_UpdateTexture(tex, NULL, c->pixels, 4 * c->dim.w);
     return _layer_new (
         1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, tex, c->dim
@@ -153,10 +152,19 @@ static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
 
 static void* _alloc_layer_image (int n, const void* key, void* ctx) {
     const char* path = (const char*)ctx;
-    SDL_Texture* tex = IMG_LoadTexture(G.window.ren, path);
+    SDL_Surface* raw = IMG_Load(path);
+    pico_assert(raw != NULL);
+    SDL_Surface* sfc = SDL_ConvertSurfaceFormat(raw, SDL_PIXELFORMAT_RGBA32, 0);
+    pico_assert(sfc != NULL);
+    SDL_FreeSurface(raw);
+    SDL_Texture* tex = SDL_CreateTexture(
+        G.window.ren, SDL_PIXELFORMAT_RGBA32,
+        SDL_TEXTUREACCESS_TARGET, sfc->w, sfc->h
+    );
     pico_assert(tex != NULL);
-    Pico_Abs_Dim dim;
-    SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
+    SDL_UpdateTexture(tex, NULL, sfc->pixels, sfc->pitch);
+    Pico_Abs_Dim dim = { sfc->w, sfc->h };
+    SDL_FreeSurface(sfc);
     return _layer_new (
         1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, tex, dim
@@ -182,10 +190,17 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
 static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
     SDL_Color c = { G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, 0xFF };
     TTF_Font* ttf = _font_get(G.layer->pencil.font, height);
-    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
+    SDL_Surface* raw = TTF_RenderText_Solid(ttf, text, c);
+    pico_assert(raw != NULL);
+    SDL_Surface* sfc = SDL_ConvertSurfaceFormat(raw, SDL_PIXELFORMAT_RGBA32, 0);
     pico_assert(sfc != NULL);
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
+    SDL_FreeSurface(raw);
+    SDL_Texture* tex = SDL_CreateTexture(
+        G.window.ren, SDL_PIXELFORMAT_RGBA32,
+        SDL_TEXTUREACCESS_TARGET, sfc->w, sfc->h
+    );
     pico_assert(tex != NULL);
+    SDL_UpdateTexture(tex, NULL, sfc->pixels, sfc->pitch);
     *dim = (Pico_Abs_Dim){ sfc->w, sfc->h };
     SDL_FreeSurface(sfc);
     return tex;
