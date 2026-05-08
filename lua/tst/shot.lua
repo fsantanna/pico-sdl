@@ -75,7 +75,7 @@ end
 
 do
     print("empty layer")
-    pico.layer.empty('!', nil, "empty1", {w=64, h=32})
+    pico.layer.empty(nil, "empty1", {w=64, h=32})
     pico.set.layer("empty1")
     pico.set.effect { color={'!', r=0x00, g=0x80, b=0x00} }
     pico.output.clear()
@@ -89,7 +89,7 @@ end
 
 do
     print("pixmap layer")
-    pico.layer.pixmap('!', nil, "pmap1", {
+    pico.layer.pixmap(nil, "pmap1", {
         {{r=255, g=  0, b=  0, a=255}, {r=  0, g=255, b=  0, a=255}},
         {{r=  0, g=  0, b=255, a=255}, {r=255, g=255, b=  0, a=255}},
     })
@@ -102,13 +102,34 @@ end
 
 do
     print("sub layer")
-    pico.layer.sub('!', nil, "sub1", "empty1",
+    pico.layer.sub(nil, "sub1", "empty1",
         {'!', x=0, y=0, w=32, h=16, anchor='NW'})
     pico.set.layer("sub1")
     local f = pico.output.screenshot("../../tst/out/shot-sub.png")
     pico.set.layer("world")
     assert(f == "../../tst/out/shot-sub.png")
     check(f, "../../tst/asr/shot-sub.png")
+end
+
+do
+    print("image layer")
+    pico.layer.image(nil, "img1", "../../res/open.png")
+    pico.set.layer("img1")
+    local f = pico.output.screenshot("../../tst/out/shot-image.png")
+    pico.set.layer("world")
+    assert(f == "../../tst/out/shot-image.png")
+    check(f, "../../tst/asr/shot-image.png")
+end
+
+do
+    print("text layer")
+    pico.set.pencil { color={'!', r=0xFF, g=0xFF, b=0xFF} }
+    pico.layer.text(nil, "txt1", 16, "hello")
+    pico.set.layer("txt1")
+    local f = pico.output.screenshot("../../tst/out/shot-text.png")
+    pico.set.layer("world")
+    assert(f == "../../tst/out/shot-text.png")
+    check(f, "../../tst/asr/shot-text.png")
 end
 
 pico.init(false)

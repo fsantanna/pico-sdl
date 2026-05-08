@@ -119,6 +119,27 @@ int main (void) {
         check(f, "asr/shot-sub.png");
     }
 
+    {
+        puts("image layer");
+        pico_layer_image(NULL, "img1", "../res/open.png");
+        pico_set_layer("img1");
+        const char* f = pico_output_screenshot("out/shot-image.png", NULL);
+        pico_set_layer("world");
+        assert(!strcmp(f, "out/shot-image.png"));
+        check(f, "asr/shot-image.png");
+    }
+
+    {
+        puts("text layer");
+        pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
+        pico_layer_text(NULL, "txt1", 16, "hello");
+        pico_set_layer("txt1");
+        const char* f = pico_output_screenshot("out/shot-text.png", NULL);
+        pico_set_layer("world");
+        assert(!strcmp(f, "out/shot-text.png"));
+        check(f, "asr/shot-text.png");
+    }
+
     pico_init(0);
     return 0;
 }
