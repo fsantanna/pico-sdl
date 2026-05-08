@@ -46,6 +46,7 @@ static struct {
     struct {
         SDL_Window*   win;
         SDL_Renderer* ren;
+        Pico_Layer    layer;
         struct {
             int fs;
             int out;
@@ -305,6 +306,22 @@ void pico_init (int on) {
                            SDL_WINDOW_SHOWN
                        ),
                 .ren = NULL,    // set after CreateRenderer
+                .layer = {
+                    .type = PICO_LAYER_WINDOW,
+                    .name = "window",
+                    .tex  = NULL,   // window framebuffer (no texture)
+                    .pencil = { .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL },
+                    .effect = { .alpha=0xFF, .color={0x77, 0x77, 0x77, 0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .rotate={0, PICO_ANCHOR_C} },
+                    .hier = { NULL, NULL, {NULL,NULL} },
+                    .scene = {
+                        .keep = -1,
+                        .dim  = PICO_DIM_PHY,
+                        .tile = {0, 0},
+                        .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+                        .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+                        .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+                    },
+                },
                 .ing = { 0, 0 },
                 .pub = {
                     .color = {0x77, 0x77, 0x77, 0xFF},
@@ -317,8 +334,10 @@ void pico_init (int on) {
         pico_assert(G.window.win != NULL);
         realm_enter(G.realm);
 
-        // realm_get("world") resolves
-        realm_put(G.realm, '!', strlen("world")+1, "world", NULL, NULL, &G.world);
+        // realm_get("window") / realm_get("world") resolve
+        realm_put(G.realm, '!', strlen("window")+1, "window", NULL, NULL, &G.window.layer);
+        realm_put(G.realm, '!', strlen("world")+1,  "world",  NULL, NULL, &G.world);
+        _layer_attach("window", "world");
 
         // create ren after win
         {

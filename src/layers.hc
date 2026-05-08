@@ -2,6 +2,7 @@
 #define PICO_LAYERS_HC
 
 typedef enum {
+    PICO_LAYER_WINDOW,
     PICO_LAYER_WORLD,
     PICO_LAYER_PLAIN,
     PICO_LAYER_VIDEO,
@@ -31,6 +32,7 @@ typedef struct {
 } Pico_Layer_Sub;
 
 static Pico_Layer* _pico_layer_name (const char* name);
+static void _layer_attach (const char* up, const char* dn);
 
 static Pico_Layer* _pico_layer_pixmap (
     int mode, const char* key, Pico_Abs_Dim dim,
