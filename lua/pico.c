@@ -1306,8 +1306,8 @@ static int l_input_event (lua_State* L) {
             L_set_keyboard(L, T, &e.keyboard);      // t
             break;
 
-        case PICO_EVENT_WIN_RESIZE:
-            lua_pushliteral(L, "win.resize");       // t | tag
+        case PICO_EVENT_WINDOW_RESIZE:
+            lua_pushliteral(L, "window.resize");    // t | tag
             lua_setfield(L, T, "tag");              // t
             lua_pushinteger(L, e.window.w);         // t | w
             lua_setfield(L, T, "w");                // t
@@ -1743,8 +1743,8 @@ int luaopen_pico_native (lua_State* L) {
         lua_newtable(L);                                    // . | G | events
         lua_pushinteger(L, PICO_EVENT_QUIT);                // . | G | events | QT
         lua_setfield(L, -2, "quit");                        // . | G | events
-        lua_pushinteger(L, PICO_EVENT_WIN_RESIZE);          // . | G | events | WN
-        lua_setfield(L, -2, "win.resize");                  // . | G | events
+        lua_pushinteger(L, PICO_EVENT_WINDOW_RESIZE);          // . | G | events | WN
+        lua_setfield(L, -2, "window.resize");                  // . | G | events
         lua_pushinteger(L, PICO_EVENT_KEY_DN);              // . | G | events | DN
         lua_setfield(L, -2, "key.dn");                      // . | G | events
         lua_pushinteger(L, PICO_EVENT_KEY_UP);              // . | G | events | UP

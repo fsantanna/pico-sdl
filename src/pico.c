@@ -984,7 +984,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
             break;
         }
 
-        case PICO_EVENT_WIN_RESIZE: {
+        case PICO_EVENT_WINDOW_RESIZE: {
             if (G.window.ing.fs) {
                 G.window.ing.fs = 0;
             } else {
@@ -1103,7 +1103,7 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
                 return PICO_EVENT_MOUSE_BUTTON_UP;
             case SDL_WINDOWEVENT:
                 if (sdl->window.event == SDL_WINDOWEVENT_RESIZED) {
-                    return PICO_EVENT_WIN_RESIZE;
+                    return PICO_EVENT_WINDOW_RESIZE;
                 } else {
                     return PICO_EVENT_NONE;
                 }
@@ -1119,7 +1119,7 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
 
         case PICO_EVENT_QUIT:
             break;
-        case PICO_EVENT_WIN_RESIZE:
+        case PICO_EVENT_WINDOW_RESIZE:
             pico->window = (typeof(pico->window)) { sdl->window.data1, sdl->window.data2 };
             break;
 
