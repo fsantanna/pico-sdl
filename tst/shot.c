@@ -64,6 +64,61 @@ int main (void) {
         assert(remove(f) == 0);
     }
 
+    {
+        puts("world layer");
+        pico_set_effect_color((Pico_Color){0x10, 0x10, 0x10, 0xFF});
+        pico_output_clear();
+        pico_set_pencil_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
+        pico_output_draw_rect (
+            &(Pico_Rel_Rect) { '!', {10, 10, 30, 30}, PICO_ANCHOR_NW }
+        );
+        const char* f = pico_output_screenshot("out/shot-world.png", NULL);
+        assert(!strcmp(f, "out/shot-world.png"));
+        check(f, "asr/shot-world.png");
+    }
+
+    {
+        puts("empty layer");
+        pico_layer_empty(NULL, "empty1", (Pico_Abs_Dim){64, 32}, NULL);
+        pico_set_layer("empty1");
+        pico_set_effect_color((Pico_Color){0x00, 0x80, 0x00, 0xFF});
+        pico_output_clear();
+        pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
+        pico_output_draw_rect (
+            &(Pico_Rel_Rect) { '!', {5, 5, 10, 10}, PICO_ANCHOR_NW }
+        );
+        const char* f = pico_output_screenshot("out/shot-empty.png", NULL);
+        pico_set_layer("world");
+        assert(!strcmp(f, "out/shot-empty.png"));
+        check(f, "asr/shot-empty.png");
+    }
+
+    {
+        puts("pixmap layer");
+        static Pico_Color buf[4] = {
+            {255,   0,   0, 255}, {  0, 255,   0, 255},
+            {  0,   0, 255, 255}, {255, 255,   0, 255}
+        };
+        pico_layer_pixmap(NULL, "pmap1", (Pico_Abs_Dim){2, 2}, buf);
+        pico_set_layer("pmap1");
+        const char* f = pico_output_screenshot("out/shot-pixmap.png", NULL);
+        pico_set_layer("world");
+        assert(!strcmp(f, "out/shot-pixmap.png"));
+        check(f, "asr/shot-pixmap.png");
+    }
+
+    {
+        puts("sub layer");
+        pico_layer_sub(NULL, "sub1", "empty1",
+            &(Pico_Rel_Rect) { '!', {0, 0, 32, 16}, PICO_ANCHOR_NW }
+        );
+        pico_set_layer("sub1");
+        const char* f = pico_output_screenshot("out/shot-sub.png", NULL);
+        pico_set_layer("world");
+        assert(!strcmp(f, "out/shot-sub.png"));
+        check(f, "asr/shot-sub.png");
+    }
+
     pico_init(0);
     return 0;
 }

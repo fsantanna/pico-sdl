@@ -62,4 +62,53 @@ do
     assert(os.remove(f))
 end
 
+do
+    print("world layer")
+    pico.set.effect { color={'!', r=0x10, g=0x10, b=0x10} }
+    pico.output.clear()
+    pico.set.pencil { color={'!', r=0xFF, g=0x00, b=0x00} }
+    pico.output.draw.rect({'!', x=10, y=10, w=30, h=30, anchor='NW'})
+    local f = pico.output.screenshot("../../tst/out/shot-world.png")
+    assert(f == "../../tst/out/shot-world.png")
+    check(f, "../../tst/asr/shot-world.png")
+end
+
+do
+    print("empty layer")
+    pico.layer.empty('!', nil, "empty1", {w=64, h=32})
+    pico.set.layer("empty1")
+    pico.set.effect { color={'!', r=0x00, g=0x80, b=0x00} }
+    pico.output.clear()
+    pico.set.pencil { color={'!', r=0xFF, g=0xFF, b=0x00} }
+    pico.output.draw.rect({'!', x=5, y=5, w=10, h=10, anchor='NW'})
+    local f = pico.output.screenshot("../../tst/out/shot-empty.png")
+    pico.set.layer("world")
+    assert(f == "../../tst/out/shot-empty.png")
+    check(f, "../../tst/asr/shot-empty.png")
+end
+
+do
+    print("pixmap layer")
+    pico.layer.pixmap('!', nil, "pmap1", {
+        {{r=255, g=  0, b=  0, a=255}, {r=  0, g=255, b=  0, a=255}},
+        {{r=  0, g=  0, b=255, a=255}, {r=255, g=255, b=  0, a=255}},
+    })
+    pico.set.layer("pmap1")
+    local f = pico.output.screenshot("../../tst/out/shot-pixmap.png")
+    pico.set.layer("world")
+    assert(f == "../../tst/out/shot-pixmap.png")
+    check(f, "../../tst/asr/shot-pixmap.png")
+end
+
+do
+    print("sub layer")
+    pico.layer.sub('!', nil, "sub1", "empty1",
+        {'!', x=0, y=0, w=32, h=16, anchor='NW'})
+    pico.set.layer("sub1")
+    local f = pico.output.screenshot("../../tst/out/shot-sub.png")
+    pico.set.layer("world")
+    assert(f == "../../tst/out/shot-sub.png")
+    check(f, "../../tst/asr/shot-sub.png")
+end
+
 pico.init(false)
