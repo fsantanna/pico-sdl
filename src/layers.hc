@@ -238,6 +238,9 @@ static void _pico_output_draw_layer (
 
     if (layer->effect.grid) {
         _show_tile(&layer->scene, dst);
+        if (G.layer == &G.window.layer) {
+            _show_grid(layer, dst);
+        }
     }
 
     _pico_output_present(0);

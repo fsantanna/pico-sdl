@@ -60,6 +60,7 @@ static struct {
 ///////////////////////////////////////////////////////////////////////////////
 
 static void _show_tile (Pico_Layer_Scene* view, SDL_Rect dst);
+static void _show_grid (Pico_Layer* layer, SDL_Rect dst);
 
 static void _pico_output_present (int force);
 
@@ -1465,29 +1466,29 @@ void pico_output_draw_tri (
     _pico_output_present(0);
 }
 
-static void _show_grid (void) {
-    if (!G.layer->effect.grid) return;
+static void _show_grid (Pico_Layer* layer, SDL_Rect dst) {
+    if (!layer->effect.grid) return;
 
     Pico_Color x_clr = pico_get_pencil_color();
     pico_set_pencil_color((Pico_Color){0x77, 0x77, 0x77, 0x77});
 
     // grid lines
     {
-        if ((G.window.layer.scene.dim.w%G.layer->scene.dim.w == 0) && (G.layer->scene.dim.w< G.window.layer.scene.dim.w)) {
-            for (int i=0; i<G.window.layer.scene.dim.w; i+=(G.window.layer.scene.dim.w/G.layer->scene.dim.w)) {
+        if ((dst.w%layer->scene.dim.w == 0) && (layer->scene.dim.w < dst.w)) {
+            for (int i=0; i<dst.w; i+=(dst.w/layer->scene.dim.w)) {
                 if (i == 0) continue;
                 pico_output_draw_line (
-                    &(Pico_Rel_Pos){ '!', {i,0}, PICO_ANCHOR_NW },
-                    &(Pico_Rel_Pos){ '!', {i, G.window.layer.scene.dim.h}, PICO_ANCHOR_NW }
+                    &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
+                    &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
                 );
             }
         }
-        if ((G.window.layer.scene.dim.h%G.layer->scene.dim.h == 0) && (G.layer->scene.dim.h < G.window.layer.scene.dim.h)) {
-            for (int j=0; j<G.window.layer.scene.dim.h; j+=(G.window.layer.scene.dim.h/G.layer->scene.dim.h)) {
+        if ((dst.h%layer->scene.dim.h == 0) && (layer->scene.dim.h < dst.h)) {
+            for (int j=0; j<dst.h; j+=(dst.h/layer->scene.dim.h)) {
                 if (j == 0) continue;
                 pico_output_draw_line (
-                    &(Pico_Rel_Pos){ '!', {0,j}, PICO_ANCHOR_NW },
-                    &(Pico_Rel_Pos){ '!', {G.window.layer.scene.dim.w,j}, PICO_ANCHOR_NW }
+                    &(Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
+                    &(Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
                 );
             }
         }
@@ -1498,13 +1499,13 @@ static void _show_grid (void) {
         pico_set_pencil_color((Pico_Color){0x77, 0x77, 0x77, 0xFF});
         int H = 10;
         Pico_Abs_Rect src = pico_cv_rect_rel_abs (
-                &G.layer->scene.src,
-                &(Pico_Abs_Rect){0, 0, G.layer->scene.dim.w, G.layer->scene.dim.h}
+                &layer->scene.src,
+                &(Pico_Abs_Rect){0, 0, layer->scene.dim.w, layer->scene.dim.h}
         );
 
-        for (int x=0; x<G.window.layer.scene.dim.w; x+=50) {
+        for (int x=0; x<dst.w; x+=50) {
             if (x == 0) continue;
-            int v = src.x + (x * src.w / G.window.layer.scene.dim.w);
+            int v = src.x + (x * src.w / dst.w);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Abs_Dim dim = pico_get_text (
@@ -1513,13 +1514,13 @@ static void _show_grid (void) {
             );
             pico_output_draw_text (
                 lbl,
-                &(Pico_Rel_Rect){ '!', {x-dim.w/2, 10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
+                &(Pico_Rel_Rect){ '!', {dst.x+x-dim.w/2, dst.y+10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
             );
         }
 
-        for (int y=0; y<G.window.layer.scene.dim.h; y+=50) {
+        for (int y=0; y<dst.h; y+=50) {
             if (y == 0) continue;
-            int v = src.y + (y * src.h / G.window.layer.scene.dim.h);
+            int v = src.y + (y * src.h / dst.h);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Abs_Dim dim = pico_get_text(
@@ -1527,7 +1528,7 @@ static void _show_grid (void) {
                 &(Pico_Rel_Dim){ '!', {0, H} });
             pico_output_draw_text (
                 lbl,
-                &(Pico_Rel_Rect){ '!', {10-dim.w/2, y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
+                &(Pico_Rel_Rect){ '!', {dst.x+10-dim.w/2, dst.y+y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
             );
         }
     }
@@ -1602,7 +1603,7 @@ static void _pico_output_present (int force) {
     // _pico_output_draw_layer (no special-case bespoke blit needed)
     _layer_traverse(&G.window.layer);
 
-    _show_grid();
+    // _show_grid is now called per-window-child inside _pico_output_draw_layer
 
     // mirror window.tex -> framebuffer
     SDL_SetRenderTarget(G.window.ren, NULL);
