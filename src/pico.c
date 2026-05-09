@@ -1493,9 +1493,6 @@ static void _show_grid (void) {
         }
     }
 
-    // tile grid lines
-    _show_tile(&G.layer->scene, (SDL_Rect){0, 0, G.window.layer.scene.dim.w, G.window.layer.scene.dim.h});
-
     // metric labels
     {
         pico_set_pencil_color((Pico_Color){0x77, 0x77, 0x77, 0xFF});
@@ -1583,8 +1580,8 @@ static void _pico_output_present (int force) {
         // ok
     } else if (G.expert.on) {
         return;
-    } else if (G.layer != &G.world) {
-        return;  // auto-present only on world layer
+    } else if (!(G.layer==&G.world || G.layer==&G.window.layer)) {
+        return;  // auto-present only on root layers (world or window)
     }
     if (!G.init) {
         return;
@@ -1592,61 +1589,18 @@ static void _pico_output_present (int force) {
 
     G.window.ing.out = 1;
 
-    // composite scene graph onto root.tex
-    _layer_traverse(&G.world);
-
-    // bespoke world->window blit goes into window.tex (intermediate);
-    // a final RenderCopy then mirrors window.tex onto the framebuffer
+    // per-frame clear of window.tex with window's effect.color
     SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
-    SDL_SetRenderDrawColor (
-        G.window.ren,
-        G.window.layer.effect.color.r, G.window.layer.effect.color.g, G.window.layer.effect.color.b, G.window.layer.effect.color.a
-    );
-    SDL_RenderClear(G.window.ren);
-
-    // Clip src/dst rectangles to their respective bounds
     {
-        // Clips rect 'a' to bounds [0,0,max_w,max_h] and propagates changes to 'b'
-        void aux (SDL_Rect* a, SDL_Rect* b, int max_w, int max_h) {
-            assert(a->w>0 && a->h>0);
-            float sw = b->w / (float)a->w;
-            float sh = b->h / (float)a->h;
-            if (a->x < 0) {
-                int d = -a->x;
-                b->x += (d * sw);
-                b->w -= (d * sw);
-                a->w -= d;
-                a->x = 0;
-            }
-            if (a->y < 0) {
-                int d = -a->y;
-                b->y += (d * sh);
-                b->h -= (d * sh);
-                a->h -= d;
-                a->y = 0;
-            }
-            if (a->x+a->w > max_w) {
-                int d = (a->x + a->w) - max_w;
-                b->w -= (d * sw);
-                a->w -= d;
-            }
-            if (a->y+a->h > max_h) {
-                int d = (a->y + a->h) - max_h;
-                b->h -= (d * sh);
-                a->h -= d;
-            }
-        }
-        Pico_Abs_Rect src = pico_cv_rect_rel_abs (
-            &G.world.scene.src,
-            &(Pico_Abs_Rect){0, 0, G.world.scene.dim.w, G.world.scene.dim.h}
-        );
-        Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-            &G.world.scene.dst, &(Pico_Abs_Rect){0, 0, G.window.layer.scene.dim.w, G.window.layer.scene.dim.h}
-        );
-        aux(&dst, &src, G.window.layer.scene.dim.w, G.window.layer.scene.dim.h);
-        aux(&src, &dst, G.world.scene.dim.w, G.world.scene.dim.h);
-        SDL_RenderCopy(G.window.ren, G.world.tex, &src, &dst);
+        Pico_Color c = G.window.layer.effect.color;
+        SDL_SetRenderDrawColor(G.window.ren, c.r, c.g, c.b, c.a);
+        SDL_RenderClear(G.window.ren);
     }
+
+    // composite window's tree (world + future window children) onto
+    // window.tex; the world->window edge goes through Phase A aux in
+    // _pico_output_draw_layer (no special-case bespoke blit needed)
+    _layer_traverse(&G.window.layer);
 
     _show_grid();
 
@@ -1656,14 +1610,18 @@ static void _pico_output_present (int force) {
     SDL_RenderPresent(G.window.ren);
 
     G.window.ing.out = 0;
-    SDL_SetRenderTarget(G.window.ren, G.world.tex);
-    Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.world.scene.clip, NULL);
-    SDL_RenderSetClipRect(G.window.ren, &r);
+
+    // restore current layer's render target + clip
+    SDL_SetRenderTarget(G.window.ren, G.layer->tex);
+    {
+        Pico_Abs_Rect r = pico_cv_rect_rel_abs(&G.layer->scene.clip, NULL);
+        SDL_RenderSetClipRect(G.window.ren, &r);
+    }
 }
 
 void pico_output_present (void) {
     _pico_guard();
-    assert(G.layer==&G.world && "can only present from world layer");
+    assert((G.layer==&G.world || G.layer==&G.window.layer) && "can only present from root layers");
     _pico_output_present(1);
 }
 
