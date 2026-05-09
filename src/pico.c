@@ -1472,6 +1472,7 @@ void pico_output_draw_tri (
     _pico_output_present(0);
 }
 
+#if 0
 static void _show_grid (void) {
     if (!G.layer->effect.grid) return;
 
@@ -1544,6 +1545,7 @@ static void _show_grid (void) {
 
     pico_set_pencil_color(x_clr);
 }
+#endif
 
 static void _show_tile (Pico_Layer_Scene* view, SDL_Rect dst) {
     if (view->tile.w<=0 || view->tile.h<=0) return;
@@ -1611,6 +1613,7 @@ static void _pico_output_present (int force) {
     );
     SDL_RenderClear(G.window.ren);
 
+#if 1
     // Clip src/dst rectangles to their respective bounds
     {
         // Clips rect 'a' to bounds [0,0,max_w,max_h] and propagates changes to 'b'
@@ -1654,8 +1657,21 @@ static void _pico_output_present (int force) {
         aux(&src, &dst, G.world.scene.dim.w, G.world.scene.dim.h);
         SDL_RenderCopy(G.window.ren, G.world.tex, &src, &dst);
     }
+#else
+    {
+        Pico_Abs_Rect src = pico_cv_rect_rel_abs (
+            &G.world.scene.src,
+            &(Pico_Abs_Rect){0, 0, G.world.scene.dim.w, G.world.scene.dim.h}
+        );
+        Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
+            &G.world.scene.dst,
+            &(Pico_Abs_Rect){0, 0, G.window.layer.scene.dim.w, G.window.layer.scene.dim.h}
+        );
+        SDL_RenderCopyEx(G.window.ren, G.world.tex, &src, &dst, 0.0, NULL, SDL_FLIP_NONE);
+    }
+#endif
 
-    _show_grid();
+    //_show_grid();
 
     // mirror window.tex -> framebuffer
     SDL_SetRenderTarget(G.window.ren, NULL);

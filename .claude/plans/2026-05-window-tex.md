@@ -17,6 +17,7 @@
 | Phase A: port aux-clipping into `_pico_output_draw_layer` | **deferred** |
 | Phase B.4: replace bespoke blit with `_layer_traverse(&G.window.layer)` | **deferred** |
 | Phase B.5/6: allow `pico_output_present` from window; auto-present on window | **deferred** |
+| Follow-up: `_show_grid` move to framebuffer (post-B.4) | **deferred** |
 | `tst/window.c` window-01 (commented out in Makefiles) | **deferred** until window-as-root |
 
 The full design below stands as the next-step plan; what landed is
@@ -240,6 +241,36 @@ Extend gate from world-only to world-or-window:
 ```
 
 Auto-present fires after window-layer ops.
+
+## Follow-up (after Phase B lands) — `_show_grid` to framebuffer
+
+**File**: `src/pico.c` `_pico_output_present`
+
+**Why**: Phase B drops the per-frame `window.tex` clear (window.keep
+== -1 → traverse skips post-composite clear). Grid lines drawn into
+`window.tex` would then accumulate across frames.
+
+**Change**: Move `_show_grid()` after the final `RenderCopy(window.tex
+→ fb)`. Body unchanged — already reads `G.layer` (layer-generic).
+
+```c
+_layer_traverse(&G.window.layer);        // → window.tex
+SDL_SetRenderTarget(G.window.ren, NULL);
+SDL_RenderCopy(G.window.ren, G.window.layer.tex, NULL, NULL);
+_show_grid();                            // on fb, not window.tex
+SDL_RenderPresent(G.window.ren);
+```
+
+**Side benefit**: with the auto-present gate extended to `world ||
+window`, the grid naturally applies to whichever of the two is
+current — not just world.
+
+**Tradeoffs**:
+- Layer (non-window) screenshots never saw grid (it lives on
+  window.tex, not on `L->tex`) — unchanged.
+- Window screenshots read fb directly → still see grid.
+
+**Order**: not the next step; lands after B.4–B.6 prove green.
 
 ## Files NOT to change
 

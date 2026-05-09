@@ -187,6 +187,49 @@ static void _pico_output_draw_layer (
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
+#if 1
+    // clip dst to current layer (parent) bounds, propagate to src
+    {
+        void aux (SDL_Rect* a, SDL_Rect* b, int max_w, int max_h) {
+            assert(a->w>0 && a->h>0);
+            float sw = b->w / (float)a->w;
+            float sh = b->h / (float)a->h;
+            if (a->x < 0) {
+                int d = -a->x;
+                b->x += (d * sw);
+                b->w -= (d * sw);
+                a->w -= d;
+                a->x = 0;
+            }
+            if (a->y < 0) {
+                int d = -a->y;
+                b->y += (d * sh);
+                b->h -= (d * sh);
+                a->h -= d;
+                a->y = 0;
+            }
+            if (a->x+a->w > max_w) {
+                int d = (a->x + a->w) - max_w;
+                b->w -= (d * sw);
+                a->w -= d;
+            }
+            if (a->y+a->h > max_h) {
+                int d = (a->y + a->h) - max_h;
+                b->h -= (d * sh);
+                a->h -= d;
+            }
+        }
+        int max_w = G.layer->scene.dim.w;
+        int max_h = G.layer->scene.dim.h;
+        if (dst.x < 0 || dst.y < 0 ||
+            dst.x + dst.w > max_w || dst.y + dst.h > max_h)
+        {
+            aux(&dst, &src, max_w, max_h);
+            aux(&src, &dst, sup->w, sup->h);
+        }
+    }
+#endif
+
     SDL_SetTextureAlphaMod(layer->tex, G.layer->pencil.color.a*layer->effect.alpha/255);
     SDL_Point center = {
         dst.w * layer->effect.rotate.anchor.x,

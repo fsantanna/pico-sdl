@@ -53,6 +53,7 @@ tests:
 	$(EXE) tst/keep.c
 	$(EXE) tst/layer-empty-tile.c
 	$(EXE) tst/layer-hier.c
+	$(EXE) tst/layer-clip.c
 	$(EXE) tst/layers.c
 	$(EXE) tst/mouse.c
 	$(EXE) tst/mouse-rect-click.c
