@@ -187,7 +187,6 @@ static void _pico_output_draw_layer (
         &(Pico_Abs_Rect){0, 0, sup->w, sup->h}
     );
 
-#if 1
     // clip dst to current layer (parent) bounds, propagate to src
     {
         void aux (SDL_Rect* a, SDL_Rect* b, int max_w, int max_h) {
@@ -227,7 +226,6 @@ static void _pico_output_draw_layer (
             aux(&src, &dst, sup->w, sup->h);
         }
     }
-#endif
 
     SDL_SetTextureAlphaMod(layer->tex, G.layer->pencil.color.a*layer->effect.alpha/255);
     SDL_Point center = {
