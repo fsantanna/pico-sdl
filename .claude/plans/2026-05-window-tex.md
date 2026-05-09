@@ -1,8 +1,8 @@
 # Window TARGET Texture (B2) + Aux-Clipping Port
 
-## Status (2026-05-08)
+## Status (2026-05-09)
 
-**Minimal subset landed; full refactor deferred.**
+**Phase A landed; bespoke→traverse refactor (Phase B) still deferred.**
 
 | step | status |
 |---|---|
@@ -14,10 +14,12 @@
 | `pico_set_layer` NULL guards `G.layer->name` (init `.layer = NULL`) | ✓ done |
 | Init ends with `pico_output_clear()` (drives one full present) | ✓ done |
 | `pico.h` `pico_assert_0` / `pico_assert_X` macros | ✓ done |
-| Phase A: port aux-clipping into `_pico_output_draw_layer` | **deferred** |
+| Phase A: aux-clipping in `_pico_output_draw_layer`, bound from `SDL_GetRenderTarget`+`SDL_QueryTexture` | ✓ done |
+| `pico_set_window_fs` no longer touches `scene.dim` (fs is render-time stretch) | ✓ done |
+| `tst/layer-clip.{c,lua}` regression suite (6 cases: dst overflow, src overflow, world+child src.y) | ✓ done |
+| `_show_grid` move to framebuffer | resolved-by-design (aux now uses target dim → no coord mismatch) |
 | Phase B.4: replace bespoke blit with `_layer_traverse(&G.window.layer)` | **deferred** |
 | Phase B.5/6: allow `pico_output_present` from window; auto-present on window | **deferred** |
-| Follow-up: `_show_grid` move to framebuffer (post-B.4) | **deferred** |
 | `tst/window.c` window-01 (commented out in Makefiles) | **deferred** until window-as-root |
 
 The full design below stands as the next-step plan; what landed is

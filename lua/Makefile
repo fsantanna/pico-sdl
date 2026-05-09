@@ -56,6 +56,7 @@ tests: pico_native.so
 	$(TST) tst/init.lua
 	$(TST) tst/layer-empty-tile.lua
 	$(TST) tst/layer-hier.lua
+	$(TST) tst/layer-clip.lua
 	$(TST) tst/layers.lua
 	$(TST) tst/mouse.lua
 	$(TST) tst/mouse-rect-click.lua
