@@ -219,10 +219,9 @@ static void _pico_output_draw_layer (
                 a->h -= d;
             }
         }
-        int max_w = G.layer->scene.dim.w;
-        int max_h = G.layer->scene.dim.h;
-        if (dst.x < 0 || dst.y < 0 ||
-            dst.x + dst.w > max_w || dst.y + dst.h > max_h)
+        int max_w, max_h;
+        SDL_QueryTexture(SDL_GetRenderTarget(G.window.ren), NULL, NULL, &max_w, &max_h);
+        //if (dst.x<0 || dst.y<0 || dst.x+dst.w>max_w || dst.y+dst.h>max_h)
         {
             aux(&dst, &src, max_w, max_h);
             aux(&src, &dst, sup->w, sup->h);
