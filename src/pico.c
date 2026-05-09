@@ -863,22 +863,15 @@ void pico_set_window_fs (int fs) {
     if (fs == G.window.pub.fs) {
         return;
     }
-    static Pico_Abs_Dim _old;
-    Pico_Abs_Dim new;
     G.window.ing.fs = 1;
     if (fs) {
-        _old = G.window.layer.scene.dim;
         int ret = SDL_SetWindowFullscreen(G.window.win, SDL_WINDOW_FULLSCREEN_DESKTOP);
         pico_assert(ret == 0);
         pico_input_delay(50);    // TODO: required for some reason
-        SDL_GetWindowSize(G.window.win, &new.w, &new.h);
     } else {
         pico_assert(0 == SDL_SetWindowFullscreen(G.window.win, 0));
-        new = _old;
     }
     G.window.pub.fs = fs;
-    G.window.layer.scene.dim = new;
-    SDL_SetWindowSize(G.window.win, new.w, new.h);
     _pico_output_present(0);
 }
 
