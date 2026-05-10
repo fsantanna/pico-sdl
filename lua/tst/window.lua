@@ -1,6 +1,7 @@
 require 'pico.check'
 
 pico.init(true)
+pico.set.expert(true, 0)    -- expert: window-direct draws + manual present
 
 -- initial current layer is world (not window)
 do
@@ -50,6 +51,7 @@ do
     pico.set.pencil { color={'!', r=0xFF, g=0x00, b=0x00} }
     pico.output.draw.rect({'%', x=0.33, y=0.33, w=0.4, h=0.4, anchor='C'})
 
+    pico.output.present()   -- expert: manual present before screenshot
     pico.check("window-01")
     pico.set.layer("world")
 end

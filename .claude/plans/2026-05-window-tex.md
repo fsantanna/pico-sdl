@@ -76,11 +76,12 @@ besides world, so `_show_grid` fires for world.
 
 - ✓ `pico_set_expert(on, fps)` flips `G.world.scene.clear`.
 - ✓ Auto-present off in expert via existing `G.expert.on` early-return.
+- ✓ Per-frame `window.tex` clear stays unconditional. Expert mode = consistent regenerator: both world (clear=1 auto-clears) and window (per-frame clear) regenerate each frame. User redraws all (game-loop pattern).
 - ✗ Window-draw restriction (`pico_set_layer("window")` or draw-on-window in non-expert) — **dropped**. Both placements proved messy:
     - set_layer assert: too coarse (internal callers like resize/screenshot/set_dim use it for housekeeping).
     - draw-time assert: needed `ing.out` exemption for internal `_show_grid` text/line draws — workable but added churn for marginal benefit.
     - Decision: don't enforce. Drawing on window in non-expert is "undefined" by convention; tests + docs steer users away.
-- ✓ `tst/window.c` + `lua/tst/window.lua` re-enabled. Tests wrap with `pico_set_expert(1, -1)` + explicit `pico_output_present()` before `_pico_check`.
+- ✓ `tst/window.c` + `lua/tst/window.lua` re-enabled. Tests wrap with `pico_set_expert(1, 0)` + explicit `pico_output_present()` before `_pico_check`. Baseline shows gray bg + blue (world @ SE); red on window only visible if redrawn each frame (expert regenerator semantic).
 
 ### Out-of-scope follow-ups
 

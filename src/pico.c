@@ -695,6 +695,7 @@ int pico_set_expert (int on, int fps) {
         G.expert.t0 = SDL_GetTicks();
     }
     G.world.effect.grid = 0;
+    G.world.scene.clear = on ? 1 : 0;
     return G.expert.ms;
 }
 
@@ -742,8 +743,7 @@ void pico_set_effect_color (Pico_Color color) {
     Pico_Layer* L = G.layer;
     L->effect.color = color;
     if (L->scene.clear && L->hier.up!=NULL) {
-        assert(L->type != PICO_LAYER_WORLD);
-        assert(L->type != PICO_LAYER_SUB);
+        assert(L->type != PICO_LAYER_SUB); // clear would corrupt parent
         SDL_SetRenderTarget(G.window.ren, L->tex);
         SDL_SetRenderDrawColor(G.window.ren, color.r, color.g, color.b, color.a);
         SDL_RenderClear(G.window.ren);
