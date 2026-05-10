@@ -1,31 +1,85 @@
 # Window TARGET Texture (B2) + Aux-Clipping Port
 
-## Status (2026-05-09)
+## Status (2026-05-10)
 
-**Phase A landed; bespoke→traverse refactor (Phase B) still deferred.**
+**Phases A + B landed. Architectural pivot to expert-vs-default
+dual-hier design supersedes the original "drop window.tex per-frame
+clear" item.**
 
 | step | status |
 |---|---|
 | `G.window.layer.tex` allocated as TARGET + destroyed at teardown | ✓ done |
-| `pico_set_scene_dim` recreates `window.tex` on resize (unified if/else) | ✓ done |
-| `_pico_output_present`: bespoke blit retargeted to `window.tex`, then `RenderCopy → fb` mirror | ✓ done |
-| `_show_grid` baked into `window.tex` (was on fb) | ✓ done |
-| `pico_output_screenshot`: window reads fb (alpha=255 fb behavior) | ✓ done |
-| `pico_set_layer` NULL guards `G.layer->name` (init `.layer = NULL`) | ✓ done |
-| Init ends with `pico_output_clear()` (drives one full present) | ✓ done |
-| `pico.h` `pico_assert_0` / `pico_assert_X` macros | ✓ done |
+| `pico_set_scene_dim` recreates `window.tex` on resize | ✓ done |
 | Phase A: aux-clipping in `_pico_output_draw_layer`, bound from `SDL_GetRenderTarget`+`SDL_QueryTexture` | ✓ done |
 | `pico_set_window_fs` no longer touches `scene.dim` (fs is render-time stretch) | ✓ done |
 | `tst/layer-clip.{c,lua}` regression suite (6 cases: dst overflow, src overflow, world+child src.y) | ✓ done |
 | `_show_grid` move to framebuffer | resolved-by-design (aux now uses target dim → no coord mismatch) |
-| Phase B.4: replace bespoke blit with `_layer_traverse(&G.window.layer)` | **deferred** |
-| Phase B.5/6: allow `pico_output_present` from window; auto-present on window | **deferred** |
-| `tst/window.c` window-01 (commented out in Makefiles) | **deferred** until window-as-root |
+| Phase B.4: replace bespoke blit with `_layer_traverse(&G.window.layer)` | ✓ done |
+| Phase B.5/6: relax `pico_output_present` + auto-present gate to `world \|\| window` | ✓ done |
+| `_show_grid` moved to per-window-child in `_pico_output_draw_layer` (post-aux src/dst params) | ✓ done |
+| `_show_tile` + `_show_grid` relocated from `pico.c` to `layers.hc` | ✓ done |
+| Rename `keep` → `clear` (inverted semantic; values flipped) | ✓ done |
+| Drop per-frame `window.tex` clear → window persistent | **superseded** by dual-hier design |
+| `tst/window.c` window-01 (commented out in Makefiles) | **deferred** until expert mode lands |
 
-The full design below stands as the next-step plan; what landed is
-just the texture insertion (the minimum to enable later steps).
+`make tests` and `cd lua && make tests` are green.
 
-Both `make tests` and `cd lua && make tests` are green.
+## Architectural Decision (2026-05-10): expert vs default dual-hier
+
+Rather than dropping the per-frame `window.tex` clear (which would
+expose the BLEND-mode transparency-accumulation issue when children
+are composited multiple times), we split rendering into two modes:
+
+| | non-expert (default, "student kit") | expert |
+|---|---|---|
+| auto-present | yes (on world only) | no (manual `pico_output_present()`) |
+| `pico_set_layer("window")` | error: "requires expert mode" | allowed |
+| `world.scene.clear` | 0 (canvas; draws persist) | 1 (regenerator; redraw each frame) |
+| render path | traverse from world; world→fb (or trivial mirror) | traverse from window; full hier on `window.tex` |
+| window-direct draws | not exposed | available |
+| sibling-of-world layers | not exposed | available |
+
+**Rationale**:
+- Beginner mental model = "world is the canvas, draw and it stays."
+- Expert mental model = "game-loop: redraw each frame, full window
+  hierarchy, manual present cycle."
+- Existing `pico_set_expert(on, fps)` already toggles auto-present;
+  extending it to flip render path + `world.scene.clear` keeps
+  the API minimal (one switch, three coupled behaviors).
+- Avoids the architectural rabbit-hole of "two-tex layers" needed
+  to make BLEND compositing idempotent under repeated auto-presents.
+
+### Implementation outline
+
+`pico_set_expert(on, fps)`:
+- Toggle `G.expert.on`.
+- Toggle `G.world.scene.clear = on ? 1 : 0`. Bypass the normal
+  `pico_set_scene_clear` assert (which rejects WORLD).
+
+`pico_set_layer`:
+- If `key == "window"` and `!G.expert.on`: assert/error.
+
+`_pico_output_present(force)`:
+- If `G.expert.on`:
+  - Window hier path: `_layer_traverse(&G.window.layer)`, mirror `window.tex → fb`.
+- Else:
+  - World hier path: target = fb (or trivial pass-through);
+    `_pico_output_draw_layer(&G.world)` directly to fb, with
+    Phase A aux for src/dst clipping.
+
+`_pico_output_draw_layer`'s `_show_grid` call: keep the
+`G.layer == &G.window.layer` gate (only direct window-children get
+pixel grid + labels). Non-expert mode never has window children
+besides world, so `_show_grid` fires for world.
+
+### Out-of-scope follow-ups (post-expert-mode-land)
+
+- **Two-tex layers** (clean BLEND compositing): each layer keeps
+  `draws.tex` (user paints) + `composed.tex` (children composited
+  onto draws each present). Eliminates accumulation-on-repeat-composite
+  for transparent layers. Bigger refactor; flag for future.
+- **Re-enable `tst/window.c`** with expert-mode wrapping.
+- **Lua expert API** if not already wired.
 
 ## Context
 

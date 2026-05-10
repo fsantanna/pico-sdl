@@ -67,17 +67,20 @@ the world/root becomes a predefined layer (`"world"`).
 - [x] Rename `PICO_EVENT_WIN_RESIZE` → `PICO_EVENT_WINDOW_RESIZE`; tag `"win.resize"` → `"window.resize"` (commit `83a698b`)
 - [~] **`tst/window.c` + `lua/tst/window.lua`** — passing cases (1) initial layer is `"world"`, (2) `set.layer("window")` switches and returns `"world"`, (3) dims (window=500×500 phy / world=100×100 log). Case (4) "draw on window + world at SE quadrant" stays redesigned (baseline `tst/asr/window-01.png` is the post-refactor target). **Currently disabled** in both Makefiles (commented out). Re-enable once the present refactor allows window-as-root (auto-present + traverse from `&G.window.layer`).
 - [x] **`G.window.layer.tex` allocated as TARGET texture** (commit-pending) — `pico_init` creates `phy = _tex_create(PICO_DIM_PHY)` + BLENDMODE_NONE; `_pico_output_present` retargets the bespoke world→fb blit to write into `window.tex`, then a final `SDL_RenderCopy(window.tex → fb)` mirrors. `_show_grid` baked into `window.tex` (so screenshots see it; window screenshots still read fb to preserve SDL's alpha=255 fb behavior). `pico_set_scene_dim` recreates `window.tex` on resize. Init refactor: pre-allocate resources into local vars before the big designated initializer; `.layer = NULL` initial + `pico_set_layer` NULL guard for `G.layer->name`. Both test suites green.
-- [ ] **Refactor `_pico_output_present` — full traverse-from-window** — replace bespoke world→window.tex blit with `_layer_traverse(&G.window.layer)`. Prerequisite (a) landed; (b) still pending:
-    - **(a) Port aux-clipping into `_pico_output_draw_layer`.** ✓ done — aux block ported with bound queried from `SDL_GetRenderTarget`+`SDL_QueryTexture` (handles `_show_grid` and any other case where current G.layer != render target). `tst/layer-clip.{c,lua}` regression suite added (6 cases). Bespoke aux still active for the world→window edge until Phase B.4 lands.
-    - **(b) Allow auto-present + explicit `pico_output_present()` from the window layer** so direct-window draws actually present. Today both gate on `G.layer == &G.world`.
-    - With (b) done, `_pico_output_present` collapses to `_layer_traverse(&G.window.layer)` + final mirror, the bespoke blit goes away, and `tst/window.c` window-01 starts passing.
-- [x] **`pico_set_window_fs` no longer touches `scene.dim`** — fullscreen is now a render-time stretch (final mirror `RenderCopy(window.tex → fb)` stretches automatically). Eliminated `_old`/`new`/`SDL_SetWindowSize` shuffle. Side effect: `_show_grid` no longer iterates past `window.tex` bounds in fs mode (was triggering Phase A aux's "rect entirely outside" assert).
-- [ ] Delete `'w'` mode branches in `aux.hc` (5 sites); after the refactor lands
+- [x] **Refactor `_pico_output_present` — full traverse-from-window** — bespoke world→window.tex blit replaced with `_layer_traverse(&G.window.layer)`. Both prerequisites landed:
+    - **(a) Port aux-clipping into `_pico_output_draw_layer`.** ✓ done — aux block ported with bound queried from `SDL_GetRenderTarget`+`SDL_QueryTexture`. `tst/layer-clip.{c,lua}` regression suite added (6 cases).
+    - **(b) Allow auto-present + explicit `pico_output_present()` from the window layer.** ✓ done — gate relaxed to `world || window`. `_show_tile` + `_show_grid` moved to `layers.hc`, called from `_pico_output_draw_layer` for direct window-children with post-aux src/dst.
+- [x] **`pico_set_window_fs` no longer touches `scene.dim`** — fullscreen is now a render-time stretch.
+- [x] **Rename `Pico_Layer_Scene.keep` → `clear`** with inverted semantic (1 = clear after composite, 0 = persist). All API + Lua bindings + tests updated.
+- [ ] **Architectural pivot: expert vs default dual-hier mode** (see `.claude/plans/2026-05-window-tex.md`) — replaces "drop window.tex per-frame clear" path:
+    - Non-expert: traverse from world only; world.clear=0 (canvas); auto-present on world; `set.layer("window")` errors.
+    - Expert: traverse from window; world.clear=1 (regenerator); manual present; window-direct draws + sibling layers allowed.
+    - `pico_set_expert(on, fps)` flips all three: auto-present, render path, world.clear.
+- [ ] Delete `'w'` mode branches in `aux.hc` (5 sites); after expert mode lands
 - [ ] Delete `_*_win_to_wld` / `_*_wld_to_win` (6 helpers)
 - [ ] Delete `pico_cv_pos_rel_win` / `pico_cv_pos_win_rel`
 - [ ] Migrate mouse / `'w'` test sites
-- [ ] Regenerate `asr/` for any visual tests that shift after the refactor
-- [ ] Add `pico.set.scene_keep` test once world is unlocked (per Open question below)
+- [ ] Re-enable `tst/window.c` + `lua/tst/window.lua` (currently disabled) once expert mode lands; window-01 passes via expert path.
 - [ ] Update `valgrind.supp:sdl-init` line `N` after `pico_init` line shifts
 
 ### Open questions
