@@ -866,10 +866,8 @@ static int l_get_scene (lua_State* L) {
     L_push_rel_rect(L, &view.clip);     // T | clip
     lua_setfield(L, -2, "clip");        // T
 
-    if (view.keep != -1) {
-        lua_pushboolean(L, view.keep);  // T | keep
-        lua_setfield(L, -2, "keep");    // T
-    }
+    lua_pushboolean(L, view.clear);     // T | clear
+    lua_setfield(L, -2, "clear");       // T
 
     return 1;
 }
@@ -1034,9 +1032,9 @@ static int l_set_scene (lua_State* L) {
     Pico_Rel_Rect src,  *xsrc=NULL;
     Pico_Rel_Rect clip, *xclip=NULL;
 
-    lua_getfield(L, 1, "keep");             // T | keep
+    lua_getfield(L, 1, "clear");            // T | clear
     if (!lua_isnil(L, -1)) {
-        pico_set_scene_keep(lua_toboolean(L, -1));
+        pico_set_scene_clear(lua_toboolean(L, -1));
     }
     lua_pop(L, 1);                          // T
 

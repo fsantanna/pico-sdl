@@ -86,7 +86,7 @@ static void _free_sound (int n, const void* key, void* value) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Layer* _layer_new (
-    int keep, int type, size_t size,
+    int clear, int type, size_t size,
     const char* key, SDL_Texture* tex, Pico_Abs_Dim dim
 ) {
     Pico_Layer* data = calloc(1, size);
@@ -102,12 +102,12 @@ static Pico_Layer* _layer_new (
             .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .rotate={0, PICO_ANCHOR_C}
         },
         .scene = {
-            .keep = keep,
-            .dim  = dim,
-            .tile = {0, 0},
-            .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
-            .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
-            .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+            .clear = clear,
+            .dim   = dim,
+            .tile  = {0, 0},
+            .dst   = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+            .src   = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+            .clip  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
         },
     };
     assert(data->name != NULL);
@@ -129,7 +129,7 @@ static void* _alloc_layer_pixmap (int n, const void* key, void* ctx) {
     pico_assert(tex != NULL);
     SDL_FreeSurface(sfc);
     return _layer_new (
-        1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, tex, c->dim
     );
 }
@@ -142,7 +142,7 @@ static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
         dim.h *= arg->tile->h;
     }
     Pico_Layer* lay = _layer_new (
-        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, _tex_create(dim), dim
     );
     if (arg->tile != NULL) {
@@ -158,7 +158,7 @@ static void* _alloc_layer_image (int n, const void* key, void* ctx) {
     Pico_Abs_Dim dim;
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
     return _layer_new (
-        1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, tex, dim
     );
 }
@@ -170,7 +170,7 @@ static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
         &(Pico_Abs_Rect){0, 0, c->par->scene.dim.w, c->par->scene.dim.h}
     );
     Pico_Layer* data = _layer_new (
-        -1, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
+        0, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
         (const char*)key, c->par->tex,
         (Pico_Abs_Dim){abs.w, abs.h}
     );
@@ -196,7 +196,7 @@ static void* _alloc_layer_text (int n, const void* key, void* ctx) {
     Pico_Abs_Dim dim;
     SDL_Texture* tex = _tex_text(c->height, c->text, &dim);
     return _layer_new (
-        1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, tex, dim
     );
 }
@@ -220,7 +220,7 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
     pico_assert(tex != NULL);
 
     Pico_Layer_Video* vs = (Pico_Layer_Video*)_layer_new (
-        1, PICO_LAYER_VIDEO, sizeof(Pico_Layer_Video),
+        0, PICO_LAYER_VIDEO, sizeof(Pico_Layer_Video),
         (const char*)key, tex, (Pico_Abs_Dim){w, h}
     );
 

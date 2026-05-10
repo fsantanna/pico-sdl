@@ -16,7 +16,7 @@ int main (void) {
     pico_layer_empty("world", "L", (Pico_Abs_Dim){8, 8}, NULL);
 
     const char* old = pico_set_layer("L");
-    pico_set_scene_keep(1);
+    pico_set_scene_clear(0);
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.3, 0.3, 0.4, 0.4}, PICO_ANCHOR_C});
     pico_set_effect_color(PICO_COLOR_WHITE);
     pico_output_clear();

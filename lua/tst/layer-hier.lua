@@ -14,7 +14,7 @@ pico.layer.empty("world", "L", {w=8, h=8})
 local old = pico.set.layer("L")
 pico.set.scene({
     target = {'%', x=0.3, y=0.3, w=0.4, h=0.4, anchor='C'},
-    keep = true,
+    clear = false,
 })
 pico.set.effect { color='white' }
 pico.output.clear()

@@ -121,7 +121,7 @@ typedef struct {
 } Pico_Layer_Effect;
 
 typedef struct {
-    int           keep;
+    int           clear;
     Pico_Abs_Dim  dim;
     Pico_Abs_Dim  tile;
     Pico_Rel_Rect dst;
@@ -482,13 +482,13 @@ Pico_Abs_Dim pico_get_text_mode (
 /// @brief Gets the entire scene state of the current layer.
 /// @param scene output struct populated with scene state
 /// @sa pico_set_scene
-void          pico_get_scene      (Pico_Layer_Scene* scene);
-Pico_Rel_Rect pico_get_scene_clip (void);
-Pico_Abs_Dim  pico_get_scene_dim  (void);
-Pico_Rel_Rect pico_get_scene_dst  (void);
-int           pico_get_scene_keep (void);
-Pico_Rel_Rect pico_get_scene_src  (void);
-Pico_Abs_Dim  pico_get_scene_tile (void);
+void          pico_get_scene       (Pico_Layer_Scene* scene);
+Pico_Rel_Rect pico_get_scene_clip  (void);
+Pico_Abs_Dim  pico_get_scene_dim   (void);
+Pico_Rel_Rect pico_get_scene_dst   (void);
+int           pico_get_scene_clear (void);
+Pico_Rel_Rect pico_get_scene_src   (void);
+Pico_Abs_Dim  pico_get_scene_tile  (void);
 
 /// @brief Gets the entire window state.
 /// @param win output struct populated with window state
@@ -556,13 +556,13 @@ int pico_set_video (const char* key, int frame);
 /// @brief Sets the entire scene state of the current layer.
 /// @param scene new scene state
 /// @sa pico_get_scene
-void pico_set_scene      (Pico_Layer_Scene scene);
-void pico_set_scene_clip (Pico_Rel_Rect clip);
-void pico_set_scene_dim  (Pico_Rel_Dim* dim);
-void pico_set_scene_dst  (Pico_Rel_Rect dst);
-void pico_set_scene_keep (int on);
-void pico_set_scene_src  (Pico_Rel_Rect src);
-void pico_set_scene_tile (Pico_Abs_Dim tile);
+void pico_set_scene       (Pico_Layer_Scene scene);
+void pico_set_scene_clip  (Pico_Rel_Rect clip);
+void pico_set_scene_dim   (Pico_Rel_Dim* dim);
+void pico_set_scene_dst   (Pico_Rel_Rect dst);
+void pico_set_scene_clear (int on);
+void pico_set_scene_src   (Pico_Rel_Rect src);
+void pico_set_scene_tile  (Pico_Abs_Dim tile);
 
 /// @brief Sets the entire window state.
 /// @param win new window state

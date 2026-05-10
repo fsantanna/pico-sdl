@@ -23,8 +23,8 @@ int main (void) {
     pico_set_layer("right");
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.75, 0.5, 0.5, 1}, PICO_ANCHOR_C});
 
-    // right keeps content across frames
-    pico_set_scene_keep(1);
+    // right keeps content across frames (clear=0 disables auto-clear)
+    pico_set_scene_clear(0);
 
     // frame 1: draw red rect on both layers
     pico_set_layer("left");

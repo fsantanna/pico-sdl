@@ -346,12 +346,12 @@ void pico_init (int on) {
                 },
                 .hier = { NULL, NULL, {NULL,NULL} },
                 .scene = {
-                    .keep = -1,
-                    .dim  = PICO_DIM_LOG,
-                    .tile = {0, 0},
-                    .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
-                    .src  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
-                    .clip = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+                    .clear = 0,
+                    .dim   = PICO_DIM_LOG,
+                    .tile  = {0, 0},
+                    .dst   = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+                    .src   = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
+                    .clip  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
                 },
             },
             .layer  = NULL,
@@ -377,7 +377,7 @@ void pico_init (int on) {
                     },
                     .hier = { NULL, NULL, {NULL,NULL} },
                     .scene = {
-                        .keep = -1,
+                        .clear = 0,
                         .dim  = PICO_DIM_PHY,
                         .tile = {0, 0},
                         .dst  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
@@ -607,9 +607,9 @@ Pico_Rel_Rect pico_get_scene_dst (void) {
     return G.layer->scene.dst;
 }
 
-int pico_get_scene_keep (void) {
+int pico_get_scene_clear (void) {
     _pico_guard();
-    return G.layer->scene.keep;
+    return G.layer->scene.clear;
 }
 
 Pico_Rel_Rect pico_get_scene_src (void) {
@@ -741,7 +741,7 @@ void pico_set_effect_color (Pico_Color color) {
     _pico_guard();
     Pico_Layer* L = G.layer;
     L->effect.color = color;
-    if (!L->scene.keep && L->hier.up!=NULL) {
+    if (L->scene.clear && L->hier.up!=NULL) {
         assert(L->type != PICO_LAYER_WORLD);
         assert(L->type != PICO_LAYER_SUB);
         SDL_SetRenderTarget(G.window.ren, L->tex);
@@ -829,12 +829,15 @@ void pico_set_scene_dst (Pico_Rel_Rect dst) {
     _pico_output_present(0);
 }
 
-void pico_set_scene_keep (int on) {
+void pico_set_scene_clear (int on) {
     _pico_guard();
     Pico_Layer* L = G.layer;
-    assert(L->type!=PICO_LAYER_WORLD && "cannot set keep on world");
-    assert(L->type!=PICO_LAYER_SUB  && "cannot set keep on sub-layer");
-    L->scene.keep = on;
+    if (L->scene.clear != on) {
+        assert(L->type!=PICO_LAYER_WORLD  && "cannot set clear on world");
+        assert(L->type!=PICO_LAYER_WINDOW && "cannot set clear on window");
+        assert(L->type!=PICO_LAYER_SUB    && "cannot set clear on sub-layer");
+    }
+    L->scene.clear = on;
 }
 
 void pico_set_scene_src (Pico_Rel_Rect src) {
