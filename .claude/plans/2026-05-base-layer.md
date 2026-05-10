@@ -72,10 +72,11 @@ the world/root becomes a predefined layer (`"world"`).
     - **(b) Allow auto-present + explicit `pico_output_present()` from the window layer.** ✓ done — gate relaxed to `world || window`. `_show_tile` + `_show_grid` moved to `layers.hc`, called from `_pico_output_draw_layer` for direct window-children with post-aux src/dst.
 - [x] **`pico_set_window_fs` no longer touches `scene.dim`** — fullscreen is now a render-time stretch.
 - [x] **Rename `Pico_Layer_Scene.keep` → `clear`** with inverted semantic (1 = clear after composite, 0 = persist). All API + Lua bindings + tests updated.
-- [ ] **Architectural pivot: expert vs default dual-hier mode** (see `.claude/plans/2026-05-window-tex.md`) — replaces "drop window.tex per-frame clear" path:
-    - Non-expert: traverse from world only; world.clear=0 (canvas); auto-present on world; `set.layer("window")` errors.
-    - Expert: traverse from window; world.clear=1 (regenerator); manual present; window-direct draws + sibling layers allowed.
-    - `pico_set_expert(on, fps)` flips all three: auto-present, render path, world.clear.
+- [x] **Architectural pivot: expert vs default dual-hier mode** (see `.claude/plans/2026-05-window-tex.md`):
+    - Non-expert: world.clear=0 (canvas); auto-present on world; `pico_output_draw_*` on window asserts.
+    - Expert: world.clear=1 (regenerator); manual present; window-direct draws allowed.
+    - `pico_set_expert(on, fps)` flips world.scene.clear.
+    - `_pico_drawable()` helper enforces window-restriction at draw time.
 - [ ] Delete `'w'` mode branches in `aux.hc` (5 sites); after expert mode lands
 - [ ] Delete `_*_win_to_wld` / `_*_wld_to_win` (6 helpers)
 - [ ] Delete `pico_cv_pos_rel_win` / `pico_cv_pos_win_rel`

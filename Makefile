@@ -79,7 +79,7 @@ tests:
 	$(EXE) tst/view-target.c
 	$(EXE) tst/view_raw.c
 	$(EXE) tst/vs.c
-	#$(EXE) tst/window.c
+	$(EXE) tst/window.c
 	@echo ""
 	@echo "All tests passed!"
 

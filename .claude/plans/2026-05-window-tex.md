@@ -72,14 +72,22 @@ are composited multiple times), we split rendering into two modes:
 pixel grid + labels). Non-expert mode never has window children
 besides world, so `_show_grid` fires for world.
 
-### Out-of-scope follow-ups (post-expert-mode-land)
+### Implementation status (2026-05-10)
+
+- ✓ `pico_set_expert(on, fps)` flips `G.world.scene.clear`.
+- ✓ Auto-present off in expert via existing `G.expert.on` early-return.
+- ✗ Window-draw restriction (`pico_set_layer("window")` or draw-on-window in non-expert) — **dropped**. Both placements proved messy:
+    - set_layer assert: too coarse (internal callers like resize/screenshot/set_dim use it for housekeeping).
+    - draw-time assert: needed `ing.out` exemption for internal `_show_grid` text/line draws — workable but added churn for marginal benefit.
+    - Decision: don't enforce. Drawing on window in non-expert is "undefined" by convention; tests + docs steer users away.
+- ✓ `tst/window.c` + `lua/tst/window.lua` re-enabled. Tests wrap with `pico_set_expert(1, -1)` + explicit `pico_output_present()` before `_pico_check`.
+
+### Out-of-scope follow-ups
 
 - **Two-tex layers** (clean BLEND compositing): each layer keeps
   `draws.tex` (user paints) + `composed.tex` (children composited
   onto draws each present). Eliminates accumulation-on-repeat-composite
   for transparent layers. Bigger refactor; flag for future.
-- **Re-enable `tst/window.c`** with expert-mode wrapping.
-- **Lua expert API** if not already wired.
 
 ## Context
 
