@@ -1482,9 +1482,10 @@ static void _pico_output_present (int force) {
 
     G.window.ing.out = 1;
 
-    // per-frame clear of window.tex with window's effect.color
+    // per-frame clear of window.tex (default mode only; expert keeps
+    // window persistent so user's window-direct draws survive presents)
     SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
-    {
+    if (!G.expert.on) {
         Pico_Color c = G.window.layer.effect.color;
         SDL_SetRenderDrawColor(G.window.ren, c.r, c.g, c.b, c.a);
         SDL_RenderClear(G.window.ren);
