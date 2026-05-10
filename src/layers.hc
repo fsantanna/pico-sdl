@@ -167,6 +167,110 @@ static Pico_Layer* _pico_layer_text (
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static void _show_tile (Pico_Layer_Scene* view, SDL_Rect dst) {
+    if (view->tile.w<=0 || view->tile.h<=0) return;
+
+    Pico_Color x_clr   = pico_get_pencil_color();
+    PICO_STYLE x_style = pico_get_pencil_style();
+
+    pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0xFF, 0xAA});
+    pico_set_pencil_style(PICO_STYLE_STROKE);
+
+    // grid
+    int dx = dst.w * view->tile.w / view->dim.w;
+    int dy = dst.h * view->tile.h / view->dim.h;
+    if (dx > 0) {
+        for (int i=dx; i<dst.w; i+=dx) {
+            pico_output_draw_line (
+                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
+                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
+            );
+        }
+    }
+    if (dy > 0) {
+        for (int j=dy; j<dst.h; j+=dy) {
+            pico_output_draw_line (
+                &(Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
+                &(Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
+            );
+        }
+    }
+
+    // surrounding rect
+    pico_output_draw_rect (
+        &(Pico_Rel_Rect){ '!', {dst.x, dst.y, dst.w, dst.h}, PICO_ANCHOR_NW }
+    );
+
+    pico_set_pencil_color(x_clr);
+    pico_set_pencil_style(x_style);
+}
+
+static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
+    if (!layer->effect.grid) return;
+
+    Pico_Color x_clr = pico_get_pencil_color();
+    pico_set_pencil_color((Pico_Color){0x77, 0x77, 0x77, 0x77});
+
+    // grid lines
+    {
+        if ((dst.w%layer->scene.dim.w == 0) && (layer->scene.dim.w < dst.w)) {
+            for (int i=0; i<dst.w; i+=(dst.w/layer->scene.dim.w)) {
+                if (i == 0) continue;
+                pico_output_draw_line (
+                    &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
+                    &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
+                );
+            }
+        }
+        if ((dst.h%layer->scene.dim.h == 0) && (layer->scene.dim.h < dst.h)) {
+            for (int j=0; j<dst.h; j+=(dst.h/layer->scene.dim.h)) {
+                if (j == 0) continue;
+                pico_output_draw_line (
+                    &(Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
+                    &(Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
+                );
+            }
+        }
+    }
+
+    // metric labels
+    {
+        pico_set_pencil_color((Pico_Color){0x77, 0x77, 0x77, 0xFF});
+        int H = 10;
+
+        for (int x=0; x<dst.w; x+=50) {
+            if (x == 0) continue;
+            int v = src.x + (x * src.w / dst.w);
+            char lbl[8];
+            snprintf(lbl, sizeof(lbl), "%d", v);
+            Pico_Abs_Dim dim = pico_get_text (
+                lbl,
+                &(Pico_Rel_Dim){ '!', {0, H} }
+            );
+            pico_output_draw_text (
+                lbl,
+                &(Pico_Rel_Rect){ '!', {dst.x+x-dim.w/2, dst.y+10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
+            );
+        }
+
+        for (int y=0; y<dst.h; y+=50) {
+            if (y == 0) continue;
+            int v = src.y + (y * src.h / dst.h);
+            char lbl[8];
+            snprintf(lbl, sizeof(lbl), "%d", v);
+            Pico_Abs_Dim dim = pico_get_text(
+                lbl,
+                &(Pico_Rel_Dim){ '!', {0, H} });
+            pico_output_draw_text (
+                lbl,
+                &(Pico_Rel_Rect){ '!', {dst.x+10-dim.w/2, dst.y+y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
+            );
+        }
+    }
+
+    pico_set_pencil_color(x_clr);
+}
+
 static void _pico_output_draw_layer (
     Pico_Layer* layer, Pico_Rel_Rect* rect
 ) {
@@ -239,7 +343,7 @@ static void _pico_output_draw_layer (
     if (layer->effect.grid) {
         _show_tile(&layer->scene, dst);
         if (G.layer == &G.window.layer) {
-            _show_grid(layer, dst);
+            _show_grid(layer, src, dst);
         }
     }
 
