@@ -72,23 +72,29 @@ are composited multiple times), we split rendering into two modes:
 pixel grid + labels). Non-expert mode never has window children
 besides world, so `_show_grid` fires for world.
 
-### Implementation status (2026-05-10)
+### Implementation status (2026-05-10) — landed
 
-- ✓ `pico_set_expert(on, fps)` flips `G.world.scene.clear`.
+- ✓ `pico_set_expert(on, fps)` flips `G.world.scene.clear` (0 = canvas, 1 = regen).
 - ✓ Auto-present off in expert via existing `G.expert.on` early-return.
-- ✓ Per-frame `window.tex` clear stays unconditional. Expert mode = consistent regenerator: both world (clear=1 auto-clears) and window (per-frame clear) regenerate each frame. User redraws all (game-loop pattern).
+- ✓ Per-frame `window.tex` clear gated on `!G.expert.on`:
+    - **non-expert**: clear → regen (window wiped each present, world canvas).
+    - **expert**: skip clear → window persistent (user-direct window draws survive across presents); world auto-clears via `world.scene.clear=1`.
+    - Asymmetric by design: world regen + window canvas = HUD-on-window pattern in expert.
 - ✗ Window-draw restriction (`pico_set_layer("window")` or draw-on-window in non-expert) — **dropped**. Both placements proved messy:
     - set_layer assert: too coarse (internal callers like resize/screenshot/set_dim use it for housekeeping).
-    - draw-time assert: needed `ing.out` exemption for internal `_show_grid` text/line draws — workable but added churn for marginal benefit.
-    - Decision: don't enforce. Drawing on window in non-expert is "undefined" by convention; tests + docs steer users away.
-- ✓ `tst/window.c` + `lua/tst/window.lua` re-enabled. Tests wrap with `pico_set_expert(1, 0)` + explicit `pico_output_present()` before `_pico_check`. Baseline shows gray bg + blue (world @ SE); red on window only visible if redrawn each frame (expert regenerator semantic).
+    - draw-time assert: needed `ing.out` exemption for internal `_show_grid` text/line draws.
+    - Decision: don't enforce. Drawing on window in non-expert is "undefined" by convention.
+- ✓ `tst/window.c` + `lua/tst/window.lua` re-enabled. Tests wrap with `pico_set_expert(1, 0)` + explicit `pico_output_present()` before `_pico_check`. Baseline `window-01`: gray bg + red NW (window-direct, persists) + blue SE (world composite).
 
-### Out-of-scope follow-ups
+### Final dual-mode summary
 
-- **Two-tex layers** (clean BLEND compositing): each layer keeps
-  `draws.tex` (user paints) + `composed.tex` (children composited
-  onto draws each present). Eliminates accumulation-on-repeat-composite
-  for transparent layers. Bigger refactor; flag for future.
+| | non-expert (default) | expert |
+|---|---|---|
+| auto-present | yes (world only) | no (manual) |
+| `world.scene.clear` | 0 (canvas) | 1 (regen) |
+| `window.tex` per-frame clear | yes | no |
+| user window draws | wiped per present | persist |
+| use case | student / canvas | game-loop + HUD |
 
 ## Context
 
