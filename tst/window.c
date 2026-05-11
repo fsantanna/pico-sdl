@@ -58,7 +58,8 @@ int main (void) {
             &(Pico_Rel_Rect){'%', {0.33, 0.33, 0.4, 0.4}, PICO_ANCHOR_C}
         );
 
-        pico_output_present();   // expert: manual present before screenshot
+        pico_output_draw_layers();   // expert: compose world onto window.tex
+        pico_output_present();       // expert: manual present before screenshot
         _pico_check("window-01");
         pico_set_layer("world");
     }

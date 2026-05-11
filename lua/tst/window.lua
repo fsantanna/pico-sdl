@@ -51,7 +51,8 @@ do
     pico.set.pencil { color={'!', r=0xFF, g=0x00, b=0x00} }
     pico.output.draw.rect({'%', x=0.33, y=0.33, w=0.4, h=0.4, anchor='C'})
 
-    pico.output.present()   -- expert: manual present before screenshot
+    pico.output.draw.layers()   -- expert: compose world onto window.tex
+    pico.output.present()       -- expert: manual present before screenshot
     pico.check("window-01")
     pico.set.layer("world")
 end
