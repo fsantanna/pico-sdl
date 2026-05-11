@@ -177,8 +177,8 @@ static SDL_FRect _sdl_rect (
 static void _rel_dim (SDL_FDim flt, Pico_Rel_Dim* to, const Pico_Abs_Rect* base) {
     switch (to->mode) {
         case '!':
-            to->w = floorf(flt.w + 0.5f);
-            to->h = floorf(flt.h + 0.5f);
+            to->w = flt.w;
+            to->h = flt.h;
             break;
         case '%': {
             SDL_FDim d;
@@ -209,8 +209,8 @@ static void _rel_pos (SDL_FPoint flt, Pico_Rel_Pos* to, const Pico_Abs_Rect* bas
     }
     switch (to->mode) {
         case '!':
-            to->x = floorf(flt.x - p.x + 0.5f) + to->anchor.x;
-            to->y = floorf(flt.y - p.y + 0.5f) + to->anchor.y;
+            to->x = flt.x - p.x + to->anchor.x;
+            to->y = flt.y - p.y + to->anchor.y;
             break;
         case '%': {
             SDL_FDim d;
@@ -241,10 +241,10 @@ static void _rel_rect (SDL_FRect flt, Pico_Rel_Rect* to, const Pico_Abs_Rect* ba
     }
     switch (to->mode) {
         case '!':
-            to->w = floorf(flt.w + 0.5f);
-            to->h = floorf(flt.h + 0.5f);
-            to->x = floorf(flt.x - p.x + 0.5f) + to->anchor.x * to->w;
-            to->y = floorf(flt.y - p.y + 0.5f) + to->anchor.y * to->h;
+            to->w = flt.w;
+            to->h = flt.h;
+            to->x = flt.x - p.x + to->anchor.x * to->w;
+            to->y = flt.y - p.y + to->anchor.y * to->h;
             break;
         case '%': {
             SDL_FDim d;

@@ -280,7 +280,7 @@ Decide after current plan `2026-05-window-tex` lands.
 | E     | tst/cv.c full rewrite (170+ combos); tst/in.c migrated |
 | F-1   | lua/pico.c: 6 new `_to`/`_from` shims; old bindings + unused helpers dropped |
 | F-2   | lua/tst/cv.lua full rewrite                          |
-| F-3   | aux.hc `_rel_*` `!` case rounds (integer-pixel semantic preserved) |
+| F-3   | aux.hc `_rel_*` `!` case rounds (integer-pixel semantic preserved) — **REVERTED**: tst/mouse.c needs subpixel precision (e.g. `0.3f` from 500→50 scale). All three `_rel_dim` / `_rel_pos` / `_rel_rect` `!` branches restored to raw float assignment. `tst/cv.c` already used `(int)` casts so unaffected. |
 | G     | `rect_to`/`rect_from`/`dim_to`/`dim_from` C impls + decls + tests |
 
 ### Public API now
