@@ -143,6 +143,10 @@ In alphabetical order:
             - `pico.output.draw.image (path: string, rect: Rect)`
         - **pico.output.draw.layer**: Draws a layer onto the current layer.
             - `pico.output.draw.layer (name: string, rect: Rect)`
+        - **pico.output.draw.layers**: Composites the window layer hierarchy
+          (window's children, including world) onto window.tex. Called
+          automatically by `pico.output.present` in non-expert mode.
+            - `pico.output.draw.layers ()`
         - **pico.output.draw.line**: Draws line.
             - `pico.output.draw.line (p1: Pos, p2: Pos)`
         - **pico.output.draw.oval**: Draws oval.

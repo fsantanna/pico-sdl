@@ -1474,21 +1474,13 @@ static void _pico_output_present (int force) {
 
     G.window.ing.out = 1;
 
-    // per-frame clear of window.tex (default mode only; expert keeps
-    // window persistent so user's window-direct draws survive presents)
-    SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
     if (!G.expert.on) {
+        SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
         Pico_Color c = G.window.layer.effect.color;
         SDL_SetRenderDrawColor(G.window.ren, c.r, c.g, c.b, c.a);
         SDL_RenderClear(G.window.ren);
+        _pico_output_draw_layers(&G.window.layer);
     }
-
-    // composite window's tree (world + future window children) onto
-    // window.tex; the world->window edge goes through Phase A aux in
-    // _pico_output_draw_layer (no special-case bespoke blit needed)
-    _layer_traverse(&G.window.layer);
-
-    // _show_grid is now called per-window-child inside _pico_output_draw_layer
 
     // mirror window.tex -> framebuffer
     SDL_SetRenderTarget(G.window.ren, NULL);
@@ -1509,6 +1501,12 @@ void pico_output_present (void) {
     _pico_guard();
     assert((G.layer==&G.world || G.layer==&G.window.layer) && "can only present from root layers");
     _pico_output_present(1);
+}
+
+void pico_output_draw_layers (void) {
+    _pico_guard();
+    assert(G.layer == &G.window.layer);
+    _pico_output_draw_layers(&G.window.layer);
 }
 
 static void _pico_output_sound_cache (const char* path, int cache) {

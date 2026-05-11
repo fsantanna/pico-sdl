@@ -13,6 +13,8 @@ require 'pico.check'
 pico.init(true)
 
 --[[
+]]
+
 pico.set.window { title="guide-02-01-01" }
 pico.check("guide-02-01-01")
 
@@ -288,7 +290,6 @@ pico.check("guide-07-03-01")
 
 -- §7.4: hierarchy -- root has image (top) and panel (bottom); panel has 2 texts
 pico.init(false); pico.init(true)
-]]
 pico.set.window { title="guide-07-04-01" }
 do
     pico.layer.image("world", "pic", "../../res/open.png")
@@ -329,6 +330,10 @@ pico.check("guide-02-01-01")
 
 -- §8.b: present flushes buffered draws
 pico.set.window { title="guide-08-00-02" }
+local old = pico.get.layer()
+pico.set.layer("window")
+pico.output.draw.layers()
+pico.set.layer(old)
 pico.output.present()
 pico.check("guide-08-00-02")
 

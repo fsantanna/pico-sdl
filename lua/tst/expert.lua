@@ -11,6 +11,10 @@ pico.set.expert(true)
 pico.output.clear()
 pico.check("expert-02")
 
+local old = pico.set.layer("window");
+pico.output.draw.layers();
+pico.set.layer(old);
+
 pico.output.present()
 pico.check("expert-03")
 

@@ -13,6 +13,10 @@ int main (void) {
     pico_output_clear();
     _pico_check("expert-02");
 
+    const char* prev = pico_set_layer("window");
+    pico_output_draw_layers();
+    pico_set_layer(prev);
+
     pico_output_present();
     _pico_check("expert-03");
 

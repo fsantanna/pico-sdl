@@ -272,6 +272,11 @@ void pico_output_draw_text_mode (
 /// @sa pico_set_expert
 void pico_output_present (void);
 
+/// @brief Composites the layer hierarchy (window's children, including
+/// world) onto window.tex. Called automatically by pico_output_present
+/// in non-expert mode.
+void pico_output_draw_layers (void);
+
 /// @brief Takes a screenshot.
 /// @param path screenshot filepath (NULL uses timestamp in the name)
 /// @param rect region to capture (NULL captures full screen)

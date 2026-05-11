@@ -1374,6 +1374,11 @@ static int l_output_draw_layer (lua_State* L) {
     return 0;
 }
 
+static int l_output_draw_layers (lua_State* L) {
+    pico_output_draw_layers();
+    return 0;
+}
+
 static int l_output_draw_line (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // p1 | p2
     luaL_checktype(L, 2, LUA_TTABLE);
@@ -1609,6 +1614,7 @@ static const luaL_Reg ll_output[] = {
 static const luaL_Reg ll_output_draw[] = {
     { "image",  l_output_draw_image  },
     { "layer",  l_output_draw_layer  },
+    { "layers", l_output_draw_layers },
     { "line",   l_output_draw_line   },
     { "oval",   l_output_draw_oval   },
     { "pixel",  l_output_draw_pixel  },
