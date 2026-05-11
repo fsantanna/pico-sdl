@@ -140,7 +140,7 @@ pico.set.scene {
     tile = { w=20, h=20 },
 }
 pico.set.layer("window")
-pico.set.scene { dim={ '#', w=40, h=40 } }
+pico.set.scene { dim={ '#', w=40, h=40 }, tile={ w=20, h=20 } }
 pico.set.layer("world")
 pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
 pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }

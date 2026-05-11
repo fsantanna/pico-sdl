@@ -12,8 +12,8 @@ end
 -- switching to the predefined window layer
 do
     print("set.layer(\"window\")")
-    local prev = pico.set.layer("window")
-    assert(prev == "world")
+    local old = pico.set.layer("window")
+    assert(old == "world")
     assert(pico.get.layer() == "window")
     pico.set.layer("world")
 end
