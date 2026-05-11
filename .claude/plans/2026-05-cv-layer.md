@@ -1,6 +1,8 @@
 # 2026-05-cv-layer
 
-Generalize the view-transform CV pair to arbitrary named layers.
+Collapse the `pico_cv_pos_*` family to a single `_to` / `_from` pair
+parameterized by a named target layer.
+Generalizes the current view-transform CV and fixes the sub-layer bug.
 
 ## Context
 
@@ -12,8 +14,8 @@ SDL_Point pico_cv_pos_cur_win (const Pico_Rel_Pos* pos);
 void      pico_cv_pos_win_cur (SDL_Point phy, Pico_Rel_Pos* out);
 ```
 
-They project between the **current layer's** logical frame and **window**
-physical pixels via `G.layer->scene.src/dst`.
+They project between the **current layer's** logical frame and
+**window** physical pixels via `G.layer->scene.src/dst`.
 
 ## Latent bug (shallow math)
 
@@ -33,93 +35,233 @@ Only correct when `G.layer`'s parent **is** window
 
 For sub-layers (HUD inside world, etc.) the math is wrong.
 
+## Design observations
+
+1. **`abs` is degenerate `rel`**.
+   `Pico_Abs_Pos {x,y}` ≡ `Pico_Rel_Pos {!, NW, x, y}`
+   resolved into some frame, with the frame reference dropped.
+   Two abs values are not comparable without out-of-band frame info.
+   That missing frame tag is exactly what enables silent miscomposes.
+
+2. **The user never needs to hold abs values**.
+   SDL interop (mouse in, draw out) is wrapped by pico:
+   mouse arrives wrapped as `Pico_Rel_Pos {!, NW, x, y}` in
+   `"window"` frame; draw consumes rel.
+   Everywhere internal, the user works in rel.
+
+3. **`from = cur` is the dominant case**.
+   The user always operates inside the current layer
+   (`G.layer`).
+   Projections go *from* cur *to* a named target,
+   or *from* a named source *to* cur.
+
+4. **Only ancestor walks are well-defined**.
+   `hier.up` gives a single deterministic path from cur outward.
+   Down-walks need to pick a child and may hit overlapping `dst`
+   rects; sibling walks need LCA + down-walk.
+   Restricting to ancestors makes the math unambiguous and the
+   algorithm a single up-chain walk.
+
 ## Proposal
 
-Add layer-targeted pair:
+Two functions, parameterized by a single layer name; the other end
+is always cur:
 
 ```c
-// project: current layer's logical frame -> <name> layer's frame
-SDL_Point pico_cv_pos_cur_lyr (const Pico_Rel_Pos* pos, const char* name);
+// cur -> name  (project out)
+void pico_cv_pos_to   (const Pico_Rel_Pos* in, Pico_Rel_Pos* out, const char* to);
 
-// unproject: <name> layer's frame -> current layer's logical frame
-void      pico_cv_pos_lyr_cur (SDL_Point phy, const char* name, Pico_Rel_Pos* out);
+// name -> cur  (bring in)
+void pico_cv_pos_from (const Pico_Rel_Pos* in, const char* from, Pico_Rel_Pos* out);
 ```
 
-Existing `cur_win`/`win_cur` become 1-line wrappers:
+Semantics:
+
+- `in` is interpreted in cur (`_to`) or `from` (`_from`).
+- `out` is written in `to` (`_to`) or cur (`_from`),
+  with `out->mode` and `out->anchor` controlling expression.
+- `_to` and `_from` are exact inverses (modulo rounding).
+
+### Ancestor-only contract
+
+The named target (`to` for `_to`, `from` for `_from`)
+MUST be cur or an ancestor of cur via `hier.up`.
+
+| direction        | allowed?                                    |
+|------------------|---------------------------------------------|
+| cur → ancestor   | yes — unique path via `hier.up`             |
+| cur → cur        | yes — mode/anchor conversion only           |
+| cur → child      | NO — down-walk has multi-child ambiguity    |
+| cur → sibling    | NO — would need LCA + down-walk             |
+| cur → unrelated  | NO — no path                                |
+| cur → orphan     | NO — orphan unreachable                     |
+
+**Violation → assert and abort**:
 
 ```c
-SDL_Point pico_cv_pos_cur_win (const Pico_Rel_Pos* pos) {
-    return pico_cv_pos_cur_lyr(pos, "window");
-}
-void pico_cv_pos_win_cur (SDL_Point phy, Pico_Rel_Pos* out) {
-    pico_cv_pos_lyr_cur(phy, "window", out);
-}
+pico_assert(0 && "cv: target must be cur or one of cur's ancestors");
 ```
 
-## Shallow vs deep
+User remedies by calling `pico_set_layer(other)` to make `other`
+(or a layer below it) the new cur, then performing the conversion.
 
-| flavor   | behavior                                                              |
-|----------|-----------------------------------------------------------------------|
-| shallow  | assume `name` is the direct parent of `G.layer`; swap base dim only   |
-| deep     | walk hierarchy via `hier.up`; chain transforms up to `name`           |
+### Special layer names
 
-Only **deep** fixes the latent bug for sub-layers.
+| name      | resolves to               |
+|-----------|---------------------------|
+| `NULL`    | `G.layer` (= `"cur"`)     |
+| `"cur"`   | `G.layer`                 |
+| `"window"`| `G.window.layer`          |
+| `"world"` | `G.world`                 |
+| `<other>` | user-named layer in scope |
 
-## Deep algorithm sketch
+`pos_to(p, &out, NULL)` collapses to today's `rel_rel`
+(mode/anchor conversion, no projection).
+
+### Reduction of existing API
+
+| today                                  | new                                              |
+|----------------------------------------|--------------------------------------------------|
+| `pos_rel_abs` / `pos_abs_rel`          | internal only (drop from public header)          |
+| `pos_rel_rel(a, b, base)`              | `pos_to(a, b, NULL)`                             |
+| `pos_cur_win(rel)` → `SDL_Point`       | `pos_to(rel, &out_pxNW, "window")`               |
+| `pos_win_cur(phy, out)`                | `pos_from(&in_pxNW, "window", out)`              |
+| `pos_cur_lyr(rel, name)` (prev plan)   | `pos_to(rel, &out, name)`                        |
+| `pos_lyr_cur(phy, name, out)` (prev)   | `pos_from(in, name, out)`                        |
+
+7 public position functions collapse to 2.
+
+### Parallel forms
+
+```c
+void pico_cv_rect_to   (const Pico_Rel_Rect*, Pico_Rel_Rect*, const char* to);
+void pico_cv_rect_from (const Pico_Rel_Rect*, const char* from, Pico_Rel_Rect*);
+void pico_cv_dim_to    (const Pico_Rel_Dim*,  Pico_Rel_Dim*,  const char* to);
+void pico_cv_dim_from  (const Pico_Rel_Dim*,  const char* from, Pico_Rel_Dim*);
+```
+
+Total public CV API: **6 functions** (today's 11 + previous plan's 4 = 15).
+
+## Why not `(from, to)` in one function?
+
+| approach              | typical call                    | reads as     |
+|-----------------------|---------------------------------|--------------|
+| `(in, from, out, to)` | `pos(p, NULL, &out, "hud")`     | NULL noise   |
+| `_to` / `_from`       | `pos_to(p, &out, "hud")`        | clean prose  |
+
+`from = cur` is the dominant case; making it implicit beats
+papering over the asymmetry with `NULL`.
+
+## abs as implementation detail
+
+`Pico_Abs_Pos` and the resolution helpers
+(`pico_cv_pos_rel_abs`, `pico_cv_pos_abs_rel`,
+`_sdl_pos`, `_rel_pos`, `_abs_pos`) stay internal to `pico.c`.
+Public header drops them.
+
+This makes silent miscomposes impossible: every public value
+carries its frame tag (a layer name passed at the call site),
+and the type system has no way to express "untagged pixels".
+
+## hier.up reachability (verified)
+
+`hier.up` is set **only** by `_layer_attach` (layers.hc:65)
+when the caller passes a non-NULL `up`.
+
+| `G.layer` is …                              | up-chain reaches `"window"`? |
+|---------------------------------------------|------------------------------|
+| `&G.window.layer`                           | trivial — already at root    |
+| `&G.world`                                  | yes (attached at init)       |
+| user layer with `up != NULL`                | yes                          |
+| user layer with `up == NULL` (orphan)       | no                           |
+| `Pico_Layer_Sub` w/ `up != NULL`            | yes                          |
+| `Pico_Layer_Sub` w/ `up == NULL`            | no                           |
+
+Edge cases the algorithm must handle:
+
+- **cur == `G.window.layer`**: only valid target is `"window"` itself
+  (identity / mode-conv). Any other target aborts.
+- **Orphan**: target check fails before walking. Abort with
+  "cv: cur is not attached to a parent chain" message.
+- **Re-attach / cycles** are out of scope for this plan; pre-existing
+  responsibility of `_layer_attach` callers.
+
+## Algorithm
 
 ```
-project(pos, name):
-    p = _sdl_pos(pos)         # abs in G.layer's frame
-    cur = G.layer
-    while cur != layer(name):
-        # cur's view: src (sample region) -> dst (placement in parent)
-        normalize p in cur.src
-        place p in cur.dst (parent's frame)
-        cur = cur.up
-    return p (in name's frame)
+project(in, target):                  # cur -> target
+    L = G.layer
+    p = _sdl_pos(in, &L.scene.src)    # float in L's logical frame
+    while L != target:
+        pico_assert(L.hier.up != NULL && "cv: target unreachable")
+        # map L's logical -> L's parent
+        p = compose_via_src_dst(p, L)
+        L = layer(L.hier.up)
+    write p into out  (mode/anchor from out, frame = target)
+
+unproject(in, source):                # source -> cur
+    # walk same chain top-down, applying inverse compose
+    chain = collect_up_chain_from_cur_until(source)
+    pico_assert(found && "cv: source unreachable")
+    p = _sdl_pos(in, &source.scene.src)
+    for L in reverse(chain):
+        p = inverse_compose_via_src_dst(p, L)
+    write p into out  (frame = cur)
 ```
 
-`unproject` is the reverse walk.
-
-Assumes `name` is an ancestor of `G.layer`. If not (sibling or
-unrelated), walk to LCA. Edge case: same layer = identity.
-
-## Naming alternatives
-
-| candidate                 | reads as                  |
-|---------------------------|---------------------------|
-| `pos_cur_lyr` / `lyr_cur` | "layer by name" (chosen)  |
-| `pos_cur_arg` / `arg_cur` | generic                   |
-| `pos_cur_to`  / `to_cur`  | directional               |
-| overload existing `pos`   | hidden behavior; rejected |
-
-`cur_lyr` chosen: explicit, short, matches `pico_cv_*_<from>_<to>` style.
+Edge case: `target == cur` → no walk, mode/anchor conversion only.
 
 ## Lua bindings
 
 ```lua
-pico.cv.pos_cur_lyr (pos: Pos, name: string) -> { x: integer, y: integer }
-pico.cv.pos_lyr_cur (phy: { x, y }, name: string, to: Pos)
-pico.cv.pos_cur_win (pos: Pos) -> { x: integer, y: integer }  -- wrapper
-pico.cv.pos_win_cur (phy: { x, y }, to: Pos)                  -- wrapper
+pico.cv.pos_to    (in: Pos,  out: Pos,  to: string?)
+pico.cv.pos_from  (in: Pos,  from: string?, out: Pos)
+pico.cv.rect_to   (in: Rect, out: Rect, to: string?)
+pico.cv.rect_from (in: Rect, from: string?, out: Rect)
+pico.cv.dim_to    (in: Dim,  out: Dim,  to: string?)
+pico.cv.dim_from  (in: Dim,  from: string?, out: Dim)
 ```
+
+Existing `pos_cur_win`/`pos_win_cur` lua bindings either:
+
+- get removed (breaking change), or
+- become 1-line lua wrappers calling `pos_to(..., "window")` etc.
 
 ## Trade-offs
 
-- Generalizing now: more API surface, fixes sub-layer bug, future-proof.
-- Keep `cur_win` only: simple, covers today's mouse needs, sub-layer
-  math broken until someone hits it.
+- **Smaller surface** (6 vs 15) but **breaking change** for
+  callers of `pos_cur_win`/`pos_win_cur` and the
+  `rel_abs`/`abs_rel`/`rel_rel` family.
+- **No public abs type** — must be wrapped at SDL boundary inside
+  pico. Mouse event delivery and similar entry points need a
+  small `SDL_Point -> Pico_Rel_Pos {!,NW}` shim.
+- **String-keyed targets** — 1 hash per call, cheap but non-zero.
+  Could add a `Pico_Layer*` overload internally if perf matters.
+- **Ancestor-only** rules out sibling/child conversions; user must
+  `pico_set_layer` to a layer that has both ends in its ancestor
+  chain first. Cheap escape hatch.
 
 ## Decision
 
-Pending. Decide after current plan `2026-05-window-tex` lands.
+Pending.
+Decide after current plan `2026-05-window-tex` lands.
 
 ## Tasks
 
-- [ ] Decide shallow vs deep.
-- [ ] Verify `hier.up` is reachable for arbitrary `G.layer`.
-- [ ] Implement `pico_cv_pos_cur_lyr` / `pico_cv_pos_lyr_cur`.
-- [ ] Convert `cur_win`/`win_cur` to wrappers.
-- [ ] Add lua bindings.
+- [x] Verify `hier.up` reachability for arbitrary `G.layer`.
+- [ ] Lock ancestor-only contract; assert-and-abort on violation.
+- [ ] Implement up-chain walk in `_to` / `_from` (pos, rect, dim).
+- [ ] Move `pos_rel_abs` / `pos_abs_rel` / etc. to internal helpers.
+- [ ] Drop public `pos_cur_win` / `pos_win_cur`
+      (or keep as thin wrappers if churn is unacceptable).
+- [ ] Wrap SDL mouse events as `Pico_Rel_Pos {!,NW}` in `"window"`
+      at event-delivery time.
+- [ ] Add lua bindings for `pos_to/_from`,
+      `rect_to/_from`, `dim_to/_from`.
 - [ ] Document in `lua/doc/api.md`.
-- [ ] Add tests for sub-layer mouse mapping.
+- [ ] Tests:
+    - [ ] mode/anchor convert in cur (`to=NULL`)
+    - [ ] cur <-> window round-trip identity
+    - [ ] sub-layer (HUD inside world) round-trip
+    - [ ] orphan layer → assert fires
+    - [ ] sibling target → assert fires

@@ -582,13 +582,6 @@ void pico_set_window_title (const char* title);
 /// @brief Utilities for users
 /// @{
 
-/// @brief Converts a relative dimension to absolute coordinates.
-/// @param dim relative dimension to convert
-/// @param base reference rectangle (NULL uses world dimensions)
-/// @return absolute dimension in logical pixels
-/// @sa pico_cv_rect_rel_abs
-Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
-
 /// @brief Converts an absolute dimension to relative coordinates.
 /// @param fr absolute dimension to convert
 /// @param to relative dimension template (mode, up must be set)
@@ -596,6 +589,13 @@ Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
 void pico_cv_dim_abs_rel (
     const Pico_Abs_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
 );
+
+/// @brief Converts a relative dimension to absolute coordinates.
+/// @param dim relative dimension to convert
+/// @param base reference rectangle (NULL uses world dimensions)
+/// @return absolute dimension in logical pixels
+/// @sa pico_cv_rect_rel_abs
+Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative dimension to another relative mode.
 /// @param fr relative dimension to convert
@@ -605,20 +605,6 @@ void pico_cv_dim_rel_rel (
     Pico_Rel_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
 );
 
-/// @brief Converts a relative position to absolute coordinates.
-/// @param pos relative position to convert
-/// @param base reference rectangle to use as basis (NULL uses world dimensions)
-/// @return absolute position in logical pixels
-/// @sa pico_cv_rect_rel_abs
-Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
-
-/// @brief Converts a relative rectangle to absolute coordinates.
-/// @param rect relative rectangle to convert
-/// @param base reference rectangle to use as basis (NULL uses world dimensions)
-/// @return absolute rectangle in logical pixels
-/// @sa pico_cv_pos_rel_abs
-Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base);
-
 /// @brief Converts an absolute position to relative coordinates.
 /// @param fr absolute position to convert
 /// @param to relative position template (mode, anchor, up must be set)
@@ -627,6 +613,13 @@ Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* ba
 void pico_cv_pos_abs_rel (
     const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
 );
+
+/// @brief Converts a relative position to absolute coordinates.
+/// @param pos relative position to convert
+/// @param base reference rectangle to use as basis (NULL uses world dimensions)
+/// @return absolute position in logical pixels
+/// @sa pico_cv_rect_rel_abs
+Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative position to another relative mode.
 /// @param fr relative position to convert
@@ -645,6 +638,13 @@ void pico_cv_pos_rel_rel (
 void pico_cv_rect_abs_rel (
     const Pico_Abs_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
 );
+
+/// @brief Converts a relative rectangle to absolute coordinates.
+/// @param rect relative rectangle to convert
+/// @param base reference rectangle to use as basis (NULL uses world dimensions)
+/// @return absolute rectangle in logical pixels
+/// @sa pico_cv_pos_rel_abs
+Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative rectangle to another relative mode.
 /// @param fr relative rectangle to convert
