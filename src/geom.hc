@@ -133,6 +133,150 @@ void pico_cv_pos_from (
     _rel_pos(p, to, &L_base);
 }
 
+void pico_cv_rect_to (
+    const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
+) {
+    _pico_guard();
+    Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
+    Pico_Layer* L = G.layer;
+
+    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
+    SDL_FRect r = _sdl_rect(fr, &L_base, NULL);
+
+    while (L != T) {
+        pico_assert (
+            L->hier.up != NULL
+            && "cv: target must be cur or one of cur's ancestors"
+        );
+        Pico_Layer* P = _pico_layer_name(L->hier.up);
+        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+        SDL_FRect src = _sdl_rect(&L->scene.src, &L_base, NULL);
+        SDL_FRect dst = _sdl_rect(&L->scene.dst, &Pb, NULL);
+        float sx = dst.w / src.w;
+        float sy = dst.h / src.h;
+        r.x = dst.x + (r.x - src.x) * sx;
+        r.y = dst.y + (r.y - src.y) * sy;
+        r.w = r.w * sx;
+        r.h = r.h * sy;
+        L = P;
+        L_base = Pb;
+    }
+
+    _rel_rect(r, to, &L_base);
+}
+
+void pico_cv_rect_from (
+    const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
+) {
+    _pico_guard();
+    Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
+    Pico_Layer* L = G.layer;
+
+    Pico_Layer* chain[64];
+    int n = 0;
+    Pico_Layer* M = L;
+    while (M != S) {
+        assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
+        chain[n++] = M;
+        pico_assert (
+            M->hier.up != NULL
+            && "cv: source must be cur or one of cur's ancestors"
+        );
+        M = _pico_layer_name(M->hier.up);
+    }
+    chain[n++] = S;
+
+    Pico_Abs_Rect S_base = {0, 0, S->scene.dim.w, S->scene.dim.h};
+    SDL_FRect r = _sdl_rect(fr, &S_base, NULL);
+
+    for (int i = n-2; i >= 0; i--) {
+        Pico_Layer* C = chain[i];
+        Pico_Layer* P = chain[i+1];
+        Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
+        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+        SDL_FRect dst = _sdl_rect(&C->scene.dst, &Pb, NULL);
+        SDL_FRect src = _sdl_rect(&C->scene.src, &Cb, NULL);
+        float sx = src.w / dst.w;
+        float sy = src.h / dst.h;
+        r.x = src.x + (r.x - dst.x) * sx;
+        r.y = src.y + (r.y - dst.y) * sy;
+        r.w = r.w * sx;
+        r.h = r.h * sy;
+    }
+
+    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
+    _rel_rect(r, to, &L_base);
+}
+
+void pico_cv_dim_to (
+    const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
+) {
+    _pico_guard();
+    Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
+    Pico_Layer* L = G.layer;
+
+    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
+    Pico_Rel_Dim fr_copy = *fr;
+    SDL_FDim d = _sdl_dim(&fr_copy, &L_base, NULL);
+
+    while (L != T) {
+        pico_assert (
+            L->hier.up != NULL
+            && "cv: target must be cur or one of cur's ancestors"
+        );
+        Pico_Layer* P = _pico_layer_name(L->hier.up);
+        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+        SDL_FRect src = _sdl_rect(&L->scene.src, &L_base, NULL);
+        SDL_FRect dst = _sdl_rect(&L->scene.dst, &Pb, NULL);
+        d.w = d.w * dst.w / src.w;
+        d.h = d.h * dst.h / src.h;
+        L = P;
+        L_base = Pb;
+    }
+
+    _rel_dim(d, to, &L_base);
+}
+
+void pico_cv_dim_from (
+    const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
+) {
+    _pico_guard();
+    Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
+    Pico_Layer* L = G.layer;
+
+    Pico_Layer* chain[64];
+    int n = 0;
+    Pico_Layer* M = L;
+    while (M != S) {
+        assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
+        chain[n++] = M;
+        pico_assert (
+            M->hier.up != NULL
+            && "cv: source must be cur or one of cur's ancestors"
+        );
+        M = _pico_layer_name(M->hier.up);
+    }
+    chain[n++] = S;
+
+    Pico_Abs_Rect S_base = {0, 0, S->scene.dim.w, S->scene.dim.h};
+    Pico_Rel_Dim fr_copy = *fr;
+    SDL_FDim d = _sdl_dim(&fr_copy, &S_base, NULL);
+
+    for (int i = n-2; i >= 0; i--) {
+        Pico_Layer* C = chain[i];
+        Pico_Layer* P = chain[i+1];
+        Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
+        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+        SDL_FRect dst = _sdl_rect(&C->scene.dst, &Pb, NULL);
+        SDL_FRect src = _sdl_rect(&C->scene.src, &Cb, NULL);
+        d.w = d.w * src.w / dst.w;
+        d.h = d.h * src.h / dst.h;
+    }
+
+    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
+    _rel_dim(d, to, &L_base);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IN: compose child onto parent, return flat rel
 ///////////////////////////////////////////////////////////////////////////////

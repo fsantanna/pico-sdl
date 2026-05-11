@@ -325,9 +325,9 @@ Decide after current plan `2026-05-window-tex` lands.
 - [ ] lua/tst/cv.lua: rewrite tests.
 - [ ] Update lua/doc/api.md.
 
-### Phase G — rect/dim parallels
+### Phase G — rect/dim parallels (moved earlier)
 
-- [ ] Add `pico_cv_rect_to` / `pico_cv_rect_from`.
-- [ ] Add `pico_cv_dim_to`  / `pico_cv_dim_from`.
-- [ ] Lua bindings for both.
-- [ ] Tests for both.
+- [x] Add `pico_cv_rect_to` / `pico_cv_rect_from`.
+- [x] Add `pico_cv_dim_to`  / `pico_cv_dim_from`.
+- [ ] Lua bindings for all six (Phase F).
+- [ ] Tests for all six (Phase E).
