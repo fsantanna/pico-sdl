@@ -283,7 +283,7 @@ static void _pico_output_draw_layer (
         dp = &layer->scene.dim;
     }
     SDL_FRect rf = _sdl_rect(rect, NULL, dp);
-    SDL_Rect dst = _abs_rect(&rf);
+    SDL_Rect dst = _rnd_rect(&rf);
 
     Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ? &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
     Pico_Abs_Rect src = pico_cv_rect_rel_abs (

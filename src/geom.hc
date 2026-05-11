@@ -4,7 +4,7 @@
 
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
     SDL_FDim df = _sdl_dim(dim, base, NULL);
-    return _abs_dim(&df);
+    return _rnd_dim(&df);
 }
 
 void pico_cv_dim_abs_rel (
@@ -22,12 +22,12 @@ void pico_cv_dim_rel_rel (
 
 Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
     SDL_FPoint pf = _sdl_pos(pos, base);
-    return (Pico_Abs_Pos) _abs_pos(&pf);
+    return (Pico_Abs_Pos) _rnd_pos(&pf);
 }
 
 Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base) {
     SDL_FRect rf = _sdl_rect(rect, base, NULL);
-    return (Pico_Abs_Rect) _abs_rect(&rf);
+    return (Pico_Abs_Rect) _rnd_rect(&rf);
 }
 
 void pico_cv_pos_abs_rel (
