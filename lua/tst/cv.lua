@@ -1,332 +1,169 @@
--- TODO: TGT=0 (phy)
-
 pico.init(true)
-
-print "pico.cv.pos [up]: pct->raw (rel_abs)"
-do
-    print('', 1)
-    local base = {x=25, y=25, w=50, h=50}
-    local pct  = {'%', x=0.5, y=0.5, anchor='C'}
-    local raw  = pico.cv.pos(pct, nil, base)
-    assert(raw.x==50 and raw.y==50)
-
-    print('', 2)
-    local base = {x=25, y=25, w=50, h=50}
-    local pct  = {'%', x=0.5, y=0.5, anchor='NW'}
-    local raw  = pico.cv.pos(pct, nil, base)
-    assert(raw.x==50 and raw.y==50)
-
-    print('', 3)
-    local base = {x=25, y=25, w=50, h=50}
-    local pct  = {'%', x=0.5, y=0.5, anchor='SE'}
-    local raw  = pico.cv.pos(pct, nil, base)
-    assert(raw.x==49 and raw.y==49)
-end
-
-print "pico.cv.rect [up]: pct->raw (rel_abs)"
-do
-    print('', 1)
-    local pct = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'}
-    local raw = pico.cv.rect(pct)
-    assert(raw.x==25 and raw.y==25 and raw.w==50 and raw.h==50)
-
-    print('', 2)
-    local base = {x=20, y=20, w=60, h=60}
-    local pct  = {'%', x=0.25, y=0.25, w=0.5, h=0.25, anchor='C'}
-    local raw  = pico.cv.rect(pct, nil, base)
-    assert(raw.x==20 and raw.y==28 and raw.w==30 and raw.h==15)
-
-    print('', 3)
-    local base = {x=20, y=20, w=60, h=60}
-    local pct  = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='NE'}
-    local raw  = pico.cv.rect(pct, nil, base)
-    assert(raw.x==20 and raw.y==50 and raw.w==30 and raw.h==30)
-
-    print('', 4)
-    local base = {x=20, y=20, w=60, h=60}
-    local pct  = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='SW'}
-    local raw  = pico.cv.rect(pct, nil, base)
-    assert(raw.x==50 and raw.y==20 and raw.w==30 and raw.h==30)
-end
-
-local log = {'!', w=100, h=100}
-pico.set.scene { dim=log }
-
-print "pico.cv.pos [log]: pct->raw (rel_abs)"
-do
-    print('', 1)
-    local pct = {'%', x=0.4, y=0.7, anchor='C'}
-    local raw = pico.cv.pos(pct)
-    assert(raw.x==40 and raw.y==70)
-
-    print('', 2)
-    local pct = {'%', x=0.55, y=0.45, anchor='NW'}
-    local raw = pico.cv.pos(pct)
-    assert(raw.x==55 and raw.y==45)
-
-    print('', 3)
-    local pct = {'%', x=0.5, y=0.5, anchor='SE'}
-    local raw = pico.cv.pos(pct)
-    assert(raw.x==49 and raw.y==49)
-
-    print('', 4)
-    local p1 = {'%', x=0.0, y=0.0, anchor='NW'}
-    local p2 = {'%', x=1.0, y=1.0, anchor='NW'}
-    local r1 = pico.cv.pos(p1)
-    local r2 = pico.cv.pos(p2)
-    assert(r1.x==0   and r1.y==0)
-    assert(r2.x==100 and r2.y==100)
-
-    print('', 5)
-    local p1 = {'%', x=0.0, y=0.0, anchor='C'}
-    local p2 = {'%', x=1.0, y=1.0, anchor='C'}
-    local r1 = pico.cv.pos(p1)
-    local r2 = pico.cv.pos(p2)
-    assert(r1.x==0   and r1.y==0)
-    assert(r2.x==100 and r2.y==100)
-end
-
-print "pico.cv.rect [log]: pct->raw (rel_abs)"
-do
-    print('', 1)
-    local pct = {'%', x=0.5, y=0.5, w=0.4, h=0.4, anchor='C'}
-    local raw = pico.cv.rect(pct)
-    assert(raw.x==30 and raw.y==30 and raw.w==40 and raw.h==40)
-
-    print('', 2)
-    local pct = {'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW'}
-    local raw = pico.cv.rect(pct)
-    assert(raw.x==50 and raw.y==50 and raw.w==30 and raw.h==30)
-end
-
-print "pico.cv.pos [log]: abs->pct (abs_rel)"
-do
-    print('', 1)
-    local abs = {x=50, y=75}
-    local to = {'%', anchor='NW'}
-    pico.cv.pos(abs, to)
-    assert(to.x == 0.5 and to.y == 0.75)
-
-    print('', 2)
-    local abs = {x=0, y=0}
-    local to = {'%', anchor='NW'}
-    pico.cv.pos(abs, to)
-    assert(to.x == 0.0 and to.y == 0.0)
-
-    print('', 3)
-    local abs = {x=100, y=100}
-    local to = {'%', anchor='NW'}
-    pico.cv.pos(abs, to)
-    assert(to.x == 1.0 and to.y == 1.0)
-
-    -- round-trip: abs -> pct -> abs
-    print('', 4)
-    local abs = {x=33, y=67}
-    local to = {'%', anchor='C'}
-    pico.cv.pos(abs, to)
-    local back = pico.cv.pos(to)
-    assert(back.x == 33 and back.y == 67)
-end
-
-print "pico.cv.rect [log]: abs->pct (abs_rel)"
-do
-    print('', 1)
-    local abs = {x=50, y=50, w=25, h=50}
-    local to = {'%', anchor='NW'}
-    pico.cv.rect(abs, to)
-    assert(to.x == 0.5 and to.y == 0.5)
-    assert(to.w == 0.25 and to.h == 0.5)
-
-    -- round-trip: abs -> pct -> abs
-    print('', 2)
-    local abs = {x=20, y=30, w=40, h=50}
-    local to = {'%', anchor='C'}
-    pico.cv.rect(abs, to)
-    local back = pico.cv.rect(to)
-    assert(back.x == 20 and back.y == 30)
-    assert(back.w == 40 and back.h == 50)
-end
-
-print "pico.cv.pos [log]: rel->rel (rel_rel, canonical form)"
-do
-    -- pct C -> pxl NW
-    print('', 1)
-    local fr = {'%', x=0.4, y=0.7, anchor='C'}
-    local to = {'!', anchor='NW'}
-    local abs_fr = pico.cv.pos(fr)
-    pico.cv.pos(fr, to)
-    local abs_to = pico.cv.pos(to)
-    assert(abs_fr.x == abs_to.x and abs_fr.y == abs_to.y)
-
-    -- pct SE -> pxl C
-    print('', 2)
-    local fr = {'%', x=0.3, y=0.8, anchor='SE'}
-    local to = {'!', anchor='C'}
-    local abs_fr = pico.cv.pos(fr)
-    pico.cv.pos(fr, to)
-    local abs_to = pico.cv.pos(to)
-    assert(abs_fr.x == abs_to.x and abs_fr.y == abs_to.y)
-
-    -- pct NW -> pct SE (same mode, different anchor)
-    print('', 3)
-    local fr = {'%', x=0.5, y=0.5, anchor='NW'}
-    local to = {'%', anchor='SE'}
-    local abs_fr = pico.cv.pos(fr)
-    pico.cv.pos(fr, to)
-    local abs_to = pico.cv.pos(to)
-    assert(abs_fr.x == abs_to.x and abs_fr.y == abs_to.y)
-end
-
-print "pico.cv.rect [log]: rel->rel (rel_rel, canonical form)"
-do
-    -- pct C -> pxl C
-    print('', 1)
-    local fr = {'%', x=0.5, y=0.5, w=0.4, h=0.4, anchor='C'}
-    local to = {'!', anchor='C'}
-    local abs_fr = pico.cv.rect(fr)
-    pico.cv.rect(fr, to)
-    local abs_to = pico.cv.rect(to)
-    assert(abs_fr.x == abs_to.x and abs_fr.y == abs_to.y)
-    assert(abs_fr.w == abs_to.w and abs_fr.h == abs_to.h)
-
-    -- pct NW -> pxl SE
-    print('', 2)
-    local fr = {'%', x=0.3, y=0.2, w=0.5, h=0.6, anchor='NW'}
-    local to = {'!', anchor='SE'}
-    local abs_fr = pico.cv.rect(fr)
-    pico.cv.rect(fr, to)
-    local abs_to = pico.cv.rect(to)
-    assert(abs_fr.x == abs_to.x and abs_fr.y == abs_to.y)
-    assert(abs_fr.w == abs_to.w and abs_fr.h == abs_to.h)
-
-    -- pct NW -> pct SE
-    print('', 3)
-    local fr = {'%', x=0.4, y=0.6, w=0.3, h=0.2, anchor='NW'}
-    local to = {'%', anchor='SE'}
-    local abs_fr = pico.cv.rect(fr)
-    pico.cv.rect(fr, to)
-    local abs_to = pico.cv.rect(to)
-    assert(abs_fr.x == abs_to.x and abs_fr.y == abs_to.y)
-    assert(abs_fr.w == abs_to.w and abs_fr.h == abs_to.h)
-end
-
-print "pico.cv.pos [base]: abs->pct (abs_rel with base)"
-do
-    print('', 1)
-    local base = {x=25, y=25, w=50, h=50}
-    local abs  = {x=50, y=50}
-    local to   = {'%', anchor='NW'}
-    pico.cv.pos(abs, to, base)
-    assert(to.x == 0.5 and to.y == 0.5)
-
-    -- round-trip with base
-    print('', 2)
-    local base = {x=25, y=25, w=50, h=50}
-    local fr   = {'%', x=0.5, y=0.5, anchor='C'}
-    local abs  = pico.cv.pos(fr, nil, base)
-    local to   = {'%', anchor='C'}
-    pico.cv.pos(abs, to, base)
-    local back = pico.cv.pos(to, nil, base)
-    assert(back.x == abs.x and back.y == abs.y)
-end
-
-print "pico.cv.rect [base]: rel->rel (rel_rel with base)"
-do
-    print('', 1)
-    local base = {x=20, y=20, w=60, h=60}
-    local fr   = {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'}
-    local to   = {'!', anchor='NW'}
-    local abs_fr = pico.cv.rect(fr, nil, base)
-    pico.cv.rect(fr, to, base)
-    local abs_to = pico.cv.rect(to, nil, base)
-    assert(abs_fr.x == abs_to.x and abs_fr.y == abs_to.y)
-    assert(abs_fr.w == abs_to.w and abs_fr.h == abs_to.h)
-end
-
-print "pico.cv.dim [log]: rel->abs (rel_abs)"
-do
-    print('', 1)
-    local dim = {'!', w=50, h=30}
-    local abs = pico.cv.dim(dim)
-    assert(abs.w == 50 and abs.h == 30)
-
-    print('', 2)
-    local dim = {'%', w=0.5, h=0.75}
-    local abs = pico.cv.dim(dim)
-    assert(abs.w == 50 and abs.h == 75)
-
-    print('', 3)
-    local base = {x=10, y=10, w=80, h=60}
-    local dim = {'%', w=0.5, h=0.5}
-    local abs = pico.cv.dim(dim, nil, base)
-    assert(abs.w == 40 and abs.h == 30)
-end
-
--- tile mode: 4x4 grid of 4x4 tiles = 16x16 logical
-pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
-
-print "pico.cv.dim [tile]: rel->abs (rel_abs)"
-do
-    print('', 1)
-    local dim = {'%', w=0.5, h=0.75}
-    local abs = pico.cv.dim(dim)
-    assert(abs.w == 8 and abs.h == 12)
-
-    print('', 2)
-    local dim = {'#', w=2, h=3}
-    local abs = pico.cv.dim(dim)
-    assert(abs.w == 8 and abs.h == 12)
-end
-
--- reset to 100x100 for inverse tests
 pico.set.scene { dim={'!', w=100, h=100} }
 
-print "pico.cv.dim [log]: abs->rel (abs_rel)"
+-- Helpers: resolve any rel to integer pixels in cur via _to(nil, ...).
+local function abs_pos (rel)
+    local out = {'!', anchor='NW'}
+    pico.cv.pos_to(nil, rel, out)
+    return out
+end
+local function abs_rect (rel)
+    local out = {'!', anchor='NW'}
+    pico.cv.rect_to(nil, rel, out)
+    return out
+end
+local function abs_dim (rel)
+    local out = {'!'}
+    pico.cv.dim_to(nil, rel, out)
+    return out
+end
+
+print "pico.cv.pos_to(nil): resolution"
 do
     print('', 1)
-    local abs = {w=50, h=30}
-    local to = {'!'}
-    pico.cv.dim(abs, to)
-    assert(to.w == 50 and to.h == 30)
+    local r = abs_pos {'%', x=0.5, y=0.5, anchor='C'}
+    assert(r.x==50 and r.y==50)
 
     print('', 2)
-    local abs = {w=50, h=25}
-    local to = {'%'}
-    pico.cv.dim(abs, to)
-    assert(to.w == 0.5 and to.h == 0.25)
+    local r = abs_pos {'%', x=0.5, y=0.5, anchor='NW'}
+    assert(r.x==50 and r.y==50)
 
     print('', 3)
-    local base = {x=10, y=10, w=80, h=40}
-    local abs = {w=40, h=20}
-    local to = {'%'}
-    pico.cv.dim(abs, to, base)
-    assert(to.w == 0.5 and to.h == 0.5)
+    local r = abs_pos {'%', x=0.5, y=0.5, anchor='SE'}
+    assert(r.x==49 and r.y==49)
+
+    print('', 4)
+    local r = abs_pos {'!', x=10, y=15, anchor='NW'}
+    assert(r.x==10 and r.y==15)
 end
 
-print "pico.cv.dim [log]: rel->rel (rel_rel)"
+print "pico.cv.rect_to(nil): resolution"
 do
     print('', 1)
-    local fr = {'!', w=50, h=25}
-    local to = {'%'}
-    pico.cv.dim(fr, to)
-    assert(to.w == 0.5 and to.h == 0.25)
+    local r = abs_rect {'%', x=0.5, y=0.5, w=0.4, h=0.4, anchor='C'}
+    assert(r.x==30 and r.y==30 and r.w==40 and r.h==40)
 
     print('', 2)
-    local fr = {'%', w=0.5, h=0.25}
-    local to = {'!'}
-    pico.cv.dim(fr, to)
-    assert(to.w == 50 and to.h == 25)
+    local r = abs_rect {'%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW'}
+    assert(r.x==50 and r.y==50 and r.w==30 and r.h==30)
 end
 
-print "pico.cv.dim [base]: round-trip"
+print "pico.cv.dim_to(nil): resolution"
 do
     print('', 1)
-    local base = {x=10, y=10, w=80, h=40}
-    local fr = {'%', w=0.5, h=0.5}
-    local abs = pico.cv.dim(fr, nil, base)
-    local to = {'%'}
-    pico.cv.dim(abs, to, base)
-    assert(to.w == 0.5 and to.h == 0.5)
+    local r = abs_dim {'!', w=50, h=30}
+    assert(r.w==50 and r.h==30)
+
+    print('', 2)
+    local r = abs_dim {'%', w=0.5, h=0.75}
+    assert(r.w==50 and r.h==75)
 end
 
+print "pico.cv.pos_to: round-trip (mode/anchor sweep)"
+do
+    local anchors = {'NW','N','NE','W','C','E','SW','S','SE'}
+    local modes = {'!', '%'}
+    local starts = {
+        {0,0}, {50,50}, {25,75}, {100,100}, {10,90},
+    }
+    local total = 0
+    for _, s in ipairs(starts) do
+        local orig = {'!', x=s[1], y=s[2], anchor='NW'}
+        for _, m in ipairs(modes) do
+            for _, a in ipairs(anchors) do
+                local mid = {m, anchor=a}
+                pico.cv.pos_to(nil, orig, mid)
+                local back = abs_pos(mid)
+                assert(math.abs(back.x - s[1]) <= 1,
+                       string.format("pos x: %d vs %d (mode=%s anchor=%s)",
+                                     back.x, s[1], m, a))
+                assert(math.abs(back.y - s[2]) <= 1)
+                total = total + 1
+            end
+        end
+    end
+    print('', 'passed:', total, 'combos')
+end
+
+print "pico.cv.rect_to: round-trip (mode/anchor sweep)"
+do
+    local anchors = {'NW','N','NE','W','C','E','SW','S','SE'}
+    local modes = {'!', '%'}
+    local starts = {
+        {0,0,10,10}, {25,25,50,50}, {10,20,30,40}, {0,0,100,100},
+    }
+    local total = 0
+    for _, s in ipairs(starts) do
+        local orig = {'!', x=s[1], y=s[2], w=s[3], h=s[4], anchor='NW'}
+        for _, m in ipairs(modes) do
+            for _, a in ipairs(anchors) do
+                local mid = {m, anchor=a}
+                pico.cv.rect_to(nil, orig, mid)
+                local back = abs_rect(mid)
+                assert(math.abs(back.x - s[1]) <= 1)
+                assert(math.abs(back.y - s[2]) <= 1)
+                assert(math.abs(back.w - s[3]) <= 1)
+                assert(math.abs(back.h - s[4]) <= 1)
+                total = total + 1
+            end
+        end
+    end
+    print('', 'passed:', total, 'combos')
+end
+
+print "pico.cv.pos_to / pos_from: world <-> window"
+do
+    -- world 100x100, window 500x500 -> 5x scale
+    print('', 1)
+    local out = {'!', anchor='NW'}
+    pico.cv.pos_to('window', {'!', x=50, y=50, anchor='NW'}, out)
+    assert(out.x==250 and out.y==250)
+
+    print('', 2)
+    local out = {'!', anchor='NW'}
+    pico.cv.pos_from('window', {'!', x=250, y=250, anchor='NW'}, out)
+    assert(out.x==50 and out.y==50)
+
+    print('', 3)
+    local win = {'!', anchor='NW'}
+    pico.cv.pos_to('window', {'!', x=37, y=89, anchor='NW'}, win)
+    local back = {'!', anchor='NW'}
+    pico.cv.pos_from('window', win, back)
+    assert(back.x==37 and back.y==89)
+end
+
+print "pico.cv.* sub-layer 2-hop walk"
+do
+    pico.layer.empty('world', 'sub_cv', {w=50, h=50})
+    pico.set.layer 'sub_cv'
+
+    print('', 'pos sub -> world')
+    local w = {'!', anchor='NW'}
+    pico.cv.pos_to('world', {'!', x=10, y=20, anchor='NW'}, w)
+    assert(w.x==20 and w.y==40)
+
+    print('', 'pos world -> sub')
+    local s = {'!', anchor='NW'}
+    pico.cv.pos_from('world', {'!', x=20, y=40, anchor='NW'}, s)
+    assert(s.x==10 and s.y==20)
+
+    print('', 'pos sub -> window (2 hops)')
+    local win = {'!', anchor='NW'}
+    pico.cv.pos_to('window', {'!', x=10, y=20, anchor='NW'}, win)
+    assert(win.x==100 and win.y==200)
+
+    print('', 'rect sub -> world')
+    local w = {'!', anchor='NW'}
+    pico.cv.rect_to('world', {'!', x=10, y=20, w=5, h=10, anchor='NW'}, w)
+    assert(w.x==20 and w.y==40 and w.w==10 and w.h==20)
+
+    print('', 'dim sub -> world')
+    local w = {'!'}
+    pico.cv.dim_to('world', {'!', w=5, h=10}, w)
+    assert(w.w==10 and w.h==20)
+
+    pico.set.layer 'world'
+end
+
+print "\n=== ALL TESTS PASSED ==="
 pico.init(false)

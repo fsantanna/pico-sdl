@@ -266,68 +266,84 @@ Existing `pos_cur_win`/`pos_win_cur` lua bindings either:
 Pending.
 Decide after current plan `2026-05-window-tex` lands.
 
-## Tasks (phased)
+## Status (handoff)
 
-- [x] Verify `hier.up` reachability for arbitrary `G.layer`.
-- [x] Lock ancestor-only contract; assert-and-abort on violation.
-- [x] Audit external callers in tst/ and lua/.
-- [x] Commit to dropping ad-hoc-base from public API.
-- [x] Implement `pico_cv_pos_to` / `pico_cv_pos_from` (int, via public CV).
+### Done
 
-### Phase A — float-precision rewrite
+| phase | scope                                                |
+|-------|------------------------------------------------------|
+| init  | hier.up audit, ancestor-only contract, cv.c audit    |
+| A     | `_to`/`_from` use `_sdl_*`/`_rel_*` (float precision) |
+| B     | `pos_cur_win`/`pos_win_cur` retired; `set/get_mouse` use `_to`/`_from`; valgrind.supp updated |
+| B.1   | signatures fixed to `(layer, fr, to)` (layer first)  |
+| D     | dropped 9 old decls from pico.h (pos/rect/dim × rel_abs/abs_rel/rel_rel) |
+| E     | tst/cv.c full rewrite (170+ combos); tst/in.c migrated |
+| F-1   | lua/pico.c: 6 new `_to`/`_from` shims; old bindings + unused helpers dropped |
+| F-2   | lua/tst/cv.lua full rewrite                          |
+| F-3   | aux.hc `_rel_*` `!` case rounds (integer-pixel semantic preserved) |
+| G     | `rect_to`/`rect_from`/`dim_to`/`dim_from` C impls + decls + tests |
 
-- [x] Switch `_to`/`_from` internals from
-      `pico_cv_pos_rel_abs`/etc. to `_sdl_pos`/`_sdl_rect`/`_rel_pos`.
-- [x] Verify build clean.
+### Public API now
 
-### Phase B — retire `pos_cur_win` / `pos_win_cur`
+```c
+void pico_cv_pos_to    (const char* layer, const Pico_Rel_Pos*,  Pico_Rel_Pos*);
+void pico_cv_pos_from  (const char* layer, const Pico_Rel_Pos*,  Pico_Rel_Pos*);
+void pico_cv_rect_to   (const char* layer, const Pico_Rel_Rect*, Pico_Rel_Rect*);
+void pico_cv_rect_from (const char* layer, const Pico_Rel_Rect*, Pico_Rel_Rect*);
+void pico_cv_dim_to    (const char* layer, const Pico_Rel_Dim*,  Pico_Rel_Dim*);
+void pico_cv_dim_from  (const char* layer, const Pico_Rel_Dim*,  Pico_Rel_Dim*);
+```
 
-- [x] Rewire `pico_set_mouse` to call `pico_cv_pos_to("window", rel, &out_pxNW)`.
-- [x] Rewire `pico_get_mouse` to call `pico_cv_pos_from("window", &inNW, out)`.
-- [x] Drop declarations from pico.h.
-- [x] Delete implementations from geom.hc.
-- [x] Update valgrind.supp SDL_Init line.
+`layer = NULL` → cur (mode/anchor conversion only).
+Lua: `pico.cv.{pos,rect,dim}_{to,from}(layer, fr, to)`.
 
-### Phase B.1 — finalize signatures
+## Next steps (explicit)
 
-- [x] Reorder `_to`/`_from` args to `(layer, fr, to)`.
-- [x] Update all call sites and docs.
+### 1. Verify full test suites pass
 
-### Phase C — convert internal pico.c callers off `pos_rel_abs`/etc.
+```bash
+cd /x/pico-sdl/.work/2026-05-base-layer
+make tests           # C tests
+cd lua && make tests # Lua tests
+```
 
-- [ ] Replace each internal `pico_cv_pos_rel_abs(rel, NULL)` with
-      `_sdl_pos(rel, NULL)` + `_abs_pos(...)`.
-- [ ] Replace `pico_in_pos` ad-hoc-base usage with `_sdl_pos(rel, &out_abs)`.
-- [ ] Same for `pico_cv_pos_abs_rel` callers.
+Expected: all pass.
+Known pre-existing flake: `tst/mouse-rect-click.c` step `02` sometimes
+fails on xvfb (predates this work — confirmed on clean tree).
 
-### Phase D — drop public `pos_rel_abs` / `pos_abs_rel` / `pos_rel_rel`
+### 2. Document the new API in `lua/doc/api.md`
 
-- [ ] Remove declarations from pico.h.
-- [ ] Remove implementations from pico.c.
+- Drop old `pico.cv.pos(fr, to, base)` / `cv.rect` / `cv.dim` sections.
+- Add 6 entries: `pico.cv.pos_to`, `pos_from`, `rect_to`, `rect_from`,
+  `dim_to`, `dim_from`. Signature: `(layer: string?, fr: table, to: table)`.
+- Note: `layer = nil` means current; must be cur or an ancestor.
+- Drop docs for `pico.cv.pos_cur_win` / `pos_win_cur` if mentioned
+  (those bindings no longer exist — handled at C level by
+  `pico_set_mouse` / `pico_get_mouse`).
 
-### Phase E — migrate tst/ tests
+### 3. Optional — Phase C internal cleanup
 
-- [ ] tst/cv.c: rewrite ad-hoc-base tests via named sub-layers OR delete
-      if redundant with named-layer coverage; rewrite NULL-base tests
-      against `_to`/`_from`.
-- [ ] tst/in.c: same.
-- [ ] Add new tests:
-    - [ ] mode/anchor convert in cur (`to=NULL`)
-    - [ ] cur <-> window round-trip identity
-    - [ ] sub-layer (HUD inside world) round-trip
-    - [ ] orphan layer → assert fires
-    - [ ] sibling target → assert fires
+Internal pico.c / geom.hc / layers.hc / mem.hc still call the old
+`pico_cv_*_rel_abs` / `_abs_rel` / `_rel_rel` family.
+They're no longer in pico.h but still defined as non-static in geom.hc.
+This is fine — same-TU resolution.
+If you want to fully retire them (delete impls from geom.hc):
 
-### Phase F — migrate Lua bindings
+| caller                                          | replacement                          |
+|-------------------------------------------------|--------------------------------------|
+| draw fns in pico.c (`pos_rel_abs(p, NULL)`)     | `SDL_FPoint f = _sdl_pos(p, NULL); SDL_Point i = (SDL_Point)_abs_pos(&f)` |
+| `pico_in_*` in geom.hc (ad-hoc-base composition) | switch to `_sdl_*` + manual compose  |
+| layers.hc / mem.hc (one each)                   | same                                  |
 
-- [ ] lua/pico.c: drop `base` arg from `pico.cv.pos(...)`;
-      add `pos_to` / `pos_from` bindings.
-- [ ] lua/tst/cv.lua: rewrite tests.
-- [ ] Update lua/doc/api.md.
+After all internal callers are off, delete the 9 old impls from geom.hc.
 
-### Phase G — rect/dim parallels (moved earlier)
+Defer unless there's a reason to clean up further. The current state
+is fully functional with the old wrappers as internal helpers.
 
-- [x] Add `pico_cv_rect_to` / `pico_cv_rect_from`.
-- [x] Add `pico_cv_dim_to`  / `pico_cv_dim_from`.
-- [ ] Lua bindings for all six (Phase F).
-- [ ] Tests for all six (Phase E).
+### 4. Final task list (for completion)
+
+- [ ] Run `make tests` from project root.
+- [ ] Run `cd lua && make tests`.
+- [ ] Update `lua/doc/api.md`.
+- [ ] (optional) Phase C internal cleanup.
+- [ ] Commit & PR.
