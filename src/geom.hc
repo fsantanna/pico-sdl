@@ -1,62 +1,4 @@
 ///////////////////////////////////////////////////////////////////////////////
-// CV
-///////////////////////////////////////////////////////////////////////////////
-
-Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
-    SDL_FDim df = _sdl_dim(dim, base, NULL);
-    return _rnd_dim(&df);
-}
-
-void pico_cv_dim_abs_rel (
-    const Pico_Abs_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
-) {
-    _rel_dim((SDL_FDim){fr->w, fr->h}, to, base);
-}
-
-void pico_cv_dim_rel_rel (
-    Pico_Rel_Dim* fr, Pico_Rel_Dim* to, Pico_Abs_Rect* base
-) {
-    Pico_Abs_Dim abs = pico_cv_dim_rel_abs(fr, base);
-    pico_cv_dim_abs_rel(&abs, to, base);
-}
-
-Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
-    SDL_FPoint pf = _sdl_pos(pos, base);
-    return (Pico_Abs_Pos) _rnd_pos(&pf);
-}
-
-Pico_Abs_Rect pico_cv_rect_rel_abs (const Pico_Rel_Rect* rect, Pico_Abs_Rect* base) {
-    SDL_FRect rf = _sdl_rect(rect, base, NULL);
-    return (Pico_Abs_Rect) _rnd_rect(&rf);
-}
-
-void pico_cv_pos_abs_rel (
-    const Pico_Abs_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
-) {
-    _rel_pos((SDL_FPoint){fr->x, fr->y}, to, base);
-}
-
-void pico_cv_pos_rel_rel (
-    const Pico_Rel_Pos* fr, Pico_Rel_Pos* to, Pico_Abs_Rect* base
-) {
-    Pico_Abs_Pos abs = pico_cv_pos_rel_abs(fr, base);
-    pico_cv_pos_abs_rel(&abs, to, base);
-}
-
-void pico_cv_rect_abs_rel (
-    const Pico_Abs_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
-) {
-    _rel_rect((SDL_FRect){fr->x, fr->y, fr->w, fr->h}, to, base);
-}
-
-void pico_cv_rect_rel_rel (
-    const Pico_Rel_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
-) {
-    Pico_Abs_Rect abs = pico_cv_rect_rel_abs(fr, base);
-    pico_cv_rect_abs_rel(&abs, to, base);
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // CV: named-layer projection (cv_pos_to / cv_pos_from)
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -282,27 +224,27 @@ void pico_cv_rect_to (
 ///////////////////////////////////////////////////////////////////////////////
 
 Pico_Rel_Rect pico_in_rect (const Pico_Rel_Rect* out, const Pico_Rel_Rect* in) {
-    Pico_Abs_Rect out_abs = pico_cv_rect_rel_abs(out, NULL);
-    Pico_Abs_Rect in_abs  = pico_cv_rect_rel_abs(in, &out_abs);
+    Pico_Abs_Rect out_abs = _rnd_rect(_sdl_rect(out, NULL, NULL));
+    Pico_Abs_Rect in_abs  = _rnd_rect(_sdl_rect(in, &out_abs, NULL));
     Pico_Rel_Rect ret = { .mode = in->mode, .anchor = in->anchor };
-    pico_cv_rect_abs_rel(&in_abs, &ret, NULL);
+    _rel_rect((SDL_FRect){in_abs.x, in_abs.y, in_abs.w, in_abs.h}, &ret, NULL);
     return ret;
 }
 
 Pico_Rel_Pos pico_in_pos (const Pico_Rel_Rect* out, const Pico_Rel_Pos* in) {
-    Pico_Abs_Rect out_abs = pico_cv_rect_rel_abs(out, NULL);
-    Pico_Abs_Pos  in_abs  = pico_cv_pos_rel_abs(in, &out_abs);
+    Pico_Abs_Rect out_abs = _rnd_rect(_sdl_rect(out, NULL, NULL));
+    Pico_Abs_Pos  in_abs  = _rnd_pos(_sdl_pos(in, &out_abs));
     Pico_Rel_Pos ret = { .mode = in->mode, .anchor = in->anchor };
-    pico_cv_pos_abs_rel(&in_abs, &ret, NULL);
+    _rel_pos((SDL_FPoint){in_abs.x, in_abs.y}, &ret, NULL);
     return ret;
 }
 
 Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in) {
-    Pico_Abs_Rect out_abs = pico_cv_rect_rel_abs(out, NULL);
+    Pico_Abs_Rect out_abs = _rnd_rect(_sdl_rect(out, NULL, NULL));
     Pico_Rel_Dim  in_copy = *in;
-    Pico_Abs_Dim  in_abs  = pico_cv_dim_rel_abs(&in_copy, &out_abs);
+    Pico_Abs_Dim  in_abs  = _rnd_dim(_sdl_dim(&in_copy, &out_abs, NULL));
     Pico_Rel_Dim ret = { .mode = in->mode };
-    pico_cv_dim_abs_rel(&in_abs, &ret, NULL);
+    _rel_dim((SDL_FDim){in_abs.w, in_abs.h}, &ret, NULL);
     return ret;
 }
 
@@ -311,14 +253,14 @@ Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in) {
 ///////////////////////////////////////////////////////////////////////////////
 
 int pico_vs_pos_rect (Pico_Rel_Pos* pos, Pico_Rel_Rect* rect) {
-    Pico_Abs_Pos  pi = pico_cv_pos_rel_abs(pos, NULL);
-    Pico_Abs_Rect ri = pico_cv_rect_rel_abs(rect, NULL);
+    Pico_Abs_Pos  pi = _rnd_pos(_sdl_pos(pos, NULL));
+    Pico_Abs_Rect ri = _rnd_rect(_sdl_rect(rect, NULL, NULL));
     return SDL_PointInRect(&pi, &ri);
 }
 
 int pico_vs_rect_rect (Pico_Rel_Rect* r1, Pico_Rel_Rect* r2) {
-    Pico_Abs_Rect i1 = pico_cv_rect_rel_abs(r1, NULL);
-    Pico_Abs_Rect i2 = pico_cv_rect_rel_abs(r2, NULL);
+    Pico_Abs_Rect i1 = _rnd_rect(_sdl_rect(r1, NULL, NULL));
+    Pico_Abs_Rect i2 = _rnd_rect(_sdl_rect(r2, NULL, NULL));
     return SDL_HasIntersection(&i1, &i2);
 }
 

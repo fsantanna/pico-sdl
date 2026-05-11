@@ -282,6 +282,8 @@ Decide after current plan `2026-05-window-tex` lands.
 | F-2   | lua/tst/cv.lua full rewrite                          |
 | F-3   | aux.hc `_rel_*` `!` case rounds (integer-pixel semantic preserved) — **REVERTED**: tst/mouse.c needs subpixel precision (e.g. `0.3f` from 500→50 scale). All three `_rel_dim` / `_rel_pos` / `_rel_rect` `!` branches restored to raw float assignment. `tst/cv.c` already used `(int)` casts so unaffected. |
 | G     | `rect_to`/`rect_from`/`dim_to`/`dim_from` C impls + decls + tests |
+| H     | rename src helpers `_abs_*` → `_rnd_*` (aux.hc / geom.hc / layers.hc): disambiguates "rounding helper" from the `Pico_Abs_*` type. Test-local `_abs_*` wrappers in tst/cv.c, tst/in.c left as-is (different role: rel→abs convenience). |
+| I     | `make tests` + `cd lua && make tests` all green after F-3 revert + H rename |
 
 ### Public API now
 
@@ -342,8 +344,8 @@ is fully functional with the old wrappers as internal helpers.
 
 ### 4. Final task list (for completion)
 
-- [ ] Run `make tests` from project root.
-- [ ] Run `cd lua && make tests`.
+- [x] Run `make tests` from project root.
+- [x] Run `cd lua && make tests`.
 - [ ] Update `lua/doc/api.md`.
 - [ ] (optional) Phase C internal cleanup.
 - [ ] Commit & PR.

@@ -165,10 +165,8 @@ static void* _alloc_layer_image (int n, const void* key, void* ctx) {
 
 static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
     _alloc_sub_t* c = (_alloc_sub_t*)ctx;
-    Pico_Abs_Rect abs = pico_cv_rect_rel_abs(
-        &c->crop,
-        &(Pico_Abs_Rect){0, 0, c->par->scene.dim.w, c->par->scene.dim.h}
-    );
+    Pico_Abs_Rect base = {0, 0, c->par->scene.dim.w, c->par->scene.dim.h};
+    Pico_Abs_Rect abs = _rnd_rect(_sdl_rect(&c->crop, &base, NULL));
     Pico_Layer* data = _layer_new (
         0, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
         (const char*)key, c->par->tex,

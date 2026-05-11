@@ -278,21 +278,21 @@ static void _rel_rect (SDL_FRect flt, Pico_Rel_Rect* to, const Pico_Abs_Rect* ba
 
 // use floorf(. + 0.5f) toward +inf: makes NW/C behave the same
 
-static Pico_Abs_Dim _rnd_dim (const SDL_FDim* f) {
+static Pico_Abs_Dim _rnd_dim (SDL_FDim f) {
     return (Pico_Abs_Dim) {
-        floorf(f->w+0.5f), floorf(f->h+0.5f)
+        floorf(f.w+0.5f), floorf(f.h+0.5f)
     };
 }
 
-static Pico_Abs_Pos _rnd_pos (const SDL_FPoint* f) {
+static Pico_Abs_Pos _rnd_pos (SDL_FPoint f) {
     return (Pico_Abs_Pos) {
-        floorf(f->x+0.5f), floorf(f->y+0.5f)
+        floorf(f.x+0.5f), floorf(f.y+0.5f)
     };
 }
 
-static Pico_Abs_Rect _rnd_rect (const SDL_FRect* f) {
+static Pico_Abs_Rect _rnd_rect (SDL_FRect f) {
     return (Pico_Abs_Rect) {
-        floorf(f->x+0.5f), floorf(f->y+0.5f),
-        floorf(f->w+0.5f), floorf(f->h+0.5f)
+        floorf(f.x+0.5f), floorf(f.y+0.5f),
+        floorf(f.w+0.5f), floorf(f.h+0.5f)
     };
 }
