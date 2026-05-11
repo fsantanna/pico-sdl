@@ -56,35 +56,6 @@ void pico_cv_rect_rel_rel (
     pico_cv_rect_abs_rel(&abs, to, base);
 }
 
-SDL_Point pico_cv_pos_cur_win (const Pico_Rel_Pos* pos) {
-    _pico_guard();
-    SDL_FPoint fp = _sdl_pos(pos, NULL);
-    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &G.layer->scene.dst,
-        &(Pico_Abs_Rect){0, 0, G.window.layer.scene.dim.w, G.window.layer.scene.dim.h}
-    );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
-    float rx = (fp.x - src.x) / (float)src.w;
-    float ry = (fp.y - src.y) / (float)src.h;
-    return (SDL_Point) {
-        (int)floorf(dst.x + rx*dst.w + 0.5f),
-        (int)floorf(dst.y + ry*dst.h + 0.5f),
-    };
-}
-
-void pico_cv_pos_win_cur (SDL_Point phy, Pico_Rel_Pos* out) {
-    _pico_guard();
-    Pico_Abs_Rect dst = pico_cv_rect_rel_abs (
-        &G.layer->scene.dst,
-        &(Pico_Abs_Rect){0, 0, G.window.layer.scene.dim.w, G.window.layer.scene.dim.h}
-    );
-    Pico_Abs_Rect src = pico_cv_rect_rel_abs(&G.layer->scene.src, NULL);
-    float rx = (phy.x - dst.x) / (float)dst.w;
-    float ry = (phy.y - dst.y) / (float)dst.h;
-    SDL_FPoint wld = { src.x + rx*src.w, src.y + ry*src.h };
-    _rel_pos(wld, out, NULL);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // CV: named-layer projection (cv_pos_to / cv_pos_from)
 ///////////////////////////////////////////////////////////////////////////////

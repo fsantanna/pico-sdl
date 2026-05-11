@@ -655,20 +655,6 @@ void pico_cv_rect_rel_rel (
     const Pico_Rel_Rect* fr, Pico_Rel_Rect* to, Pico_Abs_Rect* base
 );
 
-/// @brief Projects a position from the current layer's logical frame to
-/// window physical pixels, applying the current layer's scene.src/dst
-/// view transform.
-/// @param pos position in current layer's logical frame (any mode/anchor)
-/// @return window pixel coordinates
-SDL_Point pico_cv_pos_cur_win (const Pico_Rel_Pos* pos);
-
-/// @brief Unprojects a window physical pixel into the current layer's
-/// logical frame, applying the inverse of the current layer's
-/// scene.src/dst view transform.
-/// @param phy window pixel coordinates
-/// @param out result template (mode and anchor must be set on input)
-void pico_cv_pos_win_cur (SDL_Point phy, Pico_Rel_Pos* out);
-
 /// @brief Projects a position from the current layer's logical frame
 /// into a named ancestor layer's frame. Walks `hier.up` from cur up
 /// to the named target, composing each layer's scene.src -> scene.dst

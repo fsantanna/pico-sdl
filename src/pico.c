@@ -346,8 +346,9 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
         .middle = !!(masks & SDL_BUTTON(SDL_BUTTON_MIDDLE)),
     };
 
+    Pico_Rel_Pos in  = {'!', {phy.x, phy.y}, PICO_ANCHOR_NW};
     Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW };
-    pico_cv_pos_win_cur(phy, &rel);
+    pico_cv_pos_from(&in, "window", &rel);
     m.x = rel.x;
     m.y = rel.y;
 
@@ -546,8 +547,9 @@ const char* pico_set_layer (const char* key) {
 
 void pico_set_mouse (Pico_Rel_Pos* pos) {
     _pico_guard();
-    SDL_Point phy = pico_cv_pos_cur_win(pos);
-    SDL_WarpMouseInWindow(G.window.win, phy.x, phy.y);
+    Pico_Rel_Pos w = {'!', {}, PICO_ANCHOR_NW};
+    pico_cv_pos_to(pos, &w, "window");
+    SDL_WarpMouseInWindow(G.window.win, w.x, w.y);
     SDL_PumpEvents();
 }
 
