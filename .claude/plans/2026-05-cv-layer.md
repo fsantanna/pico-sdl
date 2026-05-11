@@ -68,18 +68,19 @@ Two functions, parameterized by a single layer name; the other end
 is always cur:
 
 ```c
-// cur -> name  (project out)
-void pico_cv_pos_to   (const Pico_Rel_Pos* in, Pico_Rel_Pos* out, const char* to);
+// cur -> layer  (project out)
+void pico_cv_pos_to   (const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to);
 
-// name -> cur  (bring in)
-void pico_cv_pos_from (const Pico_Rel_Pos* in, const char* from, Pico_Rel_Pos* out);
+// layer -> cur  (bring in)
+void pico_cv_pos_from (const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to);
 ```
 
 Semantics:
 
-- `in` is interpreted in cur (`_to`) or `from` (`_from`).
-- `out` is written in `to` (`_to`) or cur (`_from`),
-  with `out->mode` and `out->anchor` controlling expression.
+- `layer` is always first — the named ancestor of cur.
+- `fr` is interpreted in cur (`_to`) or `layer` (`_from`).
+- `to` is written in `layer` (`_to`) or cur (`_from`),
+  with `to->mode` and `to->anchor` controlling expression.
 - `_to` and `_from` are exact inverses (modulo rounding).
 
 ### Ancestor-only contract
@@ -114,7 +115,7 @@ User remedies by calling `pico_set_layer(other)` to make `other`
 | `"world"` | `G.world`                 |
 | `<other>` | user-named layer in scope |
 
-`pos_to(p, &out, NULL)` collapses to today's `rel_rel`
+`pos_to(NULL, p, &out)` collapses to today's `rel_rel`
 (mode/anchor conversion, no projection).
 No `"cur"` string sentinel — `NULL` is the only "current layer"
 shorthand, consistent with the rest of pico's API
@@ -125,21 +126,21 @@ shorthand, consistent with the rest of pico's API
 | today                                  | new                                              |
 |----------------------------------------|--------------------------------------------------|
 | `pos_rel_abs` / `pos_abs_rel`          | internal only (drop from public header)          |
-| `pos_rel_rel(a, b, base)`              | `pos_to(a, b, NULL)`                             |
-| `pos_cur_win(rel)` → `SDL_Point`       | `pos_to(rel, &out_pxNW, "window")`               |
-| `pos_win_cur(phy, out)`                | `pos_from(&in_pxNW, "window", out)`              |
-| `pos_cur_lyr(rel, name)` (prev plan)   | `pos_to(rel, &out, name)`                        |
-| `pos_lyr_cur(phy, name, out)` (prev)   | `pos_from(in, name, out)`                        |
+| `pos_rel_rel(a, b, base)`              | `pos_to(NULL, a, b)`                             |
+| `pos_cur_win(rel)` → `SDL_Point`       | `pos_to("window", rel, &out_pxNW)`               |
+| `pos_win_cur(phy, out)`                | `pos_from("window", &in_pxNW, out)`              |
+| `pos_cur_lyr(rel, name)` (prev plan)   | `pos_to(name, rel, &out)`                        |
+| `pos_lyr_cur(phy, name, out)` (prev)   | `pos_from(name, in, out)`                        |
 
 7 public position functions collapse to 2.
 
 ### Parallel forms
 
 ```c
-void pico_cv_rect_to   (const Pico_Rel_Rect*, Pico_Rel_Rect*, const char* to);
-void pico_cv_rect_from (const Pico_Rel_Rect*, const char* from, Pico_Rel_Rect*);
-void pico_cv_dim_to    (const Pico_Rel_Dim*,  Pico_Rel_Dim*,  const char* to);
-void pico_cv_dim_from  (const Pico_Rel_Dim*,  const char* from, Pico_Rel_Dim*);
+void pico_cv_rect_to   (const char* layer, const Pico_Rel_Rect*, Pico_Rel_Rect*);
+void pico_cv_rect_from (const char* layer, const Pico_Rel_Rect*, Pico_Rel_Rect*);
+void pico_cv_dim_to    (const char* layer, const Pico_Rel_Dim*,  Pico_Rel_Dim*);
+void pico_cv_dim_from  (const char* layer, const Pico_Rel_Dim*,  Pico_Rel_Dim*);
 ```
 
 Total public CV API: **6 functions** (today's 11 + previous plan's 4 = 15).
@@ -149,7 +150,7 @@ Total public CV API: **6 functions** (today's 11 + previous plan's 4 = 15).
 | approach              | typical call                    | reads as     |
 |-----------------------|---------------------------------|--------------|
 | `(in, from, out, to)` | `pos(p, NULL, &out, "hud")`     | NULL noise   |
-| `_to` / `_from`       | `pos_to(p, &out, "hud")`        | clean prose  |
+| `_to` / `_from`       | `pos_to("hud", p, &out)`        | clean prose  |
 
 `from = cur` is the dominant case; making it implicit beats
 papering over the asymmetry with `NULL`.
@@ -233,18 +234,18 @@ Edge case: `target == cur` → no walk, mode/anchor conversion only.
 ## Lua bindings
 
 ```lua
-pico.cv.pos_to    (in: Pos,  out: Pos,  to: string?)
-pico.cv.pos_from  (in: Pos,  from: string?, out: Pos)
-pico.cv.rect_to   (in: Rect, out: Rect, to: string?)
-pico.cv.rect_from (in: Rect, from: string?, out: Rect)
-pico.cv.dim_to    (in: Dim,  out: Dim,  to: string?)
-pico.cv.dim_from  (in: Dim,  from: string?, out: Dim)
+pico.cv.pos_to    (layer: string?, fr: Pos, to: Pos)
+pico.cv.pos_from  (layer: string?, fr: Pos, to: Pos)
+pico.cv.rect_to   (layer: string?, fr: Rect, to: Rect)
+pico.cv.rect_from (layer: string?, fr: Rect, to: Rect)
+pico.cv.dim_to    (layer: string?, fr: Dim,  to: Dim)
+pico.cv.dim_from  (layer: string?, fr: Dim,  to: Dim)
 ```
 
 Existing `pos_cur_win`/`pos_win_cur` lua bindings either:
 
 - get removed (breaking change), or
-- become 1-line lua wrappers calling `pos_to(..., "window")` etc.
+- become 1-line lua wrappers calling `pos_to("window", ...)` etc.
 
 ## Trade-offs
 
@@ -275,16 +276,22 @@ Decide after current plan `2026-05-window-tex` lands.
 
 ### Phase A — float-precision rewrite
 
-- [ ] Switch `_to`/`_from` internals from
+- [x] Switch `_to`/`_from` internals from
       `pico_cv_pos_rel_abs`/etc. to `_sdl_pos`/`_sdl_rect`/`_rel_pos`.
-- [ ] Verify build clean and tst/cv.c, tst/mouse.c still pass.
+- [x] Verify build clean.
 
 ### Phase B — retire `pos_cur_win` / `pos_win_cur`
 
-- [ ] Rewire `pico_set_mouse` to call `pico_cv_pos_to(rel, &out_pxNW, "window")`.
-- [ ] Rewire `pico_get_mouse` to call `pico_cv_pos_from(&inNW, "window", out)`.
-- [ ] Drop declarations from pico.h.
-- [ ] Delete implementations from pico.c.
+- [x] Rewire `pico_set_mouse` to call `pico_cv_pos_to("window", rel, &out_pxNW)`.
+- [x] Rewire `pico_get_mouse` to call `pico_cv_pos_from("window", &inNW, out)`.
+- [x] Drop declarations from pico.h.
+- [x] Delete implementations from geom.hc.
+- [x] Update valgrind.supp SDL_Init line.
+
+### Phase B.1 — finalize signatures
+
+- [x] Reorder `_to`/`_from` args to `(layer, fr, to)`.
+- [x] Update all call sites and docs.
 
 ### Phase C — convert internal pico.c callers off `pos_rel_abs`/etc.
 

@@ -61,14 +61,14 @@ void pico_cv_rect_rel_rel (
 ///////////////////////////////////////////////////////////////////////////////
 
 void pico_cv_pos_to (
-    const Pico_Rel_Pos* in, Pico_Rel_Pos* out, const char* to
+    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
 ) {
     _pico_guard();
-    Pico_Layer* T = (to == NULL) ? G.layer : _pico_layer_name(to);
+    Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
     Pico_Layer* L = G.layer;
 
     Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
-    SDL_FPoint p = _sdl_pos(in, &L_base);
+    SDL_FPoint p = _sdl_pos(fr, &L_base);
 
     while (L != T) {
         pico_assert (
@@ -87,14 +87,14 @@ void pico_cv_pos_to (
         L_base = Pb;
     }
 
-    _rel_pos(p, out, &L_base);
+    _rel_pos(p, to, &L_base);
 }
 
 void pico_cv_pos_from (
-    const Pico_Rel_Pos* in, const char* from, Pico_Rel_Pos* out
+    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
 ) {
     _pico_guard();
-    Pico_Layer* S = (from == NULL) ? G.layer : _pico_layer_name(from);
+    Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
     Pico_Layer* L = G.layer;
 
     // chain: chain[0] = cur, chain[n-1] = S
@@ -113,7 +113,7 @@ void pico_cv_pos_from (
     chain[n++] = S;
 
     Pico_Abs_Rect S_base = {0, 0, S->scene.dim.w, S->scene.dim.h};
-    SDL_FPoint p = _sdl_pos(in, &S_base);
+    SDL_FPoint p = _sdl_pos(fr, &S_base);
 
     // walk S -> cur, applying inverse of each step
     for (int i = n-2; i >= 0; i--) {
@@ -130,7 +130,7 @@ void pico_cv_pos_from (
     }
 
     Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
-    _rel_pos(p, out, &L_base);
+    _rel_pos(p, to, &L_base);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

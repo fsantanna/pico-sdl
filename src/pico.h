@@ -660,24 +660,24 @@ void pico_cv_rect_rel_rel (
 /// to the named target, composing each layer's scene.src -> scene.dst
 /// transform. Target must be cur or one of cur's ancestors via
 /// `hier.up`, otherwise asserts and aborts.
-/// @param in position in cur's frame (any mode/anchor)
-/// @param out result template (mode and anchor must be set on input);
+/// @param layer target layer name; NULL = G.layer
+/// @param fr position in cur's frame (any mode/anchor)
+/// @param to result template (mode and anchor must be set on input);
 ///        written in target's frame
-/// @param to target layer name; NULL = G.layer
 void pico_cv_pos_to (
-    const Pico_Rel_Pos* in, Pico_Rel_Pos* out, const char* to
+    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
 );
 
 /// @brief Brings a position from a named ancestor layer's frame into
 /// the current layer's frame. Walks the same `hier.up` chain as
 /// `pico_cv_pos_to` in inverse order. Source must be cur or one of
 /// cur's ancestors via `hier.up`, otherwise asserts and aborts.
-/// @param in position in source's frame (any mode/anchor)
-/// @param from source layer name; NULL = G.layer
-/// @param out result template (mode and anchor must be set on input);
+/// @param layer source layer name; NULL = G.layer
+/// @param fr position in source's frame (any mode/anchor)
+/// @param to result template (mode and anchor must be set on input);
 ///        written in cur's frame
 void pico_cv_pos_from (
-    const Pico_Rel_Pos* in, const char* from, Pico_Rel_Pos* out
+    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
 );
 
 /// @brief Composes a child rect onto a parent rect.
