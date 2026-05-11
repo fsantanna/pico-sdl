@@ -1,5 +1,5 @@
-#ifndef PICO_COLORS_H
-#define PICO_COLORS_H
+#ifndef PICO_COLORS_HC
+#define PICO_COLORS_HC
 
 /// @brief RGBA color with per-pixel alpha channel.
 typedef struct {
@@ -31,7 +31,7 @@ extern const Pico_Color PICO_COLOR_OLIVE;
 
 extern const Pico_Color PICO_COLOR_TRANSPARENT;
 
-#endif // PICO_COLORS_H
+#endif // PICO_COLORS_HC
 
 #ifdef PICO_COLORS_C
 

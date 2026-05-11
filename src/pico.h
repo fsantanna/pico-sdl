@@ -10,7 +10,7 @@ extern "C" {
 #include <SDL2/SDL.h>
 #include "keys.h"
 #include "events.h"
-#include "colors.h"
+#include "colors.hc"
 #include "anchors.h"
 
 /// @example init.c

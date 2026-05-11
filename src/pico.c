@@ -11,13 +11,15 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
+#define MAX(x,y) ((x) > (y) ? (x) : (y))
+
 #define REALM_C
 #include "realm.hc"
 #include "tiny_ttf.h"
 #include "pico.h"
 
 #define PICO_COLORS_C
-#include "colors.h"
+#include "colors.hc"
 
 #define PICO_ANCHORS_C
 #include "anchors.h"
@@ -29,8 +31,6 @@
 #include "layers.hc"
 #include "mem.hc"
 #include "video.hc"
-
-#define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 static struct {
     int           init;
