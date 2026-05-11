@@ -77,7 +77,7 @@ static void _layer_attach (const char* up, const char* dn) {
 
 static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
 
-static void _layer_traverse (Pico_Layer* UP) {
+static void _pico_output_draw_layers (Pico_Layer* UP) {
     Pico_Layer* old = G.layer;
     G.layer = UP;
     const char* cur = UP->hier.dn.fst;
@@ -86,7 +86,7 @@ static void _layer_traverse (Pico_Layer* UP) {
         assert(CUR != NULL);
 
         SDL_SetRenderTarget(G.window.ren, CUR->tex);
-        _layer_traverse(CUR);
+        _pico_output_draw_layers(CUR);
 
         SDL_SetRenderTarget(G.window.ren, UP->tex);
         _pico_output_draw_layer(CUR, NULL);
