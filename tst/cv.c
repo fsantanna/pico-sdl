@@ -753,6 +753,152 @@ int main (void) {
         printf("  passed: parent-as-base tests\n");
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // NEW: _to / _from named-layer projection
+    ///////////////////////////////////////////////////////////////////////////
+
+    // Reset cur to world 100x100, no tile
+    {
+        pico_set_scene_tile((Pico_Abs_Dim){0, 0});
+        Pico_Rel_Dim dim = { '!', {100, 100} };
+        pico_set_scene_dim(&dim);
+    }
+
+    printf("\n=== Testing pos_to / pos_from (NULL = mode-conv in cur) ===\n");
+
+    {
+        puts("pos_to(NULL) ! NW -> % NW");
+        Pico_Rel_Pos fr = { '!', {50, 75}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos to = { '%', {}, PICO_ANCHOR_NW };
+        pico_cv_pos_to(NULL, &fr, &to);
+        assert(to.x == 0.5f && to.y == 0.75f);
+    }
+    {
+        puts("pos_from(NULL) % NW -> ! NW");
+        Pico_Rel_Pos fr = { '%', {0.5, 0.5}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos to = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_pos_from(NULL, &fr, &to);
+        assert(to.x == 50 && to.y == 50);
+    }
+
+    printf("=== Testing pos_to/_from world <-> window ===\n");
+
+    // world 100x100, window 500x500, world.dst=full window
+    // (50,50) world -> (250,250) window  (5x scale)
+    {
+        puts("(50,50) world -> window");
+        Pico_Rel_Pos w   = { '!', {50, 50}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos win = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_pos_to("window", &w, &win);
+        printf("  -> (%d,%d)\n", (int)win.x, (int)win.y);
+        assert((int)win.x == 250 && (int)win.y == 250);
+    }
+    {
+        puts("(250,250) window -> world");
+        Pico_Rel_Pos win = { '!', {250, 250}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos w   = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_pos_from("window", &win, &w);
+        printf("  -> (%d,%d)\n", (int)w.x, (int)w.y);
+        assert((int)w.x == 50 && (int)w.y == 50);
+    }
+    {
+        puts("round-trip world <-> window");
+        Pico_Rel_Pos orig = { '!', {37, 89}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos win  = { '!', {}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos back = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_pos_to("window", &orig, &win);
+        pico_cv_pos_from("window", &win, &back);
+        assert((int)back.x == 37 && (int)back.y == 89);
+    }
+
+    printf("=== Testing sub-layer 2-hop walk ===\n");
+
+    // 50x50 sub attached to world, default full-cover
+    pico_layer_empty("world", "sub_cv", (Pico_Abs_Dim){50, 50}, NULL);
+    pico_set_layer("sub_cv");
+
+    // (10,20) sub -> (20,40) world (2x scale)
+    {
+        puts("(10,20) sub -> world");
+        Pico_Rel_Pos s = { '!', {10, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos w = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_pos_to("world", &s, &w);
+        printf("  -> (%d,%d)\n", (int)w.x, (int)w.y);
+        assert((int)w.x == 20 && (int)w.y == 40);
+    }
+    {
+        puts("(20,40) world -> sub");
+        Pico_Rel_Pos w = { '!', {20, 40}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos s = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_pos_from("world", &w, &s);
+        printf("  -> (%d,%d)\n", (int)s.x, (int)s.y);
+        assert((int)s.x == 10 && (int)s.y == 20);
+    }
+
+    // (10,20) sub -> (100,200) window  (sub->world 2x, world->window 5x)
+    {
+        puts("(10,20) sub -> window (2 hops)");
+        Pico_Rel_Pos s   = { '!', {10, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos win = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_pos_to("window", &s, &win);
+        printf("  -> (%d,%d)\n", (int)win.x, (int)win.y);
+        assert((int)win.x == 100 && (int)win.y == 200);
+    }
+    {
+        puts("(100,200) window -> sub (2 hops)");
+        Pico_Rel_Pos win = { '!', {100, 200}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos s   = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_pos_from("window", &win, &s);
+        printf("  -> (%d,%d)\n", (int)s.x, (int)s.y);
+        assert((int)s.x == 10 && (int)s.y == 20);
+    }
+
+    printf("=== Testing rect_to / rect_from ===\n");
+
+    // rect (10,20,5,10) sub -> (20,40,10,20) world
+    {
+        puts("rect (10,20,5,10) sub -> world");
+        Pico_Rel_Rect s = { '!', {10, 20, 5, 10}, PICO_ANCHOR_NW };
+        Pico_Rel_Rect w = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_rect_to("world", &s, &w);
+        printf("  -> (%d,%d,%d,%d)\n",
+               (int)w.x, (int)w.y, (int)w.w, (int)w.h);
+        assert((int)w.x==20 && (int)w.y==40);
+        assert((int)w.w==10 && (int)w.h==20);
+    }
+    {
+        puts("rect (20,40,10,20) world -> sub");
+        Pico_Rel_Rect w = { '!', {20, 40, 10, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Rect s = { '!', {}, PICO_ANCHOR_NW };
+        pico_cv_rect_from("world", &w, &s);
+        printf("  -> (%d,%d,%d,%d)\n",
+               (int)s.x, (int)s.y, (int)s.w, (int)s.h);
+        assert((int)s.x==10 && (int)s.y==20);
+        assert((int)s.w==5  && (int)s.h==10);
+    }
+
+    printf("=== Testing dim_to / dim_from ===\n");
+
+    // dim (5,10) sub -> (10,20) world (2x)
+    {
+        puts("dim (5,10) sub -> world");
+        Pico_Rel_Dim s = { '!', {5, 10} };
+        Pico_Rel_Dim w = { '!', {} };
+        pico_cv_dim_to("world", &s, &w);
+        printf("  -> (%d,%d)\n", (int)w.w, (int)w.h);
+        assert((int)w.w==10 && (int)w.h==20);
+    }
+    {
+        puts("dim (10,20) world -> sub");
+        Pico_Rel_Dim w = { '!', {10, 20} };
+        Pico_Rel_Dim s = { '!', {} };
+        pico_cv_dim_from("world", &w, &s);
+        printf("  -> (%d,%d)\n", (int)s.w, (int)s.h);
+        assert((int)s.w==5 && (int)s.h==10);
+    }
+
+    pico_set_layer("world");
+
     printf("\n=== ALL TESTS PASSED ===\n");
 
     pico_init(0);
