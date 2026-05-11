@@ -97,17 +97,6 @@ static TTF_Font* _font_get (const char* path, int h) {
 
 #include "aux.hc"
 
-SDL_Point pico_cv_pos_rel_win (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base) {
-    SDL_FPoint fp = _sdl_pos(pos, base);
-    SDL_FPoint win = _pos_wld_to_win(fp);
-    return (SDL_Point) { floorf(win.x + 0.5f), floorf(win.y + 0.5f) };
-}
-
-void pico_cv_pos_win_rel (SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base) {
-    SDL_FPoint wld = _pos_win_to_wld((SDL_FPoint){phy.x, phy.y});
-    _rel_pos(wld, to, base);
-}
-
 Pico_Abs_Dim pico_cv_dim_rel_abs (Pico_Rel_Dim* dim, Pico_Abs_Rect* base) {
     SDL_FDim df = _sdl_dim(dim, base, NULL);
     return _abs_dim(&df);
@@ -500,8 +489,7 @@ const char* pico_get_layer (void) {
 Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
     assert(rect == NULL);
     _pico_guard();
-    assert((mode=='!' || mode=='%' || mode=='#' || mode=='w'));
-    assert((mode!='w' || rect==NULL));
+    assert((mode=='!' || mode=='%' || mode=='#'));
 
     SDL_Point phy;
     Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
@@ -1115,9 +1103,9 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_s: {
-                    const char* prev = pico_set_layer("window");
+                    const char* old = pico_set_layer("window");
                     pico_output_screenshot(NULL, NULL);
-                    pico_set_layer(prev);
+                    pico_set_layer(old);
                     return 1;
                 }
             }
@@ -1175,9 +1163,13 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
 
         case PICO_EVENT_MOUSE_MOTION:
         case PICO_EVENT_MOUSE_BUTTON_DN:
-        case PICO_EVENT_MOUSE_BUTTON_UP:
-            pico->mouse = pico_get_mouse('w', NULL);
+        case PICO_EVENT_MOUSE_BUTTON_UP: {
+            // report mouse pos in window pixels regardless of current layer
+            const char* old = pico_set_layer("window");
+            pico->mouse = pico_get_mouse('!', NULL);
+            pico_set_layer(old);
             break;
+        }
 
         default:
             printf(">>> %d\n", pico->type);

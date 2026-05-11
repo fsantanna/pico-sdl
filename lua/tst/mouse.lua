@@ -1,5 +1,12 @@
 pico.init(true)
 
+-- helper: window-pixel mouse set (NW anchor)
+local function mouse_w (x, y)
+    local old = pico.set.layer("window")
+    pico.set.mouse({'!', x=x, y=y, anchor='NW'})
+    pico.set.layer(old)
+end
+
 print("phy (500,500) -> log (50,50)")
 do
     pico.set.window { title="Mouse" }
@@ -10,21 +17,21 @@ do
 
     -- phy (0,0) -> log (0,0)
     do
-        pico.set.mouse({'w', x=0, y=3, anchor='NW'})
+        mouse_w(0, 3)
         local pos = pico.get.mouse('!')
         assert(pos.x==0 and pos.y>0.29 and pos.y<0.31)
     end
 
     -- phy (250,250) -> log (25,25)
     do
-        pico.set.mouse({'w', x=250, y=251, anchor='NW'})
+        mouse_w(250, 251)
         local pos = pico.get.mouse('!')
         assert(pos.x==25 and pos.y>25.09 and pos.y<25.11)
     end
 
     -- phy (490,490) -> log (49,49)
     do
-        pico.set.mouse({'w', x=499, y=490, anchor='NW'})
+        mouse_w(499, 490)
         local pos = pico.get.mouse('!')
         assert(pos.x>49.89 and pos.x<49.91 and pos.y==49)
     end
@@ -38,21 +45,21 @@ do
 
     -- phy (250, 250) -> log (25,25)
     do
-        pico.set.mouse({'w', x=250, y=253, anchor='NW'})
+        mouse_w(250, 253)
         local pos = pico.get.mouse('!')
         assert(pos.x==25 and pos.y>25.59 and pos.y<25.61)
     end
 
     -- phy (0,0) -> log (-25,-25)
     do
-        pico.set.mouse({'w', x=0, y=0, anchor='NW'})
+        mouse_w(0, 0)
         local pos = pico.get.mouse('!')
         assert(pos.x==-25 and pos.y==-25)
     end
 
     -- phy (500,500) -> log (75,75)
     do
-        pico.set.mouse({'w', x=495, y=499, anchor='NW'})
+        mouse_w(495, 499)
         local pos = pico.get.mouse('!')
         assert(pos.x==74 and pos.y>74.79 and pos.y<74.81)
     end
@@ -66,21 +73,21 @@ do
 
     -- phy (0,0) -> log (20,20)
     do
-        pico.set.mouse({'w', x=1, y=2, anchor='NW'})
+        mouse_w(1, 2)
         local pos = pico.get.mouse('!')
         assert(pos.x>20.01 and pos.x<20.03 and pos.y>20.03 and pos.y<20.05)
     end
 
     -- phy center (250,250) -> log (25,25)
     do
-        pico.set.mouse({'w', x=254, y=251, anchor='NW'})
+        mouse_w(254, 251)
         local pos = pico.get.mouse('!')
         assert(pos.x>25.07 and pos.x<25.09 and pos.y>25.01 and pos.y<25.03)
     end
 
     -- phy (500,500) -> log (30,30)
     do
-        pico.set.mouse({'w', x=497, y=498, anchor='NW'})
+        mouse_w(497, 498)
         local pos = pico.get.mouse('!')
         assert(pos.x>29.93 and pos.x<29.95 and pos.y>29.95 and pos.y<29.97)
     end
@@ -94,14 +101,14 @@ do
 
     -- phy (0,0) -> log (25,25)
     do
-        pico.set.mouse({'w', x=2, y=1, anchor='NW'})
+        mouse_w(2, 1)
         local pos = pico.get.mouse('!')
         assert(pos.x>25.09 and pos.x<25.11 and pos.y>25.04 and pos.y<25.06)
     end
 
     -- phy (250,250) -> log (37,37)
     do
-        pico.set.mouse({'w', x=253, y=250, anchor='NW'})
+        mouse_w(253, 250)
         local pos = pico.get.mouse('!')
         assert(pos.x>37.64 and pos.x<37.66 and pos.y==37.5)
     end
@@ -113,14 +120,14 @@ do
 
     -- phy (250,250) -> pct (0.5,0.5)
     do
-        pico.set.mouse({'w', x=250, y=250, anchor='NW'})
+        mouse_w(250, 250)
         local pos = pico.get.mouse('%')
         assert(pos.x==0.5 and pos.y==0.5)
     end
 
     -- phy (0,0) -> pct (0,0)
     do
-        pico.set.mouse({'w', x=0, y=0, anchor='NW'})
+        mouse_w(0, 0)
         local pos = pico.get.mouse('%')
         assert(pos.x==0.0 and pos.y==0.0)
     end
@@ -132,7 +139,7 @@ do
 
     -- phy (0,0) -> raw (20,20) -> pct (0.4,0.4)
     do
-        pico.set.mouse({'w', x=0, y=0, anchor='NW'})
+        mouse_w(0, 0)
         local pos = pico.get.mouse('%')
         assert(pos.x>0.39 and pos.x<0.41)
         assert(pos.y>0.39 and pos.y<0.41)
@@ -140,7 +147,7 @@ do
 
     -- phy (250,250) -> raw (25,25) -> pct (0.5,0.5)
     do
-        pico.set.mouse({'w', x=250, y=250, anchor='NW'})
+        mouse_w(250, 250)
         local pos = pico.get.mouse('%')
         assert(pos.x>0.49 and pos.x<0.51)
         assert(pos.y>0.49 and pos.y<0.51)
@@ -149,8 +156,10 @@ end
 
 print("window mode (raw phy)")
 do
-    pico.set.mouse({'w', x=123, y=456, anchor='NW'})
-    local pos = pico.get.mouse('w')
+    mouse_w(123, 456)
+    local old = pico.set.layer("window")
+    local pos = pico.get.mouse('!')
+    pico.set.layer(old)
     assert(pos.x==123 and pos.y==456)
 end
 

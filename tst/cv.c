@@ -432,26 +432,6 @@ int main (void) {
         pico_set_scene_dim(&dim);
     }
 
-    // WIN - 'w' mode in rel_abs: window -> logical (window 500x500, view 100x100, scale 5x)
-    {
-        puts("win - pos - w mode -> logical");
-        Pico_Rel_Pos pos = { 'w', {250, 250}, PICO_ANCHOR_NW };
-        Pico_Abs_Pos abs = pico_cv_pos_rel_abs(&pos, NULL);
-        assert(abs.x==50 && abs.y==50);
-    }
-    {
-        puts("win - rect - w mode -> logical");
-        Pico_Rel_Rect rect = { 'w', {100, 50, 200, 100}, PICO_ANCHOR_NW };
-        Pico_Abs_Rect abs = pico_cv_rect_rel_abs(&rect, NULL);
-        assert(abs.x==20 && abs.y==10 && abs.w==40 && abs.h==20);
-    }
-    {
-        puts("win - dim - w mode -> logical");
-        Pico_Rel_Dim dim = { 'w', {250, 500} };
-        Pico_Abs_Dim abs = pico_cv_dim_rel_abs(&dim, NULL);
-        assert(dim_eq(abs, (Pico_Abs_Dim){50, 100}));
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // INDIVIDUAL TESTS: abs_rel, rel_rel, dim_abs_rel, dim_rel_rel
     ///////////////////////////////////////////////////////////////////////////
@@ -614,105 +594,6 @@ int main (void) {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // INDIVIDUAL TESTS: win conversions (5x scale: 100x100 -> 500x500)
-    ///////////////////////////////////////////////////////////////////////////
-
-    // WIN - rel->win - '!' NW: logical 50 * 5 = 250
-    {
-        puts("win - rel->win - ! NW");
-        Pico_Rel_Pos pos = { '!', {50, 50}, PICO_ANCHOR_NW };
-        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
-        assert(phy.x == 250 && phy.y == 250);
-    }
-
-    // WIN - rel->win - '%' NW: 50% of 100 = 50 logical -> 250 phy
-    {
-        puts("win - rel->win - % NW");
-        Pico_Rel_Pos pos = { '%', {0.5, 0.5}, PICO_ANCHOR_NW };
-        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
-        assert(phy.x == 250 && phy.y == 250);
-    }
-
-    // WIN - rel->win - 'w' NW: pass-through
-    {
-        puts("win - rel->win - w NW");
-        Pico_Rel_Pos pos = { 'w', {200, 300}, PICO_ANCHOR_NW };
-        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
-        assert(phy.x == 200 && phy.y == 300);
-    }
-
-    // WIN - win->rel - '!' NW: 250 phy / 5 = 50 logical
-    {
-        puts("win - win->rel - ! NW");
-        SDL_Point phy = { 250, 250 };
-        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_win_rel(phy, &to, NULL);
-        assert(to.x == 50 && to.y == 50);
-    }
-
-    // WIN - win->rel - '%' NW: 250 phy / 5 = 50 logical, 50/100 = 0.5
-    {
-        puts("win - win->rel - % NW");
-        SDL_Point phy = { 250, 250 };
-        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_win_rel(phy, &to, NULL);
-        assert(to.x == 0.5f && to.y == 0.5f);
-    }
-
-    // WIN - win->rel - 'w' NW: pass-through
-    {
-        puts("win - win->rel - w NW");
-        SDL_Point phy = { 200, 300 };
-        Pico_Rel_Pos to = { 'w', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_win_rel(phy, &to, NULL);
-        assert(to.x == 200 && to.y == 300);
-    }
-
-    // WIN - 'w' round-trip with non-clean ratios
-    // 418/500 and 392/500 are not exactly representable in float, so the
-    // win->wld->win round trip drifts by a few ulps. Use pos_eq tolerance.
-    {
-        puts("win - 'w' round-trip (drifty ratios)");
-        Pico_Rel_Pos in = { 'w', {418, 392}, PICO_ANCHOR_NW };
-        SDL_Point phy = pico_cv_pos_rel_win(&in, NULL);
-        assert(pos_eq((Pico_Abs_Pos){phy.x, phy.y}, (Pico_Abs_Pos){418, 392}));
-        Pico_Rel_Pos to = { 'w', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_win_rel(phy, &to, NULL);
-        assert(pos_eq((Pico_Abs_Pos){(int)to.x, (int)to.y}, (Pico_Abs_Pos){418, 392}));
-    }
-
-    // WIN - rel->win - '!' NW with up: parent (25,25,50,50), pos (25,25) -> logical (50,50) -> phy (250,250)
-    {
-        puts("win - rel->win - ! NW - up");
-        Pico_Rel_Rect up = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C };
-        Pico_Rel_Pos pos = pico_in_pos(&up, &(Pico_Rel_Pos){ '!', {25, 25}, PICO_ANCHOR_NW });
-        SDL_Point phy = pico_cv_pos_rel_win(&pos, NULL);
-        assert(phy.x == 250 && phy.y == 250);
-    }
-
-    // WIN - win->rel - '!' NW with up: phy (250,250) -> logical (50,50), parent (25,25,50,50) -> rel (25,25)
-    {
-        puts("win - win->rel - ! NW - up");
-        Pico_Rel_Rect up = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C };
-        Pico_Abs_Rect up_abs = pico_cv_rect_rel_abs(&up, NULL);
-        SDL_Point phy = { 250, 250 };
-        Pico_Rel_Pos to = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_win_rel(phy, &to, &up_abs);
-        assert(to.x == 25 && to.y == 25);
-    }
-
-    // WIN - win->rel - '%' NW with up: phy (250,250) -> logical (50,50), parent (25,25,50,50) -> rel (0.5,0.5)
-    {
-        puts("win - win->rel - % NW - up");
-        Pico_Rel_Rect up = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C };
-        Pico_Abs_Rect up_abs = pico_cv_rect_rel_abs(&up, NULL);
-        SDL_Point phy = { 250, 250 };
-        Pico_Rel_Pos to = { '%', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_win_rel(phy, &to, &up_abs);
-        assert(to.x == 0.5f && to.y == 0.5f);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
     // BIDIR TESTS: abs_rel and rel_rel (canonical form invariant)
     ///////////////////////////////////////////////////////////////////////////
 
@@ -729,7 +610,7 @@ int main (void) {
     };
     int n_anchors = sizeof(anchors) / sizeof(anchors[0]);
 
-    char modes[] = { '!', '%', 'w' };
+    char modes[] = { '!', '%' };
     int n_modes = sizeof(modes) / sizeof(modes[0]);
 
     Pico_Abs_Rect base = { 0, 0, 100, 100 };

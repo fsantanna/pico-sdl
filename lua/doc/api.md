@@ -24,7 +24,7 @@ In alphabetical order:
         '!', x: integer, y: integer,
         left: boolean, right: boolean, middle: boolean }`
 - **Flip**: `'none'` | `'horizontal'` | `'vertical'` | `'both'`
-- **Mouse**: `{ ['!'|'%'|'#'|'w'], x: number, y: number, left: boolean, right: boolean, middle: boolean }`
+- **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, left: boolean, right: boolean, middle: boolean }`
 - **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
 - **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
 - **Rotation**: `{ angle: integer, anchor: Anchor }`
@@ -65,7 +65,7 @@ In alphabetical order:
         - Returns `nil` for main layer
     - **pico.get.mouse**: Gets mouse position and button state.
         - `pico.get.mouse (mode: string [, rect: Rect]) -> Mouse`
-        - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles, `'w'` window
+        - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
         - `rect`: reference frame (omit for current layer)
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
@@ -188,7 +188,7 @@ In alphabetical order:
         - `nil` switches to main layer
     - **pico.set.mouse**: Sets mouse cursor position.
         - `pico.set.mouse (pos: Pos)`
-        - `pos.mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles, `'w'` window
+        - `pos.mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
         - `pos.up`: reference frame (omit for current layer)
 - **pico.vs**
     - **pico.vs.pos_rect**: Collision between position and rectangle.

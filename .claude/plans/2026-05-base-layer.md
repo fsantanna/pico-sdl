@@ -77,12 +77,17 @@ the world/root becomes a predefined layer (`"world"`).
     - Expert: world.clear=1 (regen); manual present; window persistent (per-frame clear gated on `!G.expert.on`).
     - `pico_set_expert(on, fps)` flips `G.world.scene.clear`.
     - Window-draw restriction NOT enforced (too messy at any single placement); convention only.
-- [ ] Delete `'w'` mode branches in `aux.hc` (5 sites); after expert mode lands
-- [ ] Delete `_*_win_to_wld` / `_*_wld_to_win` (6 helpers)
-- [ ] Delete `pico_cv_pos_rel_win` / `pico_cv_pos_win_rel`
-- [ ] Migrate mouse / `'w'` test sites
-- [ ] Re-enable `tst/window.c` + `lua/tst/window.lua` (currently disabled) once expert mode lands; window-01 passes via expert path.
-- [ ] Update `valgrind.supp:sdl-init` line `N` after `pico_init` line shifts
+- [x] **'w' mode cleanup** (2026-05-10):
+    - Migrated `tst/mouse.c`, `tst/mouse-rect-click.c`, `tst/tiles.c` + Lua mirrors to use `pico_set_layer("window")` + `'!'` mode for window-pixel mouse ops (via local `mouse_w()` / `draw_pixel_w()` helpers).
+    - Deleted dedicated `'w'`-mode tests (`tst/mouse-w-click.c` + `tst/todo/{w-mouse,mouse-rect,mouse-rect-click}.c` + `lua/tst/todo/{mouse-layer,mouse-rect-click}.lua`).
+    - Deleted `'w'`-block tests in `tst/cv.c` and `lua/tst/cv.lua`.
+    - Refactored `pico_set_mouse` / `pico_get_mouse` to inline the conversion (no longer use `pico_cv_pos_*_win`).
+    - Deleted public `pico_cv_pos_rel_win` / `pico_cv_pos_win_rel` (pico.h + pico.c).
+    - Deleted `'w'` branches in `aux.hc` (`_sdl_dim`, `_sdl_pos`, `_sdl_rect`, `_rel_dim`, `_rel_pos`, `_rel_rect`).
+    - Deleted internal helpers `_dim_*_to_*` / `_pos_*_to_*` / `_rect_*_to_*` (6 helpers).
+    - Updated `sdl_to_pico` event handler: mouse pos now reported in window pixels via `set_layer("window")` + `'!'`.
+- [x] Re-enable `tst/window.c` + `lua/tst/window.lua` — both wrap with `pico_set_expert(1, 0)` + explicit `pico_output_present()`; baseline shows gray bg + red NW + blue SE.
+- [x] Update `valgrind.supp:sdl-init` line `N` → 272 (current `SDL_Init` line in `pico_init`).
 
 ### Open questions
 

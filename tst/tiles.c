@@ -1,6 +1,13 @@
 #include "pico.h"
 #include "../check.h"
 
+// helper: window-pixel mouse set (NW anchor)
+static void mouse_w (int x, int y) {
+    const char* old = pico_set_layer("window");
+    pico_set_mouse(&(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
+    pico_set_layer(old);
+}
+
 int main (void) {
     pico_init(1);
 
@@ -60,7 +67,7 @@ int main (void) {
     // phy (0,0) -> log (0,0) -> tile (1,1)
     {
         puts("mouse tile (1,1)");
-        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {0, 0}, PICO_ANCHOR_NW });
+        mouse_w(0, 0);
         Pico_Mouse pos = pico_get_mouse('#', NULL);
         assert(pos.x==1 && pos.y==1);
     }
@@ -69,7 +76,7 @@ int main (void) {
     // 160 phy / 16 log = 10x scale, so phy 40 = log 4
     {
         puts("mouse tile (2,2)");
-        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {40, 40}, PICO_ANCHOR_NW });
+        mouse_w(40, 40);
         Pico_Mouse pos = pico_get_mouse('#', NULL);
         assert(pos.x==2 && pos.y==2);
     }
@@ -77,7 +84,7 @@ int main (void) {
     // phy (80,120) -> log (8,12) -> tile (3,4)
     {
         puts("mouse tile (3,4)");
-        pico_set_mouse(&(Pico_Rel_Pos){ 'w', {80, 120}, PICO_ANCHOR_NW });
+        mouse_w(80, 120);
         Pico_Mouse pos = pico_get_mouse('#', NULL);
         assert(pos.x==3 && pos.y==4);
     }

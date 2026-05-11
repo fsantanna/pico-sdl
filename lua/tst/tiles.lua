@@ -2,6 +2,13 @@ require 'pico.check'
 
 pico.init(true)
 
+-- helper: window-pixel mouse set (NW anchor)
+local function mouse_w (x, y)
+    local prev = pico.set.layer("window")
+    pico.set.mouse({'!', x=x, y=y, anchor='NW'})
+    pico.set.layer(prev)
+end
+
 -- 4x4 grid of 4x4 pixel tiles = 16x16 logical world
 -- 160x160 physical window
 local phy  = {'!', w=160, h=160}
@@ -62,7 +69,7 @@ end
 -- phy (0,0) -> log (0,0) -> tile (1,1)
 do
     print("mouse tile (1,1)")
-    pico.set.mouse({'w', x=0, y=0, anchor='NW'})
+    mouse_w(0, 0)
     local pos = pico.get.mouse('#')
     assert(pos.x==1 and pos.y==1)
 end
@@ -70,7 +77,7 @@ end
 -- phy (40,40) -> log (4,4) -> tile (2,2)
 do
     print("mouse tile (2,2)")
-    pico.set.mouse({'w', x=40, y=40, anchor='NW'})
+    mouse_w(40, 40)
     local pos = pico.get.mouse('#')
     assert(pos.x==2 and pos.y==2)
 end
@@ -78,7 +85,7 @@ end
 -- phy (80,120) -> log (8,12) -> tile (3,4)
 do
     print("mouse tile (3,4)")
-    pico.set.mouse({'w', x=80, y=120, anchor='NW'})
+    mouse_w(80, 120)
     local pos = pico.get.mouse('#')
     assert(pos.x==3 and pos.y==4)
 end

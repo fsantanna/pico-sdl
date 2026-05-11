@@ -52,7 +52,6 @@ typedef struct {
 } Pico_Abs_Dim;
 
 // MODES:
-// 'w': win (physical window pixels)
 // '!': raw (pixels)
 // '%': pct (0.0-1.0)
 // '#': tile (1-indexed grid coordinates)
@@ -445,7 +444,7 @@ void pico_layer_video_mode (int mode,
 Pico_Keyboard pico_get_keyboard (void);
 
 /// @brief Gets the mouse state.
-/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles, 'w' window)
+/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles)
 /// @param rect optional target rect for inverse transform
 /// @return mouse state with position and button flags
 /// @sa pico_set_mouse
@@ -531,7 +530,7 @@ const char* pico_set_layer (const char* key);
 /// Symmetric to @ref pico_get_mouse: a Pos returned by `pico_get_mouse`
 /// (any mode) round-trips through `pico_set_mouse`.
 /// @param pos target position; `pos->mode` is one of '!' pixels,
-///        '%' percentage, '#' tiles, 'w' window.
+///        '%' percentage, '#' tiles.
 /// @sa pico_get_mouse
 void pico_set_mouse (Pico_Rel_Pos* pos);
 
@@ -607,18 +606,6 @@ void pico_cv_dim_rel_rel (
 /// @return absolute position in logical pixels
 /// @sa pico_cv_rect_rel_abs
 Pico_Abs_Pos pico_cv_pos_rel_abs (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
-
-/// @brief Converts a relative position to window (physical) coordinates.
-/// @param pos relative position to convert
-/// @param base reference rectangle (NULL uses world dimensions)
-/// @return physical pixel point in window coordinates
-SDL_Point pico_cv_pos_rel_win (const Pico_Rel_Pos* pos, Pico_Abs_Rect* base);
-
-/// @brief Converts window (physical) coordinates to a relative position.
-/// @param phy physical pixel point in window coordinates
-/// @param to relative position template (mode, anchor, up must be set)
-/// @param base reference rectangle (NULL uses world dimensions)
-void pico_cv_pos_win_rel (SDL_Point phy, Pico_Rel_Pos* to, Pico_Abs_Rect* base);
 
 /// @brief Converts a relative rectangle to absolute coordinates.
 /// @param rect relative rectangle to convert
