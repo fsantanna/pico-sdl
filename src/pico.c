@@ -181,6 +181,83 @@ void pico_cv_pos_win_cur (SDL_Point phy, Pico_Rel_Pos* out) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// CV: named-layer projection (cv_pos_to / cv_pos_from)
+///////////////////////////////////////////////////////////////////////////////
+
+void pico_cv_pos_to (
+    const Pico_Rel_Pos* in, Pico_Rel_Pos* out, const char* to
+) {
+    _pico_guard();
+    Pico_Layer* T = (to == NULL) ? G.layer : _pico_layer_name(to);
+    Pico_Layer* L = G.layer;
+
+    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
+    SDL_FPoint p = _sdl_pos(in, &L_base);
+
+    while (L != T) {
+        pico_assert (
+            L->hier.up != NULL
+            && "cv: target must be cur or one of cur's ancestors"
+        );
+        Pico_Layer* P = _pico_layer_name(L->hier.up);
+        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+        SDL_FRect src = _sdl_rect(&L->scene.src, &L_base, NULL);
+        SDL_FRect dst = _sdl_rect(&L->scene.dst, &Pb, NULL);
+        float rx = (p.x - src.x) / src.w;
+        float ry = (p.y - src.y) / src.h;
+        p.x = dst.x + rx * dst.w;
+        p.y = dst.y + ry * dst.h;
+        L = P;
+        L_base = Pb;
+    }
+
+    _rel_pos(p, out, &L_base);
+}
+
+void pico_cv_pos_from (
+    const Pico_Rel_Pos* in, const char* from, Pico_Rel_Pos* out
+) {
+    _pico_guard();
+    Pico_Layer* S = (from == NULL) ? G.layer : _pico_layer_name(from);
+    Pico_Layer* L = G.layer;
+
+    // chain: chain[0] = cur, chain[n-1] = S
+    Pico_Layer* chain[64];
+    int n = 0;
+    Pico_Layer* M = L;
+    while (M != S) {
+        assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
+        chain[n++] = M;
+        pico_assert (
+            M->hier.up != NULL
+            && "cv: source must be cur or one of cur's ancestors"
+        );
+        M = _pico_layer_name(M->hier.up);
+    }
+    chain[n++] = S;
+
+    Pico_Abs_Rect S_base = {0, 0, S->scene.dim.w, S->scene.dim.h};
+    SDL_FPoint p = _sdl_pos(in, &S_base);
+
+    // walk S -> cur, applying inverse of each step
+    for (int i = n-2; i >= 0; i--) {
+        Pico_Layer* C = chain[i];      // child
+        Pico_Layer* P = chain[i+1];    // parent
+        Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
+        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+        SDL_FRect dst = _sdl_rect(&C->scene.dst, &Pb, NULL);
+        SDL_FRect src = _sdl_rect(&C->scene.src, &Cb, NULL);
+        float rx = (p.x - dst.x) / dst.w;
+        float ry = (p.y - dst.y) / dst.h;
+        p.x = src.x + rx * src.w;
+        p.y = src.y + ry * src.h;
+    }
+
+    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
+    _rel_pos(p, out, &L_base);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // IN: compose child onto parent, return flat rel
 ///////////////////////////////////////////////////////////////////////////////
 

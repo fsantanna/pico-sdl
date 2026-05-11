@@ -669,6 +669,31 @@ SDL_Point pico_cv_pos_cur_win (const Pico_Rel_Pos* pos);
 /// @param out result template (mode and anchor must be set on input)
 void pico_cv_pos_win_cur (SDL_Point phy, Pico_Rel_Pos* out);
 
+/// @brief Projects a position from the current layer's logical frame
+/// into a named ancestor layer's frame. Walks `hier.up` from cur up
+/// to the named target, composing each layer's scene.src -> scene.dst
+/// transform. Target must be cur or one of cur's ancestors via
+/// `hier.up`, otherwise asserts and aborts.
+/// @param in position in cur's frame (any mode/anchor)
+/// @param out result template (mode and anchor must be set on input);
+///        written in target's frame
+/// @param to target layer name; NULL = G.layer
+void pico_cv_pos_to (
+    const Pico_Rel_Pos* in, Pico_Rel_Pos* out, const char* to
+);
+
+/// @brief Brings a position from a named ancestor layer's frame into
+/// the current layer's frame. Walks the same `hier.up` chain as
+/// `pico_cv_pos_to` in inverse order. Source must be cur or one of
+/// cur's ancestors via `hier.up`, otherwise asserts and aborts.
+/// @param in position in source's frame (any mode/anchor)
+/// @param from source layer name; NULL = G.layer
+/// @param out result template (mode and anchor must be set on input);
+///        written in cur's frame
+void pico_cv_pos_from (
+    const Pico_Rel_Pos* in, const char* from, Pico_Rel_Pos* out
+);
+
 /// @brief Composes a child rect onto a parent rect.
 /// Returns a flat rect (no chain) that resolves to the same absolute
 /// coords as `in` interpreted relative to `out`. Mode and anchor of
