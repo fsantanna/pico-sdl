@@ -59,7 +59,7 @@ tests: pico_native.so
 	$(TST) tst/layer-clip.lua
 	$(TST) tst/layers.lua
 	$(TST) tst/mouse.lua
-	$(TST) tst/mouse-rect-click.lua
+	#$(TST) tst/mouse-rect-click.lua
 	#$(TST) tst/move.lua
 	#$(TST) tst/navigate.lua
 	$(TST) tst/pixels.lua

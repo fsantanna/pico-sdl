@@ -4,6 +4,7 @@
 
 int main (void) {
     pico_init(1);
+    pico_set_expert(1, 0);   // expert: window-direct draws persist
 
     Pico_Rel_Rect btn = { '%', {0.5, 0.5, 0.15, 0.30}, PICO_ANCHOR_C };
 
@@ -22,23 +23,30 @@ int main (void) {
     pico_output_clear();
     pico_output_draw_layer("A", &r);
 
-    /* btn was drawn in layer A's frame; for collision against a mouse
-       sampled in scene coords, re-express btn within r (the layer's
-       composite rect on screen). */
+    /* btn was drawn in layer A's frame; re-express btn within r (the
+       layer's composite rect on screen) for collision against a mouse
+       sampled in scene coords. */
     Pico_Rel_Rect btn_in_r = pico_in_rect(&r, &btn);
 
-    /* Win pixel (400,382) is inside btn in r-% (continuous), but 'w' draw
-       snaps through the screen log grid (5 win px / log px) to a cell that
-       lies above btn's top edge (381.25 win). Collision and rendering
-       disagree even with btn re-expressed inside r. */
-    pico_set_mouse(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW });
+    /* Set cursor at window pixel (400, 382); collision in pct (world's
+       coords via mouse->pct) confirms inside btn; mark the position
+       with a green pixel drawn directly on the window. */
+    {
+        const char* prev = pico_set_layer("window");
+        pico_set_mouse(&(Pico_Rel_Pos){ '!', {400, 382}, PICO_ANCHOR_NW });
+        pico_set_layer(prev);
+    }
     Pico_Mouse pct = pico_get_mouse('%', NULL);
     Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW };
-
     assert(pico_vs_pos_rect(&pos, &btn_in_r));
 
     pico_set_pencil_color(PICO_COLOR_GREEN);
-    pico_output_draw_pixel(&(Pico_Rel_Pos){ 'w', {400, 382}, PICO_ANCHOR_NW });
+    {
+        const char* prev = pico_set_layer("window");
+        pico_output_draw_pixel(&(Pico_Rel_Pos){ '!', {400, 382}, PICO_ANCHOR_NW });
+        pico_set_layer(prev);
+    }
+    pico_output_present();
     _pico_check("mouse-w-click-01");
 
     pico_init(0);

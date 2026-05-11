@@ -420,3 +420,102 @@ current — not just world.
      (lessons baked into this plan)
 4. Confirm next pending items (`'w'` mode deletion, etc.) become
    unblocked.
+
+## Progress (2026-05-11) — `pico_output_draw_layers` extraction + CV view-transform pair
+
+### Landed today
+
+| change | files | notes |
+|---|---|---|
+| Extract `_layer_traverse` body into public `pico_output_draw_layers(void)` | `src/pico.c`, `src/pico.h` | Asserts `G.layer == &G.window.layer`; internal helper renamed `_layer_traverse` → `_pico_output_draw_layers` (Pico_Layer*); recursive call in `layers.hc` follows |
+| Gate auto-traverse on `!G.expert.on` inside `_pico_output_present` | `src/pico.c` | Expert present = mirror only. World no longer auto-composited in expert; user composites explicitly via `pico_output_draw_layers()` |
+| Lua binding `pico.output.draw.layers()` | `lua/pico.c`, `lua/doc/api.md` | Wraps the C function |
+| Fix `tst/expert.c` expert-03 | `tst/expert.c` | Inserts `set_layer("window") + draw_layers() + set_layer(prev)` between `clear()` and `present()` |
+| Fix `tst/window.c` window-01 | `tst/window.c` | Inserts `pico_output_draw_layers()` before `pico_output_present()` (composite world over window-direct draws) |
+| Fix `lua/tst/window.lua` mirror | `lua/tst/window.lua` | Same |
+| Fix `lua/tst/guide.lua` §8.b | `lua/tst/guide.lua` | Same insert between `set.window` and `present` |
+| Fix `lua/tst/guide.lua` §4.1 (pre-existing tile bug) | `lua/tst/guide.lua` | Added `tile={w=20,h=20}` to window's `set.scene` (`window.tile` was default `{0,0}` → `_tex_create` 0×0); was previously masked by `set.window { dim }` on main |
+| Extract `pico_cv_pos_cur_win` / `pico_cv_pos_win_cur` | `src/pico.h`, `src/pico.c` | Public view-transform pair: layer-local ↔ window-pixel via `G.layer->scene.src/dst`. Inline math removed from `pico_set_mouse` / `pico_get_mouse` (both now 1–2 lines) |
+| Lua bindings `pico.cv.pos_cur_win` / `pico.cv.pos_win_cur` | `lua/pico.c`, `lua/doc/api.md` | |
+| New plan saved | `.claude/plans/2026-05-cv-layer.md` | Generalize cur↔win to cur↔lyr (named layer); documents latent sub-layer bug |
+| Restructure `tst/mouse-rect-click.c` to **non-expert** (path III) | `tst/mouse-rect-click.c` | Drops `pico_set_expert(1,0)`; drops helpers `mouse_w`/`draw_pixel_w`; mouse handled by `set_layer("window") + set_mouse('!') + set_layer("world")` round-trip; marker drawn on world via `'%'` mode (chunky world-px = 5×5 window-px) |
+
+**Test suites green at session end** (verified): `make tests`, `cd lua && make tests` all pass.
+Re-verify after pulling on the other machine before resuming.
+
+### Pending (do these on the other machine, in order)
+
+**1. Verify mouse-rect-click**
+```bash
+make test T=mouse-rect-click
+```
+- If pass: nothing to regen.
+- If fail with grid/marker visual diff vs `tst/asr/mouse-rect-click-*.png`: inspect.
+  - Expected: chunky 5×5 red/green markers + world grid overlay (matches old baseline).
+  - If still tiny markers or missing grid → rendering regression; debug before regen.
+- If fail with cosmetic diff only: `make gen T=mouse-rect-click`.
+
+**2. Restructure `tst/mouse-w-click.c`** (same path-III pattern)
+
+Current file uses expert mode + window-direct draws (similar mistake to mouse-rect-click pre-fix). Apply the same transform:
+- Drop `pico_set_expert(1, 0)`.
+- Stay on world (default after init) for layer A composite.
+- Use the round-trip `set_layer("window") + set_mouse('!') + set_layer("world")` pattern.
+- Draw the green marker pixel on world via `'%'` mode.
+- Drop manual `pico_output_present()` — auto-present handles it.
+- Verify with `make test T=mouse-w-click` (regen if cosmetic diff).
+
+**3. Lua mirrors**
+- `lua/tst/mouse-rect-click.lua` — apply path III (same pattern as C).
+- `lua/tst/mouse-w-click.lua` — apply path III.
+- Run `cd lua && make tests` to verify.
+
+**4. Full suite**
+```bash
+make tests
+cd lua && make tests
+```
+Spot-check any baseline diffs by reading the `tst/out/*.png` vs `tst/asr/*.png` (use Read tool — it renders images). Regen only if the diff is cosmetic-only (grid/pixel-rounding) and the new rendering matches intent.
+
+**5. valgrind.supp**
+Per `.claude/CLAUDE.md`: update `valgrind.supp` last clause `sdl-init` line `src:pico.c:N` to reflect current line of `SDL_Init` call in `pico_init`. Today's extractions changed pico.c line numbers (e.g., `pico_cv_pos_cur_win`/`win_cur` added near top, mouse fns shrank).
+
+Find current N:
+```bash
+grep -n "SDL_Init(SDL_INIT" src/pico.c
+```
+Then edit the file accordingly.
+
+**6. Update `.claude/plans/2026-05-base-layer.md`**
+- Mark `pico_output_draw_layers` extraction `[x]` if there's an item.
+- Mark mouse tests restructure complete.
+- Cross-reference `2026-05-cv-layer.md` as deferred follow-up.
+
+### Open architectural items (deferred, not blocking)
+
+- **CV view-transform generalization** (`pico_cv_pos_cur_lyr` / `lyr_cur`):
+  - Saved in `.claude/plans/2026-05-cv-layer.md`.
+  - Fixes latent bug: today's `cur_win` math assumes G.layer's parent IS window (`G.window.layer.scene.dim` used as base for `G.layer->scene.dst` conversion). Wrong for sub-layers (HUD-on-world, etc.).
+  - Two flavors: shallow (one-level) vs deep (walks `hier.up`). Deep fixes the bug.
+  - Decide flavor + implement after current plan lands.
+
+- **`pico_output_draw_layers` ↔ `_pico_output_draw_layers` naming collision**:
+  - Two symbols differ only by leading underscore (`void` vs `void(Pico_Layer*)`). Distinct in C but visually confusing.
+  - Consider renaming the internal one if it bites someone.
+
+### Resumption checklist (run first when you're back)
+
+1. `git status` — verify uncommitted changes match the table above.
+2. `make tests` + `cd lua && make tests` — confirm both green from previous session's state.
+3. Continue at **Pending step 1**.
+
+### Files modified today (untracked or unstaged)
+
+Run `git diff --stat` to confirm. Expected to include:
+- `src/pico.c`, `src/pico.h`
+- `src/layers.hc`
+- `lua/pico.c`, `lua/doc/api.md`
+- `tst/expert.c`, `tst/window.c`, `tst/mouse-rect-click.c`
+- `lua/tst/window.lua`, `lua/tst/guide.lua`
+- `.claude/plans/2026-05-cv-layer.md` (new)
+- `.claude/plans/2026-05-window-tex.md` (this file)

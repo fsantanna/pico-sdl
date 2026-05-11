@@ -525,6 +525,31 @@ static int l_cv_pos (lua_State* L) {
     }
 }
 
+static int l_cv_pos_cur_win (lua_State* L) {
+    Pico_Rel_Pos pos = C_rel_pos(L, 1);
+    SDL_Point phy = pico_cv_pos_cur_win(&pos);
+    lua_newtable(L);
+    lua_pushinteger(L, phy.x);
+    lua_setfield(L, -2, "x");
+    lua_pushinteger(L, phy.y);
+    lua_setfield(L, -2, "y");
+    return 1;
+}
+
+static int l_cv_pos_win_cur (lua_State* L) {
+    Pico_Abs_Pos phy = C_abs_pos(L, 1);
+    Pico_Rel_Pos to = {
+        .mode = C_mode(L, 2, 1),
+        .anchor = C_anchor(L, 2),
+    };
+    pico_cv_pos_win_cur((SDL_Point){phy.x, phy.y}, &to);
+    lua_pushnumber(L, to.x);
+    lua_setfield(L, 2, "x");
+    lua_pushnumber(L, to.y);
+    lua_setfield(L, 2, "y");
+    return 0;
+}
+
 static int l_cv_rect (lua_State* L) {
     Pico_Abs_Rect* base;
     int has_to = _cv_args(L, &base);
@@ -1521,9 +1546,11 @@ static const luaL_Reg ll_all[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_cv[] = {
-    { "dim",  l_cv_dim  },
-    { "pos",  l_cv_pos  },
-    { "rect", l_cv_rect },
+    { "dim",         l_cv_dim         },
+    { "pos",         l_cv_pos         },
+    { "pos_cur_win", l_cv_pos_cur_win },
+    { "pos_win_cur", l_cv_pos_win_cur },
+    { "rect",        l_cv_rect        },
     { NULL, NULL }
 };
 
