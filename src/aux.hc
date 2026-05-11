@@ -296,4 +296,3 @@ static Pico_Abs_Rect _abs_rect (const SDL_FRect* f) {
         floorf(f->w+0.5f), floorf(f->h+0.5f)
     };
 }
-

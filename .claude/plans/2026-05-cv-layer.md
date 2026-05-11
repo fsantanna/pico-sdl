@@ -109,14 +109,16 @@ User remedies by calling `pico_set_layer(other)` to make `other`
 
 | name      | resolves to               |
 |-----------|---------------------------|
-| `NULL`    | `G.layer` (= `"cur"`)     |
-| `"cur"`   | `G.layer`                 |
+| `NULL`    | `G.layer` (current)       |
 | `"window"`| `G.window.layer`          |
 | `"world"` | `G.world`                 |
 | `<other>` | user-named layer in scope |
 
 `pos_to(p, &out, NULL)` collapses to today's `rel_rel`
 (mode/anchor conversion, no projection).
+No `"cur"` string sentinel — `NULL` is the only "current layer"
+shorthand, consistent with the rest of pico's API
+(`pico_cv_*_rel_abs(..., NULL)` etc.).
 
 ### Reduction of existing API
 
@@ -152,16 +154,33 @@ Total public CV API: **6 functions** (today's 11 + previous plan's 4 = 15).
 `from = cur` is the dominant case; making it implicit beats
 papering over the asymmetry with `NULL`.
 
-## abs as implementation detail
+## abs and ad-hoc base — implementation details
 
-`Pico_Abs_Pos` and the resolution helpers
-(`pico_cv_pos_rel_abs`, `pico_cv_pos_abs_rel`,
-`_sdl_pos`, `_rel_pos`, `_abs_pos`) stay internal to `pico.c`.
-Public header drops them.
+The entire `pico_cv_pos_*_*` family drops from the public header:
 
-This makes silent miscomposes impossible: every public value
-carries its frame tag (a layer name passed at the call site),
-and the type system has no way to express "untagged pixels".
+- `pico_cv_pos_rel_abs`, `pico_cv_pos_abs_rel`,
+  `pico_cv_pos_rel_rel`,
+  `pico_cv_pos_cur_win`, `pico_cv_pos_win_cur` → removed.
+- Underlying `_sdl_pos`, `_rel_pos`, `_abs_pos`,
+  `_sdl_rect`, `_rel_rect` (aux.hc) → stay internal.
+
+Justification:
+
+- `pos_cur_win` / `pos_win_cur` have zero external callers in tree.
+- `pos_rel_abs` / `pos_abs_rel` / `pos_rel_rel` are used externally
+  (tst/, lua/) but all real-world projection cases collapse to either
+  `_to` / `_from` (named layer) or `pico_in_*` (compose against a
+  known rect).
+  The `Pico_Abs_Rect* base` argument is a low-level escape hatch:
+  every in-tree non-NULL caller is a unit test of the conversion
+  math itself, not a user-level operation.
+
+Result: every public value carries its frame tag
+(a layer name passed at the call site).
+The type system has no way to express "untagged pixels",
+so silent miscomposes become impossible.
+
+Same `_to` / `_from` design applies to rect and dim.
 
 ## hier.up reachability (verified)
 
@@ -246,22 +265,62 @@ Existing `pos_cur_win`/`pos_win_cur` lua bindings either:
 Pending.
 Decide after current plan `2026-05-window-tex` lands.
 
-## Tasks
+## Tasks (phased)
 
 - [x] Verify `hier.up` reachability for arbitrary `G.layer`.
-- [ ] Lock ancestor-only contract; assert-and-abort on violation.
-- [ ] Implement up-chain walk in `_to` / `_from` (pos, rect, dim).
-- [ ] Move `pos_rel_abs` / `pos_abs_rel` / etc. to internal helpers.
-- [ ] Drop public `pos_cur_win` / `pos_win_cur`
-      (or keep as thin wrappers if churn is unacceptable).
-- [ ] Wrap SDL mouse events as `Pico_Rel_Pos {!,NW}` in `"window"`
-      at event-delivery time.
-- [ ] Add lua bindings for `pos_to/_from`,
-      `rect_to/_from`, `dim_to/_from`.
-- [ ] Document in `lua/doc/api.md`.
-- [ ] Tests:
+- [x] Lock ancestor-only contract; assert-and-abort on violation.
+- [x] Audit external callers in tst/ and lua/.
+- [x] Commit to dropping ad-hoc-base from public API.
+- [x] Implement `pico_cv_pos_to` / `pico_cv_pos_from` (int, via public CV).
+
+### Phase A — float-precision rewrite
+
+- [ ] Switch `_to`/`_from` internals from
+      `pico_cv_pos_rel_abs`/etc. to `_sdl_pos`/`_sdl_rect`/`_rel_pos`.
+- [ ] Verify build clean and tst/cv.c, tst/mouse.c still pass.
+
+### Phase B — retire `pos_cur_win` / `pos_win_cur`
+
+- [ ] Rewire `pico_set_mouse` to call `pico_cv_pos_to(rel, &out_pxNW, "window")`.
+- [ ] Rewire `pico_get_mouse` to call `pico_cv_pos_from(&inNW, "window", out)`.
+- [ ] Drop declarations from pico.h.
+- [ ] Delete implementations from pico.c.
+
+### Phase C — convert internal pico.c callers off `pos_rel_abs`/etc.
+
+- [ ] Replace each internal `pico_cv_pos_rel_abs(rel, NULL)` with
+      `_sdl_pos(rel, NULL)` + `_abs_pos(...)`.
+- [ ] Replace `pico_in_pos` ad-hoc-base usage with `_sdl_pos(rel, &out_abs)`.
+- [ ] Same for `pico_cv_pos_abs_rel` callers.
+
+### Phase D — drop public `pos_rel_abs` / `pos_abs_rel` / `pos_rel_rel`
+
+- [ ] Remove declarations from pico.h.
+- [ ] Remove implementations from pico.c.
+
+### Phase E — migrate tst/ tests
+
+- [ ] tst/cv.c: rewrite ad-hoc-base tests via named sub-layers OR delete
+      if redundant with named-layer coverage; rewrite NULL-base tests
+      against `_to`/`_from`.
+- [ ] tst/in.c: same.
+- [ ] Add new tests:
     - [ ] mode/anchor convert in cur (`to=NULL`)
     - [ ] cur <-> window round-trip identity
     - [ ] sub-layer (HUD inside world) round-trip
     - [ ] orphan layer → assert fires
     - [ ] sibling target → assert fires
+
+### Phase F — migrate Lua bindings
+
+- [ ] lua/pico.c: drop `base` arg from `pico.cv.pos(...)`;
+      add `pos_to` / `pos_from` bindings.
+- [ ] lua/tst/cv.lua: rewrite tests.
+- [ ] Update lua/doc/api.md.
+
+### Phase G — rect/dim parallels
+
+- [ ] Add `pico_cv_rect_to` / `pico_cv_rect_from`.
+- [ ] Add `pico_cv_dim_to`  / `pico_cv_dim_from`.
+- [ ] Lua bindings for both.
+- [ ] Tests for both.
