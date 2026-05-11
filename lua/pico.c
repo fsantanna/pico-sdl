@@ -1402,13 +1402,21 @@ static const luaL_Reg ll_all[] = {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static const luaL_Reg ll_cv[] = {
-    { "dim_to",    l_cv_dim_to    },
-    { "dim_from",  l_cv_dim_from  },
-    { "pos_to",    l_cv_pos_to    },
-    { "pos_from",  l_cv_pos_from  },
-    { "rect_to",   l_cv_rect_to   },
-    { "rect_from", l_cv_rect_from },
+static const luaL_Reg ll_cv_pos[] = {
+    { "to",   l_cv_pos_to   },
+    { "from", l_cv_pos_from },
+    { NULL, NULL }
+};
+
+static const luaL_Reg ll_cv_rect[] = {
+    { "to",   l_cv_rect_to   },
+    { "from", l_cv_rect_from },
+    { NULL, NULL }
+};
+
+static const luaL_Reg ll_cv_dim[] = {
+    { "to",   l_cv_dim_to   },
+    { "from", l_cv_dim_from },
     { NULL, NULL }
 };
 
@@ -1518,7 +1526,13 @@ static const luaL_Reg ll_output_draw[] = {
 int luaopen_pico_native (lua_State* L) {
     luaL_newlib(L, ll_all);                 // pico
 
-    luaL_newlib(L, ll_cv);                  // pico | cv
+    lua_newtable(L);                        // pico | cv
+    luaL_newlib(L, ll_cv_pos);              // pico | cv | pos
+    lua_setfield(L, -2, "pos");             // pico | cv
+    luaL_newlib(L, ll_cv_rect);             // pico | cv | rect
+    lua_setfield(L, -2, "rect");            // pico | cv
+    luaL_newlib(L, ll_cv_dim);              // pico | cv | dim
+    lua_setfield(L, -2, "dim");             // pico | cv
     lua_setfield(L, -2, "cv");              // pico
 
     luaL_newlib(L, ll_in);                  // pico | xin
