@@ -1125,8 +1125,28 @@ static int l_set_window (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// If slot `i` holds a Rect (table with `x` field), set layer `key`'s
+// scene.target to it. No-op otherwise. Preserves the current layer.
+static void L_opt_target (lua_State* L, int i, const char* key) {
+    if (!lua_istable(L, i)) {       // . | t?
+        return;
+    }
+
+    lua_getfield(L, i, "x");        // . | t | t.x
+    int no = lua_isnil(L, -1);
+    lua_pop(L, 1);                  // . | t
+    if (no) {
+        return;
+    }
+
+    Pico_Rel_Rect tgt = C_rel_rect(L, i);
+    const char* old = pico_set_layer(key);
+    pico_set_scene_dst(tgt);
+    pico_set_layer(old);
+}
+
 static int l_layer_empty (lua_State* L) {
-    int m = C_mode_opt(L);  // [m] | up | key | clear | dim|rect | [tile]
+    int m = C_mode_opt(L);  // [m] | up | key | clear | (dim|rect) | [tile]
     int i = m ? 2 : 1;
     if (!m) m = '!';
     const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
@@ -1135,21 +1155,7 @@ static int l_layer_empty (lua_State* L) {
     luaL_checktype(L, i+2, LUA_TBOOLEAN);
     int clear = lua_toboolean(L, i+2);
 
-    // dim slot accepts a Dim or a Rect; Rect = presence of "x" field.
-    // When a Rect: derive Dim from mode/w/h, set full rect as scene.dst.
-    luaL_checktype(L, i+3, LUA_TTABLE);
-    lua_getfield(L, i+3, "x");
-    int is_rect = !lua_isnil(L, -1);
-    lua_pop(L, 1);
-
-    Pico_Rel_Dim dim;
-    Pico_Rel_Rect dst;
-    if (is_rect) {
-        dst = C_rel_rect(L, i+3);
-        dim = (Pico_Rel_Dim){ .mode = dst.mode, .w = dst.w, .h = dst.h };
-    } else {
-        dim = C_rel_dim(L, i+3);
-    }
+    Pico_Rel_Dim dim = C_rel_dim(L, i+3);
 
     Pico_Abs_Dim tile;
     Pico_Abs_Dim* ptr = NULL;
@@ -1161,12 +1167,7 @@ static int l_layer_empty (lua_State* L) {
     }
 
     pico_layer_empty_mode(m, up, key, clear, dim, ptr);
-
-    if (is_rect) {
-        const char* old = pico_set_layer(key);
-        pico_set_scene_dst(dst);
-        pico_set_layer(old);
-    }
+    L_opt_target(L, i+3, key);
     return 0;
 }
 
@@ -1202,6 +1203,7 @@ static int l_layer_pixmap (lua_State* L) {
     C_pixmap_fill(L, i+2, dim, (Pico_Color*)buf);
 
     pico_layer_pixmap_mode(m, up, key, dim, (Pico_Color*)buf);
+    L_opt_target(L, i+3, key);
     return 0;
 }
 
@@ -1214,6 +1216,7 @@ static int l_layer_text (lua_State* L) {
     int height = luaL_checkinteger(L, i+2);
     const char* text = luaL_checkstring(L, i+3);
     pico_layer_text_mode(m, up, key, height, text);
+    L_opt_target(L, i+4, key);
     return 0;
 }
 
@@ -1247,6 +1250,7 @@ static int l_layer_sub (lua_State* L) {
     L_dim_default_wh(L, i+3);
     Pico_Rel_Rect crop = C_rel_rect(L, i+3);
     pico_layer_sub_mode(m, up, key, parent, &crop);
+    L_opt_target(L, i+4, key);
     return 0;
 }
 
