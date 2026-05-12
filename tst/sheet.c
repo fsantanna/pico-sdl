@@ -6,7 +6,7 @@ int main (void) {
 
     // Create a 4x4 "sprite sheet" with colored quadrants
     const char* sheet = "sheet";
-    pico_layer_empty(NULL, sheet, (Pico_Abs_Dim){4, 4}, NULL);
+    pico_layer_empty(NULL, sheet, 1, (Pico_Rel_Dim){'!', {4, 4}}, NULL);
     pico_set_layer(sheet);
     pico_set_effect_color(PICO_COLOR_BLACK);
     pico_output_clear();

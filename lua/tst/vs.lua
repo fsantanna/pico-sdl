@@ -48,7 +48,7 @@ end
 
 print "child layer projection (4-arg)"
 do
-    pico.layer.empty('world', 'sub_vs', {w=50, h=50})
+    pico.layer.empty('world', 'sub_vs', true, {'!', w=50, h=50})
 
     print('', 'pos in sub vs rect in cur')
     -- sub:10,20 -> cur:20,40 (sub 50x50 fills cur 100x100, scale 2x)
@@ -69,8 +69,8 @@ end
 print "rect_rect bounds (2-string)"
 do
     -- two direct children of world; cur is world
-    pico.layer.empty('world', 'sub_a', {w=50, h=50})
-    pico.layer.empty('world', 'sub_b', {w=50, h=50})
+    pico.layer.empty('world', 'sub_a', true, {'!', w=50, h=50})
+    pico.layer.empty('world', 'sub_b', true, {'!', w=50, h=50})
     -- both default scene.dst fills world; bounds overlap
     assert(pico.vs.rect_rect('sub_a', 'sub_b'))
 end

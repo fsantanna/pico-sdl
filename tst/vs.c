@@ -81,7 +81,7 @@ int main (void) {
     }
 
     // direct-child layer (sub) attached to world; project value cur<-sub
-    pico_layer_empty("world", "sub_vs", (Pico_Abs_Dim){50, 50}, NULL);
+    pico_layer_empty("world", "sub_vs", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
 
     // pos_rect - p1 in sub, r2 in cur
     {

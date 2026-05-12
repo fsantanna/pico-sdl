@@ -14,8 +14,8 @@ int main (void) {
     pico_output_clear();
 
     // two empty layers side by side
-    pico_layer_empty("world", "left",  (Pico_Abs_Dim){32, 36}, NULL);
-    pico_layer_empty("world", "right", (Pico_Abs_Dim){32, 36}, NULL);
+    pico_layer_empty("world", "left",  1, (Pico_Rel_Dim){'!', {32, 36}}, NULL);
+    pico_layer_empty("world", "right", 1, (Pico_Rel_Dim){'!', {32, 36}}, NULL);
 
     const char* old = pico_set_layer("left");
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.25, 0.5, 0.5, 1}, PICO_ANCHOR_C});

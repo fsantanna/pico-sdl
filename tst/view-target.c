@@ -43,7 +43,7 @@ int main (void) {
     // 04: explicit layer with view target, drawn with rect=NULL
     {
         puts("target: explicit layer");
-        pico_layer_empty(NULL, "bg", (Pico_Abs_Dim){32, 32}, NULL);
+        pico_layer_empty(NULL, "bg", 1, (Pico_Rel_Dim){'!', {32, 32}}, NULL);
         const char* old = pico_set_layer("bg");
         pico_set_scene_dst((Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
         pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
@@ -62,7 +62,7 @@ int main (void) {
     // 05: target h only, w=0 -> w inferred from 2:1 layer aspect
     {
         puts("target: h only, w inferred");
-        pico_layer_empty(NULL, "bg2", (Pico_Abs_Dim){80, 40}, NULL);
+        pico_layer_empty(NULL, "bg2", 1, (Pico_Rel_Dim){'!', {80, 40}}, NULL);
         const char* old = pico_set_layer("bg2");
         pico_set_scene_dst(
             (Pico_Rel_Rect){'%', {0.5, 0.5, 0, 0.4}, PICO_ANCHOR_C});

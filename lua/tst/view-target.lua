@@ -41,7 +41,7 @@ end
 -- 04: explicit layer with view target, drawn with rect=NULL
 do
     print("target: explicit layer")
-    pico.layer.empty(nil, "bg", {w=32, h=32})
+    pico.layer.empty(nil, "bg", true, {'!', w=32, h=32})
     pico.set.layer("bg")
     pico.set.scene {
         target = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
@@ -60,7 +60,7 @@ end
 -- 05: target h only, w=0 -> w inferred from 2:1 layer aspect
 do
     print("target: h only, w inferred")
-    pico.layer.empty(nil, "bg2", {w=80, h=40})
+    pico.layer.empty(nil, "bg2", true, {'!', w=80, h=40})
     pico.set.layer("bg2")
     pico.set.scene {
         target = {'%', x=0.5, y=0.5, h=0.4}
