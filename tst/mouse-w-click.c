@@ -27,14 +27,11 @@ int main (void) {
        sampled in scene coords. */
     Pico_Rel_Rect btn_in_r = pico_in_rect(&r, &btn);
 
-    /* Set cursor at window pixel (400, 382); collision in pct (world's
-       coords via mouse->pct) confirms inside btn; mark the position
-       with a green pixel drawn in world (composited 5x to window). */
-    {
-        const char* prev = pico_set_layer("window");
-        pico_set_mouse(&(Pico_Rel_Pos){ '!', {400, 382}, PICO_ANCHOR_NW });
-        pico_set_layer(prev);
-    }
+    /* Set cursor at world pct (0.8, 0.764) ~= window (400, 382); collision
+       in pct (world's coords via mouse->pct) confirms inside btn; mark
+       the position with a green pixel drawn in world (composited 5x to
+       window). */
+    pico_set_mouse(&(Pico_Rel_Pos){ '%', {0.8, 0.76}, PICO_ANCHOR_NW });
     Pico_Mouse pct = pico_get_mouse('%', NULL);
     Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW };
     assert(pico_vs_pos_rect(NULL, &pos, NULL, &btn_in_r));
