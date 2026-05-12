@@ -108,5 +108,6 @@ var searchData=
   ['pico_5fset_5fwindow_5ftitle_105',['pico_set_window_title',['../group__State.html#ga79571d5d66f4a9aaaf3cea8309629989',1,'pico.h']]],
   ['pico_5fvs_5fpos_5fpos_106',['pico_vs_pos_pos',['../group__Utils.html#ga6e7227265a128630b516460568e88f39',1,'pico.h']]],
   ['pico_5fvs_5fpos_5frect_107',['pico_vs_pos_rect',['../group__Utils.html#gafbb62d99f9220e313e9ac4871d3b507c',1,'pico.h']]],
-  ['pico_5fvs_5frect_5frect_108',['pico_vs_rect_rect',['../group__Utils.html#gafed960041f600b0b343a5f60fe462f98',1,'pico.h']]]
+  ['pico_5fvs_5frect_5fpos_108',['pico_vs_rect_pos',['../group__Utils.html#ga6a330d50a90fb46e7c4ba9f439f2e876',1,'pico.h']]],
+  ['pico_5fvs_5frect_5frect_109',['pico_vs_rect_rect',['../group__Utils.html#gafed960041f600b0b343a5f60fe462f98',1,'pico.h']]]
 ];
