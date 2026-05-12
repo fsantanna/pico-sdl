@@ -122,40 +122,76 @@ pico.layer.empty([mode,] up, key, clear, dim [, tile])
 - [x] `valgrind.supp` `sdl-init` still at `pico.c:117` (no
       change needed).
 
-### TODO — test caller updates (NOT done; needs explicit go)
+### Done — test caller updates
 
 Preserve prior runtime behavior:
 
 - old default was `clear = 1` (hardcoded in
-  `_alloc_layer_empty`) → use `1` in C / `true` in Lua.
-- old `dim` was pixel-typed → wrap with mode `'!'`.
+  `_alloc_layer_empty`) → used `1` in C / `true` in Lua.
+- old `dim` was pixel-typed → wrapped with mode `'!'`.
 
-| file                          | line(s)        | edit                                              |
-|-------------------------------|----------------|---------------------------------------------------|
-| tst/keep.c                    | 17, 18         | `(Pico_Abs_Dim){W,H}` → `1, (Pico_Rel_Dim){'!',{W,H}}` |
-| tst/layers.c                  | 22, 29         | same (no-mode form)                               |
-| tst/layers.c                  | 77, 83         | same (`_mode` form: `clear` slot after `key`)     |
-| tst/layer-empty-tile.c        | 16, 48         | same (no-mode form)                               |
-| lua/tst/layers.lua            | 18, 25         | `{w=W,h=H}` → `true, {'!',w=W,h=H}` (mode form)   |
-| lua/tst/cv.lua                | 27             | `{w=50,h=50}` → `true, {'!',w=50,h=50}`           |
-| lua/tst/layer-empty-tile.lua  | 12, 44         | same as layers.lua (no-mode form)                 |
+Plan-listed callers (all done):
 
-Skipped: `lua/doc/gen-guide-images.lua:299,305` already
-uses a 2-arg `pico.layer.empty("bg", {w,h})` that did not
-match the prior C signature (no `up` slot) — appears unused
-by the test runner. Confirm before touching.
+| file                          | line(s)        |
+|-------------------------------|----------------|
+| tst/keep.c                    | 17, 18         |
+| tst/layers.c                  | 22, 29         |
+| tst/layers.c                  | 77, 83 (_mode) |
+| tst/layer-empty-tile.c        | 16, 48         |
+| lua/tst/layers.lua            | 18, 25         |
+| lua/tst/cv.lua                | 27             |
+| lua/tst/layer-empty-tile.lua  | 12, 44         |
 
-### TODO — verify + regenerate
+Additional callers missed by plan (found via grep, all done):
 
-After caller edits:
+| file                              | line(s)        |
+|-----------------------------------|----------------|
+| tst/clear_alpha.c                 | 18             |
+| tst/shot.c                        | 82             |
+| tst/mouse-rect-click.c            | 13             |
+| tst/view-target.c                 | 46, 65         |
+| tst/sheet.c                       | 9              |
+| tst/cv.c                          | 40             |
+| tst/layer-hier.c                  | 16, 64         |
+| tst/vs.c                          | 84             |
+| tst/layer-clip.c                  | 83             |
+| tst/tile-grid.c                   | 82, 96, 110    |
+| tst/mouse-w-click.c               | 11             |
+| tst/todo/mouse-rect-click.c       | 11             |
+| tst/todo/mouse-rect.c             | 7              |
+| lua/tst/sheet.lua                 | 6              |
+| lua/tst/vs.lua                    | 51, 72, 73     |
+| lua/tst/tile-grid.lua             | 73, 86, 99     |
+| lua/tst/view-target.lua           | 44, 63         |
+| lua/tst/todo/mouse-layer.lua      | 6              |
+| lua/tst/guide.lua                 | 240, 300       |
+| lua/tst/mouse-rect-click.lua      | 22             |
+| lua/tst/layer-hier.lua            | 12, 67         |
+| lua/tst/clear_alpha.lua           | 14             |
+| lua/tst/layer-clip.lua            | 81             |
+| lua/tst/todo/mouse-rect-click.lua | 10             |
+| lua/tst/shot.lua                  | 78             |
 
-1. `make tests` (C) — must pass without modifying `asr/`.
-2. `cd lua/ && make tests` (Lua) — same.
-3. If image diffs appear, investigate cause before
-   regenerating any `asr/` baseline (per CLAUDE.md: never
-   modify regression tests).
-4. Spot-check `make int T=keep` and
-   `make int T=layer-empty-tile` visually.
+`lua/doc/gen-guide-images.lua:299,305` — was 2-arg form
+that never matched the old C signature (pre-existing
+breakage). Updated to new sig:
+`pico.layer.empty(nil, "bg"|"flag", true, {'!', w=, h=})`.
+
+### Done — verify
+
+- [x] `make tests` (C) — all passed, no `asr/` mods.
+- [x] `cd lua/ && make tests` (Lua) — all passed.
+- [ ] Spot-check `make int T=keep` and
+      `make int T=layer-empty-tile` visually.
+
+### Lessons
+
+- Many callers were missed by the initial plan inventory.
+  Always `grep` for the symbol across the whole tree before
+  declaring a refactor scope.
+- Don't `cd lua/` in Bash — the cwd persists across calls
+  and `lua/` lacks `.claude/one`, which wedges all subsequent
+  Bash/Edit/Write. Use `make -C lua tests` instead.
 
 ### Notes for cross-machine handoff
 
@@ -163,8 +199,8 @@ After caller edits:
   exist in the worktree; without it, all Bash/Edit/Write
   calls fail with "edits are blocked". Recreate the marker
   on the new machine before resuming (`touch .claude/one`).
-- All source-side changes are in tree (uncommitted); only
-  test files remain to be edited.
+- All source-side changes are in tree (uncommitted); all
+  callers updated and tests pass.
 
 ## Open items
 
