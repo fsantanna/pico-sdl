@@ -664,7 +664,7 @@ Pico_Rel_Pos pico_in_pos (const Pico_Rel_Rect* out, const Pico_Rel_Pos* in);
 Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in);
 
 /// @brief Checks if two points fall on the same pixel.
-/// Each side can be in cur or in a direct child of cur. Both points
+/// Each side can be in cur or in a descendant of cur. Both points
 /// must be non-NULL. Comparison is on rounded integer pixel values.
 /// @return 1 if rounded (x,y) of p1 equals that of p2, or 0 otherwise
 /// @sa pico_vs_pos_rect
@@ -674,10 +674,10 @@ int pico_vs_pos_pos (
 );
 
 /// @brief Checks if a point is inside a rectangle.
-/// Each side can be expressed in cur (Lx=NULL) or in a layer that is a
-/// direct child of cur (Lx=child name). With L2 set and r2=NULL, the
-/// child layer's bounds (scene.dst in cur) act as the rect. p1 must
-/// not be NULL.
+/// Each side can be expressed in cur (Lx=NULL) or in a descendant of
+/// cur (Lx=layer name). With L2 set and r2=NULL, the named layer's
+/// bounds (scene.dst in its parent) act as the rect. p1 must not be
+/// NULL.
 /// @return 1 if p1 is inside r2, or 0 otherwise
 /// @sa pico_vs_pos_pos pico_vs_rect_rect
 int pico_vs_pos_rect (
@@ -687,8 +687,8 @@ int pico_vs_pos_rect (
 
 /// @brief Checks if a point is inside a rectangle (mirror of pos_rect).
 /// Equivalent to pico_vs_pos_rect(L2, p2, L1, r1). r1 may be NULL with
-/// L1 set (uses the child's bounds) or both NULL (uses cur's bounds).
-/// p2 must not be NULL.
+/// L1 set (uses the named layer's bounds) or both NULL (uses cur's
+/// bounds). p2 must not be NULL.
 /// @return 1 if p2 is inside r1, or 0 otherwise
 /// @sa pico_vs_pos_rect
 int pico_vs_rect_pos (
@@ -697,9 +697,9 @@ int pico_vs_rect_pos (
 );
 
 /// @brief Checks if two rectangles overlap.
-/// Each side can be expressed in cur (Lx=NULL) or in a direct child of
-/// cur. With Lx set and the rect NULL, the child layer's bounds act as
-/// the rect for that side.
+/// Each side can be expressed in cur (Lx=NULL) or in a descendant of
+/// cur. With Lx set and the rect NULL, the named layer's bounds act
+/// as the rect for that side.
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_vs_pos_rect
 int pico_vs_rect_rect (

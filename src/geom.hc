@@ -256,12 +256,9 @@ static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
     if (layer == NULL) return *p;
     Pico_Layer* old = G.layer;
     G.layer = _pico_layer_name(layer);
-    pico_assert (
-        G.layer != old
-        && G.layer->hier.up != NULL
-        && _pico_layer_name(G.layer->hier.up) == old
-        && "vs: L must be direct child of cur"
-    );
+    if (G.layer == old) {
+        return *p;
+    }
     Pico_Rel_Pos out = {'!', {0, 0}, PICO_ANCHOR_NW};
     pico_cv_pos_to(old->name, p, &out);
     G.layer = old;
@@ -272,14 +269,13 @@ static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
     if (layer == NULL) {
         return (r == NULL) ? G.layer->scene.dst : *r;
     }
+
     Pico_Layer* old = G.layer;
     G.layer = _pico_layer_name(layer);
-    pico_assert (
-        G.layer != old
-        && G.layer->hier.up != NULL
-        && _pico_layer_name(G.layer->hier.up) == old
-        && "vs: L must be direct child of cur"
-    );
+    if (G.layer == old) {
+        return (r == NULL) ? old->scene.dst : *r;
+    }
+
     Pico_Rel_Rect out;
     if (r == NULL) {
         out = G.layer->scene.dst;

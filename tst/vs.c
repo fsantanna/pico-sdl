@@ -185,6 +185,23 @@ int main (void) {
         assert(pico_vs_rect_pos(NULL, &r1, NULL, &p2) == 0);
     }
 
+    // grandchild of cur: deeper than direct child
+    pico_layer_empty("sub_vs", "sub_sub_vs", 1,
+                     (Pico_Rel_Dim){'!', {25, 25}}, NULL);
+    {
+        puts("vs_pos_pos - p1 in grandchild (scale 4x) vs cur");
+        // sub_sub:10,10 -> sub_vs:20,20 -> world:40,40
+        Pico_Rel_Pos p1 = { '!', {10, 10}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p2 = { '!', {40, 40}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_pos("sub_sub_vs", &p1, NULL, &p2) == 1);
+    }
+    {
+        puts("vs_pos_pos - p1 in grandchild vs mismatched cur pixel");
+        Pico_Rel_Pos p1 = { '!', {10, 10}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p2 = { '!', {50, 50}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_pos("sub_sub_vs", &p1, NULL, &p2) == 0);
+    }
+
     pico_init(0);
     return 0;
 }

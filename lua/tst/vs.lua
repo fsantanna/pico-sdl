@@ -165,4 +165,15 @@ do
     assert(not pico.vs.rect.pos(r, p_under))
 end
 
+print "deep descendant (grandchild)"
+do
+    pico.layer.empty('sub_vs', 'sub_sub_vs', true, {'!', w=25, h=25})
+    -- sub_sub:10,10 -> sub_vs:20,20 -> world:40,40 (scale 4x)
+    local p1 = {'!', x=10, y=10, anchor='NW'}
+    local p2 = {'!', x=40, y=40, anchor='NW'}
+    assert(    pico.vs.pos.pos('sub_sub_vs', p1, nil, p2))
+    local q  = {'!', x=50, y=50, anchor='NW'}
+    assert(not pico.vs.pos.pos('sub_sub_vs', p1, nil, q))
+end
+
 pico.init(false)
