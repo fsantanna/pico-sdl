@@ -284,6 +284,14 @@ Decide after current plan `2026-05-window-tex` lands.
 | G     | `rect_to`/`rect_from`/`dim_to`/`dim_from` C impls + decls + tests |
 | H     | rename src helpers `_abs_*` → `_rnd_*` (aux.hc / geom.hc / layers.hc): disambiguates "rounding helper" from the `Pico_Abs_*` type. Test-local `_abs_*` wrappers in tst/cv.c, tst/in.c left as-is (different role: rel→abs convenience). |
 | I     | `make tests` + `cd lua && make tests` all green after F-3 revert + H rename |
+| J     | Phase C internal cleanup: inline all `pico_cv_*_rel_abs` / `_abs_rel` / `_rel_rel` callers (~38 sites across pico.c, geom.hc, layers.hc, mem.hc) using `_sdl_*` + `_rnd_*`; deleted the 9 old impls from geom.hc. `_rnd_*` switched to by-value (drop intermediate var at ~30 callsites). |
+| K     | Lua `cv` API restructure: `pico.cv.{pos,rect,dim}_{to,from}` → nested `pico.cv.{pos,rect,dim}.{to,from}` (lua/pico.c + lua/tst/cv.lua). Six inline lua bindings (no `_l_cv_*` helper). |
+| L     | cv tests trimmed: dropped resolution + round-trip sections (redundant with other tests); kept named-layer projection. tst/cv.c 288→110 LOC; lua/tst/cv.lua 170→60 LOC. |
+| M     | in tests trimmed: tst/in.c 147→60 LOC (4 cases inline, helpers dropped); lua/tst/in.lua 83→38 LOC (3 binding-smoke cases on current API). |
+| N     | `vs` API extended: 2 new args per side (L1/L2 = direct child of cur, or NULL=cur). Added `pico_vs_pos_pos` (pixel equality after rounding). Direct G.layer swap (no `pico_set_layer` SDL side effects). File-static `_vs_pos` / `_vs_rect` aux helpers shared across 3 vs fns. |
+| O     | Lua `vs` bindings: 2-arg shorthand (2 strings → layer-pair, 2 tables → value-pair) plus 4-arg full form. tst/vs.c + lua/tst/vs.lua updated; existing callers in collide_pct/raw, mouse-rect-click prefixed with NULL/NULL. |
+| P     | `pico_set_mouse` rounds via `_rnd_pos` instead of float→int truncation (1-pixel fix at SDL boundary). |
+| Q     | tst/mouse-w-click simplified: dropped `pico_set_expert(1, 0)`, dropped window-layer block for green pixel; draw pixel in world (composited 5× on auto-present); `pico_set_mouse({'%', 0.8, 0.76, NW})` at cur=world. Matches the original asr (098918a) without modification. |
 
 ### Public API now
 
@@ -297,7 +305,22 @@ void pico_cv_dim_from  (const char* layer, const Pico_Rel_Dim*,  Pico_Rel_Dim*);
 ```
 
 `layer = NULL` → cur (mode/anchor conversion only).
-Lua: `pico.cv.{pos,rect,dim}_{to,from}(layer, fr, to)`.
+Lua: `pico.cv.{pos,rect,dim}.{to,from}(layer, fr, to)`.
+
+### `vs` API now
+
+```c
+int pico_vs_pos_rect  (const char* L1, Pico_Rel_Pos*  p1, const char* L2, Pico_Rel_Rect* r2);
+int pico_vs_pos_pos   (const char* L1, Pico_Rel_Pos*  p1, const char* L2, Pico_Rel_Pos*  p2);
+int pico_vs_rect_rect (const char* L1, Pico_Rel_Rect* r1, const char* L2, Pico_Rel_Rect* r2);
+```
+
+`Lx = NULL` → side's value is in cur. `Lx = <child>` → value is in
+that direct child of cur. `rect = NULL` with `Lx` set uses the child
+layer's bounds. `pos` must never be NULL.
+
+Lua bindings accept three forms: 2 strings (layer-pair), 2 tables
+(value-pair, both in cur), or full 4-arg.
 
 ## Next steps (explicit)
 
@@ -313,39 +336,11 @@ Expected: all pass.
 Known pre-existing flake: `tst/mouse-rect-click.c` step `02` sometimes
 fails on xvfb (predates this work — confirmed on clean tree).
 
-### 2. Document the new API in `lua/doc/api.md`
-
-- Drop old `pico.cv.pos(fr, to, base)` / `cv.rect` / `cv.dim` sections.
-- Add 6 entries: `pico.cv.pos_to`, `pos_from`, `rect_to`, `rect_from`,
-  `dim_to`, `dim_from`. Signature: `(layer: string?, fr: table, to: table)`.
-- Note: `layer = nil` means current; must be cur or an ancestor.
-- Drop docs for `pico.cv.pos_cur_win` / `pos_win_cur` if mentioned
-  (those bindings no longer exist — handled at C level by
-  `pico_set_mouse` / `pico_get_mouse`).
-
-### 3. Optional — Phase C internal cleanup
-
-Internal pico.c / geom.hc / layers.hc / mem.hc still call the old
-`pico_cv_*_rel_abs` / `_abs_rel` / `_rel_rel` family.
-They're no longer in pico.h but still defined as non-static in geom.hc.
-This is fine — same-TU resolution.
-If you want to fully retire them (delete impls from geom.hc):
-
-| caller                                          | replacement                          |
-|-------------------------------------------------|--------------------------------------|
-| draw fns in pico.c (`pos_rel_abs(p, NULL)`)     | `SDL_FPoint f = _sdl_pos(p, NULL); SDL_Point i = (SDL_Point)_abs_pos(&f)` |
-| `pico_in_*` in geom.hc (ad-hoc-base composition) | switch to `_sdl_*` + manual compose  |
-| layers.hc / mem.hc (one each)                   | same                                  |
-
-After all internal callers are off, delete the 9 old impls from geom.hc.
-
-Defer unless there's a reason to clean up further. The current state
-is fully functional with the old wrappers as internal helpers.
-
-### 4. Final task list (for completion)
+### Final task list (for completion)
 
 - [x] Run `make tests` from project root.
 - [x] Run `cd lua && make tests`.
-- [ ] Update `lua/doc/api.md`.
-- [ ] (optional) Phase C internal cleanup.
-- [ ] Commit & PR.
+- [x] Update `lua/doc/api.md` (cv + vs sections).
+- [x] Phase C internal cleanup (done in J).
+- [x] Commit (done by user).
+- [ ] PR.

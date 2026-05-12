@@ -45,13 +45,24 @@ In alphabetical order:
     - **pico.color.mix**: Mixes two colors.
         - `pico.color.mix (c1: Color, c2: Color) -> Color`
 - **pico.cv**
-    - **pico.cv.dim**: Converts relative dimensions to absolute.
-        - `pico.cv.dim (dim: Dim [, base: Rect]) -> Dim`
-        - `pico.cv.dim (dim: Dim, to: Dim [, base: Rect])`
-    - **pico.cv.pos**: Converts relative position to absolute.
-        - `pico.cv.pos (pos: Pos [,base: Rect]) -> Pos`
-    - **pico.cv.rect**: Converts relative rectangle to absolute.
-        - `pico.cv.rect (rect: Rect [, base: Rect]) -> Rect`
+    - Chain-walk projection between cur and a named ancestor layer
+      (via `hier.up`). The named end is always given; the other end is
+      cur. `layer = nil` collapses to cur (mode/anchor conversion only,
+      no projection). Target must be cur or an ancestor of cur.
+    - **pico.cv.dim.to**: Projects a dim from cur to a named ancestor.
+        - `pico.cv.dim.to (layer: string?, fr: Dim, to: Dim)`
+        - `to` is written in `layer`'s frame; `to.mode` controls form.
+    - **pico.cv.dim.from**: Brings a dim from a named ancestor into cur.
+        - `pico.cv.dim.from (layer: string?, fr: Dim, to: Dim)`
+        - `fr` is interpreted in `layer`; `to` is written in cur.
+    - **pico.cv.pos.to**: Projects a pos from cur to a named ancestor.
+        - `pico.cv.pos.to (layer: string?, fr: Pos, to: Pos)`
+    - **pico.cv.pos.from**: Brings a pos from a named ancestor into cur.
+        - `pico.cv.pos.from (layer: string?, fr: Pos, to: Pos)`
+    - **pico.cv.rect.to**: Projects a rect from cur to a named ancestor.
+        - `pico.cv.rect.to (layer: string?, fr: Rect, to: Rect)`
+    - **pico.cv.rect.from**: Brings a rect from a named ancestor into cur.
+        - `pico.cv.rect.from (layer: string?, fr: Rect, to: Rect)`
 - **pico.get**
     - **pico.get.pencil**: Gets pencil configuration.
         - `pico.get.pencil () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
@@ -195,7 +206,20 @@ In alphabetical order:
         - `pos.mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
         - `pos.up`: reference frame (omit for current layer)
 - **pico.vs**
-    - **pico.vs.pos_rect**: Collision between position and rectangle.
-        - `pico.vs.pos_rect (pos: Pos, rect: Rect) -> boolean`
-    - **pico.vs.rect_rect**: Collision between two rectangles.
+    - Collision checks. Each side can be a value in cur (`Lx=nil`) or
+      a value/bounds in a layer that is a direct child of cur
+      (`Lx=<child-name>`). `Lx` and the corresponding value cannot both
+      be `nil`. `pos` values must always be non-nil; `rect` values may
+      be `nil` when `Lx` is set (uses the child layer's bounds).
+    - **pico.vs.pos_pos**: True if two points fall on the same pixel
+      (after integer rounding in cur).
+        - `pico.vs.pos_pos (p1: Pos, p2: Pos) -> boolean`
+        - `pico.vs.pos_pos (L1: string?, p1: Pos, L2: string?, p2: Pos) -> boolean`
+    - **pico.vs.pos_rect**: True if a point is inside a rectangle.
+        - `pico.vs.pos_rect (p1: Pos, r2: Rect) -> boolean`
+        - `pico.vs.pos_rect (L1: string?, p1: Pos, L2: string?, r2: Rect?) -> boolean`
+    - **pico.vs.rect_rect**: True if two rectangles overlap.
         - `pico.vs.rect_rect (r1: Rect, r2: Rect) -> boolean`
+        - `pico.vs.rect_rect (L1: string, L2: string) -> boolean`
+        - `pico.vs.rect_rect (L1: string?, r1: Rect?, L2: string?, r2: Rect?) -> boolean`
+        - The 2-string form compares the bounds of both child layers.
