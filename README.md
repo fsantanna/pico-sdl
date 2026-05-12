@@ -1,11 +1,11 @@
 # pico-sdl
 
+<img src="res/logo.png" width="200" align="right">
+
 [![Tests][badge]][tests]
 
 [badge]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml/badge.svg
 [tests]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml
-
-<img src="res/logo.png" width="250" align="right">
 
 ***A 2D graphics library for C and Lua***
 
