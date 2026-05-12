@@ -49,9 +49,9 @@ do
     local pct = pico.get.mouse('%')
     local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos_rect(pos, b1))
-    assert(not pico.vs.pos_rect(pos, b2))
-    assert(not pico.vs.pos_rect(pos, b3))
+    assert(not pico.vs.pos_rect(nil, pos, nil, b1))
+    assert(not pico.vs.pos_rect(nil, pos, nil, b2))
+    assert(not pico.vs.pos_rect(nil, pos, nil, b3))
     pico.set.pencil { color='red' }
     draw_pixel_w(394, 355)
     pico.check("mouse-rect-click-02")
@@ -79,9 +79,9 @@ do
     local pct = pico.get.mouse('%')
     local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(    pico.vs.pos_rect(pos, b1))
-    assert(not pico.vs.pos_rect(pos, b2))
-    assert(not pico.vs.pos_rect(pos, b3))
+    assert(    pico.vs.pos_rect(nil, pos, nil, b1))
+    assert(not pico.vs.pos_rect(nil, pos, nil, b2))
+    assert(not pico.vs.pos_rect(nil, pos, nil, b3))
     pico.set.pencil { color='green' }
     draw_pixel_w(362, 405)
     pico.check("mouse-rect-click-04")

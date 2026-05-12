@@ -22,7 +22,7 @@ for y = r.y-1, r.y+r.h do
         pico.set.pencil { color='red' }
         pico.output.draw.pixel(p)
 
-        local on = pico.vs.pos_rect(p, r)
+        local on = pico.vs.pos_rect(nil, p, nil, r)
         --print(on and "in" or "out")
         pico.input.delay(10)
 

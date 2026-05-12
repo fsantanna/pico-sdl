@@ -57,7 +57,7 @@ for y = -25, 125, 10 do
         pico.set.pencil { color='red' }
         pico.output.draw.rect(r2)
 
-        local overlap = pico.vs.rect_rect(r2, r)
+        local overlap = pico.vs.rect_rect(nil, r2, nil, r)
         --print(overlap and "overlap" or "naw")
 
         if x==-25 and y==-25 then
