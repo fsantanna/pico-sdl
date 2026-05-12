@@ -80,7 +80,7 @@ int main (void) {
     // aux: dst shifts down, top of dst empty -> world.tex (white) shows
     // no aux: SDL edge-clamps L.tex top row -> green at top of world.tex
     {
-        pico_layer_empty("world", "L", (Pico_Abs_Dim){48, 48}, NULL);
+        pico_layer_empty("world", "L", 1, (Pico_Rel_Dim){'!', {48, 48}}, NULL);
         {
             const char* old = pico_set_layer("L");
             pico_set_effect_color(PICO_COLOR_GREEN);

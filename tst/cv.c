@@ -37,7 +37,7 @@ int main (void) {
     }
 
     printf("=== sub-layer 2-hop walk ===\n");
-    pico_layer_empty("world", "sub_cv", (Pico_Abs_Dim){50, 50}, NULL);
+    pico_layer_empty("world", "sub_cv", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
     pico_set_layer("sub_cv");
 
     {

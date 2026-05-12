@@ -757,15 +757,24 @@ void pico_layer_pixmap_mode (
     }
 }
 
-void pico_layer_empty (const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
+void pico_layer_empty (
+    const char* up, const char* key,
+    int clear,
+    Pico_Rel_Dim dim, Pico_Abs_Dim* tile
+) {
     _pico_guard();
-    pico_layer_empty_mode('!', up, key, dim, tile);
+    pico_layer_empty_mode('!', up, key, clear, dim, tile);
 }
 
-void pico_layer_empty_mode (int mode, const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile) {
+void pico_layer_empty_mode (
+    int mode,
+    const char* up, const char* key,
+    int clear,
+    Pico_Rel_Dim dim, Pico_Abs_Dim* tile
+) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
-    _alloc_empty_t ctx = { dim, tile };
+    _alloc_empty_t ctx = { up, clear, dim, tile };
     void* ret = realm_put (
         G.realm, mode, strlen(key)+1, key,
         _free_layer, _alloc_layer_empty, &ctx
@@ -1302,6 +1311,7 @@ void pico_output_draw_tri (
 }
 
 static void _pico_output_present (int force) {
+    _pico_guard();
     if (G.window.ing.out) {
         return;
     } else if (force) {
@@ -1310,9 +1320,6 @@ static void _pico_output_present (int force) {
         return;
     } else if (!(G.layer==&G.world || G.layer==&G.window.layer)) {
         return;  // auto-present only on root layers (world or window)
-    }
-    if (!G.init) {
-        return;
     }
 
     G.window.ing.out = 1;
@@ -1342,7 +1349,6 @@ static void _pico_output_present (int force) {
 
 void pico_output_present (void) {
     _pico_guard();
-    assert((G.layer==&G.world || G.layer==&G.window.layer) && "can only present from root layers");
     _pico_output_present(1);
 }
 

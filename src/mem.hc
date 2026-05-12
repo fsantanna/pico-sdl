@@ -11,7 +11,9 @@ typedef struct {
 } _alloc_pixmap_t;
 
 typedef struct {
-    Pico_Abs_Dim  dim;
+    const char*   up;
+    int           clear;
+    Pico_Rel_Dim  dim;
     Pico_Abs_Dim* tile;
 } _alloc_empty_t;
 
@@ -136,13 +138,26 @@ static void* _alloc_layer_pixmap (int n, const void* key, void* ctx) {
 
 static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
     _alloc_empty_t* arg = (_alloc_empty_t*)ctx;
-    Pico_Abs_Dim dim = arg->dim;
+
+    // resolve rel dim against parent's scene.dim
+    // (NULL up -> _sdl_dim falls back to G.layer->scene.dim)
+    Pico_Abs_Rect base, *xbase=NULL;
+    if (arg->up != NULL) {
+        Pico_Layer* par = (Pico_Layer*) realm_get (
+            G.realm, strlen(arg->up)+1, arg->up
+        );
+        assert(par!=NULL && "parent layer does not exist");
+        base  = (Pico_Abs_Rect){ 0, 0, par->scene.dim.w, par->scene.dim.h };
+        xbase = &base;
+    }
+    Pico_Abs_Dim dim = _rnd_dim(_sdl_dim(&arg->dim, xbase, NULL));
+
     if (arg->tile != NULL) {
         dim.w *= arg->tile->w;
         dim.h *= arg->tile->h;
     }
     Pico_Layer* lay = _layer_new (
-        1, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        arg->clear, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
         (const char*)key, _tex_create(dim), dim
     );
     if (arg->tile != NULL) {

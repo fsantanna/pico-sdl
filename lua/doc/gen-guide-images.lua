@@ -296,13 +296,13 @@ end
 
 do
     pico.init(true)
-    pico.layer.empty("bg", {w=100, h=100})
+    pico.layer.empty(nil, "bg", true, {'!', w=100, h=100})
     pico.set.layer("bg")
     pico.set.pencil { color='blue' }
     pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.8, h=0.8})
     pico.set.layer("world")
     pico.output.clear()
-    pico.layer.empty("flag", {w=300, h=200})
+    pico.layer.empty(nil, "flag", true, {'!', w=300, h=200})
     pico.set.layer("flag")
     pico.set.pencil { color={r=0x00, g=0x2B, b=0x7F} }
     pico.output.draw.rect {'%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW'}

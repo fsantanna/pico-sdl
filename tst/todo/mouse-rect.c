@@ -4,7 +4,7 @@ int main (void) {
     pico_init(1);
 
     /* Create layer 50x50, draw centered circle */
-    pico_layer_empty(NULL, "A", (Pico_Abs_Dim){50, 50}, NULL);
+    pico_layer_empty(NULL, "A", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
     pico_set_layer("A");
     pico_set_effect_color(PICO_COLOR_RED);
     pico_output_clear();

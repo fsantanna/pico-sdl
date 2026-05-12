@@ -24,7 +24,7 @@ end
 
 print "pico.cv.* sub-layer 2-hop walk"
 do
-    pico.layer.empty('world', 'sub_cv', {w=50, h=50})
+    pico.layer.empty('world', 'sub_cv', true, {'!', w=50, h=50})
     pico.set.layer 'sub_cv'
 
     print('', 'pos sub -> world')

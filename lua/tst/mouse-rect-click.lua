@@ -2,24 +2,12 @@ require 'pico.check'
 
 pico.init(true)
 
--- helpers: window-pixel mouse + pixel draw at C anchor
-local function mouse_w (x, y)
-    local prev = pico.set.layer("window")
-    pico.set.mouse({'!', x=x, y=y, anchor='C'})
-    pico.set.layer(prev)
-end
-local function draw_pixel_w (x, y)
-    local prev = pico.set.layer("window")
-    pico.output.draw.pixel({'!', x=x, y=y, anchor='C'})
-    pico.set.layer(prev)
-end
-
 -- Layer 120x50 with 3 centered buttons equally spaced
 local btn1 = {'%', x=0.25, y=0.50, w=0.15, h=0.30, anc='C'}
 local btn2 = {'%', x=0.50, y=0.50, w=0.15, h=0.30, anc='C'}
 local btn3 = {'%', x=0.75, y=0.50, w=0.15, h=0.30, anc='C'}
 
-pico.layer.empty('!', nil, "A", {w=120, h=50})
+pico.layer.empty('!', nil, "A", true, {'!', w=120, h=50})
 pico.set.layer("A")
 pico.set.effect { color='navy' }
 pico.output.clear()
@@ -37,7 +25,7 @@ pico.output.draw.layer("A", r)
 pico.check("mouse-rect-click-01")
 
 -- re-express buttons within r (layer's composite rect) for collision
--- against mouse sampled in scene coords
+-- against mouse sampled in world-pct coords
 local b1 = pico.xin.rect(r, btn1)
 local b2 = pico.xin.rect(r, btn2)
 local b3 = pico.xin.rect(r, btn3)
@@ -45,60 +33,68 @@ local b3 = pico.xin.rect(r, btn3)
 -- no collision
 print("no collision (394,355)")
 do
-    mouse_w(394, 355)
+    pico.set.layer("window")
+    pico.set.mouse({'!', x=394, y=355, anchor='C'})
+    pico.set.layer("world")
     local pct = pico.get.mouse('%')
-    local pos = {'%', x=pct.x, y=pct.y}
+    local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
     assert(not pico.vs.pos_rect(nil, pos, nil, b1))
     assert(not pico.vs.pos_rect(nil, pos, nil, b2))
     assert(not pico.vs.pos_rect(nil, pos, nil, b3))
     pico.set.pencil { color='red' }
-    draw_pixel_w(394, 355)
+    pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-02")
 end
 
 -- click 3
 print("click 3 (457,431)")
 do
-    mouse_w(457, 431)
+    pico.set.layer("window")
+    pico.set.mouse({'!', x=457, y=431, anchor='C'})
+    pico.set.layer("world")
     local pct = pico.get.mouse('%')
-    local pos = {'%', x=pct.x, y=pct.y}
+    local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos_rect(pos, b1))
-    assert(not pico.vs.pos_rect(pos, b2))
-    assert(    pico.vs.pos_rect(pos, b3))
+    assert(not pico.vs.pos_rect(nil, pos, nil, b1))
+    assert(not pico.vs.pos_rect(nil, pos, nil, b2))
+    assert(    pico.vs.pos_rect(nil, pos, nil, b3))
     pico.set.pencil { color='green' }
-    draw_pixel_w(457, 431)
+    pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-03")
 end
 
 -- click 1
 print("click 1 (362,405)")
 do
-    mouse_w(362, 405)
+    pico.set.layer("window")
+    pico.set.mouse({'!', x=362, y=405, anchor='C'})
+    pico.set.layer("world")
     local pct = pico.get.mouse('%')
-    local pos = {'%', x=pct.x, y=pct.y}
+    local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
     assert(    pico.vs.pos_rect(nil, pos, nil, b1))
     assert(not pico.vs.pos_rect(nil, pos, nil, b2))
     assert(not pico.vs.pos_rect(nil, pos, nil, b3))
     pico.set.pencil { color='green' }
-    draw_pixel_w(362, 405)
+    pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-04")
 end
 
 -- click 2
 print("click 2 (419,392)")
 do
-    mouse_w(419, 392)
+    pico.set.layer("window")
+    pico.set.mouse({'!', x=419, y=392, anchor='C'})
+    pico.set.layer("world")
     local pct = pico.get.mouse('%')
-    local pos = {'%', x=pct.x, y=pct.y}
+    local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos_rect(pos, b1))
-    assert(    pico.vs.pos_rect(pos, b2))
-    assert(not pico.vs.pos_rect(pos, b3))
+    assert(not pico.vs.pos_rect(nil, pos, nil, b1))
+    assert(    pico.vs.pos_rect(nil, pos, nil, b2))
+    assert(not pico.vs.pos_rect(nil, pos, nil, b3))
     pico.set.pencil { color='green' }
-    draw_pixel_w(419, 392)
+    pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-05")
 end
 
