@@ -82,9 +82,9 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga03bc7bb9c76b7168ae4e1ec1a409f129" id="r_ga03bc7bb9c76b7168ae4e1ec1a409f129"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a> (void)</td></tr>
-<tr class="memdesc:ga03bc7bb9c76b7168ae4e1ec1a409f129"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears screen with color set by <a class="el" href="group__State.html#ga0d90339c9388dd563e8a8aaa6daa3987">pico_set_effect_color</a>.  <br /></td></tr>
+<tr class="memdesc:ga03bc7bb9c76b7168ae4e1ec1a409f129"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears screen with color set by <a class="el" href="group__State.html#ga3a84fb1cd762dad6bb0b99c3b7fbc8f4">pico_set_effect_color</a>.  <br /></td></tr>
 <tr class="separator:ga03bc7bb9c76b7168ae4e1ec1a409f129"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4b57187cf3ba0c1bd4164896e241a41c" id="r_ga4b57187cf3ba0c1bd4164896e241a41c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga4b57187cf3ba0c1bd4164896e241a41c">pico_output_draw_pixmap</a> (const char *key, <a class="el" href="structPico__Abs__Dim.html">Pico_Abs_Dim</a> dim, const <a class="el" href="structPico__Color.html">Pico_Color</a> pixmap[], const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
+<tr class="memitem:ga4b57187cf3ba0c1bd4164896e241a41c" id="r_ga4b57187cf3ba0c1bd4164896e241a41c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga4b57187cf3ba0c1bd4164896e241a41c">pico_output_draw_pixmap</a> (const char *key, <a class="el" href="structPico__Abs__Dim.html">Pico_Abs_Dim</a> dim, const Pico_Color pixmap[], const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
 <tr class="memdesc:ga4b57187cf3ba0c1bd4164896e241a41c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws an RGBA pixmap.  <br /></td></tr>
 <tr class="separator:ga4b57187cf3ba0c1bd4164896e241a41c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab7b7d81e1873501b868ad54c81ec95b5" id="r_gab7b7d81e1873501b868ad54c81ec95b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#gab7b7d81e1873501b868ad54c81ec95b5">pico_output_draw_image</a> (const char *path, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
@@ -123,6 +123,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga22b9a09a3d8a93b72b613b9b653701c4" id="r_ga22b9a09a3d8a93b72b613b9b653701c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga22b9a09a3d8a93b72b613b9b653701c4">pico_output_present</a> (void)</td></tr>
 <tr class="memdesc:ga22b9a09a3d8a93b72b613b9b653701c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows what has been drawn onto the screen. Only does anything on expert mode.  <br /></td></tr>
 <tr class="separator:ga22b9a09a3d8a93b72b613b9b653701c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf694957ae29e2bf4d109d6478e4f4243" id="r_gaf694957ae29e2bf4d109d6478e4f4243"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#gaf694957ae29e2bf4d109d6478e4f4243">pico_output_draw_layers</a> (void)</td></tr>
+<tr class="memdesc:gaf694957ae29e2bf4d109d6478e4f4243"><td class="mdescLeft">&#160;</td><td class="mdescRight">Composites the layer hierarchy (window's children, including world) onto window.tex. Called automatically by pico_output_present in non-expert mode.  <br /></td></tr>
+<tr class="separator:gaf694957ae29e2bf4d109d6478e4f4243"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaea4343b81e35e80eb3608f1c6aaf3f4a" id="r_gaea4343b81e35e80eb3608f1c6aaf3f4a"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#gaea4343b81e35e80eb3608f1c6aaf3f4a">pico_output_screenshot</a> (const char *path, const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
 <tr class="memdesc:gaea4343b81e35e80eb3608f1c6aaf3f4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes a screenshot.  <br /></td></tr>
 <tr class="separator:gaea4343b81e35e80eb3608f1c6aaf3f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,7 +155,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Clears screen with color set by <a class="el" href="group__State.html#ga0d90339c9388dd563e8a8aaa6daa3987">pico_set_effect_color</a>. </p>
+<p>Clears screen with color set by <a class="el" href="group__State.html#ga3a84fb1cd762dad6bb0b99c3b7fbc8f4">pico_set_effect_color</a>. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_loop_8c-example.html#a3">event_loop.c</a>.</dd>
 </dl>
 
@@ -230,6 +233,26 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="gaf694957ae29e2bf4d109d6478e4f4243" name="gaf694957ae29e2bf4d109d6478e4f4243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf694957ae29e2bf4d109d6478e4f4243">&#9670;&#160;</a></span>pico_output_draw_layers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pico_output_draw_layers </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Composites the layer hierarchy (window's children, including world) onto window.tex. Called automatically by pico_output_present in non-expert mode. </p>
 
 </div>
 </div>
@@ -380,7 +403,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structPico__Color.html">Pico_Color</a>&#160;</td>
+          <td class="paramtype">const Pico_Color&#160;</td>
           <td class="paramname"><em>pixmap</em>[], </td>
         </tr>
         <tr>

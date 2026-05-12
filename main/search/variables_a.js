@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['r_0',['r',['../structPico__Color.html#a2d9912026d4f4ec0c11920f21f97861a',1,'Pico_Color']]],
-  ['right_1',['right',['../structPico__Mouse.html#a9f0d3483ec069f573d4bb18b2609479f',1,'Pico_Mouse']]],
-  ['rotate_2',['rotate',['../structPico__Layer__Effect.html#a62c547188505ad71b9c7e7092c87811a',1,'Pico_Layer_Effect']]]
+  ['shift_0',['shift',['../structPico__Keyboard.html#aeb5dc86b4afaeba9b1ac88bbe8faf5d5',1,'Pico_Keyboard']]],
+  ['show_1',['show',['../structPico__Window.html#af5b49f0bb3840a3de55e7b352d7608cb',1,'Pico_Window']]],
+  ['src_2',['src',['../structPico__Layer__Scene.html#a80f5a06503c30d64eeabbbdd76dd8a45',1,'Pico_Layer_Scene']]],
+  ['style_3',['style',['../structPico__Layer__Pencil.html#a6cf7a4fe13637787d04484928efd7fe4',1,'Pico_Layer_Pencil']]]
 ];
