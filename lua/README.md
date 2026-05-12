@@ -5,6 +5,8 @@
 [badge]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml/badge.svg
 [tests]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml
 
+<img src="../res/logo.png" width="250" align="right">
+
 ***Lua binding for [pico-sdl](../)***
 
 [
@@ -30,8 +32,6 @@ Please, switch to stable [`v0.3.1`](https://github.com/fsantanna/pico-sdl/tree/v
 2D games and applications.
 
 [pico-lua]: https://github.com/fsantanna/pico-sdl/
-
-<img src="../res/logo.png" width="250" align="right">
 
 # Hello World!
 
