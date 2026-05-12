@@ -31,7 +31,7 @@ Please, switch to stable [`v0.3.1`](https://github.com/fsantanna/pico-sdl/tree/v
 
 See also [pico-lua](lua/), the official Lua binding for `pico-sdl`.
 
-<img src="pico-logo.png" width="250" align="right">
+<img src="res/logo.png" width="250" align="right">
 
 `pico-sdl` is designed around 3 groups of APIs:
 
@@ -47,7 +47,7 @@ See also [pico-lua](lua/), the official Lua binding for `pico-sdl`.
 The following example draws an `X` on screen gradually, pixel by pixel:
 
 <picture>
-<img align="right" src="cross.gif">
+<img align="right" src="res/cross.gif">
 </picture>
 
 ```c
