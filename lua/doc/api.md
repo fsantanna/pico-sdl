@@ -14,7 +14,8 @@ In alphabetical order:
         `'blue'`, `'yellow'`, `'cyan'`, `'magenta'`, `'orange'`, `'purple'`,
         `'pink'`, `'brown'`, `'lime'`, `'teal'`, `'navy'`, `'maroon'`,
         `'olive'`
-- **Dim**: `{ ['!'|'%'|'#'], w: number, h: number }`
+- **Dim**: `{ ['!'|'%'|'#'], [w: number], [h: number] }`
+    - Missing `w` or `h` defaults to 0 ("infer from source").
 - **Event**: `{ tag: string, ... }`
     - `{ tag='quit' }`
     - `{ tag='win.resize', w: integer, h: integer }`
@@ -26,7 +27,8 @@ In alphabetical order:
 - **Flip**: `'none'` | `'horizontal'` | `'vertical'` | `'both'`
 - **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, left: boolean, right: boolean, middle: boolean }`
 - **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor] }`
-- **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anchor: Anchor] }`
+- **Rect**: `{ x: number, y: number, [w: number], [h: number] [,'!'|'%'|'#', anchor: Anchor] }`
+    - Missing `w` or `h` defaults to 0 ("infer from source").
 - **Rotation**: `{ angle: integer, anchor: Anchor }`
 - **Tile**: `{ w: integer, h: integer }`
 - **Video**: `{ dim: Dim, fps: integer, frame: integer, done: boolean }`

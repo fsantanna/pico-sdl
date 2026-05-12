@@ -184,6 +184,105 @@ breakage). Updated to new sig:
 - [ ] Spot-check `make int T=keep` and
       `make int T=layer-empty-tile` visually.
 
+## Phase 2: Lua-only rect convenience (post-base-refactor)
+
+After the C-level breaking change shipped, a second wave of
+Lua-only ergonomics was added. **No further C API changes.**
+
+### Feature A: rect-as-dim shortcut for `pico.layer.empty`
+
+If the 4th arg is a Rect (table with `x` field) instead of a
+Dim, the wrapper derives the layer's Dim from its `mode/w/h`
+AND sets the new layer's `scene.target` to the full rect.
+
+```lua
+pico.layer.empty(nil, "panel", true,
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='C'})
+-- 50%×50% layer placed centered, in one call
+```
+
+Implementation:
+- `C_rel_dim(L, i+3)` reads `mode/w/h` regardless of whether
+  the table is a Dim or Rect (Rect has these fields too).
+- `L_opt_target(L, i+3, key)` detects Rect (by `x` field) and
+  applies `scene.dst` to the new layer.
+
+### Feature B: trailing optional rect on all other ctors
+
+`image`, `pixmap`, `text`, `video`, `sub` accept an optional
+trailing `Rect` that sets `scene.target` of the new layer.
+`images` (which generates multiple sub-layers) is excluded.
+
+```lua
+pico.layer.image("world", "img", "open.png",
+    {'%', x=0.7, y=0.7, w=0.4, h=0.4, anchor='C'})
+
+pico.layer.sub("world", "blue", "buf",
+    {'!', x=0, y=1, w=1, h=1, anchor='NW'},   -- crop
+    {'%', x=0.20, y=0.9, w=0.10, h=0.10})     -- target
+```
+
+For `image`/`video` (which already support an optional
+implicit `key`), the trailing rect requires an explicit
+`key` (the wrapper can't set `scene.dst` on an unnamed
+layer).
+
+### Feature C: uniform check-and-set helper
+
+```c
+// If slot `i` holds a Rect (table with `x`), set layer
+// `key`'s scene.target. No-op otherwise. Preserves cur.
+static void L_opt_target (lua_State* L, int i, const char* key);
+```
+
+Each layer ctor ends with a single call:
+`L_opt_target(L, slot, key);`
+
+- `empty`: slot `i+3` (the dim/rect slot)
+- `image`/`video`: slot `i+3` (when explicit key)
+- `pixmap`: slot `i+3`
+- `text`: slot `i+4`
+- `sub`: slot `i+4`
+
+Safe when `key` is NULL (image/video implicit-key case): the
+helper short-circuits before touching `key` because the slot
+will either be absent or non-table.
+
+### Feature D: `w`/`h` default to 0 in `C_rel_rect` / `C_rel_dim`
+
+`Pico_Rel_Rect` semantics: `w=0` or `h=0` means "infer from
+source aspect" (already exercised by view-target-05/06/07).
+The Lua parsers now default missing fields to 0 — matching
+the C convention and unlocking concise rect forms like
+`{'%', x=0.3, y=0.3, w=0.4}` (h inferred).
+
+- New helper `C_optfieldnum(L, i, k)` — sibling of
+  `C_checkfieldnum`, returns 0 on missing, errors on
+  non-numeric.
+- `C_rel_rect`: x/y stay required (`C_checkfieldnum`); w/h
+  optional (`C_optfieldnum`).
+- `C_rel_dim`: w/h optional.
+- `L_dim_default_wh` helper removed entirely; its 9 call
+  sites also removed (defaulting now lives in the parsers).
+
+Trade-off: typos on `w=`/`h=` no longer raise — silently
+default to 0.
+
+### Tests added / simplified
+
+- `lua/tst/layers.lua` — new programmatic tests:
+  - rect-as-dim shortcut for `empty` (verifies dim
+    derivation + `scene.target`).
+  - pixmap trailing-rect (verifies `scene.target`).
+- `lua/tst/view-target.lua` — new visual test
+  `view-target-08` (identical baseline to `view-target-04`)
+  demonstrating the rect-as-dim shortcut.
+- `lua/tst/layer-hier.lua` — 5 cases collapsed to one-call:
+  image (02), pixmap (03), text (04), sub×2 (06).
+- `lua/tst/guide.lua` — 3 cases in §7.4 collapsed using
+  the w/h-omitted Rect form: image (line 295), text×2
+  (305, 310).
+
 ### Lessons
 
 - Many callers were missed by the initial plan inventory.
@@ -192,6 +291,11 @@ breakage). Updated to new sig:
 - Don't `cd lua/` in Bash — the cwd persists across calls
   and `lua/` lacks `.claude/one`, which wedges all subsequent
   Bash/Edit/Write. Use `make -C lua tests` instead.
+- Slot indices in C wrappers are easy to mis-type. The
+  `i+3` vs `i+2` bug in `l_layer_pixmap` slipped through
+  static review because the wrong slot happened to be a
+  table (the pixmap arg), so the rect-detect check passed
+  silently. Visual regression caught it.
 
 ### Notes for cross-machine handoff
 
@@ -211,5 +315,9 @@ breakage). Updated to new sig:
 - Confirm `_sdl_dim` accepts `Pico_Rel_Dim*` +
   `Pico_Abs_Rect*` base.
   Verified: `src/aux.hc:43`.
-- `lua/doc/gen-guide-images.lua` form: update to new
-  signature, or leave as-is?
+- `lua/doc/gen-guide-images.lua` form: updated to new
+  signature (Phase 1 — done).
+- Visual spot-checks: `make int T=keep`,
+  `make int T=layer-empty-tile` still pending.
+- C tests not re-run since the `C_optfieldnum` refactor
+  (user request: don't run). Lua side green.
