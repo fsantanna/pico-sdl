@@ -685,6 +685,17 @@ int pico_vs_pos_rect (
     const char* L2, Pico_Rel_Rect* r2
 );
 
+/// @brief Checks if a point is inside a rectangle (mirror of pos_rect).
+/// Equivalent to pico_vs_pos_rect(L2, p2, L1, r1). r1 may be NULL with
+/// L1 set (uses the child's bounds) or both NULL (uses cur's bounds).
+/// p2 must not be NULL.
+/// @return 1 if p2 is inside r1, or 0 otherwise
+/// @sa pico_vs_pos_rect
+int pico_vs_rect_pos (
+    const char* L1, Pico_Rel_Rect* r1,
+    const char* L2, Pico_Rel_Pos*  p2
+);
+
 /// @brief Checks if two rectangles overlap.
 /// Each side can be expressed in cur (Lx=NULL) or in a direct child of
 /// cur. With Lx set and the rect NULL, the child layer's bounds act as

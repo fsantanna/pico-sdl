@@ -226,20 +226,34 @@ In alphabetical order:
         - `pico.set.mouse (pos: Pos)`
         - `pos.mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
 - **pico.vs**
-    - Collision checks. Each side can be a value in cur (`Lx=nil`) or
-      a value/bounds in a layer that is a direct child of cur
-      (`Lx=<child-name>`). `Lx` and the corresponding value cannot both
-      be `nil`. `pos` values must always be non-nil; `rect` values may
-      be `nil` when `Lx` is set (uses the child layer's bounds).
-    - **pico.vs.pos_pos**: True if two points fall on the same pixel
+    - Collision checks.
+      Each side has the canonical shape `(Lx, vx)` where `Lx` is the
+      name of a direct child of cur (or absent for cur itself) and
+      `vx` is a `Pos` or `Rect` value relative to `Lx`.
+    - Args are matched left-to-right against the 4-slot template
+      `(L1, v1, L2, v2)`. Both explicit `nil`s and trailing omissions
+      are accepted; a mismatched type leaves the slot empty without
+      consuming the arg, so `(L1, L2)`, `(v1, v2)`, `(L1, v2)`, etc.
+      are all valid shortenings.
+    - When a `rect` slot is absent (both `Lx` and `vx`) it defaults to
+      the bounds of cur (`scene.dst`). `pos` slots have no default and
+      must always be supplied.
+    - **pico.vs.pos.pos**: True if two points fall on the same pixel
       (after integer rounding in cur).
-        - `pico.vs.pos_pos (p1: Pos, p2: Pos) -> boolean`
-        - `pico.vs.pos_pos (L1: string?, p1: Pos, L2: string?, p2: Pos) -> boolean`
-    - **pico.vs.pos_rect**: True if a point is inside a rectangle.
-        - `pico.vs.pos_rect (p1: Pos, r2: Rect) -> boolean`
-        - `pico.vs.pos_rect (L1: string?, p1: Pos, L2: string?, r2: Rect?) -> boolean`
-    - **pico.vs.rect_rect**: True if two rectangles overlap.
-        - `pico.vs.rect_rect (r1: Rect, r2: Rect) -> boolean`
-        - `pico.vs.rect_rect (L1: string, L2: string) -> boolean`
-        - `pico.vs.rect_rect (L1: string?, r1: Rect?, L2: string?, r2: Rect?) -> boolean`
-        - The 2-string form compares the bounds of both child layers.
+        - `pico.vs.pos.pos (L1: string?, p1: Pos, L2: string?, p2: Pos) -> boolean`
+        - `p1` and `p2` are required.
+    - **pico.vs.pos.rect**: True if a point is inside a rectangle.
+        - `pico.vs.pos.rect (L1: string?, p1: Pos, L2: string?, r2: Rect?) -> boolean`
+        - `p1` is required; `r2` defaults to cur's bounds (or `L2`'s
+          bounds when `L2` is set and `r2` is absent).
+    - **pico.vs.rect.pos**: True if a point is inside a rectangle
+      (mirror of `pos.rect`).
+        - `pico.vs.rect.pos (L1: string?, r1: Rect?, L2: string?, p2: Pos) -> boolean`
+        - `p2` is required; `r1` defaults to cur's bounds (or `L1`'s
+          bounds when `L1` is set and `r1` is absent).
+    - **pico.vs.rect.rect**: True if two rectangles overlap.
+        - `pico.vs.rect.rect (L1: string?, r1: Rect?, L2: string?, r2: Rect?) -> boolean`
+        - All slots are optional; each missing rect side defaults to
+          its layer's bounds (or cur's bounds when the layer is also
+          absent). The 2-string form `(L1, L2)` compares the bounds
+          of both child layers.

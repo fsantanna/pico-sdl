@@ -99,14 +99,90 @@ int main (void) {
         assert(pico_vs_pos_rect(NULL, &p1, "sub_vs", NULL) == 1);
     }
 
-    // rect_rect - L1 NULL, r1=NULL would be invalid (assertion); skip
-
     // pos_pos - p1 in sub vs p2 in cur, both land on same pixel
     {
         puts("vs_pos_pos - p1 in sub maps to p2 in cur");
         Pico_Rel_Pos p1 = { '!', {10, 20}, PICO_ANCHOR_NW };  // sub -> cur (20,40)
         Pico_Rel_Pos p2 = { '!', {20, 40}, PICO_ANCHOR_NW };
         assert(pico_vs_pos_pos("sub_vs", &p1, NULL, &p2) == 1);
+    }
+
+    // pos_rect - r2=NULL, L2=NULL: defaults to cur's bounds
+    {
+        puts("vs_pos_rect - r2=NULL+L2=NULL uses cur's bounds");
+        Pico_Rel_Pos p1 = { '%', {0.5, 0.5}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p1, NULL, NULL) == 1);
+    }
+
+    // rect_rect - both NULL: both default to cur's bounds, overlap
+    {
+        puts("vs_rect_rect - r1=NULL+r2=NULL uses cur's bounds");
+        assert(pico_vs_rect_rect(NULL, NULL, NULL, NULL) == 1);
+    }
+
+    // rect_pos - mirror of pos_rect
+    {
+        puts("vs_rect_pos - point inside rect (abs)");
+        Pico_Rel_Rect r1 = { '!', {25, 25, 50, 50}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos  p2 = { '!', {50, 50}, PICO_ANCHOR_NW };
+        assert(pico_vs_rect_pos(NULL, &r1, NULL, &p2) == 1);
+    }
+    {
+        puts("vs_rect_pos - r1=NULL uses cur's bounds");
+        Pico_Rel_Pos p2 = { '%', {0.5, 0.5}, PICO_ANCHOR_NW };
+        assert(pico_vs_rect_pos(NULL, NULL, NULL, &p2) == 1);
+    }
+    {
+        puts("vs_rect_pos - p2 in sub maps into r1 in cur");
+        Pico_Rel_Rect r1 = { '!', {15, 35, 20, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos  p2 = { '!', {10, 20}, PICO_ANCHOR_NW };  // sub -> cur (20,40)
+        assert(pico_vs_rect_pos(NULL, &r1, "sub_vs", &p2) == 1);
+    }
+
+    // % mode out of [0,1] -> projects outside cur's bounds
+    {
+        puts("vs_pos_rect - p1=% over 1.0 outside cur bounds");
+        Pico_Rel_Pos p1 = { '%', {1.5, 1.5}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p1, NULL, NULL) == 0);
+    }
+    {
+        puts("vs_pos_rect - p1=% under 0.0 outside cur bounds");
+        Pico_Rel_Pos p1 = { '%', {-0.1, -0.1}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p1, NULL, NULL) == 0);
+    }
+    {
+        puts("vs_rect_rect - r1=% over 1.0 outside cur bounds");
+        Pico_Rel_Rect r1 = { '%', {1.5, 1.5, 0.1, 0.1}, PICO_ANCHOR_NW };
+        assert(pico_vs_rect_rect(NULL, &r1, NULL, NULL) == 0);
+    }
+    {
+        puts("vs_rect_rect - r1=% under 0.0 outside cur bounds");
+        Pico_Rel_Rect r1 = { '%', {-0.5, -0.5, 0.2, 0.2}, PICO_ANCHOR_NW };
+        assert(pico_vs_rect_rect(NULL, &r1, NULL, NULL) == 0);
+    }
+    {
+        puts("vs_pos_pos - one %=0.5 vs other %=1.5 differ");
+        Pico_Rel_Pos p1 = { '%', { 0.5,  0.5}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p2 = { '%', { 1.5,  1.5}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_pos(NULL, &p1, NULL, &p2) == 0);
+    }
+    {
+        puts("vs_pos_pos - one %=0.5 vs other %=-0.1 differ");
+        Pico_Rel_Pos p1 = { '%', { 0.5,  0.5}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p2 = { '%', {-0.1, -0.1}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_pos(NULL, &p1, NULL, &p2) == 0);
+    }
+    {
+        puts("vs_rect_pos - p2=% over 1.0 outside r1");
+        Pico_Rel_Rect r1 = { '!', {25, 25, 50, 50}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos  p2 = { '%', { 1.5,  1.5}, PICO_ANCHOR_NW };
+        assert(pico_vs_rect_pos(NULL, &r1, NULL, &p2) == 0);
+    }
+    {
+        puts("vs_rect_pos - p2=% under 0.0 outside r1");
+        Pico_Rel_Rect r1 = { '!', {25, 25, 50, 50}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos  p2 = { '%', {-0.1, -0.1}, PICO_ANCHOR_NW };
+        assert(pico_vs_rect_pos(NULL, &r1, NULL, &p2) == 0);
     }
 
     pico_init(0);
