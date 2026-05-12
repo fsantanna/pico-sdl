@@ -1126,28 +1126,27 @@ static int l_set_window (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_layer_empty (lua_State* L) {
-    int m = C_mode_opt(L);  // [m] | up | key | dim | [tile]
+    int m = C_mode_opt(L);  // [m] | up | key | clear | dim | [tile]
     int i = m ? 2 : 1;
     if (!m) m = '!';
     const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
     const char* key = luaL_checkstring(L, i+1);
 
-    luaL_checktype(L, i+2, LUA_TTABLE);
-    Pico_Abs_Dim dim = {
-        (int) C_checkfieldnum(L, i+2, "w"),
-        (int) C_checkfieldnum(L, i+2, "h"),
-    };
+    luaL_checktype(L, i+2, LUA_TBOOLEAN);
+    int clear = lua_toboolean(L, i+2);
+
+    Pico_Rel_Dim dim = C_rel_dim(L, i+3);
 
     Pico_Abs_Dim tile;
     Pico_Abs_Dim* ptr = NULL;
-    if (!lua_isnoneornil(L,i+3)) {
-        luaL_checktype(L, i+3, LUA_TTABLE);
-        tile.w = (int) C_checkfieldnum(L, i+3, "w");
-        tile.h = (int) C_checkfieldnum(L, i+3, "h");
+    if (!lua_isnoneornil(L,i+4)) {
+        luaL_checktype(L, i+4, LUA_TTABLE);
+        tile.w = (int) C_checkfieldnum(L, i+4, "w");
+        tile.h = (int) C_checkfieldnum(L, i+4, "h");
         ptr = &tile;
     }
 
-    pico_layer_empty_mode(m, up, key, dim, ptr);
+    pico_layer_empty_mode(m, up, key, clear, dim, ptr);
     return 0;
 }
 

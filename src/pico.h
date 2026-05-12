@@ -367,15 +367,25 @@ void pico_layer_pixmap_mode (int mode, const char* up, const char* key,
                              const Pico_Color* pixels);
 
 /// @brief Creates an empty layer (exclusive mode).
-/// @param key layer key (must not be NULL or start with '/')
-/// @param dim layer dimensions
-void pico_layer_empty (const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile);
+/// @param key   layer key (must not be NULL or start with '/')
+/// @param clear initial scene.clear value
+/// @param dim   layer dimensions; '%' resolves against parent
+///              `up`'s scene.dim (or current layer if up==NULL)
+void pico_layer_empty (
+    const char* up, const char* key, int clear,
+    Pico_Rel_Dim dim, Pico_Abs_Dim* tile
+);
 
 /// @brief Creates an empty layer.
-/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (must not be NULL or start with '/')
-/// @param dim layer dimensions
-void pico_layer_empty_mode (int mode, const char* up, const char* key, Pico_Abs_Dim dim, Pico_Abs_Dim* tile);
+/// @param mode  realm mode ('!' exclusive, '=' shared, '~' replace)
+/// @param key   layer key (must not be NULL or start with '/')
+/// @param clear initial scene.clear value
+/// @param dim   layer dimensions; '%' resolves against parent
+///              `up`'s scene.dim (or current layer if up==NULL)
+void pico_layer_empty_mode (
+    int mode, const char* up, const char* key, int clear,
+    Pico_Rel_Dim dim, Pico_Abs_Dim* tile
+);
 
 /// @brief Creates a layer from an image file (exclusive mode).
 /// @param key layer key (NULL uses "/image/<path>", otherwise
