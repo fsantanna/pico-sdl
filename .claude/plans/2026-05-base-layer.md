@@ -140,7 +140,7 @@ Reverted. Two prerequisites split out as concrete follow-ups so the next attempt
 - `'w'` mode + 6 `_win_*` helpers + `pico_cv_pos_*_win` deletion — gated on the present refactor
 - CV/VS `base` arg removal (Decision 5)
 - Doc rewrite (`api.md`, `guide.md`) — track in `2026-05-layer-utils.md` Backlog
-- **Desktop-as-parent unification** (Decision 18): wire `window.effect.alpha` → `SDL_SetWindowOpacity`; `window.scene.dst` → `SDL_SetWindow{Position,Size}`; fold `Pico_Window.fs` into `scene.dst`. After that, `Pico_Window` collapses to layer + sdl-handle.
+- **OS-as-parent unification** (Decision 18): wire `window.effect.alpha` → `SDL_SetWindowOpacity`; `window.scene.dst` → `SDL_SetWindow{Position,Size}`; fold `Pico_Window.fs` into `scene.dst`. After that, `Pico_Window` collapses to layer + sdl-handle. Tracked in `2026-05-os-window.md`.
 
 ## Historical (compressed)
 
