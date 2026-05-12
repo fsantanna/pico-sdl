@@ -542,102 +542,104 @@ static int l_in_dim (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_vs_pos_pos (lua_State* L) {
-    const char* L1 = NULL;
-    const char* L2 = NULL;
-    Pico_Rel_Pos p1;
-    Pico_Rel_Pos p2;
-    Pico_Rel_Pos* p1p = NULL;
-    Pico_Rel_Pos* p2p = NULL;
-    if (lua_gettop(L) == 2) {
-        int t1 = lua_type(L, 1);
-        int t2 = lua_type(L, 2);
-        if (t1 == LUA_TSTRING && t2 == LUA_TSTRING) {
-            L1 = lua_tostring(L, 1);
-            L2 = lua_tostring(L, 2);
-        } else if (t1 == LUA_TTABLE && t2 == LUA_TTABLE) {
-            p1 = C_rel_pos(L, 1); p1p = &p1;
-            p2 = C_rel_pos(L, 2); p2p = &p2;
+// vs_parse — flexible 4-slot dispatcher for pico.vs.*
+// slots:  [ L1, x1, L2, x2 ]   types: [ str, tbl, str, tbl ]
+// out[i]: Lua arg index (1..nargs), or 0 if the slot is absent.
+// An explicit nil in the arg list is consumed and leaves the slot at 0;
+// a type mismatch leaves the slot empty without advancing the arg cursor.
+static void vs_parse (lua_State* L, int out[4]) {
+    static const int types[4] = {LUA_TSTRING, LUA_TTABLE, LUA_TSTRING, LUA_TTABLE};
+    int n = lua_gettop(L);
+    int ai = 1;
+    for (int si = 0; si < 4; si++) {
+        out[si] = 0;
+        if (ai > n) {
+            // no more args
+        } else if (lua_isnil(L, ai)) {
+            ai++;
+        } else if (lua_type(L, ai) == types[si]) {
+            out[si] = ai;
+            ai++;
         } else {
-            return luaL_error(L, "vs.pos_pos: 2-arg form needs (L1,L2) or (p1,p2)");
+            // type mismatch: leave slot empty, do not advance
         }
-    } else {
-        L1 = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
-        L2 = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-        luaL_checktype(L, 2, LUA_TTABLE);
-        luaL_checktype(L, 4, LUA_TTABLE);
-        p1 = C_rel_pos(L, 2); p1p = &p1;
-        p2 = C_rel_pos(L, 4); p2p = &p2;
     }
-    int ret = pico_vs_pos_pos(L1, p1p, L2, p2p);
+    if (ai <= n) {
+        luaL_error(L, "vs: unmatched argument at position %d", ai);
+    }
+}
+
+static int l_vs_pos_pos (lua_State* L) {
+    int idx[4];
+    vs_parse(L, idx);
+    if (idx[1] == 0 || idx[3] == 0) {
+        return luaL_error(L, "vs.pos_pos: p1 and p2 are required");
+    }
+    const char* L1 = idx[0] ? lua_tostring(L, idx[0]) : NULL;
+    const char* L2 = idx[2] ? lua_tostring(L, idx[2]) : NULL;
+    Pico_Rel_Pos p1 = C_rel_pos(L, idx[1]);
+    Pico_Rel_Pos p2 = C_rel_pos(L, idx[3]);
+    int ret = pico_vs_pos_pos(L1, &p1, L2, &p2);
     lua_pushboolean(L, ret);
     return 1;
 }
 
 static int l_vs_pos_rect (lua_State* L) {
-    const char* L1 = NULL;
-    const char* L2 = NULL;
-    Pico_Rel_Pos  p1;
-    Pico_Rel_Rect r2;
-    Pico_Rel_Pos*  p1p = NULL;
-    Pico_Rel_Rect* r2p = NULL;
-    if (lua_gettop(L) == 2) {
-        int t1 = lua_type(L, 1);
-        int t2 = lua_type(L, 2);
-        if (t1 == LUA_TSTRING && t2 == LUA_TSTRING) {
-            L1 = lua_tostring(L, 1);
-            L2 = lua_tostring(L, 2);
-        } else if (t1 == LUA_TTABLE && t2 == LUA_TTABLE) {
-            p1 = C_rel_pos(L, 1);  p1p = &p1;
-            r2 = C_rel_rect(L, 2); r2p = &r2;
-        } else {
-            return luaL_error(L, "vs.pos_rect: 2-arg form needs (L1,L2) or (p1,r2)");
-        }
-    } else {
-        L1 = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
-        L2 = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-        luaL_checktype(L, 2, LUA_TTABLE);
-        p1 = C_rel_pos(L, 2); p1p = &p1;
-        if (!lua_isnoneornil(L, 4)) {
-            luaL_checktype(L, 4, LUA_TTABLE);
-            r2 = C_rel_rect(L, 4); r2p = &r2;
-        }
+    int idx[4];
+    vs_parse(L, idx);
+    if (idx[1] == 0) {
+        return luaL_error(L, "vs.pos_rect: p1 is required");
     }
-    int ret = pico_vs_pos_rect(L1, p1p, L2, r2p);
+    const char* L1 = idx[0] ? lua_tostring(L, idx[0]) : NULL;
+    const char* L2 = idx[2] ? lua_tostring(L, idx[2]) : NULL;
+    Pico_Rel_Pos  p1 = C_rel_pos(L, idx[1]);
+    Pico_Rel_Rect r2;
+    Pico_Rel_Rect* r2p = NULL;
+    if (idx[3]) {
+        r2 = C_rel_rect(L, idx[3]);
+        r2p = &r2;
+    }
+    int ret = pico_vs_pos_rect(L1, &p1, L2, r2p);
+    lua_pushboolean(L, ret);
+    return 1;
+}
+
+static int l_vs_rect_pos (lua_State* L) {
+    int idx[4];
+    vs_parse(L, idx);
+    if (idx[3] == 0) {
+        return luaL_error(L, "vs.rect_pos: p2 is required");
+    }
+    const char* L1 = idx[0] ? lua_tostring(L, idx[0]) : NULL;
+    const char* L2 = idx[2] ? lua_tostring(L, idx[2]) : NULL;
+    Pico_Rel_Rect r1;
+    Pico_Rel_Rect* r1p = NULL;
+    if (idx[1]) {
+        r1 = C_rel_rect(L, idx[1]);
+        r1p = &r1;
+    }
+    Pico_Rel_Pos p2 = C_rel_pos(L, idx[3]);
+    int ret = pico_vs_rect_pos(L1, r1p, L2, &p2);
     lua_pushboolean(L, ret);
     return 1;
 }
 
 static int l_vs_rect_rect (lua_State* L) {
-    const char* L1 = NULL;
-    const char* L2 = NULL;
+    int idx[4];
+    vs_parse(L, idx);
+    const char* L1 = idx[0] ? lua_tostring(L, idx[0]) : NULL;
+    const char* L2 = idx[2] ? lua_tostring(L, idx[2]) : NULL;
     Pico_Rel_Rect r1;
     Pico_Rel_Rect r2;
     Pico_Rel_Rect* r1p = NULL;
     Pico_Rel_Rect* r2p = NULL;
-    if (lua_gettop(L) == 2) {
-        int t1 = lua_type(L, 1);
-        int t2 = lua_type(L, 2);
-        if (t1 == LUA_TSTRING && t2 == LUA_TSTRING) {
-            L1 = lua_tostring(L, 1);
-            L2 = lua_tostring(L, 2);
-        } else if (t1 == LUA_TTABLE && t2 == LUA_TTABLE) {
-            r1 = C_rel_rect(L, 1); r1p = &r1;
-            r2 = C_rel_rect(L, 2); r2p = &r2;
-        } else {
-            return luaL_error(L, "vs.rect_rect: 2-arg form needs (L1,L2) or (r1,r2)");
-        }
-    } else {
-        L1 = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
-        L2 = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-        if (!lua_isnoneornil(L, 2)) {
-            luaL_checktype(L, 2, LUA_TTABLE);
-            r1 = C_rel_rect(L, 2); r1p = &r1;
-        }
-        if (!lua_isnoneornil(L, 4)) {
-            luaL_checktype(L, 4, LUA_TTABLE);
-            r2 = C_rel_rect(L, 4); r2p = &r2;
-        }
+    if (idx[1]) {
+        r1 = C_rel_rect(L, idx[1]);
+        r1p = &r1;
+    }
+    if (idx[3]) {
+        r2 = C_rel_rect(L, idx[3]);
+        r2p = &r2;
     }
     int ret = pico_vs_rect_rect(L1, r1p, L2, r2p);
     lua_pushboolean(L, ret);
@@ -1577,6 +1579,7 @@ static const luaL_Reg ll_in[] = {
 static const luaL_Reg ll_vs[] = {
     { "pos_pos",   l_vs_pos_pos   },
     { "pos_rect",  l_vs_pos_rect  },
+    { "rect_pos",  l_vs_rect_pos  },
     { "rect_rect", l_vs_rect_rect },
     { NULL, NULL }
 };
