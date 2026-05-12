@@ -269,7 +269,9 @@ static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
 }
 
 static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
-    if (layer == NULL) return *r;
+    if (layer == NULL) {
+        return (r == NULL) ? G.layer->scene.dst : *r;
+    }
     Pico_Layer* old = G.layer;
     G.layer = _pico_layer_name(layer);
     pico_assert (
@@ -308,7 +310,6 @@ int pico_vs_pos_rect (
 ) {
     _pico_guard();
     assert(p1 != NULL);
-    assert(r2 != NULL || L2 != NULL);
     Pico_Rel_Pos  p_cur = _vs_pos (L1, p1);
     Pico_Rel_Rect r_cur = _vs_rect(L2, r2);
     Pico_Abs_Pos  pi = _rnd_pos (_sdl_pos (&p_cur, NULL));
@@ -316,13 +317,18 @@ int pico_vs_pos_rect (
     return SDL_PointInRect(&pi, &ri);
 }
 
+int pico_vs_rect_pos (
+    const char* L1, Pico_Rel_Rect* r1,
+    const char* L2, Pico_Rel_Pos*  p2
+) {
+    return pico_vs_pos_rect(L2, p2, L1, r1);
+}
+
 int pico_vs_rect_rect (
     const char* L1, Pico_Rel_Rect* r1,
     const char* L2, Pico_Rel_Rect* r2
 ) {
     _pico_guard();
-    assert(r1 != NULL || L1 != NULL);
-    assert(r2 != NULL || L2 != NULL);
     Pico_Rel_Rect r1_cur = _vs_rect(L1, r1);
     Pico_Rel_Rect r2_cur = _vs_rect(L2, r2);
     Pico_Abs_Rect i1 = _rnd_rect(_sdl_rect(&r1_cur, NULL, NULL));
