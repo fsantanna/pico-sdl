@@ -34,11 +34,11 @@ while true do
         local msg = string.format(">>> w %4.0f %4.0f | %% %5.3f %5.3f", win.x, win.y, pct.x, pct.y)
 
         local pos = {'%', x=pct.x, y=pct.y}
-        if pico.vs.pos_rect(pos, btn1) then
+        if pico.vs.pos.rect(pos, btn1) then
             msg = msg .. " | click 1"
-        elseif pico.vs.pos_rect(pos, btn2) then
+        elseif pico.vs.pos.rect(pos, btn2) then
             msg = msg .. " | click 2"
-        elseif pico.vs.pos_rect(pos, btn3) then
+        elseif pico.vs.pos.rect(pos, btn3) then
             msg = msg .. " | click 3"
         end
         print(msg)

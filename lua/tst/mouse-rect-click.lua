@@ -39,9 +39,9 @@ do
     local pct = pico.get.mouse('%')
     local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos_rect(nil, pos, nil, b1))
-    assert(not pico.vs.pos_rect(nil, pos, nil, b2))
-    assert(not pico.vs.pos_rect(nil, pos, nil, b3))
+    assert(not pico.vs.pos.rect(nil, pos, nil, b1))
+    assert(not pico.vs.pos.rect(nil, pos, nil, b2))
+    assert(not pico.vs.pos.rect(nil, pos, nil, b3))
     pico.set.pencil { color='red' }
     pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-02")
@@ -56,9 +56,9 @@ do
     local pct = pico.get.mouse('%')
     local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos_rect(nil, pos, nil, b1))
-    assert(not pico.vs.pos_rect(nil, pos, nil, b2))
-    assert(    pico.vs.pos_rect(nil, pos, nil, b3))
+    assert(not pico.vs.pos.rect(nil, pos, nil, b1))
+    assert(not pico.vs.pos.rect(nil, pos, nil, b2))
+    assert(    pico.vs.pos.rect(nil, pos, nil, b3))
     pico.set.pencil { color='green' }
     pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-03")
@@ -73,9 +73,9 @@ do
     local pct = pico.get.mouse('%')
     local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(    pico.vs.pos_rect(nil, pos, nil, b1))
-    assert(not pico.vs.pos_rect(nil, pos, nil, b2))
-    assert(not pico.vs.pos_rect(nil, pos, nil, b3))
+    assert(    pico.vs.pos.rect(nil, pos, nil, b1))
+    assert(not pico.vs.pos.rect(nil, pos, nil, b2))
+    assert(not pico.vs.pos.rect(nil, pos, nil, b3))
     pico.set.pencil { color='green' }
     pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-04")
@@ -90,9 +90,9 @@ do
     local pct = pico.get.mouse('%')
     local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos_rect(nil, pos, nil, b1))
-    assert(    pico.vs.pos_rect(nil, pos, nil, b2))
-    assert(not pico.vs.pos_rect(nil, pos, nil, b3))
+    assert(not pico.vs.pos.rect(nil, pos, nil, b1))
+    assert(    pico.vs.pos.rect(nil, pos, nil, b2))
+    assert(not pico.vs.pos.rect(nil, pos, nil, b3))
     pico.set.pencil { color='green' }
     pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-05")

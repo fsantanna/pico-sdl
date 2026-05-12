@@ -573,7 +573,7 @@ static int l_vs_pos_pos (lua_State* L) {
     int idx[4];
     vs_parse(L, idx);
     if (idx[1] == 0 || idx[3] == 0) {
-        return luaL_error(L, "vs.pos_pos: p1 and p2 are required");
+        return luaL_error(L, "vs.pos.pos: p1 and p2 are required");
     }
     const char* L1 = idx[0] ? lua_tostring(L, idx[0]) : NULL;
     const char* L2 = idx[2] ? lua_tostring(L, idx[2]) : NULL;
@@ -588,7 +588,7 @@ static int l_vs_pos_rect (lua_State* L) {
     int idx[4];
     vs_parse(L, idx);
     if (idx[1] == 0) {
-        return luaL_error(L, "vs.pos_rect: p1 is required");
+        return luaL_error(L, "vs.pos.rect: p1 is required");
     }
     const char* L1 = idx[0] ? lua_tostring(L, idx[0]) : NULL;
     const char* L2 = idx[2] ? lua_tostring(L, idx[2]) : NULL;
@@ -608,7 +608,7 @@ static int l_vs_rect_pos (lua_State* L) {
     int idx[4];
     vs_parse(L, idx);
     if (idx[3] == 0) {
-        return luaL_error(L, "vs.rect_pos: p2 is required");
+        return luaL_error(L, "vs.rect.pos: p2 is required");
     }
     const char* L1 = idx[0] ? lua_tostring(L, idx[0]) : NULL;
     const char* L2 = idx[2] ? lua_tostring(L, idx[2]) : NULL;
@@ -1576,11 +1576,15 @@ static const luaL_Reg ll_in[] = {
     { NULL, NULL }
 };
 
-static const luaL_Reg ll_vs[] = {
-    { "pos_pos",   l_vs_pos_pos   },
-    { "pos_rect",  l_vs_pos_rect  },
-    { "rect_pos",  l_vs_rect_pos  },
-    { "rect_rect", l_vs_rect_rect },
+static const luaL_Reg ll_vs_pos[] = {
+    { "pos",  l_vs_pos_pos  },
+    { "rect", l_vs_pos_rect },
+    { NULL, NULL }
+};
+
+static const luaL_Reg ll_vs_rect[] = {
+    { "pos",  l_vs_rect_pos  },
+    { "rect", l_vs_rect_rect },
     { NULL, NULL }
 };
 
@@ -1689,7 +1693,11 @@ int luaopen_pico_native (lua_State* L) {
     luaL_newlib(L, ll_in);                  // pico | xin
     lua_setfield(L, -2, "xin");             // pico
 
-    luaL_newlib(L, ll_vs);                  // pico | vs
+    lua_newtable(L);                        // pico | vs
+    luaL_newlib(L, ll_vs_pos);              // pico | vs | pos
+    lua_setfield(L, -2, "pos");             // pico | vs
+    luaL_newlib(L, ll_vs_rect);             // pico | vs | rect
+    lua_setfield(L, -2, "rect");            // pico | vs
     lua_setfield(L, -2, "vs");              // pico
 
     luaL_newlib(L, ll_color);               // pico | color

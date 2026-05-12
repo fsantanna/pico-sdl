@@ -238,21 +238,21 @@ In alphabetical order:
     - When a `rect` slot is absent (both `Lx` and `vx`) it defaults to
       the bounds of cur (`scene.dst`). `pos` slots have no default and
       must always be supplied.
-    - **pico.vs.pos_pos**: True if two points fall on the same pixel
+    - **pico.vs.pos.pos**: True if two points fall on the same pixel
       (after integer rounding in cur).
-        - `pico.vs.pos_pos (L1: string?, p1: Pos, L2: string?, p2: Pos) -> boolean`
+        - `pico.vs.pos.pos (L1: string?, p1: Pos, L2: string?, p2: Pos) -> boolean`
         - `p1` and `p2` are required.
-    - **pico.vs.pos_rect**: True if a point is inside a rectangle.
-        - `pico.vs.pos_rect (L1: string?, p1: Pos, L2: string?, r2: Rect?) -> boolean`
+    - **pico.vs.pos.rect**: True if a point is inside a rectangle.
+        - `pico.vs.pos.rect (L1: string?, p1: Pos, L2: string?, r2: Rect?) -> boolean`
         - `p1` is required; `r2` defaults to cur's bounds (or `L2`'s
           bounds when `L2` is set and `r2` is absent).
-    - **pico.vs.rect_pos**: True if a point is inside a rectangle
-      (mirror of `pos_rect`).
-        - `pico.vs.rect_pos (L1: string?, r1: Rect?, L2: string?, p2: Pos) -> boolean`
+    - **pico.vs.rect.pos**: True if a point is inside a rectangle
+      (mirror of `pos.rect`).
+        - `pico.vs.rect.pos (L1: string?, r1: Rect?, L2: string?, p2: Pos) -> boolean`
         - `p2` is required; `r1` defaults to cur's bounds (or `L1`'s
           bounds when `L1` is set and `r1` is absent).
-    - **pico.vs.rect_rect**: True if two rectangles overlap.
-        - `pico.vs.rect_rect (L1: string?, r1: Rect?, L2: string?, r2: Rect?) -> boolean`
+    - **pico.vs.rect.rect**: True if two rectangles overlap.
+        - `pico.vs.rect.rect (L1: string?, r1: Rect?, L2: string?, r2: Rect?) -> boolean`
         - All slots are optional; each missing rect side defaults to
           its layer's bounds (or cur's bounds when the layer is also
           absent). The 2-string form `(L1, L2)` compares the bounds
