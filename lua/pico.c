@@ -1177,7 +1177,7 @@ static int l_layer_image (lua_State* L) {
     const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
     const char* key;
     const char* path;
-    if (lua_gettop(L) >= i+2) {
+    if (lua_isstring(L, i+2)) {
         key  = luaL_checkstring(L, i+1);
         path = luaL_checkstring(L, i+2);
         if (!m) m = '!';
@@ -1187,6 +1187,7 @@ static int l_layer_image (lua_State* L) {
         if (!m) m = '=';
     }
     pico_layer_image_mode(m, up, key, path);
+    L_opt_target(L, i+3, key);
     return 0;
 }
 
@@ -1226,7 +1227,7 @@ static int l_layer_video (lua_State* L) {
     const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
     const char* key;
     const char* path;
-    if (lua_gettop(L) >= i+2) {
+    if (lua_isstring(L, i+2)) {
         key  = luaL_checkstring(L, i+1);
         path = luaL_checkstring(L, i+2);
         if (!m) m = '!';
@@ -1236,6 +1237,7 @@ static int l_layer_video (lua_State* L) {
         if (!m) m = '=';
     }
     pico_layer_video_mode(m, up, key, path);
+    L_opt_target(L, i+3, key);
     return 0;
 }
 
