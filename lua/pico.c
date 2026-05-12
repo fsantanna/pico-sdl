@@ -539,26 +539,53 @@ static int l_in_dim (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_vs_pos_rect (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // pos | rect
+static int l_vs_pos_pos (lua_State* L) {
+    const char* L1 = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
     luaL_checktype(L, 2, LUA_TTABLE);
+    const char* L2 = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
+    luaL_checktype(L, 4, LUA_TTABLE);
+    Pico_Rel_Pos p1 = C_rel_pos(L, 2);
+    Pico_Rel_Pos p2 = C_rel_pos(L, 4);
+    int ret = pico_vs_pos_pos(L1, &p1, L2, &p2);
+    lua_pushboolean(L, ret);
+    return 1;
+}
 
-    Pico_Rel_Pos  pos  = C_rel_pos(L, 1);
-    Pico_Rel_Rect rect = C_rel_rect(L, 2);
-
-    int ret = pico_vs_pos_rect(&pos, &rect);
+static int l_vs_pos_rect (lua_State* L) {
+    const char* L1 = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
+    luaL_checktype(L, 2, LUA_TTABLE);
+    const char* L2 = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
+    Pico_Rel_Pos  p1 = C_rel_pos(L, 2);
+    Pico_Rel_Rect r2;
+    Pico_Rel_Rect* r2p = NULL;
+    if (!lua_isnoneornil(L, 4)) {
+        luaL_checktype(L, 4, LUA_TTABLE);
+        r2 = C_rel_rect(L, 4);
+        r2p = &r2;
+    }
+    int ret = pico_vs_pos_rect(L1, &p1, L2, r2p);
     lua_pushboolean(L, ret);
     return 1;
 }
 
 static int l_vs_rect_rect (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // r1 | r2
-    luaL_checktype(L, 2, LUA_TTABLE);
-
-    Pico_Rel_Rect r1 = C_rel_rect(L, 1);
-    Pico_Rel_Rect r2 = C_rel_rect(L, 2);
-
-    int ret = pico_vs_rect_rect(&r1, &r2);
+    const char* L1 = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
+    const char* L2 = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
+    Pico_Rel_Rect r1;
+    Pico_Rel_Rect* r1p = NULL;
+    if (!lua_isnoneornil(L, 2)) {
+        luaL_checktype(L, 2, LUA_TTABLE);
+        r1 = C_rel_rect(L, 2);
+        r1p = &r1;
+    }
+    Pico_Rel_Rect r2;
+    Pico_Rel_Rect* r2p = NULL;
+    if (!lua_isnoneornil(L, 4)) {
+        luaL_checktype(L, 4, LUA_TTABLE);
+        r2 = C_rel_rect(L, 4);
+        r2p = &r2;
+    }
+    int ret = pico_vs_rect_rect(L1, r1p, L2, r2p);
     lua_pushboolean(L, ret);
     return 1;
 }
@@ -1477,6 +1504,7 @@ static const luaL_Reg ll_in[] = {
 };
 
 static const luaL_Reg ll_vs[] = {
+    { "pos_pos",   l_vs_pos_pos   },
     { "pos_rect",  l_vs_pos_rect  },
     { "rect_rect", l_vs_rect_rect },
     { NULL, NULL }
