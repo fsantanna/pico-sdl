@@ -68,4 +68,21 @@ pico.check("layers-03")
 print("present works on main")
 pico.output.present()
 
+-- rect-as-dim shortcut: 4th arg with x/y sets both dim and scene.target
+print("layer.empty: rect-as-dim shortcut sets dim + target")
+do
+    -- world is 100x100; '%' w=0.5,h=0.5 -> 50x50 layer
+    local r = {'%', x=0.25, y=0.75, w=0.5, h=0.5, anchor='C'}
+    pico.layer.empty(nil, "rect_shortcut", true, r)
+    pico.set.layer("rect_shortcut")
+    local s = pico.get.scene()
+    -- dim derived from w/h (rect's '%' resolved against parent world)
+    assert(s.dim.w == 50 and s.dim.h == 50)
+    -- target set to the full rect (mode + x/y/w/h preserved)
+    assert(s.target[1]  == '%')
+    assert(s.target.x == 0.25 and s.target.y == 0.75)
+    assert(s.target.w == 0.5  and s.target.h == 0.5)
+    pico.set.layer("world")
+end
+
 pico.init(false)

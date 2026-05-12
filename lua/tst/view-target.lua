@@ -100,4 +100,23 @@ do
     pico.check("view-target-07")
 end
 
+-- 08: rect-as-dim shortcut: same effect as test 04 (dim + scene.target)
+--     in one call. Rect's mode/w/h are used as the layer Dim, full rect
+--     becomes scene.target.
+do
+    print("target: rect-as-dim shortcut")
+    local r = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
+    pico.layer.empty(nil, "bg3", true, r)
+    pico.set.layer("bg3")
+    pico.set.effect { color={r=0x80, g=0x00, b=0x00} }
+    pico.output.clear()
+    pico.set.pencil { color='white' }
+    pico.output.draw.rect({'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.set.layer("world")
+    pico.set.effect { color='black' }
+    pico.output.clear()
+    pico.output.draw.layer("bg3")
+    pico.check("view-target-08")
+end
+
 pico.init(false)
