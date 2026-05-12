@@ -3,7 +3,7 @@ require 'pico.check'
 pico.init(true)
 
 -- Create a 4x4 "sprite sheet" layer with colored quadrants
-pico.layer.empty('!', nil, "sheet", {w=4, h=4})
+pico.layer.empty('!', nil, "sheet", true, {'!', w=4, h=4})
 pico.set.layer("sheet")
 pico.set.effect { color='black' }
 pico.output.clear()

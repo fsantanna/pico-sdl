@@ -78,7 +78,7 @@ end
 
 -- case 6: child layer src y-overflow (Phase A aux on layer->world blit)
 do
-    pico.layer.empty("world", "L", {w=48, h=48})
+    pico.layer.empty("world", "L", true, {'!', w=48, h=48})
     do
         local old = pico.set.layer("L")
         pico.set.effect { color = 'green' }

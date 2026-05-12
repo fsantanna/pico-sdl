@@ -15,14 +15,14 @@ assert(layer == "world")
 
 -- create bg layer (32x32)
 print("create and switch to layer")
-pico.layer.empty('!', nil, "background", {w=32, h=32})
+pico.layer.empty('!', nil, "background", true, {'!', w=32, h=32})
 pico.set.layer("background")
 layer = pico.get.layer()
 assert(layer == "background")
 
 -- create ui layer (48x48)
 print("switch to another layer")
-pico.layer.empty('!', nil, "ui", {w=48, h=48})
+pico.layer.empty('!', nil, "ui", true, {'!', w=48, h=48})
 pico.set.layer("ui")
 layer = pico.get.layer()
 assert(layer == "ui")
@@ -67,5 +67,37 @@ pico.check("layers-03")
 -- present works on main
 print("present works on main")
 pico.output.present()
+
+-- rect-as-dim shortcut: 4th arg with x/y sets both dim and scene.target
+print("layer.empty: rect-as-dim shortcut sets dim + target")
+do
+    -- world is 100x100; '%' w=0.5,h=0.5 -> 50x50 layer
+    local r = {'%', x=0.25, y=0.75, w=0.5, h=0.5, anchor='C'}
+    pico.layer.empty(nil, "rect_shortcut", true, r)
+    pico.set.layer("rect_shortcut")
+    local s = pico.get.scene()
+    -- dim derived from w/h (rect's '%' resolved against parent world)
+    assert(s.dim.w == 50 and s.dim.h == 50)
+    -- target set to the full rect (mode + x/y/w/h preserved)
+    assert(s.target[1]  == '%')
+    assert(s.target.x == 0.25 and s.target.y == 0.75)
+    assert(s.target.w == 0.5  and s.target.h == 0.5)
+    pico.set.layer("world")
+end
+
+-- trailing rect on other creators: pixmap with target rect set in one call
+print("layer.pixmap: trailing rect sets scene.target")
+do
+    local r = {'%', x=0.5, y=0.5, w=0.25, h=0.25, anchor='C'}
+    local px = {{ {'!',r=0xFF,g=0,b=0}, {'!',r=0,g=0xFF,b=0} },
+                { {'!',r=0,g=0,b=0xFF}, {'!',r=0xFF,g=0xFF,b=0} }}
+    pico.layer.pixmap(nil, "px_with_target", px, r)
+    pico.set.layer("px_with_target")
+    local s = pico.get.scene()
+    assert(s.target[1] == '%')
+    assert(s.target.x == 0.5 and s.target.y == 0.5)
+    assert(s.target.w == 0.25 and s.target.h == 0.25)
+    pico.set.layer("world")
+end
 
 pico.init(false)

@@ -13,7 +13,7 @@ int main (void) {
     pico_set_effect_color(PICO_COLOR_BLACK);
     pico_output_clear();
 
-    pico_layer_empty("world", "L", (Pico_Abs_Dim){8, 8}, NULL);
+    pico_layer_empty("world", "L", 1, (Pico_Rel_Dim){'!', {8, 8}}, NULL);
 
     const char* old = pico_set_layer("L");
     pico_set_scene_clear(0);
@@ -61,7 +61,7 @@ int main (void) {
     ///////////////////////////////////////////////////////////////////////////
 
     // transparent overlay with yellow background
-    pico_layer_empty("world", "over", (Pico_Abs_Dim){500, 500}, NULL);
+    pico_layer_empty("world", "over", 1, (Pico_Rel_Dim){'!', {500, 500}}, NULL);
     old = pico_set_layer("over");
     pico_set_effect_color((Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
     pico_output_clear();

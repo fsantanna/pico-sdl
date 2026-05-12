@@ -14,7 +14,8 @@ In alphabetical order:
         `'blue'`, `'yellow'`, `'cyan'`, `'magenta'`, `'orange'`, `'purple'`,
         `'pink'`, `'brown'`, `'lime'`, `'teal'`, `'navy'`, `'maroon'`,
         `'olive'`
-- **Dim**: `{ ['!'|'%'|'#'], w: number, h: number }`
+- **Dim**: `{ ['!'|'%'|'#'], [w: number], [h: number] }`
+    - Missing `w` or `h` defaults to 0 ("infer from source").
 - **Event**: `{ tag: string, ... }`
     - `{ tag='quit' }`
     - `{ tag='win.resize', w: integer, h: integer }`
@@ -26,7 +27,8 @@ In alphabetical order:
 - **Flip**: `'none'` | `'horizontal'` | `'vertical'` | `'both'`
 - **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, left: boolean, right: boolean, middle: boolean }`
 - **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor] }`
-- **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anchor: Anchor] }`
+- **Rect**: `{ x: number, y: number, [w: number], [h: number] [,'!'|'%'|'#', anchor: Anchor] }`
+    - Missing `w` or `h` defaults to 0 ("infer from source").
 - **Rotation**: `{ angle: integer, anchor: Anchor }`
 - **Tile**: `{ w: integer, h: integer }`
 - **Video**: `{ dim: Dim, fps: integer, frame: integer, done: boolean }`
@@ -111,12 +113,23 @@ In alphabetical order:
     - All layer creators accept an optional mode prefix
       (`'!'`|`'%'`|`'#'`|`'='`) as the first argument.
     - `up` is the parent layer name (string) or `nil` for the main layer.
+    - All creators (except `images`) accept an **optional trailing
+      `rect: Rect`** that sets `scene.target` of the new layer in one
+      call. For `image` and `video` it requires an explicit `key`.
     - **pico.layer.empty**: Creates an empty layer.
         - `pico.layer.empty ([mode,] up: string?, key: string,
-          dim: Dim [, tile: Tile])`
+          clear: boolean, dim: Dim [, tile: Tile])`
+        - `pico.layer.empty ([mode,] up: string?, key: string,
+          clear: boolean, rect: Rect [, tile: Tile])`
+        - `clear`: sets `scene.clear` (true = auto-clear each frame).
+        - When the 4th arg is a `Rect` (has `x` field): its
+          `mode/w/h` are used as the layer `Dim`, and the full
+          `Rect` is set as `scene.target` (one-call create+place).
     - **pico.layer.image**: Creates a layer from an image file.
-        - `pico.layer.image ([mode,] up: string?, key: string?, path: string)`
-        - If `key` is omitted, uses `"/image/<path>"` as layer name.
+        - `pico.layer.image ([mode,] up: string?, key: string?, path: string
+          [, rect: Rect])`
+        - If `key` is omitted, uses `"/image/<path>"` as layer name
+          (and `rect` is not allowed in that form).
     - **pico.layer.images**: Creates sub-layer images from a reference
         "sprite sheet" image.
         - `pico.layer.images ([mode,] up: string?, key: string, path: string, t: table) -> {string}`
@@ -132,14 +145,19 @@ In alphabetical order:
             - Each sub-layer attaches to the same `up` parent as the image.
         - Returns the list of generated sub-layer names.
     - **pico.layer.pixmap**: Creates a layer from a pixmap.
-        - `pico.layer.pixmap ([mode,] up: string?, key: string, pixmap: {{Color}})`
+        - `pico.layer.pixmap ([mode,] up: string?, key: string,
+          pixmap: {{Color}} [, rect: Rect])`
     - **pico.layer.text**: Creates a layer from text.
         - `pico.layer.text ([mode,] up: string?, key: string,
-          height: integer, text: string)`
+          height: integer, text: string [, rect: Rect])`
     - **pico.layer.video**: Creates a layer from a video file.
-        - `pico.layer.video ([mode,] up: string?, key: string?, path: string)`
+        - `pico.layer.video ([mode,] up: string?, key: string?, path: string
+          [, rect: Rect])`
+        - If `key` is omitted, uses `"/video/<path>"` as layer name
+          (and `rect` is not allowed in that form).
     - **pico.layer.sub**: Creates a sub-layer from a source layer.
-        - `pico.layer.sub ([mode,] up: string?, key: string, src: string, crop: Rect)`
+        - `pico.layer.sub ([mode,] up: string?, key: string,
+          src: string, crop: Rect [, rect: Rect])`
         - Source must exist and cannot be a sub-layer itself.
 - **pico.output**
     - **pico.output.clear**: Clears screen.

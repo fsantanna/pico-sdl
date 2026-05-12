@@ -11,7 +11,7 @@ pico.set.effect { color={'!', r=0xFF, g=0x00, b=0x00} }
 pico.output.clear()
 
 -- overlay layer: blue clear (semi-transparent), white rect
-pico.layer.empty('!', nil, "overlay", {w=64, h=36})
+pico.layer.empty('!', nil, "overlay", true, {'!', w=64, h=36})
 pico.set.layer("overlay")
 pico.set.effect { color={'!', r=0x00, g=0x00, b=0xFF, a=0x80} }
 pico.output.clear()

@@ -79,7 +79,7 @@ int main (void) {
     // Layer A: 4x4 tiles of 4x4 pixels, grid enabled
     {
         puts("layer A: 4x4 tiles, grid on");
-        pico_layer_empty(NULL, "layerA", (Pico_Abs_Dim){16, 16}, NULL);
+        pico_layer_empty(NULL, "layerA", 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL);
         const char* old = pico_set_layer("layerA");
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };
@@ -93,7 +93,7 @@ int main (void) {
     // Layer B: 8x4 tiles of 2x4 pixels, grid enabled
     {
         puts("layer B: 8x4 non-square tiles, grid on");
-        pico_layer_empty(NULL, "layerB", (Pico_Abs_Dim){16, 16}, NULL);
+        pico_layer_empty(NULL, "layerB", 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL);
         const char* old = pico_set_layer("layerB");
         Pico_Rel_Dim log = { '#', {8, 4} };
         Pico_Abs_Dim tile = { 2, 4 };
@@ -107,7 +107,7 @@ int main (void) {
     // Layer C: 4x4 tiles of 4x4 pixels, grid disabled
     {
         puts("layer C: 4x4 tiles, grid off");
-        pico_layer_empty(NULL, "layerC", (Pico_Abs_Dim){16, 16}, NULL);
+        pico_layer_empty(NULL, "layerC", 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL);
         const char* old = pico_set_layer("layerC");
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };

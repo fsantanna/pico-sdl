@@ -79,7 +79,7 @@ int main (void) {
 
     {
         puts("empty layer");
-        pico_layer_empty(NULL, "empty1", (Pico_Abs_Dim){64, 32}, NULL);
+        pico_layer_empty(NULL, "empty1", 1, (Pico_Rel_Dim){'!', {64, 32}}, NULL);
         pico_set_layer("empty1");
         pico_set_effect_color((Pico_Color){0x00, 0x80, 0x00, 0xFF});
         pico_output_clear();

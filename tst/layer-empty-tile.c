@@ -13,7 +13,7 @@ int main (void) {
     {
         puts("layer map: 20x15 tiles of 16x16");
         Pico_Abs_Dim tile = { 16, 16 };
-        pico_layer_empty(NULL, "map", (Pico_Abs_Dim){20, 15}, &tile);
+        pico_layer_empty(NULL, "map", 1, (Pico_Rel_Dim){'!', {20, 15}}, &tile);
         const char* old = pico_set_layer("map");
         pico_set_effect_grid(1);
         pico_output_clear();
@@ -45,7 +45,7 @@ int main (void) {
     // Layer "fx": tile == NULL -> dim is pixels, view.tile stays {0,0}
     {
         puts("layer fx: plain pixel layer (tile=NULL)");
-        pico_layer_empty(NULL, "fx", (Pico_Abs_Dim){64, 64}, NULL);
+        pico_layer_empty(NULL, "fx", 1, (Pico_Rel_Dim){'!', {64, 64}}, NULL);
         const char* old = pico_set_layer("fx");
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_YELLOW);

@@ -8,7 +8,7 @@ int main (void) {
     Pico_Rel_Rect btn = { '%', {0.5, 0.5, 0.15, 0.30}, PICO_ANCHOR_C };
 
     /* Draw btn into layer A. */
-    pico_layer_empty(NULL, "A", (Pico_Abs_Dim){120, 50}, NULL);
+    pico_layer_empty(NULL, "A", 1, (Pico_Rel_Dim){'!', {120, 50}}, NULL);
     const char* old = pico_set_layer("A");
     pico_set_effect_color(PICO_COLOR_NAVY);
     pico_output_clear();
