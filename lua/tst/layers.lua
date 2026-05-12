@@ -85,4 +85,19 @@ do
     pico.set.layer("world")
 end
 
+-- trailing rect on other creators: pixmap with target rect set in one call
+print("layer.pixmap: trailing rect sets scene.target")
+do
+    local r = {'%', x=0.5, y=0.5, w=0.25, h=0.25, anchor='C'}
+    local px = {{ {'!',r=0xFF,g=0,b=0}, {'!',r=0,g=0xFF,b=0} },
+                { {'!',r=0,g=0,b=0xFF}, {'!',r=0xFF,g=0xFF,b=0} }}
+    pico.layer.pixmap(nil, "px_with_target", px, r)
+    pico.set.layer("px_with_target")
+    local s = pico.get.scene()
+    assert(s.target[1] == '%')
+    assert(s.target.x == 0.5 and s.target.y == 0.5)
+    assert(s.target.w == 0.25 and s.target.h == 0.25)
+    pico.set.layer("world")
+end
+
 pico.init(false)

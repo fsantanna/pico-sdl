@@ -291,26 +291,20 @@ pico.check("guide-07-03-01")
 -- §7.4: hierarchy -- root has image (top) and panel (bottom); panel has 2 texts
 pico.init(false); pico.init(true)
 pico.set.window { title="guide-07-04-01" }
-do
-    pico.layer.image("world", "pic", "../../res/open.png")
-    pico.set.layer("pic")
-    pico.set.scene { target = {'%', x=0.3, y=0.3, w=0.4} }
-end
+pico.layer.image (
+    "world", "pic", "../../res/open.png", {'%', x=0.3, y=0.3, w=0.4}
+)
 do
     pico.layer.empty("world", "panel", true, {'!', w=100, h=50})
     pico.set.layer("panel")
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
-    do
-        pico.layer.text("panel", "H", 20, "Hello")
-        pico.set.layer("H")
-        pico.set.scene { target = {'%', x=0.5, y=0.3, h=0.6} }
-    end
-    do
-        pico.layer.text("panel", "W", 20, "World!")
-        pico.set.layer("W")
-        pico.set.scene { target = {'%', x=0.5, y=0.7, h=0.4} }
-    end
+    pico.layer.text (
+        "panel", "H", 20, "Hello", {'%', x=0.5, y=0.3, h=0.6}
+    )
+    pico.layer.text (
+        "panel", "W", 20, "World!", {'%', x=0.5, y=0.7, h=0.4}
+    )
 end
 pico.set.layer("world")
 pico.output.present()

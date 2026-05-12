@@ -111,6 +111,9 @@ In alphabetical order:
     - All layer creators accept an optional mode prefix
       (`'!'`|`'%'`|`'#'`|`'='`) as the first argument.
     - `up` is the parent layer name (string) or `nil` for the main layer.
+    - All creators (except `images`) accept an **optional trailing
+      `rect: Rect`** that sets `scene.target` of the new layer in one
+      call. For `image` and `video` it requires an explicit `key`.
     - **pico.layer.empty**: Creates an empty layer.
         - `pico.layer.empty ([mode,] up: string?, key: string,
           clear: boolean, dim: Dim [, tile: Tile])`
@@ -121,8 +124,10 @@ In alphabetical order:
           `mode/w/h` are used as the layer `Dim`, and the full
           `Rect` is set as `scene.target` (one-call create+place).
     - **pico.layer.image**: Creates a layer from an image file.
-        - `pico.layer.image ([mode,] up: string?, key: string?, path: string)`
-        - If `key` is omitted, uses `"/image/<path>"` as layer name.
+        - `pico.layer.image ([mode,] up: string?, key: string?, path: string
+          [, rect: Rect])`
+        - If `key` is omitted, uses `"/image/<path>"` as layer name
+          (and `rect` is not allowed in that form).
     - **pico.layer.images**: Creates sub-layer images from a reference
         "sprite sheet" image.
         - `pico.layer.images ([mode,] up: string?, key: string, path: string, t: table) -> {string}`
@@ -138,14 +143,19 @@ In alphabetical order:
             - Each sub-layer attaches to the same `up` parent as the image.
         - Returns the list of generated sub-layer names.
     - **pico.layer.pixmap**: Creates a layer from a pixmap.
-        - `pico.layer.pixmap ([mode,] up: string?, key: string, pixmap: {{Color}})`
+        - `pico.layer.pixmap ([mode,] up: string?, key: string,
+          pixmap: {{Color}} [, rect: Rect])`
     - **pico.layer.text**: Creates a layer from text.
         - `pico.layer.text ([mode,] up: string?, key: string,
-          height: integer, text: string)`
+          height: integer, text: string [, rect: Rect])`
     - **pico.layer.video**: Creates a layer from a video file.
-        - `pico.layer.video ([mode,] up: string?, key: string?, path: string)`
+        - `pico.layer.video ([mode,] up: string?, key: string?, path: string
+          [, rect: Rect])`
+        - If `key` is omitted, uses `"/video/<path>"` as layer name
+          (and `rect` is not allowed in that form).
     - **pico.layer.sub**: Creates a sub-layer from a source layer.
-        - `pico.layer.sub ([mode,] up: string?, key: string, src: string, crop: Rect)`
+        - `pico.layer.sub ([mode,] up: string?, key: string,
+          src: string, crop: Rect [, rect: Rect])`
         - Source must exist and cannot be a sub-layer itself.
 - **pico.output**
     - **pico.output.clear**: Clears screen.
