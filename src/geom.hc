@@ -252,43 +252,51 @@ Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in) {
 // VS
 ///////////////////////////////////////////////////////////////////////////////
 
+static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
+    if (layer == NULL) return *p;
+    Pico_Layer* old = G.layer;
+    G.layer = _pico_layer_name(layer);
+    pico_assert (
+        G.layer != old
+        && G.layer->hier.up != NULL
+        && _pico_layer_name(G.layer->hier.up) == old
+        && "vs: L must be direct child of cur"
+    );
+    Pico_Rel_Pos out = {'!', {0, 0}, PICO_ANCHOR_NW};
+    pico_cv_pos_to(old->name, p, &out);
+    G.layer = old;
+    return out;
+}
+
+static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
+    if (layer == NULL) return *r;
+    Pico_Layer* old = G.layer;
+    G.layer = _pico_layer_name(layer);
+    pico_assert (
+        G.layer != old
+        && G.layer->hier.up != NULL
+        && _pico_layer_name(G.layer->hier.up) == old
+        && "vs: L must be direct child of cur"
+    );
+    Pico_Rel_Rect out;
+    if (r == NULL) {
+        out = G.layer->scene.dst;
+    } else {
+        out = (Pico_Rel_Rect){'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
+        pico_cv_rect_to(old->name, r, &out);
+    }
+    G.layer = old;
+    return out;
+}
+
 int pico_vs_pos_pos (
     const char* L1, Pico_Rel_Pos* p1,
     const char* L2, Pico_Rel_Pos* p2
 ) {
     _pico_guard();
     assert(p1 != NULL && p2 != NULL);
-
-    Pico_Rel_Pos p1_cur = *p1;
-    if (L1 != NULL) {
-        Pico_Layer* old = G.layer;
-        G.layer = _pico_layer_name(L1);
-        pico_assert (
-            G.layer != old
-            && G.layer->hier.up != NULL
-            && _pico_layer_name(G.layer->hier.up) == old
-            && "vs: L1 must be direct child of cur"
-        );
-        p1_cur = (Pico_Rel_Pos){'!', {0, 0}, PICO_ANCHOR_NW};
-        pico_cv_pos_to(old->name, p1, &p1_cur);
-        G.layer = old;
-    }
-
-    Pico_Rel_Pos p2_cur = *p2;
-    if (L2 != NULL) {
-        Pico_Layer* old = G.layer;
-        G.layer = _pico_layer_name(L2);
-        pico_assert (
-            G.layer != old
-            && G.layer->hier.up != NULL
-            && _pico_layer_name(G.layer->hier.up) == old
-            && "vs: L2 must be direct child of cur"
-        );
-        p2_cur = (Pico_Rel_Pos){'!', {0, 0}, PICO_ANCHOR_NW};
-        pico_cv_pos_to(old->name, p2, &p2_cur);
-        G.layer = old;
-    }
-
+    Pico_Rel_Pos p1_cur = _vs_pos(L1, p1);
+    Pico_Rel_Pos p2_cur = _vs_pos(L2, p2);
     Pico_Abs_Pos i1 = _rnd_pos(_sdl_pos(&p1_cur, NULL));
     Pico_Abs_Pos i2 = _rnd_pos(_sdl_pos(&p2_cur, NULL));
     return i1.x == i2.x && i1.y == i2.y;
@@ -301,45 +309,9 @@ int pico_vs_pos_rect (
     _pico_guard();
     assert(p1 != NULL);
     assert(r2 != NULL || L2 != NULL);
-
-    Pico_Rel_Pos p_cur = *p1;
-    if (L1 != NULL) {
-        Pico_Layer* old = G.layer;
-        G.layer = _pico_layer_name(L1);
-        pico_assert (
-            G.layer != old
-            && G.layer->hier.up != NULL
-            && _pico_layer_name(G.layer->hier.up) == old
-            && "vs: L1 must be direct child of cur"
-        );
-        p_cur = (Pico_Rel_Pos){'!', {0, 0}, PICO_ANCHOR_NW};
-        pico_cv_pos_to(old->name, p1, &p_cur);
-        G.layer = old;
-    }
-
-    Pico_Rel_Rect r_cur;
-    if (L2 == NULL) {
-        r_cur = *r2;
-    } else {
-        Pico_Layer* old = G.layer;
-        G.layer = _pico_layer_name(L2);
-        pico_assert (
-            G.layer != old
-            && G.layer->hier.up != NULL
-            && _pico_layer_name(G.layer->hier.up) == old
-            && "vs: L2 must be direct child of cur"
-        );
-        if (r2 == NULL) {
-            r_cur = G.layer->scene.dst;
-            G.layer = old;
-        } else {
-            r_cur = (Pico_Rel_Rect){'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
-            pico_cv_rect_to(old->name, r2, &r_cur);
-            G.layer = old;
-        }
-    }
-
-    Pico_Abs_Pos  pi = _rnd_pos(_sdl_pos(&p_cur, NULL));
+    Pico_Rel_Pos  p_cur = _vs_pos (L1, p1);
+    Pico_Rel_Rect r_cur = _vs_rect(L2, r2);
+    Pico_Abs_Pos  pi = _rnd_pos (_sdl_pos (&p_cur, NULL));
     Pico_Abs_Rect ri = _rnd_rect(_sdl_rect(&r_cur, NULL, NULL));
     return SDL_PointInRect(&pi, &ri);
 }
@@ -351,51 +323,8 @@ int pico_vs_rect_rect (
     _pico_guard();
     assert(r1 != NULL || L1 != NULL);
     assert(r2 != NULL || L2 != NULL);
-
-    Pico_Rel_Rect r1_cur;
-    if (L1 == NULL) {
-        r1_cur = *r1;
-    } else {
-        Pico_Layer* old = G.layer;
-        G.layer = _pico_layer_name(L1);
-        pico_assert (
-            G.layer != old
-            && G.layer->hier.up != NULL
-            && _pico_layer_name(G.layer->hier.up) == old
-            && "vs: L1 must be direct child of cur"
-        );
-        if (r1 == NULL) {
-            r1_cur = G.layer->scene.dst;
-            G.layer = old;
-        } else {
-            r1_cur = (Pico_Rel_Rect){'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
-            pico_cv_rect_to(old->name, r1, &r1_cur);
-            G.layer = old;
-        }
-    }
-
-    Pico_Rel_Rect r2_cur;
-    if (L2 == NULL) {
-        r2_cur = *r2;
-    } else {
-        Pico_Layer* old = G.layer;
-        G.layer = _pico_layer_name(L2);
-        pico_assert (
-            G.layer != old
-            && G.layer->hier.up != NULL
-            && _pico_layer_name(G.layer->hier.up) == old
-            && "vs: L2 must be direct child of cur"
-        );
-        if (r2 == NULL) {
-            r2_cur = G.layer->scene.dst;
-            G.layer = old;
-        } else {
-            r2_cur = (Pico_Rel_Rect){'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
-            pico_cv_rect_to(old->name, r2, &r2_cur);
-            G.layer = old;
-        }
-    }
-
+    Pico_Rel_Rect r1_cur = _vs_rect(L1, r1);
+    Pico_Rel_Rect r2_cur = _vs_rect(L2, r2);
     Pico_Abs_Rect i1 = _rnd_rect(_sdl_rect(&r1_cur, NULL, NULL));
     Pico_Abs_Rect i2 = _rnd_rect(_sdl_rect(&r2_cur, NULL, NULL));
     return SDL_HasIntersection(&i1, &i2);
