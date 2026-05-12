@@ -113,7 +113,13 @@ In alphabetical order:
     - `up` is the parent layer name (string) or `nil` for the main layer.
     - **pico.layer.empty**: Creates an empty layer.
         - `pico.layer.empty ([mode,] up: string?, key: string,
-          dim: Dim [, tile: Tile])`
+          clear: boolean, dim: Dim [, tile: Tile])`
+        - `pico.layer.empty ([mode,] up: string?, key: string,
+          clear: boolean, rect: Rect [, tile: Tile])`
+        - `clear`: sets `scene.clear` (true = auto-clear each frame).
+        - When the 4th arg is a `Rect` (has `x` field): its
+          `mode/w/h` are used as the layer `Dim`, and the full
+          `Rect` is set as `scene.target` (one-call create+place).
     - **pico.layer.image**: Creates a layer from an image file.
         - `pico.layer.image ([mode,] up: string?, key: string?, path: string)`
         - If `key` is omitted, uses `"/image/<path>"` as layer name.
