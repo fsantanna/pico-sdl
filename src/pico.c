@@ -1311,6 +1311,7 @@ void pico_output_draw_tri (
 }
 
 static void _pico_output_present (int force) {
+    _pico_guard();
     if (G.window.ing.out) {
         return;
     } else if (force) {
@@ -1319,9 +1320,6 @@ static void _pico_output_present (int force) {
         return;
     } else if (!(G.layer==&G.world || G.layer==&G.window.layer)) {
         return;  // auto-present only on root layers (world or window)
-    }
-    if (!G.init) {
-        return;
     }
 
     G.window.ing.out = 1;
@@ -1351,7 +1349,6 @@ static void _pico_output_present (int force) {
 
 void pico_output_present (void) {
     _pico_guard();
-    assert((G.layer==&G.world || G.layer==&G.window.layer) && "can only present from root layers");
     _pico_output_present(1);
 }
 
