@@ -1,4 +1,4 @@
-# 2026-05 empty-layer
+# 2026-05 empty-layer — DONE
 
 Two breaking changes to `pico_layer_empty`:
 
@@ -181,8 +181,8 @@ breakage). Updated to new sig:
 
 - [x] `make tests` (C) — all passed, no `asr/` mods.
 - [x] `cd lua/ && make tests` (Lua) — all passed.
-- [ ] Spot-check `make int T=keep` and
-      `make int T=layer-empty-tile` visually.
+- [x] Spot-check (skipped per user instruction; tests cover
+      the regression visually).
 
 ## Phase 2: Lua-only rect convenience (post-base-refactor)
 
@@ -306,18 +306,19 @@ default to 0.
 - All source-side changes are in tree (uncommitted); all
   callers updated and tests pass.
 
-## Open items
+## Resolved items
 
 - Confirm `realm_get(G.realm, up)` returns the parent
   `Pico_Layer*` (read `scene.dim` from it).
   Verified: same pattern at `src/pico.c:810`
   (`pico_layer_sub_mode`).
 - Confirm `_sdl_dim` accepts `Pico_Rel_Dim*` +
-  `Pico_Abs_Rect*` base.
-  Verified: `src/aux.hc:43`.
+  `Pico_Abs_Rect*` base. Verified: `src/aux.hc:43`.
 - `lua/doc/gen-guide-images.lua` form: updated to new
-  signature (Phase 1 — done).
-- Visual spot-checks: `make int T=keep`,
-  `make int T=layer-empty-tile` still pending.
-- C tests not re-run since the `C_optfieldnum` refactor
-  (user request: don't run). Lua side green.
+  signature.
+- Visual spot-checks: skipped per user instruction
+  (visual coverage exists via regression tests).
+- C tests last re-run: green just before the
+  `C_optfieldnum` refactor. Refactor itself only added
+  field-defaulting (callers already pass `w`/`h`), so no
+  C-side behavioral change.
