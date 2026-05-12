@@ -163,7 +163,7 @@ void pico_init (int on) {
             .init  = 1,
             .realm = realm,
             .world = {
-                .type = PICO_LAYER_WORLD,
+                .type = PICO_LAYER_PLAIN,
                 .name = "world",
                 .tex  = log,
                 .pencil = {
@@ -194,7 +194,7 @@ void pico_init (int on) {
                 .win = win,
                 .ren = ren,
                 .layer = {
-                    .type = PICO_LAYER_WINDOW,
+                    .type = PICO_LAYER_PLAIN,
                     .name = "window",
                     .tex  = phy,
                     .pencil = {
@@ -664,9 +664,9 @@ void pico_set_scene_clear (int on) {
     _pico_guard();
     Pico_Layer* L = G.layer;
     if (L->scene.clear != on) {
-        assert(L->type!=PICO_LAYER_WORLD  && "cannot set clear on world");
-        assert(L->type!=PICO_LAYER_WINDOW && "cannot set clear on window");
-        assert(L->type!=PICO_LAYER_SUB    && "cannot set clear on sub-layer");
+        assert(L != &G.world           && "cannot set clear on world");
+        assert(L != &G.window.layer    && "cannot set clear on window");
+        assert(L->type!=PICO_LAYER_SUB && "cannot set clear on sub-layer");
     }
     L->scene.clear = on;
 }

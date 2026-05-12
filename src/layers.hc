@@ -2,8 +2,6 @@
 #define PICO_LAYERS_HC
 
 typedef enum {
-    PICO_LAYER_WINDOW,
-    PICO_LAYER_WORLD,
     PICO_LAYER_PLAIN,
     PICO_LAYER_VIDEO,
     PICO_LAYER_SUB,
