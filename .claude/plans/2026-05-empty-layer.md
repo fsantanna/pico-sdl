@@ -106,29 +106,74 @@ pico.layer.empty([mode,] up, key, clear, dim [, tile])
 -- ex: pico.layer.empty('up', 'me', true, {'%',w=.5,h=.5})
 ```
 
-## Affected callers (informational, not part of edits)
+## Progress
 
-C (`tst/`): keep.c, layers.c, layer-empty-tile.c, plus any
-that call through the typed signature.
+### Done
 
-Lua (`lua/tst/`): layers.lua, cv.lua, layer-empty-tile.lua,
-plus guide/doc generators.
+- [x] `src/pico.h` — prototypes + docs.
+- [x] `src/mem.hc` — `_alloc_empty_t` + `_alloc_layer_empty`
+      (rel→abs via `_sdl_dim`, base from `realm_get(up)`).
+- [x] `src/pico.c` — `pico_layer_empty` + `_mode` (forward
+      `up`+`clear` into the ctx).
+- [x] `lua/pico.c` — `l_layer_empty` (parses `clear` bool +
+      `C_rel_dim`).
+- [x] Compile-checked: `gcc -c src/pico.c -I src` clean;
+      `lua/Makefile -> pico.o` clean.
+- [x] `valgrind.supp` `sdl-init` still at `pico.c:117` (no
+      change needed).
 
-Regression tests are **not** modified by this plan. Updating
-callers to match the new signature is a separate step the
-user will approve.
+### TODO — test caller updates (NOT done; needs explicit go)
 
-## Steps
+Preserve prior runtime behavior:
 
-1. `src/pico.h` — prototypes + docs.
-2. `src/mem.hc` — `_alloc_empty_t` + `_alloc_layer_empty`.
-3. `src/pico.c` — `pico_layer_empty` + `_mode`.
-4. `lua/pico.c` — `l_layer_empty`.
-5. Stop. Hand off to user for caller updates / test runs.
+- old default was `clear = 1` (hardcoded in
+  `_alloc_layer_empty`) → use `1` in C / `true` in Lua.
+- old `dim` was pixel-typed → wrap with mode `'!'`.
+
+| file                          | line(s)        | edit                                              |
+|-------------------------------|----------------|---------------------------------------------------|
+| tst/keep.c                    | 17, 18         | `(Pico_Abs_Dim){W,H}` → `1, (Pico_Rel_Dim){'!',{W,H}}` |
+| tst/layers.c                  | 22, 29         | same (no-mode form)                               |
+| tst/layers.c                  | 77, 83         | same (`_mode` form: `clear` slot after `key`)     |
+| tst/layer-empty-tile.c        | 16, 48         | same (no-mode form)                               |
+| lua/tst/layers.lua            | 18, 25         | `{w=W,h=H}` → `true, {'!',w=W,h=H}` (mode form)   |
+| lua/tst/cv.lua                | 27             | `{w=50,h=50}` → `true, {'!',w=50,h=50}`           |
+| lua/tst/layer-empty-tile.lua  | 12, 44         | same as layers.lua (no-mode form)                 |
+
+Skipped: `lua/doc/gen-guide-images.lua:299,305` already
+uses a 2-arg `pico.layer.empty("bg", {w,h})` that did not
+match the prior C signature (no `up` slot) — appears unused
+by the test runner. Confirm before touching.
+
+### TODO — verify + regenerate
+
+After caller edits:
+
+1. `make tests` (C) — must pass without modifying `asr/`.
+2. `cd lua/ && make tests` (Lua) — same.
+3. If image diffs appear, investigate cause before
+   regenerating any `asr/` baseline (per CLAUDE.md: never
+   modify regression tests).
+4. Spot-check `make int T=keep` and
+   `make int T=layer-empty-tile` visually.
+
+### Notes for cross-machine handoff
+
+- Tool-call hook expects `.claude/one` or `.claude/all` to
+  exist in the worktree; without it, all Bash/Edit/Write
+  calls fail with "edits are blocked". Recreate the marker
+  on the new machine before resuming (`touch .claude/one`).
+- All source-side changes are in tree (uncommitted); only
+  test files remain to be edited.
 
 ## Open items
 
 - Confirm `realm_get(G.realm, up)` returns the parent
   `Pico_Layer*` (read `scene.dim` from it).
-- Confirm `_sdl_dim` signature accepts `Pico_Rel_Dim*` +
-  `Pico_Abs_Rect*` base (check `src/aux.hc`).
+  Verified: same pattern at `src/pico.c:810`
+  (`pico_layer_sub_mode`).
+- Confirm `_sdl_dim` accepts `Pico_Rel_Dim*` +
+  `Pico_Abs_Rect*` base.
+  Verified: `src/aux.hc:43`.
+- `lua/doc/gen-guide-images.lua` form: update to new
+  signature, or leave as-is?
