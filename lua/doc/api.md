@@ -14,7 +14,7 @@ In alphabetical order:
         `'blue'`, `'yellow'`, `'cyan'`, `'magenta'`, `'orange'`, `'purple'`,
         `'pink'`, `'brown'`, `'lime'`, `'teal'`, `'navy'`, `'maroon'`,
         `'olive'`
-- **Dim**: `{ ['!'|'%'|'#'], w: number, h: number, [up: Rect] }`
+- **Dim**: `{ ['!'|'%'|'#'], w: number, h: number }`
 - **Event**: `{ tag: string, ... }`
     - `{ tag='quit' }`
     - `{ tag='win.resize', w: integer, h: integer }`
@@ -25,8 +25,8 @@ In alphabetical order:
         left: boolean, right: boolean, middle: boolean }`
 - **Flip**: `'none'` | `'horizontal'` | `'vertical'` | `'both'`
 - **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, left: boolean, right: boolean, middle: boolean }`
-- **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
-- **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anchor: Anchor, up: Rect] }`
+- **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor] }`
+- **Rect**: `{ x: number, y: number, w: number, h: number [,'!'|'%'|'#', anchor: Anchor] }`
 - **Rotation**: `{ angle: integer, anchor: Anchor }`
 - **Tile**: `{ w: integer, h: integer }`
 - **Video**: `{ dim: Dim, fps: integer, frame: integer, done: boolean }`
@@ -74,10 +74,11 @@ In alphabetical order:
     - **pico.get.layer**: Gets current layer name.
         - `pico.get.layer () -> string?`
         - Returns `nil` for main layer
-    - **pico.get.mouse**: Gets mouse position and button state.
-        - `pico.get.mouse (mode: string [, rect: Rect]) -> Mouse`
+    - **pico.get.mouse**: Gets mouse position and button state in cur's
+      frame. Use `pico.cv.pos.from` / `pico.set.layer` to obtain coords
+      in other frames.
+        - `pico.get.mouse (mode: string) -> Mouse`
         - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
-        - `rect`: reference frame (omit for current layer)
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
     - **pico.get.text**: Gets text dimensions.
@@ -201,10 +202,11 @@ In alphabetical order:
     - **pico.set.layer**: Switches to a layer.
         - `pico.set.layer (name: string?)`
         - `nil` switches to main layer
-    - **pico.set.mouse**: Sets mouse cursor position.
+    - **pico.set.mouse**: Sets mouse cursor position. `pos` is
+      interpreted in cur's frame and projected to window for the SDL
+      warp.
         - `pico.set.mouse (pos: Pos)`
         - `pos.mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
-        - `pos.up`: reference frame (omit for current layer)
 - **pico.vs**
     - Collision checks. Each side can be a value in cur (`Lx=nil`) or
       a value/bounds in a layer that is a direct child of cur

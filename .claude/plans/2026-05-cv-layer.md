@@ -340,7 +340,7 @@ fails on xvfb (predates this work — confirmed on clean tree).
 
 - [x] Run `make tests` from project root.
 - [x] Run `cd lua && make tests`.
-- [x] Update `lua/doc/api.md` (cv + vs sections).
+- [x] Update `lua/doc/api.md` (cv + vs sections + type defs: drop `up:Rect` from Dim/Pos/Rect; drop dead `rect` arg from `get.mouse`; drop `pos.up` from `set.mouse`).
 - [x] Phase C internal cleanup (done in J).
 - [x] Commit (done by user).
 - [ ] PR.
