@@ -549,7 +549,8 @@ void pico_set_mouse (Pico_Rel_Pos* pos) {
     _pico_guard();
     Pico_Rel_Pos w = {'!', {}, PICO_ANCHOR_NW};
     pico_cv_pos_to("window", pos, &w);
-    SDL_WarpMouseInWindow(G.window.win, w.x, w.y);
+    Pico_Abs_Pos wi = _rnd_pos((SDL_FPoint){w.x, w.y});
+    SDL_WarpMouseInWindow(G.window.win, wi.x, wi.y);
     SDL_PumpEvents();
 }
 
