@@ -4,7 +4,6 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_expert(1, 0);   // expert: window-direct draws persist
 
     Pico_Rel_Rect btn = { '%', {0.5, 0.5, 0.15, 0.30}, PICO_ANCHOR_C };
 
@@ -30,7 +29,7 @@ int main (void) {
 
     /* Set cursor at window pixel (400, 382); collision in pct (world's
        coords via mouse->pct) confirms inside btn; mark the position
-       with a green pixel drawn directly on the window. */
+       with a green pixel drawn in world (composited 5x to window). */
     {
         const char* prev = pico_set_layer("window");
         pico_set_mouse(&(Pico_Rel_Pos){ '!', {400, 382}, PICO_ANCHOR_NW });
@@ -41,12 +40,7 @@ int main (void) {
     assert(pico_vs_pos_rect(NULL, &pos, NULL, &btn_in_r));
 
     pico_set_pencil_color(PICO_COLOR_GREEN);
-    {
-        const char* prev = pico_set_layer("window");
-        pico_output_draw_pixel(&(Pico_Rel_Pos){ '!', {400, 382}, PICO_ANCHOR_NW });
-        pico_set_layer(prev);
-    }
-    pico_output_present();
+    pico_output_draw_pixel(&pos);
     _pico_check("mouse-w-click-01");
 
     pico_init(0);
