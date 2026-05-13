@@ -46,6 +46,8 @@ do
     local w = {'!', anchor='NW'}
     pico.cv.pos('world', w, nil, {'!', x=10, y=20, anchor='NW'})
     assert(w.x==20 and w.y==40)
+    w = pico.cv.pos('world', w, {'!', x=10, y=20, anchor='NW'})
+    assert(w.x==20 and w.y==40)
 
     print('', 'pos world -> sub')
     local s = {'!', anchor='NW'}
@@ -54,7 +56,7 @@ do
 
     print('', 'pos sub -> window (2 hops)')
     local win = {'!', anchor='NW'}
-    pico.cv.pos('window', win, nil, {'!', x=10, y=20, anchor='NW'})
+    pico.cv.pos('window', win, {'!', x=10, y=20, anchor='NW'})
     assert(win.x==100 and win.y==200)
 
     print('', 'rect sub -> world')
