@@ -235,44 +235,46 @@ Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in) {
 // VS
 ///////////////////////////////////////////////////////////////////////////////
 
-// Project p (in `layer`'s frame; NULL == cur) up to its root.
+// Project p (in `layer`'s frame; NULL == cur) up to its root, as '!'.
 static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
     const char* L_name = (layer == NULL) ? G.layer->name : layer;
-    Pico_Layer* L = _pico_layer_name(L_name);
-    Pico_Layer* root = _root_of(L);
-    if (L == root) {
-        return *p;
-    }
+    Pico_Layer* root = _root_of(_pico_layer_name(L_name));
     Pico_Rel_Pos out = {'!', {0, 0}, PICO_ANCHOR_NW};
     pico_cv_pos(root->name, &out, L_name, p);
     return out;
 }
 
 // Project r (in `layer`; NULL r == layer's scene.dst in parent frame)
-// up to its root.
+// up to its root, as '!'.
 static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
     const char* L_name = (layer == NULL) ? G.layer->name : layer;
     Pico_Layer* L = _pico_layer_name(L_name);
     Pico_Layer* root = _root_of(L);
+    Pico_Rel_Rect out = {'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
 
     if (r == NULL) {
-        // L's bounds = scene.dst in L's parent frame.
-        Pico_Rel_Rect dst = L->scene.dst;
         if (L == root) {
-            return dst;
+            // L is root: no parent placement; use L's own interior.
+            out.w = L->scene.dim.w;
+            out.h = L->scene.dim.h;
+            return out;
         }
-        const char* parent_name = L->hier.up;
-        if (_pico_layer_name(parent_name) == root) {
-            return dst;
+        // scene.dst with w==0 or h==0 means aspect-fill from L's dim
+        // (mirrors _pico_output_draw_layer). Pre-resolve before
+        // projecting so cv sees a concrete rect.
+        Pico_Rel_Rect dst = L->scene.dst;
+        if (dst.w == 0 || dst.h == 0) {
+            Pico_Layer* P = _pico_layer_name(L->hier.up);
+            Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+            SDL_FRect filled = _sdl_rect(&dst, &Pb, &L->scene.dim);
+            dst = (Pico_Rel_Rect){
+                '!', {filled.x, filled.y, filled.w, filled.h},
+                PICO_ANCHOR_NW
+            };
         }
-        Pico_Rel_Rect out = {'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
-        pico_cv_rect(root->name, &out, parent_name, &dst);
+        pico_cv_rect(root->name, &out, L->hier.up, &dst);
         return out;
     }
-    if (L == root) {
-        return *r;
-    }
-    Pico_Rel_Rect out = {'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
     pico_cv_rect(root->name, &out, L_name, r);
     return out;
 }
