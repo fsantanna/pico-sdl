@@ -8,8 +8,7 @@ do
     local ret = pico.xin.rect(out, child)
     assert(ret[1] == '%')
     assert(ret.anchor.x == 0.5 and ret.anchor.y == 0.5)
-    local abs = {'!', anchor='NW'}
-    pico.cv.rect.to(nil, ret, abs)
+    local abs = pico.cv.rect.to('!', ret)
     assert(math.floor(abs.x+0.5)==35 and math.floor(abs.y+0.5)==35)
     assert(math.floor(abs.w+0.5)==30 and math.floor(abs.h+0.5)==30)
 end
@@ -20,8 +19,7 @@ do
     local child = {'%', x=0.5, y=0.5, anchor='NW'}
     local ret = pico.xin.pos(out, child)
     assert(ret[1] == '%')
-    local abs = {'!', anchor='NW'}
-    pico.cv.pos.to(nil, ret, abs)
+    local abs = pico.cv.pos.to('!', ret)
     assert(math.floor(abs.x+0.5)==50 and math.floor(abs.y+0.5)==50)
 end
 
@@ -31,8 +29,7 @@ do
     local child = {'%', w=0.5, h=0.5}
     local ret = pico.xin.dim(out, child)
     assert(ret[1] == '%')
-    local abs = {'!'}
-    pico.cv.dim.to(nil, ret, abs)
+    local abs = pico.cv.dim.to('!', ret)
     assert(math.floor(abs.w+0.5)==30 and math.floor(abs.h+0.5)==30)
 end
 

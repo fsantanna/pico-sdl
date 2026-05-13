@@ -595,26 +595,26 @@ void pico_set_window_title (const char* title);
 /// @brief Brings a dimension from a named related layer's frame into cur.
 /// Layer must be cur, an ancestor or a descendant of cur (siblings assert).
 void pico_cv_dim_from (
-    const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
+    Pico_Rel_Dim* to, const Pico_Rel_Dim* fr, const char* layer
 );
 
 /// @brief Projects a dimension from cur into a named related layer's frame.
 /// No position component; size scales per src->dst step.
 /// Layer must be cur, an ancestor or a descendant of cur (siblings assert).
 void pico_cv_dim_to (
-    const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
+    Pico_Rel_Dim* to, const Pico_Rel_Dim* fr, const char* layer
 );
 
 /// @brief Brings a position from a named related layer's frame into
 /// the current layer's frame. Walks the `hier.up` chain in either
 /// direction: source must be cur, an ancestor, or a descendant of cur
 /// via `hier.up`; siblings assert and abort.
-/// @param layer source layer name; NULL = G.layer
-/// @param fr position in source's frame (any mode/anchor)
 /// @param to result template (mode and anchor must be set on input);
 ///        written in cur's frame
+/// @param fr position in source's frame (any mode/anchor)
+/// @param layer source layer name; NULL = G.layer
 void pico_cv_pos_from (
-    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
+    Pico_Rel_Pos* to, const Pico_Rel_Pos* fr, const char* layer
 );
 
 /// @brief Projects a position from the current layer's logical frame
@@ -622,25 +622,25 @@ void pico_cv_pos_from (
 /// the target, or from the target up to cur, composing each layer's
 /// scene.src -> scene.dst transform. Target must be cur, an ancestor,
 /// or a descendant of cur via `hier.up`; siblings assert and abort.
-/// @param layer target layer name; NULL = G.layer
-/// @param fr position in cur's frame (any mode/anchor)
 /// @param to result template (mode and anchor must be set on input);
 ///        written in target's frame
+/// @param fr position in cur's frame (any mode/anchor)
+/// @param layer target layer name; NULL = G.layer
 void pico_cv_pos_to (
-    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
+    Pico_Rel_Pos* to, const Pico_Rel_Pos* fr, const char* layer
 );
 
 /// @brief Brings a rectangle from a named related layer's frame into cur.
 /// Layer must be cur, an ancestor or a descendant of cur (siblings assert).
 void pico_cv_rect_from (
-    const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
+    Pico_Rel_Rect* to, const Pico_Rel_Rect* fr, const char* layer
 );
 
 /// @brief Projects a rectangle from cur into a named related layer's frame.
 /// Same chain walk as `pico_cv_pos_to`, with size scaled per step.
 /// Layer must be cur, an ancestor or a descendant of cur (siblings assert).
 void pico_cv_rect_to (
-    const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
+    Pico_Rel_Rect* to, const Pico_Rel_Rect* fr, const char* layer
 );
 
 /// @brief Composes a child rect onto a parent rect.

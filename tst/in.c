@@ -14,7 +14,7 @@ int main (void) {
         Pico_Rel_Rect in  = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C };
         Pico_Rel_Rect ret = pico_in_rect(&out, &in);
         Pico_Rel_Rect abs = { '!', {0, 0, 0, 0}, PICO_ANCHOR_NW };
-        pico_cv_rect_to(NULL, &ret, &abs);
+        pico_cv_rect_to(&abs, &ret, NULL);
         assert((int)(abs.x+0.5f)==35 && (int)(abs.y+0.5f)==35);
         assert((int)(abs.w+0.5f)==30 && (int)(abs.h+0.5f)==30);
     }
@@ -26,7 +26,7 @@ int main (void) {
         Pico_Rel_Pos  in  = { '%', {0.5, 0.5}, PICO_ANCHOR_NW };
         Pico_Rel_Pos  ret = pico_in_pos(&out, &in);
         Pico_Rel_Pos abs = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_to(NULL, &ret, &abs);
+        pico_cv_pos_to(&abs, &ret, NULL);
         assert((int)(abs.x+0.5f)==50 && (int)(abs.y+0.5f)==50);
     }
 
@@ -37,7 +37,7 @@ int main (void) {
         Pico_Rel_Dim  in  = { '%', {0.5, 0.5} };
         Pico_Rel_Dim  ret = pico_in_dim(&out, &in);
         Pico_Rel_Dim abs = { '!', {0, 0} };
-        pico_cv_dim_to(NULL, &ret, &abs);
+        pico_cv_dim_to(&abs, &ret, NULL);
         assert((int)(abs.w+0.5f)==30 && (int)(abs.h+0.5f)==30);
     }
 

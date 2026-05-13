@@ -16,7 +16,7 @@ static int _cv_is_descendant_of (Pico_Layer* A, Pico_Layer* B) {
 }
 
 void pico_cv_dim_from (
-    const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
+    Pico_Rel_Dim* to, const Pico_Rel_Dim* fr, const char* layer
 ) {
     _pico_guard();
     Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
@@ -25,7 +25,7 @@ void pico_cv_dim_from (
     // S is descendant of cur: swap, delegate to _to with cur=S.
     if (_cv_is_descendant_of(S, L)) {
         G.layer = S;
-        pico_cv_dim_to(L->name, fr, to);
+        pico_cv_dim_to(to, fr, L->name);
         G.layer = L;
         return;
     }
@@ -64,7 +64,7 @@ void pico_cv_dim_from (
 }
 
 void pico_cv_dim_to (
-    const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
+    Pico_Rel_Dim* to, const Pico_Rel_Dim* fr, const char* layer
 ) {
     _pico_guard();
     Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
@@ -73,7 +73,7 @@ void pico_cv_dim_to (
     // T is descendant of cur: swap, delegate to _from with cur=T.
     if (_cv_is_descendant_of(T, L)) {
         G.layer = T;
-        pico_cv_dim_from(L->name, fr, to);
+        pico_cv_dim_from(to, fr, L->name);
         G.layer = L;
         return;
     }
@@ -101,7 +101,7 @@ void pico_cv_dim_to (
 }
 
 void pico_cv_pos_from (
-    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
+    Pico_Rel_Pos* to, const Pico_Rel_Pos* fr, const char* layer
 ) {
     _pico_guard();
     Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
@@ -110,7 +110,7 @@ void pico_cv_pos_from (
     // S is descendant of cur: swap, delegate to _to with cur=S.
     if (_cv_is_descendant_of(S, L)) {
         G.layer = S;
-        pico_cv_pos_to(L->name, fr, to);
+        pico_cv_pos_to(to, fr, L->name);
         G.layer = L;
         return;
     }
@@ -152,7 +152,7 @@ void pico_cv_pos_from (
 }
 
 void pico_cv_pos_to (
-    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
+    Pico_Rel_Pos* to, const Pico_Rel_Pos* fr, const char* layer
 ) {
     _pico_guard();
     Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
@@ -161,7 +161,7 @@ void pico_cv_pos_to (
     // T is descendant of cur: swap, delegate to _from with cur=T.
     if (_cv_is_descendant_of(T, L)) {
         G.layer = T;
-        pico_cv_pos_from(L->name, fr, to);
+        pico_cv_pos_from(to, fr, L->name);
         G.layer = L;
         return;
     }
@@ -190,7 +190,7 @@ void pico_cv_pos_to (
 }
 
 void pico_cv_rect_from (
-    const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
+    Pico_Rel_Rect* to, const Pico_Rel_Rect* fr, const char* layer
 ) {
     _pico_guard();
     Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
@@ -199,7 +199,7 @@ void pico_cv_rect_from (
     // S is descendant of cur: swap, delegate to _to with cur=S.
     if (_cv_is_descendant_of(S, L)) {
         G.layer = S;
-        pico_cv_rect_to(L->name, fr, to);
+        pico_cv_rect_to(to, fr, L->name);
         G.layer = L;
         return;
     }
@@ -241,7 +241,7 @@ void pico_cv_rect_from (
 }
 
 void pico_cv_rect_to (
-    const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
+    Pico_Rel_Rect* to, const Pico_Rel_Rect* fr, const char* layer
 ) {
     _pico_guard();
     Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
@@ -250,7 +250,7 @@ void pico_cv_rect_to (
     // T is descendant of cur: swap, delegate to _from with cur=T.
     if (_cv_is_descendant_of(T, L)) {
         G.layer = T;
-        pico_cv_rect_from(L->name, fr, to);
+        pico_cv_rect_from(to, fr, L->name);
         G.layer = L;
         return;
     }
@@ -321,7 +321,7 @@ static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
         return *p;
     }
     Pico_Rel_Pos out = {'!', {0, 0}, PICO_ANCHOR_NW};
-    pico_cv_pos_to(old->name, p, &out);
+    pico_cv_pos_to(&out, p, old->name);
     G.layer = old;
     return out;
 }
@@ -342,7 +342,7 @@ static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
         out = G.layer->scene.dst;
     } else {
         out = (Pico_Rel_Rect){'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
-        pico_cv_rect_to(old->name, r, &out);
+        pico_cv_rect_to(&out, r, old->name);
     }
     G.layer = old;
     return out;
