@@ -1354,7 +1354,6 @@ void pico_output_present (void) {
 
 void pico_output_draw_layers (void) {
     _pico_guard();
-    assert(G.layer == &G.window.layer);
     _pico_output_draw_layers(&G.window.layer);
     SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
 }
