@@ -109,16 +109,16 @@ Functions</h2></td></tr>
 <tr class="memdesc:gaeed4deb3983379b35c28198f080374cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Composes a child dimension onto a parent rect. Mode of <code>in</code> is preserved.  <br /></td></tr>
 <tr class="separator:gaeed4deb3983379b35c28198f080374cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6e7227265a128630b516460568e88f39" id="r_ga6e7227265a128630b516460568e88f39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#ga6e7227265a128630b516460568e88f39">pico_vs_pos_pos</a> (const char *L1, <a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *p1, const char *L2, <a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *p2)</td></tr>
-<tr class="memdesc:ga6e7227265a128630b516460568e88f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if two points fall on the same pixel. Each side can be in cur or in a direct child of cur. Both points must be non-NULL. Comparison is on rounded integer pixel values.  <br /></td></tr>
+<tr class="memdesc:ga6e7227265a128630b516460568e88f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if two points fall on the same pixel. Each side can be in cur or in a descendant of cur. Both points must be non-NULL. Comparison is on rounded integer pixel values.  <br /></td></tr>
 <tr class="separator:ga6e7227265a128630b516460568e88f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafbb62d99f9220e313e9ac4871d3b507c" id="r_gafbb62d99f9220e313e9ac4871d3b507c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#gafbb62d99f9220e313e9ac4871d3b507c">pico_vs_pos_rect</a> (const char *L1, <a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *p1, const char *L2, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *r2)</td></tr>
-<tr class="memdesc:gafbb62d99f9220e313e9ac4871d3b507c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a layer that is a direct child of cur (Lx=child name). With L2 set and r2=NULL, the child layer's bounds (scene.dst in cur) act as the rect. p1 must not be NULL.  <br /></td></tr>
+<tr class="memdesc:gafbb62d99f9220e313e9ac4871d3b507c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a descendant of cur (Lx=layer name). With L2 set and r2=NULL, the named layer's bounds (scene.dst in its parent) act as the rect. p1 must not be NULL.  <br /></td></tr>
 <tr class="separator:gafbb62d99f9220e313e9ac4871d3b507c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6a330d50a90fb46e7c4ba9f439f2e876" id="r_ga6a330d50a90fb46e7c4ba9f439f2e876"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#ga6a330d50a90fb46e7c4ba9f439f2e876">pico_vs_rect_pos</a> (const char *L1, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *r1, const char *L2, <a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *p2)</td></tr>
-<tr class="memdesc:ga6a330d50a90fb46e7c4ba9f439f2e876"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is inside a rectangle (mirror of pos_rect). Equivalent to pico_vs_pos_rect(L2, p2, L1, r1). r1 may be NULL with L1 set (uses the child's bounds) or both NULL (uses cur's bounds). p2 must not be NULL.  <br /></td></tr>
+<tr class="memdesc:ga6a330d50a90fb46e7c4ba9f439f2e876"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is inside a rectangle (mirror of pos_rect). Equivalent to pico_vs_pos_rect(L2, p2, L1, r1). r1 may be NULL with L1 set (uses the named layer's bounds) or both NULL (uses cur's bounds). p2 must not be NULL.  <br /></td></tr>
 <tr class="separator:ga6a330d50a90fb46e7c4ba9f439f2e876"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafed960041f600b0b343a5f60fe462f98" id="r_gafed960041f600b0b343a5f60fe462f98"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#gafed960041f600b0b343a5f60fe462f98">pico_vs_rect_rect</a> (const char *L1, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *r1, const char *L2, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *r2)</td></tr>
-<tr class="memdesc:gafed960041f600b0b343a5f60fe462f98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if two rectangles overlap. Each side can be expressed in cur (Lx=NULL) or in a direct child of cur. With Lx set and the rect NULL, the child layer's bounds act as the rect for that side.  <br /></td></tr>
+<tr class="memdesc:gafed960041f600b0b343a5f60fe462f98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if two rectangles overlap. Each side can be expressed in cur (Lx=NULL) or in a descendant of cur. With Lx set and the rect NULL, the named layer's bounds act as the rect for that side.  <br /></td></tr>
 <tr class="separator:gafed960041f600b0b343a5f60fe462f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8e3939c60494441a270b650349cded90" id="r_ga8e3939c60494441a270b650349cded90"><td class="memItemLeft" align="right" valign="top">Pico_Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Utils.html#ga8e3939c60494441a270b650349cded90">pico_color_darker</a> (Pico_Color clr, float pct)</td></tr>
 <tr class="memdesc:ga8e3939c60494441a270b650349cded90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a color darker by the specified percentage.  <br /></td></tr>
@@ -710,9 +710,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks if two points fall on the same pixel. Each side can be in cur or in a direct child of cur. Both points must be non-NULL. Comparison is on rounded integer pixel values. </p>
+<p>Checks if two points fall on the same pixel. Each side can be in cur or in a descendant of cur. Both points must be non-NULL. Comparison is on rounded integer pixel values. </p>
 <dl class="section return"><dt>Returns</dt><dd>1 if rounded (x,y) of p1 equals that of p2, or 0 otherwise </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#gafbb62d99f9220e313e9ac4871d3b507c" title="Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a layer th...">pico_vs_pos_rect</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#gafbb62d99f9220e313e9ac4871d3b507c" title="Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a descenda...">pico_vs_pos_rect</a> </dd></dl>
 
 </div>
 </div>
@@ -754,9 +754,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a layer that is a direct child of cur (Lx=child name). With L2 set and r2=NULL, the child layer's bounds (scene.dst in cur) act as the rect. p1 must not be NULL. </p>
+<p>Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a descendant of cur (Lx=layer name). With L2 set and r2=NULL, the named layer's bounds (scene.dst in its parent) act as the rect. p1 must not be NULL. </p>
 <dl class="section return"><dt>Returns</dt><dd>1 if p1 is inside r2, or 0 otherwise </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#ga6e7227265a128630b516460568e88f39" title="Checks if two points fall on the same pixel. Each side can be in cur or in a direct child of cur....">pico_vs_pos_pos</a> <a class="el" href="group__Utils.html#gafed960041f600b0b343a5f60fe462f98" title="Checks if two rectangles overlap. Each side can be expressed in cur (Lx=NULL) or in a direct child of...">pico_vs_rect_rect</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#ga6e7227265a128630b516460568e88f39" title="Checks if two points fall on the same pixel. Each side can be in cur or in a descendant of cur....">pico_vs_pos_pos</a> <a class="el" href="group__Utils.html#gafed960041f600b0b343a5f60fe462f98" title="Checks if two rectangles overlap. Each side can be expressed in cur (Lx=NULL) or in a descendant of c...">pico_vs_rect_rect</a> </dd></dl>
 
 </div>
 </div>
@@ -798,9 +798,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks if a point is inside a rectangle (mirror of pos_rect). Equivalent to pico_vs_pos_rect(L2, p2, L1, r1). r1 may be NULL with L1 set (uses the child's bounds) or both NULL (uses cur's bounds). p2 must not be NULL. </p>
+<p>Checks if a point is inside a rectangle (mirror of pos_rect). Equivalent to pico_vs_pos_rect(L2, p2, L1, r1). r1 may be NULL with L1 set (uses the named layer's bounds) or both NULL (uses cur's bounds). p2 must not be NULL. </p>
 <dl class="section return"><dt>Returns</dt><dd>1 if p2 is inside r1, or 0 otherwise </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#gafbb62d99f9220e313e9ac4871d3b507c" title="Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a layer th...">pico_vs_pos_rect</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#gafbb62d99f9220e313e9ac4871d3b507c" title="Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a descenda...">pico_vs_pos_rect</a> </dd></dl>
 
 </div>
 </div>
@@ -842,9 +842,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks if two rectangles overlap. Each side can be expressed in cur (Lx=NULL) or in a direct child of cur. With Lx set and the rect NULL, the child layer's bounds act as the rect for that side. </p>
+<p>Checks if two rectangles overlap. Each side can be expressed in cur (Lx=NULL) or in a descendant of cur. With Lx set and the rect NULL, the named layer's bounds act as the rect for that side. </p>
 <dl class="section return"><dt>Returns</dt><dd>1 if r1 and r2 overlap, or 0 otherwise </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#gafbb62d99f9220e313e9ac4871d3b507c" title="Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a layer th...">pico_vs_pos_rect</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__Utils.html#gafbb62d99f9220e313e9ac4871d3b507c" title="Checks if a point is inside a rectangle. Each side can be expressed in cur (Lx=NULL) or in a descenda...">pico_vs_pos_rect</a> </dd></dl>
 
 </div>
 </div>
