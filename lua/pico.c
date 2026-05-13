@@ -488,7 +488,7 @@ static int l_cv_pos (lua_State* L) {
     Pico_Rel_Pos fr = C_rel_pos(L, idx[3]);
     if (lua_type(L, idx[1]) == LUA_TSTRING) {
         char m = C_mode_s_opt(L, idx[1]);
-        Pico_Rel_Pos to = { .mode=m, .anchor=PICO_ANCHOR_NW };
+        Pico_Rel_Pos to = { .mode=m, .anchor=PICO_ANCHOR_C };
         pico_cv_pos(L_to, &to, L_fr, &fr);
         L_push_rel_pos(L, &to);
         return 1;
@@ -519,7 +519,7 @@ static int l_cv_rect (lua_State* L) {
     Pico_Rel_Rect fr = C_rel_rect(L, idx[3]);
     if (lua_type(L, idx[1]) == LUA_TSTRING) {
         char m = C_mode_s_opt(L, idx[1]);
-        Pico_Rel_Rect to = { .mode=m, .anchor=PICO_ANCHOR_NW };
+        Pico_Rel_Rect to = { .mode=m, .anchor=PICO_ANCHOR_C };
         pico_cv_rect(L_to, &to, L_fr, &fr);
         L_push_rel_rect(L, &to);
         return 1;

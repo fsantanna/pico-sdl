@@ -9,7 +9,7 @@ do
     assert(ret[1] == '%')
     assert(ret.anchor.x == 0.5 and ret.anchor.y == 0.5)
     local abs = pico.cv.rect(nil, '!', nil, ret)
-    assert(math.floor(abs.x+0.5)==35 and math.floor(abs.y+0.5)==35)
+    assert(math.floor(abs.x+0.5)==50 and math.floor(abs.y+0.5)==50)
     assert(math.floor(abs.w+0.5)==30 and math.floor(abs.h+0.5)==30)
 end
 
@@ -20,7 +20,7 @@ do
     local ret = pico.xin.pos(out, child)
     assert(ret[1] == '%')
     local abs = pico.cv.pos(nil, '!', nil, ret)
-    assert(math.floor(abs.x+0.5)==50 and math.floor(abs.y+0.5)==50)
+    assert(math.floor(abs.x+0.5)==51 and math.floor(abs.y+0.5)==51)
 end
 
 print "pico.xin.dim smoke"
