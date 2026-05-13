@@ -314,7 +314,9 @@ Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
-    if (layer == NULL) return *p;
+    if (layer == NULL) {
+        return *p;
+    }
     Pico_Layer* old = G.layer;
     G.layer = _pico_layer_name(layer);
     if (G.layer == old) {
@@ -339,7 +341,17 @@ static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
 
     Pico_Rel_Rect out;
     if (r == NULL) {
-        out = G.layer->scene.dst;
+        // scene.dst is in L2's parent frame. If parent == cur, it's already
+        // in cur's frame; otherwise project from parent up to cur.
+        Pico_Rel_Rect dst = G.layer->scene.dst;
+        if (G.layer->hier.up != NULL
+            && _pico_layer_name(G.layer->hier.up) != old) {
+            G.layer = _pico_layer_name(G.layer->hier.up);
+            out = (Pico_Rel_Rect){'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
+            pico_cv_rect_to(&out, &dst, old->name);
+        } else {
+            out = dst;
+        }
     } else {
         out = (Pico_Rel_Rect){'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
         pico_cv_rect_to(&out, r, old->name);

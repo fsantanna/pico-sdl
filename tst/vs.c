@@ -219,6 +219,34 @@ int main (void) {
     }
     pico_set_layer("world");
 
+    // deep descendant w/ NON-full scene.dst: explicit r_pct path.
+    // sub_sub_tight (10x10) sits in top-left 10x10 of sub_vs (50x50);
+    // projected to world, that's the top-left 20x20.
+    pico_layer_empty("sub_vs", "sub_sub_tight", 1,
+                     (Pico_Rel_Dim){'!', {10, 10}}, NULL);
+    pico_set_layer("sub_sub_tight");
+    pico_set_scene_dst((Pico_Rel_Rect){'!', {0, 0, 10, 10}, PICO_ANCHOR_NW});
+    pico_set_layer("world");
+    {
+        puts("vs_pos_rect - non-full scene.dst, explicit r_pct grandchild");
+        Pico_Rel_Pos  p_in  = { '!', {15, 15}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos  p_out = { '!', {30, 30}, PICO_ANCHOR_NW };
+        Pico_Rel_Rect r_pct = { '%', {0, 0, 1, 1}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p_in,  "sub_sub_tight", &r_pct) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, "sub_sub_tight", &r_pct) == 0);
+        assert(pico_vs_rect_pos("sub_sub_tight", &r_pct, NULL, &p_in)  == 1);
+        assert(pico_vs_rect_pos("sub_sub_tight", &r_pct, NULL, &p_out) == 0);
+    }
+    {
+        puts("vs_pos_rect - non-full scene.dst, default r2 (grandchild bounds)");
+        Pico_Rel_Pos p_in  = { '!', {15, 15}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p_out = { '!', {30, 30}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p_in,  "sub_sub_tight", NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, "sub_sub_tight", NULL) == 0);
+        assert(pico_vs_rect_pos("sub_sub_tight", NULL, NULL, &p_in)  == 1);
+        assert(pico_vs_rect_pos("sub_sub_tight", NULL, NULL, &p_out) == 0);
+    }
+
     pico_init(0);
     return 0;
 }

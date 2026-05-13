@@ -1210,8 +1210,16 @@ static void L_opt_target (lua_State* L, int i, const char* key) {
     pico_set_layer(old);
 }
 
+// True if table at idx i has a non-nil `x` field (Rect-shaped).
+static int L_is_rect (lua_State* L, int i) {
+    lua_getfield(L, i, "x");
+    int yes = !lua_isnil(L, -1);
+    lua_pop(L, 1);
+    return yes;
+}
+
 static int l_layer_empty (lua_State* L) {
-    int m = C_realm_opt(L);  // [m] | up | key | clear | (dim|rect) | [tile]
+    int m = C_realm_opt(L);  // [m] | up | key | clear | (Dim|Rect) | (Tile|Rect)? | (Tile|Rect)?
     int i = m ? 2 : 1;
     if (!m) m = '!';
     const char* up = lua_isnil(L, i) ? NULL : luaL_checkstring(L, i);
@@ -1220,19 +1228,38 @@ static int l_layer_empty (lua_State* L) {
     luaL_checktype(L, i+2, LUA_TBOOLEAN);
     int clear = lua_toboolean(L, i+2);
 
+    // arg 4: Dim or Rect (Rect also sets scene.target via its full shape).
+    luaL_checktype(L, i+3, LUA_TTABLE);
     Pico_Rel_Dim dim = C_rel_dim(L, i+3);
+    int target_idx = L_is_rect(L, i+3) ? i+3 : 0;
 
+    // args 5, 6: each Tile (no x) or Rect (scene.target). Order-free.
     Pico_Abs_Dim tile;
-    Pico_Abs_Dim* ptr = NULL;
-    if (!lua_isnoneornil(L,i+4)) {
-        luaL_checktype(L, i+4, LUA_TTABLE);
-        tile.w = (int) C_asrfieldnum(L, i+4, "w");
-        tile.h = (int) C_asrfieldnum(L, i+4, "h");
-        ptr = &tile;
+    Pico_Abs_Dim* tile_ptr = NULL;
+    for (int j = i+4; j <= i+5; j++) {
+        if (lua_isnoneornil(L, j)) {
+            continue;
+        }
+        luaL_checktype(L, j, LUA_TTABLE);
+        if (L_is_rect(L, j)) {
+            if (target_idx != 0) {
+                return luaL_error(L, "layer.empty: target specified twice");
+            }
+            target_idx = j;
+        } else {
+            if (tile_ptr != NULL) {
+                return luaL_error(L, "layer.empty: tile specified twice");
+            }
+            tile.w = (int) C_asrfieldnum(L, j, "w");
+            tile.h = (int) C_asrfieldnum(L, j, "h");
+            tile_ptr = &tile;
+        }
     }
 
-    pico_layer_empty_mode(m, up, key, clear, dim, ptr);
-    L_opt_target(L, i+3, key);
+    pico_layer_empty_mode(m, up, key, clear, dim, tile_ptr);
+    if (target_idx != 0) {
+        L_opt_target(L, target_idx, key);
+    }
     return 0;
 }
 

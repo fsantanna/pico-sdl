@@ -190,4 +190,58 @@ do
     pico.set.layer 'world'
 end
 
+print "deep descendant bounds default (r==NULL) -- should match explicit r"
+do
+    -- cur=world (100x100). sub_vs (50x50) fills world; sub_sub_vs (25x25)
+    -- fills sub_vs. So sub_sub_vs's bounds project to cover all of world.
+    local p_in  = {'!', x= 75, y= 75, anchor='NW'}      -- inside world
+    local p_out = {'!', x=200, y=200, anchor='NW'}      -- outside world
+
+    print('', "explicit r2 = '%' full of grandchild (r!=NULL path)")
+    local r_pct = {'%', x=0, y=0, w=1, h=1, anchor='NW'}
+    assert(    pico.vs.pos.rect(nil, p_in,  'sub_sub_vs', r_pct))
+    assert(not pico.vs.pos.rect(nil, p_out, 'sub_sub_vs', r_pct))
+    assert(    pico.vs.rect.pos('sub_sub_vs', r_pct, nil, p_in))
+    assert(not pico.vs.rect.pos('sub_sub_vs', r_pct, nil, p_out))
+
+    print('', "default r2 = grandchild bounds (r==NULL path)")
+    -- 2-arg / nil-r2 shortcut must produce the same answer.
+    assert(    pico.vs.pos.rect(p_in,  'sub_sub_vs'))
+    assert(not pico.vs.pos.rect(p_out, 'sub_sub_vs'))
+    assert(    pico.vs.pos.rect(nil, p_in,  'sub_sub_vs', nil))
+    assert(not pico.vs.pos.rect(nil, p_out, 'sub_sub_vs', nil))
+    assert(    pico.vs.rect.pos('sub_sub_vs', nil, nil, p_in))
+    assert(not pico.vs.rect.pos('sub_sub_vs', nil, nil, p_out))
+end
+
+print "deep descendant w/ NON-full scene.dst (default-r vs explicit-r)"
+do
+    -- sub_vs (50x50) fills world (100x100), scale 2x.
+    -- sub_sub_tight covers only top-left 10x10 of sub_vs ->
+    -- top-left 20x20 of world after projection.
+    pico.layer.empty('sub_vs', 'sub_sub_tight', true,
+        {'!', w=10, h=10},
+        {'!', x=0, y=0, w=10, h=10, anchor='NW'})
+
+    -- world:(15,15) is inside 20x20 projected bounds,
+    -- but OUTSIDE the unprojected 10x10 dst if misread in world.
+    local p_in  = {'!', x=15, y=15, anchor='NW'}
+    local p_out = {'!', x=30, y=30, anchor='NW'}
+
+    print('', "explicit r2 = '%' full of grandchild (r!=NULL path)")
+    local r_pct = {'%', x=0, y=0, w=1, h=1, anchor='NW'}
+    assert(    pico.vs.pos.rect(nil, p_in,  'sub_sub_tight', r_pct))
+    assert(not pico.vs.pos.rect(nil, p_out, 'sub_sub_tight', r_pct))
+    assert(    pico.vs.rect.pos('sub_sub_tight', r_pct, nil, p_in))
+    assert(not pico.vs.rect.pos('sub_sub_tight', r_pct, nil, p_out))
+
+    print('', "default r2 = grandchild bounds (r==NULL path)")
+    assert(    pico.vs.pos.rect(p_in,  'sub_sub_tight'))
+    assert(not pico.vs.pos.rect(p_out, 'sub_sub_tight'))
+    assert(    pico.vs.pos.rect(nil, p_in,  'sub_sub_tight', nil))
+    assert(not pico.vs.pos.rect(nil, p_out, 'sub_sub_tight', nil))
+    assert(    pico.vs.rect.pos('sub_sub_tight', nil, nil, p_in))
+    assert(not pico.vs.rect.pos('sub_sub_tight', nil, nil, p_out))
+end
+
 pico.init(false)
