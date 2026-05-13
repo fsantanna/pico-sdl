@@ -210,16 +210,16 @@ void pico_output_draw_pixmap (const char* key, Pico_Abs_Dim dim,
 /// @param path path to the image file
 /// @param rect target position and dimension (mode determines coordinates)
 /// @sa pico_output_draw_pixmap
-void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect);
+void pico_output_draw_image (const char* path, Pico_Rel_Rect rect);
 
 /// @brief Draws a line.
 /// @param p1 first endpoint position (mode determines coordinates)
 /// @param p2 second endpoint position (mode determines coordinates)
-void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2);
+void pico_output_draw_line (Pico_Rel_Pos p1, Pico_Rel_Pos p2);
 
 /// @brief Draws a single pixel.
 /// @param pos drawing position (mode determines coordinates)
-void pico_output_draw_pixel (Pico_Rel_Pos* pos);
+void pico_output_draw_pixel (Pico_Rel_Pos pos);
 
 /// @brief Draws a batch of pixels.
 /// @param n number of positions
@@ -233,17 +233,17 @@ void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw (mode determines coordinates)
-void pico_output_draw_rect (Pico_Rel_Rect* rect);
+void pico_output_draw_rect (Pico_Rel_Rect rect);
 
 /// @brief Draws a triangle.
 /// @param p1 first vertex position (mode determines coordinates)
 /// @param p2 second vertex position (mode determines coordinates)
 /// @param p3 third vertex position (mode determines coordinates)
-void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3);
+void pico_output_draw_tri (Pico_Rel_Pos p1, Pico_Rel_Pos p2, Pico_Rel_Pos p3);
 
 /// @brief Draws an ellipse.
 /// @param rect bounding rectangle (mode determines coordinates)
-void pico_output_draw_oval (Pico_Rel_Rect* rect);
+void pico_output_draw_oval (Pico_Rel_Rect rect);
 
 /// @brief Draws a polygon.
 /// @param n number of vertices
@@ -253,7 +253,7 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps);
 /// @brief Draws text (shared caching by text content).
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
-void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect);
+void pico_output_draw_text (const char* text, Pico_Rel_Rect rect);
 
 /// @brief Draws text with explicit realm mode and layer key.
 /// @param mode realm mode ('!' exclusive, '=' shared,
@@ -264,7 +264,7 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect);
 void pico_output_draw_text_mode (
     int mode,
     const char* key, const char* text,
-    Pico_Rel_Rect* rect
+    Pico_Rel_Rect rect
 );
 
 /// @brief Shows what has been drawn onto the screen.
@@ -288,7 +288,7 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
 /// @param path path to the Y4M video file
 /// @param rect target position and dimension
 /// @return 1 if frame drawn, or 0 at EOF
-int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect);
+int pico_output_draw_video (const char* path, Pico_Rel_Rect rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file

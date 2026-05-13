@@ -236,7 +236,7 @@ int pico_set_video (const char* key, int frame) {
     return 1;
 }
 
-int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect) {
+int pico_output_draw_video (const char* path, Pico_Rel_Rect rect) {
     Pico_Layer_Video* vs = _pico_layer_video('=', path, path);
     pico_assert(vs != NULL);
 
@@ -252,7 +252,7 @@ int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect) {
     }
 
     /* Draw */
-    _pico_output_draw_layer(&vs->base, rect);
+    _pico_output_draw_layer(&vs->base, &rect);
     return 1;
 }
 

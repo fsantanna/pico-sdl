@@ -180,23 +180,23 @@ static void _show_tile (Pico_Layer_Scene* view, SDL_Rect dst) {
     if (dx > 0) {
         for (int i=dx; i<dst.w; i+=dx) {
             pico_output_draw_line (
-                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
-                &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
+                (Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
+                (Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
             );
         }
     }
     if (dy > 0) {
         for (int j=dy; j<dst.h; j+=dy) {
             pico_output_draw_line (
-                &(Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
-                &(Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
+                (Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
+                (Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
             );
         }
     }
 
     // surrounding rect
     pico_output_draw_rect (
-        &(Pico_Rel_Rect){ '!', {dst.x, dst.y, dst.w, dst.h}, PICO_ANCHOR_NW }
+        (Pico_Rel_Rect){ '!', {dst.x, dst.y, dst.w, dst.h}, PICO_ANCHOR_NW }
     );
 
     pico_set_pencil_color(x_clr);
@@ -215,8 +215,8 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             for (int i=0; i<dst.w; i+=(dst.w/layer->scene.dim.w)) {
                 if (i == 0) continue;
                 pico_output_draw_line (
-                    &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
-                    &(Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
+                    (Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
+                    (Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
                 );
             }
         }
@@ -224,8 +224,8 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             for (int j=0; j<dst.h; j+=(dst.h/layer->scene.dim.h)) {
                 if (j == 0) continue;
                 pico_output_draw_line (
-                    &(Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
-                    &(Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
+                    (Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
+                    (Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
                 );
             }
         }
@@ -247,7 +247,7 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             );
             pico_output_draw_text (
                 lbl,
-                &(Pico_Rel_Rect){ '!', {dst.x+x-dim.w/2, dst.y+10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
+                (Pico_Rel_Rect){ '!', {dst.x+x-dim.w/2, dst.y+10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
             );
         }
 
@@ -261,7 +261,7 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
                 &(Pico_Rel_Dim){ '!', {0, H} });
             pico_output_draw_text (
                 lbl,
-                &(Pico_Rel_Rect){ '!', {dst.x+10-dim.w/2, dst.y+y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
+                (Pico_Rel_Rect){ '!', {dst.x+10-dim.w/2, dst.y+y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
             );
         }
     }

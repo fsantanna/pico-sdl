@@ -8,7 +8,7 @@ int main (void) {
     pico_set_layer("A");
     pico_set_effect_color(PICO_COLOR_RED);
     pico_output_clear();
-    pico_output_draw_oval(&(Pico_Rel_Rect){ '%', {0.3, 0.6, 0.5, 0.5}, PICO_ANCHOR_C });
+    pico_output_draw_oval((Pico_Rel_Rect){ '%', {0.3, 0.6, 0.5, 0.5}, PICO_ANCHOR_C });
     pico_set_layer("world");
 
     /* Draw layer distorted 2:1 on main */

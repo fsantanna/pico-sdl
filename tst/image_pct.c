@@ -52,35 +52,35 @@ int main (void) {
         puts("show original centered");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0, 0}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-01");
     }
     {
         puts("show big centered");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 1.0, 1.0}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-02");
     }
     {
         puts("show small centered");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.2, 0.2}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-03");
     }
     {
         puts("show w-half proportional");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.5, 0}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-04");
     }
     {
         puts("show w-half h-quart distorted");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.5, 0.25}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-05");
     }
 

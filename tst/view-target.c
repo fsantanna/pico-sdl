@@ -11,7 +11,7 @@ int main (void) {
         pico_set_scene_dst((Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
         pico_output_clear();
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
+            (Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
         );
         _pico_check("view-target-01");
     }
@@ -21,10 +21,10 @@ int main (void) {
         puts("target: r2 inside r1");
         pico_output_clear();
         Pico_Rel_Rect r1 = {'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C};
-        pico_output_draw_rect(&r1);
+        pico_output_draw_rect(r1);
         Pico_Rel_Rect r2 = pico_in_rect(r1, (Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
         pico_set_pencil_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
-        pico_output_draw_rect(&r2);
+        pico_output_draw_rect(r2);
         _pico_check("view-target-02");
     }
 
@@ -35,7 +35,7 @@ int main (void) {
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_WHITE);
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
+            (Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
         );
         _pico_check("view-target-03");
     }
@@ -50,7 +50,7 @@ int main (void) {
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_WHITE);
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
+            (Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
         );
         pico_set_layer(old);
         pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});

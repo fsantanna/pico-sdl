@@ -44,12 +44,12 @@ int main (void) {
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_WHITE);
         pico_output_draw_rect (
-            &(Pico_Rel_Rect){ '!', {world.w/2-5, world.h/2-5, 10, 10}, PICO_ANCHOR_NW }
+            (Pico_Rel_Rect){ '!', {world.w/2-5, world.h/2-5, 10, 10}, PICO_ANCHOR_NW }
         );
         pico_set_pencil_color(PICO_COLOR_RED);
         pico_output_draw_line (
-            &(Pico_Rel_Pos){ '%', {0.5, 0.5}, PICO_ANCHOR_C },
-            &(Pico_Rel_Pos){ '%', {1.0, 0}, PICO_ANCHOR_C }
+            (Pico_Rel_Pos){ '%', {0.5, 0.5}, PICO_ANCHOR_C },
+            (Pico_Rel_Pos){ '%', {1.0, 0}, PICO_ANCHOR_C }
         );
         pico_input_delay(10);
         switch (i) {
@@ -69,7 +69,7 @@ int main (void) {
         pico_set_scene_src((Pico_Rel_Rect){ '!', {i, i, 100, 100}, PICO_ANCHOR_NW });
         pico_output_clear();
         pico_output_draw_text("Uma frase bem grande...",
-            &(Pico_Rel_Rect){ '!', {10, 50, 0, 10}, PICO_ANCHOR_NW });
+            (Pico_Rel_Rect){ '!', {10, 50, 0, 10}, PICO_ANCHOR_NW });
         pico_input_delay(10);
         //pico_input_event(NULL, PICO_EVENT_KEY_DN);
         switch (i) {

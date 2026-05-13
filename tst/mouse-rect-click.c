@@ -15,9 +15,9 @@ int main (void) {
     pico_set_effect_color(PICO_COLOR_NAVY);
     pico_output_clear();
     pico_set_pencil_color(PICO_COLOR_WHITE);
-    pico_output_draw_rect(&btn1);
-    pico_output_draw_rect(&btn2);
-    pico_output_draw_rect(&btn3);
+    pico_output_draw_rect(btn1);
+    pico_output_draw_rect(btn2);
+    pico_output_draw_rect(btn3);
     pico_set_layer("world");
 
     /* Draw layer at bottom-right, 35%x35% of screen (distorted) */
@@ -46,7 +46,7 @@ int main (void) {
         assert(!pico_vs_pos_rect(NULL, &pos, NULL, &b2));
         assert(!pico_vs_pos_rect(NULL, &pos, NULL, &b3));
         pico_set_pencil_color(PICO_COLOR_RED);
-        pico_output_draw_pixel(&pos);
+        pico_output_draw_pixel(pos);
         _pico_check("mouse-rect-click-02");
     }
 
@@ -63,7 +63,7 @@ int main (void) {
         assert(!pico_vs_pos_rect(NULL, &pos, NULL, &b2));
         assert( pico_vs_pos_rect(NULL, &pos, NULL, &b3));
         pico_set_pencil_color(PICO_COLOR_GREEN);
-        pico_output_draw_pixel(&pos);
+        pico_output_draw_pixel(pos);
         _pico_check("mouse-rect-click-03");
     }
 
@@ -80,7 +80,7 @@ int main (void) {
         assert(!pico_vs_pos_rect(NULL, &pos, NULL, &b2));
         assert(!pico_vs_pos_rect(NULL, &pos, NULL, &b3));
         pico_set_pencil_color(PICO_COLOR_GREEN);
-        pico_output_draw_pixel(&pos);
+        pico_output_draw_pixel(pos);
         _pico_check("mouse-rect-click-04");
     }
 
@@ -97,7 +97,7 @@ int main (void) {
         assert( pico_vs_pos_rect(NULL, &pos, NULL, &b2));
         assert(!pico_vs_pos_rect(NULL, &pos, NULL, &b3));
         pico_set_pencil_color(PICO_COLOR_GREEN);
-        pico_output_draw_pixel(&pos);
+        pico_output_draw_pixel(pos);
         _pico_check("mouse-rect-click-05");
     }
 

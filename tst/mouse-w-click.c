@@ -13,7 +13,7 @@ int main (void) {
     pico_set_effect_color(PICO_COLOR_NAVY);
     pico_output_clear();
     pico_set_pencil_color(PICO_COLOR_WHITE);
-    pico_output_draw_rect(&btn);
+    pico_output_draw_rect(btn);
     pico_set_layer(old);
 
     /* Composite layer A distorted at SE, 35%x35% of screen. */
@@ -37,7 +37,7 @@ int main (void) {
     assert(pico_vs_pos_rect(NULL, &pos, NULL, &btn_in_r));
 
     pico_set_pencil_color(PICO_COLOR_GREEN);
-    pico_output_draw_pixel(&pos);
+    pico_output_draw_pixel(pos);
     _pico_check("mouse-w-click-01");
 
     pico_init(0);

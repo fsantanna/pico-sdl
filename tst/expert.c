@@ -6,7 +6,7 @@ int main (void) {
     pico_set_window_title("Expert");
 
     Pico_Rel_Rect r = { '%', {0.5,0.5, 0.5,0.5}, PICO_ANCHOR_C };
-    pico_output_draw_rect(&r);
+    pico_output_draw_rect(r);
     _pico_check("expert-01");
 
     pico_set_expert(1, 0);

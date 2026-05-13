@@ -79,7 +79,7 @@ int main (void) {
             (Pico_Color){0x40, 0x40, 0x40, 0xFF}
         );
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){
+            (Pico_Rel_Rect){
                 '!',
                 {0, win_h - BAR_H * 2, win_w, BAR_H},
                 PICO_ANCHOR_NW
@@ -93,7 +93,7 @@ int main (void) {
             (Pico_Color){0x00, 0xAA, 0xFF, 0xFF}
         );
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){
+            (Pico_Rel_Rect){
                 '!',
                 {0, win_h - BAR_H * 2, bar_w, BAR_H},
                 PICO_ANCHOR_NW
@@ -112,7 +112,7 @@ int main (void) {
             );
             pico_output_draw_text(
                 label,
-                &(Pico_Rel_Rect){
+                (Pico_Rel_Rect){
                     '!',
                     {2, win_h - BAR_H, 0, BAR_H},
                     PICO_ANCHOR_NW

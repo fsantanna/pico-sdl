@@ -16,31 +16,31 @@ int main (void) {
         pico_output_clear();
 
         pico_set_pencil_color(PICO_COLOR_RED);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.1, 0.8, 0.05}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.1, 0.8, 0.05}, C });
 
         pico_set_pencil_color(PICO_COLOR_GREEN);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.2, 0.8, 0.05}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.2, 0.8, 0.05}, C });
 
         pico_set_pencil_color(PICO_COLOR_BLUE);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.3, 0.8, 0.05}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.3, 0.8, 0.05}, C });
 
         pico_set_pencil_color(PICO_COLOR_YELLOW);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.4, 0.8, 0.05}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.4, 0.8, 0.05}, C });
 
         pico_set_pencil_color(PICO_COLOR_CYAN);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.8, 0.05}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.5, 0.8, 0.05}, C });
 
         pico_set_pencil_color(PICO_COLOR_MAGENTA);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.6, 0.8, 0.05}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.6, 0.8, 0.05}, C });
 
         pico_set_pencil_color(PICO_COLOR_ORANGE);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.7, 0.8, 0.05}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.7, 0.8, 0.05}, C });
 
         pico_set_pencil_color(PICO_COLOR_PURPLE);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.8, 0.8, 0.05}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.8, 0.8, 0.05}, C });
 
         pico_set_pencil_color(PICO_COLOR_PINK);
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.9, 0.8, 0.05}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.9, 0.8, 0.05}, C });
 
         _pico_check("colors-01");
     }
@@ -52,7 +52,7 @@ int main (void) {
             Pico_Color c = pico_color_darker(PICO_COLOR_RED, i*0.1);
             pico_set_pencil_color(c);
             pico_output_draw_rect(
-                &(Pico_Rel_Rect){ '%', {0.5, 0.1+i*0.1, 0.8, 0.05}, PICO_ANCHOR_C }
+                (Pico_Rel_Rect){ '%', {0.5, 0.1+i*0.1, 0.8, 0.05}, PICO_ANCHOR_C }
             );
         }
         _pico_check("colors-02");
@@ -65,7 +65,7 @@ int main (void) {
             Pico_Color c = pico_color_lighter(PICO_COLOR_BLUE, i*0.1);
             pico_set_pencil_color(c);
             pico_output_draw_rect(
-                &(Pico_Rel_Rect){ '%', {0.5, 0.1+i*0.1, 0.8, 0.05}, PICO_ANCHOR_C }
+                (Pico_Rel_Rect){ '%', {0.5, 0.1+i*0.1, 0.8, 0.05}, PICO_ANCHOR_C }
             );
         }
         _pico_check("colors-03");
@@ -78,19 +78,19 @@ int main (void) {
         // -dark -> light
         pico_set_pencil_color(pico_color_darker(PICO_COLOR_GREEN, -0.50));
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.25, 0.5, 0.15}, PICO_ANCHOR_C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.25, 0.5, 0.15}, PICO_ANCHOR_C }
         );
 
         // green
         pico_set_pencil_color(PICO_COLOR_GREEN);
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.50, 0.5, 0.15}, PICO_ANCHOR_C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.50, 0.5, 0.15}, PICO_ANCHOR_C }
         );
 
         // -light -> dark
         pico_set_pencil_color(pico_color_lighter(PICO_COLOR_GREEN, -0.50));
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.75, 0.5, 0.15}, PICO_ANCHOR_C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.75, 0.5, 0.15}, PICO_ANCHOR_C }
         );
 
         _pico_check("colors-04");
@@ -104,28 +104,28 @@ int main (void) {
         Pico_Color c1 = pico_color_mix(PICO_COLOR_RED, PICO_COLOR_BLUE);
         pico_set_pencil_color(c1);
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, PICO_ANCHOR_C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, PICO_ANCHOR_C }
         );
 
         // red + green = olive
         Pico_Color c2 = pico_color_mix(PICO_COLOR_RED, PICO_COLOR_GREEN);
         pico_set_pencil_color(c2);
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.35, 0.8, 0.1}, PICO_ANCHOR_C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.35, 0.8, 0.1}, PICO_ANCHOR_C }
         );
 
         // blue + green = teal
         Pico_Color c3 = pico_color_mix(PICO_COLOR_BLUE, PICO_COLOR_GREEN);
         pico_set_pencil_color(c3);
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.55, 0.8, 0.1}, PICO_ANCHOR_C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.55, 0.8, 0.1}, PICO_ANCHOR_C }
         );
 
         // black + white = gray
         Pico_Color c4 = pico_color_mix(PICO_COLOR_BLACK, PICO_COLOR_WHITE);
         pico_set_pencil_color(c4);
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, PICO_ANCHOR_C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, PICO_ANCHOR_C }
         );
 
         _pico_check("colors-05");
@@ -139,37 +139,37 @@ int main (void) {
         // {'%', r=1, g=0, b=0} -> (255, 0, 0)
         pico_set_pencil_color((Pico_Color){255, 0, 0, 0xFF});
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, C }
         );
 
         // {'%', r=0, g=1, b=0} -> (0, 255, 0)
         pico_set_pencil_color((Pico_Color){0, 255, 0, 0xFF});
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.30, 0.8, 0.1}, C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.30, 0.8, 0.1}, C }
         );
 
         // {'%', r=0, g=0, b=1} -> (0, 0, 255)
         pico_set_pencil_color((Pico_Color){0, 0, 255, 0xFF});
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.45, 0.8, 0.1}, C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.45, 0.8, 0.1}, C }
         );
 
         // {'%', r=0.5, g=0.5, b=0.5} -> (127, 127, 127)
         pico_set_pencil_color((Pico_Color){127, 127, 127, 0xFF});
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.60, 0.8, 0.1}, C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.60, 0.8, 0.1}, C }
         );
 
         // {'!', r=255, g=255, b=0} -> (255, 255, 0)
         pico_set_pencil_color((Pico_Color){255, 255, 0, 0xFF});
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, C }
         );
 
         // {r=0, g=255, b=255} -> (0, 255, 255)
         pico_set_pencil_color((Pico_Color){0, 255, 255, 0xFF});
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.90, 0.8, 0.1}, C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.90, 0.8, 0.1}, C }
         );
 
         _pico_check("colors-06");
@@ -180,22 +180,22 @@ int main (void) {
         pico_output_clear();
 
         pico_set_pencil_color(pico_color_hex(0xFF0000));
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.15, 0.8, 0.1}, C });
 
         pico_set_pencil_color(pico_color_hex(0x00FF00));
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.30, 0.8, 0.1}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.30, 0.8, 0.1}, C });
 
         pico_set_pencil_color(pico_color_hex(0x0000FF));
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.45, 0.8, 0.1}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.45, 0.8, 0.1}, C });
 
         pico_set_pencil_color(pico_color_hex(0x7F7F7F));
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.60, 0.8, 0.1}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.60, 0.8, 0.1}, C });
 
         pico_set_pencil_color(pico_color_hex(0xFFFF00));
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.75, 0.8, 0.1}, C });
 
         pico_set_pencil_color(pico_color_hex(0x00FFFF));
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.90, 0.8, 0.1}, C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.90, 0.8, 0.1}, C });
 
         _pico_check("colors-06");
     }
@@ -267,7 +267,7 @@ int main (void) {
             pico_output_clear();
             pico_set_pencil_color(PICO_COLOR_WHITE);
             pico_output_draw_rect (
-                &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, C}
+                (Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, C}
             );
             _pico_check("colors-08");
         }
@@ -283,7 +283,7 @@ int main (void) {
             assert(c.r==0xFF && c.g==0x00 && c.b==0x00 && c.a==0xFF);
             pico_output_clear();
             pico_output_draw_rect (
-                &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, C}
+                (Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, C}
             );
             _pico_check("colors-09");
         }
@@ -299,7 +299,7 @@ int main (void) {
             assert(c.r==0x00 && c.g==0xFF && c.b==0x00 && c.a==0xFF);
             pico_output_clear();
             pico_output_draw_rect (
-                &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, C}
+                (Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, C}
             );
             _pico_check("colors-10");
         }

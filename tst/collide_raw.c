@@ -18,11 +18,11 @@ int main() {
         for (int x=r.x-1; x<=r.x+r.w; x++) {
             pico_output_clear();
             pico_set_pencil_color((Pico_Color){255,255,255, 0xFF});
-            pico_output_draw_rect(&r);
+            pico_output_draw_rect(r);
 
             Pico_Rel_Pos p = { '!', {x, y}, PICO_ANCHOR_NW };
             pico_set_pencil_color((Pico_Color){255,0,0, 0xFF});
-            pico_output_draw_pixel(&p);
+            pico_output_draw_pixel(p);
 
             int in = pico_vs_pos_rect(NULL, &p, NULL, &r);
             //puts(in ? "in" : "out");
@@ -60,11 +60,11 @@ int main() {
         for (int x=r.x-r.w; x<=r.x+r.w; x++) {
             pico_output_clear();
             pico_set_pencil_color((Pico_Color){255,255,255, 0xFF});
-            pico_output_draw_rect(&r);
+            pico_output_draw_rect(r);
 
             Pico_Rel_Rect r2 = { '!', {x,y,4,4}, PICO_ANCHOR_NW };
             pico_set_pencil_color((Pico_Color){255,0,0, 0xFF});
-            pico_output_draw_rect(&r2);
+            pico_output_draw_rect(r2);
 
             int in = pico_vs_rect_rect(NULL, &r2, NULL, &r);
             //puts(in ? "overlap" : "naw");

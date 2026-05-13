@@ -10,10 +10,10 @@ int main (void) {
     pico_output_clear();
     for (int i=0; i<16; i++) {
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_NW }
+            (Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_NW }
         );
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {15-i, i}, PICO_ANCHOR_NW }
+            (Pico_Rel_Pos) { '!', {15-i, i}, PICO_ANCHOR_NW }
         );
         pico_input_delay(10);
         switch (i) {

@@ -36,7 +36,7 @@ int main (void) {
     pico_set_layer("background");
     pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
     pico_output_clear();
-    pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
+    pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
     pico_set_layer("world");
     pico_output_clear();
     pico_output_draw_layer("background", &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C });
@@ -48,7 +48,7 @@ int main (void) {
     pico_set_effect_color((Pico_Color){0x00, 0x00, 0x80, 0xFF});
     pico_output_clear();
     pico_set_pencil_color((Pico_Color){0x00, 0xFF, 0x00, 0xFF});
-    pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
+    pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
     pico_set_layer("world");
     pico_output_clear();
     pico_output_draw_layer("ui", &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C });
@@ -79,7 +79,7 @@ int main (void) {
     pico_set_effect_color((Pico_Color){0x00, 0x80, 0x00, 0xFF});
     pico_output_clear();
     pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
-    pico_output_draw_rect(&(Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
+    pico_output_draw_rect((Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
     pico_layer_empty_mode('=', NULL, "reuse", 1, (Pico_Rel_Dim){'!', {64, 64}}, NULL);
     pico_set_layer("world");
     pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});

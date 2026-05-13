@@ -37,9 +37,9 @@ int main (void) {
     {
         pico_output_clear();
         pico_set_pencil_color((Pico_Color){255, 255, 255, 0xFF});
-        pico_output_draw_rect(&rect);
-        pico_output_draw_oval(&oval);
-        pico_output_draw_tri(&t1, &t2, &t3);
+        pico_output_draw_rect(rect);
+        pico_output_draw_oval(oval);
+        pico_output_draw_tri(t1, t2, t3);
         pico_output_draw_poly(4, poly);
         _pico_check("style-01");
     }
@@ -49,9 +49,9 @@ int main (void) {
         pico_output_clear();
         pico_set_pencil_style(PICO_STYLE_STROKE);
         pico_set_pencil_color((Pico_Color){255, 255, 255, 0xFF});
-        pico_output_draw_rect(&rect);
-        pico_output_draw_oval(&oval);
-        pico_output_draw_tri(&t1, &t2, &t3);
+        pico_output_draw_rect(rect);
+        pico_output_draw_oval(oval);
+        pico_output_draw_tri(t1, t2, t3);
         pico_output_draw_poly(4, poly);
         _pico_check("style-02");
     }
@@ -61,9 +61,9 @@ int main (void) {
         pico_output_clear();
         pico_set_pencil_style(PICO_STYLE_FILL);
         pico_set_pencil_color((Pico_Color){255, 255, 255, 0xFF});
-        pico_output_draw_rect(&rect);
-        pico_output_draw_oval(&oval);
-        pico_output_draw_tri(&t1, &t2, &t3);
+        pico_output_draw_rect(rect);
+        pico_output_draw_oval(oval);
+        pico_output_draw_tri(t1, t2, t3);
         pico_output_draw_poly(4, poly);
         _pico_check("style-03");
     }

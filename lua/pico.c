@@ -1407,7 +1407,7 @@ static int l_output_draw_image (lua_State* L) {
     L_image_get_dim(L, 2, path);
 
     Pico_Rel_Rect rect = C_rel_rect(L, 2);
-    pico_output_draw_image(path, &rect);
+    pico_output_draw_image(path, rect);
     return 0;
 }
 
@@ -1436,21 +1436,21 @@ static int l_output_draw_line (lua_State* L) {
     Pico_Rel_Pos p1 = C_rel_pos(L, 1);
     Pico_Rel_Pos p2 = C_rel_pos(L, 2);
 
-    pico_output_draw_line(&p1, &p2);
+    pico_output_draw_line(p1, p2);
     return 0;
 }
 
 static int l_output_draw_oval (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);
     Pico_Rel_Rect rect = C_rel_rect(L, 1);
-    pico_output_draw_oval(&rect);
+    pico_output_draw_oval(rect);
     return 0;
 }
 
 static int l_output_draw_pixel (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);
     Pico_Rel_Pos pos = C_rel_pos(L, 1);
-    pico_output_draw_pixel(&pos);
+    pico_output_draw_pixel(pos);
     return 0;
 }
 
@@ -1494,7 +1494,7 @@ static int l_output_draw_poly (lua_State* L) {
 static int l_output_draw_rect (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);
     Pico_Rel_Rect rect = C_rel_rect(L, 1);
-    pico_output_draw_rect(&rect);
+    pico_output_draw_rect(rect);
     return 0;
 }
 
@@ -1502,7 +1502,7 @@ static int l_output_draw_text (lua_State* L) {
     const char* text = luaL_checkstring(L, 1);  // text | rect
     luaL_checktype(L, 2, LUA_TTABLE);
     Pico_Rel_Rect rect = C_rel_rect(L, 2);
-    pico_output_draw_text(text, &rect);
+    pico_output_draw_text(text, rect);
     return 0;
 }
 
@@ -1515,7 +1515,7 @@ static int l_output_draw_tri (lua_State* L) {
     Pico_Rel_Pos p2 = C_rel_pos(L, 2);
     Pico_Rel_Pos p3 = C_rel_pos(L, 3);
 
-    pico_output_draw_tri(&p1, &p2, &p3);
+    pico_output_draw_tri(p1, p2, p3);
     return 0;
 }
 
@@ -1523,7 +1523,7 @@ static int l_output_draw_video (lua_State* L) {
     const char* path = luaL_checkstring(L, 1);  // path | rect
     luaL_checktype(L, 2, LUA_TTABLE);
     Pico_Rel_Rect rect = C_rel_rect(L, 2);
-    int ok = pico_output_draw_video(path, &rect);
+    int ok = pico_output_draw_video(path, rect);
     lua_pushboolean(L, ok);
     return 1;
 }

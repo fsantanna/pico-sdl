@@ -22,7 +22,7 @@ int main (void) {
     pico_output_clear();
     pico_set_pencil_color(PICO_COLOR_RED);
     pico_output_draw_rect(
-        &(Pico_Rel_Rect){'%', {.5, .5, 0.5, 0.5}, PICO_ANCHOR_C}
+        (Pico_Rel_Rect){'%', {.5, .5, 0.5, 0.5}, PICO_ANCHOR_C}
     );
 
     pico_set_layer(old);

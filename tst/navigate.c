@@ -20,18 +20,18 @@ int main() {
     {
         // X at center
         pico_output_draw_line(
-            &(Pico_Rel_Pos){ '%', {0.45, 0.45}, PICO_ANCHOR_C },
-            &(Pico_Rel_Pos){ '%', {0.55, 0.55}, PICO_ANCHOR_C }
+            (Pico_Rel_Pos){ '%', {0.45, 0.45}, PICO_ANCHOR_C },
+            (Pico_Rel_Pos){ '%', {0.55, 0.55}, PICO_ANCHOR_C }
         );
         pico_output_draw_line(
-            &(Pico_Rel_Pos){ '%', {0.55, 0.45}, PICO_ANCHOR_C },
-            &(Pico_Rel_Pos){ '%', {0.45, 0.55}, PICO_ANCHOR_C }
+            (Pico_Rel_Pos){ '%', {0.55, 0.45}, PICO_ANCHOR_C },
+            (Pico_Rel_Pos){ '%', {0.45, 0.55}, PICO_ANCHOR_C }
         );
 
         // RECT at center
         pico_set_pencil_style(PICO_STYLE_STROKE);
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.25, 0.25}, PICO_ANCHOR_C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.5, 0.25, 0.25}, PICO_ANCHOR_C }
         );
     }
     _pico_check("navigate-01");
