@@ -53,17 +53,23 @@ In alphabetical order:
       siblings project via cur in two steps.
     - `to` accepts two forms:
         - **table**: filled in-place (mode/anchor read from input);
-          returns nothing.
+          returns the same table.
         - **mode string** (`'!'`, `'%'`, `'#'`): builds and returns
           a fresh value; anchor defaults to `'NW'` (Pos/Rect only).
+    - Args are matched left-to-right against the 4-slot template
+      `(L_to, to_or_mode, L_fr, fr)`. Both explicit `nil`s and
+      trailing/leading omissions are accepted; a mismatched type
+      leaves the slot empty without consuming the arg, so short
+      forms like `(to, fr)`, `(L_to, to, fr)`, `(L_to, mode, fr)`
+      are all valid. `to_or_mode` and `fr` are required.
     - **pico.cv.pos**: Projects a Pos.
-        - `pico.cv.pos (L_to: string?, to: Pos, L_fr: string?, fr: Pos)`
+        - `pico.cv.pos (L_to: string?, to: Pos, L_fr: string?, fr: Pos) -> Pos`
         - `pico.cv.pos (L_to: string?, mode: string, L_fr: string?, fr: Pos) -> Pos`
     - **pico.cv.rect**: Projects a Rect.
-        - `pico.cv.rect (L_to: string?, to: Rect, L_fr: string?, fr: Rect)`
+        - `pico.cv.rect (L_to: string?, to: Rect, L_fr: string?, fr: Rect) -> Rect`
         - `pico.cv.rect (L_to: string?, mode: string, L_fr: string?, fr: Rect) -> Rect`
     - **pico.cv.dim**: Projects a Dim (no position component).
-        - `pico.cv.dim (L_to: string?, to: Dim, L_fr: string?, fr: Dim)`
+        - `pico.cv.dim (L_to: string?, to: Dim, L_fr: string?, fr: Dim) -> Dim`
         - `pico.cv.dim (L_to: string?, mode: string, L_fr: string?, fr: Dim) -> Dim`
 - **pico.get**
     - **pico.get.pencil**: Gets pencil configuration.

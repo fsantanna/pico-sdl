@@ -416,85 +416,157 @@ static int l_quit (lua_State* L) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// args_parse — flexible 4-slot dispatcher for pico.vs.* and pico.cv.*
+// out[i]: Lua arg index (1..nargs), or 0 if the slot is absent.
+// types[i]: bitmask of accepted lua_type values for slot i, e.g.
+//     (1<<LUA_TSTRING) | (1<<LUA_TTABLE).
+// An explicit nil in the arg list is consumed and leaves the slot at 0;
+// a type mismatch leaves the slot empty without advancing the arg cursor.
+///////////////////////////////////////////////////////////////////////////////
+
+static void args_parse (lua_State* L, int out[4], const int types[4], const char* who) {
+    int n = lua_gettop(L);
+    int ai = 1;
+    for (int si = 0; si < 4; si++) {
+        out[si] = 0;
+        if (ai > n) {
+            // no more args
+        } else if (lua_isnil(L, ai)) {
+            ai++;
+        } else if ((1 << lua_type(L, ai)) & types[si]) {
+            out[si] = ai;
+            ai++;
+        } else {
+            // type mismatch: leave slot empty, do not advance
+        }
+    }
+    if (ai <= n) {
+        luaL_error(L, "%s: unmatched argument at position %d", who, ai);
+    }
+}
+
+static const int VS_TYPES[4] = {
+    1 << LUA_TSTRING,
+    1 << LUA_TTABLE,
+    1 << LUA_TSTRING,
+    1 << LUA_TTABLE,
+};
+
+static const int CV_TYPES[4] = {
+    1 << LUA_TSTRING,
+    (1 << LUA_TSTRING) | (1 << LUA_TTABLE),
+    1 << LUA_TSTRING,
+    1 << LUA_TTABLE,
+};
+
+// If arg 1 is a single mode char ('!','%','#'), insert a nil at
+// position 1 so args_parse treats it as `to_or_mode`, not `L_to`.
+static void cv_shift_mode (lua_State* L) {
+    if (lua_gettop(L) >= 1 && lua_type(L, 1) == LUA_TSTRING) {
+        size_t len;
+        const char* s = lua_tolstring(L, 1, &len);
+        if (len == 1 && (s[0] == '!' || s[0] == '%' || s[0] == '#')) {
+            lua_pushnil(L);
+            lua_insert(L, 1);
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // CV: unified pos/rect/dim — (L_to, to_or_mode, L_fr, fr)
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_cv_pos (lua_State* L) {
-    const char* L_to = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
-    const char* L_fr = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-    luaL_checktype(L, 4, LUA_TTABLE);
-    Pico_Rel_Pos fr = C_rel_pos(L, 4);
-    char m = C_mode_s_opt(L, 2);
-    if (m) {
+    int idx[4];
+    cv_shift_mode(L);
+    args_parse(L, idx, CV_TYPES, "cv");
+    if (idx[1] == 0 || idx[3] == 0) {
+        return luaL_error(L, "cv.pos: to_or_mode and fr are required");
+    }
+    const char* L_to = idx[0] ? lua_tostring(L, idx[0]) : NULL;
+    const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
+    Pico_Rel_Pos fr = C_rel_pos(L, idx[3]);
+    if (lua_type(L, idx[1]) == LUA_TSTRING) {
+        char m = C_mode_s_opt(L, idx[1]);
         Pico_Rel_Pos to = { .mode=m, .anchor=PICO_ANCHOR_NW };
         pico_cv_pos(L_to, &to, L_fr, &fr);
         L_push_rel_pos(L, &to);
         return 1;
     } else {
-        luaL_checktype(L, 2, LUA_TTABLE);
         Pico_Rel_Pos to = {
-            .mode = C_mode_t(L, 2, 1),
-            .anchor = C_anchor(L, 2),
+            .mode = C_mode_t(L, idx[1], 1),
+            .anchor = C_anchor(L, idx[1]),
         };
         pico_cv_pos(L_to, &to, L_fr, &fr);
         lua_pushnumber(L, to.x);
-        lua_setfield(L, 2, "x");
+        lua_setfield(L, idx[1], "x");
         lua_pushnumber(L, to.y);
-        lua_setfield(L, 2, "y");
-        return 0;
+        lua_setfield(L, idx[1], "y");
+        lua_pushvalue(L, idx[1]);
+        return 1;
     }
 }
 
 static int l_cv_rect (lua_State* L) {
-    const char* L_to = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
-    const char* L_fr = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-    luaL_checktype(L, 4, LUA_TTABLE);
-    Pico_Rel_Rect fr = C_rel_rect(L, 4);
-    char m = C_mode_s_opt(L, 2);
-    if (m) {
+    int idx[4];
+    cv_shift_mode(L);
+    args_parse(L, idx, CV_TYPES, "cv");
+    if (idx[1] == 0 || idx[3] == 0) {
+        return luaL_error(L, "cv.rect: to_or_mode and fr are required");
+    }
+    const char* L_to = idx[0] ? lua_tostring(L, idx[0]) : NULL;
+    const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
+    Pico_Rel_Rect fr = C_rel_rect(L, idx[3]);
+    if (lua_type(L, idx[1]) == LUA_TSTRING) {
+        char m = C_mode_s_opt(L, idx[1]);
         Pico_Rel_Rect to = { .mode=m, .anchor=PICO_ANCHOR_NW };
         pico_cv_rect(L_to, &to, L_fr, &fr);
         L_push_rel_rect(L, &to);
         return 1;
     } else {
-        luaL_checktype(L, 2, LUA_TTABLE);
         Pico_Rel_Rect to = {
-            .mode = C_mode_t(L, 2, 1),
-            .anchor = C_anchor(L, 2),
+            .mode = C_mode_t(L, idx[1], 1),
+            .anchor = C_anchor(L, idx[1]),
         };
         pico_cv_rect(L_to, &to, L_fr, &fr);
         lua_pushnumber(L, to.x);
-        lua_setfield(L, 2, "x");
+        lua_setfield(L, idx[1], "x");
         lua_pushnumber(L, to.y);
-        lua_setfield(L, 2, "y");
+        lua_setfield(L, idx[1], "y");
         lua_pushnumber(L, to.w);
-        lua_setfield(L, 2, "w");
+        lua_setfield(L, idx[1], "w");
         lua_pushnumber(L, to.h);
-        lua_setfield(L, 2, "h");
-        return 0;
+        lua_setfield(L, idx[1], "h");
+        lua_pushvalue(L, idx[1]);
+        return 1;
     }
 }
 
 static int l_cv_dim (lua_State* L) {
-    const char* L_to = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
-    const char* L_fr = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-    luaL_checktype(L, 4, LUA_TTABLE);
-    Pico_Rel_Dim fr = C_rel_dim(L, 4);
-    char m = C_mode_s_opt(L, 2);
-    if (m) {
+    int idx[4];
+    cv_shift_mode(L);
+    args_parse(L, idx, CV_TYPES, "cv");
+    if (idx[1] == 0 || idx[3] == 0) {
+        return luaL_error(L, "cv.dim: to_or_mode and fr are required");
+    }
+    const char* L_to = idx[0] ? lua_tostring(L, idx[0]) : NULL;
+    const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
+    Pico_Rel_Dim fr = C_rel_dim(L, idx[3]);
+    if (lua_type(L, idx[1]) == LUA_TSTRING) {
+        char m = C_mode_s_opt(L, idx[1]);
         Pico_Rel_Dim to = { .mode=m };
         pico_cv_dim(L_to, &to, L_fr, &fr);
         L_push_rel_dim(L, &to);
         return 1;
     } else {
-        luaL_checktype(L, 2, LUA_TTABLE);
-        Pico_Rel_Dim to = { .mode = C_mode_t(L, 2, 1) };
+        Pico_Rel_Dim to = { .mode = C_mode_t(L, idx[1], 1) };
         pico_cv_dim(L_to, &to, L_fr, &fr);
         lua_pushnumber(L, to.w);
-        lua_setfield(L, 2, "w");
+        lua_setfield(L, idx[1], "w");
         lua_pushnumber(L, to.h);
-        lua_setfield(L, 2, "h");
-        return 0;
+        lua_setfield(L, idx[1], "h");
+        lua_pushvalue(L, idx[1]);
+        return 1;
     }
 }
 
@@ -532,36 +604,9 @@ static int l_in_dim (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// vs_parse — flexible 4-slot dispatcher for pico.vs.*
-// slots:  [ L1, x1, L2, x2 ]   types: [ str, tbl, str, tbl ]
-// out[i]: Lua arg index (1..nargs), or 0 if the slot is absent.
-// An explicit nil in the arg list is consumed and leaves the slot at 0;
-// a type mismatch leaves the slot empty without advancing the arg cursor.
-static void vs_parse (lua_State* L, int out[4]) {
-    static const int types[4] = {LUA_TSTRING, LUA_TTABLE, LUA_TSTRING, LUA_TTABLE};
-    int n = lua_gettop(L);
-    int ai = 1;
-    for (int si = 0; si < 4; si++) {
-        out[si] = 0;
-        if (ai > n) {
-            // no more args
-        } else if (lua_isnil(L, ai)) {
-            ai++;
-        } else if (lua_type(L, ai) == types[si]) {
-            out[si] = ai;
-            ai++;
-        } else {
-            // type mismatch: leave slot empty, do not advance
-        }
-    }
-    if (ai <= n) {
-        luaL_error(L, "vs: unmatched argument at position %d", ai);
-    }
-}
-
 static int l_vs_pos_pos (lua_State* L) {
     int idx[4];
-    vs_parse(L, idx);
+    args_parse(L, idx, VS_TYPES, "vs");
     if (idx[1] == 0 || idx[3] == 0) {
         return luaL_error(L, "vs.pos.pos: p1 and p2 are required");
     }
@@ -576,7 +621,7 @@ static int l_vs_pos_pos (lua_State* L) {
 
 static int l_vs_pos_rect (lua_State* L) {
     int idx[4];
-    vs_parse(L, idx);
+    args_parse(L, idx, VS_TYPES, "vs");
     if (idx[1] == 0) {
         return luaL_error(L, "vs.pos.rect: p1 is required");
     }
@@ -596,7 +641,7 @@ static int l_vs_pos_rect (lua_State* L) {
 
 static int l_vs_rect_pos (lua_State* L) {
     int idx[4];
-    vs_parse(L, idx);
+    args_parse(L, idx, VS_TYPES, "vs");
     if (idx[3] == 0) {
         return luaL_error(L, "vs.rect.pos: p2 is required");
     }
@@ -616,7 +661,7 @@ static int l_vs_rect_pos (lua_State* L) {
 
 static int l_vs_rect_rect (lua_State* L) {
     int idx[4];
-    vs_parse(L, idx);
+    args_parse(L, idx, VS_TYPES, "vs");
     const char* L1 = idx[0] ? lua_tostring(L, idx[0]) : NULL;
     const char* L2 = idx[2] ? lua_tostring(L, idx[2]) : NULL;
     Pico_Rel_Rect r1;
