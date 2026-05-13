@@ -479,7 +479,7 @@ const char* pico_get_window_title (void) {
 // SET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_set_dim (Pico_Rel_Dim* dim) {
+void pico_set_dim (Pico_Rel_Dim dim) {
     _pico_guard();
     const char* old = pico_set_layer("window");
     pico_set_scene_dim(dim);
@@ -545,10 +545,10 @@ const char* pico_set_layer (const char* key) {
     return old;
 }
 
-void pico_set_mouse (Pico_Rel_Pos* pos) {
+void pico_set_mouse (Pico_Rel_Pos pos) {
     _pico_guard();
     Pico_Rel_Pos w = {'!', {}, PICO_ANCHOR_NW};
-    pico_cv_pos("window", &w, NULL, pos);
+    pico_cv_pos("window", &w, NULL, &pos);
     Pico_Abs_Pos wi = _rnd_pos((SDL_FPoint){w.x, w.y});
     SDL_WarpMouseInWindow(G.window.win, wi.x, wi.y);
     SDL_PumpEvents();
@@ -624,11 +624,11 @@ void pico_set_scene_clip (Pico_Rel_Rect clip) {
     _pico_output_present(0);
 }
 
-void pico_set_scene_dim (Pico_Rel_Dim* dim) {
+void pico_set_scene_dim (Pico_Rel_Dim dim) {
     _pico_guard();
-    assert(dim->mode != '%');
+    assert(dim.mode != '%');
     Pico_Layer* L = G.layer;
-    Pico_Abs_Dim di = _rnd_dim(_sdl_dim(dim, NULL, NULL));
+    Pico_Abs_Dim di = _rnd_dim(_sdl_dim(&dim, NULL, NULL));
     L->scene.dim = di;
     assert(L->tex != NULL);
     SDL_DestroyTexture(L->tex);
@@ -873,7 +873,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
             } else {
                 Pico_Rel_Dim phy = { '!', {pico->window.w, pico->window.h} };
                 const char* old = pico_set_layer("window");
-                pico_set_scene_dim(&phy);
+                pico_set_scene_dim(phy);
                 pico_set_layer(old);
             }
             break;

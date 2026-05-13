@@ -5,7 +5,7 @@ int main (void) {
     pico_init(1);
     pico_set_scene_tile((Pico_Abs_Dim){0, 0});
     Pico_Rel_Dim dim = { '!', {100, 100} };
-    pico_set_scene_dim(&dim);
+    pico_set_scene_dim(dim);
 
     ///////////////////////////////////////////////////////////////////////////
     // _to / _from across named layers

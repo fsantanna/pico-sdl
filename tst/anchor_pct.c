@@ -7,9 +7,9 @@ int main (void) {
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Anchoring Pct..." });
 
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {200, 200} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {200, 200} });
     pico_set_layer("world");
-    pico_set_scene_dim(&log);
+    pico_set_scene_dim(log);
 
     // PIXELS
     {

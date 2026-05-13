@@ -23,11 +23,11 @@ int main (void) {
     // SIZE (using set_dim for both window and world)
     puts("set_dim: set both equal");
     Pico_Rel_Dim dim = { '!', {window.w, window.h} };
-    pico_set_dim(&dim);
+    pico_set_dim(dim);
     Pico_Abs_Dim world2;
     world2 = pico_get_scene_dim();
     assert(world2.w==window.w && world2.h==window.h);
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {world.w, world.h} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {world.w, world.h} });
 
     _pico_check("view_raw-0a");
     pico_set_effect_grid(0);
@@ -40,7 +40,7 @@ int main (void) {
         world.w += 1;
         world.h += 1;
         Pico_Rel_Dim dim = { '!', {world.w, world.h} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_WHITE);
         pico_output_draw_rect (

@@ -5,9 +5,9 @@ int main (void) {
     pico_init(1);
     pico_set_window_title("Colors Test");
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {640,480} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {640,480} });
     pico_set_layer("world");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {64, 48} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {64, 48} });
 
     Pico_Anchor C = PICO_ANCHOR_C;
 

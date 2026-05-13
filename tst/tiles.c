@@ -4,7 +4,7 @@
 // helper: window-pixel mouse set (NW anchor)
 static void mouse_w (int x, int y) {
     const char* old = pico_set_layer("window");
-    pico_set_mouse(&(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
+    pico_set_mouse((Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
     pico_set_layer(old);
 }
 
@@ -17,9 +17,9 @@ int main (void) {
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Tile" });
 
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {160, 160} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {160, 160} });
     pico_set_layer("world");
-    pico_set_scene_tile(tile); pico_set_scene_dim(&log);
+    pico_set_scene_tile(tile); pico_set_scene_dim(log);
 
     // 4x4 pixel white tile
     Pico_Color white[16];

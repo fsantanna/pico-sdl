@@ -518,7 +518,7 @@ const char*  pico_get_window_title (void);
 /// @param dim dimensions for both window and world
 /// @sa pico_set_window
 /// @sa pico_set_scene_dim
-void pico_set_dim (Pico_Rel_Dim* dim);
+void pico_set_dim (Pico_Rel_Dim dim);
 
 /// @brief Sets the entire pencil state of the current layer.
 /// @param pencil new pencil state
@@ -547,7 +547,7 @@ const char* pico_set_layer (const char* key);
 /// @param pos target position; `pos->mode` is one of '!' pixels,
 ///        '%' percentage, '#' tiles.
 /// @sa pico_get_mouse
-void pico_set_mouse (Pico_Rel_Pos* pos);
+void pico_set_mouse (Pico_Rel_Pos pos);
 
 /// @brief Sets the entire effect state of the current layer.
 /// @param effect new effect state
@@ -572,7 +572,7 @@ int pico_set_video (const char* key, int frame);
 /// @sa pico_get_scene
 void pico_set_scene       (Pico_Layer_Scene scene);
 void pico_set_scene_clip  (Pico_Rel_Rect clip);
-void pico_set_scene_dim   (Pico_Rel_Dim* dim);
+void pico_set_scene_dim   (Pico_Rel_Dim dim);
 void pico_set_scene_dst   (Pico_Rel_Rect dst);
 void pico_set_scene_clear (int on);
 void pico_set_scene_src   (Pico_Rel_Rect src);

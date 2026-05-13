@@ -5,7 +5,7 @@ int main (void) {
     pico_init(1);
 
     Pico_Rel_Dim phy = { '!', {480, 480} };
-    pico_set_dim(&phy);
+    pico_set_dim(phy);
     pico_set_effect_grid(0);
 
     // Layer "map": 20x15 cols/rows of 16x16 tiles -> 320x240 px texture.

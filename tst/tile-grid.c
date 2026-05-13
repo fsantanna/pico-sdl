@@ -8,14 +8,14 @@ int main (void) {
 
 
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {480, 480} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {480, 480} });
     pico_set_layer("world");
 
     // Test 1: main layer, no tile mode, pixel grid only
     {
         puts("pixel grid only (no tile)");
         Pico_Rel_Dim log = { '!', {16, 16} };
-        pico_set_effect_grid(1); pico_set_scene_dim(&log);
+        pico_set_effect_grid(1); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_RED);
         pico_output_draw_rect((Pico_Rel_Rect){ '!', {4, 4, 8, 8}, PICO_ANCHOR_NW });
@@ -27,7 +27,7 @@ int main (void) {
         puts("pixel + tile grid (4x4 tiles)");
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(&log);
+        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_GREEN);
         pico_output_draw_rect((Pico_Rel_Rect){ '#', {1, 1, 2, 2}, PICO_ANCHOR_NW });
@@ -39,7 +39,7 @@ int main (void) {
         puts("pixel + tile grid (8x8 tiles)");
         Pico_Rel_Dim log = { '#', {8, 8} };
         Pico_Abs_Dim tile = { 2, 2 };
-        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(&log);
+        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_BLUE);
         pico_output_draw_rect((Pico_Rel_Rect){ '#', {3, 3, 2, 2}, PICO_ANCHOR_NW });
@@ -51,7 +51,7 @@ int main (void) {
         puts("pixel + tile grid (non-square 4x2 tiles)");
         Pico_Rel_Dim log = { '#', {4, 8} };
         Pico_Abs_Dim tile = { 4, 2 };
-        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(&log);
+        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_YELLOW);
         pico_output_draw_rect((Pico_Rel_Rect){ '#', {2, 4, 1, 2}, PICO_ANCHOR_NW });
@@ -63,7 +63,7 @@ int main (void) {
         puts("grid disabled");
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_effect_grid(0); pico_set_scene_tile(tile); pico_set_scene_dim(&log);
+        pico_set_effect_grid(0); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_RED);
         pico_output_draw_rect((Pico_Rel_Rect){ '#', {2, 2, 1, 1}, PICO_ANCHOR_C });
@@ -73,7 +73,7 @@ int main (void) {
     // Reset main to simple view for layer tests, grid off
     {
         Pico_Rel_Dim log = { '!', {480, 480} };
-        pico_set_effect_grid(0); pico_set_scene_dim(&log);
+        pico_set_effect_grid(0); pico_set_scene_dim(log);
     }
 
     // Layer A: 4x4 tiles of 4x4 pixels, grid enabled
@@ -83,7 +83,7 @@ int main (void) {
         const char* old = pico_set_layer("layerA");
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(&log);
+        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_RED);
         pico_output_draw_rect((Pico_Rel_Rect){ '#', {1, 1, 2, 2}, PICO_ANCHOR_NW });
@@ -97,7 +97,7 @@ int main (void) {
         const char* old = pico_set_layer("layerB");
         Pico_Rel_Dim log = { '#', {8, 4} };
         Pico_Abs_Dim tile = { 2, 4 };
-        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(&log);
+        pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_GREEN);
         pico_output_draw_rect((Pico_Rel_Rect){ '#', {5, 2, 2, 1}, PICO_ANCHOR_NW });
@@ -111,7 +111,7 @@ int main (void) {
         const char* old = pico_set_layer("layerC");
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };
-        pico_set_effect_grid(0); pico_set_scene_tile(tile); pico_set_scene_dim(&log);
+        pico_set_effect_grid(0); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_BLUE);
         pico_output_draw_rect((Pico_Rel_Rect){ '#', {3, 3, 1, 1}, PICO_ANCHOR_NW });

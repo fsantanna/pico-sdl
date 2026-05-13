@@ -31,10 +31,10 @@ int main (void) {
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Video Player" });
 
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {win_w, win_h} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {win_w, win_h} });
     pico_set_layer("world");
     pico_set_effect_grid(0);
-    pico_set_scene_dim(&(Pico_Rel_Dim){'!', {win_w, win_h}});
+    pico_set_scene_dim((Pico_Rel_Dim){'!', {win_w, win_h}});
 
     pico_layer_video(NULL, "vid", VIDEO_PATH);
 

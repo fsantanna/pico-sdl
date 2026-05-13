@@ -5,7 +5,7 @@
 int main (void) {
     pico_init(1);
     Pico_Rel_Dim log = { '!', {100, 100} };
-    pico_set_scene_dim(&log);
+    pico_set_scene_dim(log);
 
     // RECT IN RECT - % C inside ! NW (composition)
     {

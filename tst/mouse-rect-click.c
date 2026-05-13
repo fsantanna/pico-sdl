@@ -37,7 +37,7 @@ int main (void) {
     puts("no collision (394,355)");
     {
         pico_set_layer("window");
-        pico_set_mouse(&(Pico_Rel_Pos){'!', {394, 355}, PICO_ANCHOR_C});
+        pico_set_mouse((Pico_Rel_Pos){'!', {394, 355}, PICO_ANCHOR_C});
         pico_set_layer("world");
         Pico_Mouse pct = pico_get_mouse('%', NULL);
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C };
@@ -54,7 +54,7 @@ int main (void) {
     puts("click 3 (457,431)");
     {
         pico_set_layer("window");
-        pico_set_mouse(&(Pico_Rel_Pos){'!', {457, 431}, PICO_ANCHOR_C});
+        pico_set_mouse((Pico_Rel_Pos){'!', {457, 431}, PICO_ANCHOR_C});
         pico_set_layer("world");
         Pico_Mouse pct = pico_get_mouse('%', NULL);
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C };
@@ -71,7 +71,7 @@ int main (void) {
     puts("click 1 (362,405)");
     {
         pico_set_layer("window");
-        pico_set_mouse(&(Pico_Rel_Pos){'!', {362, 405}, PICO_ANCHOR_C});
+        pico_set_mouse((Pico_Rel_Pos){'!', {362, 405}, PICO_ANCHOR_C});
         pico_set_layer("world");
         Pico_Mouse pct = pico_get_mouse('%', NULL);
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C };
@@ -88,7 +88,7 @@ int main (void) {
     puts("click 2 (415,392)");
     {
         pico_set_layer("window");
-        pico_set_mouse(&(Pico_Rel_Pos){'!', {419, 392}, PICO_ANCHOR_C});
+        pico_set_mouse((Pico_Rel_Pos){'!', {419, 392}, PICO_ANCHOR_C});
         pico_set_layer("world");
         Pico_Mouse pct = pico_get_mouse('%', NULL);
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C };

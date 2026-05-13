@@ -897,7 +897,7 @@ static int l_get_window (lua_State* L) {
 static int l_set_dim (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
     Pico_Rel_Dim xdim = C_rel_dim(L, 1);
-    pico_set_dim(&xdim);
+    pico_set_dim(xdim);
     return 0;
 }
 
@@ -963,7 +963,7 @@ static int l_set_layer (lua_State* L) {
 static int l_set_mouse (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);          // pos
     Pico_Rel_Pos pos = C_rel_pos(L, 1);
-    pico_set_mouse(&pos);
+    pico_set_mouse(pos);
     return 0;
 }
 
@@ -1077,7 +1077,7 @@ static int l_set_scene (lua_State* L) {
     lua_pop(L, 1);                          // T
 
     if (xtile != NULL) { pico_set_scene_tile(*xtile); }
-    if (xdim  != NULL) { pico_set_scene_dim(xdim);   }
+    if (xdim  != NULL) { pico_set_scene_dim(*xdim);  }
     if (xclip != NULL) { pico_set_scene_clip(*xclip); }
     if (xdst  != NULL) { pico_set_scene_dst(*xdst);  }
     if (xsrc  != NULL) { pico_set_scene_src(*xsrc);  }

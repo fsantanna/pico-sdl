@@ -7,9 +7,9 @@ int main() {
     Pico_Rel_Dim phy = { '!', {200,200} };
     Pico_Rel_Dim log = { '!', { 20, 20} };
     pico_set_layer("window");
-    pico_set_scene_dim(&phy);
+    pico_set_scene_dim(phy);
     pico_set_layer("world");
-    pico_set_scene_dim(&log);
+    pico_set_scene_dim(log);
 
     Pico_Rel_Rect r = { '%', {0.5,0.5, 0.5,0.5}, PICO_ANCHOR_C };
 

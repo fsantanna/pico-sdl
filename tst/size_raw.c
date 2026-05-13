@@ -15,7 +15,7 @@ int main (void) {
         puts("normal");
         Pico_Rel_Dim dim = { '!', {phy.w, phy.h} };
         pico_set_layer("window");
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_set_layer("world");
         pico_output_clear();
         pico_output_draw_rect(r);
@@ -25,7 +25,7 @@ int main (void) {
         puts("double");
         Pico_Rel_Dim dim = { '!', {phy.w*2, phy.h*2} };
         pico_set_layer("window");
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_set_layer("world");
         pico_output_clear();
         pico_output_draw_rect(r);
@@ -35,7 +35,7 @@ int main (void) {
         puts("half");
         Pico_Rel_Dim dim = { '!', {phy.w/2, phy.h/2} };
         pico_set_layer("window");
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_set_layer("world");
         pico_output_clear();
         pico_output_draw_rect(r);
@@ -45,7 +45,7 @@ int main (void) {
         puts("normal");
         Pico_Rel_Dim dim = { '!', {phy.w, phy.h} };
         pico_set_layer("window");
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_set_layer("world");
         pico_output_clear();
         pico_output_draw_rect(r);
@@ -73,7 +73,7 @@ int main (void) {
     {
         puts("normal");
         Pico_Rel_Dim dim = { '!', {log.w, log.h} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_raw-07");
@@ -81,7 +81,7 @@ int main (void) {
     {
         puts("double");
         Pico_Rel_Dim dim = { '!', {log.w*2, log.h*2} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_output_clear();
         Pico_Rel_Rect r = { '!', {log.w-25, log.h-25, 50, 50}, PICO_ANCHOR_NW };
         pico_output_draw_rect(r);
@@ -90,7 +90,7 @@ int main (void) {
     {
         puts("half");
         Pico_Rel_Dim dim = { '!', {log.w/2, log.h/2} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_output_clear();
         Pico_Rel_Rect r = { '!', {log.w/4-25, log.w/4-25, 50, 50}, PICO_ANCHOR_NW };
         pico_output_draw_rect(r);
@@ -99,7 +99,7 @@ int main (void) {
     {
         puts("normal");
         Pico_Rel_Dim dim = { '!', {log.w, log.h} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_raw-10");

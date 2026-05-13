@@ -6,7 +6,7 @@
 // helper: window-pixel mouse set (NW anchor)
 static void mouse_w (int x, int y) {
     const char* old = pico_set_layer("window");
-    pico_set_mouse(&(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
+    pico_set_mouse((Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
     pico_set_layer(old);
 }
 
@@ -18,9 +18,9 @@ int main(void) {
         pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Mouse" });
 
         pico_set_layer("window");
-        pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {500, 500} });
+        pico_set_scene_dim((Pico_Rel_Dim){ '!', {500, 500} });
         pico_set_layer("world");
-        pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {50, 50} });
+        pico_set_scene_dim((Pico_Rel_Dim){ '!', {50, 50} });
 
         // phy (0,0) -> log (0,0)
         {
@@ -177,7 +177,7 @@ int main(void) {
     {
         pico_set_scene_src((Pico_Rel_Rect){ '!', {0, 0, 50, 50}, PICO_ANCHOR_NW });
         pico_set_mouse (
-            &(Pico_Rel_Pos){ '!', {25, 25}, PICO_ANCHOR_NW }
+            (Pico_Rel_Pos){ '!', {25, 25}, PICO_ANCHOR_NW }
         );
         Pico_Mouse pos = pico_get_mouse('!', NULL);
         assert(pos.x==25 && pos.y==25);
@@ -186,7 +186,7 @@ int main(void) {
     puts("roundtrip '%'");
     {
         pico_set_mouse (
-            &(Pico_Rel_Pos){ '%', {0.5, 0.5}, PICO_ANCHOR_NW }
+            (Pico_Rel_Pos){ '%', {0.5, 0.5}, PICO_ANCHOR_NW }
         );
         Pico_Mouse pos = pico_get_mouse('%', NULL);
         assert(pos.x>0.49 && pos.x<0.51);
@@ -197,7 +197,7 @@ int main(void) {
     {
         pico_set_scene_src((Pico_Rel_Rect){ '!', {20, 20, 10, 10}, PICO_ANCHOR_NW });
         pico_set_mouse (
-            &(Pico_Rel_Pos){ '!', {25, 25}, PICO_ANCHOR_NW }
+            (Pico_Rel_Pos){ '!', {25, 25}, PICO_ANCHOR_NW }
         );
         Pico_Mouse pos = pico_get_mouse('!', NULL);
         assert(pos.x==25 && pos.y==25);

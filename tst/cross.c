@@ -4,9 +4,9 @@
 int main (void) {
     pico_init(1);
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {160, 160} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {160, 160} });
     pico_set_layer("world");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {16, 16} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {16, 16} });
     pico_output_clear();
     for (int i=0; i<16; i++) {
         pico_output_draw_pixel (
