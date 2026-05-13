@@ -105,6 +105,37 @@ int main (void) {
 
     pico_set_layer("world");
 
+    printf("=== descendant target/source (bidirectional) ===\n");
+    {
+        puts("(20,40) world -> (10,20) sub (target=descendant)");
+        Pico_Rel_Pos w = { '!', {20, 40}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos s = { '!', {0, 0}, PICO_ANCHOR_NW };
+        pico_cv_pos_to("sub_cv", &w, &s);
+        assert((int)s.x == 10 && (int)s.y == 20);
+    }
+    {
+        puts("(10,20) sub -> (20,40) world (source=descendant)");
+        Pico_Rel_Pos s = { '!', {10, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos w = { '!', {0, 0}, PICO_ANCHOR_NW };
+        pico_cv_pos_from("sub_cv", &s, &w);
+        assert((int)w.x == 20 && (int)w.y == 40);
+    }
+    {
+        puts("rect (20,40,10,20) world -> (10,20,5,10) sub (target=descendant)");
+        Pico_Rel_Rect w = { '!', {20, 40, 10, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Rect s = { '!', {0, 0, 0, 0}, PICO_ANCHOR_NW };
+        pico_cv_rect_to("sub_cv", &w, &s);
+        assert((int)s.x==10 && (int)s.y==20);
+        assert((int)s.w==5  && (int)s.h==10);
+    }
+    {
+        puts("dim (10,20) world -> (5,10) sub (target=descendant)");
+        Pico_Rel_Dim w = { '!', {10, 20} };
+        Pico_Rel_Dim s = { '!', {0, 0} };
+        pico_cv_dim_to("sub_cv", &w, &s);
+        assert((int)s.w==5 && (int)s.h==10);
+    }
+
     printf("\n=== ALL TESTS PASSED ===\n");
 
     pico_init(0);

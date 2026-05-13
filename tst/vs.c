@@ -202,6 +202,23 @@ int main (void) {
         assert(pico_vs_pos_pos("sub_sub_vs", &p1, NULL, &p2) == 0);
     }
 
+    // inverse ancestor (bidirectional): cur = sub_vs, L1 = world
+    pico_set_layer("sub_vs");
+    {
+        puts("vs_pos_pos - L1=world (ancestor of cur=sub_vs)");
+        // world:20,40 -> sub_vs:10,20 (sub 50x50 in world 100x100, scale 0.5x)
+        Pico_Rel_Pos p1 = { '!', {20, 40}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p2 = { '!', {10, 20}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_pos("world", &p1, NULL, &p2) == 1);
+    }
+    {
+        puts("vs_rect_rect - L1=world (ancestor of cur=sub_vs)");
+        Pico_Rel_Rect r1 = { '!', {20, 40, 10, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Rect r2 = { '!', {10, 20,  5, 10}, PICO_ANCHOR_NW };
+        assert(pico_vs_rect_rect("world", &r1, NULL, &r2) == 1);
+    }
+    pico_set_layer("world");
+
     pico_init(0);
     return 0;
 }

@@ -592,21 +592,23 @@ void pico_set_window_title (const char* title);
 /// @brief Utilities for users
 /// @{
 
-/// @brief Brings a dimension from a named ancestor's frame into cur.
+/// @brief Brings a dimension from a named related layer's frame into cur.
+/// Layer must be cur, an ancestor or a descendant of cur (siblings assert).
 void pico_cv_dim_from (
     const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
 );
 
-/// @brief Projects a dimension from cur into a named ancestor's frame.
+/// @brief Projects a dimension from cur into a named related layer's frame.
 /// No position component; size scales per src->dst step.
+/// Layer must be cur, an ancestor or a descendant of cur (siblings assert).
 void pico_cv_dim_to (
     const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
 );
 
-/// @brief Brings a position from a named ancestor layer's frame into
-/// the current layer's frame. Walks the same `hier.up` chain as
-/// `pico_cv_pos_to` in inverse order. Source must be cur or one of
-/// cur's ancestors via `hier.up`, otherwise asserts and aborts.
+/// @brief Brings a position from a named related layer's frame into
+/// the current layer's frame. Walks the `hier.up` chain in either
+/// direction: source must be cur, an ancestor, or a descendant of cur
+/// via `hier.up`; siblings assert and abort.
 /// @param layer source layer name; NULL = G.layer
 /// @param fr position in source's frame (any mode/anchor)
 /// @param to result template (mode and anchor must be set on input);
@@ -616,10 +618,10 @@ void pico_cv_pos_from (
 );
 
 /// @brief Projects a position from the current layer's logical frame
-/// into a named ancestor layer's frame. Walks `hier.up` from cur up
-/// to the named target, composing each layer's scene.src -> scene.dst
-/// transform. Target must be cur or one of cur's ancestors via
-/// `hier.up`, otherwise asserts and aborts.
+/// into a named related layer's frame. Walks `hier.up` from cur up to
+/// the target, or from the target up to cur, composing each layer's
+/// scene.src -> scene.dst transform. Target must be cur, an ancestor,
+/// or a descendant of cur via `hier.up`; siblings assert and abort.
 /// @param layer target layer name; NULL = G.layer
 /// @param fr position in cur's frame (any mode/anchor)
 /// @param to result template (mode and anchor must be set on input);
@@ -628,13 +630,15 @@ void pico_cv_pos_to (
     const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
 );
 
-/// @brief Brings a rectangle from a named ancestor's frame into cur.
+/// @brief Brings a rectangle from a named related layer's frame into cur.
+/// Layer must be cur, an ancestor or a descendant of cur (siblings assert).
 void pico_cv_rect_from (
     const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
 );
 
-/// @brief Projects a rectangle from cur into a named ancestor's frame.
+/// @brief Projects a rectangle from cur into a named related layer's frame.
 /// Same chain walk as `pico_cv_pos_to`, with size scaled per step.
+/// Layer must be cur, an ancestor or a descendant of cur (siblings assert).
 void pico_cv_rect_to (
     const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
 );

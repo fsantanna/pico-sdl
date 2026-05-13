@@ -2,12 +2,33 @@
 // CV: named-layer projection (cv_pos_to / cv_pos_from)
 ///////////////////////////////////////////////////////////////////////////////
 
+// Returns 1 if A is a strict descendant of B (via hier.up chain).
+// Returns 0 when A == B or when A is not below B.
+static int _cv_is_descendant_of (Pico_Layer* A, Pico_Layer* B) {
+    Pico_Layer* M = A;
+    while (M->hier.up != NULL) {
+        M = _pico_layer_name(M->hier.up);
+        if (M == B) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void pico_cv_dim_from (
     const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
 ) {
     _pico_guard();
     Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
     Pico_Layer* L = G.layer;
+
+    // S is descendant of cur: swap, delegate to _to with cur=S.
+    if (_cv_is_descendant_of(S, L)) {
+        G.layer = S;
+        pico_cv_dim_to(L->name, fr, to);
+        G.layer = L;
+        return;
+    }
 
     Pico_Layer* chain[64];
     int n = 0;
@@ -17,7 +38,7 @@ void pico_cv_dim_from (
         chain[n++] = M;
         pico_assert (
             M->hier.up != NULL
-            && "cv: source must be cur or one of cur's ancestors"
+            && "cv: source must be cur, ancestor, or descendant of cur"
         );
         M = _pico_layer_name(M->hier.up);
     }
@@ -49,6 +70,14 @@ void pico_cv_dim_to (
     Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
     Pico_Layer* L = G.layer;
 
+    // T is descendant of cur: swap, delegate to _from with cur=T.
+    if (_cv_is_descendant_of(T, L)) {
+        G.layer = T;
+        pico_cv_dim_from(L->name, fr, to);
+        G.layer = L;
+        return;
+    }
+
     Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
     Pico_Rel_Dim fr_copy = *fr;
     SDL_FDim d = _sdl_dim(&fr_copy, &L_base, NULL);
@@ -56,7 +85,7 @@ void pico_cv_dim_to (
     while (L != T) {
         pico_assert (
             L->hier.up != NULL
-            && "cv: target must be cur or one of cur's ancestors"
+            && "cv: target must be cur, ancestor, or descendant of cur"
         );
         Pico_Layer* P = _pico_layer_name(L->hier.up);
         Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
@@ -78,6 +107,14 @@ void pico_cv_pos_from (
     Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
     Pico_Layer* L = G.layer;
 
+    // S is descendant of cur: swap, delegate to _to with cur=S.
+    if (_cv_is_descendant_of(S, L)) {
+        G.layer = S;
+        pico_cv_pos_to(L->name, fr, to);
+        G.layer = L;
+        return;
+    }
+
     // chain: chain[0] = cur, chain[n-1] = S
     Pico_Layer* chain[64];
     int n = 0;
@@ -87,7 +124,7 @@ void pico_cv_pos_from (
         chain[n++] = M;
         pico_assert (
             M->hier.up != NULL
-            && "cv: source must be cur or one of cur's ancestors"
+            && "cv: source must be cur, ancestor, or descendant of cur"
         );
         M = _pico_layer_name(M->hier.up);
     }
@@ -121,13 +158,21 @@ void pico_cv_pos_to (
     Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
     Pico_Layer* L = G.layer;
 
+    // T is descendant of cur: swap, delegate to _from with cur=T.
+    if (_cv_is_descendant_of(T, L)) {
+        G.layer = T;
+        pico_cv_pos_from(L->name, fr, to);
+        G.layer = L;
+        return;
+    }
+
     Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
     SDL_FPoint p = _sdl_pos(fr, &L_base);
 
     while (L != T) {
         pico_assert (
             L->hier.up != NULL
-            && "cv: target must be cur or one of cur's ancestors"
+            && "cv: target must be cur, ancestor, or descendant of cur"
         );
         Pico_Layer* P = _pico_layer_name(L->hier.up);
         Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
@@ -151,6 +196,14 @@ void pico_cv_rect_from (
     Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
     Pico_Layer* L = G.layer;
 
+    // S is descendant of cur: swap, delegate to _to with cur=S.
+    if (_cv_is_descendant_of(S, L)) {
+        G.layer = S;
+        pico_cv_rect_to(L->name, fr, to);
+        G.layer = L;
+        return;
+    }
+
     Pico_Layer* chain[64];
     int n = 0;
     Pico_Layer* M = L;
@@ -159,7 +212,7 @@ void pico_cv_rect_from (
         chain[n++] = M;
         pico_assert (
             M->hier.up != NULL
-            && "cv: source must be cur or one of cur's ancestors"
+            && "cv: source must be cur, ancestor, or descendant of cur"
         );
         M = _pico_layer_name(M->hier.up);
     }
@@ -194,13 +247,21 @@ void pico_cv_rect_to (
     Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
     Pico_Layer* L = G.layer;
 
+    // T is descendant of cur: swap, delegate to _from with cur=T.
+    if (_cv_is_descendant_of(T, L)) {
+        G.layer = T;
+        pico_cv_rect_from(L->name, fr, to);
+        G.layer = L;
+        return;
+    }
+
     Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
     SDL_FRect r = _sdl_rect(fr, &L_base, NULL);
 
     while (L != T) {
         pico_assert (
             L->hier.up != NULL
-            && "cv: target must be cur or one of cur's ancestors"
+            && "cv: target must be cur, ancestor, or descendant of cur"
         );
         Pico_Layer* P = _pico_layer_name(L->hier.up);
         Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};

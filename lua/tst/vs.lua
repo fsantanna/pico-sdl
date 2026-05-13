@@ -176,4 +176,18 @@ do
     assert(not pico.vs.pos.pos('sub_sub_vs', p1, nil, q))
 end
 
+print "inverse ancestor (bidirectional)"
+do
+    -- cur=sub_vs, L1=world (ancestor of cur). sub_vs is 50x50 in world 100x100.
+    pico.set.layer 'sub_vs'
+    -- world:20,40 -> sub_vs:10,20 (scale 0.5x)
+    local p1 = {'!', x=20, y=40, anchor='NW'}
+    local p2 = {'!', x=10, y=20, anchor='NW'}
+    assert(pico.vs.pos.pos('world', p1, nil, p2))
+    local r1 = {'!', x=20, y=40, w=10, h=20, anchor='NW'}
+    local r2 = {'!', x=10, y=20, w= 5, h=10, anchor='NW'}
+    assert(pico.vs.rect.rect('world', r1, nil, r2))
+    pico.set.layer 'world'
+end
+
 pico.init(false)
