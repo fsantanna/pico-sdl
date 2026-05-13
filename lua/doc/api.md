@@ -47,34 +47,24 @@ In alphabetical order:
     - **pico.color.mix**: Mixes two colors.
         - `pico.color.mix (c1: Color, c2: Color) -> Color`
 - **pico.cv**
-    - Chain-walk projection between cur and a named related layer
-      (via `hier.up`). The named end is always given; the other end is
-      cur. `layer = nil` (or absent) collapses to cur (mode/anchor
-      conversion only, no projection). `layer` must be cur, an ancestor
-      or a descendant of cur (siblings assert and abort).
+    - Projects a value from `L_fr`'s frame into `L_to`'s frame via
+      the `hier.up` chain. Either layer may be `nil` (== cur). Each
+      layer must be cur, an ancestor, or a descendant of cur;
+      siblings project via cur in two steps.
     - `to` accepts two forms:
         - **table**: filled in-place (mode/anchor read from input);
           returns nothing.
-        - **mode string** (`'!'`, `'%'`, `'#'`): builds and returns a
-          fresh value; anchor defaults to `'NW'` (Pos/Rect only).
-    - **pico.cv.dim.to**: Projects a dim from cur to a related layer.
-        - `pico.cv.dim.to (to: Dim, fr: Dim, layer: string?)`
-        - `pico.cv.dim.to (mode: string, fr: Dim, layer: string?) -> Dim`
-    - **pico.cv.dim.from**: Brings a dim from a related layer into cur.
-        - `pico.cv.dim.from (to: Dim, fr: Dim, layer: string?)`
-        - `pico.cv.dim.from (mode: string, fr: Dim, layer: string?) -> Dim`
-    - **pico.cv.pos.to**: Projects a pos from cur to a related layer.
-        - `pico.cv.pos.to (to: Pos, fr: Pos, layer: string?)`
-        - `pico.cv.pos.to (mode: string, fr: Pos, layer: string?) -> Pos`
-    - **pico.cv.pos.from**: Brings a pos from a related layer into cur.
-        - `pico.cv.pos.from (to: Pos, fr: Pos, layer: string?)`
-        - `pico.cv.pos.from (mode: string, fr: Pos, layer: string?) -> Pos`
-    - **pico.cv.rect.to**: Projects a rect from cur to a related layer.
-        - `pico.cv.rect.to (to: Rect, fr: Rect, layer: string?)`
-        - `pico.cv.rect.to (mode: string, fr: Rect, layer: string?) -> Rect`
-    - **pico.cv.rect.from**: Brings a rect from a related layer into cur.
-        - `pico.cv.rect.from (to: Rect, fr: Rect, layer: string?)`
-        - `pico.cv.rect.from (mode: string, fr: Rect, layer: string?) -> Rect`
+        - **mode string** (`'!'`, `'%'`, `'#'`): builds and returns
+          a fresh value; anchor defaults to `'NW'` (Pos/Rect only).
+    - **pico.cv.pos**: Projects a Pos.
+        - `pico.cv.pos (L_to: string?, to: Pos, L_fr: string?, fr: Pos)`
+        - `pico.cv.pos (L_to: string?, mode: string, L_fr: string?, fr: Pos) -> Pos`
+    - **pico.cv.rect**: Projects a Rect.
+        - `pico.cv.rect (L_to: string?, to: Rect, L_fr: string?, fr: Rect)`
+        - `pico.cv.rect (L_to: string?, mode: string, L_fr: string?, fr: Rect) -> Rect`
+    - **pico.cv.dim**: Projects a Dim (no position component).
+        - `pico.cv.dim (L_to: string?, to: Dim, L_fr: string?, fr: Dim)`
+        - `pico.cv.dim (L_to: string?, mode: string, L_fr: string?, fr: Dim) -> Dim`
 - **pico.get**
     - **pico.get.pencil**: Gets pencil configuration.
         - `pico.get.pencil () -> { color: Color, font: string?, style: 'fill'|'stroke' }`

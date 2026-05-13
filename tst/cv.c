@@ -16,14 +16,14 @@ int main (void) {
         puts("(50,50) world -> window");
         Pico_Rel_Pos w   = { '!', {50, 50}, PICO_ANCHOR_NW };
         Pico_Rel_Pos win = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_to(&win, &w, "window");
+        pico_cv_pos("window", &win, NULL, &w);
         assert((int)win.x == 250 && (int)win.y == 250);
     }
     {
         puts("(250,250) window -> world");
         Pico_Rel_Pos win = { '!', {250, 250}, PICO_ANCHOR_NW };
         Pico_Rel_Pos w   = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_from(&w, &win, "window");
+        pico_cv_pos(NULL, &w, "window", &win);
         assert((int)w.x == 50 && (int)w.y == 50);
     }
     {
@@ -31,8 +31,8 @@ int main (void) {
         Pico_Rel_Pos orig = { '!', {37, 89}, PICO_ANCHOR_NW };
         Pico_Rel_Pos win  = { '!', {0, 0}, PICO_ANCHOR_NW };
         Pico_Rel_Pos back = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_to(&win, &orig, "window");
-        pico_cv_pos_from(&back, &win, "window");
+        pico_cv_pos("window", &win, NULL, &orig);
+        pico_cv_pos(NULL, &back, "window", &win);
         assert((int)back.x == 37 && (int)back.y == 89);
     }
 
@@ -44,28 +44,28 @@ int main (void) {
         puts("(10,20) sub -> (20,40) world");
         Pico_Rel_Pos s = { '!', {10, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Pos w = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_to(&w, &s, "world");
+        pico_cv_pos("world", &w, NULL, &s);
         assert((int)w.x == 20 && (int)w.y == 40);
     }
     {
         puts("(20,40) world -> (10,20) sub");
         Pico_Rel_Pos w = { '!', {20, 40}, PICO_ANCHOR_NW };
         Pico_Rel_Pos s = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_from(&s, &w, "world");
+        pico_cv_pos(NULL, &s, "world", &w);
         assert((int)s.x == 10 && (int)s.y == 20);
     }
     {
         puts("(10,20) sub -> (100,200) window (2 hops)");
         Pico_Rel_Pos s   = { '!', {10, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Pos win = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_to(&win, &s, "window");
+        pico_cv_pos("window", &win, NULL, &s);
         assert((int)win.x == 100 && (int)win.y == 200);
     }
     {
         puts("(100,200) window -> (10,20) sub (2 hops)");
         Pico_Rel_Pos win = { '!', {100, 200}, PICO_ANCHOR_NW };
         Pico_Rel_Pos s   = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_from(&s, &win, "window");
+        pico_cv_pos(NULL, &s, "window", &win);
         assert((int)s.x == 10 && (int)s.y == 20);
     }
 
@@ -74,7 +74,7 @@ int main (void) {
         puts("rect (10,20,5,10) sub -> (20,40,10,20) world");
         Pico_Rel_Rect s = { '!', {10, 20, 5, 10}, PICO_ANCHOR_NW };
         Pico_Rel_Rect w = { '!', {0, 0, 0, 0}, PICO_ANCHOR_NW };
-        pico_cv_rect_to(&w, &s, "world");
+        pico_cv_rect("world", &w, NULL, &s);
         assert((int)w.x==20 && (int)w.y==40);
         assert((int)w.w==10 && (int)w.h==20);
     }
@@ -82,7 +82,7 @@ int main (void) {
         puts("rect (20,40,10,20) world -> (10,20,5,10) sub");
         Pico_Rel_Rect w = { '!', {20, 40, 10, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Rect s = { '!', {0, 0, 0, 0}, PICO_ANCHOR_NW };
-        pico_cv_rect_from(&s, &w, "world");
+        pico_cv_rect(NULL, &s, "world", &w);
         assert((int)s.x==10 && (int)s.y==20);
         assert((int)s.w==5  && (int)s.h==10);
     }
@@ -92,14 +92,14 @@ int main (void) {
         puts("dim (5,10) sub -> (10,20) world");
         Pico_Rel_Dim s = { '!', {5, 10} };
         Pico_Rel_Dim w = { '!', {0, 0} };
-        pico_cv_dim_to(&w, &s, "world");
+        pico_cv_dim("world", &w, NULL, &s);
         assert((int)w.w==10 && (int)w.h==20);
     }
     {
         puts("dim (10,20) world -> (5,10) sub");
         Pico_Rel_Dim w = { '!', {10, 20} };
         Pico_Rel_Dim s = { '!', {0, 0} };
-        pico_cv_dim_from(&s, &w, "world");
+        pico_cv_dim(NULL, &s, "world", &w);
         assert((int)s.w==5 && (int)s.h==10);
     }
 
@@ -110,21 +110,21 @@ int main (void) {
         puts("(20,40) world -> (10,20) sub (target=descendant)");
         Pico_Rel_Pos w = { '!', {20, 40}, PICO_ANCHOR_NW };
         Pico_Rel_Pos s = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_to(&s, &w, "sub_cv");
+        pico_cv_pos("sub_cv", &s, NULL, &w);
         assert((int)s.x == 10 && (int)s.y == 20);
     }
     {
         puts("(10,20) sub -> (20,40) world (source=descendant)");
         Pico_Rel_Pos s = { '!', {10, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Pos w = { '!', {0, 0}, PICO_ANCHOR_NW };
-        pico_cv_pos_from(&w, &s, "sub_cv");
+        pico_cv_pos(NULL, &w, "sub_cv", &s);
         assert((int)w.x == 20 && (int)w.y == 40);
     }
     {
         puts("rect (20,40,10,20) world -> (10,20,5,10) sub (target=descendant)");
         Pico_Rel_Rect w = { '!', {20, 40, 10, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Rect s = { '!', {0, 0, 0, 0}, PICO_ANCHOR_NW };
-        pico_cv_rect_to(&s, &w, "sub_cv");
+        pico_cv_rect("sub_cv", &s, NULL, &w);
         assert((int)s.x==10 && (int)s.y==20);
         assert((int)s.w==5  && (int)s.h==10);
     }
@@ -132,7 +132,7 @@ int main (void) {
         puts("dim (10,20) world -> (5,10) sub (target=descendant)");
         Pico_Rel_Dim w = { '!', {10, 20} };
         Pico_Rel_Dim s = { '!', {0, 0} };
-        pico_cv_dim_to(&s, &w, "sub_cv");
+        pico_cv_dim("sub_cv", &s, NULL, &w);
         assert((int)s.w==5 && (int)s.h==10);
     }
 

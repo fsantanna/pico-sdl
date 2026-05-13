@@ -56,15 +56,15 @@ static char C_mode_t (lua_State* L, int i, int asr) {
     return mode;
 }
 
-// Optional mode-string at arg 1. Returns the mode char if arg 1 is a
-// valid Pos/Rect/Dim mode string ('!', '%', '#'), '\0' if arg 1 is
+// Optional mode-string at arg i. Returns the mode char if arg i is a
+// valid Pos/Rect/Dim mode string ('!', '%', '#'), '\0' if arg i is
 // not a string. Errors on a string with an invalid mode.
-static char C_mode_s_opt (lua_State* L) {
-    if (!lua_isstring(L, 1)) {
+static char C_mode_s_opt (lua_State* L, int i) {
+    if (!lua_isstring(L, i)) {
         return '\0';
     }
     size_t len;
-    const char* s = lua_tolstring(L, 1, &len);
+    const char* s = lua_tolstring(L, i, &len);
     if (len!=1 || (s[0]!='!' && s[0]!='%' && s[0]!='#')) {
         luaL_error(L, "invalid mode '%s': expected '!', '%%', or '#'", s);
     }
@@ -416,157 +416,84 @@ static int l_quit (lua_State* L) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// CV: pos/rect/dim _to / _from named layer
+// CV: unified pos/rect/dim — (L_to, to_or_mode, L_fr, fr)
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_cv_pos_to (lua_State* L) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-    Pico_Rel_Pos fr = C_rel_pos(L, 2);
-    const char* layer = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-    char m = C_mode_s_opt(L);
+static int l_cv_pos (lua_State* L) {
+    const char* L_to = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
+    const char* L_fr = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
+    luaL_checktype(L, 4, LUA_TTABLE);
+    Pico_Rel_Pos fr = C_rel_pos(L, 4);
+    char m = C_mode_s_opt(L, 2);
     if (m) {
         Pico_Rel_Pos to = { .mode=m, .anchor=PICO_ANCHOR_NW };
-        pico_cv_pos_to(&to, &fr, layer);
+        pico_cv_pos(L_to, &to, L_fr, &fr);
         L_push_rel_pos(L, &to);
         return 1;
     } else {
-        luaL_checktype(L, 1, LUA_TTABLE);
+        luaL_checktype(L, 2, LUA_TTABLE);
         Pico_Rel_Pos to = {
-            .mode = C_mode_t(L, 1, 1),
-            .anchor = C_anchor(L, 1),
+            .mode = C_mode_t(L, 2, 1),
+            .anchor = C_anchor(L, 2),
         };
-        pico_cv_pos_to(&to, &fr, layer);
+        pico_cv_pos(L_to, &to, L_fr, &fr);
         lua_pushnumber(L, to.x);
-        lua_setfield(L, 1, "x");
+        lua_setfield(L, 2, "x");
         lua_pushnumber(L, to.y);
-        lua_setfield(L, 1, "y");
+        lua_setfield(L, 2, "y");
         return 0;
     }
 }
 
-static int l_cv_pos_from (lua_State* L) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-    Pico_Rel_Pos fr = C_rel_pos(L, 2);
-    const char* layer = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-    char m = C_mode_s_opt(L);
-    if (m) {
-        Pico_Rel_Pos to = { .mode=m, .anchor=PICO_ANCHOR_NW };
-        pico_cv_pos_from(&to, &fr, layer);
-        L_push_rel_pos(L, &to);
-        return 1;
-    } else {
-        luaL_checktype(L, 1, LUA_TTABLE);
-        Pico_Rel_Pos to = {
-            .mode = C_mode_t(L, 1, 1),
-            .anchor = C_anchor(L, 1),
-        };
-        pico_cv_pos_from(&to, &fr, layer);
-        lua_pushnumber(L, to.x);
-        lua_setfield(L, 1, "x");
-        lua_pushnumber(L, to.y);
-        lua_setfield(L, 1, "y");
-        return 0;
-    }
-}
-
-static int l_cv_rect_to (lua_State* L) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-    Pico_Rel_Rect fr = C_rel_rect(L, 2);
-    const char* layer = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-    char m = C_mode_s_opt(L);
+static int l_cv_rect (lua_State* L) {
+    const char* L_to = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
+    const char* L_fr = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
+    luaL_checktype(L, 4, LUA_TTABLE);
+    Pico_Rel_Rect fr = C_rel_rect(L, 4);
+    char m = C_mode_s_opt(L, 2);
     if (m) {
         Pico_Rel_Rect to = { .mode=m, .anchor=PICO_ANCHOR_NW };
-        pico_cv_rect_to(&to, &fr, layer);
+        pico_cv_rect(L_to, &to, L_fr, &fr);
         L_push_rel_rect(L, &to);
         return 1;
     } else {
-        luaL_checktype(L, 1, LUA_TTABLE);
+        luaL_checktype(L, 2, LUA_TTABLE);
         Pico_Rel_Rect to = {
-            .mode = C_mode_t(L, 1, 1),
-            .anchor = C_anchor(L, 1),
+            .mode = C_mode_t(L, 2, 1),
+            .anchor = C_anchor(L, 2),
         };
-        pico_cv_rect_to(&to, &fr, layer);
+        pico_cv_rect(L_to, &to, L_fr, &fr);
         lua_pushnumber(L, to.x);
-        lua_setfield(L, 1, "x");
+        lua_setfield(L, 2, "x");
         lua_pushnumber(L, to.y);
-        lua_setfield(L, 1, "y");
+        lua_setfield(L, 2, "y");
         lua_pushnumber(L, to.w);
-        lua_setfield(L, 1, "w");
+        lua_setfield(L, 2, "w");
         lua_pushnumber(L, to.h);
-        lua_setfield(L, 1, "h");
+        lua_setfield(L, 2, "h");
         return 0;
     }
 }
 
-static int l_cv_rect_from (lua_State* L) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-    Pico_Rel_Rect fr = C_rel_rect(L, 2);
-    const char* layer = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-    char m = C_mode_s_opt(L);
-    if (m) {
-        Pico_Rel_Rect to = { .mode=m, .anchor=PICO_ANCHOR_NW };
-        pico_cv_rect_from(&to, &fr, layer);
-        L_push_rel_rect(L, &to);
-        return 1;
-    } else {
-        luaL_checktype(L, 1, LUA_TTABLE);
-        Pico_Rel_Rect to = {
-            .mode = C_mode_t(L, 1, 1),
-            .anchor = C_anchor(L, 1),
-        };
-        pico_cv_rect_from(&to, &fr, layer);
-        lua_pushnumber(L, to.x);
-        lua_setfield(L, 1, "x");
-        lua_pushnumber(L, to.y);
-        lua_setfield(L, 1, "y");
-        lua_pushnumber(L, to.w);
-        lua_setfield(L, 1, "w");
-        lua_pushnumber(L, to.h);
-        lua_setfield(L, 1, "h");
-        return 0;
-    }
-}
-
-static int l_cv_dim_to (lua_State* L) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-    Pico_Rel_Dim fr = C_rel_dim(L, 2);
-    const char* layer = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-    char m = C_mode_s_opt(L);
+static int l_cv_dim (lua_State* L) {
+    const char* L_to = lua_isnoneornil(L, 1) ? NULL : luaL_checkstring(L, 1);
+    const char* L_fr = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
+    luaL_checktype(L, 4, LUA_TTABLE);
+    Pico_Rel_Dim fr = C_rel_dim(L, 4);
+    char m = C_mode_s_opt(L, 2);
     if (m) {
         Pico_Rel_Dim to = { .mode=m };
-        pico_cv_dim_to(&to, &fr, layer);
+        pico_cv_dim(L_to, &to, L_fr, &fr);
         L_push_rel_dim(L, &to);
         return 1;
     } else {
-        luaL_checktype(L, 1, LUA_TTABLE);
-        Pico_Rel_Dim to = { .mode = C_mode_t(L, 1, 1) };
-        pico_cv_dim_to(&to, &fr, layer);
+        luaL_checktype(L, 2, LUA_TTABLE);
+        Pico_Rel_Dim to = { .mode = C_mode_t(L, 2, 1) };
+        pico_cv_dim(L_to, &to, L_fr, &fr);
         lua_pushnumber(L, to.w);
-        lua_setfield(L, 1, "w");
+        lua_setfield(L, 2, "w");
         lua_pushnumber(L, to.h);
-        lua_setfield(L, 1, "h");
-        return 0;
-    }
-}
-
-static int l_cv_dim_from (lua_State* L) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-    Pico_Rel_Dim fr = C_rel_dim(L, 2);
-    const char* layer = lua_isnoneornil(L, 3) ? NULL : luaL_checkstring(L, 3);
-    char m = C_mode_s_opt(L);
-    if (m) {
-        Pico_Rel_Dim to = { .mode=m };
-        pico_cv_dim_from(&to, &fr, layer);
-        L_push_rel_dim(L, &to);
-        return 1;
-    } else {
-        luaL_checktype(L, 1, LUA_TTABLE);
-        Pico_Rel_Dim to = { .mode = C_mode_t(L, 1, 1) };
-        pico_cv_dim_from(&to, &fr, layer);
-        lua_pushnumber(L, to.w);
-        lua_setfield(L, 1, "w");
-        lua_pushnumber(L, to.h);
-        lua_setfield(L, 1, "h");
+        lua_setfield(L, 2, "h");
         return 0;
     }
 }
@@ -1641,21 +1568,10 @@ static const luaL_Reg ll_all[] = {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static const luaL_Reg ll_cv_pos[] = {
-    { "to",   l_cv_pos_to   },
-    { "from", l_cv_pos_from },
-    { NULL, NULL }
-};
-
-static const luaL_Reg ll_cv_rect[] = {
-    { "to",   l_cv_rect_to   },
-    { "from", l_cv_rect_from },
-    { NULL, NULL }
-};
-
-static const luaL_Reg ll_cv_dim[] = {
-    { "to",   l_cv_dim_to   },
-    { "from", l_cv_dim_from },
+static const luaL_Reg ll_cv[] = {
+    { "pos",  l_cv_pos  },
+    { "rect", l_cv_rect },
+    { "dim",  l_cv_dim  },
     { NULL, NULL }
 };
 
@@ -1771,13 +1687,7 @@ static const luaL_Reg ll_output_draw[] = {
 int luaopen_pico_native (lua_State* L) {
     luaL_newlib(L, ll_all);                 // pico
 
-    lua_newtable(L);                        // pico | cv
-    luaL_newlib(L, ll_cv_pos);              // pico | cv | pos
-    lua_setfield(L, -2, "pos");             // pico | cv
-    luaL_newlib(L, ll_cv_rect);             // pico | cv | rect
-    lua_setfield(L, -2, "rect");            // pico | cv
-    luaL_newlib(L, ll_cv_dim);              // pico | cv | dim
-    lua_setfield(L, -2, "dim");             // pico | cv
+    luaL_newlib(L, ll_cv);                  // pico | cv
     lua_setfield(L, -2, "cv");              // pico
 
     luaL_newlib(L, ll_in);                  // pico | xin

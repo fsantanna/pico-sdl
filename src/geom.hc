@@ -15,269 +15,262 @@ static int _cv_is_descendant_of (Pico_Layer* A, Pico_Layer* B) {
     return 0;
 }
 
-void pico_cv_dim_from (
-    Pico_Rel_Dim* to, const Pico_Rel_Dim* fr, const char* layer
+// One walk helper per value type. Direction (ascend/descend/identity)
+// is detected from the hier.up relationship between fromL and toL.
+static void _cv_walk_pos  (Pico_Rel_Pos*  to, const Pico_Rel_Pos*  fr,
+                           Pico_Layer* fromL, Pico_Layer* toL);
+static void _cv_walk_rect (Pico_Rel_Rect* to, const Pico_Rel_Rect* fr,
+                           Pico_Layer* fromL, Pico_Layer* toL);
+static void _cv_walk_dim  (Pico_Rel_Dim*  to, const Pico_Rel_Dim*  fr,
+                           Pico_Layer* fromL, Pico_Layer* toL);
+
+// Public unified cv: project fr (in L_fr) into to (in L_to).
+// L_fr / L_to == NULL means cur. If the layers have a direct
+// ancestor/descendant chain, walk directly; otherwise two-step
+// via cur (siblings/cousins).
+void pico_cv_dim (
+    const char* L_to, Pico_Rel_Dim* to,
+    const char* L_fr, const Pico_Rel_Dim* fr
 ) {
     _pico_guard();
-    Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
-    Pico_Layer* L = G.layer;
-
-    // S is descendant of cur: swap, delegate to _to with cur=S.
-    if (_cv_is_descendant_of(S, L)) {
-        G.layer = S;
-        pico_cv_dim_to(to, fr, L->name);
-        G.layer = L;
-        return;
+    Pico_Layer* cur = G.layer;
+    Pico_Layer* T = (L_to == NULL) ? cur : _pico_layer_name(L_to);
+    Pico_Layer* S = (L_fr == NULL) ? cur : _pico_layer_name(L_fr);
+    if (S == T
+        || _cv_is_descendant_of(S, T)
+        || _cv_is_descendant_of(T, S))
+    {
+        _cv_walk_dim(to, fr, S, T);
+    } else {
+        Pico_Rel_Dim mid = { .mode = fr->mode };
+        _cv_walk_dim(&mid, fr, S, cur);
+        _cv_walk_dim(to, &mid, cur, T);
     }
-
-    Pico_Layer* chain[64];
-    int n = 0;
-    Pico_Layer* M = L;
-    while (M != S) {
-        assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
-        chain[n++] = M;
-        pico_assert (
-            M->hier.up != NULL
-            && "cv: source must be cur, ancestor, or descendant of cur"
-        );
-        M = _pico_layer_name(M->hier.up);
-    }
-    chain[n++] = S;
-
-    Pico_Abs_Rect S_base = {0, 0, S->scene.dim.w, S->scene.dim.h};
-    Pico_Rel_Dim fr_copy = *fr;
-    SDL_FDim d = _sdl_dim(&fr_copy, &S_base, NULL);
-
-    for (int i = n-2; i >= 0; i--) {
-        Pico_Layer* C = chain[i];
-        Pico_Layer* P = chain[i+1];
-        Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect dst = _sdl_rect(&C->scene.dst, &Pb, NULL);
-        SDL_FRect src = _sdl_rect(&C->scene.src, &Cb, NULL);
-        d.w = d.w * src.w / dst.w;
-        d.h = d.h * src.h / dst.h;
-    }
-
-    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
-    _rel_dim(d, to, &L_base);
 }
 
-void pico_cv_dim_to (
-    Pico_Rel_Dim* to, const Pico_Rel_Dim* fr, const char* layer
+void pico_cv_pos (
+    const char* L_to, Pico_Rel_Pos* to,
+    const char* L_fr, const Pico_Rel_Pos* fr
 ) {
     _pico_guard();
-    Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
-    Pico_Layer* L = G.layer;
-
-    // T is descendant of cur: swap, delegate to _from with cur=T.
-    if (_cv_is_descendant_of(T, L)) {
-        G.layer = T;
-        pico_cv_dim_from(to, fr, L->name);
-        G.layer = L;
-        return;
+    Pico_Layer* cur = G.layer;
+    Pico_Layer* T = (L_to == NULL) ? cur : _pico_layer_name(L_to);
+    Pico_Layer* S = (L_fr == NULL) ? cur : _pico_layer_name(L_fr);
+    if (S == T
+        || _cv_is_descendant_of(S, T)
+        || _cv_is_descendant_of(T, S))
+    {
+        _cv_walk_pos(to, fr, S, T);
+    } else {
+        Pico_Rel_Pos mid = { .mode = fr->mode, .anchor = fr->anchor };
+        _cv_walk_pos(&mid, fr, S, cur);
+        _cv_walk_pos(to, &mid, cur, T);
     }
-
-    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
-    Pico_Rel_Dim fr_copy = *fr;
-    SDL_FDim d = _sdl_dim(&fr_copy, &L_base, NULL);
-
-    while (L != T) {
-        pico_assert (
-            L->hier.up != NULL
-            && "cv: target must be cur, ancestor, or descendant of cur"
-        );
-        Pico_Layer* P = _pico_layer_name(L->hier.up);
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect src = _sdl_rect(&L->scene.src, &L_base, NULL);
-        SDL_FRect dst = _sdl_rect(&L->scene.dst, &Pb, NULL);
-        d.w = d.w * dst.w / src.w;
-        d.h = d.h * dst.h / src.h;
-        L = P;
-        L_base = Pb;
-    }
-
-    _rel_dim(d, to, &L_base);
 }
 
-void pico_cv_pos_from (
-    Pico_Rel_Pos* to, const Pico_Rel_Pos* fr, const char* layer
+void pico_cv_rect (
+    const char* L_to, Pico_Rel_Rect* to,
+    const char* L_fr, const Pico_Rel_Rect* fr
 ) {
     _pico_guard();
-    Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
-    Pico_Layer* L = G.layer;
-
-    // S is descendant of cur: swap, delegate to _to with cur=S.
-    if (_cv_is_descendant_of(S, L)) {
-        G.layer = S;
-        pico_cv_pos_to(to, fr, L->name);
-        G.layer = L;
-        return;
+    Pico_Layer* cur = G.layer;
+    Pico_Layer* T = (L_to == NULL) ? cur : _pico_layer_name(L_to);
+    Pico_Layer* S = (L_fr == NULL) ? cur : _pico_layer_name(L_fr);
+    if (S == T
+        || _cv_is_descendant_of(S, T)
+        || _cv_is_descendant_of(T, S))
+    {
+        _cv_walk_rect(to, fr, S, T);
+    } else {
+        Pico_Rel_Rect mid = { .mode = fr->mode, .anchor = fr->anchor };
+        _cv_walk_rect(&mid, fr, S, cur);
+        _cv_walk_rect(to, &mid, cur, T);
     }
-
-    // chain: chain[0] = cur, chain[n-1] = S
-    Pico_Layer* chain[64];
-    int n = 0;
-    Pico_Layer* M = L;
-    while (M != S) {
-        assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
-        chain[n++] = M;
-        pico_assert (
-            M->hier.up != NULL
-            && "cv: source must be cur, ancestor, or descendant of cur"
-        );
-        M = _pico_layer_name(M->hier.up);
-    }
-    chain[n++] = S;
-
-    Pico_Abs_Rect S_base = {0, 0, S->scene.dim.w, S->scene.dim.h};
-    SDL_FPoint p = _sdl_pos(fr, &S_base);
-
-    // walk S -> cur, applying inverse of each step
-    for (int i = n-2; i >= 0; i--) {
-        Pico_Layer* C = chain[i];      // child
-        Pico_Layer* P = chain[i+1];    // parent
-        Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect dst = _sdl_rect(&C->scene.dst, &Pb, NULL);
-        SDL_FRect src = _sdl_rect(&C->scene.src, &Cb, NULL);
-        float rx = (p.x - dst.x) / dst.w;
-        float ry = (p.y - dst.y) / dst.h;
-        p.x = src.x + rx * src.w;
-        p.y = src.y + ry * src.h;
-    }
-
-    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
-    _rel_pos(p, to, &L_base);
 }
 
-void pico_cv_pos_to (
-    Pico_Rel_Pos* to, const Pico_Rel_Pos* fr, const char* layer
+static void _cv_walk_pos (
+    Pico_Rel_Pos* to, const Pico_Rel_Pos* fr,
+    Pico_Layer* fromL, Pico_Layer* toL
 ) {
-    _pico_guard();
-    Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
-    Pico_Layer* L = G.layer;
-
-    // T is descendant of cur: swap, delegate to _from with cur=T.
-    if (_cv_is_descendant_of(T, L)) {
-        G.layer = T;
-        pico_cv_pos_from(to, fr, L->name);
-        G.layer = L;
+    if (fromL == toL) {
+        Pico_Abs_Rect base = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+        SDL_FPoint p = _sdl_pos(fr, &base);
+        _rel_pos(p, to, &base);
         return;
     }
-
-    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
-    SDL_FPoint p = _sdl_pos(fr, &L_base);
-
-    while (L != T) {
+    if (_cv_is_descendant_of(fromL, toL)) {
+        // ascend: walk fromL up to toL
+        Pico_Abs_Rect L_base = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+        SDL_FPoint p = _sdl_pos(fr, &L_base);
+        Pico_Layer* L = fromL;
+        while (L != toL) {
+            Pico_Layer* P = _pico_layer_name(L->hier.up);
+            Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+            SDL_FRect src = _sdl_rect(&L->scene.src, &L_base, NULL);
+            SDL_FRect dst = _sdl_rect(&L->scene.dst, &Pb, NULL);
+            float rx = (p.x - src.x) / src.w;
+            float ry = (p.y - src.y) / src.h;
+            p.x = dst.x + rx * dst.w;
+            p.y = dst.y + ry * dst.h;
+            L = P;
+            L_base = Pb;
+        }
+        _rel_pos(p, to, &L_base);
+    } else {
         pico_assert (
-            L->hier.up != NULL
-            && "cv: target must be cur, ancestor, or descendant of cur"
+            _cv_is_descendant_of(toL, fromL)
+            && "cv: layers must be related via hier.up"
         );
-        Pico_Layer* P = _pico_layer_name(L->hier.up);
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect src = _sdl_rect(&L->scene.src, &L_base, NULL);
-        SDL_FRect dst = _sdl_rect(&L->scene.dst, &Pb, NULL);
-        float rx = (p.x - src.x) / src.w;
-        float ry = (p.y - src.y) / src.h;
-        p.x = dst.x + rx * dst.w;
-        p.y = dst.y + ry * dst.h;
-        L = P;
-        L_base = Pb;
+        // descend: build chain toL → fromL, then walk back applying inverse
+        Pico_Layer* chain[64];
+        int n = 0;
+        Pico_Layer* M = toL;
+        while (M != fromL) {
+            assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
+            chain[n++] = M;
+            M = _pico_layer_name(M->hier.up);
+        }
+        chain[n++] = fromL;
+        Pico_Abs_Rect fromBase = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+        SDL_FPoint p = _sdl_pos(fr, &fromBase);
+        for (int i = n-2; i >= 0; i--) {
+            Pico_Layer* C = chain[i];
+            Pico_Layer* P = chain[i+1];
+            Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
+            Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+            SDL_FRect dst = _sdl_rect(&C->scene.dst, &Pb, NULL);
+            SDL_FRect src = _sdl_rect(&C->scene.src, &Cb, NULL);
+            float rx = (p.x - dst.x) / dst.w;
+            float ry = (p.y - dst.y) / dst.h;
+            p.x = src.x + rx * src.w;
+            p.y = src.y + ry * src.h;
+        }
+        Pico_Abs_Rect toBase = {0, 0, toL->scene.dim.w, toL->scene.dim.h};
+        _rel_pos(p, to, &toBase);
     }
-
-    _rel_pos(p, to, &L_base);
 }
 
-void pico_cv_rect_from (
-    Pico_Rel_Rect* to, const Pico_Rel_Rect* fr, const char* layer
+static void _cv_walk_rect (
+    Pico_Rel_Rect* to, const Pico_Rel_Rect* fr,
+    Pico_Layer* fromL, Pico_Layer* toL
 ) {
-    _pico_guard();
-    Pico_Layer* S = (layer == NULL) ? G.layer : _pico_layer_name(layer);
-    Pico_Layer* L = G.layer;
-
-    // S is descendant of cur: swap, delegate to _to with cur=S.
-    if (_cv_is_descendant_of(S, L)) {
-        G.layer = S;
-        pico_cv_rect_to(to, fr, L->name);
-        G.layer = L;
+    if (fromL == toL) {
+        Pico_Abs_Rect base = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+        SDL_FRect r = _sdl_rect(fr, &base, NULL);
+        _rel_rect(r, to, &base);
         return;
     }
-
-    Pico_Layer* chain[64];
-    int n = 0;
-    Pico_Layer* M = L;
-    while (M != S) {
-        assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
-        chain[n++] = M;
+    if (_cv_is_descendant_of(fromL, toL)) {
+        Pico_Abs_Rect L_base = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+        SDL_FRect r = _sdl_rect(fr, &L_base, NULL);
+        Pico_Layer* L = fromL;
+        while (L != toL) {
+            Pico_Layer* P = _pico_layer_name(L->hier.up);
+            Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+            SDL_FRect src = _sdl_rect(&L->scene.src, &L_base, NULL);
+            SDL_FRect dst = _sdl_rect(&L->scene.dst, &Pb, NULL);
+            float sx = dst.w / src.w;
+            float sy = dst.h / src.h;
+            r.x = dst.x + (r.x - src.x) * sx;
+            r.y = dst.y + (r.y - src.y) * sy;
+            r.w = r.w * sx;
+            r.h = r.h * sy;
+            L = P;
+            L_base = Pb;
+        }
+        _rel_rect(r, to, &L_base);
+    } else {
         pico_assert (
-            M->hier.up != NULL
-            && "cv: source must be cur, ancestor, or descendant of cur"
+            _cv_is_descendant_of(toL, fromL)
+            && "cv: layers must be related via hier.up"
         );
-        M = _pico_layer_name(M->hier.up);
+        Pico_Layer* chain[64];
+        int n = 0;
+        Pico_Layer* M = toL;
+        while (M != fromL) {
+            assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
+            chain[n++] = M;
+            M = _pico_layer_name(M->hier.up);
+        }
+        chain[n++] = fromL;
+        Pico_Abs_Rect fromBase = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+        SDL_FRect r = _sdl_rect(fr, &fromBase, NULL);
+        for (int i = n-2; i >= 0; i--) {
+            Pico_Layer* C = chain[i];
+            Pico_Layer* P = chain[i+1];
+            Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
+            Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+            SDL_FRect dst = _sdl_rect(&C->scene.dst, &Pb, NULL);
+            SDL_FRect src = _sdl_rect(&C->scene.src, &Cb, NULL);
+            float sx = src.w / dst.w;
+            float sy = src.h / dst.h;
+            r.x = src.x + (r.x - dst.x) * sx;
+            r.y = src.y + (r.y - dst.y) * sy;
+            r.w = r.w * sx;
+            r.h = r.h * sy;
+        }
+        Pico_Abs_Rect toBase = {0, 0, toL->scene.dim.w, toL->scene.dim.h};
+        _rel_rect(r, to, &toBase);
     }
-    chain[n++] = S;
-
-    Pico_Abs_Rect S_base = {0, 0, S->scene.dim.w, S->scene.dim.h};
-    SDL_FRect r = _sdl_rect(fr, &S_base, NULL);
-
-    for (int i = n-2; i >= 0; i--) {
-        Pico_Layer* C = chain[i];
-        Pico_Layer* P = chain[i+1];
-        Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect dst = _sdl_rect(&C->scene.dst, &Pb, NULL);
-        SDL_FRect src = _sdl_rect(&C->scene.src, &Cb, NULL);
-        float sx = src.w / dst.w;
-        float sy = src.h / dst.h;
-        r.x = src.x + (r.x - dst.x) * sx;
-        r.y = src.y + (r.y - dst.y) * sy;
-        r.w = r.w * sx;
-        r.h = r.h * sy;
-    }
-
-    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
-    _rel_rect(r, to, &L_base);
 }
 
-void pico_cv_rect_to (
-    Pico_Rel_Rect* to, const Pico_Rel_Rect* fr, const char* layer
+static void _cv_walk_dim (
+    Pico_Rel_Dim* to, const Pico_Rel_Dim* fr,
+    Pico_Layer* fromL, Pico_Layer* toL
 ) {
-    _pico_guard();
-    Pico_Layer* T = (layer == NULL) ? G.layer : _pico_layer_name(layer);
-    Pico_Layer* L = G.layer;
-
-    // T is descendant of cur: swap, delegate to _from with cur=T.
-    if (_cv_is_descendant_of(T, L)) {
-        G.layer = T;
-        pico_cv_rect_from(to, fr, L->name);
-        G.layer = L;
+    if (fromL == toL) {
+        Pico_Abs_Rect base = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+        Pico_Rel_Dim fr_copy = *fr;
+        SDL_FDim d = _sdl_dim(&fr_copy, &base, NULL);
+        _rel_dim(d, to, &base);
         return;
     }
-
-    Pico_Abs_Rect L_base = {0, 0, L->scene.dim.w, L->scene.dim.h};
-    SDL_FRect r = _sdl_rect(fr, &L_base, NULL);
-
-    while (L != T) {
+    if (_cv_is_descendant_of(fromL, toL)) {
+        Pico_Abs_Rect L_base = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+        Pico_Rel_Dim fr_copy = *fr;
+        SDL_FDim d = _sdl_dim(&fr_copy, &L_base, NULL);
+        Pico_Layer* L = fromL;
+        while (L != toL) {
+            Pico_Layer* P = _pico_layer_name(L->hier.up);
+            Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+            SDL_FRect src = _sdl_rect(&L->scene.src, &L_base, NULL);
+            SDL_FRect dst = _sdl_rect(&L->scene.dst, &Pb, NULL);
+            d.w = d.w * dst.w / src.w;
+            d.h = d.h * dst.h / src.h;
+            L = P;
+            L_base = Pb;
+        }
+        _rel_dim(d, to, &L_base);
+    } else {
         pico_assert (
-            L->hier.up != NULL
-            && "cv: target must be cur, ancestor, or descendant of cur"
+            _cv_is_descendant_of(toL, fromL)
+            && "cv: layers must be related via hier.up"
         );
-        Pico_Layer* P = _pico_layer_name(L->hier.up);
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect src = _sdl_rect(&L->scene.src, &L_base, NULL);
-        SDL_FRect dst = _sdl_rect(&L->scene.dst, &Pb, NULL);
-        float sx = dst.w / src.w;
-        float sy = dst.h / src.h;
-        r.x = dst.x + (r.x - src.x) * sx;
-        r.y = dst.y + (r.y - src.y) * sy;
-        r.w = r.w * sx;
-        r.h = r.h * sy;
-        L = P;
-        L_base = Pb;
+        Pico_Layer* chain[64];
+        int n = 0;
+        Pico_Layer* M = toL;
+        while (M != fromL) {
+            assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
+            chain[n++] = M;
+            M = _pico_layer_name(M->hier.up);
+        }
+        chain[n++] = fromL;
+        Pico_Abs_Rect fromBase = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+        Pico_Rel_Dim fr_copy = *fr;
+        SDL_FDim d = _sdl_dim(&fr_copy, &fromBase, NULL);
+        for (int i = n-2; i >= 0; i--) {
+            Pico_Layer* C = chain[i];
+            Pico_Layer* P = chain[i+1];
+            Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
+            Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+            SDL_FRect dst = _sdl_rect(&C->scene.dst, &Pb, NULL);
+            SDL_FRect src = _sdl_rect(&C->scene.src, &Cb, NULL);
+            d.w = d.w * src.w / dst.w;
+            d.h = d.h * src.h / dst.h;
+        }
+        Pico_Abs_Rect toBase = {0, 0, toL->scene.dim.w, toL->scene.dim.h};
+        _rel_dim(d, to, &toBase);
     }
-
-    _rel_rect(r, to, &L_base);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -314,17 +307,11 @@ Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
-    if (layer == NULL) {
-        return *p;
-    }
-    Pico_Layer* old = G.layer;
-    G.layer = _pico_layer_name(layer);
-    if (G.layer == old) {
+    if (layer == NULL || _pico_layer_name(layer) == G.layer) {
         return *p;
     }
     Pico_Rel_Pos out = {'!', {0, 0}, PICO_ANCHOR_NW};
-    pico_cv_pos_to(&out, p, old->name);
-    G.layer = old;
+    pico_cv_pos(NULL, &out, layer, p);
     return out;
 }
 
@@ -332,31 +319,24 @@ static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
     if (layer == NULL) {
         return (r == NULL) ? G.layer->scene.dst : *r;
     }
-
-    Pico_Layer* old = G.layer;
-    G.layer = _pico_layer_name(layer);
-    if (G.layer == old) {
-        return (r == NULL) ? old->scene.dst : *r;
+    Pico_Layer* L = _pico_layer_name(layer);
+    if (L == G.layer) {
+        return (r == NULL) ? L->scene.dst : *r;
     }
 
-    Pico_Rel_Rect out;
+    Pico_Rel_Rect out = {'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
     if (r == NULL) {
-        // scene.dst is in L2's parent frame. If parent == cur, it's already
-        // in cur's frame; otherwise project from parent up to cur.
-        Pico_Rel_Rect dst = G.layer->scene.dst;
-        if (G.layer->hier.up != NULL
-            && _pico_layer_name(G.layer->hier.up) != old) {
-            G.layer = _pico_layer_name(G.layer->hier.up);
-            out = (Pico_Rel_Rect){'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
-            pico_cv_rect_to(&out, &dst, old->name);
+        // L's bounds = scene.dst in L's parent frame, projected to cur.
+        Pico_Rel_Rect dst = L->scene.dst;
+        if (L->hier.up != NULL
+            && _pico_layer_name(L->hier.up) != G.layer) {
+            pico_cv_rect(NULL, &out, L->hier.up, &dst);
         } else {
             out = dst;
         }
     } else {
-        out = (Pico_Rel_Rect){'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
-        pico_cv_rect_to(&out, r, old->name);
+        pico_cv_rect(NULL, &out, layer, r);
     }
-    G.layer = old;
     return out;
 }
 
