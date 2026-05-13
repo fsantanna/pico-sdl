@@ -8,18 +8,33 @@ do
     local out = {'!', anchor='NW'}
     pico.cv.pos('window', out, nil, {'!', x=50, y=50, anchor='NW'})
     assert(out.x==250 and out.y==250)
+    pico.cv.pos('window', out, {'!', x=50, y=50, anchor='NW'})
+    assert(out.x==250 and out.y==250)
 
     print('', 2)
     local out = {'!', anchor='NW'}
     pico.cv.pos(nil, out, 'window', {'!', x=250, y=250, anchor='NW'})
     assert(out.x==50 and out.y==50)
+    pico.cv.pos(out, 'window', {'!', x=250, y=250, anchor='NW'})
+    assert(out.x==50 and out.y==50)
 
     print('', 3)
     local win = {'!', anchor='NW'}
-    pico.cv.pos('window', win, nil, {'!', x=37, y=89, anchor='NW'})
+    pico.cv.pos('window', win, {'!', x=37, y=89, anchor='NW'})
     local back = {'!', anchor='NW'}
     pico.cv.pos(nil, back, 'window', win)
     assert(back.x==37 and back.y==89)
+end
+
+do
+    local v = pico.cv.pos('%', {'!',x=50,y=99})
+    assert(v.x*100//1==49 and v.y*100//98)
+
+    local v = pico.cv.rect(
+        {'!',anchor='NW'},
+        {'%',x=1,y=1,w=0.5,h=0.5,anchor='SE'}
+    )
+    assert(v.x==50 and v.y==50)
 end
 
 print "pico.cv.* sub-layer 2-hop walk"
