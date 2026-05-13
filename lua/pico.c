@@ -505,7 +505,7 @@ static int l_in_rect (lua_State* L) {
     luaL_checktype(L, 2, LUA_TTABLE);
     Pico_Rel_Rect out = C_rel_rect(L, 1);
     Pico_Rel_Rect in  = C_rel_rect(L, 2);
-    Pico_Rel_Rect ret = pico_in_rect(&out, &in);
+    Pico_Rel_Rect ret = pico_in_rect(out, in);
     L_push_rel_rect(L, &ret);
     return 1;
 }
@@ -515,7 +515,7 @@ static int l_in_pos (lua_State* L) {
     luaL_checktype(L, 2, LUA_TTABLE);
     Pico_Rel_Rect out = C_rel_rect(L, 1);
     Pico_Rel_Pos  in  = C_rel_pos(L, 2);
-    Pico_Rel_Pos ret = pico_in_pos(&out, &in);
+    Pico_Rel_Pos ret = pico_in_pos(out, in);
     L_push_rel_pos(L, &ret);
     return 1;
 }
@@ -525,7 +525,7 @@ static int l_in_dim (lua_State* L) {
     luaL_checktype(L, 2, LUA_TTABLE);
     Pico_Rel_Rect out = C_rel_rect(L, 1);
     Pico_Rel_Dim  in  = C_rel_dim(L, 2);
-    Pico_Rel_Dim ret = pico_in_dim(&out, &in);
+    Pico_Rel_Dim ret = pico_in_dim(out, in);
     L_push_rel_dim(L, &ret);
     return 1;
 }

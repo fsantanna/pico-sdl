@@ -20,7 +20,7 @@ int main (void) {
     // after pico_in_dim, d is in scene's % frame
     {
         Pico_Rel_Rect up = { '%', {0, 0, 0.5, 0.5}, PICO_ANCHOR_NW };
-        Pico_Rel_Dim d = pico_in_dim(&up, &(Pico_Rel_Dim){ '%', {0, 0.2} });
+        Pico_Rel_Dim d = pico_in_dim(up, (Pico_Rel_Dim){ '%', {0, 0.2} });
         Pico_Abs_Dim r = pico_get_text("ABC", &d);
         assert(r.w==17 && r.h==10);
         assert(d.w==0.17f && d.h==0.1f);

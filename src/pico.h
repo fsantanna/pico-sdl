@@ -635,21 +635,21 @@ void pico_cv_rect (
 /// @param out parent rectangle (relative to current scene)
 /// @param in child rectangle (relative to `out`)
 /// @return flat rectangle, no parent reference needed
-Pico_Rel_Rect pico_in_rect (const Pico_Rel_Rect* out, const Pico_Rel_Rect* in);
+Pico_Rel_Rect pico_in_rect (Pico_Rel_Rect out, Pico_Rel_Rect in);
 
 /// @brief Composes a child position onto a parent rect.
 /// Mode and anchor of `in` are preserved.
 /// @param out parent rectangle (relative to current scene)
 /// @param in child position (relative to `out`)
 /// @return flat position, no parent reference needed
-Pico_Rel_Pos pico_in_pos (const Pico_Rel_Rect* out, const Pico_Rel_Pos* in);
+Pico_Rel_Pos pico_in_pos (Pico_Rel_Rect out, Pico_Rel_Pos in);
 
 /// @brief Composes a child dimension onto a parent rect.
 /// Mode of `in` is preserved.
 /// @param out parent rectangle (relative to current scene)
 /// @param in child dimension (relative to `out`)
 /// @return flat dimension, no parent reference needed
-Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in);
+Pico_Rel_Dim pico_in_dim (Pico_Rel_Rect out, Pico_Rel_Dim in);
 
 /// @brief Checks if two points fall on the same pixel.
 /// Each side can be in cur or in a descendant of cur. Both points

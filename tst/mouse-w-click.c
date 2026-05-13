@@ -25,7 +25,7 @@ int main (void) {
     /* btn was drawn in layer A's frame; re-express btn within r (the
        layer's composite rect on screen) for collision against a mouse
        sampled in scene coords. */
-    Pico_Rel_Rect btn_in_r = pico_in_rect(&r, &btn);
+    Pico_Rel_Rect btn_in_r = pico_in_rect(r, btn);
 
     /* Set cursor at world pct (0.8, 0.764) ~= window (400, 382); collision
        in pct (world's coords via mouse->pct) confirms inside btn; mark

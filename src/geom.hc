@@ -206,27 +206,26 @@ static void _cv_walk_dim (
 // IN: compose child onto parent, return flat rel
 ///////////////////////////////////////////////////////////////////////////////
 
-Pico_Rel_Rect pico_in_rect (const Pico_Rel_Rect* out, const Pico_Rel_Rect* in) {
-    Pico_Abs_Rect out_abs = _rnd_rect(_sdl_rect(out, NULL, NULL));
-    Pico_Abs_Rect in_abs  = _rnd_rect(_sdl_rect(in, &out_abs, NULL));
-    Pico_Rel_Rect ret = { .mode = in->mode, .anchor = in->anchor };
+Pico_Rel_Rect pico_in_rect (Pico_Rel_Rect out, Pico_Rel_Rect in) {
+    Pico_Abs_Rect out_abs = _rnd_rect(_sdl_rect(&out, NULL, NULL));
+    Pico_Abs_Rect in_abs  = _rnd_rect(_sdl_rect(&in, &out_abs, NULL));
+    Pico_Rel_Rect ret = { .mode = in.mode, .anchor = in.anchor };
     _rel_rect((SDL_FRect){in_abs.x, in_abs.y, in_abs.w, in_abs.h}, &ret, NULL);
     return ret;
 }
 
-Pico_Rel_Pos pico_in_pos (const Pico_Rel_Rect* out, const Pico_Rel_Pos* in) {
-    Pico_Abs_Rect out_abs = _rnd_rect(_sdl_rect(out, NULL, NULL));
-    Pico_Abs_Pos  in_abs  = _rnd_pos(_sdl_pos(in, &out_abs));
-    Pico_Rel_Pos ret = { .mode = in->mode, .anchor = in->anchor };
+Pico_Rel_Pos pico_in_pos (Pico_Rel_Rect out, Pico_Rel_Pos in) {
+    Pico_Abs_Rect out_abs = _rnd_rect(_sdl_rect(&out, NULL, NULL));
+    Pico_Abs_Pos  in_abs  = _rnd_pos(_sdl_pos(&in, &out_abs));
+    Pico_Rel_Pos ret = { .mode = in.mode, .anchor = in.anchor };
     _rel_pos((SDL_FPoint){in_abs.x, in_abs.y}, &ret, NULL);
     return ret;
 }
 
-Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in) {
-    Pico_Abs_Rect out_abs = _rnd_rect(_sdl_rect(out, NULL, NULL));
-    Pico_Rel_Dim  in_copy = *in;
-    Pico_Abs_Dim  in_abs  = _rnd_dim(_sdl_dim(&in_copy, &out_abs, NULL));
-    Pico_Rel_Dim ret = { .mode = in->mode };
+Pico_Rel_Dim pico_in_dim (Pico_Rel_Rect out, Pico_Rel_Dim in) {
+    Pico_Abs_Rect out_abs = _rnd_rect(_sdl_rect(&out, NULL, NULL));
+    Pico_Abs_Dim  in_abs  = _rnd_dim(_sdl_dim(&in, &out_abs, NULL));
+    Pico_Rel_Dim ret = { .mode = in.mode };
     _rel_dim((SDL_FDim){in_abs.w, in_abs.h}, &ret, NULL);
     return ret;
 }

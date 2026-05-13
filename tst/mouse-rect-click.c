@@ -29,9 +29,9 @@ int main (void) {
 
     /* re-express buttons within r (layer's composite rect) for
        collision against mouse sampled in world-pct coords */
-    Pico_Rel_Rect b1 = pico_in_rect(&r, &btn1);
-    Pico_Rel_Rect b2 = pico_in_rect(&r, &btn2);
-    Pico_Rel_Rect b3 = pico_in_rect(&r, &btn3);
+    Pico_Rel_Rect b1 = pico_in_rect(r, btn1);
+    Pico_Rel_Rect b2 = pico_in_rect(r, btn2);
+    Pico_Rel_Rect b3 = pico_in_rect(r, btn3);
 
     /* no collision */
     puts("no collision (394,355)");
