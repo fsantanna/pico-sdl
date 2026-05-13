@@ -237,7 +237,7 @@ pico.check("guide-06-03-01")
 
 -- §7.1: create the "flag" layer (no check; nothing on screen yet)
 pico.output.clear()
-pico.layer.empty(nil, "flag", false, {'!', w=300, h=200})
+pico.layer.empty(nil, "flag", true, {'!', w=300, h=200})
 pico.set.layer("flag")
 pico.set.pencil { color={ r=0x00, g=0x2B, b=0x7F } }
 pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
@@ -295,7 +295,7 @@ pico.layer.image (
     "world", "pic", "../../res/open.png", {'%', x=0.3, y=0.3, w=0.4}
 )
 do
-    pico.layer.empty("world", "panel", false, {'!', w=100, h=50})
+    pico.layer.empty("world", "panel", true, {'!', w=100, h=50})
     pico.set.layer("panel")
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
