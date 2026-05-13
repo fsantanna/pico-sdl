@@ -110,8 +110,8 @@ do
     pico.layer.empty('world', 'sib_b', true, {'!', w=50, h=50})
 
     print('', 'pos sib_a -> sib_b')
-    local p = pico.cv.pos('sib_b', '!', 'sib_a', {'!', x=5, y=10, anchor='NW'})
-    assert(p.x==5.5 and p.y==10.5)
+    local p = pico.cv.pos('sib_b', '!', 'sib_a', {'!', x=5, y=10})
+    assert(p.x==5 and p.y==10)
 end
 
 print "pico.cv.* deep 4-layer (window > world > A > B), default anchor C"
@@ -178,8 +178,8 @@ end
 print "pico.cv.* mode-string as to (returns fresh table)"
 do
     print('', "pos with '!'")
-    local out = pico.cv.pos('window', '!', nil, {'!', x=50, y=50, anchor='NW'})
-    assert(out and out.x==250.5 and out.y==250.5 and out[1]=='!')
+    local out = pico.cv.pos('window', '!', nil, {'!', x=50, y=50})
+    assert(out and out.x==248 and out.y==248 and out[1]=='!')
 
     print('', "rect with '%'")
     local out = pico.cv.rect('%', 'window', {'!', x=250, y=250, w=50, h=50, anchor='NW'})
