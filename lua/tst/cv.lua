@@ -51,7 +51,9 @@ do
 
     print('', 'pos world -> sub')
     local s = {'!', anchor='NW'}
-    pico.cv.pos(nil, s, 'world', {'!', x=20, y=40, anchor='NW'})
+    s = pico.cv.pos(nil, s, 'world', {'!', x=20, y=40, anchor='NW'})
+    assert(s.x==10 and s.y==20)
+    pico.cv.pos(s, 'world', {'!', x=20, y=40, anchor='NW'})
     assert(s.x==10 and s.y==20)
 
     print('', 'pos sub -> window (2 hops)')
@@ -62,6 +64,8 @@ do
     print('', 'rect sub -> world')
     local w = {'!', anchor='NW'}
     pico.cv.rect('world', w, nil, {'!', x=10, y=20, w=5, h=10, anchor='NW'})
+    assert(w.x==20 and w.y==40 and w.w==10 and w.h==20)
+    w = pico.cv.rect('world', w, {'!', x=10, y=20, w=5, h=10, anchor='NW'})
     assert(w.x==20 and w.y==40 and w.w==10 and w.h==20)
 
     print('', 'dim sub -> world')
@@ -76,7 +80,9 @@ do
     -- cur=world, target=sub_cv (descendant). sub_cv is 50x50 in world 100x100.
     print('', 'pos world -> sub (target=descendant)')
     local s = {'!', anchor='NW'}
-    pico.cv.pos('sub_cv', s, nil, {'!', x=20, y=40, anchor='NW'})
+    s = pico.cv.pos('sub_cv', s, nil, {'!', x=20, y=40, anchor='NW'})
+    assert(s.x==10 and s.y==20)
+    pico.cv.pos('sub_cv', s, {'!', x=20, y=40, anchor='NW'})
     assert(s.x==10 and s.y==20)
 
     print('', 'pos sub -> world (source=descendant)')
@@ -115,11 +121,11 @@ do
     assert(out and out.x==250 and out.y==250 and out[1]=='!')
 
     print('', "rect with '%'")
-    local out = pico.cv.rect(nil, '%', 'window', {'!', x=250, y=250, w=50, h=50, anchor='NW'})
+    local out = pico.cv.rect('%', 'window', {'!', x=250, y=250, w=50, h=50, anchor='NW'})
     assert(out and out[1]=='%')
 
     print('', "dim with '#'")
-    local out = pico.cv.dim('window', '#', nil, {'!', w=10, h=20})
+    local out = pico.cv.dim('window', '#', {'!', w=10, h=20})
     assert(out and out[1]=='#')
 
     print('', "invalid mode-string 'z' errors")
