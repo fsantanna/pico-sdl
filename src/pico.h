@@ -305,7 +305,7 @@ void pico_output_sound (const char* path);
 /// @brief Gets the entire pencil state of the current layer.
 /// @param pencil output struct populated with pencil state
 /// @sa pico_set_pencil
-void        pico_get_pencil       (Pico_Layer_Pencil* pencil);
+Pico_Layer_Pencil pico_get_pencil       (void);
 Pico_Color  pico_get_pencil_color (void);
 const char* pico_get_pencil_font  (void);
 PICO_STYLE  pico_get_pencil_style (void);
@@ -330,7 +330,7 @@ const char* pico_get_layer (void);
 /// @brief Gets the entire effect state of the current layer.
 /// @param effect output struct populated with effect state
 /// @sa pico_set_effect
-void          pico_get_effect          (Pico_Layer_Effect* effect);
+Pico_Layer_Effect pico_get_effect          (void);
 unsigned char pico_get_effect_alpha    (void);
 Pico_Color    pico_get_effect_color    (void);
 PICO_FLIP     pico_get_effect_flip     (void);
@@ -507,7 +507,7 @@ Pico_Abs_Dim  pico_get_scene_tile  (void);
 /// @brief Gets the entire window state.
 /// @param win output struct populated with window state
 /// @sa pico_set_window
-void         pico_get_window       (Pico_Window* win);
+Pico_Window  pico_get_window       (void);
 int          pico_get_window_fs    (void);
 int          pico_get_window_show  (void);
 const char*  pico_get_window_title (void);

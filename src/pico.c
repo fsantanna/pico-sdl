@@ -269,9 +269,9 @@ void pico_quit (void) {
 // GET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_get_pencil (Pico_Layer_Pencil* pencil) {
+Pico_Layer_Pencil pico_get_pencil (void) {
     _pico_guard();
-    *pencil = G.layer->pencil;
+    return G.layer->pencil;
 }
 
 Pico_Color pico_get_pencil_color (void) {
@@ -360,9 +360,9 @@ Uint32 pico_get_now (void) {
     return SDL_GetTicks();
 }
 
-void pico_get_effect (Pico_Layer_Effect* effect) {
+Pico_Layer_Effect pico_get_effect (void) {
     _pico_guard();
-    *effect = G.layer->effect;
+    return G.layer->effect;
 }
 
 unsigned char pico_get_effect_alpha (void) {
@@ -451,9 +451,9 @@ Pico_Abs_Dim pico_get_scene_tile (void) {
     return G.layer->scene.tile;
 }
 
-void pico_get_window (Pico_Window* win) {
+Pico_Window pico_get_window (void) {
     _pico_guard();
-    *win = (Pico_Window) {
+    return (Pico_Window) {
         .fs    = G.window.pub.fs,
         .show  = SDL_GetWindowFlags(G.window.win) & SDL_WINDOW_SHOWN,
         .title = SDL_GetWindowTitle(G.window.win),

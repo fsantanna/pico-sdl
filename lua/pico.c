@@ -673,8 +673,7 @@ static int l_color_alpha (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_get_pencil (lua_State* L) {
-    Pico_Layer_Pencil draw;
-    pico_get_pencil(&draw);
+    Pico_Layer_Pencil draw = pico_get_pencil();
 
     lua_newtable(L);                    // T
 
@@ -752,8 +751,7 @@ static int l_get_now (lua_State* L) {
 }
 
 static int l_get_effect (lua_State* L) {
-    Pico_Layer_Effect show;
-    pico_get_effect(&show);
+    Pico_Layer_Effect show = pico_get_effect();
 
     lua_newtable(L);                    // T
 
@@ -875,8 +873,7 @@ static int l_get_scene (lua_State* L) {
 }
 
 static int l_get_window (lua_State* L) {
-    Pico_Window win;
-    pico_get_window(&win);
+    Pico_Window win = pico_get_window();
 
     lua_newtable(L);                    // T
 
@@ -904,8 +901,7 @@ static int l_set_dim (lua_State* L) {
 static int l_set_pencil (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
-    Pico_Layer_Pencil draw;
-    pico_get_pencil(&draw);
+    Pico_Layer_Pencil draw = pico_get_pencil();
 
     lua_getfield(L, 1, "color");            // T | color
     if (!lua_isnil(L, -1)) {

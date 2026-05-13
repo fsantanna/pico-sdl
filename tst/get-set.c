@@ -57,8 +57,7 @@ int main (void) {
             .color=PICO_COLOR_RED, .font="test.ttf", .style=PICO_STYLE_STROKE
         });
 
-        Pico_Layer_Pencil gd;
-        pico_get_pencil(&gd);
+        Pico_Layer_Pencil gd = pico_get_pencil();
         assert(gd.color.r == 255 && gd.color.g == 0 && gd.color.b == 0);
         assert(strcmp(gd.font, "test.ttf") == 0);
         assert(gd.style == PICO_STYLE_STROKE);
@@ -99,8 +98,7 @@ int main (void) {
             .alpha=0x40, .color=PICO_COLOR_RED, .flip=PICO_FLIP_VERTICAL, .grid=1, .rotate={90, PICO_ANCHOR_C}
         });
 
-        Pico_Layer_Effect gs;
-        pico_get_effect(&gs);
+        Pico_Layer_Effect gs = pico_get_effect();
         assert(gs.alpha == 0x40);
         assert(gs.color.r == 255 && gs.color.g == 0 && gs.color.b == 0);
         assert(gs.flip == PICO_FLIP_VERTICAL);
@@ -119,11 +117,9 @@ int main (void) {
         pico_set_layer("window");
         pico_set_effect_color((Pico_Color){0x12, 0x34, 0x56, 0x78});
         pico_set_layer("world");
-        Pico_Window w1;
-        pico_get_window(&w1);
+        Pico_Window w1 = pico_get_window();
         pico_set_window(w1);
-        Pico_Window w2;
-        pico_get_window(&w2);
+        Pico_Window w2 = pico_get_window();
         assert(w2.fs == w1.fs);
         Pico_Color c1;
         pico_set_layer("window");
