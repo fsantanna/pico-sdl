@@ -1323,46 +1323,83 @@ static int l_layer_pixmap (lua_State* L) {
 }
 
 static int l_layer_text (lua_State* L) {
+    // [m] | up | me | height | text | [Rect]
     char m = L_realm_opt(L);
     if (!m) m = '!';
-    const char* up = lua_isnil(L, 2) ? NULL : luaL_checkstring(L, 2);
-    const char* key = luaL_checkstring(L, 3);
+
+    const char* up = lua_tostring(L, 2);
+    const char* me = luaL_checkstring(L, 3);
     int height = luaL_checkinteger(L, 4);
     const char* text = luaL_checkstring(L, 5);
-    pico_layer_text_mode(m, up, key, height, text);
-    L_opt_target(L, 6, key);
+
+    pico_layer_text_mode(m, up, me, height, text);
+
+    if (lua_gettop(L) >= 6) {
+        Pico_Rel_Rect dst = C_rel_rect(L, 6);
+        const char* old = pico_set_layer(me);
+        pico_set_scene_dst(dst);
+        pico_set_layer(old);
+    }
+
     return 0;
 }
 
 static int l_layer_video (lua_State* L) {
+    // [m] | up | [me] | path | Rect
     char m = L_realm_opt(L);
-    const char* up = lua_isnil(L, 2) ? NULL : luaL_checkstring(L, 2);
-    const char* key;
-    const char* path;
+
     if (lua_isstring(L, 4)) {
-        key  = luaL_checkstring(L, 3);
-        path = luaL_checkstring(L, 4);
+        // [m] | up | me | path | Rect
         if (!m) m = '!';
     } else {
-        key  = NULL;
-        path = luaL_checkstring(L, 3);
+        // [m] | up | path | Rect
         if (!m) m = '=';
+        lua_pushnil(L);
+        assert(lua_gettop(L) >= 3);
+        lua_insert(L, 3);               // [m] | up | nil | path | Rect
     }
-    pico_layer_video_mode(m, up, key, path);
-    L_opt_target(L, 5, key);
+    // [m] | up | [me] | path | Rect
+
+    const char* up = lua_tostring(L, 2);
+    const char* me = lua_tostring(L, 3);
+    const char* f  = luaL_checkstring(L, 4);
+
+    if (me == NULL) {
+        me = f;
+    }
+
+    pico_layer_video_mode(m, up, me, f);
+
+    if (lua_gettop(L) >= 5) {
+        Pico_Rel_Rect dst = C_rel_rect(L, 5);
+        const char* old = pico_set_layer(me);
+        pico_set_scene_dst(dst);
+        pico_set_layer(old);
+    }
+
     return 0;
 }
 
 static int l_layer_sub (lua_State* L) {
+    // [m] | up | me | sup | crop | [Rect]
     char m = L_realm_opt(L);
     if (!m) m = '!';
-    const char* up = lua_isnil(L, 2) ? NULL : luaL_checkstring(L, 2);
-    const char* key    = luaL_checkstring(L, 3);
-    const char* parent = luaL_checkstring(L, 4);
+
+    const char* up = lua_tostring(L, 2);
+    const char* me = luaL_checkstring(L, 3);
+    const char* sup = luaL_checkstring(L, 4);
     luaL_checktype(L, 5, LUA_TTABLE);
     Pico_Rel_Rect crop = C_rel_rect(L, 5);
-    pico_layer_sub_mode(m, up, key, parent, &crop);
-    L_opt_target(L, 6, key);
+
+    pico_layer_sub_mode(m, up, me, sup, &crop);
+
+    if (lua_gettop(L) >= 6) {
+        Pico_Rel_Rect dst = C_rel_rect(L, 6);
+        const char* old = pico_set_layer(me);
+        pico_set_scene_dst(dst);
+        pico_set_layer(old);
+    }
+
     return 0;
 }
 
