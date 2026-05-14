@@ -487,7 +487,35 @@ static void _layer_opt_mode (lua_State* L) {
 // CV: unified pos/rect/dim — (L_to, to_or_mode, L_fr, fr)
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_cv_pos (lua_State* L) {
+static int l_cv_dim (lua_State* L) {
+    int idx[4];
+    _layer_opt_mode(L);
+    args_parse(L, idx, CV_TYPES, "cv");
+    if (idx[1] == 0 || idx[3] == 0) {
+        return luaL_error(L, "cv.dim: to_or_mode and fr are required");
+    }
+    const char* L_to = idx[0] ? lua_tostring(L, idx[0]) : NULL;
+    const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
+    Pico_Rel_Dim fr = C_rel_dim(L, idx[3]);
+    if (lua_type(L, idx[1]) == LUA_TSTRING) {
+        char m = C_mode_s_opt(L, 1, idx[1]);
+        Pico_Rel_Dim to = { .mode=m };
+        pico_cv_dim(L_to, &to, L_fr, &fr);
+        L_push_rel_dim(L, &to);
+        return 1;
+    } else {
+        Pico_Rel_Dim to = { .mode = C_mode_t(L, idx[1], 1) };
+        pico_cv_dim(L_to, &to, L_fr, &fr);
+        lua_pushnumber(L, to.w);
+        lua_setfield(L, idx[1], "w");
+        lua_pushnumber(L, to.h);
+        lua_setfield(L, idx[1], "h");
+        lua_pushvalue(L, idx[1]);
+        return 1;
+    }
+}
+
+static int l_cv_pos (lua_State* L) {    // [L] | to | [L] | fr
     int idx[4];
     _layer_opt_mode(L);
     args_parse(L, idx, CV_TYPES, "cv");
@@ -544,34 +572,6 @@ static int l_cv_rect (lua_State* L) {
         lua_setfield(L, idx[1], "x");
         lua_pushnumber(L, to.y);
         lua_setfield(L, idx[1], "y");
-        lua_pushnumber(L, to.w);
-        lua_setfield(L, idx[1], "w");
-        lua_pushnumber(L, to.h);
-        lua_setfield(L, idx[1], "h");
-        lua_pushvalue(L, idx[1]);
-        return 1;
-    }
-}
-
-static int l_cv_dim (lua_State* L) {
-    int idx[4];
-    _layer_opt_mode(L);
-    args_parse(L, idx, CV_TYPES, "cv");
-    if (idx[1] == 0 || idx[3] == 0) {
-        return luaL_error(L, "cv.dim: to_or_mode and fr are required");
-    }
-    const char* L_to = idx[0] ? lua_tostring(L, idx[0]) : NULL;
-    const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
-    Pico_Rel_Dim fr = C_rel_dim(L, idx[3]);
-    if (lua_type(L, idx[1]) == LUA_TSTRING) {
-        char m = C_mode_s_opt(L, 1, idx[1]);
-        Pico_Rel_Dim to = { .mode=m };
-        pico_cv_dim(L_to, &to, L_fr, &fr);
-        L_push_rel_dim(L, &to);
-        return 1;
-    } else {
-        Pico_Rel_Dim to = { .mode = C_mode_t(L, idx[1], 1) };
-        pico_cv_dim(L_to, &to, L_fr, &fr);
         lua_pushnumber(L, to.w);
         lua_setfield(L, idx[1], "w");
         lua_pushnumber(L, to.h);
