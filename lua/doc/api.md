@@ -72,8 +72,8 @@ In alphabetical order:
         - `pico.cv.dim (L_to: string?, to: Dim, L_fr: string?, fr: Dim) -> Dim`
         - `pico.cv.dim (L_to: string?, mode: string, L_fr: string?, fr: Dim) -> Dim`
 - **pico.get**
-    - **pico.get.pencil**: Gets pencil configuration.
-        - `pico.get.pencil () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
+    - **pico.get.effect**: Gets effect configuration.
+        - `pico.get.effect () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, rotate: Rotation }`
     - **pico.get.image**: Gets image dimensions.
         - `pico.get.image (path: string [, dim: Dim]) -> Dim`
     - **pico.get.keyboard**: Gets keyboard modifier state.
@@ -98,14 +98,14 @@ In alphabetical order:
             - `pico.get.mouse({'!', anchor='NW'})` — explicit anchor
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
+    - **pico.get.pencil**: Gets pencil configuration.
+        - `pico.get.pencil () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
+    - **pico.get.scene**: Gets scene configuration.
+        - `pico.get.scene () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect, clear: boolean }`
     - **pico.get.text**: Gets text dimensions.
         - `pico.get.text (text: string, dim: Dim) -> Dim`
     - **pico.get.video**: Gets video information.
         - `pico.get.video (path: string [, rect: Rect]) -> Video`
-    - **pico.get.effect**: Gets effect configuration.
-        - `pico.get.effect () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, rotate: Rotation }`
-    - **pico.get.scene**: Gets scene configuration.
-        - `pico.get.scene () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect, clear: boolean }`
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { fullscreen: boolean, show: boolean, title: string }`
 - **pico.init**: Initializes and finalizes pico.
@@ -219,23 +219,13 @@ In alphabetical order:
 - **pico.set**
     - **pico.set.dim**: Sets both window and world to the same dimensions.
         - `pico.set.dim (dim: Dim)`
-    - **pico.set.pencil**: Sets pencil configuration.
-        - `pico.set.pencil (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
+    - **pico.set.effect**: Sets effect configuration.
+        - `pico.set.effect (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [rotate: Rotation] })`
     - **pico.set.expert**: Toggles expert mode.
         - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
         - fps: omitted or `false` = wait forever, `true` = as fast as
           possible, `N>0` = fixed FPS. Explicit `nil` errors.
         - Returns frame period in ms: `-1` = block forever, `0` = immediate, `N>0` = frame period
-    - **pico.set.effect**: Sets effect configuration.
-        - `pico.set.effect (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [rotate: Rotation] })`
-    - **pico.set.video**: Sets video frame.
-        - `pico.set.video (name: string, frame: integer) -> boolean`
-    - **pico.set.scene**: Sets scene configuration.
-        - `pico.set.scene (cfg: { [dim: Dim], [source: Rect], [clip: Rect], [target: Rect], [tile: Tile], [clear: boolean] })`
-        - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
-        - `clear`: when true, the layer auto-clears each frame
-    - **pico.set.window**: Sets window configuration.
-        - `pico.set.window (cfg: { [fullscreen: boolean], [show: boolean], [title: string] })`
     - **pico.set.layer**: Switches the target layer.
         - `pico.set.layer (name: string) -> string`
         - Returns the previous layer name (useful for save/restore).
@@ -250,6 +240,16 @@ In alphabetical order:
             - `pico.set.mouse(pos)` — cur
             - `pico.set.mouse(nil, pos)` — explicit nil = cur
             - `pico.set.mouse('window', pos)` — named layer's frame
+    - **pico.set.pencil**: Sets pencil configuration.
+        - `pico.set.pencil (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
+    - **pico.set.scene**: Sets scene configuration.
+        - `pico.set.scene (cfg: { [dim: Dim], [source: Rect], [clip: Rect], [target: Rect], [tile: Tile], [clear: boolean] })`
+        - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
+        - `clear`: when true, the layer auto-clears each frame
+    - **pico.set.video**: Sets video frame.
+        - `pico.set.video (name: string, frame: integer) -> boolean`
+    - **pico.set.window**: Sets window configuration.
+        - `pico.set.window (cfg: { [fullscreen: boolean], [show: boolean], [title: string] })`
 - **pico.vs**
     - Collision checks.
       Each side has the canonical shape `(Lx, vx)` where `Lx` is the
