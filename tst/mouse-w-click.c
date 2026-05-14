@@ -31,8 +31,8 @@ int main (void) {
        in pct (world's coords via mouse->pct) confirms inside btn; mark
        the position with a green pixel drawn in world (composited 5x to
        window). */
-    pico_set_mouse((Pico_Rel_Pos){ '%', {0.8, 0.76}, PICO_ANCHOR_NW });
-    Pico_Mouse pct = pico_get_mouse('%', NULL);
+    pico_set_mouse(NULL, (Pico_Rel_Pos){ '%', {0.8, 0.76}, PICO_ANCHOR_NW });
+    Pico_Mouse pct = pico_get_mouse(NULL, '%');
     Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW };
     assert(pico_vs_pos_rect(NULL, &pos, NULL, &btn_in_r));
 

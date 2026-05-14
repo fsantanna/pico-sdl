@@ -4,7 +4,7 @@
 // helper: window-pixel mouse set (NW anchor)
 static void mouse_w (int x, int y) {
     const char* old = pico_set_layer("window");
-    pico_set_mouse((Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
+    pico_set_mouse(NULL, (Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
     pico_set_layer(old);
 }
 
@@ -68,7 +68,7 @@ int main (void) {
     {
         puts("mouse tile (1,1)");
         mouse_w(0, 0);
-        Pico_Mouse pos = pico_get_mouse('#', NULL);
+        Pico_Mouse pos = pico_get_mouse(NULL, '#');
         assert(pos.x==1 && pos.y==1);
     }
 
@@ -77,7 +77,7 @@ int main (void) {
     {
         puts("mouse tile (2,2)");
         mouse_w(40, 40);
-        Pico_Mouse pos = pico_get_mouse('#', NULL);
+        Pico_Mouse pos = pico_get_mouse(NULL, '#');
         assert(pos.x==2 && pos.y==2);
     }
 
@@ -85,7 +85,7 @@ int main (void) {
     {
         puts("mouse tile (3,4)");
         mouse_w(80, 120);
-        Pico_Mouse pos = pico_get_mouse('#', NULL);
+        Pico_Mouse pos = pico_get_mouse(NULL, '#');
         assert(pos.x==3 && pos.y==4);
     }
 

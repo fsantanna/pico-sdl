@@ -544,10 +544,11 @@ const char* pico_set_layer (const char* key);
 /// @brief Warps the mouse cursor to the given relative position.
 /// Symmetric to @ref pico_get_mouse: a Pos returned by `pico_get_mouse`
 /// (any mode) round-trips through `pico_set_mouse`.
+/// @param layer layer name; NULL = cur. `pos` is interpreted in `layer`'s frame.
 /// @param pos target position; `pos->mode` is one of '!' pixels,
 ///        '%' percentage, '#' tiles.
 /// @sa pico_get_mouse
-void pico_set_mouse (Pico_Rel_Pos pos);
+void pico_set_mouse (const char* layer, Pico_Rel_Pos pos);
 
 /// @brief Sets the entire effect state of the current layer.
 /// @param effect new effect state

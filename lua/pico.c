@@ -997,9 +997,17 @@ static int l_set_layer (lua_State* L) {
 }
 
 static int l_set_mouse (lua_State* L) {
-    luaL_checktype(L, 1, LUA_TTABLE);          // pos
-    Pico_Rel_Pos pos = C_rel_pos(L, 1);
-    pico_set_mouse(pos);
+    const char* layer = NULL;
+    int pos_idx = 1;
+    if (lua_isstring(L, 1)) {
+        layer = lua_tostring(L, 1);
+        pos_idx = 2;
+    } else if (lua_isnil(L, 1)) {
+        pos_idx = 2;
+    }
+    luaL_checktype(L, pos_idx, LUA_TTABLE);    // pos
+    Pico_Rel_Pos pos = C_rel_pos(L, pos_idx);
+    pico_set_mouse(layer, pos);
     return 0;
 }
 
