@@ -171,7 +171,11 @@ static SDL_FRect _sdl_rect (
 // _rel_*: float (logical coords) -> rel
 ///////////////////////////////////////////////////////////////////////////////
 
-static void _rel_dim (SDL_FDim flt, Pico_Rel_Dim* to, const Pico_Abs_Rect* base) {
+static void _rel_dim (
+    SDL_FDim flt,
+    Pico_Rel_Dim* to,
+    const Pico_Abs_Rect* base
+) {
     switch (to->mode) {
         case '!':
             to->w = flt.w;
@@ -197,7 +201,11 @@ static void _rel_dim (SDL_FDim flt, Pico_Rel_Dim* to, const Pico_Abs_Rect* base)
     }
 }
 
-static void _rel_pos (SDL_FPoint flt, Pico_Rel_Pos* to, const Pico_Abs_Rect* base) {
+static void _rel_pos (
+    SDL_FPoint flt,
+    Pico_Rel_Pos* to,
+    const Pico_Abs_Rect* base
+) {
     SDL_FPoint p;
     if (base == NULL) {
         p = (SDL_FPoint) { 0, 0 };
@@ -229,7 +237,11 @@ static void _rel_pos (SDL_FPoint flt, Pico_Rel_Pos* to, const Pico_Abs_Rect* bas
     }
 }
 
-static void _rel_rect (SDL_FRect flt, Pico_Rel_Rect* to, const Pico_Abs_Rect* base) {
+static void _rel_rect (
+    SDL_FRect flt,
+    Pico_Rel_Rect* to,
+    const Pico_Abs_Rect* base
+) {
     SDL_FPoint p;
     if (base == NULL) {
         p = (SDL_FPoint) { 0, 0 };
