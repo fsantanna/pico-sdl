@@ -1213,6 +1213,7 @@ static int l_layer_empty (lua_State* L) {
 
     char m = L_realm_opt(L);
     if (!m) m = '!';
+
     const char* up = lua_tostring(L, 2);
     const char* me = luaL_checkstring(L, 3);
 
@@ -1224,7 +1225,7 @@ static int l_layer_empty (lua_State* L) {
     Pico_Rel_Dim dim = C_rel_dim(L, 5);
 
     int ok = 0;
-    Pico_Rel_Rect tgt;
+    Pico_Rel_Rect dst;
 
     int n = lua_gettop(L);
     if (n == 5) {
@@ -1232,7 +1233,7 @@ static int l_layer_empty (lua_State* L) {
         if (L_is_rect(L, 5)) {
             // [m] | up | me | clear | Rect
             ok = 1;
-            tgt = C_rel_rect(L, 5);
+            dst = C_rel_rect(L, 5);
         } else {
             // [m] | up | me | clear | Dim
         }
@@ -1247,13 +1248,13 @@ static int l_layer_empty (lua_State* L) {
         pico_layer_empty_mode(m, up, me, clear, dim, &tile);
         if (n >= 7) {
             ok = 1;
-            tgt = C_rel_rect(L, 7);
+            dst = C_rel_rect(L, 7);
         }
     }
 
     if (ok) {
         const char* old = pico_set_layer(me);
-        pico_set_scene_dst(tgt);
+        pico_set_scene_dst(dst);
         pico_set_layer(old);
     }
 
@@ -1261,37 +1262,63 @@ static int l_layer_empty (lua_State* L) {
 }
 
 static int l_layer_image (lua_State* L) {
+    // [m] | up | [me] | path | [Rect]
     char m = L_realm_opt(L);
-    const char* up = lua_isnil(L, 2) ? NULL : luaL_checkstring(L, 2);
-    const char* key;
-    const char* path;
+
     if (lua_isstring(L, 4)) {
-        key  = luaL_checkstring(L, 3);
-        path = luaL_checkstring(L, 4);
+        // [m] | up | me | path | [Rect]
         if (!m) m = '!';
     } else {
-        key  = NULL;
-        path = luaL_checkstring(L, 3);
+        // [m] | up | path | [Rect]
         if (!m) m = '=';
+        lua_pushnil(L);
+        assert(lua_gettop(L) >= 3);
+        lua_insert(L, 3);               // [m] | up | nil | path | [Rect]
     }
-    pico_layer_image_mode(m, up, key, path);
-    L_opt_target(L, 5, key);
+    // [m] | up | [me] | path | [Rect]
+
+    const char* up = lua_tostring(L, 2);
+    const char* me = lua_tostring(L, 3);
+    const char* f  = luaL_checkstring(L, 4);
+
+    if (me == NULL) {
+        me = f;
+    }
+
+    pico_layer_image_mode(m, up, me, f);
+
+    if (lua_gettop(L) >= 5) {
+        Pico_Rel_Rect dst = C_rel_rect(L, 5);
+        const char* old = pico_set_layer(me);
+        pico_set_scene_dst(dst);
+        pico_set_layer(old);
+    }
+
     return 0;
 }
 
 static int l_layer_pixmap (lua_State* L) {
+    // [m] | up | me | pix | [Rect]
     char m = L_realm_opt(L);
     if (!m) m = '!';
-    const char* up = lua_isnil(L, 2) ? NULL : luaL_checkstring(L, 2);
-    const char* key = luaL_checkstring(L, 3);
-    luaL_checktype(L, 4, LUA_TTABLE);
 
+    const char* up = lua_tostring(L, 2);
+    const char* me = luaL_checkstring(L, 3);
+
+    luaL_checktype(L, 4, LUA_TTABLE);
     Pico_Abs_Dim dim = C_pixmap_dim(L, 4);
     Pico_Color buf[dim.h][dim.w];
     C_pixmap_fill(L, 4, dim, (Pico_Color*)buf);
 
-    pico_layer_pixmap_mode(m, up, key, dim, (Pico_Color*)buf);
-    L_opt_target(L, 5, key);
+    pico_layer_pixmap_mode(m, up, me, dim, (Pico_Color*)buf);
+
+    if (lua_gettop(L) >= 5) {
+        Pico_Rel_Rect dst = C_rel_rect(L, 5);
+        const char* old = pico_set_layer(me);
+        pico_set_scene_dst(dst);
+        pico_set_layer(old);
+    }
+
     return 0;
 }
 
