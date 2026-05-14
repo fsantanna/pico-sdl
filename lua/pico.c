@@ -56,17 +56,21 @@ static char C_mode_t (lua_State* L, int i, int asr) {
     return mode;
 }
 
-// Optional mode-string at arg i. Returns the mode char if arg i is a
-// valid Pos/Rect/Dim mode string ('!', '%', '#'), '\0' if arg i is
-// not a string. Errors on a string with an invalid mode.
-static char C_mode_s_opt (lua_State* L, int i) {
+// Optional mode-string at arg i.
+// - returns mode char if ('!', '%', '#')
+// - error or '\0', otherwise
+static char C_mode_s_opt (lua_State* L, int asr, int i) {
     if (!lua_isstring(L, i)) {
         return '\0';
     }
     size_t len;
     const char* s = lua_tolstring(L, i, &len);
     if (len!=1 || (s[0]!='!' && s[0]!='%' && s[0]!='#')) {
-        luaL_error(L, "invalid mode '%s': expected '!', '%%', or '#'", s);
+        if (asr) {
+            luaL_error(L, "invalid mode '%s': expected '!', '%%', or '#'", s);
+        } else {
+            return '\0';
+        }
     }
     return s[0];
 }
@@ -468,16 +472,14 @@ static const int CV_TYPES[4] = {
     1 << LUA_TTABLE,
 };
 
-// If arg 1 is a single mode char ('!','%','#'), insert a nil at
-// position 1 so args_parse treats it as `to_or_mode`, not `L_to`.
-static void _shift_if_mode (lua_State* L) {
-    if (lua_gettop(L)>=1 && lua_type(L,1)==LUA_TSTRING) {
-        size_t len;
-        const char* s = lua_tolstring(L, 1, &len);
-        if (len == 1 && (s[0] == '!' || s[0] == '%' || s[0] == '#')) {
-            lua_pushnil(L);
-            lua_insert(L, 1);
-        }
+// L expects optional layer at index 1, otherwise insert nil there.
+// Need to distinguish layer from mode.
+static void _layer_opt_mode (lua_State* L) {
+    int t = lua_type(L, 1);
+    int has = (t == LUA_TNIL) || (t==LUA_TSTRING && C_mode_s_opt(L,0,1)=='\0');
+    if (!has) {
+        lua_pushnil(L);
+        lua_insert(L, 1);
     }
 }
 
@@ -487,7 +489,7 @@ static void _shift_if_mode (lua_State* L) {
 
 static int l_cv_pos (lua_State* L) {
     int idx[4];
-    _shift_if_mode(L);
+    _layer_opt_mode(L);
     args_parse(L, idx, CV_TYPES, "cv");
     if (idx[1] == 0 || idx[3] == 0) {
         return luaL_error(L, "cv.pos: to_or_mode and fr are required");
@@ -496,7 +498,7 @@ static int l_cv_pos (lua_State* L) {
     const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
     Pico_Rel_Pos fr = C_rel_pos(L, idx[3]);
     if (lua_type(L, idx[1]) == LUA_TSTRING) {
-        char m = C_mode_s_opt(L, idx[1]);
+        char m = C_mode_s_opt(L, 1, idx[1]);
         Pico_Rel_Pos to = { .mode=m, .anchor=PICO_ANCHOR_C };
         pico_cv_pos(L_to, &to, L_fr, &fr);
         L_push_rel_pos(L, &to);
@@ -518,7 +520,7 @@ static int l_cv_pos (lua_State* L) {
 
 static int l_cv_rect (lua_State* L) {
     int idx[4];
-    _shift_if_mode(L);
+    _layer_opt_mode(L);
     args_parse(L, idx, CV_TYPES, "cv");
     if (idx[1] == 0 || idx[3] == 0) {
         return luaL_error(L, "cv.rect: to_or_mode and fr are required");
@@ -527,7 +529,7 @@ static int l_cv_rect (lua_State* L) {
     const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
     Pico_Rel_Rect fr = C_rel_rect(L, idx[3]);
     if (lua_type(L, idx[1]) == LUA_TSTRING) {
-        char m = C_mode_s_opt(L, idx[1]);
+        char m = C_mode_s_opt(L, 1, idx[1]);
         Pico_Rel_Rect to = { .mode=m, .anchor=PICO_ANCHOR_C };
         pico_cv_rect(L_to, &to, L_fr, &fr);
         L_push_rel_rect(L, &to);
@@ -553,7 +555,7 @@ static int l_cv_rect (lua_State* L) {
 
 static int l_cv_dim (lua_State* L) {
     int idx[4];
-    _shift_if_mode(L);
+    _layer_opt_mode(L);
     args_parse(L, idx, CV_TYPES, "cv");
     if (idx[1] == 0 || idx[3] == 0) {
         return luaL_error(L, "cv.dim: to_or_mode and fr are required");
@@ -562,7 +564,7 @@ static int l_cv_dim (lua_State* L) {
     const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
     Pico_Rel_Dim fr = C_rel_dim(L, idx[3]);
     if (lua_type(L, idx[1]) == LUA_TSTRING) {
-        char m = C_mode_s_opt(L, idx[1]);
+        char m = C_mode_s_opt(L, 1, idx[1]);
         Pico_Rel_Dim to = { .mode=m };
         pico_cv_dim(L_to, &to, L_fr, &fr);
         L_push_rel_dim(L, &to);
@@ -784,24 +786,19 @@ static int l_get_layer (lua_State* L) {
 }
 
 static int l_get_mouse (lua_State* L) {     // [lay] | (mode|pos)
-    // single mode char OR Pos table at arg 1 -> shift nil in front
-    _shift_if_mode(L);
-    if (lua_gettop(L) >= 1 && lua_type(L, 1) == LUA_TTABLE) {
-        lua_pushnil(L);
-        lua_insert(L, 1);
-    }
-    const char* layer = lua_isnil(L, 1) ? NULL : luaL_checkstring(L, 1);
-    Pico_Rel_Pos tmpl;
-    if (lua_type(L, 2) == LUA_TSTRING) {
-        char m = C_mode_s_opt(L, 2);
-        tmpl = (Pico_Rel_Pos) { .mode=m, .anchor=PICO_ANCHOR_C };
+    _layer_opt_mode(L);
+    const char* layer = lua_tostring(L, 1);
+    char m = C_mode_s_opt(L, 1, 2);
+    Pico_Rel_Pos pos;
+    if (m != '\0') {
+        pos = (Pico_Rel_Pos) { .mode=m, .anchor=PICO_ANCHOR_C };
     } else {
-        tmpl = (Pico_Rel_Pos) {
-            .mode = C_mode_t(L, 2, 1),
+        pos = (Pico_Rel_Pos) {
+            .mode   = C_mode_t(L, 2, 1),
             .anchor = C_anchor(L, 2),
         };
     }
-    Pico_Mouse mouse = pico_get_mouse(layer, &tmpl);
+    Pico_Mouse mouse = pico_get_mouse(layer, &pos);
     lua_newtable(L);                            // ... | mouse
     L_set_mouse(L, lua_gettop(L), &mouse);
     return 1;                                   // ... | *mouse*
