@@ -1652,9 +1652,9 @@ static const luaL_Reg ll_all[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_cv[] = {
+    { "dim",  l_cv_dim  },
     { "pos",  l_cv_pos  },
     { "rect", l_cv_rect },
-    { "dim",  l_cv_dim  },
     { NULL, NULL }
 };
 
