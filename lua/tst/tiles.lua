@@ -66,30 +66,42 @@ do
 end
 
 -- Test 5: mouse position in tile mode
+-- helper: each call site is exercised in both forms
+--   * table form `{'#', anchor='NW'}` — preserves legacy NW numbers
+--   * mode-string form — new C-anchor default; result shifted by -0.5
+--     per axis in tile units (for '#': `flt/tile + 1 - anchor.x`)
+
 -- phy (0,0) -> log (0,0) -> tile (1,1)
 do
     print("mouse tile (1,1)")
     mouse_w(0, 0)
+    local pos = pico.get.mouse({'#', anchor='NW'})
+    assert(pos.x==1 and pos.y==1)
+    local pos = pico.get.mouse(nil, {'#', anchor='NW'})
+    assert(pos.x==1 and pos.y==1)
     local pos = pico.get.mouse('#')
-    assert(pos.x==1 and pos.y==1)
-    local pos = pico.get.mouse(nil, '#')
-    assert(pos.x==1 and pos.y==1)
+    assert(pos.anchor.x==0.5 and pos.anchor.y==0.5)
+    assert(pos.x==0.5 and pos.y==0.5)
 end
 
 -- phy (40,40) -> log (4,4) -> tile (2,2)
 do
     print("mouse tile (2,2)")
     mouse_w(40, 40)
-    local pos = pico.get.mouse('#')
+    local pos = pico.get.mouse({'#', anchor='NW'})
     assert(pos.x==2 and pos.y==2)
+    local pos = pico.get.mouse('#')
+    assert(pos.x==1.5 and pos.y==1.5)
 end
 
 -- phy (80,120) -> log (8,12) -> tile (3,4)
 do
     print("mouse tile (3,4)")
     mouse_w(80, 120)
-    local pos = pico.get.mouse('#')
+    local pos = pico.get.mouse({'#', anchor='NW'})
     assert(pos.x==3 and pos.y==4)
+    local pos = pico.get.mouse('#')
+    assert(pos.x==2.5 and pos.y==3.5)
 end
 
 pico.init(false)
