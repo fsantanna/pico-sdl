@@ -21,6 +21,13 @@ do
     assert(ret[1] == '%')
     local abs = pico.cv.pos(nil, '!', nil, ret)
     assert(abs.x==20.5 and abs.y==20.5)
+
+    local out   = {'!', x=20, y=20, w=60, h=60}
+    local child = {'%', x=0.5, y=0.5}
+    local ret = pico.xin.pos(out, child)
+    assert(ret[1] == '%')
+    local abs = pico.cv.pos({'!',anchor='NW'}, ret)
+    assert(abs.x==20 and abs.y==20)
 end
 
 print "pico.xin.dim smoke"

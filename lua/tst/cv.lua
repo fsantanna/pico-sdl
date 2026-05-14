@@ -180,6 +180,11 @@ do
     print('', "pos with '!'")
     local out = pico.cv.pos('window', '!', nil, {'!', x=50, y=50})
     assert(out and out.x==248 and out.y==248 and out[1]=='!')
+    local out = pico.cv.pos('window', '!', {'!', x=50, y=50})
+    assert(out and out.x==248 and out.y==248 and out[1]=='!')
+
+    local out = pico.cv.pos('window', {'!', anchor='NW'}, {'!', x=50, y=50, anchor='NW'})
+    assert(out and out.x==250 and out.y==250 and out[1]=='!')
 
     print('', "rect with '%'")
     local out = pico.cv.rect('%', 'window', {'!', x=250, y=250, w=50, h=50, anchor='NW'})

@@ -238,7 +238,7 @@ Pico_Rel_Dim pico_in_dim (Pico_Rel_Rect out, Pico_Rel_Dim in) {
 static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
     const char* L_name = (layer == NULL) ? G.layer->name : layer;
     Pico_Layer* root = _root_of(_pico_layer_name(L_name));
-    Pico_Rel_Pos out = {'!', {0, 0}, PICO_ANCHOR_NW};
+    Pico_Rel_Pos out = {'!', {0, 0}, PICO_ANCHOR_C};
     pico_cv_pos(root->name, &out, L_name, p);
     return out;
 }
@@ -249,7 +249,7 @@ static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
     const char* L_name = (layer == NULL) ? G.layer->name : layer;
     Pico_Layer* L = _pico_layer_name(L_name);
     Pico_Layer* root = _root_of(L);
-    Pico_Rel_Rect out = {'!', {0, 0, 0, 0}, PICO_ANCHOR_NW};
+    Pico_Rel_Rect out = {'!', {0, 0, 0, 0}, PICO_ANCHOR_C};
 
     if (r == NULL) {
         if (L == root) {
@@ -268,7 +268,7 @@ static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
             SDL_FRect filled = _sdl_rect(dst, &Pb, &L->scene.dim);
             dst = (Pico_Rel_Rect){
                 '!', {filled.x, filled.y, filled.w, filled.h},
-                PICO_ANCHOR_NW
+                PICO_ANCHOR_C
             };
         }
         pico_cv_rect(root->name, &out, L->hier.up, &dst);
