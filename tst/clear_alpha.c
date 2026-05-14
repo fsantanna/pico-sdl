@@ -15,7 +15,7 @@ int main (void) {
     pico_output_clear();
 
     // overlay layer: blue clear (semi-transparent), small white rect
-    pico_layer_empty(NULL, "overlay", 1, (Pico_Rel_Dim){'!', {64, 36}}, NULL);
+    pico_layer_empty(NULL, "overlay", 0, (Pico_Rel_Dim){'!', {64, 36}}, NULL);
     pico_set_layer("overlay");
     pico_set_effect_color((Pico_Color){0x00, 0x00, 0xFF, 0x80});
     pico_output_clear();
