@@ -1313,20 +1313,20 @@ static int l_layer_text (lua_State* L) {
 }
 
 static int l_layer_video (lua_State* L) {
-    // [m] | up | [me] | path | Rect
+    // [m] | up | [me] | path | [Rect]
     char m = L_realm_opt(L);
 
     if (lua_isstring(L, 4)) {
-        // [m] | up | me | path | Rect
+        // [m] | up | me | path | [Rect]
         if (!m) m = '!';
     } else {
-        // [m] | up | path | Rect
+        // [m] | up | path | [Rect]
         if (!m) m = '=';
         lua_pushnil(L);
         assert(lua_gettop(L) >= 3);
-        lua_insert(L, 3);               // [m] | up | nil | path | Rect
+        lua_insert(L, 3);               // [m] | up | nil | path | [Rect]
     }
-    // [m] | up | [me] | path | Rect
+    // [m] | up | [me] | path | [Rect]
 
     const char* up = lua_tostring(L, 2);
     const char* me = lua_tostring(L, 3);
