@@ -1136,23 +1136,11 @@ void pico_output_clear (void) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixmap (
-    const char* key,
-    Pico_Abs_Dim dim,
-    const Pico_Color pixmap[],
-    Pico_Rel_Rect rect
-) {
-    _pico_guard();
-    assert(key!=NULL && "layer key required");
-    pico_layer_pixmap_mode('=', NULL, key, dim, pixmap);
-    pico_output_draw_layer(key, &rect);
-}
-
 void pico_output_draw_image (const char* path, Pico_Rel_Rect rect) {
     _pico_guard();
     Pico_Layer* layer = _pico_layer_image('=', NULL, path);
+    Pico_Abs_Dim* orig = (rect.w==0 || rect.h==0) ? &layer->scene.dim : NULL;
     Pico_Rel_Dim rel = { rect.mode, {rect.w, rect.h} };
-    Pico_Abs_Dim* orig = (rel.w==0 || rel.h==0) ? &layer->scene.dim : NULL;
     _sdl_dim(&rel, NULL, orig);
     rect.w = rel.w;
     rect.h = rel.h;
@@ -1228,22 +1216,16 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_rect (Pico_Rel_Rect rect) {
+void pico_output_draw_pixmap (
+    const char* key,
+    Pico_Abs_Dim dim,
+    const Pico_Color pixmap[],
+    Pico_Rel_Rect rect
+) {
     _pico_guard();
-    SDL_SetRenderDrawColor(G.window.ren,
-        G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
-    );
-
-    Pico_Abs_Rect i = _rnd_rect(_sdl_rect(rect, NULL, NULL));
-    switch (G.layer->pencil.style) {
-        case PICO_STYLE_FILL:
-            SDL_RenderFillRect(G.window.ren, &i);
-            break;
-        case PICO_STYLE_STROKE:
-            SDL_RenderDrawRect(G.window.ren, &i);
-            break;
-    }
-    _pico_output_present(0);
+    assert(key!=NULL && "layer key required");
+    pico_layer_pixmap_mode('=', NULL, key, dim, pixmap);
+    pico_output_draw_layer(key, &rect);
 }
 
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
@@ -1274,6 +1256,24 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
     _pico_output_present(0);
 }
 
+void pico_output_draw_rect (Pico_Rel_Rect rect) {
+    _pico_guard();
+    SDL_SetRenderDrawColor(G.window.ren,
+        G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
+    );
+
+    Pico_Abs_Rect i = _rnd_rect(_sdl_rect(rect, NULL, NULL));
+    switch (G.layer->pencil.style) {
+        case PICO_STYLE_FILL:
+            SDL_RenderFillRect(G.window.ren, &i);
+            break;
+        case PICO_STYLE_STROKE:
+            SDL_RenderDrawRect(G.window.ren, &i);
+            break;
+    }
+    _pico_output_present(0);
+}
+
 void pico_output_draw_text (const char* text, Pico_Rel_Rect rect) {
     _pico_guard();
     pico_output_draw_text_mode('=', NULL, text, rect);
@@ -1284,17 +1284,20 @@ void pico_output_draw_text_mode (
     const char* text, Pico_Rel_Rect rect
 ) {
     _pico_guard();
+    assert(rect.h != 0);
     if (text[0] == '\0') return;
 
-    assert(rect.h != 0);
-    Pico_Rel_Dim rel_h = { rect.mode, {0, rect.h} };
-    SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
-    int height = (int)fd_h.h;
-    Pico_Layer* layer = _pico_layer_text(mode, key, height, text);
+    SDL_FDim dim = _sdl_dim (
+        &(Pico_Rel_Dim){ rect.mode, {0, rect.h} }, NULL, NULL
+    );
+
+    Pico_Layer* layer = _pico_layer_text(mode, key, dim.h, text);
+    Pico_Abs_Dim* orig = (rect.w == 0) ? &layer->scene.dim : NULL;
+
     Pico_Rel_Dim rel = { rect.mode, {rect.w, rect.h} };
-    Pico_Abs_Dim* orig = (rel.w == 0) ? &layer->scene.dim : NULL;
     _sdl_dim(&rel, NULL, orig);
     rect.w = rel.w;
+
     _pico_output_draw_layer(layer, &rect);
 }
 
@@ -1361,10 +1364,8 @@ static void _pico_output_present (int force) {
 
     // restore current layer's render target + clip
     SDL_SetRenderTarget(G.window.ren, G.layer->tex);
-    {
-        Pico_Abs_Rect r = _rnd_rect(_sdl_rect(G.layer->scene.clip, NULL, NULL));
-        SDL_RenderSetClipRect(G.window.ren, &r);
-    }
+    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(G.layer->scene.clip, NULL, NULL));
+    SDL_RenderSetClipRect(G.window.ren, &r);
 }
 
 void pico_output_present (void) {
@@ -1402,17 +1403,12 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect) {
     _pico_guard();
     Pico_Layer* L = G.layer;
-    Pico_Abs_Rect ri;
-    if (rect == NULL) {
-        ri = (Pico_Abs_Rect){0, 0, L->scene.dim.w, L->scene.dim.h};
-    } else {
-        ri = _rnd_rect(_sdl_rect(*rect, NULL, NULL));
-    }
+    Pico_Abs_Rect ri = (rect == NULL)
+        ? (Pico_Abs_Rect){0, 0, L->scene.dim.w, L->scene.dim.h}
+        : _rnd_rect(_sdl_rect(*rect, NULL, NULL));
 
-    const char* ret;
-    if (path != NULL) {
-        ret = path;
-    } else {
+    const char* ret = path;
+    if (path == NULL) {
         static char _path_[32] = "";
         time_t ts = time(NULL);
         struct tm* ti = localtime(&ts);
