@@ -1178,24 +1178,13 @@ static char L_realm_opt (lua_State* L) {
     return m;
 }
 
-// If slot `i` holds a Rect (table with `x` field), set layer `key`'s
-// scene.target to it. No-op otherwise. Preserves the current layer.
-static void L_opt_target (lua_State* L, int i, const char* key) {
-    if (!lua_istable(L, i)) {       // . | t?
-        return;
+static void L_opt_dst (lua_State* L, int i, const char* me) {
+    if (lua_gettop(L) >= i) {
+        Pico_Rel_Rect dst = C_rel_rect(L, i);
+        const char* old = pico_set_layer(me);
+        pico_set_scene_dst(dst);
+        pico_set_layer(old);
     }
-
-    lua_getfield(L, i, "x");        // . | t | t.x
-    int no = lua_isnil(L, -1);
-    lua_pop(L, 1);                  // . | t
-    if (no) {
-        return;
-    }
-
-    Pico_Rel_Rect tgt = C_rel_rect(L, i);
-    const char* old = pico_set_layer(key);
-    pico_set_scene_dst(tgt);
-    pico_set_layer(old);
 }
 
 // True if table at idx i has a non-nil `x` field (Rect-shaped).
@@ -1286,14 +1275,7 @@ static int l_layer_image (lua_State* L) {
     }
 
     pico_layer_image_mode(m, up, me, f);
-
-    if (lua_gettop(L) >= 5) {
-        Pico_Rel_Rect dst = C_rel_rect(L, 5);
-        const char* old = pico_set_layer(me);
-        pico_set_scene_dst(dst);
-        pico_set_layer(old);
-    }
-
+    L_opt_dst(L, 5, me);
     return 0;
 }
 
@@ -1311,14 +1293,7 @@ static int l_layer_pixmap (lua_State* L) {
     C_pixmap_fill(L, 4, dim, (Pico_Color*)buf);
 
     pico_layer_pixmap_mode(m, up, me, dim, (Pico_Color*)buf);
-
-    if (lua_gettop(L) >= 5) {
-        Pico_Rel_Rect dst = C_rel_rect(L, 5);
-        const char* old = pico_set_layer(me);
-        pico_set_scene_dst(dst);
-        pico_set_layer(old);
-    }
-
+    L_opt_dst(L, 5, me);
     return 0;
 }
 
@@ -1333,14 +1308,7 @@ static int l_layer_text (lua_State* L) {
     const char* text = luaL_checkstring(L, 5);
 
     pico_layer_text_mode(m, up, me, height, text);
-
-    if (lua_gettop(L) >= 6) {
-        Pico_Rel_Rect dst = C_rel_rect(L, 6);
-        const char* old = pico_set_layer(me);
-        pico_set_scene_dst(dst);
-        pico_set_layer(old);
-    }
-
+    L_opt_dst(L, 6, me);
     return 0;
 }
 
@@ -1369,14 +1337,7 @@ static int l_layer_video (lua_State* L) {
     }
 
     pico_layer_video_mode(m, up, me, f);
-
-    if (lua_gettop(L) >= 5) {
-        Pico_Rel_Rect dst = C_rel_rect(L, 5);
-        const char* old = pico_set_layer(me);
-        pico_set_scene_dst(dst);
-        pico_set_layer(old);
-    }
-
+    L_opt_dst(L, 5, me);
     return 0;
 }
 
@@ -1392,14 +1353,7 @@ static int l_layer_sub (lua_State* L) {
     Pico_Rel_Rect crop = C_rel_rect(L, 5);
 
     pico_layer_sub_mode(m, up, me, sup, &crop);
-
-    if (lua_gettop(L) >= 6) {
-        Pico_Rel_Rect dst = C_rel_rect(L, 6);
-        const char* old = pico_set_layer(me);
-        pico_set_scene_dst(dst);
-        pico_set_layer(old);
-    }
-
+    L_opt_dst(L, 6, me);
     return 0;
 }
 
