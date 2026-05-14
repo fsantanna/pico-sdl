@@ -13,12 +13,21 @@ static Pico_Layer* _root_of (Pico_Layer* L) {
 
 // Root-mediated walk: fromL → root → toL.
 // fromL and toL must share a root (typically window).
-static void _cv_walk_pos  (Pico_Rel_Pos*  to, const Pico_Rel_Pos*  fr,
-                           Pico_Layer* fromL, Pico_Layer* toL);
-static void _cv_walk_rect (Pico_Rel_Rect* to, const Pico_Rel_Rect* fr,
-                           Pico_Layer* fromL, Pico_Layer* toL);
-static void _cv_walk_dim  (Pico_Rel_Dim*  to, const Pico_Rel_Dim*  fr,
-                           Pico_Layer* fromL, Pico_Layer* toL);
+
+static void _cv_walk_dim (
+    Pico_Layer* L_to, Pico_Rel_Dim*  to,
+    Pico_Layer* L_fr, const Pico_Rel_Dim*  fr
+);
+
+static void _cv_walk_pos (
+    Pico_Layer* L_to, Pico_Rel_Pos*  to,
+    Pico_Layer* L_fr, const Pico_Rel_Pos*  fr
+);
+
+static void _cv_walk_rect (
+    Pico_Layer* L_to, Pico_Rel_Rect* to,
+    Pico_Layer* L_fr, const Pico_Rel_Rect* fr
+);
 
 // Public unified cv: project fr (in L_fr) into to (in L_to).
 // L_fr / L_to == NULL means cur. Layers must share a root.
@@ -29,7 +38,7 @@ void pico_cv_dim (
     _pico_guard();
     Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
     Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
-    _cv_walk_dim(to, fr, S, T);
+    _cv_walk_dim(T, to, S, fr);
 }
 
 void pico_cv_pos (
@@ -39,7 +48,7 @@ void pico_cv_pos (
     _pico_guard();
     Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
     Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
-    _cv_walk_pos(to, fr, S, T);
+    _cv_walk_pos(T, to, S, fr);
 }
 
 void pico_cv_rect (
@@ -49,21 +58,67 @@ void pico_cv_rect (
     _pico_guard();
     Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
     Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
-    _cv_walk_rect(to, fr, S, T);
+    _cv_walk_rect(T, to, S, fr);
+}
+
+static void _cv_walk_dim (
+    Pico_Layer* L_to, Pico_Rel_Dim* to,
+    Pico_Layer* L_fr, const Pico_Rel_Dim* fr
+) {
+    Pico_Abs_Rect base = {0, 0, L_fr->scene.dim.w, L_fr->scene.dim.h};
+    Pico_Rel_Dim fr_copy = *fr;
+    SDL_FDim d = _sdl_dim(&fr_copy, &base, NULL);
+    if (L_fr == L_to) {
+        _rel_dim(d, to, &base);
+        return;
+    }
+    Pico_Layer* L = L_fr;
+    while (L->hier.up != NULL) {
+        Pico_Layer* P = _pico_layer_name(L->hier.up);
+        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+        SDL_FRect src = _sdl_rect(L->scene.src, &base, NULL);
+        SDL_FRect dst = _sdl_rect(L->scene.dst, &Pb, NULL);
+        d.w = d.w * dst.w / src.w;
+        d.h = d.h * dst.h / src.h;
+        L = P;
+        base = Pb;
+    }
+    Pico_Layer* chain[64];
+    int n = 0;
+    Pico_Layer* M = L_to;
+    while (M->hier.up != NULL) {
+        assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
+        chain[n++] = M;
+        M = _pico_layer_name(M->hier.up);
+    }
+    chain[n++] = M;
+    pico_assert(M == L && "cv: layers must share a root");
+    for (int i = n-2; i >= 0; i--) {
+        Pico_Layer* C = chain[i];
+        Pico_Layer* P = chain[i+1];
+        Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
+        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+        SDL_FRect dst = _sdl_rect(C->scene.dst, &Pb, NULL);
+        SDL_FRect src = _sdl_rect(C->scene.src, &Cb, NULL);
+        d.w = d.w * src.w / dst.w;
+        d.h = d.h * src.h / dst.h;
+    }
+    Pico_Abs_Rect toBase = {0, 0, L_to->scene.dim.w, L_to->scene.dim.h};
+    _rel_dim(d, to, &toBase);
 }
 
 static void _cv_walk_pos (
-    Pico_Rel_Pos* to, const Pico_Rel_Pos* fr,
-    Pico_Layer* fromL, Pico_Layer* toL
+    Pico_Layer* L_to, Pico_Rel_Pos* to,
+    Pico_Layer* L_fr, const Pico_Rel_Pos* fr
 ) {
-    Pico_Abs_Rect base = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+    Pico_Abs_Rect base = {0, 0, L_fr->scene.dim.w, L_fr->scene.dim.h};
     SDL_FPoint p = _sdl_pos(*fr, &base);
-    if (fromL == toL) {
+    if (L_fr == L_to) {
         _rel_pos(p, to, &base);
         return;
     }
-    // 1) walk fromL up to root, accumulating src->dst per step.
-    Pico_Layer* L = fromL;
+    // 1) walk L_fr up to root, accumulating src->dst per step.
+    Pico_Layer* L = L_fr;
     while (L->hier.up != NULL) {
         Pico_Layer* P = _pico_layer_name(L->hier.up);
         Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
@@ -76,10 +131,10 @@ static void _cv_walk_pos (
         L = P;
         base = Pb;
     }
-    // 2) build chain toL up to root; walk back applying inverse.
+    // 2) build chain L_to up to root; walk back applying inverse.
     Pico_Layer* chain[64];
     int n = 0;
-    Pico_Layer* M = toL;
+    Pico_Layer* M = L_to;
     while (M->hier.up != NULL) {
         assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
         chain[n++] = M;
@@ -99,21 +154,21 @@ static void _cv_walk_pos (
         p.x = src.x + rx * src.w;
         p.y = src.y + ry * src.h;
     }
-    Pico_Abs_Rect toBase = {0, 0, toL->scene.dim.w, toL->scene.dim.h};
+    Pico_Abs_Rect toBase = {0, 0, L_to->scene.dim.w, L_to->scene.dim.h};
     _rel_pos(p, to, &toBase);
 }
 
 static void _cv_walk_rect (
-    Pico_Rel_Rect* to, const Pico_Rel_Rect* fr,
-    Pico_Layer* fromL, Pico_Layer* toL
+    Pico_Layer* L_to, Pico_Rel_Rect* to,
+    Pico_Layer* L_fr, const Pico_Rel_Rect* fr
 ) {
-    Pico_Abs_Rect base = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
+    Pico_Abs_Rect base = {0, 0, L_fr->scene.dim.w, L_fr->scene.dim.h};
     SDL_FRect r = _sdl_rect(*fr, &base, NULL);
-    if (fromL == toL) {
+    if (L_fr == L_to) {
         _rel_rect(r, to, &base);
         return;
     }
-    Pico_Layer* L = fromL;
+    Pico_Layer* L = L_fr;
     while (L->hier.up != NULL) {
         Pico_Layer* P = _pico_layer_name(L->hier.up);
         Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
@@ -130,7 +185,7 @@ static void _cv_walk_rect (
     }
     Pico_Layer* chain[64];
     int n = 0;
-    Pico_Layer* M = toL;
+    Pico_Layer* M = L_to;
     while (M->hier.up != NULL) {
         assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
         chain[n++] = M;
@@ -152,54 +207,8 @@ static void _cv_walk_rect (
         r.w = r.w * sx;
         r.h = r.h * sy;
     }
-    Pico_Abs_Rect toBase = {0, 0, toL->scene.dim.w, toL->scene.dim.h};
+    Pico_Abs_Rect toBase = {0, 0, L_to->scene.dim.w, L_to->scene.dim.h};
     _rel_rect(r, to, &toBase);
-}
-
-static void _cv_walk_dim (
-    Pico_Rel_Dim* to, const Pico_Rel_Dim* fr,
-    Pico_Layer* fromL, Pico_Layer* toL
-) {
-    Pico_Abs_Rect base = {0, 0, fromL->scene.dim.w, fromL->scene.dim.h};
-    Pico_Rel_Dim fr_copy = *fr;
-    SDL_FDim d = _sdl_dim(&fr_copy, &base, NULL);
-    if (fromL == toL) {
-        _rel_dim(d, to, &base);
-        return;
-    }
-    Pico_Layer* L = fromL;
-    while (L->hier.up != NULL) {
-        Pico_Layer* P = _pico_layer_name(L->hier.up);
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect src = _sdl_rect(L->scene.src, &base, NULL);
-        SDL_FRect dst = _sdl_rect(L->scene.dst, &Pb, NULL);
-        d.w = d.w * dst.w / src.w;
-        d.h = d.h * dst.h / src.h;
-        L = P;
-        base = Pb;
-    }
-    Pico_Layer* chain[64];
-    int n = 0;
-    Pico_Layer* M = toL;
-    while (M->hier.up != NULL) {
-        assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
-        chain[n++] = M;
-        M = _pico_layer_name(M->hier.up);
-    }
-    chain[n++] = M;
-    pico_assert(M == L && "cv: layers must share a root");
-    for (int i = n-2; i >= 0; i--) {
-        Pico_Layer* C = chain[i];
-        Pico_Layer* P = chain[i+1];
-        Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect dst = _sdl_rect(C->scene.dst, &Pb, NULL);
-        SDL_FRect src = _sdl_rect(C->scene.src, &Cb, NULL);
-        d.w = d.w * src.w / dst.w;
-        d.h = d.h * src.h / dst.h;
-    }
-    Pico_Abs_Rect toBase = {0, 0, toL->scene.dim.w, toL->scene.dim.h};
-    _rel_dim(d, to, &toBase);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
