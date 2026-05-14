@@ -4,16 +4,16 @@
 int main (void) {
     pico_init(1);
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {160, 160} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {160, 160} });
     pico_set_layer("world");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {16, 16} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {16, 16} });
     pico_output_clear();
     for (int i=0; i<16; i++) {
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_NW }
+            (Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_NW }
         );
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {15-i, i}, PICO_ANCHOR_NW }
+            (Pico_Rel_Pos) { '!', {15-i, i}, PICO_ANCHOR_NW }
         );
         pico_input_delay(10);
         switch (i) {

@@ -7,9 +7,9 @@ int main (void) {
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Keep" });
 
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {640, 360} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {640, 360} });
     pico_set_layer("world");
-    pico_set_scene_dim(&(Pico_Rel_Dim){'!', {64, 36}});
+    pico_set_scene_dim((Pico_Rel_Dim){'!', {64, 36}});
     pico_set_effect_grid(0);
     pico_output_clear();
 
@@ -29,11 +29,11 @@ int main (void) {
     // frame 1: draw red rect on both layers
     pico_set_layer("left");
     pico_set_pencil_color(PICO_COLOR_RED);
-    pico_output_draw_rect(&(Pico_Rel_Rect){'%', {0.5, 0.5, 0.8, 0.8}, PICO_ANCHOR_C});
+    pico_output_draw_rect((Pico_Rel_Rect){'%', {0.5, 0.5, 0.8, 0.8}, PICO_ANCHOR_C});
 
     pico_set_layer("right");
     pico_set_pencil_color(PICO_COLOR_RED);
-    pico_output_draw_rect(&(Pico_Rel_Rect){'%', {0.5, 0.5, 0.8, 0.8}, PICO_ANCHOR_C});
+    pico_output_draw_rect((Pico_Rel_Rect){'%', {0.5, 0.5, 0.8, 0.8}, PICO_ANCHOR_C});
 
     // composite frame 1: both red
     pico_set_layer(old);

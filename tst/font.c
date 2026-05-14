@@ -20,7 +20,7 @@ int main (void) {
     // after pico_in_dim, d is in scene's % frame
     {
         Pico_Rel_Rect up = { '%', {0, 0, 0.5, 0.5}, PICO_ANCHOR_NW };
-        Pico_Rel_Dim d = pico_in_dim(&up, &(Pico_Rel_Dim){ '%', {0, 0.2} });
+        Pico_Rel_Dim d = pico_in_dim(up, (Pico_Rel_Dim){ '%', {0, 0.2} });
         Pico_Abs_Dim r = pico_get_text("ABC", &d);
         assert(r.w==17 && r.h==10);
         assert(d.w==0.17f && d.h==0.1f);
@@ -28,12 +28,12 @@ int main (void) {
 
     {
         Pico_Rel_Rect r = { '!', {10,10, 0,10}, PICO_ANCHOR_NW };
-        pico_output_draw_text("hg - gh", &r);
+        pico_output_draw_text("hg - gh", r);
         _pico_check("font-01");
     }
     {
         Pico_Rel_Rect r = { '%', {0.5,0.5, 0,0.2}, PICO_ANCHOR_C };
-        pico_output_draw_text("hg - gh", &r);
+        pico_output_draw_text("hg - gh", r);
         _pico_check("font-02");
     }
 
@@ -43,12 +43,12 @@ int main (void) {
     pico_set_pencil_font("../res/DejaVuSans.ttf");
     {
         Pico_Rel_Rect r = { '!', {10,10, 0,10}, PICO_ANCHOR_NW };
-        pico_output_draw_text("hg - gh", &r);
+        pico_output_draw_text("hg - gh", r);
         _pico_check("font-03");
     }
     {
         Pico_Rel_Rect r = { '%', {0.5,0.5, 0,0.2}, PICO_ANCHOR_C };
-        pico_output_draw_text("hg - gh", &r);
+        pico_output_draw_text("hg - gh", r);
         _pico_check("font-04");
     }
 

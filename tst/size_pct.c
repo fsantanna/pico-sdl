@@ -15,10 +15,10 @@ int main (void) {
         pico_set_layer("window");
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 1, cur.h * 1} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_set_layer("world");
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         _pico_check("size_pct-01");
     }
     {
@@ -27,10 +27,10 @@ int main (void) {
         pico_set_layer("window");
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_set_layer("world");
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         _pico_check("size_pct-02");
     }
     {
@@ -39,10 +39,10 @@ int main (void) {
         pico_set_layer("window");
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 0.25, cur.h * 0.25} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_set_layer("world");
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         _pico_check("size_pct-03");
     }
     {
@@ -51,10 +51,10 @@ int main (void) {
         pico_set_layer("window");
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_set_layer("world");
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         _pico_check("size_pct-04");
     }
 
@@ -63,14 +63,14 @@ int main (void) {
         puts("full");
         pico_set_window_fs(1);
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         //_pico_check("size_pct-05");
     }
     {
         puts("normal");
         pico_set_window_fs(0);
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         _pico_check("size_pct-06");
     }
 
@@ -81,9 +81,9 @@ int main (void) {
         Pico_Abs_Dim cur;
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 1, cur.h * 1} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         _pico_check("size_pct-07");
     }
     {
@@ -91,9 +91,9 @@ int main (void) {
         Pico_Abs_Dim cur;
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         _pico_check("size_pct-08");
     }
     {
@@ -101,9 +101,9 @@ int main (void) {
         Pico_Abs_Dim cur;
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 0.25, cur.h * 0.25} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         _pico_check("size_pct-09");
     }
     {
@@ -111,9 +111,9 @@ int main (void) {
         Pico_Abs_Dim cur;
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2} };
-        pico_set_scene_dim(&dim);
+        pico_set_scene_dim(dim);
         pico_output_clear();
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         _pico_check("size_pct-10");
     }
 

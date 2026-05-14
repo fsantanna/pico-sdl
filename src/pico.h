@@ -204,22 +204,22 @@ void pico_output_clear (void);
 /// @sa pico_output_draw_image
 void pico_output_draw_pixmap (const char* key, Pico_Abs_Dim dim,
                               const Pico_Color pixmap[],
-                              const Pico_Rel_Rect* rect);
+                              Pico_Rel_Rect rect);
 
 /// @brief Draws an image.
 /// @param path path to the image file
 /// @param rect target position and dimension (mode determines coordinates)
 /// @sa pico_output_draw_pixmap
-void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect);
+void pico_output_draw_image (const char* path, Pico_Rel_Rect rect);
 
 /// @brief Draws a line.
 /// @param p1 first endpoint position (mode determines coordinates)
 /// @param p2 second endpoint position (mode determines coordinates)
-void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2);
+void pico_output_draw_line (Pico_Rel_Pos p1, Pico_Rel_Pos p2);
 
 /// @brief Draws a single pixel.
 /// @param pos drawing position (mode determines coordinates)
-void pico_output_draw_pixel (Pico_Rel_Pos* pos);
+void pico_output_draw_pixel (Pico_Rel_Pos pos);
 
 /// @brief Draws a batch of pixels.
 /// @param n number of positions
@@ -228,22 +228,24 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws a layer onto the current layer.
 /// @param key layer key (must exist)
-/// @param rect target position and dimension (mode determines coordinates)
-void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect);
+/// @param rect target position and dimension (mode determines
+///        coordinates); NULL uses the layer's scene.dst defaults
+///        (full bounds in cur).
+void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw (mode determines coordinates)
-void pico_output_draw_rect (Pico_Rel_Rect* rect);
+void pico_output_draw_rect (Pico_Rel_Rect rect);
 
 /// @brief Draws a triangle.
 /// @param p1 first vertex position (mode determines coordinates)
 /// @param p2 second vertex position (mode determines coordinates)
 /// @param p3 third vertex position (mode determines coordinates)
-void pico_output_draw_tri (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3);
+void pico_output_draw_tri (Pico_Rel_Pos p1, Pico_Rel_Pos p2, Pico_Rel_Pos p3);
 
 /// @brief Draws an ellipse.
 /// @param rect bounding rectangle (mode determines coordinates)
-void pico_output_draw_oval (Pico_Rel_Rect* rect);
+void pico_output_draw_oval (Pico_Rel_Rect rect);
 
 /// @brief Draws a polygon.
 /// @param n number of vertices
@@ -253,7 +255,7 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps);
 /// @brief Draws text (shared caching by text content).
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
-void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect);
+void pico_output_draw_text (const char* text, Pico_Rel_Rect rect);
 
 /// @brief Draws text with explicit realm mode and layer key.
 /// @param mode realm mode ('!' exclusive, '=' shared,
@@ -264,7 +266,7 @@ void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect);
 void pico_output_draw_text_mode (
     int mode,
     const char* key, const char* text,
-    Pico_Rel_Rect* rect
+    Pico_Rel_Rect rect
 );
 
 /// @brief Shows what has been drawn onto the screen.
@@ -277,18 +279,18 @@ void pico_output_present (void);
 /// in non-expert mode.
 void pico_output_draw_layers (void);
 
-/// @brief Takes a screenshot.
-/// @param path screenshot filepath (NULL uses timestamp in the name)
-/// @param rect region to capture (NULL captures full screen)
-/// @return the filepath of the screenshot
-const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect);
-
 /// @brief Draws a video frame (all-in-one).
 /// Auto-syncs to elapsed time internally.
 /// @param path path to the Y4M video file
 /// @param rect target position and dimension
 /// @return 1 if frame drawn, or 0 at EOF
-int pico_output_draw_video (const char* path, Pico_Rel_Rect* rect);
+int pico_output_draw_video (const char* path, Pico_Rel_Rect rect);
+
+/// @brief Takes a screenshot.
+/// @param path screenshot filepath (NULL uses timestamp in the name)
+/// @param rect region to capture (NULL captures full screen)
+/// @return the filepath of the screenshot
+const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file
@@ -305,7 +307,7 @@ void pico_output_sound (const char* path);
 /// @brief Gets the entire pencil state of the current layer.
 /// @param pencil output struct populated with pencil state
 /// @sa pico_set_pencil
-void        pico_get_pencil       (Pico_Layer_Pencil* pencil);
+Pico_Layer_Pencil pico_get_pencil       (void);
 Pico_Color  pico_get_pencil_color (void);
 const char* pico_get_pencil_font  (void);
 PICO_STYLE  pico_get_pencil_style (void);
@@ -330,7 +332,7 @@ const char* pico_get_layer (void);
 /// @brief Gets the entire effect state of the current layer.
 /// @param effect output struct populated with effect state
 /// @sa pico_set_effect
-void          pico_get_effect          (Pico_Layer_Effect* effect);
+Pico_Layer_Effect pico_get_effect          (void);
 unsigned char pico_get_effect_alpha    (void);
 Pico_Color    pico_get_effect_color    (void);
 PICO_FLIP     pico_get_effect_flip     (void);
@@ -459,11 +461,12 @@ void pico_layer_video_mode (int mode,
 Pico_Keyboard pico_get_keyboard (void);
 
 /// @brief Gets the mouse state.
-/// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles)
-/// @param rect optional target rect for inverse transform
-/// @return mouse state with position and button flags
+/// @param layer layer name; NULL = cur
+/// @param pos template: `pos->mode` ('!','%','#') and `pos->anchor` are
+///            read on input; `pos->x` / `pos->y` are filled on output.
+/// @return mouse state (mode + anchor + x/y + buttons) expressed in `layer`'s frame
 /// @sa pico_set_mouse
-Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect);
+Pico_Mouse pico_get_mouse (const char* layer, Pico_Rel_Pos* pos);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds
@@ -507,7 +510,7 @@ Pico_Abs_Dim  pico_get_scene_tile  (void);
 /// @brief Gets the entire window state.
 /// @param win output struct populated with window state
 /// @sa pico_set_window
-void         pico_get_window       (Pico_Window* win);
+Pico_Window  pico_get_window       (void);
 int          pico_get_window_fs    (void);
 int          pico_get_window_show  (void);
 const char*  pico_get_window_title (void);
@@ -518,7 +521,7 @@ const char*  pico_get_window_title (void);
 /// @param dim dimensions for both window and world
 /// @sa pico_set_window
 /// @sa pico_set_scene_dim
-void pico_set_dim (Pico_Rel_Dim* dim);
+void pico_set_dim (Pico_Rel_Dim dim);
 
 /// @brief Sets the entire pencil state of the current layer.
 /// @param pencil new pencil state
@@ -544,10 +547,11 @@ const char* pico_set_layer (const char* key);
 /// @brief Warps the mouse cursor to the given relative position.
 /// Symmetric to @ref pico_get_mouse: a Pos returned by `pico_get_mouse`
 /// (any mode) round-trips through `pico_set_mouse`.
+/// @param layer layer name; NULL = cur. `pos` is interpreted in `layer`'s frame.
 /// @param pos target position; `pos->mode` is one of '!' pixels,
 ///        '%' percentage, '#' tiles.
 /// @sa pico_get_mouse
-void pico_set_mouse (Pico_Rel_Pos* pos);
+void pico_set_mouse (const char* layer, Pico_Rel_Pos pos);
 
 /// @brief Sets the entire effect state of the current layer.
 /// @param effect new effect state
@@ -572,7 +576,7 @@ int pico_set_video (const char* key, int frame);
 /// @sa pico_get_scene
 void pico_set_scene       (Pico_Layer_Scene scene);
 void pico_set_scene_clip  (Pico_Rel_Rect clip);
-void pico_set_scene_dim   (Pico_Rel_Dim* dim);
+void pico_set_scene_dim   (Pico_Rel_Dim dim);
 void pico_set_scene_dst   (Pico_Rel_Rect dst);
 void pico_set_scene_clear (int on);
 void pico_set_scene_src   (Pico_Rel_Rect src);
@@ -592,51 +596,39 @@ void pico_set_window_title (const char* title);
 /// @brief Utilities for users
 /// @{
 
-/// @brief Brings a dimension from a named ancestor's frame into cur.
-void pico_cv_dim_from (
-    const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
+/// @brief Projects a dimension from `L_fr`'s frame into `L_to`'s frame.
+/// Either layer name may be NULL (== cur). Each layer must be cur, an
+/// ancestor, or a descendant of cur via `hier.up`. Siblings (neither
+/// is ancestor of the other) project via cur in two steps.
+/// @param L_to target layer name; NULL = cur
+/// @param to result template (mode set on input); written in L_to's frame
+/// @param L_fr source layer name; NULL = cur
+/// @param fr dimension in L_fr's frame
+void pico_cv_dim (
+    const char* L_to, Pico_Rel_Dim* to,
+    const char* L_fr, const Pico_Rel_Dim* fr
 );
 
-/// @brief Projects a dimension from cur into a named ancestor's frame.
-/// No position component; size scales per src->dst step.
-void pico_cv_dim_to (
-    const char* layer, const Pico_Rel_Dim* fr, Pico_Rel_Dim* to
+/// @brief Projects a position from `L_fr`'s frame into `L_to`'s frame.
+/// Either layer name may be NULL (== cur). Siblings project via cur.
+/// @param L_to target layer name; NULL = cur
+/// @param to result template (mode/anchor set on input); written in L_to
+/// @param L_fr source layer name; NULL = cur
+/// @param fr position in L_fr's frame
+void pico_cv_pos (
+    const char* L_to, Pico_Rel_Pos* to,
+    const char* L_fr, const Pico_Rel_Pos* fr
 );
 
-/// @brief Brings a position from a named ancestor layer's frame into
-/// the current layer's frame. Walks the same `hier.up` chain as
-/// `pico_cv_pos_to` in inverse order. Source must be cur or one of
-/// cur's ancestors via `hier.up`, otherwise asserts and aborts.
-/// @param layer source layer name; NULL = G.layer
-/// @param fr position in source's frame (any mode/anchor)
-/// @param to result template (mode and anchor must be set on input);
-///        written in cur's frame
-void pico_cv_pos_from (
-    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
-);
-
-/// @brief Projects a position from the current layer's logical frame
-/// into a named ancestor layer's frame. Walks `hier.up` from cur up
-/// to the named target, composing each layer's scene.src -> scene.dst
-/// transform. Target must be cur or one of cur's ancestors via
-/// `hier.up`, otherwise asserts and aborts.
-/// @param layer target layer name; NULL = G.layer
-/// @param fr position in cur's frame (any mode/anchor)
-/// @param to result template (mode and anchor must be set on input);
-///        written in target's frame
-void pico_cv_pos_to (
-    const char* layer, const Pico_Rel_Pos* fr, Pico_Rel_Pos* to
-);
-
-/// @brief Brings a rectangle from a named ancestor's frame into cur.
-void pico_cv_rect_from (
-    const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
-);
-
-/// @brief Projects a rectangle from cur into a named ancestor's frame.
-/// Same chain walk as `pico_cv_pos_to`, with size scaled per step.
-void pico_cv_rect_to (
-    const char* layer, const Pico_Rel_Rect* fr, Pico_Rel_Rect* to
+/// @brief Projects a rectangle from `L_fr`'s frame into `L_to`'s frame.
+/// Either layer name may be NULL (== cur). Siblings project via cur.
+/// @param L_to target layer name; NULL = cur
+/// @param to result template (mode/anchor set on input); written in L_to
+/// @param L_fr source layer name; NULL = cur
+/// @param fr rectangle in L_fr's frame
+void pico_cv_rect (
+    const char* L_to, Pico_Rel_Rect* to,
+    const char* L_fr, const Pico_Rel_Rect* fr
 );
 
 /// @brief Composes a child rect onto a parent rect.
@@ -647,24 +639,24 @@ void pico_cv_rect_to (
 /// @param out parent rectangle (relative to current scene)
 /// @param in child rectangle (relative to `out`)
 /// @return flat rectangle, no parent reference needed
-Pico_Rel_Rect pico_in_rect (const Pico_Rel_Rect* out, const Pico_Rel_Rect* in);
+Pico_Rel_Rect pico_in_rect (Pico_Rel_Rect out, Pico_Rel_Rect in);
 
 /// @brief Composes a child position onto a parent rect.
 /// Mode and anchor of `in` are preserved.
 /// @param out parent rectangle (relative to current scene)
 /// @param in child position (relative to `out`)
 /// @return flat position, no parent reference needed
-Pico_Rel_Pos pico_in_pos (const Pico_Rel_Rect* out, const Pico_Rel_Pos* in);
+Pico_Rel_Pos pico_in_pos (Pico_Rel_Rect out, Pico_Rel_Pos in);
 
 /// @brief Composes a child dimension onto a parent rect.
 /// Mode of `in` is preserved.
 /// @param out parent rectangle (relative to current scene)
 /// @param in child dimension (relative to `out`)
 /// @return flat dimension, no parent reference needed
-Pico_Rel_Dim pico_in_dim (const Pico_Rel_Rect* out, const Pico_Rel_Dim* in);
+Pico_Rel_Dim pico_in_dim (Pico_Rel_Rect out, Pico_Rel_Dim in);
 
 /// @brief Checks if two points fall on the same pixel.
-/// Each side can be in cur or in a direct child of cur. Both points
+/// Each side can be in cur or in a descendant of cur. Both points
 /// must be non-NULL. Comparison is on rounded integer pixel values.
 /// @return 1 if rounded (x,y) of p1 equals that of p2, or 0 otherwise
 /// @sa pico_vs_pos_rect
@@ -674,10 +666,10 @@ int pico_vs_pos_pos (
 );
 
 /// @brief Checks if a point is inside a rectangle.
-/// Each side can be expressed in cur (Lx=NULL) or in a layer that is a
-/// direct child of cur (Lx=child name). With L2 set and r2=NULL, the
-/// child layer's bounds (scene.dst in cur) act as the rect. p1 must
-/// not be NULL.
+/// Each side can be expressed in cur (Lx=NULL) or in a descendant of
+/// cur (Lx=layer name). With L2 set and r2=NULL, the named layer's
+/// bounds (scene.dst in its parent) act as the rect. p1 must not be
+/// NULL.
 /// @return 1 if p1 is inside r2, or 0 otherwise
 /// @sa pico_vs_pos_pos pico_vs_rect_rect
 int pico_vs_pos_rect (
@@ -685,10 +677,21 @@ int pico_vs_pos_rect (
     const char* L2, Pico_Rel_Rect* r2
 );
 
+/// @brief Checks if a point is inside a rectangle (mirror of pos_rect).
+/// Equivalent to pico_vs_pos_rect(L2, p2, L1, r1). r1 may be NULL with
+/// L1 set (uses the named layer's bounds) or both NULL (uses cur's
+/// bounds). p2 must not be NULL.
+/// @return 1 if p2 is inside r1, or 0 otherwise
+/// @sa pico_vs_pos_rect
+int pico_vs_rect_pos (
+    const char* L1, Pico_Rel_Rect* r1,
+    const char* L2, Pico_Rel_Pos*  p2
+);
+
 /// @brief Checks if two rectangles overlap.
-/// Each side can be expressed in cur (Lx=NULL) or in a direct child of
-/// cur. With Lx set and the rect NULL, the child layer's bounds act as
-/// the rect for that side.
+/// Each side can be expressed in cur (Lx=NULL) or in a descendant of
+/// cur. With Lx set and the rect NULL, the named layer's bounds act
+/// as the rect for that side.
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_vs_pos_rect
 int pico_vs_rect_rect (

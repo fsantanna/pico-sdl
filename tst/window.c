@@ -55,7 +55,7 @@ int main (void) {
         pico_output_clear();
         pico_set_pencil_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
         pico_output_draw_rect (
-            &(Pico_Rel_Rect){'%', {0.33, 0.33, 0.4, 0.4}, PICO_ANCHOR_C}
+            (Pico_Rel_Rect){'%', {0.33, 0.33, 0.4, 0.4}, PICO_ANCHOR_C}
         );
 
         pico_output_draw_layers();   // expert: compose world onto window.tex

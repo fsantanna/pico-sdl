@@ -92,7 +92,7 @@ int main (void) {
         puts("draw_video: first call");
         pico_output_clear();
         int ok = pico_output_draw_video("video.y4m",
-            &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
+            (Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         assert(ok == 1);
         _pico_check("video-05");

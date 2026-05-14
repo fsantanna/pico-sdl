@@ -140,17 +140,17 @@ static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
     _alloc_empty_t* arg = (_alloc_empty_t*)ctx;
 
     // resolve rel dim against parent's scene.dim
-    // (NULL up -> _sdl_dim falls back to G.layer->scene.dim)
-    Pico_Abs_Rect base, *xbase=NULL;
-    if (arg->up != NULL) {
-        Pico_Layer* par = (Pico_Layer*) realm_get (
-            G.realm, strlen(arg->up)+1, arg->up
-        );
-        assert(par!=NULL && "parent layer does not exist");
-        base  = (Pico_Abs_Rect){ 0, 0, par->scene.dim.w, par->scene.dim.h };
-        xbase = &base;
+    Pico_Abs_Dim dim;
+    if (arg->up == NULL) {
+        // falls back to G.layer->scene.dim
+        dim = _rnd_dim(_sdl_dim(&arg->dim, NULL, NULL));
+    } else {
+        Pico_Layer* par = _pico_layer_name(arg->up);
+        Pico_Abs_Rect base = (Pico_Abs_Rect) {
+            0, 0, par->scene.dim.w, par->scene.dim.h
+        };
+        dim = _rnd_dim(_sdl_dim(&arg->dim, &base, NULL));
     }
-    Pico_Abs_Dim dim = _rnd_dim(_sdl_dim(&arg->dim, xbase, NULL));
 
     if (arg->tile != NULL) {
         dim.w *= arg->tile->w;
@@ -181,7 +181,7 @@ static void* _alloc_layer_image (int n, const void* key, void* ctx) {
 static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
     _alloc_sub_t* c = (_alloc_sub_t*)ctx;
     Pico_Abs_Rect base = {0, 0, c->par->scene.dim.w, c->par->scene.dim.h};
-    Pico_Abs_Rect abs = _rnd_rect(_sdl_rect(&c->crop, &base, NULL));
+    Pico_Abs_Rect abs = _rnd_rect(_sdl_rect(c->crop, &base, NULL));
     Pico_Layer* data = _layer_new (
         0, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
         (const char*)key, c->par->tex,

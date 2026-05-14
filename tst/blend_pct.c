@@ -6,9 +6,9 @@ int main (void) {
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Blend" });
 
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {640, 360} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {640, 360} });
     pico_set_layer("world");
-    pico_set_scene_dim(&(Pico_Rel_Dim){'!', {64, 36}});
+    pico_set_scene_dim((Pico_Rel_Dim){'!', {64, 36}});
 
     {
         puts("image dimming");
@@ -16,7 +16,7 @@ int main (void) {
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color(pico_color_alpha(pico_get_pencil_color(), a));
-            pico_output_draw_image("../res/open.png", &r);
+            pico_output_draw_image("../res/open.png", r);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-01");
@@ -29,7 +29,7 @@ int main (void) {
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color((Pico_Color){255,0,0,a});
-            pico_output_draw_pixel(&p);
+            pico_output_draw_pixel(p);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-02");
@@ -43,8 +43,8 @@ int main (void) {
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color((Pico_Color){255,0,0,a});
-            pico_output_draw_rect(&z);
-            pico_output_draw_text("SOME TEXT", &r);
+            pico_output_draw_rect(z);
+            pico_output_draw_text("SOME TEXT", r);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-03");
@@ -57,7 +57,7 @@ int main (void) {
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color((Pico_Color){255,0,0,a});
-            pico_output_draw_rect(&r);
+            pico_output_draw_rect(r);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-04");
@@ -70,7 +70,7 @@ int main (void) {
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color((Pico_Color){255,0,0,a});
-            pico_output_draw_oval(&r);
+            pico_output_draw_oval(r);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-05");
@@ -85,7 +85,7 @@ int main (void) {
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color((Pico_Color){255,0,0,a});
-            pico_output_draw_tri(&p1, &p2, &p3);
+            pico_output_draw_tri(p1, p2, p3);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-06");
@@ -99,7 +99,7 @@ int main (void) {
         for (int a=255; a>0; a-=5) {
             pico_output_clear();
             pico_set_pencil_color((Pico_Color){255,0,0,a});
-            pico_output_draw_line(&p1, &p2);
+            pico_output_draw_line(p1, p2);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-07");

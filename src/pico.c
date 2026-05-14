@@ -269,9 +269,9 @@ void pico_quit (void) {
 // GET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_get_pencil (Pico_Layer_Pencil* pencil) {
+Pico_Layer_Pencil pico_get_pencil (void) {
     _pico_guard();
-    *pencil = G.layer->pencil;
+    return G.layer->pencil;
 }
 
 Pico_Color pico_get_pencil_color (void) {
@@ -331,26 +331,27 @@ const char* pico_get_layer (void) {
     return G.layer->name;
 }
 
-Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
-    assert(rect == NULL);
+Pico_Mouse pico_get_mouse (const char* layer, Pico_Rel_Pos* pos) {
     _pico_guard();
-    assert((mode=='!' || mode=='%' || mode=='#'));
+    assert((pos->mode=='!' || pos->mode=='%' || pos->mode=='#'));
 
     SDL_Point phy;
     Uint32 masks = SDL_GetMouseState(&phy.x, &phy.y);
 
     Pico_Mouse m = {
-        .mode   = mode,
+        .mode   = pos->mode,
+        .anchor = pos->anchor,
         .left   = !!(masks & SDL_BUTTON(SDL_BUTTON_LEFT)),
         .right  = !!(masks & SDL_BUTTON(SDL_BUTTON_RIGHT)),
         .middle = !!(masks & SDL_BUTTON(SDL_BUTTON_MIDDLE)),
     };
 
-    Pico_Rel_Pos in  = {'!', {phy.x, phy.y}, PICO_ANCHOR_NW};
-    Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW };
-    pico_cv_pos_from("window", &in, &rel);
-    m.x = rel.x;
-    m.y = rel.y;
+    pico_cv_pos (
+        layer, pos, "window",
+        &(Pico_Rel_Pos){'!', {phy.x, phy.y}, PICO_ANCHOR_NW}
+    );
+    m.x = pos->x;
+    m.y = pos->y;
 
     return m;
 }
@@ -360,9 +361,9 @@ Uint32 pico_get_now (void) {
     return SDL_GetTicks();
 }
 
-void pico_get_effect (Pico_Layer_Effect* effect) {
+Pico_Layer_Effect pico_get_effect (void) {
     _pico_guard();
-    *effect = G.layer->effect;
+    return G.layer->effect;
 }
 
 unsigned char pico_get_effect_alpha (void) {
@@ -451,9 +452,9 @@ Pico_Abs_Dim pico_get_scene_tile (void) {
     return G.layer->scene.tile;
 }
 
-void pico_get_window (Pico_Window* win) {
+Pico_Window pico_get_window (void) {
     _pico_guard();
-    *win = (Pico_Window) {
+    return (Pico_Window) {
         .fs    = G.window.pub.fs,
         .show  = SDL_GetWindowFlags(G.window.win) & SDL_WINDOW_SHOWN,
         .title = SDL_GetWindowTitle(G.window.win),
@@ -479,7 +480,7 @@ const char* pico_get_window_title (void) {
 // SET
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_set_dim (Pico_Rel_Dim* dim) {
+void pico_set_dim (Pico_Rel_Dim dim) {
     _pico_guard();
     const char* old = pico_set_layer("window");
     pico_set_scene_dim(dim);
@@ -540,15 +541,15 @@ const char* pico_set_layer (const char* key) {
     G.layer = data;
 
     SDL_SetRenderTarget(G.window.ren, G.layer->tex);
-    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(&G.layer->scene.clip, NULL, NULL));
+    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(G.layer->scene.clip, NULL, NULL));
     SDL_RenderSetClipRect(G.window.ren, &r);
     return old;
 }
 
-void pico_set_mouse (Pico_Rel_Pos* pos) {
+void pico_set_mouse (const char* layer, Pico_Rel_Pos pos) {
     _pico_guard();
     Pico_Rel_Pos w = {'!', {}, PICO_ANCHOR_NW};
-    pico_cv_pos_to("window", pos, &w);
+    pico_cv_pos("window", &w, layer, &pos);
     Pico_Abs_Pos wi = _rnd_pos((SDL_FPoint){w.x, w.y});
     SDL_WarpMouseInWindow(G.window.win, wi.x, wi.y);
     SDL_PumpEvents();
@@ -612,7 +613,7 @@ void pico_set_scene (Pico_Layer_Scene view) {
     SDL_BlendMode mode = (L == &G.world) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
     SDL_SetTextureBlendMode(L->tex, mode);
     SDL_SetRenderTarget(G.window.ren, L->tex);
-    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(&L->scene.clip, NULL, NULL));
+    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(L->scene.clip, NULL, NULL));
     SDL_RenderSetClipRect(G.window.ren, &r);
     pico_output_clear();
     _pico_output_present(0);
@@ -624,11 +625,11 @@ void pico_set_scene_clip (Pico_Rel_Rect clip) {
     _pico_output_present(0);
 }
 
-void pico_set_scene_dim (Pico_Rel_Dim* dim) {
+void pico_set_scene_dim (Pico_Rel_Dim dim) {
     _pico_guard();
-    assert(dim->mode != '%');
+    assert(dim.mode != '%');
     Pico_Layer* L = G.layer;
-    Pico_Abs_Dim di = _rnd_dim(_sdl_dim(dim, NULL, NULL));
+    Pico_Abs_Dim di = _rnd_dim(_sdl_dim(&dim, NULL, NULL));
     L->scene.dim = di;
     assert(L->tex != NULL);
     SDL_DestroyTexture(L->tex);
@@ -641,7 +642,7 @@ void pico_set_scene_dim (Pico_Rel_Dim* dim) {
         )
     );
 
-    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(&L->scene.clip, NULL, NULL));
+    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(L->scene.clip, NULL, NULL));
     SDL_SetRenderTarget(G.window.ren, L->tex);
     SDL_RenderSetClipRect(G.window.ren, &r);
 
@@ -758,8 +759,7 @@ void pico_layer_pixmap_mode (
 }
 
 void pico_layer_empty (
-    const char* up, const char* key,
-    int clear,
+    const char* up, const char* key, int clear,
     Pico_Rel_Dim dim, Pico_Abs_Dim* tile
 ) {
     _pico_guard();
@@ -767,9 +767,7 @@ void pico_layer_empty (
 }
 
 void pico_layer_empty_mode (
-    int mode,
-    const char* up, const char* key,
-    int clear,
+    int mode, const char* up, const char* key, int clear,
     Pico_Rel_Dim dim, Pico_Abs_Dim* tile
 ) {
     _pico_guard();
@@ -873,7 +871,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
             } else {
                 Pico_Rel_Dim phy = { '!', {pico->window.w, pico->window.h} };
                 const char* old = pico_set_layer("window");
-                pico_set_scene_dim(&phy);
+                pico_set_scene_dim(phy);
                 pico_set_layer(old);
             }
             break;
@@ -890,62 +888,86 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 case SDLK_MINUS: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(&G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.w += 0.1;
                     pct.h += 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(&pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_EQUALS: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(&G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.w -= 0.1;
                     pct.h -= 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(&pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_LEFT: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(&G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.x -= 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(&pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_RIGHT: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(&G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.x += 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(&pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_UP: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(&G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.y -= 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(&pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_DOWN: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(&G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.y += 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(&pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
@@ -1017,9 +1039,8 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
         case PICO_EVENT_MOUSE_BUTTON_DN:
         case PICO_EVENT_MOUSE_BUTTON_UP: {
             // report mouse pos in window pixels regardless of current layer
-            const char* old = pico_set_layer("window");
-            pico->mouse = pico_get_mouse('!', NULL);
-            pico_set_layer(old);
+            Pico_Rel_Pos tmpl = { .mode='!', .anchor=PICO_ANCHOR_C };
+            pico->mouse = pico_get_mouse("window", &tmpl);
             break;
         }
 
@@ -1111,35 +1132,23 @@ void pico_output_clear (void) {
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->effect.color.r, G.layer->effect.color.g, G.layer->effect.color.b, G.layer->effect.color.a
     );
-    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(&G.layer->scene.clip, NULL, NULL));
+    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(G.layer->scene.clip, NULL, NULL));
     SDL_RenderFillRect(G.window.ren, &r);
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixmap (
-    const char* key,
-    Pico_Abs_Dim dim,
-    const Pico_Color pixmap[],
-    const Pico_Rel_Rect* rect
-) {
-    _pico_guard();
-    assert(key!=NULL && "layer key required");
-    pico_layer_pixmap_mode('=', NULL, key, dim, pixmap);
-    pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
-}
-
-void pico_output_draw_image (const char* path, Pico_Rel_Rect* rect) {
+void pico_output_draw_image (const char* path, Pico_Rel_Rect rect) {
     _pico_guard();
     Pico_Layer* layer = _pico_layer_image('=', NULL, path);
-    Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h} };
-    Pico_Abs_Dim* orig = (rel.w==0 || rel.h==0) ? &layer->scene.dim : NULL;
+    Pico_Abs_Dim* orig = (rect.w==0 || rect.h==0) ? &layer->scene.dim : NULL;
+    Pico_Rel_Dim rel = { rect.mode, {rect.w, rect.h} };
     _sdl_dim(&rel, NULL, orig);
-    rect->w = rel.w;
-    rect->h = rel.h;
-    _pico_output_draw_layer(layer, rect);
+    rect.w = rel.w;
+    rect.h = rel.h;
+    _pico_output_draw_layer(layer, &rect);
 }
 
-void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect) {
+void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
 
@@ -1150,7 +1159,7 @@ void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect) {
     _pico_output_draw_layer(layer, rect);
 }
 
-void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
+void pico_output_draw_line (Pico_Rel_Pos p1, Pico_Rel_Pos p2) {
     _pico_guard();
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
@@ -1161,7 +1170,7 @@ void pico_output_draw_line (Pico_Rel_Pos* p1, Pico_Rel_Pos* p2) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_oval (Pico_Rel_Rect* rect) {
+void pico_output_draw_oval (Pico_Rel_Rect rect) {
     _pico_guard();
     Pico_Abs_Rect i = _rnd_rect(_sdl_rect(rect, NULL, NULL));
     SDL_SetRenderDrawColor(G.window.ren,
@@ -1184,7 +1193,7 @@ void pico_output_draw_oval (Pico_Rel_Rect* rect) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixel (Pico_Rel_Pos* pos) {
+void pico_output_draw_pixel (Pico_Rel_Pos pos) {
     _pico_guard();
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
@@ -1199,7 +1208,7 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
     _pico_guard();
     Pico_Abs_Pos vs[n];
     for (int i=0; i<n; i++) {
-        vs[i] = _rnd_pos(_sdl_pos(&ps[i], NULL));
+        vs[i] = _rnd_pos(_sdl_pos(ps[i], NULL));
     }
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
@@ -1208,29 +1217,23 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_rect (Pico_Rel_Rect* rect) {
+void pico_output_draw_pixmap (
+    const char* key,
+    Pico_Abs_Dim dim,
+    const Pico_Color pixmap[],
+    Pico_Rel_Rect rect
+) {
     _pico_guard();
-    SDL_SetRenderDrawColor(G.window.ren,
-        G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
-    );
-
-    Pico_Abs_Rect i = _rnd_rect(_sdl_rect(rect, NULL, NULL));
-    switch (G.layer->pencil.style) {
-        case PICO_STYLE_FILL:
-            SDL_RenderFillRect(G.window.ren, &i);
-            break;
-        case PICO_STYLE_STROKE:
-            SDL_RenderDrawRect(G.window.ren, &i);
-            break;
-    }
-    _pico_output_present(0);
+    assert(key!=NULL && "layer key required");
+    pico_layer_pixmap_mode('=', NULL, key, dim, pixmap);
+    pico_output_draw_layer(key, &rect);
 }
 
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
     _pico_guard();
     Sint16 xs[n], ys[n];
     for (int i=0; i<n; i++) {
-        Pico_Abs_Pos v = _rnd_pos(_sdl_pos(&ps[i], NULL));
+        Pico_Abs_Pos v = _rnd_pos(_sdl_pos(ps[i], NULL));
         xs[i] = v.x;
         ys[i] = v.y;
     }
@@ -1254,32 +1257,53 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_text (const char* text, Pico_Rel_Rect* rect) {
+void pico_output_draw_rect (Pico_Rel_Rect rect) {
+    _pico_guard();
+    SDL_SetRenderDrawColor(G.window.ren,
+        G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
+    );
+
+    Pico_Abs_Rect i = _rnd_rect(_sdl_rect(rect, NULL, NULL));
+    switch (G.layer->pencil.style) {
+        case PICO_STYLE_FILL:
+            SDL_RenderFillRect(G.window.ren, &i);
+            break;
+        case PICO_STYLE_STROKE:
+            SDL_RenderDrawRect(G.window.ren, &i);
+            break;
+    }
+    _pico_output_present(0);
+}
+
+void pico_output_draw_text (const char* text, Pico_Rel_Rect rect) {
     _pico_guard();
     pico_output_draw_text_mode('=', NULL, text, rect);
 }
 
 void pico_output_draw_text_mode (
     int mode, const char* key,
-    const char* text, Pico_Rel_Rect* rect
+    const char* text, Pico_Rel_Rect rect
 ) {
     _pico_guard();
+    assert(rect.h != 0);
     if (text[0] == '\0') return;
 
-    assert(rect->h != 0);
-    Pico_Rel_Dim rel_h = { rect->mode, {0, rect->h} };
-    SDL_FDim fd_h = _sdl_dim(&rel_h, NULL, NULL);
-    int height = (int)fd_h.h;
-    Pico_Layer* layer = _pico_layer_text(mode, key, height, text);
-    Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h} };
-    Pico_Abs_Dim* orig = (rel.w == 0) ? &layer->scene.dim : NULL;
+    SDL_FDim dim = _sdl_dim (
+        &(Pico_Rel_Dim){ rect.mode, {0, rect.h} }, NULL, NULL
+    );
+
+    Pico_Layer* layer = _pico_layer_text(mode, key, dim.h, text);
+    Pico_Abs_Dim* orig = (rect.w == 0) ? &layer->scene.dim : NULL;
+
+    Pico_Rel_Dim rel = { rect.mode, {rect.w, rect.h} };
     _sdl_dim(&rel, NULL, orig);
-    rect->w = rel.w;
-    _pico_output_draw_layer(layer, rect);
+    rect.w = rel.w;
+
+    _pico_output_draw_layer(layer, &rect);
 }
 
 void pico_output_draw_tri (
-    Pico_Rel_Pos* p1, Pico_Rel_Pos* p2, Pico_Rel_Pos* p3
+    Pico_Rel_Pos p1, Pico_Rel_Pos p2, Pico_Rel_Pos p3
 ) {
     _pico_guard();
     Pico_Abs_Pos i1 = _rnd_pos(_sdl_pos(p1, NULL));
@@ -1341,10 +1365,8 @@ static void _pico_output_present (int force) {
 
     // restore current layer's render target + clip
     SDL_SetRenderTarget(G.window.ren, G.layer->tex);
-    {
-        Pico_Abs_Rect r = _rnd_rect(_sdl_rect(&G.layer->scene.clip, NULL, NULL));
-        SDL_RenderSetClipRect(G.window.ren, &r);
-    }
+    Pico_Abs_Rect r = _rnd_rect(_sdl_rect(G.layer->scene.clip, NULL, NULL));
+    SDL_RenderSetClipRect(G.window.ren, &r);
 }
 
 void pico_output_present (void) {
@@ -1354,7 +1376,6 @@ void pico_output_present (void) {
 
 void pico_output_draw_layers (void) {
     _pico_guard();
-    assert(G.layer == &G.window.layer);
     _pico_output_draw_layers(&G.window.layer);
     SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
 }
@@ -1383,17 +1404,12 @@ static void _pico_output_sound_cache (const char* path, int cache) {
 const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect) {
     _pico_guard();
     Pico_Layer* L = G.layer;
-    Pico_Abs_Rect ri;
-    if (rect == NULL) {
-        ri = (Pico_Abs_Rect){0, 0, L->scene.dim.w, L->scene.dim.h};
-    } else {
-        ri = _rnd_rect(_sdl_rect(rect, NULL, NULL));
-    }
+    Pico_Abs_Rect ri = (rect == NULL)
+        ? (Pico_Abs_Rect){0, 0, L->scene.dim.w, L->scene.dim.h}
+        : _rnd_rect(_sdl_rect(*rect, NULL, NULL));
 
-    const char* ret;
-    if (path != NULL) {
-        ret = path;
-    } else {
+    const char* ret = path;
+    if (path == NULL) {
         static char _path_[32] = "";
         time_t ts = time(NULL);
         struct tm* ti = localtime(&ts);

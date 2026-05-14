@@ -5,10 +5,10 @@ int main (void) {
     pico_init(1);
     for (int i=0; i<100; i++) {
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_C }
+            (Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_C }
         );
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {99-i, i}, PICO_ANCHOR_C }
+            (Pico_Rel_Pos) { '!', {99-i, i}, PICO_ANCHOR_C }
         );
         char path[64];
         sprintf(path, "out/cross-%03d.png", i);

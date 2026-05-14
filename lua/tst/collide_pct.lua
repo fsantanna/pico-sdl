@@ -22,7 +22,7 @@ for y = -1, 10 do
         pico.set.pencil { color='red' }
         pico.output.draw.pixel(p)
 
-        local on = pico.vs.pos_rect(p, r)
+        local on = pico.vs.rect.pos(r, p)
         --print(on and "in" or "out")
 
         if x==-1 and y==-1 then
@@ -57,7 +57,7 @@ for y = -25, 125, 10 do
         pico.set.pencil { color='red' }
         pico.output.draw.rect(r2)
 
-        local overlap = pico.vs.rect_rect(nil, r2, nil, r)
+        local overlap = pico.vs.rect.rect(r2, r)
         --print(overlap and "overlap" or "naw")
 
         if x==-25 and y==-25 then
@@ -92,7 +92,7 @@ for y = -5, 10 do
         pico.set.pencil { color='red' }
         pico.output.draw.rect(r2)
 
-        local overlap = pico.vs.rect_rect(r2, r)
+        local overlap = pico.vs.rect.rect(r2, r)
         --print(overlap and "overlap" or "naw")
 
         if x==-5 and y==-5 then

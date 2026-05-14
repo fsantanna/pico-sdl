@@ -75,7 +75,7 @@ end
 
 do
     print("empty layer")
-    pico.layer.empty(nil, "empty1", true, {'!', w=64, h=32})
+    pico.layer.empty(nil, "empty1", false, {'!', w=64, h=32})
     pico.set.layer("empty1")
     pico.set.effect { color={'!', r=0x00, g=0x80, b=0x00} }
     pico.output.clear()

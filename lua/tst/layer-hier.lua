@@ -9,7 +9,7 @@ pico.init(true)
 pico.set.effect { color='black' }
 pico.output.clear()
 
-pico.layer.empty("world", "L", true, {'!', w=8, h=8})
+pico.layer.empty("world", "L", false, {'!', w=8, h=8})
 
 local old = pico.set.layer("L")
 pico.set.scene({
@@ -48,7 +48,7 @@ pico.check("layer-hier-04")
 ---------------------------------------------------------------------------
 
 -- transparent overlay with yellow background
-pico.layer.empty("world", "over", true, {'!', w=500, h=500})
+pico.layer.empty("world", "over", false, {'!', w=500, h=500})
 old = pico.set.layer("over")
 pico.set.effect { color={r=0xFF, g=0xFF, b=0x00}, alpha=0x80 }
 pico.output.clear()

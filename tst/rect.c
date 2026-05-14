@@ -8,7 +8,7 @@ int main (void) {
     {
         puts("centered rect");
         pico_output_clear();
-        pico_output_draw_rect(&(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
+        pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
         _pico_check("rect-01");
     }
 
@@ -16,12 +16,12 @@ int main (void) {
         puts("rect at 30%");
         pico_output_clear();
         Pico_Rel_Rect r1 = { '%', {0.3, 0.3, 0.5, 0.5}, PICO_ANCHOR_C };
-        pico_output_draw_rect(&r1);
+        pico_output_draw_rect(r1);
 
         puts("red centered under white");
-        Pico_Rel_Rect r2 = pico_in_rect(&r1, &(Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
+        Pico_Rel_Rect r2 = pico_in_rect(r1, (Pico_Rel_Rect){ '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C });
         pico_set_pencil_color((Pico_Color){0xFF,0x00,0x00, 0xFF});
-        pico_output_draw_rect(&r2);
+        pico_output_draw_rect(r2);
 
         _pico_check("rect-02");
     }
@@ -32,12 +32,12 @@ int main (void) {
 
         Pico_Rel_Rect r1 = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_SE };
         pico_set_pencil_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
-        pico_output_draw_rect(&r1);
+        pico_output_draw_rect(r1);
 
         puts("red anchored by top-left under 0% of white");
-        Pico_Rel_Rect r2 = pico_in_rect(&r1, &(Pico_Rel_Rect){ '%', {0, 0, 0.5, 0.5}, PICO_ANCHOR_NW });
+        Pico_Rel_Rect r2 = pico_in_rect(r1, (Pico_Rel_Rect){ '%', {0, 0, 0.5, 0.5}, PICO_ANCHOR_NW });
         pico_set_pencil_color((Pico_Color){0xFF,0x00,0x00, 0xFF});
-        pico_output_draw_rect(&r2);
+        pico_output_draw_rect(r2);
 
         _pico_check("rect-03");
     }
@@ -48,12 +48,12 @@ int main (void) {
 
         Pico_Rel_Rect r1 = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C };
         pico_set_pencil_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
-        pico_output_draw_rect(&r1);
+        pico_output_draw_rect(r1);
 
         puts("red anchored by top-left under -10% of white");
-        Pico_Rel_Rect r2 = pico_in_rect(&r1, &(Pico_Rel_Rect){ '%', {-0.1, -0.1, 0.5, 0.5}, PICO_ANCHOR_NW });
+        Pico_Rel_Rect r2 = pico_in_rect(r1, (Pico_Rel_Rect){ '%', {-0.1, -0.1, 0.5, 0.5}, PICO_ANCHOR_NW });
         pico_set_pencil_color((Pico_Color){0xFF,0x00,0x00, 0xFF});
-        pico_output_draw_rect(&r2);
+        pico_output_draw_rect(r2);
 
         _pico_check("rect-04");
     }
@@ -64,12 +64,12 @@ int main (void) {
 
         Pico_Rel_Rect r1 = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C };
         pico_set_pencil_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
-        pico_output_draw_rect(&r1);
+        pico_output_draw_rect(r1);
 
         puts("red anchored by top-left under 110% of white (symmetric to previous)");
-        Pico_Rel_Rect r2 = pico_in_rect(&r1, &(Pico_Rel_Rect){ '%', {1.1, 1.1, 0.5, 0.5}, PICO_ANCHOR_SE });
+        Pico_Rel_Rect r2 = pico_in_rect(r1, (Pico_Rel_Rect){ '%', {1.1, 1.1, 0.5, 0.5}, PICO_ANCHOR_SE });
         pico_set_pencil_color((Pico_Color){0xFF,0x00,0x00, 0xFF});
-        pico_output_draw_rect(&r2);
+        pico_output_draw_rect(r2);
 
         _pico_check("rect-05");
     }

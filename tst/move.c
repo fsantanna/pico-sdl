@@ -6,15 +6,15 @@ int main (void) {
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Moving Around" });
 
     pico_set_layer("window");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {640, 360} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {640, 360} });
     pico_set_layer("world");
-    pico_set_scene_dim(&(Pico_Rel_Dim){ '!', {64, 18} });
+    pico_set_scene_dim((Pico_Rel_Dim){ '!', {64, 18} });
     srand(0);
 
     Pico_Rel_Pos pos = { '!', {32, 9}, PICO_ANCHOR_NW };
     for (int i=0; i<100; i++) {
         pico_set_pencil_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
-        pico_output_draw_pixel(&pos);
+        pico_output_draw_pixel(pos);
 
         pico_input_delay(10);
 
@@ -37,7 +37,7 @@ int main (void) {
         }
 
         //pico_set_pencil_color((Pico_Color){0x00,0x00,0x00, 0xFF});
-        //pico_output_draw_pixel(&pos);
+        //pico_output_draw_pixel(pos);
 
         pos.x += rand()%3 - 1;
         pos.y += rand()%3 - 1;

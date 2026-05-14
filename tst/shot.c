@@ -13,7 +13,7 @@ int main (void) {
     {
         puts("entire screen - 01");
         Pico_Rel_Rect r = { '!', {10, 10, 20, 20}, PICO_ANCHOR_NW };
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         pico_set_layer("window");
         const char* f = pico_output_screenshot(NULL, NULL);
         pico_set_layer("world");
@@ -26,7 +26,7 @@ int main (void) {
         puts("entire screen - 02");
         pico_set_pencil_color((Pico_Color){200, 0, 0, 0xFF});
         Pico_Rel_Rect r = { '!', {30, 30, 10, 10}, PICO_ANCHOR_NW };
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         pico_set_layer("window");
         const char* f = pico_output_screenshot("out/shot-02.png", NULL);
         pico_set_layer("world");
@@ -38,7 +38,7 @@ int main (void) {
         puts("part of screen (raw)");
         pico_set_pencil_color((Pico_Color){0, 200, 0, 0xFF});
         Pico_Rel_Rect r = { '!', {40, 5, 10, 10}, PICO_ANCHOR_NW };
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         Pico_Rel_Rect clip = { '!', {0, 0, 250, 150}, PICO_ANCHOR_NW };
         pico_set_layer("window");
         const char* f = pico_output_screenshot(NULL, &clip);
@@ -52,7 +52,7 @@ int main (void) {
         puts("part of screen (pct)");
         pico_set_pencil_color((Pico_Color){0, 0, 200, 0xFF});
         pico_output_draw_rect (
-            &(Pico_Rel_Rect) { '!', {50, 50, 10, 10}, PICO_ANCHOR_NW }
+            (Pico_Rel_Rect) { '!', {50, 50, 10, 10}, PICO_ANCHOR_NW }
         );
         pico_set_layer("window");
         const char* f = pico_output_screenshot(NULL,
@@ -70,7 +70,7 @@ int main (void) {
         pico_output_clear();
         pico_set_pencil_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
         pico_output_draw_rect (
-            &(Pico_Rel_Rect) { '!', {10, 10, 30, 30}, PICO_ANCHOR_NW }
+            (Pico_Rel_Rect) { '!', {10, 10, 30, 30}, PICO_ANCHOR_NW }
         );
         const char* f = pico_output_screenshot("out/shot-world.png", NULL);
         assert(!strcmp(f, "out/shot-world.png"));
@@ -85,7 +85,7 @@ int main (void) {
         pico_output_clear();
         pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
         pico_output_draw_rect (
-            &(Pico_Rel_Rect) { '!', {5, 5, 10, 10}, PICO_ANCHOR_NW }
+            (Pico_Rel_Rect) { '!', {5, 5, 10, 10}, PICO_ANCHOR_NW }
         );
         const char* f = pico_output_screenshot("out/shot-empty.png", NULL);
         pico_set_layer("world");

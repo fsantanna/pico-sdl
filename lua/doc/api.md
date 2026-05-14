@@ -25,7 +25,7 @@ In alphabetical order:
         '!', x: integer, y: integer,
         left: boolean, right: boolean, middle: boolean }`
 - **Flip**: `'none'` | `'horizontal'` | `'vertical'` | `'both'`
-- **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, left: boolean, right: boolean, middle: boolean }`
+- **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, anchor: Anchor, left: boolean, right: boolean, middle: boolean }`
 - **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor] }`
 - **Rect**: `{ x: number, y: number, [w: number], [h: number] [,'!'|'%'|'#', anchor: Anchor] }`
     - Missing `w` or `h` defaults to 0 ("infer from source").
@@ -47,24 +47,30 @@ In alphabetical order:
     - **pico.color.mix**: Mixes two colors.
         - `pico.color.mix (c1: Color, c2: Color) -> Color`
 - **pico.cv**
-    - Chain-walk projection between cur and a named ancestor layer
-      (via `hier.up`). The named end is always given; the other end is
-      cur. `layer = nil` collapses to cur (mode/anchor conversion only,
-      no projection). Target must be cur or an ancestor of cur.
-    - **pico.cv.dim.to**: Projects a dim from cur to a named ancestor.
-        - `pico.cv.dim.to (layer: string?, fr: Dim, to: Dim)`
-        - `to` is written in `layer`'s frame; `to.mode` controls form.
-    - **pico.cv.dim.from**: Brings a dim from a named ancestor into cur.
-        - `pico.cv.dim.from (layer: string?, fr: Dim, to: Dim)`
-        - `fr` is interpreted in `layer`; `to` is written in cur.
-    - **pico.cv.pos.to**: Projects a pos from cur to a named ancestor.
-        - `pico.cv.pos.to (layer: string?, fr: Pos, to: Pos)`
-    - **pico.cv.pos.from**: Brings a pos from a named ancestor into cur.
-        - `pico.cv.pos.from (layer: string?, fr: Pos, to: Pos)`
-    - **pico.cv.rect.to**: Projects a rect from cur to a named ancestor.
-        - `pico.cv.rect.to (layer: string?, fr: Rect, to: Rect)`
-    - **pico.cv.rect.from**: Brings a rect from a named ancestor into cur.
-        - `pico.cv.rect.from (layer: string?, fr: Rect, to: Rect)`
+    - Projects a value from `L_fr`'s frame into `L_to`'s frame via
+      the `hier.up` chain. Either layer may be `nil` (== cur). Each
+      layer must be cur, an ancestor, or a descendant of cur;
+      siblings project via cur in two steps.
+    - `to` accepts two forms:
+        - **table**: filled in-place (mode/anchor read from input);
+          returns the same table.
+        - **mode string** (`'!'`, `'%'`, `'#'`): builds and returns
+          a fresh value; anchor defaults to `'NW'` (Pos/Rect only).
+    - Args are matched left-to-right against the 4-slot template
+      `(L_to, to_or_mode, L_fr, fr)`. Both explicit `nil`s and
+      trailing/leading omissions are accepted; a mismatched type
+      leaves the slot empty without consuming the arg, so short
+      forms like `(to, fr)`, `(L_to, to, fr)`, `(L_to, mode, fr)`
+      are all valid. `to_or_mode` and `fr` are required.
+    - **pico.cv.pos**: Projects a Pos.
+        - `pico.cv.pos (L_to: string?, to: Pos, L_fr: string?, fr: Pos) -> Pos`
+        - `pico.cv.pos (L_to: string?, mode: string, L_fr: string?, fr: Pos) -> Pos`
+    - **pico.cv.rect**: Projects a Rect.
+        - `pico.cv.rect (L_to: string?, to: Rect, L_fr: string?, fr: Rect) -> Rect`
+        - `pico.cv.rect (L_to: string?, mode: string, L_fr: string?, fr: Rect) -> Rect`
+    - **pico.cv.dim**: Projects a Dim (no position component).
+        - `pico.cv.dim (L_to: string?, to: Dim, L_fr: string?, fr: Dim) -> Dim`
+        - `pico.cv.dim (L_to: string?, mode: string, L_fr: string?, fr: Dim) -> Dim`
 - **pico.get**
     - **pico.get.pencil**: Gets pencil configuration.
         - `pico.get.pencil () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
@@ -76,11 +82,20 @@ In alphabetical order:
     - **pico.get.layer**: Gets current layer name.
         - `pico.get.layer () -> string?`
         - Returns `nil` for main layer
-    - **pico.get.mouse**: Gets mouse position and button state in cur's
-      frame. Use `pico.cv.pos.from` / `pico.set.layer` to obtain coords
-      in other frames.
-        - `pico.get.mouse (mode: string) -> Mouse`
+    - **pico.get.mouse**: Gets mouse position and button state in
+      `layer`'s frame. `layer` defaults to cur when omitted or `nil`.
+        - `pico.get.mouse ([layer: string?,] mode: string) -> Mouse`
+        - `pico.get.mouse ([layer: string?,] pos: Pos) -> Mouse`
         - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
+        - String-mode form defaults `anchor` to `C` (cell-center),
+          matching the Lua-wide default. Use the table form with an
+          explicit `anchor` field to override (e.g. `'NW'`).
+        - Returned `Mouse` mirrors `mode` and `anchor` of the request.
+        - Forms:
+            - `pico.get.mouse('!')` — cur, pixels, C anchor
+            - `pico.get.mouse(nil, '!')` — explicit nil = cur
+            - `pico.get.mouse('world', '%')` — named layer's frame
+            - `pico.get.mouse({'!', anchor='NW'})` — explicit anchor
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
     - **pico.get.text**: Gets text dimensions.
@@ -172,7 +187,9 @@ In alphabetical order:
         - **pico.output.draw.image**: Draws image.
             - `pico.output.draw.image (path: string, rect: Rect)`
         - **pico.output.draw.layer**: Draws a layer onto the current layer.
-            - `pico.output.draw.layer (name: string, rect: Rect)`
+            - `pico.output.draw.layer (name: string [, rect: Rect])`
+            - `rect` is optional; when omitted (or `nil`), the layer's
+              `scene.dst` is used (full bounds in cur).
         - **pico.output.draw.layers**: Composites the window layer hierarchy
           (window's children, including world) onto window.tex. Called
           automatically by `pico.output.present` in non-expert mode.
@@ -221,25 +238,43 @@ In alphabetical order:
         - `pico.set.layer (name: string?)`
         - `nil` switches to main layer
     - **pico.set.mouse**: Sets mouse cursor position. `pos` is
-      interpreted in cur's frame and projected to window for the SDL
-      warp.
-        - `pico.set.mouse (pos: Pos)`
+      interpreted in `layer`'s frame and projected to window for the
+      SDL warp. `layer` defaults to cur when omitted or `nil`.
+        - `pico.set.mouse ([layer: string?,] pos: Pos)`
         - `pos.mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
+        - Forms:
+            - `pico.set.mouse(pos)` — cur
+            - `pico.set.mouse(nil, pos)` — explicit nil = cur
+            - `pico.set.mouse('window', pos)` — named layer's frame
 - **pico.vs**
-    - Collision checks. Each side can be a value in cur (`Lx=nil`) or
-      a value/bounds in a layer that is a direct child of cur
-      (`Lx=<child-name>`). `Lx` and the corresponding value cannot both
-      be `nil`. `pos` values must always be non-nil; `rect` values may
-      be `nil` when `Lx` is set (uses the child layer's bounds).
-    - **pico.vs.pos_pos**: True if two points fall on the same pixel
+    - Collision checks.
+      Each side has the canonical shape `(Lx, vx)` where `Lx` is the
+      name of a direct child of cur (or absent for cur itself) and
+      `vx` is a `Pos` or `Rect` value relative to `Lx`.
+    - Args are matched left-to-right against the 4-slot template
+      `(L1, v1, L2, v2)`. Both explicit `nil`s and trailing omissions
+      are accepted; a mismatched type leaves the slot empty without
+      consuming the arg, so `(L1, L2)`, `(v1, v2)`, `(L1, v2)`, etc.
+      are all valid shortenings.
+    - When a `rect` slot is absent (both `Lx` and `vx`) it defaults to
+      the bounds of cur (`scene.dst`). `pos` slots have no default and
+      must always be supplied.
+    - **pico.vs.pos.pos**: True if two points fall on the same pixel
       (after integer rounding in cur).
-        - `pico.vs.pos_pos (p1: Pos, p2: Pos) -> boolean`
-        - `pico.vs.pos_pos (L1: string?, p1: Pos, L2: string?, p2: Pos) -> boolean`
-    - **pico.vs.pos_rect**: True if a point is inside a rectangle.
-        - `pico.vs.pos_rect (p1: Pos, r2: Rect) -> boolean`
-        - `pico.vs.pos_rect (L1: string?, p1: Pos, L2: string?, r2: Rect?) -> boolean`
-    - **pico.vs.rect_rect**: True if two rectangles overlap.
-        - `pico.vs.rect_rect (r1: Rect, r2: Rect) -> boolean`
-        - `pico.vs.rect_rect (L1: string, L2: string) -> boolean`
-        - `pico.vs.rect_rect (L1: string?, r1: Rect?, L2: string?, r2: Rect?) -> boolean`
-        - The 2-string form compares the bounds of both child layers.
+        - `pico.vs.pos.pos (L1: string?, p1: Pos, L2: string?, p2: Pos) -> boolean`
+        - `p1` and `p2` are required.
+    - **pico.vs.pos.rect**: True if a point is inside a rectangle.
+        - `pico.vs.pos.rect (L1: string?, p1: Pos, L2: string?, r2: Rect?) -> boolean`
+        - `p1` is required; `r2` defaults to cur's bounds (or `L2`'s
+          bounds when `L2` is set and `r2` is absent).
+    - **pico.vs.rect.pos**: True if a point is inside a rectangle
+      (mirror of `pos.rect`).
+        - `pico.vs.rect.pos (L1: string?, r1: Rect?, L2: string?, p2: Pos) -> boolean`
+        - `p2` is required; `r1` defaults to cur's bounds (or `L1`'s
+          bounds when `L1` is set and `r1` is absent).
+    - **pico.vs.rect.rect**: True if two rectangles overlap.
+        - `pico.vs.rect.rect (L1: string?, r1: Rect?, L2: string?, r2: Rect?) -> boolean`
+        - All slots are optional; each missing rect side defaults to
+          its layer's bounds (or cur's bounds when the layer is also
+          absent). The 2-string form `(L1, L2)` compares the bounds
+          of both child layers.

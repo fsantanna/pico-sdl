@@ -2,7 +2,7 @@
 
 int main (void) {
     pico_init(1);
-    pico_set_scene_dim(&(Pico_Rel_Dim){'!', {10, 10}});
+    pico_set_scene_dim((Pico_Rel_Dim){'!', {10, 10}});
 
     pico_output_clear();
     pico_set_pencil_color(pico_color_alpha(pico_get_pencil_color(), 0x80));
@@ -17,15 +17,15 @@ int main (void) {
 
         // Red — NW anchor
         pico_set_pencil_color(PICO_COLOR_RED);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_NW});
+        pico_output_draw_pixel((Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_NW});
 
         // Green — C anchor
         pico_set_pencil_color(PICO_COLOR_GREEN);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_C});
+        pico_output_draw_pixel((Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_C});
 
         // Blue — SE anchor
         pico_set_pencil_color(PICO_COLOR_BLUE);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_SE});
+        pico_output_draw_pixel((Pico_Rel_Pos){'w', {x, y}, PICO_ANCHOR_SE});
     }
 #endif
 
@@ -39,15 +39,15 @@ int main (void) {
 
         // Red — NW anchor
         pico_set_pencil_color(PICO_COLOR_RED);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
+        pico_output_draw_pixel((Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
 
         // Green — C anchor
         pico_set_pencil_color(PICO_COLOR_GREEN);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_C});
+        pico_output_draw_pixel((Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_C});
 
         // Blue — SE anchor
         pico_set_pencil_color(PICO_COLOR_BLUE);
-        pico_output_draw_pixel(&(Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_SE});
+        pico_output_draw_pixel((Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_SE});
     }
 #endif
 

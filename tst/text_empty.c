@@ -21,14 +21,14 @@ int main (void) {
     {
         pico_output_clear();
         Pico_Rel_Rect r = { '!', {10, 10, 0, 10}, PICO_ANCHOR_NW };
-        pico_output_draw_text("", &r);
+        pico_output_draw_text("", r);
         _pico_check("text_empty-01");
     }
     // pico_output_draw_text: empty string, pct mode -> no crash, screen stays clear
     {
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0, 0.2}, PICO_ANCHOR_C };
-        pico_output_draw_text("", &r);
+        pico_output_draw_text("", r);
         _pico_check("text_empty-02");
     }
 
@@ -36,9 +36,9 @@ int main (void) {
     {
         pico_output_clear();
         Pico_Rel_Rect r1 = { '!', {10, 10, 0, 10}, PICO_ANCHOR_NW };
-        pico_output_draw_text("HELLO", &r1);
+        pico_output_draw_text("HELLO", r1);
         Pico_Rel_Rect r2 = { '!', {10, 10, 0, 10}, PICO_ANCHOR_NW };
-        pico_output_draw_text("", &r2);
+        pico_output_draw_text("", r2);
         _pico_check("text_empty-03");
     }
 

@@ -68,7 +68,7 @@ int main (void) {
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_BLACK);
         pico_output_draw_rect(
-            &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.25, 0.25}, PICO_ANCHOR_C});
+            (Pico_Rel_Rect){'%', {0.5, 0.5, 0.25, 0.25}, PICO_ANCHOR_C});
         pico_set_scene_src(
             (Pico_Rel_Rect){'%', {0.5, 0.2, 1.0, 1.0}, PICO_ANCHOR_C});
         pico_output_present();
@@ -87,7 +87,7 @@ int main (void) {
             pico_output_clear();
             pico_set_pencil_color(PICO_COLOR_BLACK);
             pico_output_draw_rect(
-                &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_C});
+                (Pico_Rel_Rect){'%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_C});
             pico_set_scene_dst(
                 (Pico_Rel_Rect){'%', {0.5, 0.5, 1.0, 1.0}, PICO_ANCHOR_C});
             pico_set_scene_src(

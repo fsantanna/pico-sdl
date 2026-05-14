@@ -33,7 +33,7 @@ int main (void) {
         {
             // w=0, h=0 -> raw dimensions 48x48
             // after pico_in_dim, d is in scene's % (100x100): 48/100 = 0.48
-            Pico_Rel_Dim d = pico_in_dim(&up, &(Pico_Rel_Dim){ '%', {0, 0} });
+            Pico_Rel_Dim d = pico_in_dim(up, (Pico_Rel_Dim){ '%', {0, 0} });
             Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
             assert(r.w==48 && r.h==48);
             assert(d.w==0.48f && d.h==0.48f);
@@ -41,7 +41,7 @@ int main (void) {
         {
             // h=0.48 of 50 = 24px, aspect 1:1 -> w=24px
             // after pico_in_dim, h is now 0.24 of scene (100x100); fills w to 0.24
-            Pico_Rel_Dim d = pico_in_dim(&up, &(Pico_Rel_Dim){ '%', {0, 0.48} });
+            Pico_Rel_Dim d = pico_in_dim(up, (Pico_Rel_Dim){ '%', {0, 0.48} });
             Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
             assert(r.w==24 && r.h==24);
             assert(d.w==0.24f && d.h==0.24f);
@@ -52,35 +52,35 @@ int main (void) {
         puts("show original centered");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0, 0}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-01");
     }
     {
         puts("show big centered");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 1.0, 1.0}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-02");
     }
     {
         puts("show small centered");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.2, 0.2}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-03");
     }
     {
         puts("show w-half proportional");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.5, 0}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-04");
     }
     {
         puts("show w-half h-quart distorted");
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.5, 0.25}, PICO_ANCHOR_C };
-        pico_output_draw_image("../res/open.png", &r);
+        pico_output_draw_image("../res/open.png", r);
         _pico_check("image_pct-05");
     }
 

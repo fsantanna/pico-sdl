@@ -12,7 +12,7 @@ int main (void) {
     for (float i=0; i<=100; i+=25) {
         pico_output_clear();
         r.w = r.h = i/100.0;
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
         sprintf(fmt, "dim-%02d", N++);
         puts(fmt);
         _pico_check(fmt);
@@ -23,11 +23,11 @@ int main (void) {
         pico_output_clear();
 
         pico_set_pencil_color((Pico_Color){255,255,255, 0xFF});
-        pico_output_draw_rect(&r);
+        pico_output_draw_rect(r);
 
-        Pico_Rel_Rect rr = pico_in_rect(&r, &(Pico_Rel_Rect){ '%', {0.5,0.5, i/100.0,i/100.0}, PICO_ANCHOR_C });
+        Pico_Rel_Rect rr = pico_in_rect(r, (Pico_Rel_Rect){ '%', {0.5,0.5, i/100.0,i/100.0}, PICO_ANCHOR_C });
         pico_set_pencil_color((Pico_Color){255,0,0, 150});
-        pico_output_draw_rect(&rr);
+        pico_output_draw_rect(rr);
 
         sprintf(fmt, "dim-%02d", N++);
         puts(fmt);

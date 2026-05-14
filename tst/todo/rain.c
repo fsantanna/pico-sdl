@@ -52,7 +52,7 @@ int main(void) {
                 if (drop->r.y >= 1.0) {
                     init_drop(drop);
                 } else {
-                    pico_output_draw_rect(&drop->r);
+                    pico_output_draw_rect(drop->r);
                 }
             }
         }
