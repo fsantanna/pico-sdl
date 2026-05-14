@@ -82,7 +82,6 @@ do
     do
         local old = pico.set.layer("L")
         pico.set.effect { color = 'green' }
-        pico.output.clear()
         pico.set.pencil { color = 'black' }
         pico.output.draw.rect(
             {'%', x=0.5, y=0.5, w=0.4, h=0.4, anchor='C'})

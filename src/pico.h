@@ -459,11 +459,11 @@ void pico_layer_video_mode (int mode,
 Pico_Keyboard pico_get_keyboard (void);
 
 /// @brief Gets the mouse state.
+/// @param layer layer name; NULL = cur
 /// @param mode coordinate mode ('!' pixels, '%' percentage, '#' tiles)
-/// @param rect optional target rect for inverse transform
-/// @return mouse state with position and button flags
+/// @return mouse state with position and button flags expressed in `layer`'s frame
 /// @sa pico_set_mouse
-Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect);
+Pico_Mouse pico_get_mouse (const char* layer, char mode);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds

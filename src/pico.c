@@ -331,8 +331,7 @@ const char* pico_get_layer (void) {
     return G.layer->name;
 }
 
-Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
-    assert(rect == NULL);
+Pico_Mouse pico_get_mouse (const char* layer, char mode) {
     _pico_guard();
     assert((mode=='!' || mode=='%' || mode=='#'));
 
@@ -348,7 +347,7 @@ Pico_Mouse pico_get_mouse (char mode, Pico_Rel_Rect* rect) {
 
     Pico_Rel_Pos in  = {'!', {phy.x, phy.y}, PICO_ANCHOR_NW};
     Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW };
-    pico_cv_pos(NULL, &rel, "window", &in);
+    pico_cv_pos(layer, &rel, "window", &in);
     m.x = rel.x;
     m.y = rel.y;
 
@@ -1017,9 +1016,7 @@ static void sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
         case PICO_EVENT_MOUSE_BUTTON_DN:
         case PICO_EVENT_MOUSE_BUTTON_UP: {
             // report mouse pos in window pixels regardless of current layer
-            const char* old = pico_set_layer("window");
-            pico->mouse = pico_get_mouse('!', NULL);
-            pico_set_layer(old);
+            pico->mouse = pico_get_mouse("window", '!');
             break;
         }
 

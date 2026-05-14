@@ -461,7 +461,7 @@ static const int CV_TYPES[4] = {
 
 // If arg 1 is a single mode char ('!','%','#'), insert a nil at
 // position 1 so args_parse treats it as `to_or_mode`, not `L_to`.
-static void cv_shift_mode (lua_State* L) {
+static void _shift_if_mode (lua_State* L) {
     if (lua_gettop(L) >= 1 && lua_type(L, 1) == LUA_TSTRING) {
         size_t len;
         const char* s = lua_tolstring(L, 1, &len);
@@ -478,7 +478,7 @@ static void cv_shift_mode (lua_State* L) {
 
 static int l_cv_pos (lua_State* L) {
     int idx[4];
-    cv_shift_mode(L);
+    _shift_if_mode(L);
     args_parse(L, idx, CV_TYPES, "cv");
     if (idx[1] == 0 || idx[3] == 0) {
         return luaL_error(L, "cv.pos: to_or_mode and fr are required");
@@ -509,7 +509,7 @@ static int l_cv_pos (lua_State* L) {
 
 static int l_cv_rect (lua_State* L) {
     int idx[4];
-    cv_shift_mode(L);
+    _shift_if_mode(L);
     args_parse(L, idx, CV_TYPES, "cv");
     if (idx[1] == 0 || idx[3] == 0) {
         return luaL_error(L, "cv.rect: to_or_mode and fr are required");
@@ -544,7 +544,7 @@ static int l_cv_rect (lua_State* L) {
 
 static int l_cv_dim (lua_State* L) {
     int idx[4];
-    cv_shift_mode(L);
+    _shift_if_mode(L);
     args_parse(L, idx, CV_TYPES, "cv");
     if (idx[1] == 0 || idx[3] == 0) {
         return luaL_error(L, "cv.dim: to_or_mode and fr are required");
@@ -775,15 +775,10 @@ static int l_get_layer (lua_State* L) {
 }
 
 static int l_get_mouse (lua_State* L) {
-    Pico_Mouse mouse;
-    const char* s = luaL_checkstring(L, 1);     // mode | [rect]
-    if (lua_gettop(L) == 1) {
-        mouse = pico_get_mouse(s[0], NULL);     // mode
-    } else {
-        luaL_checktype(L, 2, LUA_TTABLE);       // mode | rect
-        Pico_Rel_Rect rect = C_rel_rect(L, 2);
-        mouse = pico_get_mouse(s[0], &rect);
-    }
+    _shift_if_mode(L);                          // single mode char at arg 1 -> shift nil in front
+    const char* layer = lua_isnil(L, 1) ? NULL : luaL_checkstring(L, 1);
+    const char* s = luaL_checkstring(L, 2);
+    Pico_Mouse mouse = pico_get_mouse(layer, s[0]);
     lua_newtable(L);                            // ... | mouse
     L_set_mouse(L, lua_gettop(L), &mouse);
     return 1;                                   // ... | *mouse*
