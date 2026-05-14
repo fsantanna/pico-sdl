@@ -82,11 +82,14 @@ In alphabetical order:
     - **pico.get.layer**: Gets current layer name.
         - `pico.get.layer () -> string?`
         - Returns `nil` for main layer
-    - **pico.get.mouse**: Gets mouse position and button state in cur's
-      frame. Use `pico.cv.pos.from` / `pico.set.layer` to obtain coords
-      in other frames.
-        - `pico.get.mouse (mode: string) -> Mouse`
+    - **pico.get.mouse**: Gets mouse position and button state in
+      `layer`'s frame. `layer` defaults to cur when omitted or `nil`.
+        - `pico.get.mouse ([layer: string?,] mode: string) -> Mouse`
         - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
+        - Forms:
+            - `pico.get.mouse('!')` — cur, pixels
+            - `pico.get.mouse(nil, '!')` — explicit nil = cur
+            - `pico.get.mouse('world', '%')` — named layer's frame
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
     - **pico.get.text**: Gets text dimensions.
@@ -227,10 +230,14 @@ In alphabetical order:
         - `pico.set.layer (name: string?)`
         - `nil` switches to main layer
     - **pico.set.mouse**: Sets mouse cursor position. `pos` is
-      interpreted in cur's frame and projected to window for the SDL
-      warp.
-        - `pico.set.mouse (pos: Pos)`
+      interpreted in `layer`'s frame and projected to window for the
+      SDL warp. `layer` defaults to cur when omitted or `nil`.
+        - `pico.set.mouse ([layer: string?,] pos: Pos)`
         - `pos.mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
+        - Forms:
+            - `pico.set.mouse(pos)` — cur
+            - `pico.set.mouse(nil, pos)` — explicit nil = cur
+            - `pico.set.mouse('window', pos)` — named layer's frame
 - **pico.vs**
     - Collision checks.
       Each side has the canonical shape `(Lx, vx)` where `Lx` is the
