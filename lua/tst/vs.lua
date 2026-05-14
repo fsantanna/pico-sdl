@@ -222,7 +222,7 @@ do
     -- sub_sub_tight covers only top-left 10x10 of sub_vs ->
     -- top-left 20x20 of world after projection.
     pico.layer.empty('sub_vs', 'sub_sub_tight', true,
-        {'!', w=10, h=10},
+        --{'!', w=10, h=10},
         {'!', x=0, y=0, w=10, h=10, anchor='NW'})
 
     -- world:(15,15) is inside 20x20 projected bounds,

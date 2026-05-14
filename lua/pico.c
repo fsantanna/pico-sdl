@@ -1207,50 +1207,56 @@ static int L_is_rect (lua_State* L, int i) {
 }
 
 static int l_layer_empty (lua_State* L) {
-    // [m] | up | key | clear | Rect
-    // [m] | up | key | clear | Dim
-    // [m] | up | key | clear | Dim | Tile | [Rect]
+    // [m] | up | me | clear | Rect
+    // [m] | up | me | clear | Dim
+    // [m] | up | me | clear | Dim | Tile | [Rect]
 
     char m = L_realm_opt(L);
     if (!m) m = '!';
-    const char* up = lua_isnil(L, 2) ? NULL : luaL_checkstring(L, 2);
-    const char* key = luaL_checkstring(L, 3);
+    const char* up = lua_tostring(L, 2);
+    const char* me = luaL_checkstring(L, 3);
 
     luaL_checktype(L, 4, LUA_TBOOLEAN);
     int clear = lua_toboolean(L, 4);
 
-    // slot 5: Dim or Rect (Rect also sets scene.target via its full shape).
+    // [Dim | Rect] (Rect also sets scene.target via its full shape).
     luaL_checktype(L, 5, LUA_TTABLE);
     Pico_Rel_Dim dim = C_rel_dim(L, 5);
-    int target_idx = L_is_rect(L, 5) ? 5 : 0;
 
-    // slots 6, 7: each Tile (no x) or Rect (scene.target). Order-free.
-    Pico_Abs_Dim tile;
-    Pico_Abs_Dim* tile_ptr = NULL;
-    for (int j = 6; j <= 7; j++) {
-        if (lua_isnoneornil(L, j)) {
-            continue;
-        }
-        luaL_checktype(L, j, LUA_TTABLE);
-        if (L_is_rect(L, j)) {
-            if (target_idx != 0) {
-                return luaL_error(L, "layer.empty: target specified twice");
-            }
-            target_idx = j;
+    int ok = 0;
+    Pico_Rel_Rect tgt;
+
+    int n = lua_gettop(L);
+    if (n == 5) {
+        pico_layer_empty_mode(m, up, me, clear, dim, NULL);
+        if (L_is_rect(L, 5)) {
+            // [m] | up | me | clear | Rect
+            ok = 1;
+            tgt = C_rel_rect(L, 5);
         } else {
-            if (tile_ptr != NULL) {
-                return luaL_error(L, "layer.empty: tile specified twice");
-            }
-            tile.w = (int) C_asrfieldnum(L, j, "w");
-            tile.h = (int) C_asrfieldnum(L, j, "h");
-            tile_ptr = &tile;
+            // [m] | up | me | clear | Dim
+        }
+    } else {
+        // [m] | up | me | clear | Dim | Tile | [Rect]
+        luaL_checktype(L, 6, LUA_TTABLE);
+        assert(!L_is_rect(L, 6));
+        Pico_Abs_Dim tile = {
+            C_asrfieldnum(L, 6, "w"),
+            C_asrfieldnum(L, 6, "h"),
+        };
+        pico_layer_empty_mode(m, up, me, clear, dim, &tile);
+        if (n >= 7) {
+            ok = 1;
+            tgt = C_rel_rect(L, 7);
         }
     }
 
-    pico_layer_empty_mode(m, up, key, clear, dim, tile_ptr);
-    if (target_idx != 0) {
-        L_opt_target(L, target_idx, key);
+    if (ok) {
+        const char* old = pico_set_layer(me);
+        pico_set_scene_dst(tgt);
+        pico_set_layer(old);
     }
+
     return 0;
 }
 
