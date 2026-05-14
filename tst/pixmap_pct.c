@@ -30,7 +30,7 @@ int main (void) {
         puts("centered 3x3 on black - 1dir/1baixo");
         Pico_Rel_Rect r = { '%', {0.5,0.5,0,0}, PICO_ANCHOR_C };
         pico_output_clear();
-        pico_output_draw_pixmap("buf1", (Pico_Abs_Dim){3,3}, pixmap, &r);
+        pico_output_draw_pixmap("buf1", (Pico_Abs_Dim){3,3}, pixmap, r);
         _pico_check("pixmap-01");   // same as raw
     }
 
@@ -39,7 +39,7 @@ int main (void) {
         Pico_Rel_Rect r = { '%', {1,1,0,0}, PICO_ANCHOR_SE };
         pico_set_effect_color((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
         pico_output_clear();
-        pico_output_draw_pixmap("buf2", (Pico_Abs_Dim){9,1}, pixmap, &r);
+        pico_output_draw_pixmap("buf2", (Pico_Abs_Dim){9,1}, pixmap, r);
         _pico_check("pixmap-02");   // same as raw
     }
 
@@ -50,7 +50,7 @@ int main (void) {
         pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.1,0.1,0,0.6}, PICO_ANCHOR_NW };
-        pico_output_draw_pixmap("buf3", (Pico_Abs_Dim){3,3}, pixmap, &r);
+        pico_output_draw_pixmap("buf3", (Pico_Abs_Dim){3,3}, pixmap, r);
         _pico_check("pixmap-03");   // same as raw
     }
 
@@ -61,7 +61,7 @@ int main (void) {
         pico_set_effect_color((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
         pico_output_clear();
         Pico_Rel_Rect r = { '%', {0.1,0.1,0.6,0.3}, PICO_ANCHOR_NW };
-        pico_output_draw_pixmap("buf4", (Pico_Abs_Dim){3,3}, pixmap, &r);
+        pico_output_draw_pixmap("buf4", (Pico_Abs_Dim){3,3}, pixmap, r);
         _pico_check("pixmap-04");   // same as raw
     }
 
