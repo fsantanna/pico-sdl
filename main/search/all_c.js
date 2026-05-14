@@ -34,7 +34,7 @@ var searchData=
   ['pico_5fget_5fimage_31',['pico_get_image',['../group__State.html#ga46901f637f0a1eea41572031c5d530c8',1,'pico.h']]],
   ['pico_5fget_5fkeyboard_32',['pico_get_keyboard',['../group__State.html#ga8b57db112b8ec986958d5c15b2c854b2',1,'pico.h']]],
   ['pico_5fget_5flayer_33',['pico_get_layer',['../group__State.html#ga7203c69b639b6d299213926b2bffd713',1,'pico.h']]],
-  ['pico_5fget_5fmouse_34',['pico_get_mouse',['../group__State.html#ga467637a2247e7bde502430d2f8ffb910',1,'pico.h']]],
+  ['pico_5fget_5fmouse_34',['pico_get_mouse',['../group__State.html#gab8c5c80101717edd28aaae8c0539a6e4',1,'pico.h']]],
   ['pico_5fget_5fnow_35',['pico_get_now',['../group__State.html#ga20838f46d25a4201f8e9c20f800c244c',1,'pico.h']]],
   ['pico_5fget_5fpencil_36',['pico_get_pencil',['../group__State.html#ga2ef481c31009499afd3a23ee54a32674',1,'pico.h']]],
   ['pico_5fget_5fpencil_5fcolor_37',['pico_get_pencil_color',['../group__State.html#gafc5445b4a6be94e47617813012e1ceda',1,'pico.h']]],
