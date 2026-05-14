@@ -32,7 +32,7 @@ int main (void) {
        the position with a green pixel drawn in world (composited 5x to
        window). */
     pico_set_mouse(NULL, (Pico_Rel_Pos){ '%', {0.8, 0.76}, PICO_ANCHOR_NW });
-    Pico_Mouse pct = pico_get_mouse(NULL, '%');
+    Pico_Mouse pct = pico_get_mouse(NULL, &(Pico_Rel_Pos){.mode='%', .anchor=PICO_ANCHOR_NW});
     Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW };
     assert(pico_vs_pos_rect(NULL, &pos, NULL, &btn_in_r));
 

@@ -392,6 +392,15 @@ static void L_set_mouse (lua_State* L, int idx, Pico_Mouse* m) {
     lua_setfield(L, idx, "x");                  // T
     lua_pushnumber(L, m->y);                    // T | y
     lua_setfield(L, idx, "y");                  // T
+    {
+        lua_newtable(L);                        // T | anc
+        int j = lua_gettop(L);
+        lua_pushnumber(L, m->anchor.x);         // T | anc | ax
+        lua_setfield(L, j, "x");                // T | anc
+        lua_pushnumber(L, m->anchor.y);         // T | anc | ay
+        lua_setfield(L, j, "y");                // T | anc
+        lua_setfield(L, idx, "anchor");         // T
+    }
     lua_pushboolean(L, m->left);                // T | left
     lua_setfield(L, idx, "left");               // T
     lua_pushboolean(L, m->right);               // T | right
@@ -462,7 +471,7 @@ static const int CV_TYPES[4] = {
 // If arg 1 is a single mode char ('!','%','#'), insert a nil at
 // position 1 so args_parse treats it as `to_or_mode`, not `L_to`.
 static void _shift_if_mode (lua_State* L) {
-    if (lua_gettop(L) >= 1 && lua_type(L, 1) == LUA_TSTRING) {
+    if (lua_gettop(L)>=1 && lua_type(L,1)==LUA_TSTRING) {
         size_t len;
         const char* s = lua_tolstring(L, 1, &len);
         if (len == 1 && (s[0] == '!' || s[0] == '%' || s[0] == '#')) {
@@ -774,11 +783,25 @@ static int l_get_layer (lua_State* L) {
     return 1;
 }
 
-static int l_get_mouse (lua_State* L) {
-    _shift_if_mode(L);                          // single mode char at arg 1 -> shift nil in front
+static int l_get_mouse (lua_State* L) {     // [lay] | (mode|pos)
+    // single mode char OR Pos table at arg 1 -> shift nil in front
+    _shift_if_mode(L);
+    if (lua_gettop(L) >= 1 && lua_type(L, 1) == LUA_TTABLE) {
+        lua_pushnil(L);
+        lua_insert(L, 1);
+    }
     const char* layer = lua_isnil(L, 1) ? NULL : luaL_checkstring(L, 1);
-    const char* s = luaL_checkstring(L, 2);
-    Pico_Mouse mouse = pico_get_mouse(layer, s[0]);
+    Pico_Rel_Pos tmpl;
+    if (lua_type(L, 2) == LUA_TSTRING) {
+        char m = C_mode_s_opt(L, 2);
+        tmpl = (Pico_Rel_Pos) { .mode=m, .anchor=PICO_ANCHOR_C };
+    } else {
+        tmpl = (Pico_Rel_Pos) {
+            .mode = C_mode_t(L, 2, 1),
+            .anchor = C_anchor(L, 2),
+        };
+    }
+    Pico_Mouse mouse = pico_get_mouse(layer, &tmpl);
     lua_newtable(L);                            // ... | mouse
     L_set_mouse(L, lua_gettop(L), &mouse);
     return 1;                                   // ... | *mouse*

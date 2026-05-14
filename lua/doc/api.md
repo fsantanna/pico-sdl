@@ -25,7 +25,7 @@ In alphabetical order:
         '!', x: integer, y: integer,
         left: boolean, right: boolean, middle: boolean }`
 - **Flip**: `'none'` | `'horizontal'` | `'vertical'` | `'both'`
-- **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, left: boolean, right: boolean, middle: boolean }`
+- **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, anchor: Anchor, left: boolean, right: boolean, middle: boolean }`
 - **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor] }`
 - **Rect**: `{ x: number, y: number, [w: number], [h: number] [,'!'|'%'|'#', anchor: Anchor] }`
     - Missing `w` or `h` defaults to 0 ("infer from source").
@@ -85,11 +85,17 @@ In alphabetical order:
     - **pico.get.mouse**: Gets mouse position and button state in
       `layer`'s frame. `layer` defaults to cur when omitted or `nil`.
         - `pico.get.mouse ([layer: string?,] mode: string) -> Mouse`
+        - `pico.get.mouse ([layer: string?,] pos: Pos) -> Mouse`
         - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
+        - String-mode form defaults `anchor` to `C` (cell-center),
+          matching the Lua-wide default. Use the table form with an
+          explicit `anchor` field to override (e.g. `'NW'`).
+        - Returned `Mouse` mirrors `mode` and `anchor` of the request.
         - Forms:
-            - `pico.get.mouse('!')` — cur, pixels
+            - `pico.get.mouse('!')` — cur, pixels, C anchor
             - `pico.get.mouse(nil, '!')` — explicit nil = cur
             - `pico.get.mouse('world', '%')` — named layer's frame
+            - `pico.get.mouse({'!', anchor='NW'})` — explicit anchor
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
     - **pico.get.text**: Gets text dimensions.

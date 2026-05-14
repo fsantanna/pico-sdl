@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL_events.h>
 
+#include "anchors.h"
+
 typedef enum PICO_EVENT {
     PICO_EVENT_ANY               = -1,
     PICO_EVENT_NONE              =  0,
@@ -25,6 +27,7 @@ typedef struct {
 typedef struct {
     char mode;              // 'w', '!', '%', '#'
     float x, y;
+    Pico_Anchor anchor;
     unsigned left   : 1;
     unsigned right  : 1;
     unsigned middle : 1;

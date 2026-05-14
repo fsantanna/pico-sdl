@@ -36,7 +36,14 @@ do
     pico.set.layer("window")
     pico.set.mouse({'!', x=394, y=355, anchor='C'})
     pico.set.layer("world")
-    local pct = pico.get.mouse('%')
+    local pct = pico.get.mouse({'%', anchor='NW'})
+    do
+        -- mode-string form: anchor C (sanity) + position shift +0.5/100
+        local pctC = pico.get.mouse('%')
+        assert(pctC.anchor.x==0.5 and pctC.anchor.y==0.5)
+        assert(math.abs(pctC.x - pct.x - 0.005) < 0.001)
+        assert(math.abs(pctC.y - pct.y - 0.005) < 0.001)
+    end
     local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
     assert(not pico.vs.pos.rect(nil, pos, nil, b1))
@@ -44,8 +51,11 @@ do
     assert(not pico.vs.pos.rect(nil, pos, b3))
     -- equivalent via explicit layer args (no set_layer dance)
     pico.set.mouse("window", {'!', x=394, y=355, anchor='C'})
-    local pct2 = pico.get.mouse("world", '%')
+    local pct2 = pico.get.mouse("world", {'%', anchor='NW'})
     assert(math.abs(pct2.x - pct.x) < 0.001 and math.abs(pct2.y - pct.y) < 0.001)
+    local pct2C = pico.get.mouse("world", '%')
+    assert(math.abs(pct2C.x - pct.x - 0.005) < 0.001)
+    assert(math.abs(pct2C.y - pct.y - 0.005) < 0.001)
     pico.set.pencil { color='red' }
     pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-02")
@@ -57,7 +67,12 @@ do
     pico.set.layer("window")
     pico.set.mouse({'!', x=457, y=431, anchor='C'})
     pico.set.layer("world")
-    local pct = pico.get.mouse('%')
+    local pct = pico.get.mouse({'%', anchor='NW'})
+    do
+        local pctC = pico.get.mouse('%')
+        assert(math.abs(pctC.x - pct.x - 0.005) < 0.001)
+        assert(math.abs(pctC.y - pct.y - 0.005) < 0.001)
+    end
     local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
     assert(not pico.vs.pos.rect(pos, b1))
@@ -74,7 +89,12 @@ do
     pico.set.layer("window")
     pico.set.mouse({'!', x=362, y=405, anchor='C'})
     pico.set.layer("world")
-    local pct = pico.get.mouse('%')
+    local pct = pico.get.mouse({'%', anchor='NW'})
+    do
+        local pctC = pico.get.mouse('%')
+        assert(math.abs(pctC.x - pct.x - 0.005) < 0.001)
+        assert(math.abs(pctC.y - pct.y - 0.005) < 0.001)
+    end
     local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
     assert(    pico.vs.pos.rect(pos, nil, b1))
@@ -91,7 +111,12 @@ do
     pico.set.layer("window")
     pico.set.mouse({'!', x=419, y=392})
     pico.set.layer("world")
-    local pct = pico.get.mouse('%')
+    local pct = pico.get.mouse({'%', anchor='NW'})
+    do
+        local pctC = pico.get.mouse('%')
+        assert(math.abs(pctC.x - pct.x - 0.005) < 0.001)
+        assert(math.abs(pctC.y - pct.y - 0.005) < 0.001)
+    end
     local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
     assert(not pico.vs.pos.rect(pos, b1))
