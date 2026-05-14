@@ -1117,12 +1117,12 @@ void pico_output_draw_pixmap (
     const char* key,
     Pico_Abs_Dim dim,
     const Pico_Color pixmap[],
-    const Pico_Rel_Rect* rect
+    Pico_Rel_Rect rect
 ) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
     pico_layer_pixmap_mode('=', NULL, key, dim, pixmap);
-    pico_output_draw_layer(key, (Pico_Rel_Rect*)rect);
+    pico_output_draw_layer(key, &rect);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect rect) {
@@ -1136,7 +1136,7 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect rect) {
     _pico_output_draw_layer(layer, &rect);
 }
 
-void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect) {
+void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
 

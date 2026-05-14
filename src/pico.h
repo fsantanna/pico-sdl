@@ -204,7 +204,7 @@ void pico_output_clear (void);
 /// @sa pico_output_draw_image
 void pico_output_draw_pixmap (const char* key, Pico_Abs_Dim dim,
                               const Pico_Color pixmap[],
-                              const Pico_Rel_Rect* rect);
+                              Pico_Rel_Rect rect);
 
 /// @brief Draws an image.
 /// @param path path to the image file
@@ -228,8 +228,10 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws a layer onto the current layer.
 /// @param key layer key (must exist)
-/// @param rect target position and dimension (mode determines coordinates)
-void pico_output_draw_layer (const char* key, Pico_Rel_Rect* rect);
+/// @param rect target position and dimension (mode determines
+///        coordinates); NULL uses the layer's scene.dst defaults
+///        (full bounds in cur).
+void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw (mode determines coordinates)
@@ -277,18 +279,18 @@ void pico_output_present (void);
 /// in non-expert mode.
 void pico_output_draw_layers (void);
 
-/// @brief Takes a screenshot.
-/// @param path screenshot filepath (NULL uses timestamp in the name)
-/// @param rect region to capture (NULL captures full screen)
-/// @return the filepath of the screenshot
-const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect);
-
 /// @brief Draws a video frame (all-in-one).
 /// Auto-syncs to elapsed time internally.
 /// @param path path to the Y4M video file
 /// @param rect target position and dimension
 /// @return 1 if frame drawn, or 0 at EOF
 int pico_output_draw_video (const char* path, Pico_Rel_Rect rect);
+
+/// @brief Takes a screenshot.
+/// @param path screenshot filepath (NULL uses timestamp in the name)
+/// @param rect region to capture (NULL captures full screen)
+/// @return the filepath of the screenshot
+const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file

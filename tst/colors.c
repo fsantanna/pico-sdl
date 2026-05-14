@@ -245,7 +245,7 @@ int main (void) {
             '%', {0.5, 0.5, 0, 0}, PICO_ANCHOR_C
         };
         pico_output_draw_pixmap(
-            "alpha", (Pico_Abs_Dim){3,1}, pixmap, &r
+            "alpha", (Pico_Abs_Dim){3,1}, pixmap, r
         );
         _pico_check("colors-07");
     }

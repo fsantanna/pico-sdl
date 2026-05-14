@@ -181,7 +181,9 @@ In alphabetical order:
         - **pico.output.draw.image**: Draws image.
             - `pico.output.draw.image (path: string, rect: Rect)`
         - **pico.output.draw.layer**: Draws a layer onto the current layer.
-            - `pico.output.draw.layer (name: string, rect: Rect)`
+            - `pico.output.draw.layer (name: string [, rect: Rect])`
+            - `rect` is optional; when omitted (or `nil`), the layer's
+              `scene.dst` is used (full bounds in cur).
         - **pico.output.draw.layers**: Composites the window layer hierarchy
           (window's children, including world) onto window.tex. Called
           automatically by `pico.output.present` in non-expert mode.

@@ -43,7 +43,7 @@ static Pico_Layer* _pico_layer_text (
     int mode, const char* key, int height, const char* text
 );
 static void _pico_output_draw_layer (
-    Pico_Layer* layer, Pico_Rel_Rect* rect
+    Pico_Layer* layer, const Pico_Rel_Rect* rect
 );
 
 #endif // PICO_LAYERS_HC
@@ -73,7 +73,7 @@ static void _layer_attach (const char* up, const char* dn) {
     }
 }
 
-static void _pico_output_draw_layer (Pico_Layer*, Pico_Rel_Rect*);
+static void _pico_output_draw_layer (Pico_Layer*, const Pico_Rel_Rect*);
 
 static void _pico_output_draw_layers (Pico_Layer* UP) {
     Pico_Layer* old = G.layer;
@@ -180,7 +180,7 @@ static void _show_tile (Pico_Layer_Scene* view, SDL_Rect dst) {
     if (dx > 0) {
         for (int i=dx; i<dst.w; i+=dx) {
             pico_output_draw_line (
-                (Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
+                (Pico_Rel_Pos){ '!', {dst.x+i, dst.y},       PICO_ANCHOR_NW },
                 (Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
             );
         }
@@ -188,7 +188,7 @@ static void _show_tile (Pico_Layer_Scene* view, SDL_Rect dst) {
     if (dy > 0) {
         for (int j=dy; j<dst.h; j+=dy) {
             pico_output_draw_line (
-                (Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
+                (Pico_Rel_Pos){ '!', {dst.x, dst.y+j},       PICO_ANCHOR_NW },
                 (Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
             );
         }
@@ -215,8 +215,12 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             for (int i=0; i<dst.w; i+=(dst.w/layer->scene.dim.w)) {
                 if (i == 0) continue;
                 pico_output_draw_line (
-                    (Pico_Rel_Pos){ '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW },
-                    (Pico_Rel_Pos){ '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW }
+                    (Pico_Rel_Pos) {
+                        '!', {dst.x+i, dst.y}, PICO_ANCHOR_NW
+                    },
+                    (Pico_Rel_Pos) {
+                        '!', {dst.x+i, dst.y+dst.h}, PICO_ANCHOR_NW
+                    }
                 );
             }
         }
@@ -224,8 +228,12 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             for (int j=0; j<dst.h; j+=(dst.h/layer->scene.dim.h)) {
                 if (j == 0) continue;
                 pico_output_draw_line (
-                    (Pico_Rel_Pos){ '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW },
-                    (Pico_Rel_Pos){ '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW }
+                    (Pico_Rel_Pos) {
+                        '!', {dst.x, dst.y+j}, PICO_ANCHOR_NW
+                    },
+                    (Pico_Rel_Pos) {
+                        '!', {dst.x+dst.w, dst.y+j}, PICO_ANCHOR_NW
+                    }
                 );
             }
         }
@@ -247,7 +255,11 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             );
             pico_output_draw_text (
                 lbl,
-                (Pico_Rel_Rect){ '!', {dst.x+x-dim.w/2, dst.y+10-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
+                (Pico_Rel_Rect) {
+                    '!',
+                    {dst.x+x-dim.w/2, dst.y+10-dim.h/2, 0, dim.h},
+                    PICO_ANCHOR_NW
+                }
             );
         }
 
@@ -261,7 +273,11 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
                 &(Pico_Rel_Dim){ '!', {0, H} });
             pico_output_draw_text (
                 lbl,
-                (Pico_Rel_Rect){ '!', {dst.x+10-dim.w/2, dst.y+y-dim.h/2, 0, dim.h}, PICO_ANCHOR_NW }
+                (Pico_Rel_Rect) {
+                    '!',
+                    {dst.x+10-dim.w/2, dst.y+y-dim.h/2, 0, dim.h},
+                    PICO_ANCHOR_NW
+                }
             );
         }
     }
@@ -270,7 +286,7 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
 }
 
 static void _pico_output_draw_layer (
-    Pico_Layer* layer, Pico_Rel_Rect* rect
+    Pico_Layer* layer, const Pico_Rel_Rect* rect
 ) {
     // blit layer onto current render target
     if (rect == NULL) {
@@ -282,9 +298,13 @@ static void _pico_output_draw_layer (
     }
     SDL_Rect dst = _rnd_rect(_sdl_rect(*rect, NULL, dp));
 
-    Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ? &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
-    Pico_Abs_Rect sup_base = {0, 0, sup->w, sup->h};
-    Pico_Abs_Rect src = _rnd_rect(_sdl_rect(layer->scene.src, &sup_base, NULL));
+    Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ?
+                            &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
+    Pico_Abs_Rect src = _rnd_rect (
+        _sdl_rect (
+            layer->scene.src, &(Pico_Abs_Rect){0, 0, sup->w, sup->h}, NULL
+        )
+    );
 
     // clip dst to current layer (parent) bounds, propagate to src
     {

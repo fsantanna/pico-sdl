@@ -1439,7 +1439,7 @@ static int l_output_draw_pixmap (lua_State* L) {
     C_pixmap_fill(L, 2, dim, (Pico_Color*)buf);
 
     Pico_Rel_Rect rect = C_rel_rect(L, 3);
-    pico_output_draw_pixmap(name, dim, (Pico_Color*)buf, &rect);
+    pico_output_draw_pixmap(name, dim, (Pico_Color*)buf, rect);
     return 0;
 }
 
