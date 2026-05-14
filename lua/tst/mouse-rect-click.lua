@@ -37,11 +37,11 @@ do
     pico.set.mouse({'!', x=394, y=355, anchor='C'})
     pico.set.layer("world")
     local pct = pico.get.mouse('%')
-    local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
+    local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
     assert(not pico.vs.pos.rect(nil, pos, nil, b1))
-    assert(not pico.vs.pos.rect(nil, pos, nil, b2))
-    assert(not pico.vs.pos.rect(nil, pos, nil, b3))
+    assert(not pico.vs.pos.rect(pos, nil, b2))
+    assert(not pico.vs.pos.rect(nil, pos, b3))
     -- equivalent via explicit layer args (no set_layer dance)
     pico.set.mouse("window", {'!', x=394, y=355, anchor='C'})
     local pct2 = pico.get.mouse("world", '%')
@@ -58,11 +58,11 @@ do
     pico.set.mouse({'!', x=457, y=431, anchor='C'})
     pico.set.layer("world")
     local pct = pico.get.mouse('%')
-    local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
+    local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos.rect(nil, pos, nil, b1))
-    assert(not pico.vs.pos.rect(nil, pos, nil, b2))
-    assert(    pico.vs.pos.rect(nil, pos, nil, b3))
+    assert(not pico.vs.pos.rect(pos, b1))
+    assert(not pico.vs.pos.rect(nil, pos, b2))
+    assert(    pico.vs.pos.rect(pos, nil, b3))
     pico.set.pencil { color='green' }
     pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-03")
@@ -75,11 +75,11 @@ do
     pico.set.mouse({'!', x=362, y=405, anchor='C'})
     pico.set.layer("world")
     local pct = pico.get.mouse('%')
-    local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
+    local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(    pico.vs.pos.rect(nil, pos, nil, b1))
-    assert(not pico.vs.pos.rect(nil, pos, nil, b2))
-    assert(not pico.vs.pos.rect(nil, pos, nil, b3))
+    assert(    pico.vs.pos.rect(pos, nil, b1))
+    assert(not pico.vs.pos.rect(nil, pos, b2))
+    assert(not pico.vs.pos.rect(pos, b3))
     pico.set.pencil { color='green' }
     pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-04")
@@ -89,14 +89,14 @@ end
 print("click 2 (419,392)")
 do
     pico.set.layer("window")
-    pico.set.mouse({'!', x=419, y=392, anchor='C'})
+    pico.set.mouse({'!', x=419, y=392})
     pico.set.layer("world")
     local pct = pico.get.mouse('%')
-    local pos = {'%', x=pct.x, y=pct.y, anchor='C'}
+    local pos = {'%', x=pct.x, y=pct.y}
     print(string.format("  pct %5.3f %5.3f", pct.x, pct.y))
-    assert(not pico.vs.pos.rect(nil, pos, nil, b1))
-    assert(    pico.vs.pos.rect(nil, pos, nil, b2))
-    assert(not pico.vs.pos.rect(nil, pos, nil, b3))
+    assert(not pico.vs.pos.rect(pos, b1))
+    assert(    pico.vs.pos.rect(pos, b2))
+    assert(not pico.vs.pos.rect(pos, b3))
     pico.set.pencil { color='green' }
     pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-05")

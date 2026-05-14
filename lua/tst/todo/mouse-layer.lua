@@ -3,7 +3,7 @@ require 'pico'
 pico.init(true)
 
 -- Create layer 50x50, draw centered circle
-pico.layer.empty('!', nil, "A", true, {'!', w=50, h=50})
+pico.layer.empty('!', nil, "A", false, {'!', w=50, h=50})
 pico.set.layer("A")
 pico.set.effect { color='red' }
 pico.output.clear()
