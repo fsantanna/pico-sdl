@@ -345,9 +345,11 @@ Pico_Mouse pico_get_mouse (const char* layer, char mode) {
         .middle = !!(masks & SDL_BUTTON(SDL_BUTTON_MIDDLE)),
     };
 
-    Pico_Rel_Pos in  = {'!', {phy.x, phy.y}, PICO_ANCHOR_NW};
     Pico_Rel_Pos rel = { .mode=mode, .anchor=PICO_ANCHOR_NW };
-    pico_cv_pos(layer, &rel, "window", &in);
+    pico_cv_pos (
+        layer, &rel, "window",
+        &(Pico_Rel_Pos){'!', {phy.x, phy.y}, PICO_ANCHOR_NW}
+    );
     m.x = rel.x;
     m.y = rel.y;
 
@@ -757,8 +759,7 @@ void pico_layer_pixmap_mode (
 }
 
 void pico_layer_empty (
-    const char* up, const char* key,
-    int clear,
+    const char* up, const char* key, int clear,
     Pico_Rel_Dim dim, Pico_Abs_Dim* tile
 ) {
     _pico_guard();
@@ -766,9 +767,7 @@ void pico_layer_empty (
 }
 
 void pico_layer_empty_mode (
-    int mode,
-    const char* up, const char* key,
-    int clear,
+    int mode, const char* up, const char* key, int clear,
     Pico_Rel_Dim dim, Pico_Abs_Dim* tile
 ) {
     _pico_guard();
@@ -889,62 +888,86 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                 case SDLK_MINUS: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.w += 0.1;
                     pct.h += 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_EQUALS: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.w -= 0.1;
                     pct.h -= 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_LEFT: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.x -= 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_RIGHT: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.x += 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_UP: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.y -= 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_DOWN: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    { SDL_FRect f = _sdl_rect(G.layer->scene.src, NULL, NULL); _rel_rect(f, &pct, NULL); }
+                    _rel_rect (
+                        _sdl_rect(G.layer->scene.src, NULL, NULL), &pct, NULL
+                    );
                     pct.y += 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    { SDL_FRect f = _sdl_rect(pct, NULL, NULL); _rel_rect(f, &r, NULL); }
+                    _rel_rect (
+                        _sdl_rect(pct, NULL, NULL), &r, NULL
+                    );
                     pico_set_scene_src(r);
                     return 1;
                 }
