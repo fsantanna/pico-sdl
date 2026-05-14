@@ -17,6 +17,17 @@ static void L_reg_get (lua_State* L, const char* t, int i) {
     lua_pop(L, 1);                          // ... | *v*
 }
 
+// L expects optional layer at index 1, otherwise insert nil there.
+// Need to distinguish layer from mode.
+static void _layer_opt_mode (lua_State* L) {
+    int t = lua_type(L, 1);
+    int has = (t == LUA_TNIL) || (t==LUA_TSTRING && C_mode_s_opt(L,0,1)=='\0');
+    if (!has) {
+        lua_pushnil(L);
+        lua_insert(L, 1);
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -429,59 +440,11 @@ static int l_quit (lua_State* L) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// args_parse — flexible 4-slot dispatcher for pico.vs.* and pico.cv.*
-// out[i]: Lua arg index (1..nargs), or 0 if the slot is absent.
-// types[i]: bitmask of accepted lua_type values for slot i, e.g.
-//     (1<<LUA_TSTRING) | (1<<LUA_TTABLE).
-// An explicit nil in the arg list is consumed and leaves the slot at 0;
-// a type mismatch leaves the slot empty without advancing the arg cursor.
-///////////////////////////////////////////////////////////////////////////////
-
-static void args_parse (lua_State* L, int out[4], const int types[4], const char* who) {
-    int n = lua_gettop(L);
-    int ai = 1;
-    for (int si = 0; si < 4; si++) {
-        out[si] = 0;
-        if (ai > n) {
-            // no more args
-        } else if (lua_isnil(L, ai)) {
-            ai++;
-        } else if ((1 << lua_type(L, ai)) & types[si]) {
-            out[si] = ai;
-            ai++;
-        } else {
-            // type mismatch: leave slot empty, do not advance
-        }
-    }
-    if (ai <= n) {
-        luaL_error(L, "%s: unmatched argument at position %d", who, ai);
-    }
-}
-
-static const int VS_TYPES[4] = {
-    1 << LUA_TSTRING,
-    1 << LUA_TTABLE,
-    1 << LUA_TSTRING,
-    1 << LUA_TTABLE,
-};
-
-// L expects optional layer at index 1, otherwise insert nil there.
-// Need to distinguish layer from mode.
-static void _layer_opt_mode (lua_State* L) {
-    int t = lua_type(L, 1);
-    int has = (t == LUA_TNIL) || (t==LUA_TSTRING && C_mode_s_opt(L,0,1)=='\0');
-    if (!has) {
-        lua_pushnil(L);
-        lua_insert(L, 1);
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // CV: unified pos/rect/dim — (L_to, to_or_mode, L_fr, fr)
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_cv_dim (lua_State* L) {    // [L] | to | [L] | fr
-    _layer_opt_mode(L);                 // L | to | [L] | fr
+    L_layer_opt_mode(L);                // L | to | [L] | fr
 
     int t3 = lua_type(L, 3);
     if (t3!=LUA_TNIL && t3!=LUA_TSTRING) {
@@ -516,7 +479,7 @@ static int l_cv_dim (lua_State* L) {    // [L] | to | [L] | fr
 }
 
 static int l_cv_pos (lua_State* L) {    // [L] | to | [L] | fr
-    _layer_opt_mode(L);                 // L | to | [L] | fr
+    L_layer_opt_mode(L);                // L | to | [L] | fr
 
     int t3 = lua_type(L, 3);
     if (t3!=LUA_TNIL && t3!=LUA_TSTRING) {
@@ -560,7 +523,7 @@ static int l_cv_pos (lua_State* L) {    // [L] | to | [L] | fr
 }
 
 static int l_cv_rect (lua_State* L) {   // [L] | to | [L] | fr
-    _layer_opt_mode(L);                 // L | to | [L] | fr
+    L_layer_opt_mode(L);                // L | to | [L] | fr
 
     int t3 = lua_type(L, 3);
     if (t3!=LUA_TNIL && t3!=LUA_TSTRING) {
@@ -640,6 +603,43 @@ static int l_in_dim (lua_State* L) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// args_parse — flexible 4-slot dispatcher for pico.vs.* and pico.cv.*
+// out[i]: Lua arg index (1..nargs), or 0 if the slot is absent.
+// types[i]: bitmask of accepted lua_type values for slot i, e.g.
+//     (1<<LUA_TSTRING) | (1<<LUA_TTABLE).
+// An explicit nil in the arg list is consumed and leaves the slot at 0;
+// a type mismatch leaves the slot empty without advancing the arg cursor.
+///////////////////////////////////////////////////////////////////////////////
+
+static void args_parse (lua_State* L, int out[4], const int types[4], const char* who) {
+    int n = lua_gettop(L);
+    int ai = 1;
+    for (int si = 0; si < 4; si++) {
+        out[si] = 0;
+        if (ai > n) {
+            // no more args
+        } else if (lua_isnil(L, ai)) {
+            ai++;
+        } else if ((1 << lua_type(L, ai)) & types[si]) {
+            out[si] = ai;
+            ai++;
+        } else {
+            // type mismatch: leave slot empty, do not advance
+        }
+    }
+    if (ai <= n) {
+        luaL_error(L, "%s: unmatched argument at position %d", who, ai);
+    }
+}
+
+static const int VS_TYPES[4] = {
+    1 << LUA_TSTRING,
+    1 << LUA_TTABLE,
+    1 << LUA_TSTRING,
+    1 << LUA_TTABLE,
+};
 
 static int l_vs_pos_pos (lua_State* L) {
     int idx[4];
@@ -812,7 +812,7 @@ static int l_get_layer (lua_State* L) {
 }
 
 static int l_get_mouse (lua_State* L) {     // [lay] | (mode|pos)
-    _layer_opt_mode(L);
+    L_layer_opt_mode(L);
     const char* layer = lua_tostring(L, 1);
     char m = C_mode_s_opt(L, 1, 2);
     Pico_Rel_Pos pos;
