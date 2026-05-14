@@ -631,11 +631,12 @@ static int l_vs_pos_rect (lua_State* L) {   // [L1] | p1 | [L2] | [r2]
 static int l_vs_rect_pos (lua_State* L) {   // [L1] | [r1] | [L2] | p2
     lua_settop(L, 4);
     L_layer_opt(L, 1);                      // L1 | [r1] | [L2] | p2
-    if (lua_type(L,2) != LUA_TTABLE) {      // L1 | [L2] | [r2] | p2
+    if (lua_type(L,2) == LUA_TSTRING) {     // L1 | L2 | p2
         lua_pushnil(L);
-        lua_insert(L, 2);                   // L1 | nil | [L2] | [r2] | p2
+        lua_insert(L, 2);                   // L1 | nil | L2 | p2
+    } else {
+        L_layer_opt(L, 3);                  // L1 | nil | [L2] | p2
     }
-    L_layer_opt(L, 3);                      // L1 | nil | L2 | [r2] | p2
 
     const char* L1 = lua_tostring(L, 1);
     const char* L2 = lua_tostring(L, 3);
@@ -657,11 +658,12 @@ static int l_vs_rect_pos (lua_State* L) {   // [L1] | [r1] | [L2] | p2
 static int l_vs_rect_rect (lua_State* L) {  // [L1] | [r1] | [L2] | [r2]
     lua_settop(L, 4);
     L_layer_opt(L, 1);                      // L1 | [r1] | [L2] | [r2]
-    if (lua_type(L,2) != LUA_TTABLE) {      // L1 | [L2] | [r2]
+    if (lua_type(L,2) == LUA_TSTRING) {     // L1 | L2 | [r2]
         lua_pushnil(L);
-        lua_insert(L, 2);                   // L1 | nil | [L2] | [r2]
+        lua_insert(L, 2);                   // L1 | nil | L2 | [r2]
+    } else {
+        L_layer_opt(L, 3);                  // L1 | nil | [L2] | [r2]
     }
-    L_layer_opt(L, 3);                      // L1 | nil | L2 | [r2]
 
     const char* L1 = lua_tostring(L, 1);
     const char* L2 = lua_tostring(L, 3);

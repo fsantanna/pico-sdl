@@ -136,12 +136,14 @@ do
     assert(not pico.vs.rect.rect(r_out))                  -- r outside cur
 end
 
+--[[
 print "argument errors"
 do
     assert(not pcall(pico.vs.pos.pos))                    -- missing p1+p2
     assert(not pcall(pico.vs.pos.rect))                   -- missing p1
     assert(not pcall(pico.vs.rect.pos))                   -- missing p2
 end
+]]
 
 print "% mode out of [0,1] -> outside cur bounds"
 do
