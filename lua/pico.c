@@ -86,25 +86,6 @@ static void L_layer_opt_mode (lua_State* L) {
     }
 }
 
-// Optional realm mode at arg 1 ('!', '=', '~'). If present, keep it.
-// Otherwise insert nil at slot 1 so the realm slot is always explicit.
-// Returns the realm char, or '\0' when absent (caller picks default).
-static char L_realm_opt (lua_State* L) {
-    char m = '\0';
-    if (lua_isstring(L, 1)) {
-        size_t len;
-        const char* s = lua_tolstring(L, 1, &len);
-        if (len==1 && (s[0]=='!' || s[0]=='=' || s[0]=='~')) {
-            m = s[0];
-        }
-    }
-    if (m == '\0') {
-        lua_pushnil(L);
-        lua_insert(L, 1);
-    }
-    return m;
-}
-
 static Pico_Color C_color_s (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TSTRING);   // clr = 'red'
@@ -1177,6 +1158,25 @@ static int l_set_window (lua_State* L) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+// Optional realm mode at arg 1 ('!', '=', '~'). If present, keep it.
+// Otherwise insert nil at slot 1 so the realm slot is always explicit.
+// Returns the realm char, or '\0' when absent (caller picks default).
+static char L_realm_opt (lua_State* L) {
+    char m = '\0';
+    if (lua_isstring(L, 1)) {
+        size_t len;
+        const char* s = lua_tolstring(L, 1, &len);
+        if (len==1 && (s[0]=='!' || s[0]=='=' || s[0]=='~')) {
+            m = s[0];
+        }
+    }
+    if (m == '\0') {
+        lua_pushnil(L);
+        lua_insert(L, 1);
+    }
+    return m;
+}
 
 // If slot `i` holds a Rect (table with `x` field), set layer `key`'s
 // scene.target to it. No-op otherwise. Preserves the current layer.
