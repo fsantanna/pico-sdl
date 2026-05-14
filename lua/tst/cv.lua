@@ -69,8 +69,9 @@ do
     assert(w.x==20 and w.y==40 and w.w==10 and w.h==20)
 
     print('', 'dim sub -> world')
-    local v = pico.cv.dim('world', '!', nil, {'!', w=5, h=10})
-    assert(v.w==10 and v.h==20)
+    local t = {'!'}
+    local v = pico.cv.dim('world', t, nil, {'!', w=5, h=10})
+    assert(t==v and v.w==10 and v.h==20)
 
     pico.set.layer 'world'
 end

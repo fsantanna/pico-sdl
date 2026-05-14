@@ -487,32 +487,39 @@ static void _layer_opt_mode (lua_State* L) {
 // CV: unified pos/rect/dim — (L_to, to_or_mode, L_fr, fr)
 ///////////////////////////////////////////////////////////////////////////////
 
-static int l_cv_dim (lua_State* L) {
-    int idx[4];
-    _layer_opt_mode(L);
-    args_parse(L, idx, CV_TYPES, "cv");
-    if (idx[1] == 0 || idx[3] == 0) {
-        return luaL_error(L, "cv.dim: to_or_mode and fr are required");
+static int l_cv_dim (lua_State* L) {    // [L] | to | [L] | fr
+    _layer_opt_mode(L);                 // L | to | [L] | fr
+
+    int t3 = lua_type(L, 3);
+    if (t3!=LUA_TNIL && t3!=LUA_TSTRING) {
+        lua_pushnil(L);
+        lua_insert(L, 3);
+    }                                   // L | to | L | fr
+
+    if (lua_gettop(L) < 4) {
+        return luaL_error(L, "too few arguments");
     }
-    const char* L_to = idx[0] ? lua_tostring(L, idx[0]) : NULL;
-    const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
-    Pico_Rel_Dim fr = C_rel_dim(L, idx[3]);
-    if (lua_type(L, idx[1]) == LUA_TSTRING) {
-        char m = C_mode_s_opt(L, 1, idx[1]);
-        Pico_Rel_Dim to = { .mode=m };
-        pico_cv_dim(L_to, &to, L_fr, &fr);
+
+    const char* L_to = lua_tostring(L, 1);
+    const char* L_fr = lua_tostring(L, 3);
+    Pico_Rel_Dim fr = C_rel_dim(L, 4);
+
+    char m = C_mode_s_opt(L, 1, 2);
+    Pico_Rel_Dim to = {
+        .mode = (m != '\0') ? m : C_mode_t(L, 2, 1)
+    };
+
+    pico_cv_dim(L_to, &to, L_fr, &fr);
+    if (m != '\0') {
         L_push_rel_dim(L, &to);
-        return 1;
     } else {
-        Pico_Rel_Dim to = { .mode = C_mode_t(L, idx[1], 1) };
-        pico_cv_dim(L_to, &to, L_fr, &fr);
         lua_pushnumber(L, to.w);
-        lua_setfield(L, idx[1], "w");
+        lua_setfield(L, 2, "w");
         lua_pushnumber(L, to.h);
-        lua_setfield(L, idx[1], "h");
-        lua_pushvalue(L, idx[1]);
-        return 1;
+        lua_setfield(L, 2, "h");
+        lua_pushvalue(L, 2);
     }
+    return 1;
 }
 
 static int l_cv_pos (lua_State* L) {    // [L] | to | [L] | fr
