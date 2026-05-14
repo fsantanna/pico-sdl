@@ -465,13 +465,6 @@ static const int VS_TYPES[4] = {
     1 << LUA_TTABLE,
 };
 
-static const int CV_TYPES[4] = {
-    1 << LUA_TSTRING,
-    (1 << LUA_TSTRING) | (1 << LUA_TTABLE),
-    1 << LUA_TSTRING,
-    1 << LUA_TTABLE,
-};
-
 // L expects optional layer at index 1, otherwise insert nil there.
 // Need to distinguish layer from mode.
 static void _layer_opt_mode (lua_State* L) {
@@ -508,8 +501,8 @@ static int l_cv_dim (lua_State* L) {    // [L] | to | [L] | fr
     Pico_Rel_Dim to = {
         .mode = (m != '\0') ? m : C_mode_t(L, 2, 1)
     };
-
     pico_cv_dim(L_to, &to, L_fr, &fr);
+
     if (m != '\0') {
         L_push_rel_dim(L, &to);
     } else {
@@ -523,69 +516,95 @@ static int l_cv_dim (lua_State* L) {    // [L] | to | [L] | fr
 }
 
 static int l_cv_pos (lua_State* L) {    // [L] | to | [L] | fr
-    int idx[4];
-    _layer_opt_mode(L);
-    args_parse(L, idx, CV_TYPES, "cv");
-    if (idx[1] == 0 || idx[3] == 0) {
-        return luaL_error(L, "cv.pos: to_or_mode and fr are required");
+    _layer_opt_mode(L);                 // L | to | [L] | fr
+
+    int t3 = lua_type(L, 3);
+    if (t3!=LUA_TNIL && t3!=LUA_TSTRING) {
+        lua_pushnil(L);
+        lua_insert(L, 3);
+    }                                   // L | to | L | fr
+
+    if (lua_gettop(L) < 4) {
+        return luaL_error(L, "too few arguments");
     }
-    const char* L_to = idx[0] ? lua_tostring(L, idx[0]) : NULL;
-    const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
-    Pico_Rel_Pos fr = C_rel_pos(L, idx[3]);
-    if (lua_type(L, idx[1]) == LUA_TSTRING) {
-        char m = C_mode_s_opt(L, 1, idx[1]);
-        Pico_Rel_Pos to = { .mode=m, .anchor=PICO_ANCHOR_C };
-        pico_cv_pos(L_to, &to, L_fr, &fr);
-        L_push_rel_pos(L, &to);
-        return 1;
-    } else {
-        Pico_Rel_Pos to = {
-            .mode = C_mode_t(L, idx[1], 1),
-            .anchor = C_anchor(L, idx[1]),
+
+    const char* L_to = lua_tostring(L, 1);
+    const char* L_fr = lua_tostring(L, 3);
+    Pico_Rel_Pos fr = C_rel_pos(L, 4);
+
+    char m = C_mode_s_opt(L, 1, 2);
+    Pico_Rel_Pos to;
+    if (m != '\0') {
+        to = (Pico_Rel_Pos) {
+            .mode   = m,
+            .anchor = PICO_ANCHOR_C,
         };
-        pico_cv_pos(L_to, &to, L_fr, &fr);
-        lua_pushnumber(L, to.x);
-        lua_setfield(L, idx[1], "x");
-        lua_pushnumber(L, to.y);
-        lua_setfield(L, idx[1], "y");
-        lua_pushvalue(L, idx[1]);
-        return 1;
+    } else {
+        to = (Pico_Rel_Pos) {
+            .mode   = C_mode_t(L, 2, 1),
+            .anchor = C_anchor(L, 2),
+        };
     }
+    pico_cv_pos(L_to, &to, L_fr, &fr);
+
+    if (m != '\0') {
+        L_push_rel_pos(L, &to);
+    } else {
+        lua_pushnumber(L, to.x);
+        lua_setfield(L, 2, "x");
+        lua_pushnumber(L, to.y);
+        lua_setfield(L, 2, "y");
+        lua_pushvalue(L, 2);
+    }
+    return 1;
 }
 
-static int l_cv_rect (lua_State* L) {
-    int idx[4];
-    _layer_opt_mode(L);
-    args_parse(L, idx, CV_TYPES, "cv");
-    if (idx[1] == 0 || idx[3] == 0) {
-        return luaL_error(L, "cv.rect: to_or_mode and fr are required");
+static int l_cv_rect (lua_State* L) {   // [L] | to | [L] | fr
+    _layer_opt_mode(L);                 // L | to | [L] | fr
+
+    int t3 = lua_type(L, 3);
+    if (t3!=LUA_TNIL && t3!=LUA_TSTRING) {
+        lua_pushnil(L);
+        lua_insert(L, 3);
+    }                                   // L | to | L | fr
+
+    if (lua_gettop(L) < 4) {
+        return luaL_error(L, "too few arguments");
     }
-    const char* L_to = idx[0] ? lua_tostring(L, idx[0]) : NULL;
-    const char* L_fr = idx[2] ? lua_tostring(L, idx[2]) : NULL;
-    Pico_Rel_Rect fr = C_rel_rect(L, idx[3]);
-    if (lua_type(L, idx[1]) == LUA_TSTRING) {
-        char m = C_mode_s_opt(L, 1, idx[1]);
-        Pico_Rel_Rect to = { .mode=m, .anchor=PICO_ANCHOR_C };
-        pico_cv_rect(L_to, &to, L_fr, &fr);
-        L_push_rel_rect(L, &to);
-        return 1;
-    } else {
-        Pico_Rel_Rect to = {
-            .mode = C_mode_t(L, idx[1], 1),
-            .anchor = C_anchor(L, idx[1]),
+
+    const char* L_to = lua_tostring(L, 1);
+    const char* L_fr = lua_tostring(L, 3);
+    Pico_Rel_Rect fr = C_rel_rect(L, 4);
+
+    char m = C_mode_s_opt(L, 1, 2);
+    Pico_Rel_Rect to;
+    if (m != '\0') {
+        to = (Pico_Rel_Rect) {
+            .mode   = m,
+            .anchor = PICO_ANCHOR_C,
         };
-        pico_cv_rect(L_to, &to, L_fr, &fr);
-        lua_pushnumber(L, to.x);
-        lua_setfield(L, idx[1], "x");
-        lua_pushnumber(L, to.y);
-        lua_setfield(L, idx[1], "y");
-        lua_pushnumber(L, to.w);
-        lua_setfield(L, idx[1], "w");
-        lua_pushnumber(L, to.h);
-        lua_setfield(L, idx[1], "h");
-        lua_pushvalue(L, idx[1]);
-        return 1;
+    } else {
+        to = (Pico_Rel_Rect) {
+            .mode   = C_mode_t(L, 2, 1),
+            .anchor = C_anchor(L, 2),
+        };
     }
+    pico_cv_rect(L_to, &to, L_fr, &fr);
+
+    if (m != '\0') {
+        L_push_rel_rect(L, &to);
+    } else {
+        lua_pushnumber(L, to.x);
+        lua_setfield(L, 2, "x");
+        lua_pushnumber(L, to.y);
+        lua_setfield(L, 2, "y");
+        lua_pushnumber(L, to.w);
+        lua_setfield(L, 2, "w");
+        lua_pushnumber(L, to.h);
+        lua_setfield(L, 2, "h");
+        lua_pushvalue(L, 2);
+    }
+    return 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
