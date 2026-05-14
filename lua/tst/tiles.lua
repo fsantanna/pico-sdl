@@ -72,6 +72,8 @@ do
     mouse_w(0, 0)
     local pos = pico.get.mouse('#')
     assert(pos.x==1 and pos.y==1)
+    local pos = pico.get.mouse(nil, '#')
+    assert(pos.x==1 and pos.y==1)
 end
 
 -- phy (40,40) -> log (4,4) -> tile (2,2)

@@ -42,6 +42,10 @@ do
     assert(not pico.vs.pos.rect(nil, pos, nil, b1))
     assert(not pico.vs.pos.rect(nil, pos, nil, b2))
     assert(not pico.vs.pos.rect(nil, pos, nil, b3))
+    -- equivalent via explicit layer args (no set_layer dance)
+    pico.set.mouse("window", {'!', x=394, y=355, anchor='C'})
+    local pct2 = pico.get.mouse("world", '%')
+    assert(math.abs(pct2.x - pct.x) < 0.001 and math.abs(pct2.y - pct.y) < 0.001)
     pico.set.pencil { color='red' }
     pico.output.draw.pixel(pos)
     pico.check("mouse-rect-click-02")

@@ -20,6 +20,8 @@ do
         mouse_w(0, 3)
         local pos = pico.get.mouse('!')
         assert(pos.x==0 and pos.y>0.29 and pos.y<0.31)
+        local pos = pico.get.mouse(nil, '!')
+        assert(pos.x==0 and pos.y>0.29 and pos.y<0.31)
     end
 
     -- phy (250,250) -> log (25,25)
@@ -161,6 +163,9 @@ do
     local pos = pico.get.mouse('!')
     pico.set.layer(old)
     assert(pos.x==123 and pos.y==456)
+    -- equivalent via explicit layer arg (no set_layer dance)
+    local pos = pico.get.mouse("window", '!')
+    assert(pos.x==123 and pos.y==456)
 end
 
 -- roundtrip: set(rel) -> get(rel) -> assert equal
@@ -170,6 +175,9 @@ do
 
     pico.set.mouse({'!', x=25, y=25, anchor='NW'})
     local pos = pico.get.mouse('!')
+    assert(pos.x==25 and pos.y==25)
+    pico.set.mouse(nil, {'!', x=25, y=25, anchor='NW'})
+    local pos = pico.get.mouse(nil, '!')
     assert(pos.x==25 and pos.y==25)
 end
 
