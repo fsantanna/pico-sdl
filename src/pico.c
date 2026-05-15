@@ -657,7 +657,27 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
 
 void pico_set_scene_dst (Pico_Rel_Rect dst) {
     _pico_guard();
-    G.layer->scene.dst = dst;
+    Pico_Layer* L = G.layer;
+    if (dst.w == 0 || dst.h == 0) {
+        // aspect-fill: resolve eagerly so cv walks and draw-time
+        // see a concrete '!' rect. '%' needs parent's dim as base;
+        // '!' and '#' self-resolve via L's own dim / tile.
+        Pico_Abs_Rect Pb = {0, 0, 0, 0};
+        if (dst.mode == '%') {
+            assert (
+                L->hier.up != NULL
+                && "'%' aspect-fill dst requires a parent"
+            );
+            Pico_Layer* P = _pico_layer_name(L->hier.up);
+            Pb.w = P->scene.dim.w;
+            Pb.h = P->scene.dim.h;
+        }
+        SDL_FRect f = _sdl_rect(dst, &Pb, &L->scene.dim);
+        dst = (Pico_Rel_Rect) {
+            '!', {f.x, f.y, f.w, f.h}, PICO_ANCHOR_NW
+        };
+    }
+    L->scene.dst = dst;
     _pico_output_present(0);
 }
 
