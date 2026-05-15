@@ -129,9 +129,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga58b1be7bef5a8df9121e39614177b922" id="r_ga58b1be7bef5a8df9121e39614177b922"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga58b1be7bef5a8df9121e39614177b922">pico_output_draw_video</a> (const char *path, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> rect)</td></tr>
 <tr class="memdesc:ga58b1be7bef5a8df9121e39614177b922"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a video frame (all-in-one). Auto-syncs to elapsed time internally.  <br /></td></tr>
 <tr class="separator:ga58b1be7bef5a8df9121e39614177b922"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaea4343b81e35e80eb3608f1c6aaf3f4a" id="r_gaea4343b81e35e80eb3608f1c6aaf3f4a"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#gaea4343b81e35e80eb3608f1c6aaf3f4a">pico_output_screenshot</a> (const char *path, const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
-<tr class="memdesc:gaea4343b81e35e80eb3608f1c6aaf3f4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes a screenshot.  <br /></td></tr>
-<tr class="separator:gaea4343b81e35e80eb3608f1c6aaf3f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga447c51cbeae1015d6e2d3e6beab0d578" id="r_ga447c51cbeae1015d6e2d3e6beab0d578"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga447c51cbeae1015d6e2d3e6beab0d578">pico_output_screenshot</a> (const char *layer, const char *path, const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
+<tr class="memdesc:ga447c51cbeae1015d6e2d3e6beab0d578"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes a screenshot of a layer.  <br /></td></tr>
+<tr class="separator:ga447c51cbeae1015d6e2d3e6beab0d578"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac84f68083d09b7b09f3ea66c5075a4da" id="r_gac84f68083d09b7b09f3ea66c5075a4da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#gac84f68083d09b7b09f3ea66c5075a4da">pico_output_sound</a> (const char *path)</td></tr>
 <tr class="memdesc:gac84f68083d09b7b09f3ea66c5075a4da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plays a sound.  <br /></td></tr>
 <tr class="separator:gac84f68083d09b7b09f3ea66c5075a4da"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -690,8 +690,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gaea4343b81e35e80eb3608f1c6aaf3f4a" name="gaea4343b81e35e80eb3608f1c6aaf3f4a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaea4343b81e35e80eb3608f1c6aaf3f4a">&#9670;&#160;</a></span>pico_output_screenshot()</h2>
+<a id="ga447c51cbeae1015d6e2d3e6beab0d578" name="ga447c51cbeae1015d6e2d3e6beab0d578"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga447c51cbeae1015d6e2d3e6beab0d578">&#9670;&#160;</a></span>pico_output_screenshot()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -699,6 +699,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">const char * pico_output_screenshot </td>
           <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>path</em>, </td>
         </tr>
@@ -716,11 +722,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Takes a screenshot. </p>
+<p>Takes a screenshot of a layer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">layer</td><td>layer name to capture (NULL uses current layer) </td></tr>
     <tr><td class="paramname">path</td><td>screenshot filepath (NULL uses timestamp in the name) </td></tr>
-    <tr><td class="paramname">rect</td><td>region to capture (NULL captures full screen) </td></tr>
+    <tr><td class="paramname">rect</td><td>region to capture (NULL captures full layer) </td></tr>
   </table>
   </dd>
 </dl>

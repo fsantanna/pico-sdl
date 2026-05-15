@@ -96,7 +96,7 @@ var searchData=
   ['pico_5foutput_5fdraw_5ftri_93',['pico_output_draw_tri',['../group__Output.html#ga9044c4db2d9977d977246c7e62623e6e',1,'pico.h']]],
   ['pico_5foutput_5fdraw_5fvideo_94',['pico_output_draw_video',['../group__Output.html#ga58b1be7bef5a8df9121e39614177b922',1,'pico.h']]],
   ['pico_5foutput_5fpresent_95',['pico_output_present',['../group__Output.html#ga22b9a09a3d8a93b72b613b9b653701c4',1,'pico.h']]],
-  ['pico_5foutput_5fscreenshot_96',['pico_output_screenshot',['../group__Output.html#gaea4343b81e35e80eb3608f1c6aaf3f4a',1,'pico.h']]],
+  ['pico_5foutput_5fscreenshot_96',['pico_output_screenshot',['../group__Output.html#ga447c51cbeae1015d6e2d3e6beab0d578',1,'pico.h']]],
   ['pico_5foutput_5fsound_97',['pico_output_sound',['../group__Output.html#gac84f68083d09b7b09f3ea66c5075a4da',1,'pico.h']]],
   ['pico_5fquit_98',['pico_quit',['../group__Init.html#ga23af6ecbe77adf45ef2866252cb5b85e',1,'pico.h']]],
   ['pico_5frel_5fdim_99',['Pico_Rel_Dim',['../structPico__Rel__Dim.html',1,'']]],
