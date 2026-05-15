@@ -136,7 +136,9 @@ caller.
     - [x] lua/tst/cross.lua (commented gen-loop updated)
     - [x] lua/pico/check.lua → collapsed to `screenshot("window", ...)`
     - [x] lua/doc/gen-guide-{rects,anims,images}.lua
-- [ ] 4.5 Verify
-    - [ ] `make tests` (root)
-    - [ ] `cd lua && make tests`
-    - [ ] regen `res/cross.gif` via `lua/tst/cross.lua` gen loop
+- [x] 4.5 Verify
+    - [x] `make tests` (root) — pass
+    - [x] `cd lua && make tests` — pass
+    - [x] post-merge fixes: `logo.lua` (path passed as layer);
+          `lua/tst/shot.lua` `(nil, nil, rect)` → `(nil, rect)`
+    - [x] regen `res/cross.gif` via `lua/tst/cross.lua` gen loop
