@@ -262,25 +262,14 @@ static Pico_Rel_Rect _root_rect (const char* layer, const Pico_Rel_Rect* r) {
 
     if (r != NULL) {
         pico_cv_rect(R->name, &ret, L->name, r);
+    } else if (L == R) {
+        // L is R: no parent placement; use L's own interior.
+        ret.x = 0;
+        ret.y = 0;
+        ret.w = L->scene.dim.w;
+        ret.h = L->scene.dim.h;
     } else {
-        if (L == R) {
-            // L is R: no parent placement; use L's own interior.
-            ret.x = 0;
-            ret.y = 0;
-            ret.w = L->scene.dim.w;
-            ret.h = L->scene.dim.h;
-        } else {
-            // scene.dst with w==0 or h==0 means aspect-fill from L's dim
-            // (mirrors _pico_output_draw_layer). Pre-resolve to '!' so cv
-            // sees a concrete rect (cv internally passes NULL for aspect).
-            Pico_Layer* P = _pico_layer_name(L->hier.up);
-            Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-            SDL_FRect f = _sdl_rect(L->scene.dst, &Pb, &L->scene.dim);
-            Pico_Rel_Rect dst = {
-                '!', {f.x, f.y, f.w, f.h}, PICO_ANCHOR_NW
-            };
-            pico_cv_rect(R->name, &ret, L->hier.up, &dst);
-        }
+        pico_cv_rect(R->name, &ret, L->hier.up, &L->scene.dst);
     }
 
     return ret;
