@@ -245,46 +245,45 @@ static Pico_Layer* _root_of (Pico_Layer* L) {
 
 // Project p (in `layer`'s frame; NULL == cur) up to its root, as '!'.
 static Pico_Rel_Pos _root_pos (const char* layer, const Pico_Rel_Pos* p) {
-    const char* L_name = (layer == NULL) ? G.layer->name : layer;
-    Pico_Layer* root = _root_of(_pico_layer_name(L_name));
-    Pico_Rel_Pos out = {'!', {0, 0}, PICO_ANCHOR_C};
-    pico_cv_pos(root->name, &out, L_name, p);
-    return out;
+    Pico_Layer* L = (layer == NULL) ? G.layer : _pico_layer_name(layer);
+    Pico_Layer* R = _root_of(L);
+    Pico_Rel_Pos ret = {'!', {}, PICO_ANCHOR_C};
+    pico_cv_pos(R->name, &ret, L->name, p);
+    return ret;
 }
 
 // Project r (in `layer`; NULL r == layer's scene.dst in parent frame)
 // up to its root, as '!'.
 static Pico_Rel_Rect _root_rect (const char* layer, const Pico_Rel_Rect* r) {
-    const char* L_name = (layer == NULL) ? G.layer->name : layer;
-    Pico_Layer* L = _pico_layer_name(L_name);
-    Pico_Layer* root = _root_of(L);
-    Pico_Rel_Rect out = {'!', {0, 0, 0, 0}, PICO_ANCHOR_C};
+    Pico_Layer* L = (layer == NULL) ? G.layer : _pico_layer_name(layer);
+    Pico_Layer* R = _root_of(L);
 
-    if (r == NULL) {
-        if (L == root) {
-            // L is root: no parent placement; use L's own interior.
-            out.w = L->scene.dim.w;
-            out.h = L->scene.dim.h;
-            return out;
-        }
-        // scene.dst with w==0 or h==0 means aspect-fill from L's dim
-        // (mirrors _pico_output_draw_layer). Pre-resolve before
-        // projecting so cv sees a concrete rect.
-        Pico_Rel_Rect dst = L->scene.dst;
-        if (dst.w == 0 || dst.h == 0) {
+    Pico_Rel_Rect ret = {'!', {}, PICO_ANCHOR_C};
+
+    if (r != NULL) {
+        pico_cv_rect(R->name, &ret, L->name, r);
+    } else {
+        if (L == R) {
+            // L is R: no parent placement; use L's own interior.
+            ret.x = 0;
+            ret.y = 0;
+            ret.w = L->scene.dim.w;
+            ret.h = L->scene.dim.h;
+        } else {
+            // scene.dst with w==0 or h==0 means aspect-fill from L's dim
+            // (mirrors _pico_output_draw_layer). Pre-resolve to '!' so cv
+            // sees a concrete rect (cv internally passes NULL for aspect).
             Pico_Layer* P = _pico_layer_name(L->hier.up);
             Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-            SDL_FRect filled = _sdl_rect(dst, &Pb, &L->scene.dim);
-            dst = (Pico_Rel_Rect){
-                '!', {filled.x, filled.y, filled.w, filled.h},
-                PICO_ANCHOR_C
+            SDL_FRect f = _sdl_rect(L->scene.dst, &Pb, &L->scene.dim);
+            Pico_Rel_Rect dst = {
+                '!', {f.x, f.y, f.w, f.h}, PICO_ANCHOR_C
             };
+            pico_cv_rect(R->name, &ret, L->hier.up, &dst);
         }
-        pico_cv_rect(root->name, &out, L->hier.up, &dst);
-        return out;
     }
-    pico_cv_rect(root->name, &out, L_name, r);
-    return out;
+
+    return ret;
 }
 
 int pico_vs_pos_pos (
