@@ -43,9 +43,6 @@ do
     print("target: explicit layer")
     pico.layer.empty(nil, "bg", false, {'!', w=32, h=32})
     pico.set.layer("bg")
-    pico.set.scene {
-        target = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
-    }
     pico.set.effect { color={r=0x80, g=0x00, b=0x00} }
     pico.output.clear()
     pico.set.pencil { color='white' }
@@ -53,7 +50,7 @@ do
     pico.set.layer("world")
     pico.set.effect { color='black' }
     pico.output.clear()
-    pico.output.draw.layer("bg")
+    pico.output.draw.layer("bg", {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'})
     pico.check("view-target-04")
 end
 
@@ -106,7 +103,7 @@ end
 do
     print("target: rect-as-dim shortcut")
     local r = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
-    pico.layer.empty(nil, "bg3", false, r)
+    pico.layer.empty("world", "bg3", false, r)
     pico.set.layer("bg3")
     pico.set.effect { color={r=0x80, g=0x00, b=0x00} }
     pico.output.clear()

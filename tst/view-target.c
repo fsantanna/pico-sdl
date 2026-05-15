@@ -45,7 +45,6 @@ int main (void) {
         puts("target: explicit layer");
         pico_layer_empty(NULL, "bg", 1, (Pico_Rel_Dim){'!', {32, 32}}, NULL);
         const char* old = pico_set_layer("bg");
-        pico_set_scene_dst((Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
         pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_WHITE);
@@ -55,7 +54,8 @@ int main (void) {
         pico_set_layer(old);
         pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
         pico_output_clear();
-        pico_output_draw_layer("bg", NULL);
+        Pico_Rel_Rect bg_at = {'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE};
+        pico_output_draw_layer("bg", &bg_at);
         _pico_check("view-target-04");
     }
 
