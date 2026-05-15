@@ -277,7 +277,7 @@ static Pico_Rel_Rect _root_rect (const char* layer, const Pico_Rel_Rect* r) {
             Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
             SDL_FRect f = _sdl_rect(L->scene.dst, &Pb, &L->scene.dim);
             Pico_Rel_Rect dst = {
-                '!', {f.x, f.y, f.w, f.h}, PICO_ANCHOR_C
+                '!', {f.x, f.y, f.w, f.h}, PICO_ANCHOR_NW
             };
             pico_cv_rect(R->name, &ret, L->hier.up, &dst);
         }
