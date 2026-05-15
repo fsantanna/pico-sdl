@@ -136,6 +136,48 @@ int main (void) {
         assert((int)s.w==5 && (int)s.h==10);
     }
 
+    printf("=== aspect-fill mid layer (cv bug repro) ===\n");
+    // mid 50x50 under world (100x100); zero w/h in scene.dst aspect-fills
+    // from mid's own dim. Eager-resolved in pico_set_scene_dst so cv walks
+    // see a concrete '!' rect (bypassing the cv NULL-ratio blind spot).
+    pico_layer_empty("world", "mid", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer("mid");
+
+    {
+        puts("'!' dst {0,0,0,100}: (10,10) mid -> (20,20) world");
+        pico_set_scene_dst (
+            (Pico_Rel_Rect){'!', {0, 0, 0, 100}, PICO_ANCHOR_NW}
+        );
+        Pico_Rel_Pos m = { '!', {10, 10}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos w = { '!', {0, 0}, PICO_ANCHOR_NW };
+        pico_cv_pos("world", &w, NULL, &m);
+        printf("  got (%g,%g)\n", w.x, w.y);
+        assert((int)w.x == 20 && (int)w.y == 20);
+    }
+    {
+        puts("'%%' dst {0,0,0,1.0}: same fill, parent-relative");
+        pico_set_scene_dst (
+            (Pico_Rel_Rect){'%', {0, 0, 0, 1.0}, PICO_ANCHOR_NW}
+        );
+        Pico_Rel_Pos m = { '!', {10, 10}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos w = { '!', {0, 0}, PICO_ANCHOR_NW };
+        pico_cv_pos("world", &w, NULL, &m);
+        printf("  got (%g,%g)\n", w.x, w.y);
+        assert((int)w.x == 20 && (int)w.y == 20);
+    }
+    {
+        puts("'#' dst {1,1,0,10} tile=10: same fill, tile-relative");
+        pico_set_scene_tile((Pico_Abs_Dim){10, 10});
+        pico_set_scene_dst (
+            (Pico_Rel_Rect){'#', {1, 1, 0, 10}, PICO_ANCHOR_NW}
+        );
+        Pico_Rel_Pos m = { '!', {10, 10}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos w = { '!', {0, 0}, PICO_ANCHOR_NW };
+        pico_cv_pos("world", &w, NULL, &m);
+        printf("  got (%g,%g)\n", w.x, w.y);
+        assert((int)w.x == 20 && (int)w.y == 20);
+    }
+
     printf("\n=== ALL TESTS PASSED ===\n");
 
     pico_init(0);
