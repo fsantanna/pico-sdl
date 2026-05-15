@@ -47,7 +47,7 @@ See also [pico-lua](lua/), the official Lua binding for `pico-sdl`.
 The following example draws an `X` on screen gradually, pixel by pixel:
 
 <picture>
-<img align="right" src="res/cross.gif">
+<img align="right" src="res/cross.gif" width="250">
 </picture>
 
 ```c

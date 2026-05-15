@@ -38,7 +38,7 @@ Please, switch to stable [`v0.3.1`](https://github.com/fsantanna/pico-sdl/tree/v
 The following example draws an `X` on screen gradually with instant feedback:
 
 <picture>
-<img align="right" src="../res/cross.gif">
+<img align="right" src="../res/cross.gif" width="250">
 </picture>
 
 ```lua
