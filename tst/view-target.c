@@ -62,7 +62,7 @@ int main (void) {
     // 05: target h only, w=0 -> w inferred from 2:1 layer aspect
     {
         puts("target: h only, w inferred");
-        pico_layer_empty(NULL, "bg2", 1, (Pico_Rel_Dim){'!', {80, 40}}, NULL);
+        pico_layer_empty("world", "bg2", 1, (Pico_Rel_Dim){'!', {80, 40}}, NULL);
         const char* old = pico_set_layer("bg2");
         pico_set_scene_dst(
             (Pico_Rel_Rect){'%', {0.5, 0.5, 0, 0.4}, PICO_ANCHOR_C});
