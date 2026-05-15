@@ -1617,18 +1617,16 @@ static int l_output_present (lua_State* L) {
 }
 
 static int l_output_screenshot (lua_State* L) {
-    const char* path = NULL;
-    if (lua_type(L, 1) == LUA_TSTRING) {
-        path = lua_tostring(L, 1);
-    }
+    const char* layer = lua_tostring(L, 1);
+    const char* path  = lua_tostring(L, 2);
 
     Pico_Rel_Rect rect, *xrect=NULL;
-    if (lua_gettop(L) >= 2 && lua_istable(L, 2)) {
-        rect = C_rel_rect(L, 2);
+    if (lua_gettop(L)>=3 && lua_istable(L, 3)) {
+        rect = C_rel_rect(L, 3);
         xrect = &rect;
     }
 
-    const char* ret = pico_output_screenshot(path, xrect);
+    const char* ret = pico_output_screenshot(layer, path, xrect);
     assert(ret != NULL);
     lua_pushstring(L, ret);
     return 1;

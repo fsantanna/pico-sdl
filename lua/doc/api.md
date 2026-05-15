@@ -179,8 +179,18 @@ In alphabetical order:
         - `pico.output.clear ()`
     - **pico.output.present**: Presents buffer (expert mode only).
         - `pico.output.present ()`
-    - **pico.output.screenshot**: Takes a screenshot.
-        - `pico.output.screenshot ([path: string] [, rect: Rect]) -> string`
+    - **pico.output.screenshot**: Takes a screenshot of a layer.
+        - `pico.output.screenshot (layer: string?, [path: string,] [rect: Rect]) -> string`
+        - `layer`: target layer name; `nil` means current layer.
+        - `path`: output file; `nil` uses a timestamped name.
+        - `rect`: region in target layer's frame; `nil` captures full.
+        - Forms:
+            - `pico.output.screenshot(nil)` — cur, default path
+            - `pico.output.screenshot(nil, "x.png")` — cur, given path
+            - `pico.output.screenshot("window")` — window, default path
+            - `pico.output.screenshot("window", "x.png")` — window
+            - `pico.output.screenshot("L", "x.png", rect)` — full form
+        - Cur layer is preserved (save+restore around the switch).
     - **pico.output.sound**: Plays sound.
         - `pico.output.sound (path: string)`
     - **pico.output.draw**

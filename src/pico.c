@@ -977,9 +977,7 @@ static int pico_event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_s: {
-                    const char* old = pico_set_layer("window");
-                    pico_output_screenshot(NULL, NULL);
-                    pico_set_layer(old);
+                    pico_output_screenshot("window", NULL, NULL);
                     return 1;
                 }
             }
@@ -1401,8 +1399,12 @@ static void _pico_output_sound_cache (const char* path, int cache) {
     }
 }
 
-const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect) {
+const char* pico_output_screenshot (const char* layer, const char* path, const Pico_Rel_Rect* rect) {
     _pico_guard();
+    const char* old = NULL;
+    if (layer != NULL) {
+        old = pico_set_layer(layer);
+    }
     Pico_Layer* L = G.layer;
     Pico_Abs_Rect ri = (rect == NULL)
         ? (Pico_Abs_Rect){0, 0, L->scene.dim.w, L->scene.dim.h}
@@ -1451,6 +1453,9 @@ const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect)
         SDL_DestroyTexture(tmp);
     }
 
+    if (layer != NULL) {
+        pico_set_layer(old);
+    }
     return ret;
 }
 
