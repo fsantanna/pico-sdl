@@ -122,8 +122,12 @@ caller.
     - [x] internal caller (KEY_S) simplified to one-liner
 - [x] 4.2 Lua binding
     - [x] `l_output_screenshot` parses opt `layer` first
+    - [x] simplified parsing via `lua_tostring` (NULL on missing/nil)
+    - [x] rect accepted at position 2 (no path) or 3
+          (single `C_rel_rect(L, i)` call via `int i=-1` dispatch)
 - [x] 4.3 Docs
     - [x] api.md sig + forms table + cur-preserved note
+    - [x] api.md updated with new (L, rect) and (nil, rect) forms
 - [x] 4.4 Callers
     - [x] tst/shot.c (10 sites)
     - [x] tst/todo/cross.c (1 site)

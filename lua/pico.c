@@ -1620,9 +1620,11 @@ static int l_output_screenshot (lua_State* L) {
     const char* layer = lua_tostring(L, 1);
     const char* path  = lua_tostring(L, 2);
 
+    int i = (lua_istable(L,2) ? 2 : (lua_istable(L,3) ? 3 : -1));
+
     Pico_Rel_Rect rect, *xrect=NULL;
-    if (lua_gettop(L)>=3 && lua_istable(L, 3)) {
-        rect = C_rel_rect(L, 3);
+    if (i != -1) {
+        rect = C_rel_rect(L, i);
         xrect = &rect;
     }
 
