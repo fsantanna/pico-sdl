@@ -2,15 +2,6 @@
 // CV: named-layer projection (cv_pos_to / cv_pos_from)
 ///////////////////////////////////////////////////////////////////////////////
 
-// Returns the root layer of L (top of the hier.up chain).
-// For attached layers this is window; detached subtrees have their own root.
-static Pico_Layer* _root_of (Pico_Layer* L) {
-    while (L->hier.up != NULL) {
-        L = _pico_layer_name(L->hier.up);
-    }
-    return L;
-}
-
 // Root-mediated walk: fromL → root → toL.
 // fromL and toL must share a root (typically window).
 
@@ -243,8 +234,17 @@ Pico_Rel_Dim pico_in_dim (Pico_Rel_Rect out, Pico_Rel_Dim in) {
 // VS
 ///////////////////////////////////////////////////////////////////////////////
 
+// Returns the root layer of L (top of the hier.up chain).
+// For attached layers this is window; detached subtrees have their own root.
+static Pico_Layer* _root_of (Pico_Layer* L) {
+    while (L->hier.up != NULL) {
+        L = _pico_layer_name(L->hier.up);
+    }
+    return L;
+}
+
 // Project p (in `layer`'s frame; NULL == cur) up to its root, as '!'.
-static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
+static Pico_Rel_Pos _root_pos (const char* layer, const Pico_Rel_Pos* p) {
     const char* L_name = (layer == NULL) ? G.layer->name : layer;
     Pico_Layer* root = _root_of(_pico_layer_name(L_name));
     Pico_Rel_Pos out = {'!', {0, 0}, PICO_ANCHOR_C};
@@ -254,7 +254,7 @@ static Pico_Rel_Pos _vs_pos (const char* layer, const Pico_Rel_Pos* p) {
 
 // Project r (in `layer`; NULL r == layer's scene.dst in parent frame)
 // up to its root, as '!'.
-static Pico_Rel_Rect _vs_rect (const char* layer, const Pico_Rel_Rect* r) {
+static Pico_Rel_Rect _root_rect (const char* layer, const Pico_Rel_Rect* r) {
     const char* L_name = (layer == NULL) ? G.layer->name : layer;
     Pico_Layer* L = _pico_layer_name(L_name);
     Pico_Layer* root = _root_of(L);
@@ -293,8 +293,8 @@ int pico_vs_pos_pos (
 ) {
     _pico_guard();
     assert(p1 != NULL && p2 != NULL);
-    Pico_Rel_Pos p1_cur = _vs_pos(L1, p1);
-    Pico_Rel_Pos p2_cur = _vs_pos(L2, p2);
+    Pico_Rel_Pos p1_cur = _root_pos(L1, p1);
+    Pico_Rel_Pos p2_cur = _root_pos(L2, p2);
     Pico_Abs_Pos i1 = _rnd_pos(_sdl_pos(p1_cur, NULL));
     Pico_Abs_Pos i2 = _rnd_pos(_sdl_pos(p2_cur, NULL));
     return i1.x == i2.x && i1.y == i2.y;
@@ -306,8 +306,8 @@ int pico_vs_pos_rect (
 ) {
     _pico_guard();
     assert(p1 != NULL);
-    Pico_Rel_Pos  p_cur = _vs_pos (L1, p1);
-    Pico_Rel_Rect r_cur = _vs_rect(L2, r2);
+    Pico_Rel_Pos  p_cur = _root_pos (L1, p1);
+    Pico_Rel_Rect r_cur = _root_rect(L2, r2);
     Pico_Abs_Pos  pi = _rnd_pos (_sdl_pos(p_cur, NULL));
     Pico_Abs_Rect ri = _rnd_rect(_sdl_rect(r_cur, NULL, NULL));
     return SDL_PointInRect(&pi, &ri);
@@ -325,8 +325,8 @@ int pico_vs_rect_rect (
     const char* L2, Pico_Rel_Rect* r2
 ) {
     _pico_guard();
-    Pico_Rel_Rect r1_cur = _vs_rect(L1, r1);
-    Pico_Rel_Rect r2_cur = _vs_rect(L2, r2);
+    Pico_Rel_Rect r1_cur = _root_rect(L1, r1);
+    Pico_Rel_Rect r2_cur = _root_rect(L2, r2);
     Pico_Abs_Rect i1 = _rnd_rect(_sdl_rect(r1_cur, NULL, NULL));
     Pico_Abs_Rect i2 = _rnd_rect(_sdl_rect(r2_cur, NULL, NULL));
     return SDL_HasIntersection(&i1, &i2);
