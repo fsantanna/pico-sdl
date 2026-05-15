@@ -58,7 +58,7 @@ local pi = {
 }
 pico.output.draw.buffer("pi", pi, {'%', x=0.5, y=0.5, w=1, h=1})
 
-pico.output.screenshot("res/logo.png")
+pico.output.screenshot(nil, "res/logo.png")
 
 while true do
     pico.input.event('key.dn')

@@ -43,7 +43,7 @@ do
     pico.set.pencil { color={'!', r=0, g=200, b=0} }
     pico.output.draw.rect({'!', x=40, y=5, w=10, h=10, anchor='NW'})
     pico.set.layer("window")
-    local f = pico.output.screenshot(nil, nil, {'!', x=0, y=0, w=250, h=150, anchor='NW'})
+    local f = pico.output.screenshot(nil, {'!', x=0, y=0, w=250, h=150, anchor='NW'})
     pico.set.layer("world")
     assert(f ~= nil)
     check(f, "../../tst/asr/shot-03.png")
@@ -55,7 +55,7 @@ do
     pico.set.pencil { color={'!', r=0, g=0, b=200} }
     pico.output.draw.rect({'!', x=50, y=50, w=10, h=10, anchor='NW'})
     pico.set.layer("window")
-    local f = pico.output.screenshot(nil, nil, {'%', x=0, y=0, w=0.5, h=0.3, anchor='NW'})
+    local f = pico.output.screenshot(nil, {'%', x=0, y=0, w=0.5, h=0.3, anchor='NW'})
     pico.set.layer("world")
     assert(f ~= nil)
     check(f, "../../tst/asr/shot-04.png")
