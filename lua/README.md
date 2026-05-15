@@ -1,5 +1,7 @@
 # pico-lua
 
+<img src="../res/logo.png" width="200" align="right">
+
 [![Tests][badge]][tests]
 
 [badge]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml/badge.svg
@@ -31,30 +33,20 @@ Please, switch to stable [`v0.3.1`](https://github.com/fsantanna/pico-sdl/tree/v
 
 [pico-lua]: https://github.com/fsantanna/pico-sdl/
 
-<img src="pico-logo.png" width="250" align="right">
-
 # Hello World!
 
 The following example draws an `X` on screen gradually with instant feedback:
 
 <picture>
-<img align="right" src="../cross.gif">
+<img align="right" src="../res/cross.gif" width="250">
 </picture>
 
 ```lua
 pico.init(true)
-pico.set.window {
-    title = "Draws an X",        -- window title
-    dim   = {'!', w=160, h=160}, -- physical screen size
-}
-pico.set.scene {
-    dim = {'!', w=16,  h=16},    -- logical screen size (10x10 pixel size)
-}
-pico.output.clear()
-for i = 0, 15 do
-    pico.output.draw.pixel({'!', x=i, y=i})    -- raw position (i,i)
-    pico.output.draw.pixel({'!', x=15-i, y=i}) -- raw position (15-i,i)
-    pico.input.delay(100)
+for i=0, 99 do
+    pico.output.draw.pixel { '!', x=i,    y=i }
+    pico.output.draw.pixel { '!', x=99-i, y=i }
+    pico.input.delay(30)
 end
 pico.init(false)
 ```

@@ -18,7 +18,7 @@ In alphabetical order:
     - Missing `w` or `h` defaults to 0 ("infer from source").
 - **Event**: `{ tag: string, ... }`
     - `{ tag='quit' }`
-    - `{ tag='win.resize', w: integer, h: integer }`
+    - `{ tag='window.resize', w: integer, h: integer }`
     - `{ tag='key.dn'|'key.up',
         key: string, ctrl: boolean, shift: boolean, alt: boolean }`
     - `{ tag='mouse.motion'|'mouse.button.dn'|'mouse.button.up',
@@ -72,8 +72,8 @@ In alphabetical order:
         - `pico.cv.dim (L_to: string?, to: Dim, L_fr: string?, fr: Dim) -> Dim`
         - `pico.cv.dim (L_to: string?, mode: string, L_fr: string?, fr: Dim) -> Dim`
 - **pico.get**
-    - **pico.get.pencil**: Gets pencil configuration.
-        - `pico.get.pencil () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
+    - **pico.get.effect**: Gets effect configuration.
+        - `pico.get.effect () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, rotate: Rotation }`
     - **pico.get.image**: Gets image dimensions.
         - `pico.get.image (path: string [, dim: Dim]) -> Dim`
     - **pico.get.keyboard**: Gets keyboard modifier state.
@@ -98,14 +98,14 @@ In alphabetical order:
             - `pico.get.mouse({'!', anchor='NW'})` — explicit anchor
     - **pico.get.now**: Gets milliseconds since initialization.
         - `pico.get.now () -> integer`
+    - **pico.get.pencil**: Gets pencil configuration.
+        - `pico.get.pencil () -> { color: Color, font: string?, style: 'fill'|'stroke' }`
+    - **pico.get.scene**: Gets scene configuration.
+        - `pico.get.scene () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect, clear: boolean }`
     - **pico.get.text**: Gets text dimensions.
         - `pico.get.text (text: string, dim: Dim) -> Dim`
     - **pico.get.video**: Gets video information.
         - `pico.get.video (path: string [, rect: Rect]) -> Video`
-    - **pico.get.effect**: Gets effect configuration.
-        - `pico.get.effect () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, rotate: Rotation }`
-    - **pico.get.scene**: Gets scene configuration.
-        - `pico.get.scene () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect, keep: boolean }`
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { fullscreen: boolean, show: boolean, title: string }`
 - **pico.init**: Initializes and finalizes pico.
@@ -120,7 +120,7 @@ In alphabetical order:
         - `pico.input.event (filter: string) -> Event, integer`
         - `pico.input.event (filter: string, ms: integer) -> Event?, integer`
         - Returns event (or nil on timeout) and elapsed time in ms (delta time)
-        - Filters: `'quit'`, `'win.resize'`, `'key.dn'`, `'key.up'`,
+        - Filters: `'quit'`, `'window.resize'`, `'key.dn'`, `'key.up'`,
           `'mouse.motion'`, `'mouse.button.dn'`, `'mouse.button.up'`
     - **pico.input.loop**: Blocks on event loop until quit.
         - `pico.input.loop ()`
@@ -143,7 +143,7 @@ In alphabetical order:
     - **pico.layer.image**: Creates a layer from an image file.
         - `pico.layer.image ([mode,] up: string?, key: string?, path: string
           [, rect: Rect])`
-        - If `key` is omitted, uses `"/image/<path>"` as layer name
+        - If `key` is omitted, uses `path` itself as the layer name
           (and `rect` is not allowed in that form).
     - **pico.layer.images**: Creates sub-layer images from a reference
         "sprite sheet" image.
@@ -168,7 +168,7 @@ In alphabetical order:
     - **pico.layer.video**: Creates a layer from a video file.
         - `pico.layer.video ([mode,] up: string?, key: string?, path: string
           [, rect: Rect])`
-        - If `key` is omitted, uses `"/video/<path>"` as layer name
+        - If `key` is omitted, uses `path` itself as the layer name
           (and `rect` is not allowed in that form).
     - **pico.layer.sub**: Creates a sub-layer from a source layer.
         - `pico.layer.sub ([mode,] up: string?, key: string,
@@ -179,8 +179,21 @@ In alphabetical order:
         - `pico.output.clear ()`
     - **pico.output.present**: Presents buffer (expert mode only).
         - `pico.output.present ()`
-    - **pico.output.screenshot**: Takes a screenshot.
-        - `pico.output.screenshot ([path: string] [, rect: Rect]) -> string`
+    - **pico.output.screenshot**: Takes a screenshot of a layer.
+        - `pico.output.screenshot (layer: string?, [path: string|rect: Rect,] [rect: Rect]) -> string`
+        - `layer`: target layer name; `nil` means current layer.
+        - `path`: output file; `nil` (or omitted) uses a timestamped name.
+        - `rect`: region in target layer's frame; `nil` (or omitted)
+          captures full. Accepted at position 2 (no path) or 3.
+        - Forms:
+            - `pico.output.screenshot(nil)` — cur, default path
+            - `pico.output.screenshot(nil, "x.png")` — cur, given path
+            - `pico.output.screenshot(nil, rect)` — cur, default path, rect
+            - `pico.output.screenshot("L")` — layer L, default path
+            - `pico.output.screenshot("L", "x.png")` — layer L, given path
+            - `pico.output.screenshot("L", rect)` — layer L, default path, rect
+            - `pico.output.screenshot("L", "x.png", rect)` — full form
+        - Cur layer is preserved (save+restore around the switch).
     - **pico.output.sound**: Plays sound.
         - `pico.output.sound (path: string)`
     - **pico.output.draw**
@@ -219,24 +232,18 @@ In alphabetical order:
 - **pico.set**
     - **pico.set.dim**: Sets both window and world to the same dimensions.
         - `pico.set.dim (dim: Dim)`
-    - **pico.set.pencil**: Sets pencil configuration.
-        - `pico.set.pencil (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
-    - **pico.set.expert**: Toggles expert mode.
-        - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
-        - fps: `nil`/`false` = wait forever, `true` = as fast as possible, `N>0` = fixed FPS
-        - Returns frame period in ms: `-1` = block forever, `0` = immediate, `N>0` = frame period
     - **pico.set.effect**: Sets effect configuration.
         - `pico.set.effect (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [rotate: Rotation] })`
-    - **pico.set.video**: Sets video frame.
-        - `pico.set.video (name: string, frame: integer) -> boolean`
-    - **pico.set.scene**: Sets scene configuration.
-        - `pico.set.scene (cfg: { [dim: Dim], [source: Rect], [clip: Rect], [target: Rect], [tile: Tile], [keep: boolean] })`
-        - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
-    - **pico.set.window**: Sets window configuration.
-        - `pico.set.window (cfg: { [fullscreen: boolean], [show: boolean], [title: string] })`
-    - **pico.set.layer**: Switches to a layer.
-        - `pico.set.layer (name: string?)`
-        - `nil` switches to main layer
+    - **pico.set.expert**: Toggles expert mode.
+        - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
+        - fps: omitted or `false` = wait forever, `true` = as fast as
+          possible, `N>0` = fixed FPS. Explicit `nil` errors.
+        - Returns frame period in ms: `-1` = block forever, `0` = immediate, `N>0` = frame period
+    - **pico.set.layer**: Switches the target layer.
+        - `pico.set.layer (name: string) -> string`
+        - Returns the previous layer name (useful for save/restore).
+        - `name` must be a string; `nil` errors. The two predefined
+          layers are `"world"` (default) and `"window"` (expert mode).
     - **pico.set.mouse**: Sets mouse cursor position. `pos` is
       interpreted in `layer`'s frame and projected to window for the
       SDL warp. `layer` defaults to cur when omitted or `nil`.
@@ -246,6 +253,16 @@ In alphabetical order:
             - `pico.set.mouse(pos)` — cur
             - `pico.set.mouse(nil, pos)` — explicit nil = cur
             - `pico.set.mouse('window', pos)` — named layer's frame
+    - **pico.set.pencil**: Sets pencil configuration.
+        - `pico.set.pencil (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
+    - **pico.set.scene**: Sets scene configuration.
+        - `pico.set.scene (cfg: { [dim: Dim], [source: Rect], [clip: Rect], [target: Rect], [tile: Tile], [clear: boolean] })`
+        - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
+        - `clear`: when true, the layer auto-clears each frame
+    - **pico.set.video**: Sets video frame.
+        - `pico.set.video (name: string, frame: integer) -> boolean`
+    - **pico.set.window**: Sets window configuration.
+        - `pico.set.window (cfg: { [fullscreen: boolean], [show: boolean], [title: string] })`
 - **pico.vs**
     - Collision checks.
       Each side has the canonical shape `(Lx, vx)` where `Lx` is the
@@ -278,3 +295,16 @@ In alphabetical order:
           its layer's bounds (or cur's bounds when the layer is also
           absent). The 2-string form `(L1, L2)` compares the bounds
           of both child layers.
+- **pico.xin**
+    - Composes a child value (`in`) onto a parent rect (`out`) and
+      returns a flat value (no parent reference) that resolves to
+      the same absolute coordinates. Mode and anchor of `in` are
+      preserved; numeric `x`/`y`/`w`/`h` are re-expressed within
+      the current scene.
+    - The module is named `xin` because `in` is a Lua reserved word.
+    - **pico.xin.rect**: Composes a child rect onto a parent rect.
+        - `pico.xin.rect (out: Rect, in: Rect) -> Rect`
+    - **pico.xin.pos**: Composes a child position onto a parent rect.
+        - `pico.xin.pos (out: Rect, in: Pos) -> Pos`
+    - **pico.xin.dim**: Composes a child dimension onto a parent rect.
+        - `pico.xin.dim (out: Rect, in: Dim) -> Dim`

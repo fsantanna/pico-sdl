@@ -286,11 +286,12 @@ void pico_output_draw_layers (void);
 /// @return 1 if frame drawn, or 0 at EOF
 int pico_output_draw_video (const char* path, Pico_Rel_Rect rect);
 
-/// @brief Takes a screenshot.
+/// @brief Takes a screenshot of a layer.
+/// @param layer layer name to capture (NULL uses current layer)
 /// @param path screenshot filepath (NULL uses timestamp in the name)
-/// @param rect region to capture (NULL captures full screen)
+/// @param rect region to capture (NULL captures full layer)
 /// @return the filepath of the screenshot
-const char* pico_output_screenshot (const char* path, const Pico_Rel_Rect* rect);
+const char* pico_output_screenshot (const char* layer, const char* path, const Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
 /// @param path path to the audio file

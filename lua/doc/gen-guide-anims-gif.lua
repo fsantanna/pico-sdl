@@ -54,7 +54,7 @@ for step=0, 79 do
     pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
     pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
     pico.output.present()
-    pico.output.screenshot(string.format(
+    pico.output.screenshot(nil, string.format(
         "img/anims/frame-%03d.png", step))
     f1, x1, y1 = walk('clock',   (step+1)*2, step+1)
     f2, x2, y2 = walk('counter', step+1,     step+1)

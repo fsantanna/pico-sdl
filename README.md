@@ -1,5 +1,7 @@
 # pico-sdl
 
+<img src="res/logo.png" width="200" align="right">
+
 [![Tests][badge]][tests]
 
 [badge]: https://github.com/fsantanna/pico-sdl/actions/workflows/tests.yml/badge.svg
@@ -31,8 +33,6 @@ Please, switch to stable [`v0.3.1`](https://github.com/fsantanna/pico-sdl/tree/v
 
 See also [pico-lua](lua/), the official Lua binding for `pico-sdl`.
 
-<img src="pico-logo.png" width="250" align="right">
-
 `pico-sdl` is designed around 3 groups of APIs:
 
 - `pico_output_*` for output operations,
@@ -47,7 +47,7 @@ See also [pico-lua](lua/), the official Lua binding for `pico-sdl`.
 The following example draws an `X` on screen gradually, pixel by pixel:
 
 <picture>
-<img align="right" src="cross.gif">
+<img align="right" src="res/cross.gif" width="250">
 </picture>
 
 ```c
@@ -56,10 +56,10 @@ int main (void) {
     pico_init(1);
     for (int i=0; i<100; i++) {
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_C, NULL }
+            (Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_C }
         );
         pico_output_draw_pixel (
-            &(Pico_Rel_Pos) { '!', {99-i, i}, PICO_ANCHOR_C, NULL }
+            (Pico_Rel_Pos) { '!', {99-i, i}, PICO_ANCHOR_C }
         );
         pico_input_delay(30);
     }

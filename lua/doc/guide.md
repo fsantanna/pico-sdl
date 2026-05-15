@@ -14,11 +14,11 @@
 `pico-lua` is a graphics library for 2D games and applications.
 It is designed around 4 groups of APIs:
 
-- `pico.output.*`: draw shapes and layers; play sound and video.
+- `pico.output.*`: draw shapes and layers; play sounds and videos.
 - `pico.input.*`: handle events, such as time passing and key presses.
 - `pico.get.*` and `pico.set.*`: manage internal library state,
     such as current drawing color, and window dimensions.
-- `pico.layer.*`: structure visuals in hierarchical scenes.
+- `pico.layer.*`: structure graphics in hierarchical scenes.
 
 This guide is an interactive walk-through of `pico-lua`.
 It is not meant to be exhaustive.

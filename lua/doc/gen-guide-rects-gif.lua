@@ -48,7 +48,7 @@ for step = 0, #moves do
     pico.set.pencil { color='blue' }
     pico.output.draw.pixel(k)
     pico.output.present()
-    pico.output.screenshot(string.format("img/anim/frame-%03d.png", step))
+    pico.output.screenshot(nil, string.format("img/anim/frame-%03d.png", step))
 
     local mv = moves[step + 1]
     if mv then

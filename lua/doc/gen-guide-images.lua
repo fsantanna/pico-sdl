@@ -3,7 +3,7 @@
 -- Run with: pico-lua gen-guide-images.lua
 
 local function shot(name)
-    pico.output.screenshot("img/" .. name .. ".png")
+    pico.output.screenshot(nil, "img/" .. name .. ".png")
     print(name)
 end
 
@@ -388,7 +388,7 @@ do
     pico.output.clear()
     pico.set.pencil { color='red' }
     pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
-    pico.output.screenshot("img/guide-11-01-02.png",
+    pico.output.screenshot(nil, "img/guide-11-01-02.png",
         {'%', x=0.5, y=0.5, w=0.25, h=0.25})
     print("guide-11-01-02")
     pico.init(false)

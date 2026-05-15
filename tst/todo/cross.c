@@ -12,7 +12,7 @@ int main (void) {
         );
         char path[64];
         sprintf(path, "out/cross-%03d.png", i);
-        pico_output_screenshot(path, NULL);
+        pico_output_screenshot(NULL, path, NULL);
     }
     pico_init(0);
     return 0;

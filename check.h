@@ -149,9 +149,7 @@ void _pico_check (const char* msg) {
     // Always write to out/
     char fmt_out[256];
     sprintf(fmt_out, "out/%s.png", msg);
-    const char* prev = pico_set_layer("window");
-    pico_output_screenshot(fmt_out, NULL);
-    pico_set_layer(prev);
+    pico_output_screenshot("window", fmt_out, NULL);
     printf("Testing: %s\n", msg);
 
     #ifdef PICO_CHECK_INT

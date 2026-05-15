@@ -20,7 +20,7 @@ do
     print("entire screen - 01")
     pico.output.draw.rect({'!', x=10, y=10, w=20, h=20, anchor='NW'})
     pico.set.layer("window")
-    local f = pico.output.screenshot()
+    local f = pico.output.screenshot(nil)
     pico.set.layer("world")
     assert(f ~= nil)
     check(f, "../../tst/asr/shot-01.png")
@@ -32,7 +32,7 @@ do
     pico.set.pencil { color={'!', r=200, g=0, b=0} }
     pico.output.draw.rect({'!', x=30, y=30, w=10, h=10, anchor='NW'})
     pico.set.layer("window")
-    local f = pico.output.screenshot("../../tst/out/shot-02.png")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-02.png")
     pico.set.layer("world")
     assert(f == "../../tst/out/shot-02.png")
     check(f, "../../tst/asr/shot-02.png")
@@ -68,7 +68,7 @@ do
     pico.output.clear()
     pico.set.pencil { color={'!', r=0xFF, g=0x00, b=0x00} }
     pico.output.draw.rect({'!', x=10, y=10, w=30, h=30, anchor='NW'})
-    local f = pico.output.screenshot("../../tst/out/shot-world.png")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-world.png")
     assert(f == "../../tst/out/shot-world.png")
     check(f, "../../tst/asr/shot-world.png")
 end
@@ -81,7 +81,7 @@ do
     pico.output.clear()
     pico.set.pencil { color={'!', r=0xFF, g=0xFF, b=0x00} }
     pico.output.draw.rect({'!', x=5, y=5, w=10, h=10, anchor='NW'})
-    local f = pico.output.screenshot("../../tst/out/shot-empty.png")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-empty.png")
     pico.set.layer("world")
     assert(f == "../../tst/out/shot-empty.png")
     check(f, "../../tst/asr/shot-empty.png")
@@ -94,7 +94,7 @@ do
         {{r=  0, g=  0, b=255, a=255}, {r=255, g=255, b=  0, a=255}},
     })
     pico.set.layer("pmap1")
-    local f = pico.output.screenshot("../../tst/out/shot-pixmap.png")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-pixmap.png")
     pico.set.layer("world")
     assert(f == "../../tst/out/shot-pixmap.png")
     check(f, "../../tst/asr/shot-pixmap.png")
@@ -105,7 +105,7 @@ do
     pico.layer.sub(nil, "sub1", "empty1",
         {'!', x=0, y=0, w=32, h=16, anchor='NW'})
     pico.set.layer("sub1")
-    local f = pico.output.screenshot("../../tst/out/shot-sub.png")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-sub.png")
     pico.set.layer("world")
     assert(f == "../../tst/out/shot-sub.png")
     check(f, "../../tst/asr/shot-sub.png")
@@ -115,7 +115,7 @@ do
     print("image layer")
     pico.layer.image(nil, "img1", "../../res/open.png")
     pico.set.layer("img1")
-    local f = pico.output.screenshot("../../tst/out/shot-image.png")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-image.png")
     pico.set.layer("world")
     assert(f == "../../tst/out/shot-image.png")
     check(f, "../../tst/asr/shot-image.png")
@@ -126,7 +126,7 @@ do
     pico.set.pencil { color={'!', r=0xFF, g=0xFF, b=0xFF} }
     pico.layer.text(nil, "txt1", 16, "hello")
     pico.set.layer("txt1")
-    local f = pico.output.screenshot("../../tst/out/shot-text.png")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-text.png")
     pico.set.layer("world")
     assert(f == "../../tst/out/shot-text.png")
     check(f, "../../tst/asr/shot-text.png")
@@ -137,7 +137,7 @@ do
     pico.layer.video(nil, "vid1", "video.y4m")
     pico.set.layer("vid1")
     assert(pico.set.video("vid1", 0) == true)
-    local f = pico.output.screenshot("../../tst/out/shot-video.png")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-video.png")
     pico.set.layer("world")
     assert(f == "../../tst/out/shot-video.png")
     check(f, "../../tst/asr/shot-video.png")
