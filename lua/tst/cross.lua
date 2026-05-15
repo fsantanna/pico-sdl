@@ -6,7 +6,10 @@ pico.init(true)
 pico.set.window { title = "Hello World!" }
 
 for i=0, 99 do
+    --pico.set.layer("window")
     --pico.output.screenshot(string.format("/tmp/cross/%02d.png", i))
+    --pico.set.layer("world")
+
     pico.output.draw.pixel { '!', x=i,    y=i }
     pico.output.draw.pixel { '!', x=99-i, y=i }
     pico.input.delay(5)
