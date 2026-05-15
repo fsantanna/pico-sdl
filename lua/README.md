@@ -43,18 +43,10 @@ The following example draws an `X` on screen gradually with instant feedback:
 
 ```lua
 pico.init(true)
-pico.set.window {
-    title = "Draws an X",        -- window title
-    dim   = {'!', w=160, h=160}, -- physical screen size
-}
-pico.set.scene {
-    dim = {'!', w=16,  h=16},    -- logical screen size (10x10 pixel size)
-}
-pico.output.clear()
-for i = 0, 15 do
-    pico.output.draw.pixel({'!', x=i, y=i})    -- raw position (i,i)
-    pico.output.draw.pixel({'!', x=15-i, y=i}) -- raw position (15-i,i)
-    pico.input.delay(100)
+for i=0, 99 do
+    pico.output.draw.pixel { '!', x=i,    y=i }
+    pico.output.draw.pixel { '!', x=99-i, y=i }
+    pico.input.delay(30)
 end
 pico.init(false)
 ```
