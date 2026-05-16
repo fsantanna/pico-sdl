@@ -6,53 +6,6 @@
 // fromL and toL must share a root (typically window).
 
 static void _cv_walk_dim (
-    Pico_Layer* L_to, Pico_Rel_Dim*  to,
-    Pico_Layer* L_fr, const Pico_Rel_Dim*  fr
-);
-
-static void _cv_walk_pos (
-    Pico_Layer* L_to, Pico_Rel_Pos*  to,
-    Pico_Layer* L_fr, const Pico_Rel_Pos*  fr
-);
-
-static void _cv_walk_rect (
-    Pico_Layer* L_to, Pico_Rel_Rect* to,
-    Pico_Layer* L_fr, const Pico_Rel_Rect* fr
-);
-
-// Public unified cv: project fr (in L_fr) into to (in L_to).
-// L_fr / L_to == NULL means cur. Layers must share a root.
-void pico_cv_dim (
-    const char* L_to, Pico_Rel_Dim* to,
-    const char* L_fr, const Pico_Rel_Dim* fr
-) {
-    _pico_guard();
-    Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
-    Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
-    _cv_walk_dim(T, to, S, fr);
-}
-
-void pico_cv_pos (
-    const char* L_to, Pico_Rel_Pos* to,
-    const char* L_fr, const Pico_Rel_Pos* fr
-) {
-    _pico_guard();
-    Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
-    Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
-    _cv_walk_pos(T, to, S, fr);
-}
-
-void pico_cv_rect (
-    const char* L_to, Pico_Rel_Rect* to,
-    const char* L_fr, const Pico_Rel_Rect* fr
-) {
-    _pico_guard();
-    Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
-    Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
-    _cv_walk_rect(T, to, S, fr);
-}
-
-static void _cv_walk_dim (
     Pico_Layer* L_to, Pico_Rel_Dim* to,
     Pico_Layer* L_fr, const Pico_Rel_Dim* fr
 ) {
@@ -200,6 +153,38 @@ static void _cv_walk_rect (
     }
     Pico_Abs_Rect toBase = {0, 0, L_to->scene.dim.w, L_to->scene.dim.h};
     _rel_rect(r, to, &toBase);
+}
+
+// Public unified cv: project fr (in L_fr) into to (in L_to).
+// L_fr / L_to == NULL means cur. Layers must share a root.
+void pico_cv_dim (
+    const char* L_to, Pico_Rel_Dim* to,
+    const char* L_fr, const Pico_Rel_Dim* fr
+) {
+    _pico_guard();
+    Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
+    Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
+    _cv_walk_dim(T, to, S, fr);
+}
+
+void pico_cv_pos (
+    const char* L_to, Pico_Rel_Pos* to,
+    const char* L_fr, const Pico_Rel_Pos* fr
+) {
+    _pico_guard();
+    Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
+    Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
+    _cv_walk_pos(T, to, S, fr);
+}
+
+void pico_cv_rect (
+    const char* L_to, Pico_Rel_Rect* to,
+    const char* L_fr, const Pico_Rel_Rect* fr
+) {
+    _pico_guard();
+    Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
+    Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
+    _cv_walk_rect(T, to, S, fr);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
