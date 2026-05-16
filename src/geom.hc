@@ -51,55 +51,42 @@ static void _cv_walk_dim (
     _rel_dim(d, to, &toBase);
 }
 
-static void _cv_walk_pos (
-    Pico_Layer* L_to, Pico_Rel_Pos* to,
-    Pico_Layer* L_fr, const Pico_Rel_Pos* fr
-) {
-    Pico_Abs_Rect base = {0, 0, L_fr->scene.dim.w, L_fr->scene.dim.h};
-    SDL_FPoint p = _sdl_pos(*fr, &base);
-    if (L_fr == L_to) {
-        _rel_pos(p, to, &base);
-        return;
+// up: walk p (in L's frame) to root; *out is p in root's frame.
+static Pico_Layer* _pos_root_to (Pico_Layer* L, SDL_FPoint p, SDL_FPoint* out) {
+    if (L->hier.up == NULL) {
+        *out = p;
+        return L;
     }
-    // 1) walk L_fr up to root, accumulating src->dst per step.
-    Pico_Layer* L = L_fr;
-    while (L->hier.up != NULL) {
-        Pico_Layer* P = _pico_layer_name(L->hier.up);
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect src = _sdl_rect(L->scene.src, &base, NULL);
-        SDL_FRect dst = _sdl_rect(L->scene.dst, &Pb, NULL);
-        float rx = (p.x - src.x) / src.w;
-        float ry = (p.y - src.y) / src.h;
-        p.x = dst.x + rx * dst.w;
-        p.y = dst.y + ry * dst.h;
-        L = P;
-        base = Pb;
+    Pico_Layer* P = _pico_layer_name(L->hier.up);
+    Pico_Abs_Rect Lb = {0, 0, L->scene.dim.w, L->scene.dim.h};
+    Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+    SDL_FRect src = _sdl_rect(L->scene.src, &Lb, NULL);
+    SDL_FRect dst = _sdl_rect(L->scene.dst, &Pb, NULL);
+    float rx = (p.x - src.x) / src.w;
+    float ry = (p.y - src.y) / src.h;
+    p.x = dst.x + rx * dst.w;
+    p.y = dst.y + ry * dst.h;
+    return _pos_root_to(P, p, out);
+}
+
+// down: project p (in L's root's frame) into L's frame.
+static Pico_Layer* _pos_root_fr (Pico_Layer* L, SDL_FPoint p, SDL_FPoint* out) {
+    if (L->hier.up == NULL) {
+        *out = p;
+        return L;
     }
-    // 2) build chain L_to up to root; walk back applying inverse.
-    Pico_Layer* chain[64];
-    int n = 0;
-    Pico_Layer* M = L_to;
-    while (M->hier.up != NULL) {
-        assert(n < (int)(sizeof(chain)/sizeof(chain[0])));
-        chain[n++] = M;
-        M = _pico_layer_name(M->hier.up);
-    }
-    chain[n++] = M;
-    pico_assert(M == L && "cv: layers must share a root");
-    for (int i = n-2; i >= 0; i--) {
-        Pico_Layer* C = chain[i];
-        Pico_Layer* P = chain[i+1];
-        Pico_Abs_Rect Cb = {0, 0, C->scene.dim.w, C->scene.dim.h};
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect dst = _sdl_rect(C->scene.dst, &Pb, NULL);
-        SDL_FRect src = _sdl_rect(C->scene.src, &Cb, NULL);
-        float rx = (p.x - dst.x) / dst.w;
-        float ry = (p.y - dst.y) / dst.h;
-        p.x = src.x + rx * src.w;
-        p.y = src.y + ry * src.h;
-    }
-    Pico_Abs_Rect toBase = {0, 0, L_to->scene.dim.w, L_to->scene.dim.h};
-    _rel_pos(p, to, &toBase);
+    Pico_Layer* P = _pico_layer_name(L->hier.up);
+    Pico_Layer* R = _pos_root_fr(P, p, &p);
+    Pico_Abs_Rect Lb = {0, 0, L->scene.dim.w, L->scene.dim.h};
+    Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
+    SDL_FRect dst = _sdl_rect(L->scene.dst, &Pb, NULL);
+    SDL_FRect src = _sdl_rect(L->scene.src, &Lb, NULL);
+    float rx = (p.x - dst.x) / dst.w;
+    float ry = (p.y - dst.y) / dst.h;
+    p.x = src.x + rx * src.w;
+    p.y = src.y + ry * src.h;
+    *out = p;
+    return R;
 }
 
 static void _cv_walk_rect (
@@ -174,7 +161,15 @@ void pico_cv_pos (
     _pico_guard();
     Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
     Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
-    _cv_walk_pos(T, to, S, fr);
+
+    SDL_FPoint p1,p2,p3;
+    p1 = _sdl_pos(*fr, &(Pico_Abs_Rect){0, 0, S->scene.dim.w, S->scene.dim.h});
+
+    Pico_Layer* R_fr = _pos_root_to(S, p1, &p2);
+    Pico_Layer* R_to = _pos_root_fr(T, p2, &p3);
+    pico_assert(R_fr == R_to && "cv: layers must share a root");
+
+    _rel_pos(p3, to, &(Pico_Abs_Rect){0, 0, T->scene.dim.w, T->scene.dim.h});
 }
 
 void pico_cv_rect (
