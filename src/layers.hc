@@ -296,12 +296,12 @@ static void _pico_output_draw_layer (
     if (rect->w == 0 || rect->h == 0) {
         dp = &layer->scene.dim;
     }
-    SDL_Rect dst = _rnd_rect(_sdl_rect(*rect, NULL, dp));
+    SDL_Rect dst = _rnd_rect(_raw_rect(*rect, NULL, dp));
 
     Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ?
                             &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
     Pico_Abs_Rect src = _rnd_rect (
-        _sdl_rect (
+        _raw_rect (
             layer->scene.src, &(Pico_Abs_Rect){0, 0, sup->w, sup->h}, NULL
         )
     );

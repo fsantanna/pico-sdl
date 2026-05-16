@@ -167,7 +167,7 @@ Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
     if (rect != NULL
             && (rect->w == 0 || rect->h == 0)) {
         Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h} };
-        _sdl_dim(&rel, NULL, &info.dim);
+        _raw_dim(&rel, NULL, &info.dim);
         rect->w = rel.w;
         rect->h = rel.h;
     }

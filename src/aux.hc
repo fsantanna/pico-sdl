@@ -1,6 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
 // _f_rat: fill missing w/h from aspect ratio
-// _f_pct: resolve a '%' rect onto a base SDL_FRect
 ///////////////////////////////////////////////////////////////////////////////
 
 static SDL_FDim _f_rat (float w, float h, const Pico_Abs_Dim* ratio) {
@@ -23,24 +22,11 @@ static SDL_FDim _f_rat (float w, float h, const Pico_Abs_Dim* ratio) {
     return (SDL_FDim) { w, h };
 }
 
-static SDL_FRect _f_pct (
-    Pico_Rel_Rect r,
-    SDL_FRect base,
-    const Pico_Abs_Dim* ratio
-) {
-    SDL_FDim d = _f_rat(r.w*base.w, r.h*base.h, ratio);
-    return (SDL_FRect) {
-        base.x + r.x*base.w - r.anchor.x*d.w,
-        base.y + r.y*base.h - r.anchor.y*d.h,
-        d.w, d.h,
-    };
-}
-
 ///////////////////////////////////////////////////////////////////////////////
-// _sdl_*: rel -> float (logical coords)
+// _raw_*: rel -> float (logical coords)
 ///////////////////////////////////////////////////////////////////////////////
 
-static SDL_FDim _sdl_dim (
+static SDL_FDim _raw_dim (
     Pico_Rel_Dim*        dim,
     const Pico_Abs_Rect* base,
     const Pico_Abs_Dim*  ratio
@@ -75,7 +61,7 @@ static SDL_FDim _sdl_dim (
     return ret;
 }
 
-static SDL_FPoint _sdl_pos (Pico_Rel_Pos pos, const Pico_Abs_Rect* base) {
+static SDL_FPoint _raw_pos (Pico_Rel_Pos pos, const Pico_Abs_Rect* base) {
     SDL_FPoint p;
     if (base == NULL) {
         p = (SDL_FPoint) { 0, 0 };
@@ -115,7 +101,7 @@ static SDL_FPoint _sdl_pos (Pico_Rel_Pos pos, const Pico_Abs_Rect* base) {
     return ret;
 }
 
-static SDL_FRect _sdl_rect (
+static SDL_FRect _raw_rect (
     Pico_Rel_Rect        rect,
     const Pico_Abs_Rect* base,
     const Pico_Abs_Dim*  ratio
@@ -144,7 +130,12 @@ static SDL_FRect _sdl_rect (
             } else {
                 d = (SDL_FDim) { base->w, base->h };
             }
-            ret = _f_pct(rect, (SDL_FRect){ p.x, p.y, d.w, d.h }, ratio);
+            SDL_FDim wh = _f_rat(rect.w*d.w, rect.h*d.h, ratio);
+            ret = (SDL_FRect) {
+                p.x + rect.x*d.w - rect.anchor.x*wh.w,
+                p.y + rect.y*d.h - rect.anchor.y*wh.h,
+                wh.w, wh.h
+            };
             break;
         }
         case '#': {
