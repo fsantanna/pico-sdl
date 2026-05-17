@@ -10,7 +10,7 @@
 #include "pico.h"
 
 ///////////////////////////////////////////////////////////////////////////////
-// LAYERS (types)
+// LAYER (types)
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef enum {
@@ -177,7 +177,7 @@ Pico_Layer* _pico_layer_text (
     int mode, const char* key, int height, const char* text
 );
 
-void _pico_layer_output     (Pico_Layer* layer, const Pico_Rel_Rect* rect);
+void _pico_layer_output   (Pico_Layer* layer, const Pico_Rel_Rect* rect);
 void _pico_layer_draw_all (Pico_Layer* UP);
 
 ///////////////////////////////////////////////////////////////////////////////

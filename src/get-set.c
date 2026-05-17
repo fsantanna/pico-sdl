@@ -45,11 +45,9 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
         return layer->scene.dim;
     } else if (rel->w==0 || rel->h==0) {
         Pico_Layer* layer = _pico_layer_image('=', NULL, path);
-        SDL_FDim fd = _pico_raw_dim(rel, NULL, &layer->scene.dim);
-        return (Pico_Abs_Dim){fd.w, fd.h};
+        return _pico_rnd_dim(_pico_raw_dim(rel, NULL, &layer->scene.dim));
     } else {
-        SDL_FDim fd = _pico_raw_dim(rel, NULL, NULL);
-        return (Pico_Abs_Dim){fd.w, fd.h};
+        return _pico_rnd_dim(_pico_raw_dim(rel, NULL, NULL));
     }
 }
 
@@ -110,14 +108,11 @@ Pico_Abs_Dim pico_get_text_mode (
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
         Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h} };
-        SDL_FDim fd_h = _pico_raw_dim(&rel_h, NULL, NULL);
-        int height = (int)fd_h.h;
-        Pico_Layer* layer = _pico_layer_text(mode, key, height, text);
-        SDL_FDim fd = _pico_raw_dim(rel, NULL, &layer->scene.dim);
-        return (Pico_Abs_Dim){fd.w, fd.h};
+        int h = _pico_rnd_dim(_pico_raw_dim(&rel_h, NULL, NULL)).h;
+        Pico_Layer* layer = _pico_layer_text(mode, key, h, text);
+        return _pico_rnd_dim(_pico_raw_dim(rel, NULL, &layer->scene.dim));
     } else {
-        SDL_FDim fd = _pico_raw_dim(rel, NULL, NULL);
-        return (Pico_Abs_Dim){fd.w, fd.h};
+        return _pico_rnd_dim(_pico_raw_dim(rel, NULL, NULL));
     }
 }
 

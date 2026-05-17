@@ -175,9 +175,9 @@ void pico_output_draw_text_mode (
     assert(rect.h != 0);
     if (text[0] == '\0') return;
 
-    SDL_FDim dim = _pico_raw_dim (
+    Pico_Abs_Dim dim = _pico_rnd_dim(_pico_raw_dim (
         &(Pico_Rel_Dim){ rect.mode, {0, rect.h} }, NULL, NULL
-    );
+    ));
 
     Pico_Layer* layer = _pico_layer_text(mode, key, dim.h, text);
     Pico_Abs_Dim* orig = (rect.w == 0) ? &layer->scene.dim : NULL;
