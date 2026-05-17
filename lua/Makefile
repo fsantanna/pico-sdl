@@ -8,9 +8,13 @@ GEN = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= $(LUA) ./pico-lua
 
 all: tests
 
-pico_native.so: ../src/pico.c pico.c
-	gcc -Wall -Werror -g -shared -fPIC -o pico/$@ $^ \
+pico_native.so: ../src/libpico-sdl.a pico.c
+	gcc -Wall -Werror -g -shared -fPIC -o pico/$@ pico.c \
+		-L../src -lpico-sdl \
 		-llua5.4 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -lSDL2_image
+
+../src/libpico-sdl.a:
+	$(MAKE) -C .. lib
 
 test: pico_native.so
 	$(TST) tst/$(T).lua

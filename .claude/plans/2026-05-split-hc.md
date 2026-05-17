@@ -107,5 +107,5 @@ Decisions:
 - [x] aux split
 - [x] layers / mem / video split
 - [x] geom split
-- [ ] Makefile + pico-sdl script
-- [ ] valgrind.supp line check
+- [x] Makefile + pico-sdl script
+- [x] valgrind.supp line check (117 → 91)

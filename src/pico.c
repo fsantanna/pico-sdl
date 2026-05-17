@@ -19,8 +19,6 @@
 #include "tiny_ttf.h"
 #include "pico.h"
 
-#include "colors.c"
-
 #define PICO_ANCHORS_C
 #include "anchors.h"
 
@@ -28,6 +26,7 @@
 // DATA
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "aux.h"
 #include "layers.h"
 #include "mem.h"
 #include "video.h"
@@ -68,9 +67,6 @@ TTF_Font* _font_get (const char* path, int h) {
     assert(ret != NULL);
     return ret;
 }
-
-#include "aux.c"
-#include "geom.c"
 
 ///////////////////////////////////////////////////////////////////////////////
 // INIT
@@ -712,9 +708,6 @@ void pico_set_window_title (const char* title) {
     SDL_SetWindowTitle(G.window.win, title);
     _pico_output_present(0);
 }
-
-#include "mem.c"
-#include "layers.c"
 
 ///////////////////////////////////////////////////////////////////////////////
 // LAYER
@@ -1449,5 +1442,3 @@ void pico_output_sound (const char* path) {
     _pico_guard();
     _pico_output_sound_cache(path, 1);
 }
-
-#include "video.c"
