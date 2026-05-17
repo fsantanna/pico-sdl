@@ -102,10 +102,10 @@ Decisions:
 
 ## Progress
 
-- [ ] state.h
-- [ ] colors split
-- [ ] aux split
-- [ ] layers / mem / video split
-- [ ] geom split
+- [x] state.h
+- [x] colors split
+- [x] aux split
+- [x] layers / mem / video split
+- [x] geom split
 - [ ] Makefile + pico-sdl script
 - [ ] valgrind.supp line check

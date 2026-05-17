@@ -1,63 +1,22 @@
-#ifndef PICO_LAYERS_HC
-#define PICO_LAYERS_HC
+#include <assert.h>
+#include <string.h>
+#include <stdio.h>
 
-typedef enum {
-    PICO_LAYER_PLAIN,
-    PICO_LAYER_VIDEO,
-    PICO_LAYER_SUB,
-} PICO_LAYER;
+#include <SDL2/SDL.h>
 
-typedef struct Pico_Layer {
-    PICO_LAYER            type;
-    char*                 name;     // "world" for the world/root layer
-    SDL_Texture*          tex;
-    Pico_Layer_Pencil     pencil;
-    Pico_Layer_Effect     effect;
-    Pico_Layer_Scene      scene;
-    struct {
-        const char* up;             // parent id; NULL = root or detached
-        const char* nxt;            // next sibling under same up
-        struct {
-            const char* fst;        // first child (back; drawn first)
-            const char* lst;        // last child  (front; drawn last)
-        } dn;
-    } hier;
-} Pico_Layer;
+#include "layers.h"
+#include "state.h"
+#include "aux.h"
+#include "mem.h"
 
-typedef struct {
-    Pico_Layer   base;
-    Pico_Abs_Dim sup;     // snapshot of source scene.dim
-} Pico_Layer_Sub;
-
-static Pico_Layer* _pico_layer_name (const char* name);
-static void _layer_attach (const char* up, const char* dn);
-
-static Pico_Layer* _pico_layer_pixmap (
-    int mode, const char* key, Pico_Abs_Dim dim,
-    const Pico_Color* pixels
-);
-static Pico_Layer* _pico_layer_image (
-    int mode, const char* key, const char* path
-);
-static Pico_Layer* _pico_layer_text (
-    int mode, const char* key, int height, const char* text
-);
-static void _pico_output_draw_layer (
-    Pico_Layer* layer, const Pico_Rel_Rect* rect
-);
-
-#endif // PICO_LAYERS_HC
-
-#ifdef PICO_LAYERS_C
-
-static Pico_Layer* _pico_layer_name (const char* name) {
+Pico_Layer* _pico_layer_name (const char* name) {
     assert(name != NULL);
     Pico_Layer* L = (Pico_Layer*) realm_get(G.realm, strlen(name)+1, name);
     pico_assert(L!=NULL && "layer does not exist");
     return L;
 }
 
-static void _layer_attach (const char* up, const char* dn) {
+void _layer_attach (const char* up, const char* dn) {
     Pico_Layer* UP = _pico_layer_name(up);
     Pico_Layer* DN = _pico_layer_name(dn);
     DN->hier.up = UP->name;
@@ -73,9 +32,7 @@ static void _layer_attach (const char* up, const char* dn) {
     }
 }
 
-static void _pico_output_draw_layer (Pico_Layer*, const Pico_Rel_Rect*);
-
-static void _pico_output_draw_layers (Pico_Layer* UP) {
+void _pico_output_draw_layers (Pico_Layer* UP) {
     Pico_Layer* old = G.layer;
     G.layer = UP;
     const char* cur = UP->hier.dn.fst;
@@ -103,7 +60,7 @@ static void _pico_output_draw_layers (Pico_Layer* UP) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Layer* _pico_layer_pixmap (
+Pico_Layer* _pico_layer_pixmap (
     int mode,
     const char* key,
     Pico_Abs_Dim dim,
@@ -120,7 +77,7 @@ static Pico_Layer* _pico_layer_pixmap (
     return ret;
 }
 
-static Pico_Layer* _pico_layer_image (
+Pico_Layer* _pico_layer_image (
     int mode, const char* key, const char* path
 ) {
     assert(path!=NULL && "image path required");
@@ -133,7 +90,7 @@ static Pico_Layer* _pico_layer_image (
     return ret;
 }
 
-static Pico_Layer* _pico_layer_text (
+Pico_Layer* _pico_layer_text (
     int mode, const char* key, int height, const char* text
 ) {
     assert(text!=NULL && text[0]!='\0' && "text required");
@@ -285,7 +242,7 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
     pico_set_pencil_color(x_clr);
 }
 
-static void _pico_output_draw_layer (
+void _pico_output_draw_layer (
     Pico_Layer* layer, const Pico_Rel_Rect* rect
 ) {
     // blit layer onto current render target
@@ -364,6 +321,3 @@ static void _pico_output_draw_layer (
 
     _pico_output_present(0);
 }
-
-#undef PICO_LAYERS_C
-#endif

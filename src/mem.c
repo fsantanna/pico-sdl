@@ -1,73 +1,31 @@
-#ifndef PICO_MEM_HC
-#define PICO_MEM_HC
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
-///////////////////////////////////////////////////////////////////////////////
-// Context structs for realm alloc callbacks
-///////////////////////////////////////////////////////////////////////////////
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 
-typedef struct {
-    Pico_Abs_Dim dim;
-    const Pico_Color* pixels;
-} _alloc_pixmap_t;
+#include "mem.h"
+#include "state.h"
+#include "aux.h"
+#include "layers.h"
+#include "video.h"
 
-typedef struct {
-    const char*   up;
-    int           clear;
-    Pico_Rel_Dim  dim;
-    Pico_Abs_Dim* tile;
-} _alloc_empty_t;
-
-typedef struct {
-    Pico_Layer* par;
-    Pico_Rel_Rect crop;
-} _alloc_sub_t;
-
-typedef struct {
-    int height;
-    const char* text;
-} _alloc_text_t;
-
-typedef struct {
-    const char* path;
-    int h;
-} _alloc_font_t;
+// tiny_ttf.h *defines* the data; declare as extern to avoid double-def
+extern unsigned char pico_tiny_ttf[];
+extern unsigned int  pico_tiny_ttf_len;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Free callbacks
 ///////////////////////////////////////////////////////////////////////////////
 
-static void _free_font (int, const void*, void*);
-static void _free_layer (int, const void*, void*);
-static void _free_sound (int, const void*, void*);
-
-///////////////////////////////////////////////////////////////////////////////
-// Alloc callbacks
-///////////////////////////////////////////////////////////////////////////////
-
-static void* _alloc_layer_pixmap (int, const void*, void*);
-static void* _alloc_layer_empty (int, const void*, void*);
-static void* _alloc_layer_image (int, const void*, void*);
-static void* _alloc_layer_sub (int, const void*, void*);
-static void* _alloc_layer_text (int, const void*, void*);
-static void* _alloc_layer_video (int, const void*, void*);
-static void* _alloc_font (int, const void*, void*);
-static void* _alloc_sound (int, const void*, void*);
-
-#endif // PICO_MEM_HC
-
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef PICO_MEM_C
-
-///////////////////////////////////////////////////////////////////////////////
-// Free callbacks
-///////////////////////////////////////////////////////////////////////////////
-
-static void _free_font (int n, const void* key, void* value) {
+void _free_font (int n, const void* key, void* value) {
     TTF_CloseFont((TTF_Font*)value);
 }
 
-static void _free_layer (int n, const void* key, void* value) {
+void _free_layer (int n, const void* key, void* value) {
     Pico_Layer* data = (Pico_Layer*)value;
     if (data->type == PICO_LAYER_VIDEO) {
         _free_layer_video((Pico_Layer_Video*)data);
@@ -79,7 +37,7 @@ static void _free_layer (int n, const void* key, void* value) {
     free(data);
 }
 
-static void _free_sound (int n, const void* key, void* value) {
+void _free_sound (int n, const void* key, void* value) {
     Mix_FreeChunk((Mix_Chunk*)value);
 }
 
@@ -87,7 +45,7 @@ static void _free_sound (int n, const void* key, void* value) {
 // Alloc helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Layer* _layer_new (
+Pico_Layer* _layer_new (
     int clear, int type, size_t size,
     const char* key, SDL_Texture* tex, Pico_Abs_Dim dim
 ) {
@@ -121,7 +79,7 @@ static Pico_Layer* _layer_new (
 // Alloc callbacks
 ///////////////////////////////////////////////////////////////////////////////
 
-static void* _alloc_layer_pixmap (int n, const void* key, void* ctx) {
+void* _alloc_layer_pixmap (int n, const void* key, void* ctx) {
     _alloc_pixmap_t* c = (_alloc_pixmap_t*)ctx;
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom(
         (void*)c->pixels, c->dim.w, c->dim.h,
@@ -136,7 +94,7 @@ static void* _alloc_layer_pixmap (int n, const void* key, void* ctx) {
     );
 }
 
-static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
+void* _alloc_layer_empty (int n, const void* key, void* ctx) {
     _alloc_empty_t* arg = (_alloc_empty_t*)ctx;
 
     // resolve rel dim against parent's scene.dim
@@ -166,7 +124,7 @@ static void* _alloc_layer_empty (int n, const void* key, void* ctx) {
     return lay;
 }
 
-static void* _alloc_layer_image (int n, const void* key, void* ctx) {
+void* _alloc_layer_image (int n, const void* key, void* ctx) {
     const char* path = (const char*)ctx;
     SDL_Texture* tex = IMG_LoadTexture(G.window.ren, path);
     pico_assert(tex != NULL);
@@ -178,7 +136,7 @@ static void* _alloc_layer_image (int n, const void* key, void* ctx) {
     );
 }
 
-static void* _alloc_layer_sub (int n, const void* key, void* ctx) {
+void* _alloc_layer_sub (int n, const void* key, void* ctx) {
     _alloc_sub_t* c = (_alloc_sub_t*)ctx;
     Pico_Abs_Rect base = {0, 0, c->par->scene.dim.w, c->par->scene.dim.h};
     Pico_Abs_Rect abs = _rnd_rect(_raw_rect(c->crop, &base, NULL));
@@ -204,7 +162,7 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
     return tex;
 }
 
-static void* _alloc_layer_text (int n, const void* key, void* ctx) {
+void* _alloc_layer_text (int n, const void* key, void* ctx) {
     _alloc_text_t* c = (_alloc_text_t*)ctx;
     Pico_Abs_Dim dim;
     SDL_Texture* tex = _tex_text(c->height, c->text, &dim);
@@ -214,55 +172,7 @@ static void* _alloc_layer_text (int n, const void* key, void* ctx) {
     );
 }
 
-static void* _alloc_layer_video (int n, const void* key, void* ctx) {
-    const char* path = (const char*)ctx;
-
-    FILE* fp = fopen(path, "rb");
-    pico_assert(fp != NULL);
-
-    int w, h, fps;
-    if (!_y4m_parse_header(fp, &w, &h, &fps)) {
-        fclose(fp);
-        assert(0 && "invalid Y4M header");
-    }
-
-    SDL_Texture* tex = SDL_CreateTexture(
-        G.window.ren, SDL_PIXELFORMAT_YV12,
-        SDL_TEXTUREACCESS_STREAMING, w, h
-    );
-    pico_assert(tex != NULL);
-
-    Pico_Layer_Video* vs = (Pico_Layer_Video*)_layer_new (
-        0, PICO_LAYER_VIDEO, sizeof(Pico_Layer_Video),
-        (const char*)key, tex, (Pico_Abs_Dim){w, h}
-    );
-
-    vs->fp = fp;
-    vs->fps = fps;
-    vs->size.y = w * h;
-    vs->size.uv = (w / 2) * (h / 2);
-    vs->size.frame = 6 + vs->size.y + vs->size.uv * 2;
-    vs->data_offset = ftell(fp);
-    vs->frame.cur = -1;
-    vs->frame.done = 0;
-    vs->t0 = 0;
-
-    vs->plane.y = malloc(vs->size.y);
-    vs->plane.u = malloc(vs->size.uv);
-    vs->plane.v = malloc(vs->size.uv);
-    assert(vs->plane.y && vs->plane.u && vs->plane.v);
-
-    long cur = ftell(fp);
-    fseek(fp, 0, SEEK_END);
-    long end = ftell(fp);
-    fseek(fp, cur, SEEK_SET);
-    vs->frame.total =
-        (int)((end - vs->data_offset) / vs->size.frame);
-
-    return vs;
-}
-
-static void* _alloc_font (int n, const void* key, void* ctx) {
+void* _alloc_font (int n, const void* key, void* ctx) {
     _alloc_font_t* c = (_alloc_font_t*)ctx;
     TTF_Font* ttf;
     if (c->path == NULL) {
@@ -275,10 +185,7 @@ static void* _alloc_font (int n, const void* key, void* ctx) {
     return ttf;
 }
 
-static void* _alloc_sound (int n, const void* key, void* ctx) {
+void* _alloc_sound (int n, const void* key, void* ctx) {
     const char* path = (const char*)ctx;
     return Mix_LoadWAV(path);
 }
-
-#undef PICO_MEM_C
-#endif

@@ -15,11 +15,11 @@
 
 #define REALM_C
 #include "realm.hc"
+#undef REALM_C
 #include "tiny_ttf.h"
 #include "pico.h"
 
-#define PICO_COLORS_C
-#include "colors.hc"
+#include "colors.c"
 
 #define PICO_ANCHORS_C
 #include "anchors.h"
@@ -28,47 +28,25 @@
 // DATA
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "layers.hc"
-#include "mem.hc"
-#include "video.hc"
+#include "layers.h"
+#include "mem.h"
+#include "video.h"
+#include "state.h"
 
-static struct {
-    int           init;
-    realm_t*      realm;
-    Pico_Layer    world;
-    Pico_Layer*   layer;            // current render target
-    struct {
-        int on;
-        int fps;
-        int ms;
-        int t0;
-    } expert;
-    struct {
-        SDL_Window*   win;
-        SDL_Renderer* ren;
-        Pico_Layer    layer;
-        struct {
-            int fs;
-            int out;
-        } ing;
-        struct { int fs; } pub;
-    } window;
-} G = { 0 };
+PicoState G = { 0 };
 
 ///////////////////////////////////////////////////////////////////////////////
 // AUX
 ///////////////////////////////////////////////////////////////////////////////
 
-static void _pico_output_present (int force);
-
-static void _pico_guard (void) {
+void _pico_guard (void) {
     if (!G.init) {
         fprintf(stderr, "ERROR : pico-sdl is not initialized\n");
         abort();
     }
 }
 
-static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
+SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
     SDL_Texture* tex = SDL_CreateTexture (
         G.window.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         dim.w, dim.h
@@ -77,7 +55,7 @@ static SDL_Texture* _tex_create (Pico_Abs_Dim dim) {
     return tex;
 }
 
-static TTF_Font* _font_get (const char* path, int h) {
+TTF_Font* _font_get (const char* path, int h) {
     const char* path_str = path ? path : "null";
     char key[256];
     snprintf(key, sizeof(key), "/font/%s/%d", path_str, h);
@@ -91,8 +69,8 @@ static TTF_Font* _font_get (const char* path, int h) {
     return ret;
 }
 
-#include "aux.hc"
-#include "geom.hc"
+#include "aux.c"
+#include "geom.c"
 
 ///////////////////////////////////////////////////////////////////////////////
 // INIT
@@ -737,11 +715,8 @@ void pico_set_window_title (const char* title) {
     _pico_output_present(0);
 }
 
-#define PICO_MEM_C
-#include "mem.hc"
-
-#define PICO_LAYERS_C
-#include "layers.hc"
+#include "mem.c"
+#include "layers.c"
 
 ///////////////////////////////////////////////////////////////////////////////
 // LAYER
@@ -1345,7 +1320,7 @@ void pico_output_draw_tri (
     _pico_output_present(0);
 }
 
-static void _pico_output_present (int force) {
+void _pico_output_present (int force) {
     _pico_guard();
     if (G.window.ing.out) {
         return;
@@ -1477,5 +1452,4 @@ void pico_output_sound (const char* path) {
     _pico_output_sound_cache(path, 1);
 }
 
-#define PICO_VIDEO_C
-#include "video.hc"
+#include "video.c"

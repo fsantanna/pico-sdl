@@ -1,35 +1,15 @@
-#ifndef PICO_VIDEO_HC
-#define PICO_VIDEO_HC
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
-typedef struct {
-    Pico_Layer base;
-    FILE*      fp;
-    int        fps;
-    struct {
-        unsigned char* y;
-        unsigned char* u;
-        unsigned char* v;
-    } plane;
-    struct {
-        int y;
-        int uv;
-        int frame;
-    } size;
-    long       data_offset;
-    struct {
-        int total;
-        int cur;
-        int done;
-    } frame;
-    Uint32     t0;
-} Pico_Layer_Video;
+#include <SDL2/SDL.h>
 
-static void _free_layer_video (Pico_Layer_Video*);
-static int _y4m_parse_header (FILE*, int*, int*, int*);
-
-#endif // PICO_VIDEO_HC
-
-#ifdef PICO_VIDEO_C
+#include "video.h"
+#include "state.h"
+#include "aux.h"
+#include "layers.h"
+#include "mem.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // VIDEO
@@ -109,12 +89,62 @@ static void _y4m_update_texture (Pico_Layer_Video* vs) {
 ///////////////////////////////////////////////////////////////////////////////
 
 /* Free video-specific resources (called from _free_layer) */
-static void _free_layer_video (Pico_Layer_Video* vs) {
+void _free_layer_video (Pico_Layer_Video* vs) {
     free(vs->plane.y);
     free(vs->plane.u);
     free(vs->plane.v);
     fclose(vs->fp);
 }
+
+void* _alloc_layer_video (int n, const void* key, void* ctx) {
+    const char* path = (const char*)ctx;
+
+    FILE* fp = fopen(path, "rb");
+    pico_assert(fp != NULL);
+
+    int w, h, fps;
+    if (!_y4m_parse_header(fp, &w, &h, &fps)) {
+        fclose(fp);
+        assert(0 && "invalid Y4M header");
+    }
+
+    SDL_Texture* tex = SDL_CreateTexture(
+        G.window.ren, SDL_PIXELFORMAT_YV12,
+        SDL_TEXTUREACCESS_STREAMING, w, h
+    );
+    pico_assert(tex != NULL);
+
+    Pico_Layer_Video* vs = (Pico_Layer_Video*)_layer_new (
+        0, PICO_LAYER_VIDEO, sizeof(Pico_Layer_Video),
+        (const char*)key, tex, (Pico_Abs_Dim){w, h}
+    );
+
+    vs->fp = fp;
+    vs->fps = fps;
+    vs->size.y = w * h;
+    vs->size.uv = (w / 2) * (h / 2);
+    vs->size.frame = 6 + vs->size.y + vs->size.uv * 2;
+    vs->data_offset = ftell(fp);
+    vs->frame.cur = -1;
+    vs->frame.done = 0;
+    vs->t0 = 0;
+
+    vs->plane.y = malloc(vs->size.y);
+    vs->plane.u = malloc(vs->size.uv);
+    vs->plane.v = malloc(vs->size.uv);
+    assert(vs->plane.y && vs->plane.u && vs->plane.v);
+
+    long cur = ftell(fp);
+    fseek(fp, 0, SEEK_END);
+    long end = ftell(fp);
+    fseek(fp, cur, SEEK_SET);
+    vs->frame.total =
+        (int)((end - vs->data_offset) / vs->size.frame);
+
+    return vs;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 static Pico_Layer_Video* _pico_layer_video (
     int mode, const char* key, const char* path
@@ -255,5 +285,3 @@ int pico_output_draw_video (const char* path, Pico_Rel_Rect rect) {
     _pico_output_draw_layer(&vs->base, &rect);
     return 1;
 }
-
-#endif // PICO_VIDEO_C
