@@ -29,7 +29,6 @@ typedef struct {
     Uint32     t0;
 } Pico_Layer_Video;
 
-void  _free_layer_video  (Pico_Layer_Video*);
-void* _alloc_layer_video (int, const void*, void*);
+void _pico_free_layer_video (Pico_Layer_Video*);
 
 #endif

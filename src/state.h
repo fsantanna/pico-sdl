@@ -37,8 +37,8 @@ extern PicoState G;
 ///////////////////////////////////////////////////////////////////////////////
 
 void         _pico_guard          (void);
-SDL_Texture* _tex_create          (Pico_Abs_Dim dim);
-TTF_Font*    _font_get            (const char* path, int h);
+SDL_Texture* _pico_tex_create          (Pico_Abs_Dim dim);
+TTF_Font*    _pico_font_get            (const char* path, int h);
 void         _pico_output_present (int force);
 
 #endif

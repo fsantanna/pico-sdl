@@ -33,7 +33,7 @@ typedef struct {
 
 Pico_Layer* _pico_layer_name (const char* name);
 
-void        _layer_attach    (const char* up, const char* dn);
+void        _pico_layer_attach    (const char* up, const char* dn);
 
 Pico_Layer* _pico_layer_pixmap (
     int mode, const char* key, Pico_Abs_Dim dim,

@@ -32,7 +32,7 @@ static SDL_FDim _f_rat (float w, float h, const Pico_Abs_Dim* ratio) {
 // _raw_*: rel -> float (logical coords)
 ///////////////////////////////////////////////////////////////////////////////
 
-SDL_FDim _raw_dim (
+SDL_FDim _pico_raw_dim (
     Pico_Rel_Dim*        dim,
     const Pico_Abs_Rect* base,
     const Pico_Abs_Dim*  ratio
@@ -67,7 +67,7 @@ SDL_FDim _raw_dim (
     return ret;
 }
 
-SDL_FPoint _raw_pos (Pico_Rel_Pos pos, const Pico_Abs_Rect* base) {
+SDL_FPoint _pico_raw_pos (Pico_Rel_Pos pos, const Pico_Abs_Rect* base) {
     SDL_FPoint p;
     if (base == NULL) {
         p = (SDL_FPoint) { 0, 0 };
@@ -107,7 +107,7 @@ SDL_FPoint _raw_pos (Pico_Rel_Pos pos, const Pico_Abs_Rect* base) {
     return ret;
 }
 
-SDL_FRect _raw_rect (
+SDL_FRect _pico_raw_rect (
     Pico_Rel_Rect        rect,
     const Pico_Abs_Rect* base,
     const Pico_Abs_Dim*  ratio
@@ -168,7 +168,7 @@ SDL_FRect _raw_rect (
 // _rel_*: float (logical coords) -> rel
 ///////////////////////////////////////////////////////////////////////////////
 
-void _rel_dim (
+void _pico_rel_dim (
     SDL_FDim flt,
     Pico_Rel_Dim* to,
     const Pico_Abs_Rect* base
@@ -198,7 +198,7 @@ void _rel_dim (
     }
 }
 
-void _rel_pos (
+void _pico_rel_pos (
     SDL_FPoint flt,
     Pico_Rel_Pos* to,
     const Pico_Abs_Rect* base
@@ -234,7 +234,7 @@ void _rel_pos (
     }
 }
 
-void _rel_rect (
+void _pico_rel_rect (
     SDL_FRect flt,
     Pico_Rel_Rect* to,
     const Pico_Abs_Rect* base
@@ -284,19 +284,19 @@ void _rel_rect (
 
 // use floorf(. + 0.5f) toward +inf: makes NW/C behave the same
 
-Pico_Abs_Dim _rnd_dim (SDL_FDim f) {
+Pico_Abs_Dim _pico_rnd_dim (SDL_FDim f) {
     return (Pico_Abs_Dim) {
         floorf(f.w+0.5f), floorf(f.h+0.5f)
     };
 }
 
-Pico_Abs_Pos _rnd_pos (SDL_FPoint f) {
+Pico_Abs_Pos _pico_rnd_pos (SDL_FPoint f) {
     return (Pico_Abs_Pos) {
         floorf(f.x+0.5f), floorf(f.y+0.5f)
     };
 }
 
-Pico_Abs_Rect _rnd_rect (SDL_FRect f) {
+Pico_Abs_Rect _pico_rnd_rect (SDL_FRect f) {
     return (Pico_Abs_Rect) {
         floorf(f.x+0.5f), floorf(f.y+0.5f),
         floorf(f.w+0.5f), floorf(f.h+0.5f)

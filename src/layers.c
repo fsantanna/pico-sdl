@@ -16,7 +16,7 @@ Pico_Layer* _pico_layer_name (const char* name) {
     return L;
 }
 
-void _layer_attach (const char* up, const char* dn) {
+void _pico_layer_attach (const char* up, const char* dn) {
     Pico_Layer* UP = _pico_layer_name(up);
     Pico_Layer* DN = _pico_layer_name(dn);
     DN->hier.up = UP->name;
@@ -68,10 +68,10 @@ Pico_Layer* _pico_layer_pixmap (
 ) {
     assert(key!=NULL && "layer key required");
     assert(pixels!=NULL && "pixels required");
-    _alloc_pixmap_t ctx = { dim, pixels };
+    _pico_alloc_pixmap_t ctx = { dim, pixels };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(key)+1, key,
-        _free_layer, _alloc_layer_pixmap, &ctx
+        _pico_free_layer, _pico_alloc_layer_pixmap, &ctx
     );
     assert(ret != NULL);
     return ret;
@@ -84,7 +84,7 @@ Pico_Layer* _pico_layer_image (
     const char* str = (key != NULL) ? key : path;
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(str)+1, str,
-        _free_layer, _alloc_layer_image, (void*)path
+        _pico_free_layer, _pico_alloc_layer_image, (void*)path
     );
     assert(ret != NULL);
     return ret;
@@ -111,10 +111,10 @@ Pico_Layer* _pico_layer_text (
         str = key;
     }
 
-    _alloc_text_t ctx = { height, text };
+    _pico_alloc_text_t ctx = { height, text };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(str)+1, str,
-        _free_layer, _alloc_layer_text, &ctx
+        _pico_free_layer, _pico_alloc_layer_text, &ctx
     );
     assert(ret != NULL);
     return ret;
@@ -253,12 +253,12 @@ void _pico_output_draw_layer (
     if (rect->w == 0 || rect->h == 0) {
         dp = &layer->scene.dim;
     }
-    SDL_Rect dst = _rnd_rect(_raw_rect(*rect, NULL, dp));
+    SDL_Rect dst = _pico_rnd_rect(_pico_raw_rect(*rect, NULL, dp));
 
     Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ?
                             &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
-    Pico_Abs_Rect src = _rnd_rect (
-        _raw_rect (
+    Pico_Abs_Rect src = _pico_rnd_rect (
+        _pico_raw_rect (
             layer->scene.src, &(Pico_Abs_Rect){0, 0, sup->w, sup->h}, NULL
         )
     );
