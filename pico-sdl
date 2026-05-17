@@ -36,10 +36,6 @@ fi
 if [ -n "$PICO_CHECK_ASR" ]; then
     DEFINES="$DEFINES -DPICO_CHECK_ASR"
 fi
-if [ -n "$PICO_TESTS" ]; then
-    DEFINES="$DEFINES -DPICO_TESTS"
-fi
-
 #echo $PICO, $DIR, $EXE
 
 gcc -Wall -Werror -g -o "$DIR/$EXE" "$1" \

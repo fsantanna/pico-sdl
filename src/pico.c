@@ -113,11 +113,9 @@ void pico_init (int on) {
             // renderer
             ren = SDL_CreateRenderer (
                 win, -1,
-                #ifdef PICO_TESTS
-                    SDL_RENDERER_SOFTWARE
-                #else
-                    SDL_RENDERER_ACCELERATED // |SDL_RENDERER_PRESENTVSYNC
-                #endif
+                getenv("PICO_TESTS")
+                    ? SDL_RENDERER_SOFTWARE
+                    : SDL_RENDERER_ACCELERATED // |SDL_RENDERER_PRESENTVSYNC
             );
             pico_assert_X(ren);
             pico_assert_0 (
