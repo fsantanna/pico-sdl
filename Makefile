@@ -4,9 +4,20 @@ EXE = $(CHECK) $(XVFB) ./pico-sdl
 INT = PICO_TESTS=1 PICO_CHECK_INT=1 PICO_CHECK_ASR= ./pico-sdl
 GEN = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl
 
-.PHONY: realm tests lua clean
+OBJS = src/aux.o src/colors.o src/geom.o src/get-set.o src/input.o \
+	   src/layer.o src/mem.o src/output.o src/pico.o src/video.o
+
+.PHONY: realm tests lua clean lib
 
 all: tests
+
+lib: src/libpico-sdl.a
+
+src/libpico-sdl.a: $(OBJS)
+	ar rcs $@ $^
+
+src/%.o: src/%.c
+	gcc -Wall -Werror -g -fPIC -I src -c -o $@ $<
 
 realm:
 	curl -sL https://raw.githubusercontent.com/fsantanna/realm-allocator/v0.1/realm.h \
@@ -15,17 +26,17 @@ realm:
 lua:
 	sudo luarocks make lua/pico-sdl-0.3.1-1.rockspec --lua-version=5.4
 
-test:
+test: lib
 	$(EXE) tst/$(T).c
 
-int:
+int: lib
 	$(INT) tst/$(T).c
 
-gen:
+gen: lib
 	$(GEN) tst/$(T).c
 	cp tst/out/$(T)-*.png tst/asr/
 
-tests:
+tests: lib
 	@echo "Running tests..."
 	./pico-sdl | grep -q "Usage: pico-sdl"
 	./pico-sdl --help | grep -q "Usage: pico-sdl"
@@ -86,3 +97,4 @@ tests:
 clean:
 	rm -f tst/*.exe
 	rm -f tst/out/*.png
+	rm -f src/*.o src/libpico-sdl.a

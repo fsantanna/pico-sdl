@@ -5,6 +5,8 @@
 *.swp
 *.zip
 
+src/libpico-sdl.a
+
 .claude/ok
 .work/
 
