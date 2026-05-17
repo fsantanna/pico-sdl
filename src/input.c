@@ -4,9 +4,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "pico.h"
-#include "state.h"
-#include "aux.h"
+#include "_pico.h"
 
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 

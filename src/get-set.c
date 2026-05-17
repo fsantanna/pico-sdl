@@ -4,10 +4,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "pico.h"
-#include "state.h"
-#include "aux.h"
-#include "layers.h"
+#include "_pico.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // GET

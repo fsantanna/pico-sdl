@@ -1,8 +1,8 @@
 #include <math.h>
 #include <assert.h>
 
-#include "aux.h"
-#include "state.h"
+#include "_pico.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // _f_rat: fill missing w/h from aspect ratio

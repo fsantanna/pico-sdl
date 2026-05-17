@@ -4,21 +4,19 @@
 
 #include <SDL2/SDL.h>
 
-#include "layers.h"
-#include "state.h"
-#include "aux.h"
-#include "mem.h"
+#include "_pico.h"
 
-Pico_Layer* _pico_layer_name (const char* name) {
+
+Pico_Layer* _pico_layers_name (const char* name) {
     assert(name != NULL);
     Pico_Layer* L = (Pico_Layer*) realm_get(G.realm, strlen(name)+1, name);
     pico_assert(L!=NULL && "layer does not exist");
     return L;
 }
 
-void _pico_layer_attach (const char* up, const char* dn) {
-    Pico_Layer* UP = _pico_layer_name(up);
-    Pico_Layer* DN = _pico_layer_name(dn);
+void _pico_layers_attach (const char* up, const char* dn) {
+    Pico_Layer* UP = _pico_layers_name(up);
+    Pico_Layer* DN = _pico_layers_name(dn);
     DN->hier.up = UP->name;
     DN->hier.nxt = NULL;
     if (UP->hier.dn.fst == NULL) {
@@ -32,7 +30,7 @@ void _pico_layer_attach (const char* up, const char* dn) {
     }
 }
 
-void _pico_output_draw_layers (Pico_Layer* UP) {
+void _pico_layers_draw_all (Pico_Layer* UP) {
     Pico_Layer* old = G.layer;
     G.layer = UP;
     const char* cur = UP->hier.dn.fst;
@@ -41,10 +39,10 @@ void _pico_output_draw_layers (Pico_Layer* UP) {
         assert(CUR != NULL);
 
         SDL_SetRenderTarget(G.window.ren, CUR->tex);
-        _pico_output_draw_layers(CUR);
+        _pico_layers_draw_all(CUR);
 
         SDL_SetRenderTarget(G.window.ren, UP->tex);
-        _pico_output_draw_layer(CUR, NULL);
+        _pico_layers_draw(CUR, NULL);
 
         // post-composite clear: allows drawing bw presents
         if (CUR->scene.clear) {
@@ -60,7 +58,7 @@ void _pico_output_draw_layers (Pico_Layer* UP) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Pico_Layer* _pico_layer_pixmap (
+Pico_Layer* _pico_layers_pixmap (
     int mode,
     const char* key,
     Pico_Abs_Dim dim,
@@ -68,29 +66,29 @@ Pico_Layer* _pico_layer_pixmap (
 ) {
     assert(key!=NULL && "layer key required");
     assert(pixels!=NULL && "pixels required");
-    _pico_alloc_pixmap_t ctx = { dim, pixels };
+    _pico_mem_alloc_pixmap_t ctx = { dim, pixels };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(key)+1, key,
-        _pico_free_layer, _pico_alloc_layer_pixmap, &ctx
+        _pico_mem_free_layer, _pico_mem_alloc_layer_pixmap, &ctx
     );
     assert(ret != NULL);
     return ret;
 }
 
-Pico_Layer* _pico_layer_image (
+Pico_Layer* _pico_layers_image (
     int mode, const char* key, const char* path
 ) {
     assert(path!=NULL && "image path required");
     const char* str = (key != NULL) ? key : path;
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(str)+1, str,
-        _pico_free_layer, _pico_alloc_layer_image, (void*)path
+        _pico_mem_free_layer, _pico_mem_alloc_layer_image, (void*)path
     );
     assert(ret != NULL);
     return ret;
 }
 
-Pico_Layer* _pico_layer_text (
+Pico_Layer* _pico_layers_text (
     int mode, const char* key, int height, const char* text
 ) {
     assert(text!=NULL && text[0]!='\0' && "text required");
@@ -111,10 +109,10 @@ Pico_Layer* _pico_layer_text (
         str = key;
     }
 
-    _pico_alloc_text_t ctx = { height, text };
+    _pico_mem_alloc_text_t ctx = { height, text };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(str)+1, str,
-        _pico_free_layer, _pico_alloc_layer_text, &ctx
+        _pico_mem_free_layer, _pico_mem_alloc_layer_text, &ctx
     );
     assert(ret != NULL);
     return ret;
@@ -242,7 +240,7 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
     pico_set_pencil_color(x_clr);
 }
 
-void _pico_output_draw_layer (
+void _pico_layers_draw (
     Pico_Layer* layer, const Pico_Rel_Rect* rect
 ) {
     // blit layer onto current render target
@@ -253,12 +251,12 @@ void _pico_output_draw_layer (
     if (rect->w == 0 || rect->h == 0) {
         dp = &layer->scene.dim;
     }
-    SDL_Rect dst = _pico_rnd_rect(_pico_raw_rect(*rect, NULL, dp));
+    SDL_Rect dst = _pico_aux_rnd_rect(_pico_aux_raw_rect(*rect, NULL, dp));
 
     Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ?
                             &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
-    Pico_Abs_Rect src = _pico_rnd_rect (
-        _pico_raw_rect (
+    Pico_Abs_Rect src = _pico_aux_rnd_rect (
+        _pico_aux_raw_rect (
             layer->scene.src, &(Pico_Abs_Rect){0, 0, sup->w, sup->h}, NULL
         )
     );
@@ -343,9 +341,9 @@ void pico_layer_pixmap_mode (
     const Pico_Color* pixels
 ) {
     _pico_guard();
-    _pico_layer_pixmap(mode, key, dim, pixels);
+    _pico_layers_pixmap(mode, key, dim, pixels);
     if (up != NULL) {
-        _pico_layer_attach(up, key);
+        _pico_layers_attach(up, key);
     }
 }
 
@@ -363,14 +361,14 @@ void pico_layer_empty_mode (
 ) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
-    _pico_alloc_empty_t ctx = { up, clear, dim, tile };
+    _pico_mem_alloc_empty_t ctx = { up, clear, dim, tile };
     void* ret = realm_put (
         G.realm, mode, strlen(key)+1, key,
-        _pico_free_layer, _pico_alloc_layer_empty, &ctx
+        _pico_mem_free_layer, _pico_mem_alloc_layer_empty, &ctx
     );
     assert(ret != NULL);
     if (up != NULL) {
-        _pico_layer_attach(up, key);
+        _pico_layers_attach(up, key);
     }
 }
 
@@ -384,9 +382,9 @@ void pico_layer_image_mode (
 ) {
     _pico_guard();
     const char* str = (key != NULL) ? key : path;
-    _pico_layer_image(mode, key, path);
+    _pico_layers_image(mode, key, path);
     if (up != NULL) {
-        _pico_layer_attach(up, str);
+        _pico_layers_attach(up, str);
     }
 }
 
@@ -411,14 +409,14 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
     assert(par->type!=PICO_LAYER_SUB
         && "cannot create sub-layer of sub-layer");
 
-    _pico_alloc_sub_t ctx = { par, *crop };
+    _pico_mem_alloc_sub_t ctx = { par, *crop };
     void* ret = realm_put (
         G.realm, mode, strlen(key)+1, key,
-        _pico_free_layer, _pico_alloc_layer_sub, &ctx
+        _pico_mem_free_layer, _pico_mem_alloc_layer_sub, &ctx
     );
     assert(ret != NULL);
     if (up != NULL) {
-        _pico_layer_attach(up, key);
+        _pico_layers_attach(up, key);
     }
 }
 
@@ -434,8 +432,8 @@ void pico_layer_text_mode (
 ) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
-    _pico_layer_text(mode, key, height, text);
+    _pico_layers_text(mode, key, height, text);
     if (up != NULL) {
-        _pico_layer_attach(up, key);
+        _pico_layers_attach(up, key);
     }
 }

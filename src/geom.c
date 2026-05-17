@@ -1,7 +1,4 @@
-#include "pico.h"
-#include "state.h"
-#include "aux.h"
-#include "layers.h"
+#include "_pico.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // CV: named-layer projection (cv_pos_to / cv_pos_from)

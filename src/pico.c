@@ -18,6 +18,7 @@
 #undef REALM_C
 #include "tiny_ttf.h"
 #include "pico.h"
+#include "_pico.h"
 
 #define PICO_ANCHORS_C
 #include "anchors.h"
@@ -26,11 +27,6 @@
 // DATA
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "aux.h"
-#include "layers.h"
-#include "mem.h"
-#include "video.h"
-#include "state.h"
 
 PicoState G = { 0 };
 
@@ -59,10 +55,10 @@ TTF_Font* _pico_font_get (const char* path, int h) {
     char key[256];
     snprintf(key, sizeof(key), "/font/%s/%d", path_str, h);
     int n = strlen(key) + 1;
-    _pico_alloc_font_t ctx = { path, h };
+    _pico_mem_alloc_font_t ctx = { path, h };
     TTF_Font* ret = realm_put(
         G.realm, '=', n, key,
-        _pico_free_font, _pico_alloc_font, &ctx
+        _pico_mem_free_font, _pico_mem_alloc_font, &ctx
     );
     assert(ret != NULL);
     return ret;

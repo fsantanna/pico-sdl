@@ -8,11 +8,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 
-#include "pico.h"
-#include "state.h"
-#include "aux.h"
-#include "layers.h"
-#include "mem.h"
+#include "_pico.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // OUTPUT
@@ -36,7 +32,7 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect rect) {
     _pico_raw_dim(&rel, NULL, orig);
     rect.w = rel.w;
     rect.h = rel.h;
-    _pico_output_draw_layer(layer, &rect);
+    _pico_layer_output(layer, &rect);
 }
 
 void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect) {
@@ -47,7 +43,7 @@ void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect) {
         G.realm, strlen(key)+1, key);
     pico_assert(layer!=NULL && "layer does not exist");
 
-    _pico_output_draw_layer(layer, rect);
+    _pico_layer_output(layer, rect);
 }
 
 void pico_output_draw_line (Pico_Rel_Pos p1, Pico_Rel_Pos p2) {
@@ -190,7 +186,7 @@ void pico_output_draw_text_mode (
     _pico_raw_dim(&rel, NULL, orig);
     rect.w = rel.w;
 
-    _pico_output_draw_layer(layer, &rect);
+    _pico_layer_output(layer, &rect);
 }
 
 void pico_output_draw_tri (
@@ -244,7 +240,7 @@ void _pico_output_present (int force) {
         Pico_Color c = G.window.layer.effect.color;
         SDL_SetRenderDrawColor(G.window.ren, c.r, c.g, c.b, c.a);
         SDL_RenderClear(G.window.ren);
-        _pico_output_draw_layers(&G.window.layer);
+        _pico_layer_draw_all(&G.window.layer);
     }
 
     // mirror window.tex -> framebuffer
@@ -267,7 +263,7 @@ void pico_output_present (void) {
 
 void pico_output_draw_layers (void) {
     _pico_guard();
-    _pico_output_draw_layers(&G.window.layer);
+    _pico_layer_draw_all(&G.window.layer);
     SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
 }
 
@@ -278,7 +274,7 @@ static void _output_sound_cache (const char* path, int cache) {
         int n = strlen(path) + 1;
         mix = (Mix_Chunk*)realm_put(
             G.realm, '=', n, path,
-            _pico_free_sound, _pico_alloc_sound, (void*)path
+            _pico_mem_free_sound, _pico_mem_alloc_sound, (void*)path
         );
     } else {
         mix = Mix_LoadWAV(path);

@@ -5,11 +5,8 @@
 
 #include <SDL2/SDL.h>
 
-#include "video.h"
-#include "state.h"
-#include "aux.h"
-#include "layers.h"
-#include "mem.h"
+#include "_pico.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // VIDEO
@@ -88,8 +85,8 @@ static void _y4m_update_texture (Pico_Layer_Video* vs) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/* Free video-specific resources (called from _pico_free_layer) */
-void _pico_free_layer_video (Pico_Layer_Video* vs) {
+/* Free video-specific resources (called from _pico_mem_free_layer) */
+void _pico_video_free_layer (Pico_Layer_Video* vs) {
     free(vs->plane.y);
     free(vs->plane.u);
     free(vs->plane.v);
@@ -114,7 +111,7 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
     );
     pico_assert(tex != NULL);
 
-    Pico_Layer_Video* vs = (Pico_Layer_Video*)_pico_layer_new (
+    Pico_Layer_Video* vs = (Pico_Layer_Video*)_pico_mem_layer_new (
         0, PICO_LAYER_VIDEO, sizeof(Pico_Layer_Video),
         (const char*)key, tex, (Pico_Abs_Dim){w, h}
     );
@@ -153,7 +150,7 @@ static Pico_Layer_Video* _layer_video (
     const char* str = (key != NULL) ? key : path;
     Pico_Layer_Video* ret = (Pico_Layer_Video*) realm_put(
         G.realm, mode, strlen(str)+1, str,
-        _pico_free_layer, _alloc_layer_video, (void*)path
+        _pico_mem_free_layer, _alloc_layer_video, (void*)path
     );
     assert(ret != NULL);
     return ret;
@@ -282,6 +279,6 @@ int pico_output_draw_video (const char* path, Pico_Rel_Rect rect) {
     }
 
     /* Draw */
-    _pico_output_draw_layer(&vs->base, &rect);
+    _pico_layer_output(&vs->base, &rect);
     return 1;
 }
