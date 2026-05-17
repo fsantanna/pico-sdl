@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['right_0',['right',['../structPico__Mouse.html#a9f0d3483ec069f573d4bb18b2609479f',1,'Pico_Mouse']]],
-  ['rotate_1',['rotate',['../structPico__Layer__Effect.html#a62c547188505ad71b9c7e7092c87811a',1,'Pico_Layer_Effect']]]
+  ['name_0',['name',['../structPico__Layer.html#a01cac5128038c0d8e60f737da98ceff4',1,'Pico_Layer']]],
+  ['nxt_1',['nxt',['../structPico__Layer.html#aac10d45b737591240c7fbafa20f156b5',1,'Pico_Layer']]]
 ];

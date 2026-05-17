@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['x_0',['x',['../structPico__Mouse.html#af442594278384573054d64fbb3cdcb2b',1,'Pico_Mouse::x'],['../structPico__Rel__Rect.html#a6c530306253581f213962ba6b75cbb40',1,'Pico_Rel_Rect::x'],['../structPico__Rel__Pos.html#a35b5b7c77261951cd4f6af201751c642',1,'Pico_Rel_Pos::x']]]
+  ['on_0',['on',['../structPicoState.html#a10f6bced98e0e923445d6d8eee3e4060',1,'PicoState']]],
+  ['out_1',['out',['../structPicoState.html#ac715f60496b8fb6650442377421c645d',1,'PicoState']]]
 ];

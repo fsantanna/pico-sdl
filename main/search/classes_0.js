@@ -1,16 +1,8 @@
 var searchData=
 [
-  ['pico_5fabs_5fdim_0',['Pico_Abs_Dim',['../structPico__Abs__Dim.html',1,'']]],
-  ['pico_5fevent_1',['Pico_Event',['../structPico__Event.html',1,'']]],
-  ['pico_5fkeyboard_2',['Pico_Keyboard',['../structPico__Keyboard.html',1,'']]],
-  ['pico_5flayer_5feffect_3',['Pico_Layer_Effect',['../structPico__Layer__Effect.html',1,'']]],
-  ['pico_5flayer_5fpencil_4',['Pico_Layer_Pencil',['../structPico__Layer__Pencil.html',1,'']]],
-  ['pico_5flayer_5fscene_5',['Pico_Layer_Scene',['../structPico__Layer__Scene.html',1,'']]],
-  ['pico_5fmouse_6',['Pico_Mouse',['../structPico__Mouse.html',1,'']]],
-  ['pico_5frel_5fdim_7',['Pico_Rel_Dim',['../structPico__Rel__Dim.html',1,'']]],
-  ['pico_5frel_5fpos_8',['Pico_Rel_Pos',['../structPico__Rel__Pos.html',1,'']]],
-  ['pico_5frel_5frect_9',['Pico_Rel_Rect',['../structPico__Rel__Rect.html',1,'']]],
-  ['pico_5frot_10',['Pico_Rot',['../structPico__Rot.html',1,'']]],
-  ['pico_5fvideo_11',['Pico_Video',['../structPico__Video.html',1,'']]],
-  ['pico_5fwindow_12',['Pico_Window',['../structPico__Window.html',1,'']]]
+  ['_5fpico_5fmem_5falloc_5fempty_5ft_0',['_pico_mem_alloc_empty_t',['../struct__pico__mem__alloc__empty__t.html',1,'']]],
+  ['_5fpico_5fmem_5falloc_5ffont_5ft_1',['_pico_mem_alloc_font_t',['../struct__pico__mem__alloc__font__t.html',1,'']]],
+  ['_5fpico_5fmem_5falloc_5fpixmap_5ft_2',['_pico_mem_alloc_pixmap_t',['../struct__pico__mem__alloc__pixmap__t.html',1,'']]],
+  ['_5fpico_5fmem_5falloc_5fsub_5ft_3',['_pico_mem_alloc_sub_t',['../struct__pico__mem__alloc__sub__t.html',1,'']]],
+  ['_5fpico_5fmem_5falloc_5ftext_5ft_4',['_pico_mem_alloc_text_t',['../struct__pico__mem__alloc__text__t.html',1,'']]]
 ];
