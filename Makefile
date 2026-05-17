@@ -4,8 +4,8 @@ EXE = $(CHECK) $(XVFB) ./pico-sdl
 INT = PICO_TESTS=1 PICO_CHECK_INT=1 PICO_CHECK_ASR= ./pico-sdl
 GEN = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl
 
-OBJS = src/aux.o src/colors.o src/geom.o src/input.o src/layers.o \
-	   src/mem.o src/output.o src/pico.o src/video.o
+OBJS = src/aux.o src/colors.o src/geom.o src/get-set.o src/input.o \
+	   src/layers.o src/mem.o src/output.o src/pico.o src/video.o
 
 .PHONY: realm tests lua clean lib
 
