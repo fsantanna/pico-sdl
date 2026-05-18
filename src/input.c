@@ -93,62 +93,62 @@ static int _event_handler (Pico_Event* pico, int do_exit) {
                 case SDLK_MINUS: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    _pico_mode_rect(G.layer->scene.src, &pct);
+                    pico_cv_mode_rect(G.layer->scene.src, &pct);
                     pct.w += 0.1;
                     pct.h += 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    _pico_mode_rect(pct, &r);
+                    pico_cv_mode_rect(pct, &r);
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_EQUALS: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    _pico_mode_rect(G.layer->scene.src, &pct);
+                    pico_cv_mode_rect(G.layer->scene.src, &pct);
                     pct.w -= 0.1;
                     pct.h -= 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    _pico_mode_rect(pct, &r);
+                    pico_cv_mode_rect(pct, &r);
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_LEFT: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    _pico_mode_rect(G.layer->scene.src, &pct);
+                    pico_cv_mode_rect(G.layer->scene.src, &pct);
                     pct.x -= 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    _pico_mode_rect(pct, &r);
+                    pico_cv_mode_rect(pct, &r);
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_RIGHT: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    _pico_mode_rect(G.layer->scene.src, &pct);
+                    pico_cv_mode_rect(G.layer->scene.src, &pct);
                     pct.x += 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    _pico_mode_rect(pct, &r);
+                    pico_cv_mode_rect(pct, &r);
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_UP: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    _pico_mode_rect(G.layer->scene.src, &pct);
+                    pico_cv_mode_rect(G.layer->scene.src, &pct);
                     pct.y -= 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    _pico_mode_rect(pct, &r);
+                    pico_cv_mode_rect(pct, &r);
                     pico_set_scene_src(r);
                     return 1;
                 }
                 case SDLK_DOWN: {
                     assert(G.layer == &G.world);
                     Pico_Rel_Rect pct = {'%', {0}, PICO_ANCHOR_C};
-                    _pico_mode_rect(G.layer->scene.src, &pct);
+                    pico_cv_mode_rect(G.layer->scene.src, &pct);
                     pct.y += 0.1;
                     Pico_Rel_Rect r = G.layer->scene.src;
-                    _pico_mode_rect(pct, &r);
+                    pico_cv_mode_rect(pct, &r);
                     pico_set_scene_src(r);
                     return 1;
                 }

@@ -632,6 +632,13 @@ void pico_cv_rect (
     const char* L_fr, const Pico_Rel_Rect* fr
 );
 
+/// @brief Converts `in` into `out`'s mode/anchor (same current layer).
+/// `out->mode` and `out->anchor` are honored; numeric fields are
+/// rewritten to express the same absolute value in `out`'s mode.
+void pico_cv_mode_dim  (Pico_Rel_Dim  in, Pico_Rel_Dim*  out);
+void pico_cv_mode_pos  (Pico_Rel_Pos  in, Pico_Rel_Pos*  out);
+void pico_cv_mode_rect (Pico_Rel_Rect in, Pico_Rel_Rect* out);
+
 /// @brief Composes a child rect onto a parent rect.
 /// Returns a flat rect (no chain) that resolves to the same absolute
 /// coords as `in` interpreted relative to `out`. Mode and anchor of
