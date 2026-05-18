@@ -120,7 +120,7 @@ Then, we can restart `pico-lua` by calling `pico.init(true)` again:
 </td></tr>
 </table>
 
-We can see that the title, grid, and sizes are now reset to default.
+We can see that grid and dimensions are now reset to default.
 
 ## 3. Basic Drawing
 
@@ -160,7 +160,8 @@ which we discuss in [#Anchors](#4-positioning-modes--anchors).
 With the aid of the tick marks, we can see that the rectangle is actually
 centered at the given position.
 
-Note that `pico-lua` retains both shapes on the screen.
+Note that `pico-lua` retains both shapes on the screen, i.e., drawing
+operations are cumulative.
 
 Other drawing operations include `pico.output.draw.line`,
 `pico.output.draw.poly`, and `pico.output.draw.oval`.
