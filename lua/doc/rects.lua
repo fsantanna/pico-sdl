@@ -19,6 +19,7 @@ while true do
     pico.output.draw.pixel(m)
     pico.set.pencil { color=B }
     pico.output.draw.pixel(k)
+    pico.output.draw.layers()
     pico.output.present()
 
     local e = pico.input.event()
