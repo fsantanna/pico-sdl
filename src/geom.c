@@ -631,21 +631,3 @@ Pico_Abs_Rect _pico_abs_rect (
     return _rnd_rect(_raw_rect(rect, base, ratio));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// pico_cv_mode_*: mode conversion (in.mode -> out.mode, same layer)
-///////////////////////////////////////////////////////////////////////////////
-
-void pico_cv_mode_dim (Pico_Rel_Dim in, Pico_Rel_Dim* out) {
-    _pico_guard();
-    _rel_dim(_raw_dim(&in, NULL, NULL), out, NULL);
-}
-
-void pico_cv_mode_pos (Pico_Rel_Pos in, Pico_Rel_Pos* out) {
-    _pico_guard();
-    _rel_pos(_raw_pos(in, NULL), out, NULL);
-}
-
-void pico_cv_mode_rect (Pico_Rel_Rect in, Pico_Rel_Rect* out) {
-    _pico_guard();
-    _rel_rect(_raw_rect(in, NULL, NULL), out, NULL);
-}
