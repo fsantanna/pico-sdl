@@ -135,13 +135,17 @@ pico.check("guide-04-00-01")
 pico.init(false)
 pico.init(true)
 pico.set.window { title="guide-04-01-01" }
-pico.set.scene {
-    dim  = { '#', w=5, h=5 },
-    tile = { w=20, h=20 },
-}
+local tile = { w=20, h=20 }
 pico.set.layer("window")
-pico.set.scene { dim={ '#', w=40, h=40 }, tile={ w=20, h=20 } }
+pico.set.scene {
+    tile = tile,
+    dim  = { '#', w=40, h=40 },
+}
 pico.set.layer("world")
+pico.set.scene {
+    tile = tile,
+    dim  = { '#', w=5, h=5 },
+}
 pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
 pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }
 pico.check("guide-04-01-01")
