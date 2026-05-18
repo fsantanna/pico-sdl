@@ -1,5 +1,5 @@
 package = "pico-sdl"
-version = "dev-1"
+version = "dev-2"
 
 source = {
    url = "git://github.com/fsantanna/pico-sdl",
