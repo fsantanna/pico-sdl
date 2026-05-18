@@ -393,12 +393,16 @@ dimensions:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.scene {
-    tile = { w=20, h=20 },     -- tile size (20x20 physical)
-    dim  = { '#', w=5, h=5 },  -- world size in tiles (5x5 logical)
+> tile = { w=20, h=20 }         -- tile size (20x20 physical)
+> pico.set.layer("window")
+  pico.set.scene {
+    tile = tile,
+    dim  = { '#', w=40, h=40 }, -- window size (40x40 x 20x20 tiles)
   }
-> pico.set.window {
-    dim = { '#', w=40, h=40 }, -- window size (40x40 x 20x20 tiles)
+> pico.set.layer("world")
+  pico.set.scene {
+    tile = tile,
+    dim  = { '#', w=5, h=5 },   -- world size in tiles (5x5 logical)
   }
 > pico.output.draw.rect { '#', x=3, y=3, w=1, h=1 }
 > pico.output.draw.rect { '#', x=5, y=1, w=2, h=1, anchor='NE' }
@@ -412,6 +416,7 @@ In the example, we set each tile to `20x20` and create a world of `5x5` tiles.
 Note that the window can also be specified in tiles.
 
 We then draw two rectangles using the tile mode `'#'`:
+
 - The first is centered at `(3,3)` occupying `1x1` tile (`20x20` pixels).
 - The second uses anchor `NE`, to properly occupy the top right of the screen
   with `2x1` tiles (`40x20` pixels).
