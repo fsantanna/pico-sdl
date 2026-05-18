@@ -45,9 +45,9 @@ Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
         return layer->scene.dim;
     } else if (rel->w==0 || rel->h==0) {
         Pico_Layer* layer = _pico_layer_image('=', NULL, path);
-        return _pico_rnd_dim(_pico_raw_dim(rel, NULL, &layer->scene.dim));
+        return _pico_abs_dim(rel, NULL, &layer->scene.dim);
     } else {
-        return _pico_rnd_dim(_pico_raw_dim(rel, NULL, NULL));
+        return _pico_abs_dim(rel, NULL, NULL);
     }
 }
 
@@ -108,11 +108,11 @@ Pico_Abs_Dim pico_get_text_mode (
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
         Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h} };
-        int h = _pico_rnd_dim(_pico_raw_dim(&rel_h, NULL, NULL)).h;
+        int h = _pico_abs_dim(&rel_h, NULL, NULL).h;
         Pico_Layer* layer = _pico_layer_text(mode, key, h, text);
-        return _pico_rnd_dim(_pico_raw_dim(rel, NULL, &layer->scene.dim));
+        return _pico_abs_dim(rel, NULL, &layer->scene.dim);
     } else {
-        return _pico_rnd_dim(_pico_raw_dim(rel, NULL, NULL));
+        return _pico_abs_dim(rel, NULL, NULL);
     }
 }
 
@@ -240,7 +240,7 @@ const char* pico_set_layer (const char* key) {
     G.layer = data;
 
     SDL_SetRenderTarget(G.window.ren, G.layer->tex);
-    Pico_Abs_Rect r = _pico_rnd_rect(_pico_raw_rect(G.layer->scene.clip, NULL, NULL));
+    Pico_Abs_Rect r = _pico_abs_rect(G.layer->scene.clip, NULL, NULL);
     SDL_RenderSetClipRect(G.window.ren, &r);
     return old;
 }
@@ -304,7 +304,7 @@ void pico_set_scene (Pico_Layer_Scene view) {
     SDL_BlendMode mode = (L == &G.world) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
     SDL_SetTextureBlendMode(L->tex, mode);
     SDL_SetRenderTarget(G.window.ren, L->tex);
-    Pico_Abs_Rect r = _pico_rnd_rect(_pico_raw_rect(L->scene.clip, NULL, NULL));
+    Pico_Abs_Rect r = _pico_abs_rect(L->scene.clip, NULL, NULL);
     SDL_RenderSetClipRect(G.window.ren, &r);
     pico_output_clear();
     _pico_output_present(0);
@@ -320,7 +320,7 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
     _pico_guard();
     assert(dim.mode != '%');
     Pico_Layer* L = G.layer;
-    Pico_Abs_Dim di = _pico_rnd_dim(_pico_raw_dim(&dim, NULL, NULL));
+    Pico_Abs_Dim di = _pico_abs_dim(&dim, NULL, NULL);
     L->scene.dim = di;
     assert(L->tex != NULL);
     SDL_DestroyTexture(L->tex);
@@ -333,7 +333,7 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
         )
     );
 
-    Pico_Abs_Rect r = _pico_rnd_rect(_pico_raw_rect(L->scene.clip, NULL, NULL));
+    Pico_Abs_Rect r = _pico_abs_rect(L->scene.clip, NULL, NULL);
     SDL_SetRenderTarget(G.window.ren, L->tex);
     SDL_RenderSetClipRect(G.window.ren, &r);
 
@@ -356,7 +356,7 @@ void pico_set_scene_dst (Pico_Rel_Rect dst) {
         // '!' and '#' modes (size unused) and base for '%' mode.
         Pico_Layer* P = _pico_layer_name(L->hier.up);
         Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        SDL_FRect f = _pico_raw_rect(dst, &Pb, &L->scene.dim);
+        Pico_Abs_Rect f = _pico_abs_rect(dst, &Pb, &L->scene.dim);
         dst = (Pico_Rel_Rect) {
             '!', {f.x, f.y, f.w, f.h}, PICO_ANCHOR_NW
         };

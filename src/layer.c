@@ -251,14 +251,12 @@ void _pico_layer_output (
     if (rect->w == 0 || rect->h == 0) {
         dp = &layer->scene.dim;
     }
-    SDL_Rect dst = _pico_rnd_rect(_pico_raw_rect(*rect, NULL, dp));
+    SDL_Rect dst = _pico_abs_rect(*rect, NULL, dp);
 
     Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ?
                             &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
-    Pico_Abs_Rect src = _pico_rnd_rect (
-        _pico_raw_rect (
-            layer->scene.src, &(Pico_Abs_Rect){0, 0, sup->w, sup->h}, NULL
-        )
+    Pico_Abs_Rect src = _pico_abs_rect (
+        layer->scene.src, &(Pico_Abs_Rect){0, 0, sup->w, sup->h}, NULL
     );
 
     // clip dst to current layer (parent) bounds, propagate to src
