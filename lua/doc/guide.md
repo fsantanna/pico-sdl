@@ -423,11 +423,7 @@ We then draw two rectangles using the tile mode `'#'`:
 
 ## 5. Advanced Views
 
-The view controls how the logical world maps to the physical window:
-
-- `pico.set.window` controls the **physical** window
-- `pico.set.scene` controls the **logical** world
-
+The scene view controls how the logical world maps to the physical window.
 Next, we discuss some advanced properties for `pico.set.scene`:
 
 | Property | Description             |
@@ -470,8 +466,8 @@ The `source` property selects which region of the world is visible:
 </table>
 
 We now crop a small piece (`40%`) of the world from its center.
-The visual effect is to zoom in the image, since we stretch out the world piece
-into the same target.
+The visual effect is to zoom in the image, since we stretch out the cropped
+world into the same target.
 
 The `clip` property restricts the effect of drawing operations into a
 sub-region of the world:
@@ -489,7 +485,8 @@ sub-region of the world:
 </td></tr>
 </table>
 
-We restrict drawing to a small region (`25%`) in the center of the world.
+We restrict drawing operations to a small region (`25%`) in the center of the
+world.
 Then, we draw the image centered, which is clipped to fit the specified area.
 
 ### 5.1. Zoom & Scroll
@@ -497,16 +494,16 @@ Then, we draw the image centered, which is clipped to fit the specified area.
 We can manipulate the `source` view property to implement not only zooming, as
 illustrated above, but also scrolling effects.
 
-Let's restart with a centered image over a black window background matching the
-world black background when we zoom out:
+Let's restart with a centered image over a black window background (to match
+the world background when we zoom out):
 
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.layer("window")             -- (typically grey to distinguish from world)
-> pico.set.effect { color='black' }
+> pico.set.layer("window")            -- (typically grey to distinguish from world)
+  pico.set.effect { color='black' }
 > pico.set.layer("world")
-> pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+  pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-05-01-01.png" width="200">
@@ -553,7 +550,7 @@ the source `x` and `y` fields:
 </td></tr>
 </table>
 
-A positive `x=0.3` offset (from `0.5` to `0.8`) crops the left side of the
+A positive `x=+0.3` offset (from `0.5` to `0.8`) crops the left side of the
 source, which still targets the whole window, resulting in a scroll left.
 
 A negative `y=-0.3` offset (from `0.5` to `0.2`) crops the bottom of the
