@@ -38,6 +38,8 @@ if [ -n "$PICO_CHECK_ASR" ]; then
 fi
 #echo $PICO, $DIR, $EXE
 
+make -C "$PICO" lib >/dev/null || exit 1
+
 gcc -Wall -Werror -g -o "$DIR/$EXE" "$1" \
     -I "$PICO/src"               \
     $DEFINES                     \

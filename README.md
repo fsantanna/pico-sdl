@@ -120,7 +120,7 @@ cd pico-sdl/    # executable is here
 Run:
 
 ```
-./pico-sdl tst/main.c
+./pico-sdl tst/cross.c
 ```
 
 # Documentation
