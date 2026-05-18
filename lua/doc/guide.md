@@ -76,6 +76,9 @@ appropriate layer:
 </td></tr>
 </table>
 
+Note that `window` and `world` are pre-defined layers, which we discuss in
+[#Layers](#7-layers).
+
 Using the same dimension for both the window and world, the grid disappears,
 since the pixel size is now `1x1`.
 
@@ -315,28 +318,25 @@ We detail caching in [#Layers](#7-layers).
 
 ## 4. Positioning: Modes & Anchors
 
-The positioning **mode** determines the unit used in world coordinates:
+The **mode** determines the behavior of coordinate positions within layers:
 
-- `'!'` - Raw: world pixel coordinates
-            (from `0` to world `w/h`)
-- `'%'` - Percentage: coordinates relative to world `w/h`
-            (from `0.0` to `1.0`)
-- `'#'` - Tile: grid coordinates based on tile and world `w/h`
-            (from `0` to `w/h`)
+- `'!'` - Raw: coordinates are in pixels
+- `'%'` - Percentage: coordinates are relative to layer dimensions
+- `'#'` - Tile: coordinates are based on tile indices
 
-The percentage mode `'%'` is preferable, since it is independent of world
+The percentage mode `'%'` is preferable, since it is independent of layer
 dimensions and adapts naturally to resizes.
 For instance, `{ '%', x=0.5, y=0.5 }` always points to the center of the
-world, regardless of its size.
+layer, regardless of its size.
 
 The mode is set at index `1` in tables representing positions, dimensions, and
 rectangles:
 
 - `{ '%', x=0.5, y=0.5 }`:          a centered relative position
 - `{ '!', w=20, h=30 }`:            a raw dimension
-- `{ '#', x=4, y=4, w=2, h=1 }`:    a rectangle covering 2 tiles horizontally
+- `{ '#', x=4, y=4, w=2, h=1 }`:    a rectangle spanning 2 tiles horizontally
 
-The positioning **anchor** determines the reference point **within** the shape:
+The **anchor** determines the reference point **within** shapes:
 
 ```
 +-----------+
@@ -350,7 +350,8 @@ When drawing, the anchor position is pinned to the given coordinate.
 As shown in the previous examples, by default, `pico-lua` uses the center
 anchor `'C'`.
 
-The anchor is set at field `anchor` in tables representing positions:
+To specify an anchor, we use the field `anchor` in tables representing
+positions:
 
 - `{ '%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='SW' }`:
     the rectangle's *southwest* corner pinned at center of the screen
@@ -362,13 +363,13 @@ different anchors:
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
 > pico.set.pencil { color='white' }
-> pico.output.draw.pixel { '%', x=0.5, y=0.5 }
+  pico.output.draw.pixel { '%', x=0.5, y=0.5 }
 > pico.set.pencil { color=pico.color.alpha('red', 0x80) }
-> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW' }
+  pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='NW' }
 > pico.set.pencil { color=pico.color.alpha('green', 0x80) }
-> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
+  pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
 > pico.set.pencil { color=pico.color.alpha('blue', 0x80) }
-> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
+  pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='SE' }
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-04-00-01.png" width="200">
