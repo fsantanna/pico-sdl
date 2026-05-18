@@ -183,8 +183,8 @@ Now the pixel and rectangle are gone.
 
 By default, `pico-lua` uses black to clear the screen and white to draw shapes.
 
-To pick different colors, we use `pico.set.effect` and `pico.set.pencil` passing
-the `color` attribute:
+To pick different colors, we use `pico.set.effect` and `pico.set.pencil`
+passing the `color` attribute:
 
 <table>
 <tr><td><pre>
@@ -202,7 +202,7 @@ In the example, we set the background color as yellow, and the drawing color
 for shapes as red.
 A `set` has no immediate effect on the screen, and only affects further
 operations.
-Next, we actually clear the screen and draw a centered rectangle.
+Then, we finally clear the screen and draw a centered rectangle.
 
 Colors can also be specified as numbers or tables:
 
@@ -237,7 +237,7 @@ Let's restart `pico-lua` for the next examples:
 
 ### 3.3. Text, Image and Pixmap
 
-To draw text, we call `pico.output.draw.text`:
+To write text, we call `pico.output.draw.text`:
 
 <table>
 <tr><td><pre>
@@ -250,13 +250,13 @@ To draw text, we call `pico.output.draw.text`:
 </td></tr>
 </table>
 
-*(You may need to save the [font](../../res/DejaVuSans.ttf) on your machine.)*
+*(You need to save the [font](../../res/DejaVuSans.ttf) on your machine.)*
 
 We first draw `Hello` at the top using the default built-in font.
-Then, we switch the font and draw `Hello` again at the bottom.
+Then, we switch a new font and draw `Hello` again at the bottom.
 
-Note that `pico-lua` preserves the correct text aspect ratio when width `w` is
-omitted.
+Note that `pico-lua` preserves the correct text aspect ratio when we ommit the
+width `w`.
 
 To draw an [image](../../res/open.png), we call `pico.output.draw.image`:
 
@@ -270,15 +270,16 @@ To draw an [image](../../res/open.png), we call `pico.output.draw.image`:
 </td></tr>
 </table>
 
-*(You may need to save the [image](../../res/open.png) on your machine.)*
+*(You need to save the [image](../../res/open.png) on your machine.)*
 
 For images, we can omit both width `w` and height `h` to preserve original
 dimensions and aspect ratio.
 
-`pico-lua` also supports pixmaps, which are arrays of colored pixels:
+`pico-lua` also supports pixmaps, which are custom arrays of colored pixels:
 
 <table>
 <tr><td><pre>
+> pico.output.clear()
 > _ = 'black'
   o = 'blue'
   x = 'silver'
@@ -302,11 +303,11 @@ dimensions and aspect ratio.
 </table>
 
 The table `PI` determines the color of each pixel to draw.
-We use single-char color variables to ease visualizing: the Greek letter `pi`,
-on top of blue circle, on top of a black background.
+We use single-char color variables to initialize the pixmap array: a Greek
+letter `pi`, on top of a blue circle, on top of a black background.
 
-Note that pixmaps require a string identifier as first parameter for proper
-caching.
+Note that `pico.output.draw.pixmap` requires a string identifier as first
+parameter for proper caching.
 
 Internally, `pico-lua` caches texts, images and pixmaps such that they are
 reused on subsequent redraws.
