@@ -694,7 +694,7 @@ redirect further drawing operations to it:
 
 ```lua
 > pico.output.clear()
-> pico.layer.empty(nil, "flag", {w=300, h=200})
+> pico.layer.empty(nil, "flag", false, {'!', w=300, h=200})
 > pico.set.layer("flag")
 > pico.set.pencil { color={ r=0x00, g=0x2B, b=0x7F } }
   pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
@@ -710,13 +710,16 @@ main world view.
 We identify the layer as `flag` and then set it as the current drawing layer.
 Then, we paint inside the layer with the colors.
 
-Note that the first argument to `pico.layer.empty` (`nil` in the example)
-represents the optional implicit parent layer to be discussed in
-[#Hierarchy](#74-hierarchy).
+Two notes about `pico.layer.empty` to be discussed further in
+[#Hierarchy](#74-hierarchy):
+
+- the first argument (`nil`) is the optional parent layer
+- the third argument (`false`) determines if the layer is automatically cleared
 
 ### 7.2. Compositing
 
-To compose a layer on top of the current layer, we call `pico.output.draw.layer`:
+To compose a layer on top of the current layer, we call
+`pico.output.draw.layer`:
 
 <table>
 <tr><td><pre>
@@ -750,7 +753,7 @@ We can also flip and rotate layers when compositing them, by setting their
 </td></tr>
 </table>
 
-In the example, the `flip` field receives `'horizontal'` to reverse the stripe
+In the example, the `flip` field receives `horizontal` to reverse the stripe
 order.
 The `rotate` table takes an `angle` in degrees and an `anchor` for the pivot
 point.
@@ -790,10 +793,10 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 
 <table>
 <tr><td><pre>
+> pico.output.clear()
 > pico.layer.sub(nil, "blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15})
 > pico.layer.sub(nil, "yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15})
 > pico.layer.sub(nil, "red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15})
-> pico.output.clear()
 > pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
 > pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
 > pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
@@ -812,8 +815,8 @@ for further operations.
 
 ### 7.4. Hierarchy
 
-Layers in `pico-lua` can form a tree hierarchy, such that calls to
-`pico.output.present` redraws the whole scene automatically.
+Layers in `pico-lua` can form a tree hierarchy that `pico.output.present`
+traverses automatically to compose the full scene onto the screen.
 
 When creating a layer (e.g., `me`), we can pass another layer (e.g., `up`) to
 become its parent:
@@ -821,7 +824,7 @@ become its parent:
 ```
 pico.layer.empty("up", "me", ...)   -- "up" is parent of "me"
 pico.set.layer("me")                -- setup "me"
-pico.set.scene {                     -- position "me" within "up"
+pico.set.scene {                    -- position "me" within "up"
     target = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 }
 ```
@@ -832,42 +835,34 @@ In the example, the child layer `me` is centered inside parent layer `up`.
 <img src="../../tst/asr/guide-07-04-01.png" width="200" align="right">
 
 Suppose we want to draw the layout in the figure in the right:
-The root layer `R` contains the image layer `I` and panel layer `P`, which
-contains the text layers `T1` and `T2`.
+The world layer (shown as `R` in the figure) contains the image layer `I`
+and panel layer `P`, which contains the text layers `T1` and `T2`.
 
 The next code listing implements this layout:
 
-- `root`: predefined layer in `pico-lua`, representing the world
-- `I`: created with `pico.layer.image` with `root` as parent
-- `P`: created with `pico.layer.empty` with `root` as parent
+- `I`: created with `pico.layer.image` with `world` as parent
+- `P`: created with `pico.layer.empty` with `world` as parent
     - `T1`: created with `pico.layer.text` with `P` as parent
     - `T2`: created with `pico.layer.text` with `P` as parent
 
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
+> pico.layer.image (
+    "world", "I", "open.png", {'%', x=0.3, y=0.3, w=0.4}
+  )
 > do
-    pico.layer.image("world", "I", "open.png")
-    pico.set.layer("I")
-    pico.set.scene { target = {'%', x=0.3, y=0.3, w=0.4} }
-  end
-> do
-    pico.layer.empty("world", "P", {w=100, h=50})
+    pico.layer.empty("world", "P", true, {'!', w=100, h=50})
     pico.set.layer("P")
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
->   do
-        pico.layer.text("P", "T1", 20, "Hello")
-        pico.set.layer("hello")
-        pico.set.scene { target = {'%', x=0.5, y=0.3, h=0.6} }
-    end
->   do
-        pico.layer.text("P", "T2", 20, "World!")
-        pico.set.layer("world")
-        pico.set.scene { target = {'%', x=0.5, y=0.7, h=0.4} }
-    end
+    pico.layer.text (
+        "P", "T1", 20, "Hello",  {'%', x=0.5, y=0.3, h=0.6}
+    )
+    pico.layer.text (
+        "P", "T2", 20, "World!", {'%', x=0.5, y=0.7, h=0.4}
+    )
   end
-> pico.set.layer("world")
 > pico.output.present()
 </pre>
 </td><td>
@@ -875,8 +870,8 @@ The next code listing implements this layout:
 </td></tr>
 </table>
 
-After the scene is composed, we simply switch to the `root` layer and call
-`pico.output.present` to update the screen all at once.
+After the scene is composed, we simply call `pico.output.present` to
+update the screen all at once.
 
 ## 8. Expert Mode
 
