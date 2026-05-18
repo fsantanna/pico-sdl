@@ -59,7 +59,15 @@ build = {
       pico_native = {
          sources = {
             "lua/pico.c",
+            "src/colors.c",
+            "src/geom.c",
+            "src/get-set.c",
+            "src/input.c",
+            "src/layer.c",
+            "src/mem.c",
+            "src/output.c",
             "src/pico.c",
+            "src/video.c",
          },
          libraries = {
             "SDL2",
