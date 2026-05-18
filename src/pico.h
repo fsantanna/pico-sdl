@@ -8,10 +8,107 @@ extern "C" {
 #include <stdio.h>
 #include <assert.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
 #include "keys.h"
-#include "events.h"
-#include "colors.h"
-#include "anchors.h"
+
+///////////////////////////////////////////////////////////////////////////////
+// anchors
+///////////////////////////////////////////////////////////////////////////////
+
+#define PICO_ANCHOR_LEFT   0
+#define PICO_ANCHOR_CENTER 0.5
+#define PICO_ANCHOR_RIGHT  1
+#define PICO_ANCHOR_TOP    0
+#define PICO_ANCHOR_MIDDLE 0.5
+#define PICO_ANCHOR_BOTTOM 1
+
+typedef SDL_FPoint Pico_Anchor;
+
+extern const Pico_Anchor PICO_ANCHOR_X;
+extern const Pico_Anchor PICO_ANCHOR_C;
+extern const Pico_Anchor PICO_ANCHOR_NW;
+extern const Pico_Anchor PICO_ANCHOR_N;
+extern const Pico_Anchor PICO_ANCHOR_NE;
+extern const Pico_Anchor PICO_ANCHOR_E;
+extern const Pico_Anchor PICO_ANCHOR_SE;
+extern const Pico_Anchor PICO_ANCHOR_S;
+extern const Pico_Anchor PICO_ANCHOR_SW;
+extern const Pico_Anchor PICO_ANCHOR_W;
+
+///////////////////////////////////////////////////////////////////////////////
+// events
+///////////////////////////////////////////////////////////////////////////////
+
+typedef enum PICO_EVENT {
+    PICO_EVENT_ANY               = -1,
+    PICO_EVENT_NONE              =  0,
+    PICO_EVENT_QUIT,
+    PICO_EVENT_WINDOW_RESIZE,
+    PICO_EVENT_KEY_DN,
+    PICO_EVENT_KEY_UP,
+    PICO_EVENT_MOUSE_MOTION,
+    PICO_EVENT_MOUSE_BUTTON_DN,
+    PICO_EVENT_MOUSE_BUTTON_UP,
+} PICO_EVENT;
+
+typedef struct {
+    int key;
+    unsigned ctrl  : 1;
+    unsigned shift : 1;
+    unsigned alt   : 1;
+} Pico_Keyboard;
+
+typedef struct {
+    char mode;              // 'w', '!', '%', '#'
+    float x, y;
+    Pico_Anchor anchor;
+    unsigned left   : 1;
+    unsigned right  : 1;
+    unsigned middle : 1;
+} Pico_Mouse;
+
+typedef struct {
+    PICO_EVENT type;
+    union {
+        struct { int w, h; } window;
+        Pico_Keyboard        keyboard;
+        Pico_Mouse           mouse;
+    };
+} Pico_Event;
+
+///////////////////////////////////////////////////////////////////////////////
+// colors
+///////////////////////////////////////////////////////////////////////////////
+
+/// @brief RGBA color with per-pixel alpha channel.
+typedef struct {
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+    Uint8 a;
+} Pico_Color;
+
+extern const Pico_Color PICO_COLOR_BLACK;
+extern const Pico_Color PICO_COLOR_WHITE;
+extern const Pico_Color PICO_COLOR_GRAY;
+extern const Pico_Color PICO_COLOR_SILVER;
+extern const Pico_Color PICO_COLOR_RED;
+extern const Pico_Color PICO_COLOR_GREEN;
+extern const Pico_Color PICO_COLOR_BLUE;
+extern const Pico_Color PICO_COLOR_YELLOW;
+extern const Pico_Color PICO_COLOR_CYAN;
+extern const Pico_Color PICO_COLOR_MAGENTA;
+extern const Pico_Color PICO_COLOR_ORANGE;
+extern const Pico_Color PICO_COLOR_PURPLE;
+extern const Pico_Color PICO_COLOR_PINK;
+extern const Pico_Color PICO_COLOR_BROWN;
+extern const Pico_Color PICO_COLOR_LIME;
+extern const Pico_Color PICO_COLOR_TEAL;
+extern const Pico_Color PICO_COLOR_NAVY;
+extern const Pico_Color PICO_COLOR_MAROON;
+extern const Pico_Color PICO_COLOR_OLIVE;
+
+extern const Pico_Color PICO_COLOR_TRANSPARENT;
 
 /// @example init.c
 /// @example delay.c
