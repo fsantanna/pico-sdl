@@ -152,8 +152,6 @@ Pico_Abs_Pos  _pico_abs_pos  (Pico_Rel_Pos pos, const Pico_Abs_Rect* base);
 Pico_Abs_Rect _pico_abs_rect (Pico_Rel_Rect rect, const Pico_Abs_Rect* base,
                               const Pico_Abs_Dim* ratio);
 
-void _pico_mode_rect (Pico_Rel_Rect in, Pico_Rel_Rect* out);
-
 ///////////////////////////////////////////////////////////////////////////////
 // layers
 ///////////////////////////////////////////////////////////////////////////////
