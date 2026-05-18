@@ -61,32 +61,28 @@ You may click the image to zoom in.
 
 ### 2.2. Configure
 
-To configure the window and the world view, we use `pico.set.window` and
-`pico.set.scene`:
+To configure the window and the world views, we use `pico.set.scene` on the
+appropriate layer:
 
 <table>
 <tr><td><pre>
-> pico.set.window {
-    title = "Hello!",
-    dim   = { '!', w=200, h=200 },
-  }
-> pico.set.scene {
-    dim = { '!', w=200, h=200 },
-  }
+> pico.set.layer("window")
+  pico.set.scene { dim = { '!', w=200, h=200 } }
+> pico.set.layer("world")
+  pico.set.scene { dim = { '!', w=200, h=200 } }
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-02-02-01.png" width="200">
 </td></tr>
 </table>
 
-After the two commands, the window title changes and the grid disappears, since
-the pixel size is now `1x1`.
+Using the same dimension for both the window and world, the grid disappears,
+since the pixel size is now `1x1`.
 
 The character `'!'` indicates a dimension in "raw mode", which we discuss in
 [#Positioning Modes](#4-positioning-modes--anchors).
 
-You could also use the simpler `pico.set.dim` to set the window and view
-dimensions at the same time:
+We could also use the simpler `pico.set.dim` to set the views at the same time:
 
 <table>
 <tr><td><pre>
