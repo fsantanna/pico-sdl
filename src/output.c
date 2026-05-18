@@ -19,7 +19,7 @@ void pico_output_clear (void) {
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->effect.color.r, G.layer->effect.color.g, G.layer->effect.color.b, G.layer->effect.color.a
     );
-    Pico_Abs_Rect r = _pico_rnd_rect(_pico_raw_rect(G.layer->scene.clip, NULL, NULL));
+    Pico_Abs_Rect r = _pico_abs_rect(G.layer->scene.clip, NULL, NULL);
     SDL_RenderFillRect(G.window.ren, &r);
     _pico_output_present(0);
 }
@@ -29,7 +29,7 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect rect) {
     Pico_Layer* layer = _pico_layer_image('=', NULL, path);
     Pico_Abs_Dim* orig = (rect.w==0 || rect.h==0) ? &layer->scene.dim : NULL;
     Pico_Rel_Dim rel = { rect.mode, {rect.w, rect.h} };
-    _pico_raw_dim(&rel, NULL, orig);
+    _pico_abs_dim(&rel, NULL, orig);
     rect.w = rel.w;
     rect.h = rel.h;
     _pico_layer_output(layer, &rect);
@@ -51,15 +51,15 @@ void pico_output_draw_line (Pico_Rel_Pos p1, Pico_Rel_Pos p2) {
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
     );
-    Pico_Abs_Pos i1 = _pico_rnd_pos(_pico_raw_pos(p1, NULL));
-    Pico_Abs_Pos i2 = _pico_rnd_pos(_pico_raw_pos(p2, NULL));
+    Pico_Abs_Pos i1 = _pico_abs_pos(p1, NULL);
+    Pico_Abs_Pos i2 = _pico_abs_pos(p2, NULL);
     SDL_RenderDrawLine(G.window.ren, i1.x,i1.y, i2.x,i2.y);
     _pico_output_present(0);
 }
 
 void pico_output_draw_oval (Pico_Rel_Rect rect) {
     _pico_guard();
-    Pico_Abs_Rect i = _pico_rnd_rect(_pico_raw_rect(rect, NULL, NULL));
+    Pico_Abs_Rect i = _pico_abs_rect(rect, NULL, NULL);
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
     );
@@ -85,7 +85,7 @@ void pico_output_draw_pixel (Pico_Rel_Pos pos) {
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
     );
-    Pico_Abs_Pos i = _pico_rnd_pos(_pico_raw_pos(pos, NULL));
+    Pico_Abs_Pos i = _pico_abs_pos(pos, NULL);
     SDL_RenderDrawPoint(G.window.ren, i.x, i.y);
         // TODO: could use PointF, but 4.5->4 (not 5 desired)
     _pico_output_present(0);
@@ -95,7 +95,7 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
     _pico_guard();
     Pico_Abs_Pos vs[n];
     for (int i=0; i<n; i++) {
-        vs[i] = _pico_rnd_pos(_pico_raw_pos(ps[i], NULL));
+        vs[i] = _pico_abs_pos(ps[i], NULL);
     }
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
@@ -120,7 +120,7 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
     _pico_guard();
     Sint16 xs[n], ys[n];
     for (int i=0; i<n; i++) {
-        Pico_Abs_Pos v = _pico_rnd_pos(_pico_raw_pos(ps[i], NULL));
+        Pico_Abs_Pos v = _pico_abs_pos(ps[i], NULL);
         xs[i] = v.x;
         ys[i] = v.y;
     }
@@ -150,7 +150,7 @@ void pico_output_draw_rect (Pico_Rel_Rect rect) {
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
     );
 
-    Pico_Abs_Rect i = _pico_rnd_rect(_pico_raw_rect(rect, NULL, NULL));
+    Pico_Abs_Rect i = _pico_abs_rect(rect, NULL, NULL);
     switch (G.layer->pencil.style) {
         case PICO_STYLE_FILL:
             SDL_RenderFillRect(G.window.ren, &i);
@@ -175,7 +175,7 @@ void pico_output_draw_text_mode (
     assert(rect.h != 0);
     if (text[0] == '\0') return;
 
-    SDL_FDim dim = _pico_raw_dim (
+    Pico_Abs_Dim dim = _pico_abs_dim (
         &(Pico_Rel_Dim){ rect.mode, {0, rect.h} }, NULL, NULL
     );
 
@@ -183,7 +183,7 @@ void pico_output_draw_text_mode (
     Pico_Abs_Dim* orig = (rect.w == 0) ? &layer->scene.dim : NULL;
 
     Pico_Rel_Dim rel = { rect.mode, {rect.w, rect.h} };
-    _pico_raw_dim(&rel, NULL, orig);
+    _pico_abs_dim(&rel, NULL, orig);
     rect.w = rel.w;
 
     _pico_layer_output(layer, &rect);
@@ -193,9 +193,9 @@ void pico_output_draw_tri (
     Pico_Rel_Pos p1, Pico_Rel_Pos p2, Pico_Rel_Pos p3
 ) {
     _pico_guard();
-    Pico_Abs_Pos i1 = _pico_rnd_pos(_pico_raw_pos(p1, NULL));
-    Pico_Abs_Pos i2 = _pico_rnd_pos(_pico_raw_pos(p2, NULL));
-    Pico_Abs_Pos i3 = _pico_rnd_pos(_pico_raw_pos(p3, NULL));
+    Pico_Abs_Pos i1 = _pico_abs_pos(p1, NULL);
+    Pico_Abs_Pos i2 = _pico_abs_pos(p2, NULL);
+    Pico_Abs_Pos i3 = _pico_abs_pos(p3, NULL);
 
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
@@ -252,7 +252,7 @@ void _pico_output_present (int force) {
 
     // restore current layer's render target + clip
     SDL_SetRenderTarget(G.window.ren, G.layer->tex);
-    Pico_Abs_Rect r = _pico_rnd_rect(_pico_raw_rect(G.layer->scene.clip, NULL, NULL));
+    Pico_Abs_Rect r = _pico_abs_rect(G.layer->scene.clip, NULL, NULL);
     SDL_RenderSetClipRect(G.window.ren, &r);
 }
 
@@ -297,7 +297,7 @@ const char* pico_output_screenshot (const char* layer, const char* path, const P
     Pico_Layer* L = G.layer;
     Pico_Abs_Rect ri = (rect == NULL)
         ? (Pico_Abs_Rect){0, 0, L->scene.dim.w, L->scene.dim.h}
-        : _pico_rnd_rect(_pico_raw_rect(*rect, NULL, NULL));
+        : _pico_abs_rect(*rect, NULL, NULL);
 
     const char* ret = path;
     if (path == NULL) {
