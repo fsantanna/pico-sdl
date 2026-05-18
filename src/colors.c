@@ -1,6 +1,4 @@
-#include "pico.h"
-
-#define MAX(x,y) ((x) > (y) ? (x) : (y))
+#include "_pico.h"
 
 /// @defgroup Predefined Colors
 /// @brief Predefined color constants for common colors.

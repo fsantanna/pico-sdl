@@ -11,8 +11,6 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
-#define MAX(x,y) ((x) > (y) ? (x) : (y))
-
 #define REALM_C
 #include "realm.hc"
 #undef REALM_C

@@ -109,3 +109,41 @@ Decisions:
 - [x] geom split
 - [x] Makefile + pico-sdl script
 - [x] valgrind.supp line check (117 → 91)
+
+## Follow-ups (beyond original plan)
+
+- [x] PICO_TESTS runtime via `getenv` (drop `-DPICO_TESTS`)
+- [x] naming convention: intra-module statics drop `_pico_` prefix;
+      cross-module gets `_pico_<module>_*` (then partly walked back
+      for the aux module to keep names short)
+- [x] extract `output.c` from pico.c
+- [x] extract `input.c` from pico.c
+- [x] extract `get-set.c` from pico.c
+- [x] move `pico_layer_*` public wrappers from pico.c to layer.c
+- [x] absorb per-module headers into single `_pico.h` umbrella;
+      delete state.h/aux.h/layers.h/mem.h/video.h
+- [x] rename `layers.c` -> `layer.c`; `_pico_layers_*` -> `_pico_layer_*`;
+      `_pico_layers_draw` -> `_pico_layer_output`
+- [x] merge `aux.c` into `geom.c`; make `_raw_*`/`_rel_*`/`_rnd_*`
+      static intra-geom (drop `_pico_` prefix)
+- [x] add `_pico_abs_*` sugar (rnd of raw); migrate ~27 call sites
+- [x] add `_pico_mode_rect` (rel of raw) -> promoted to
+      `pico_cv_mode_*` -> removed entirely (polymorphism via
+      `pico_cv_*(NULL, &to, NULL, &fr)` covers same-layer mode conv)
+- [x] fix 6 silent float->int truncations (wrap raw in rnd/abs)
+- [x] inline `events.h`, `anchors.h`, `colors.h` into pico.h;
+      drop the `PICO_ANCHORS_C` ritual; delete those 3 headers
+- [x] nm audit: all underscore exports are `_pico_*` (no leaks)
+
+## Final layout
+
+`src/`:
+- public: `pico.h`, `keys.h`, `tiny_ttf.h`
+- internal: `_pico.h`
+- external: `realm.hc`
+- TUs: `aux is merged into geom`, `colors.c`, `geom.c`, `get-set.c`,
+       `input.c`, `layer.c`, `mem.c`, `output.c`, `pico.c`, `video.c`
+- artifact: `libpico-sdl.a`
+
+`pico.c` is now small (~250 lines): init/quit + the `_pico_guard`,
+`_pico_tex_create`, `_pico_font_get` helpers + anchor constants.

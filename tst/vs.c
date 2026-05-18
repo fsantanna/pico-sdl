@@ -247,9 +247,9 @@ int main (void) {
         assert(pico_vs_rect_pos("sub_sub_tight", NULL, NULL, &p_out) == 0);
     }
 
-    // scene.dst with w=0 or h=0 means aspect-fill (mirrors render path
-    // at layers.hc:280-283). Without the fill _vs_rect returns an
-    // empty rect and no point ever lands inside.
+    // scene.dst with w=0 or h=0 means aspect-fill (resolved in
+    // pico_set_scene_dst, get-set.c). Without the fill _vs_rect
+    // returns an empty rect and no point ever lands inside.
     pico_layer_empty("world", "sub_aspect", 1,
                      (Pico_Rel_Dim){'!', {50, 50}}, NULL);
     pico_set_layer("sub_aspect");
