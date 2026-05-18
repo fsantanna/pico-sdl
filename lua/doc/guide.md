@@ -49,11 +49,11 @@ To initialize `pico-lua`, we pass `true` to `pico.init`:
 </td></tr>
 </table>
 
-We immediately see a `500x500` window divided in small `5x5` rectangles
-representing `100x100` **logical pixels**.
+We immediately see a `500x500` **physical pixels** window divided in small
+`5x5` rectangles representing `100x100` **logical pixels**.
 
 In the context of `pico-lua`, we use the term **world** to designate the
-logical view, which applications use as the main reference.
+logical view, which applications typically use as the main reference.
 
 By default, note that `pico-lua` conventionally exhibits the grid and
 coordinate labels to aid development with visual inspection.

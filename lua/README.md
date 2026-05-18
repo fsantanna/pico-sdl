@@ -31,7 +31,7 @@ Please, switch to stable [`v0.3.1`](https://github.com/fsantanna/pico-sdl/tree/v
 `pico-lua` is the Lua binding for [pico-sdl][pico-sdl], a graphics library for
 2D games and applications.
 
-[pico-lua]: https://github.com/fsantanna/pico-sdl/
+[pico-sdl]: https://github.com/fsantanna/pico-sdl/
 
 # Hello World!
 
@@ -58,7 +58,7 @@ pico.init(false)
 ```
 sudo apt install libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
 sudo luarocks install pico-sdl 0.3.1
-pico-lua tst/cross.lua
+pico-lua lua/tst/cross.lua
 ```
 
 ## Development
@@ -74,7 +74,12 @@ From local repo:
 ```
 cd ../  # pico-sdl root
 sudo luarocks make lua/pico-sdl-dev-1.rockspec
-pico-lua /lua/tst/cross.lua
+```
+
+Then run the program:
+
+```
+pico-lua lua/tst/cross.lua
 ```
 
 # Documentation
