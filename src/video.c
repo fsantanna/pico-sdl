@@ -178,21 +178,18 @@ void pico_layer_video_mode (
 
 Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path) {
     _pico_guard();
-    Pico_Layer_Video* vs =
-        _layer_video('=', path, path);
+    Pico_Layer_Video* vs = _layer_video('=', path, path);
     pico_assert(vs != NULL);
 
     Pico_Video info = {
         .dim   = vs->base.scene.dim,
         .fps   = vs->fps,
-        .frame = (vs->frame.cur < 0) ? 0
-                                      : vs->frame.cur,
+        .frame = (vs->frame.cur < 0) ? 0 : vs->frame.cur,
         .done  = vs->frame.done,
     };
 
     /* Fill rect dimensions if provided */
-    if (rect != NULL
-            && (rect->w == 0 || rect->h == 0)) {
+    if (rect!=NULL && (rect->w==0 || rect->h==0)) {
         Pico_Rel_Dim rel = { rect->mode, {rect->w, rect->h} };
         _pico_abs_dim(&rel, NULL, &info.dim);
         rect->w = rel.w;
