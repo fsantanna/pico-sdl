@@ -729,20 +729,33 @@ static int l_get_pencil (lua_State* L) {
     return 1;
 }
 
-static int l_get_image (lua_State* L) {
-    const char* path = luaL_checkstring(L, 1);  // path | [dim]
+static int l_get_image (lua_State* L) {     // [dim] | path
+    if (lua_gettop(L) == 1) {
+        lua_pushnil(L);
+        lua_insert(L, 1);
+    }                                       // dim | path
+    const char* path = luaL_checkstring(L, 2);
 
-    if (lua_gettop(L) == 1) { // default dim={'!',w=0,h=0}
-        lua_newtable(L);                        // path | dim
-        lua_pushliteral(L, "!");
+    int t = lua_type(L, 1);
+    if (t==LUA_TNIL || t==LUA_TSTRING) {    // '?' | path
+        char mode = '!';
+        if (t == LUA_TSTRING) {
+            mode = C_mode_s_opt(L, 1, 1);
+        }
+        lua_newtable(L);                    // '?' | path | rel
+        lua_pushlstring(L, &mode, 1);
         lua_rawseti(L, -2, 1);
         lua_pushinteger(L, 0);
         lua_setfield(L, -2, "w");
         lua_pushinteger(L, 0);
         lua_setfield(L, -2, "h");
+        lua_replace(L, 1);                  // dim | path
     }
 
-    L_image_get_dim(L, 2, path);
+    luaL_checktype(L, 1, LUA_TTABLE);       // dim | path
+    L_image_get_dim(L, 1, path);
+
+    lua_settop(L, 1);                       // *dim*
     return 1;
 }
 

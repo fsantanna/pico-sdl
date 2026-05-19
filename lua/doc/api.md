@@ -75,7 +75,22 @@ In alphabetical order:
     - **pico.get.effect**: Gets effect configuration.
         - `pico.get.effect () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, rotate: Rotation }`
     - **pico.get.image**: Gets image dimensions.
-        - `pico.get.image (path: string [, dim: Dim]) -> Dim`
+        - `pico.get.image (path: string) -> Dim`
+        - `pico.get.image (mode: string, path: string) -> Dim`
+        - `pico.get.image (dim: Dim, path: string) -> Dim`
+        - `pico.get.image (dim: nil, path: string) -> Dim`
+        - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
+        - String-mode and nil/no-arg forms build a fresh
+          `{mode, w=0, h=0}` table; default mode is `'!'`.
+        - Table form is mutated in place; missing `w`/`h` (zero)
+          axes are filled from the image's natural pixel size,
+          aspect-preserving.
+        - Returns the rel `Dim` (the same table when one was
+          passed, or the freshly built one).
+        - Forms:
+            - `pico.get.image('cat.png')` — pixels
+            - `pico.get.image('%', 'cat.png')` — percent
+            - `pico.get.image({'%', w=0.5}, 'cat.png')` — fills `h`
     - **pico.get.keyboard**: Gets keyboard modifier state.
         - `pico.get.keyboard () ->
           { key: string, ctrl: boolean, shift: boolean, alt: boolean }`
