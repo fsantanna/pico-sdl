@@ -258,7 +258,7 @@ void pico_set_effect (Pico_Layer_Effect effect) {
 void pico_set_effect_alpha (unsigned char alpha) {
     _pico_guard();
     G.layer->effect.alpha = alpha;
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_effect_color (Pico_Color color) {
@@ -272,25 +272,25 @@ void pico_set_effect_color (Pico_Color color) {
         SDL_RenderClear(G.window.ren);
         SDL_SetRenderTarget(G.window.ren, G.layer->tex);
     }
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_effect_flip (PICO_FLIP flip) {
     _pico_guard();
     G.layer->effect.flip = flip;
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_effect_grid (int on) {
     _pico_guard();
     G.layer->effect.grid = on;
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_effect_rotate (Pico_Rot rotate) {
     _pico_guard();
     G.layer->effect.rotate = rotate;
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_scene (Pico_Layer_Scene view) {
@@ -307,13 +307,13 @@ void pico_set_scene (Pico_Layer_Scene view) {
     Pico_Abs_Rect r = _pico_abs_rect(L->scene.clip, NULL, NULL);
     SDL_RenderSetClipRect(G.window.ren, &r);
     pico_output_clear();
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_scene_clip (Pico_Rel_Rect clip) {
     _pico_guard();
     G.layer->scene.clip = clip;
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_scene_dim (Pico_Rel_Dim dim) {
@@ -340,7 +340,7 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
     if (L == &G.window.layer) {
         assert(!G.window.pub.fs);
         SDL_SetWindowSize(G.window.win, di.w, di.h);
-        _pico_output_present(0);
+        _pico_output_present(0, 1);
     } else {
         pico_output_clear();
     }
@@ -362,7 +362,7 @@ void pico_set_scene_dst (Pico_Rel_Rect dst) {
         };
     }
     L->scene.dst = dst;
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_scene_clear (int on) {
@@ -379,13 +379,13 @@ void pico_set_scene_clear (int on) {
 void pico_set_scene_src (Pico_Rel_Rect src) {
     _pico_guard();
     G.layer->scene.src = src;
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_scene_tile (Pico_Abs_Dim tile) {
     _pico_guard();
     G.layer->scene.tile = tile;
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_window (Pico_Window win) {
@@ -409,14 +409,14 @@ void pico_set_window_fs (int fs) {
         pico_assert(0 == SDL_SetWindowFullscreen(G.window.win, 0));
     }
     G.window.pub.fs = fs;
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 void pico_set_window_show (int on) {
     _pico_guard();
     if (on) {
         SDL_ShowWindow(G.window.win);
-        _pico_output_present(0);
+        _pico_output_present(0, 1);
     } else {
         SDL_HideWindow(G.window.win);
     }
@@ -425,7 +425,7 @@ void pico_set_window_show (int on) {
 void pico_set_window_title (const char* title) {
     _pico_guard();
     SDL_SetWindowTitle(G.window.win, title);
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 
 

@@ -62,7 +62,6 @@ while true do
     pico.output.draw.rect { '%', x=0.6, y=0.6, w=0.4, h=0.4 }
     pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
     pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
-    pico.output.draw.layers()
     pico.output.present()
 
     local e = pico.input.event('quit')

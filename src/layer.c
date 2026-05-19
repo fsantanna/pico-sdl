@@ -324,7 +324,7 @@ void _pico_layer_output (
         }
     }
 
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 ///////////////////////////////////////////////////////////////////////////////
 // LAYER
