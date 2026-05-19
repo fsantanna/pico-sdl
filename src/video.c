@@ -176,7 +176,7 @@ void pico_layer_video_mode (
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect) {
+Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path) {
     _pico_guard();
     Pico_Layer_Video* vs =
         _layer_video('=', path, path);

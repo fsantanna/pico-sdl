@@ -127,7 +127,19 @@ In alphabetical order:
           by the scene dim.
         - No string-mode shorthand: `h` cannot be conveyed.
     - **pico.get.video**: Gets video information.
-        - `pico.get.video (path: string [, rect: Rect]) -> Video`
+        - `pico.get.video (path: string) -> Video`
+        - `pico.get.video (mode: string, path: string) -> Video`
+        - `pico.get.video (rect: Rect, path: string) -> Video`
+        - `pico.get.video (rect: nil, path: string) -> Video`
+        - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
+        - Returns the full `Video` (`{dim, fps, frame, done}`).
+        - `Video.dim` **is** the slot-1 input table: caller's
+          `Rect` (table-form, mutated in place) or a freshly
+          built rect (string-form / nil / no-arg). Only
+          `mode`/`w`/`h` are meaningful for dim use; `x`/`y`
+          may be present (zero by default).
+        - Missing `w`/`h` (zero) axes are filled aspect-
+          preserving from the video's natural pixel size.
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { fullscreen: boolean, show: boolean, title: string }`
 - **pico.init**: Initializes and finalizes pico.

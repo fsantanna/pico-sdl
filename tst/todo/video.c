@@ -21,7 +21,7 @@ int main (void) {
     pico_init(1);
     int ms = pico_set_expert(1, 60);
 
-    Pico_Video info = pico_get_video(VIDEO_PATH, NULL);
+    Pico_Video info = pico_get_video(NULL, VIDEO_PATH);
     int total = info.fps * 5;
 
     /* Window: video width scaled up, plus bar */

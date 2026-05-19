@@ -441,12 +441,12 @@ int           pico_get_effect_grid     (void);
 Pico_Rot      pico_get_effect_rotate   (void);
 
 /// @brief Gets video properties.
-/// @param path path to the Y4M video file
 /// @param rect optional rect with w/h to complete (NULL ok)
+/// @param path path to the Y4M video file
 /// @return video properties (dim, fps, frame, done)
 /// @sa pico_set_video
 /// @sa pico_get_image
-Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
+Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////
 
