@@ -491,15 +491,15 @@ void pico_layer_empty_mode (
 );
 
 /// @brief Creates a layer from an image file (exclusive mode).
-/// @param key layer key (NULL uses "/image/<path>", otherwise
-///            must not start with '/')
+/// @param key layer key (NULL uses path, otherwise must not
+///            start with '/')
 /// @param path path to the image file
 void pico_layer_image (const char* up, const char* key, const char* path);
 
 /// @brief Creates a layer from an image file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (NULL uses "/image/<path>", otherwise
-///            must not start with '/')
+/// @param key layer key (NULL uses path, otherwise must not
+///            start with '/')
 /// @param path path to the image file
 void pico_layer_image_mode (int mode,
     const char* up, const char* key, const char* path);
