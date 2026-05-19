@@ -933,7 +933,6 @@ This is what a main loop in `pico-lua` looks like:
 pico.set.expert(true, 40)           -- 40 FPS
 
 while true do                       -- main loop
-    pico.output.clear()
     pico.output.*()                 -- scene redrawing
     pico.output.present()
 
@@ -950,8 +949,9 @@ end
 The call to `pico.set.expert` serves two purposes:
 
 1. Disables automatic screen update that would happen after every single draw
-   call.
-    Now, all redrawing between `clear` and `present` appears as a single frame.
+    call.
+    Now, all redrawing between successive calls to `present` appears as a
+    single frame.
     Even with hundreds of objects, the screen update is instantaneous.
 
 2. Sets the FPS rate to `40`, making `pico.input.event` awake every `25ms`.
@@ -989,14 +989,15 @@ local k = {'!', x=4, y=4}           -- key pixel
 local m = {'!', x=5, y=5}           -- mouse pixel
 
 while true do                       -- main loop
-    pico.output.clear()             -- redraw scene
+    -- redraw scene
     pico.set.pencil { color='red' }
     pico.output.draw.pixel(m)
     pico.set.pencil { color='blue' }
     pico.output.draw.pixel(k)
     pico.output.present()
 
-    local e = pico.input.event()    -- handle events
+    -- handle events
+    local e = pico.input.event()
     assert(e, "no FPS set here")
     if e.tag == 'mouse.motion' then
         m = pico.get.mouse '!'
@@ -1072,7 +1073,7 @@ local f2, x2, y2 = walk('counter', 0, 0)    -- counter clockwise
 local step = 0
 
 while true do                               -- main loop
-    pico.output.clear()                     -- redraw the scene
+    -- redraw the scene
     pico.output.draw.rect {
         '%', x=0.3, y=0.3, w=0.4, h=0.4     -- rect path (top-left)
     }
@@ -1087,7 +1088,8 @@ while true do                               -- main loop
     )
     pico.output.present()
 
-    local e = pico.input.event('quit')      -- handle events
+    -- handle events
+    local e = pico.input.event('quit')
     if e then
         break
     end

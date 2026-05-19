@@ -14,7 +14,6 @@ local k = {'!', x=4, y=4}        -- arrow-key pixel (centered)
 local m = {'!', x=5, y=5}        -- mouse pixel
 
 while true do
-    pico.output.clear()
     pico.set.pencil { color=R }
     pico.output.draw.pixel(m)
     pico.set.pencil { color=B }
