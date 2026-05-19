@@ -360,6 +360,28 @@ assert(pico.vs.rect.rect(
     "world", "window", {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 ) == true)
 
+-- §9.3.a: xin.pos -- nest child point at parent's SW corner into world
+local p = pico.xin.pos(
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5},
+    {'%', x=0, y=1}
+)
+assert(p.x*100//1 == 25 and p.y*100//1 == 75)
+
+-- §9.3.b: xin.rect -- centered 50% child of centered 50% parent -> 25% of world
+local rr = pico.xin.rect(
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5},
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5}
+)
+assert(rr.x*100//1 == 50 and rr.y*100//1 == 50
+   and rr.w*100//1 == 25 and rr.h*100//1 == 25)
+
+-- §9.3.c: xin.dim -- 50% child of 50% parent -> 25% of world
+local dd = pico.xin.dim(
+    {'%', x=0.5, y=0.5, w=0.5, h=0.5},
+    {'%', w=0.5, h=0.5}
+)
+assert(dd.w*100//1 == 25 and dd.h*100//1 == 25)
+
 -------------------------------------------------------------------------------
 -- Section 10: Extras
 -------------------------------------------------------------------------------

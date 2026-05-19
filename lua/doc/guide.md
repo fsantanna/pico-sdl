@@ -790,7 +790,7 @@ A sub-layer points to a region within a source layer, with both sharing the
 actual pixel contents.
 
 Sub-layers are useful to isolate individual frames from sprite sheets in games,
-which we discuss in [#Animations](#93-animations).
+which we discuss in [#Animations](#83-animations).
 
 We call `pico.layer.sub` to crop a region of a source layer.
 In the next example, we want to isolate each stripe of the flag as a sub layer:
@@ -1203,6 +1203,32 @@ the window, which must overlap since the world is inside the window by default.
 
 For the sake of completion, `pico-lua` also provides `pico.vs.pos.pos` and
 `pico.vs.rect.pos`.
+
+### 9.3. Nesting Rects
+
+The set of `pico.xin.*` functions composes a child onto a parent rect,
+returning a new flat value re-expressed in the current scene:
+
+```lua
+> p = pico.xin.pos (
+    { '%', x=0.5, y=0.5, w=0.5, h=0.5 },  -- parent
+    { '%', x=0, y=1 }                     -- child
+  )
+> print(p.x, p.y)
+0.25   0.75
+```
+
+The parent rect is centered in the world with the child point at its south
+(`y=1`) west (`x=0`) boundary, resulting in a new world point at `y=0.75`
+(south) and `x=0.25` (west).
+
+Nesting is useful, for instance, to check mouse collisions against shapes drawn
+inside shapes inside layers.
+
+For the sake of completion, `pico-lua` also provides `pico.xin.rect` and
+`pico.xin.dim`.
+
+Note that the module name is `xin` because `in` is a reserved word in Lua.
 
 ## 10. Extras
 
