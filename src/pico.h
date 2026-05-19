@@ -420,10 +420,10 @@ PICO_STYLE  pico_get_pencil_style (void);
 int pico_get_expert (int* fps);
 
 /// @brief Gets the dimensions of the given image.
-/// @param path image filepath
 /// @param dim optional dim with w/h to complete (NULL returns raw dimensions)
+/// @param path image filepath
 /// @return absolute dimensions (missing w or h filled based on aspect ratio)
-Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
+Pico_Abs_Dim pico_get_image (Pico_Rel_Dim* dim, const char* path);
 
 /// @brief Gets current layer key.
 /// @return layer key
@@ -441,12 +441,12 @@ int           pico_get_effect_grid     (void);
 Pico_Rot      pico_get_effect_rotate   (void);
 
 /// @brief Gets video properties.
-/// @param path path to the Y4M video file
 /// @param rect optional rect with w/h to complete (NULL ok)
+/// @param path path to the Y4M video file
 /// @return video properties (dim, fps, frame, done)
 /// @sa pico_set_video
 /// @sa pico_get_image
-Pico_Video pico_get_video (const char* path, Pico_Rel_Rect* rect);
+Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -574,27 +574,27 @@ Pico_Mouse pico_get_mouse (const char* layer, Pico_Rel_Pos* pos);
 Uint32 pico_get_now (void);
 
 /// @brief Gets the dimensions of the given text (shared caching).
-/// @param text text to measure
 /// @param dim dim with h for font size (mode '!' or '%'),
 ///            w filled in
+/// @param text text to measure
 /// @return absolute dimensions
 /// @sa pico_get_text_mode
-Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
+Pico_Abs_Dim pico_get_text (Pico_Rel_Dim* dim, const char* text);
 
 /// @brief Gets text dimensions with explicit realm mode and
 ///        layer key.
 /// @param mode realm mode ('!' exclusive, '=' shared,
 ///             '~' replace)
 /// @param key layer key
-/// @param text text to measure
 /// @param dim dim with h for font size (mode '!' or '%'),
 ///            w filled in
+/// @param text text to measure
 /// @return absolute dimensions
 /// @sa pico_get_text
 Pico_Abs_Dim pico_get_text_mode (
     int mode,
-    const char* key, const char* text,
-    Pico_Rel_Dim* dim
+    const char* key, Pico_Rel_Dim* dim,
+    const char* text
 );
 
 /// @brief Gets the entire scene state of the current layer.

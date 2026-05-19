@@ -9,7 +9,7 @@ int main (void) {
     /* pico_get_video: check Y4M header parsing */
     {
         puts("get_video: dimensions and fps");
-        Pico_Video info = pico_get_video("video.y4m", NULL);
+        Pico_Video info = pico_get_video(NULL, "video.y4m");
         assert(info.dim.w == 10);
         assert(info.dim.h == 10);
         assert(info.fps == 10);
@@ -83,7 +83,7 @@ int main (void) {
     /* pico_get_video: check state after sync */
     {
         puts("get_video: state after sync");
-        Pico_Video info = pico_get_video("vid", NULL);
+        Pico_Video info = pico_get_video(NULL, "vid");
         assert(info.done == 1);
     }
 

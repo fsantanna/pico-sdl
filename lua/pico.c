@@ -272,7 +272,7 @@ static void L_image_get_dim (lua_State* L, int i, const char* path) {
     luaL_checktype(L, i, LUA_TTABLE);               // rel
 
     Pico_Rel_Dim dim = C_rel_dim(L, i);
-    Pico_Abs_Dim abs = pico_get_image(path, &dim);
+    Pico_Abs_Dim abs = pico_get_image(&dim, path);
 
     lua_pushnumber(L, dim.w);
     lua_setfield(L, i, "w");
@@ -729,20 +729,33 @@ static int l_get_pencil (lua_State* L) {
     return 1;
 }
 
-static int l_get_image (lua_State* L) {
-    const char* path = luaL_checkstring(L, 1);  // path | [dim]
+static int l_get_image (lua_State* L) {     // [dim] | path
+    if (lua_gettop(L) == 1) {
+        lua_pushnil(L);
+        lua_insert(L, 1);
+    }                                       // dim | path
+    const char* path = luaL_checkstring(L, 2);
 
-    if (lua_gettop(L) == 1) { // default dim={'!',w=0,h=0}
-        lua_newtable(L);                        // path | dim
-        lua_pushliteral(L, "!");
+    int t = lua_type(L, 1);
+    if (t==LUA_TNIL || t==LUA_TSTRING) {    // '?' | path
+        char mode = '!';
+        if (t == LUA_TSTRING) {
+            mode = C_mode_s_opt(L, 1, 1);
+        }
+        lua_newtable(L);                    // '?' | path | rel
+        lua_pushlstring(L, &mode, 1);
         lua_rawseti(L, -2, 1);
         lua_pushinteger(L, 0);
         lua_setfield(L, -2, "w");
         lua_pushinteger(L, 0);
         lua_setfield(L, -2, "h");
+        lua_replace(L, 1);                  // dim | path
     }
 
-    L_image_get_dim(L, 2, path);
+    luaL_checktype(L, 1, LUA_TTABLE);       // dim | path
+    L_image_get_dim(L, 1, path);
+
+    lua_settop(L, 1);                       // *dim*
     return 1;
 }
 
@@ -821,47 +834,63 @@ static int l_get_effect (lua_State* L) {
     return 1;
 }
 
-static int l_get_text (lua_State* L) {
-    const char* text = luaL_checkstring(L, 1);  // text | dim
-    luaL_checktype(L, 2, LUA_TTABLE);
+static int l_get_text (lua_State* L) {      // dim | text
+    luaL_checktype(L, 1, LUA_TTABLE);
+    const char* text = luaL_checkstring(L, 2);
 
-    Pico_Rel_Dim dim = C_rel_dim(L, 2);
-    Pico_Abs_Dim abs = pico_get_text(text, &dim);
+    Pico_Rel_Dim dim = C_rel_dim(L, 1);
+    pico_get_text(&dim, text);
 
     lua_pushnumber(L, dim.w);
-    lua_setfield(L, 2, "w");
+    lua_setfield(L, 1, "w");
     lua_pushnumber(L, dim.h);
-    lua_setfield(L, 2, "h");
+    lua_setfield(L, 1, "h");
 
-    lua_newtable(L);                                // text | dim | abs
-    lua_pushnumber(L, abs.w);
-    lua_setfield(L, -2, "w");
-    lua_pushnumber(L, abs.h);
-    lua_setfield(L, -2, "h");                       // text | dim | *abs*
+    lua_settop(L, 1);                       // *dim*
     return 1;
 }
 
-static int l_get_video (lua_State* L) {
-    const char* path = luaL_checkstring(L, 1);  // path | [rect]
+static int l_get_video (lua_State* L) {     // [rect|mode] | path
+    if (lua_gettop(L) == 1) {
+        lua_pushnil(L);
+        lua_insert(L, 1);
+    }                                       // ?  | path
+    const char* path = luaL_checkstring(L, 2);
 
-    Pico_Rel_Rect rect, *xrect=NULL;
-    if (lua_gettop(L)>=2 && !lua_isnil(L,2)) {
-        rect = C_rel_rect(L, 2);
-        xrect = &rect;
+    int t = lua_type(L, 1);
+    if (t==LUA_TNIL || t==LUA_TSTRING) {    // '?' | path
+        char mode = '!';
+        if (t == LUA_TSTRING) {
+            mode = C_mode_s_opt(L, 1, 1);
+        }
+        lua_newtable(L);                    // '?' | path | rect
+        lua_pushlstring(L, &mode, 1);
+        lua_rawseti(L, -2, 1);
+        lua_pushinteger(L, 0);
+        lua_setfield(L, -2, "x");
+        lua_pushinteger(L, 0);
+        lua_setfield(L, -2, "y");
+        lua_pushinteger(L, 0);
+        lua_setfield(L, -2, "w");
+        lua_pushinteger(L, 0);
+        lua_setfield(L, -2, "h");
+        lua_replace(L, 1);                  // rect | path
     }
 
-    Pico_Video vid = pico_get_video(path, xrect);
+    luaL_checktype(L, 1, LUA_TTABLE);       // rect | path
 
-    lua_newtable(L);                        // T
+    Pico_Rel_Rect rect = C_rel_rect(L, 1);
+    Pico_Video vid = pico_get_video(&rect, path);
 
-    lua_newtable(L);                        // T | dim
-    lua_pushliteral(L, "!");
-    lua_rawseti(L, -2, 1);
-    lua_pushinteger(L, vid.dim.w);
-    lua_setfield(L, -2, "w");
-    lua_pushinteger(L, vid.dim.h);
-    lua_setfield(L, -2, "h");
-    lua_setfield(L, -2, "dim");             // T
+    lua_pushnumber(L, rect.w);              // write back filled w/h
+    lua_setfield(L, 1, "w");
+    lua_pushnumber(L, rect.h);
+    lua_setfield(L, 1, "h");
+
+    lua_newtable(L);                        // ... | T
+
+    lua_pushvalue(L, 1);                    // ... | T | dim (=slot1)
+    lua_setfield(L, -2, "dim");             // ... | T
 
     lua_pushinteger(L, vid.fps);
     lua_setfield(L, -2, "fps");

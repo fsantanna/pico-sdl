@@ -75,7 +75,22 @@ In alphabetical order:
     - **pico.get.effect**: Gets effect configuration.
         - `pico.get.effect () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, rotate: Rotation }`
     - **pico.get.image**: Gets image dimensions.
-        - `pico.get.image (path: string [, dim: Dim]) -> Dim`
+        - `pico.get.image (path: string) -> Dim`
+        - `pico.get.image (mode: string, path: string) -> Dim`
+        - `pico.get.image (dim: Dim, path: string) -> Dim`
+        - `pico.get.image (dim: nil, path: string) -> Dim`
+        - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
+        - String-mode and nil/no-arg forms build a fresh
+          `{mode, w=0, h=0}` table; default mode is `'!'`.
+        - Table form is mutated in place; missing `w`/`h` (zero)
+          axes are filled from the image's natural pixel size,
+          aspect-preserving.
+        - Returns the rel `Dim` (the same table when one was
+          passed, or the freshly built one).
+        - Forms:
+            - `pico.get.image('cat.png')` — pixels
+            - `pico.get.image('%', 'cat.png')` — percent
+            - `pico.get.image({'%', w=0.5}, 'cat.png')` — fills `h`
     - **pico.get.keyboard**: Gets keyboard modifier state.
         - `pico.get.keyboard () ->
           { key: string, ctrl: boolean, shift: boolean, alt: boolean }`
@@ -103,9 +118,28 @@ In alphabetical order:
     - **pico.get.scene**: Gets scene configuration.
         - `pico.get.scene () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect, clear: boolean }`
     - **pico.get.text**: Gets text dimensions.
-        - `pico.get.text (text: string, dim: Dim) -> Dim`
+        - `pico.get.text (dim: Dim, text: string) -> Dim`
+        - `dim` is **required** and must be a table: `h` is the
+          input font size (in `dim.mode`'s realm).
+        - `w` is filled in by the call (when initially `0`).
+        - Returns the rel `Dim` (the same table passed in,
+          mutated). To get pixels, use `'!'` mode or multiply
+          by the scene dim.
+        - No string-mode shorthand: `h` cannot be conveyed.
     - **pico.get.video**: Gets video information.
-        - `pico.get.video (path: string [, rect: Rect]) -> Video`
+        - `pico.get.video (path: string) -> Video`
+        - `pico.get.video (mode: string, path: string) -> Video`
+        - `pico.get.video (rect: Rect, path: string) -> Video`
+        - `pico.get.video (rect: nil, path: string) -> Video`
+        - `mode`: `'!'` pixels, `'%'` percentage, `'#'` tiles
+        - Returns the full `Video` (`{dim, fps, frame, done}`).
+        - `Video.dim` **is** the slot-1 input table: caller's
+          `Rect` (table-form, mutated in place) or a freshly
+          built rect (string-form / nil / no-arg). Only
+          `mode`/`w`/`h` are meaningful for dim use; `x`/`y`
+          may be present (zero by default).
+        - Missing `w`/`h` (zero) axes are filled aspect-
+          preserving from the video's natural pixel size.
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { fullscreen: boolean, show: boolean, title: string }`
 - **pico.init**: Initializes and finalizes pico.

@@ -38,7 +38,7 @@ int pico_get_expert (int* fps) {
     return G.expert.on;
 }
 
-Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
+Pico_Abs_Dim pico_get_image (Pico_Rel_Dim* rel, const char* path) {
     _pico_guard();
     if (rel == NULL) {
         Pico_Layer* layer = _pico_layer_image('=', NULL, path);
@@ -93,14 +93,14 @@ Pico_Rot pico_get_effect_rotate (void) {
     return G.layer->effect.rotate;
 }
 
-Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* rel) {
+Pico_Abs_Dim pico_get_text (Pico_Rel_Dim* rel, const char* text) {
     _pico_guard();
-    return pico_get_text_mode('=', NULL, text, rel);
+    return pico_get_text_mode('=', NULL, rel, text);
 }
 
 Pico_Abs_Dim pico_get_text_mode (
     int mode, const char* key,
-    const char* text, Pico_Rel_Dim* rel
+    Pico_Rel_Dim* rel, const char* text
 ) {
     _pico_guard();
     if (text[0] == '\0') return (Pico_Abs_Dim){0, 0};

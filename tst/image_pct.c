@@ -11,19 +11,19 @@ int main (void) {
         {
             // h=0.24 -> 24px, aspect 1:1 -> w=24px
             Pico_Rel_Dim d = { '%', {0, 0.24} };
-            Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
+            Pico_Abs_Dim r = pico_get_image(&d, "../res/open.png");
             assert(r.w==24 && r.h==24);
         }
         {
             // w=0.48 -> 48px, aspect 1:1 -> h=48px
             Pico_Rel_Dim d = { '%', {0.48, 0} };
-            Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
+            Pico_Abs_Dim r = pico_get_image(&d, "../res/open.png");
             assert(r.w==48 && r.h==48);
         }
         {
             // w=0, h=0 -> raw dimensions 48x48
             Pico_Rel_Dim d = { '%', {0, 0} };
-            Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
+            Pico_Abs_Dim r = pico_get_image(&d, "../res/open.png");
             assert(r.w==48 && r.h==48);
         }
     }
@@ -34,7 +34,7 @@ int main (void) {
             // w=0, h=0 -> raw dimensions 48x48
             // after pico_in_dim, d is in scene's % (100x100): 48/100 = 0.48
             Pico_Rel_Dim d = pico_in_dim(up, (Pico_Rel_Dim){ '%', {0, 0} });
-            Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
+            Pico_Abs_Dim r = pico_get_image(&d, "../res/open.png");
             assert(r.w==48 && r.h==48);
             assert(d.w==0.48f && d.h==0.48f);
         }
@@ -42,7 +42,7 @@ int main (void) {
             // h=0.48 of 50 = 24px, aspect 1:1 -> w=24px
             // after pico_in_dim, h is now 0.24 of scene (100x100); fills w to 0.24
             Pico_Rel_Dim d = pico_in_dim(up, (Pico_Rel_Dim){ '%', {0, 0.48} });
-            Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
+            Pico_Abs_Dim r = pico_get_image(&d, "../res/open.png");
             assert(r.w==24 && r.h==24);
             assert(d.w==0.24f && d.h==0.24f);
         }

@@ -10,15 +10,15 @@ do
     assert(dim.w==48 and dim.h==48)
 end
 do
-    local dim = pico.get.image("../../res/open.png", {'!', h=24})
+    local dim = pico.get.image({'!', h=24}, "../../res/open.png")
     assert(dim.w==24 and dim.h==24)
 end
 do
-    local dim = pico.get.image("../../res/open.png", {'!', w=48, h=nil})
+    local dim = pico.get.image({'!', w=48, h=nil}, "../../res/open.png")
     assert(dim.w==48 and dim.h==48)
 end
 do
-    local dim = pico.get.image("../../res/open.png", {'!'})
+    local dim = pico.get.image({'!'}, "../../res/open.png")
     assert(dim.w==48 and dim.h==48)
 end
 
