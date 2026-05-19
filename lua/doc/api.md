@@ -177,8 +177,13 @@ In alphabetical order:
 - **pico.output**
     - **pico.output.clear**: Clears screen.
         - `pico.output.clear ()`
-    - **pico.output.present**: Presents buffer (expert mode only).
-        - `pico.output.present ()`
+    - **pico.output.present**: Composites layers and presents buffer.
+        - `pico.output.present ([layers: boolean])`
+        - `layers`: when `true` (default), composites the window layer
+          hierarchy onto `window.tex` before mirroring to the
+          framebuffer; when `false`, mirrors only (raw, advanced).
+        - In non-expert mode `layers` must be `true` (asserted);
+          non-expert auto-presents after each draw op.
     - **pico.output.screenshot**: Takes a screenshot of a layer.
         - `pico.output.screenshot (layer: string?, [path: string|rect: Rect,] [rect: Rect]) -> string`
         - `layer`: target layer name; `nil` means current layer.
@@ -204,8 +209,10 @@ In alphabetical order:
             - `rect` is optional; when omitted (or `nil`), the layer's
               `scene.dst` is used (full bounds in cur).
         - **pico.output.draw.layers**: Composites the window layer hierarchy
-          (window's children, including world) onto window.tex. Called
-          automatically by `pico.output.present` in non-expert mode.
+          (window's children, including world) onto window.tex. Implicit
+          in `pico.output.present(true)` (default) and in non-expert mode
+          auto-present. Standalone use: compose without mirroring (e.g.,
+          to sample composed `window.tex` mid-frame).
             - `pico.output.draw.layers ()`
         - **pico.output.draw.line**: Draws line.
             - `pico.output.draw.line (p1: Pos, p2: Pos)`
