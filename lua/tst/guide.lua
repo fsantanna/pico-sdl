@@ -360,4 +360,29 @@ assert(pico.vs.rect.rect(
     "world", "window", {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 ) == true)
 
+-------------------------------------------------------------------------------
+-- Section 10: Extras
+-------------------------------------------------------------------------------
+
+-- §10.1.a: screenshot to a file (returns the path)
+pico.init(false); pico.init(true)
+pico.set.window { title="guide-10-01-01" }
+pico.set.pencil { color='red' }
+pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
+local path = pico.output.screenshot("window", "../../tst/out/guide-10-01-01.png")
+assert(path == "../../tst/out/guide-10-01-01.png")
+pico.check("guide-10-01-01")
+
+-- §10.1.b: screenshot with crop rect
+pico.output.screenshot("window", "../../tst/out/guide-10-01-02.png",
+    {'%', x=0.5, y=0.5, w=0.25, h=0.25})
+-- (no pico.check -- cropped image is captured to file but scene state
+-- is unchanged, so a follow-up window check would mismatch)
+
+-- §10.3: fullscreen toggle
+pico.set.window { fullscreen=true }
+assert(pico.get.window().fullscreen == true)
+pico.set.window { fullscreen=false }
+assert(pico.get.window().fullscreen == false)
+
 pico.init(false)

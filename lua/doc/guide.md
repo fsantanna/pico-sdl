@@ -1214,26 +1214,28 @@ To save a screenshot of the current window, we call
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.color.draw 'red'
+> pico.set.pencil { color='red' }
 > pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
-> pico.output.screenshot('my-screenshot.png')
+> pico.output.screenshot('window', "my-screenshot.png")
 </pre>
 </td><td>
-<img src="img/guide-11-01-01.png" width="200">
+<img src="../../tst/asr/guide-10-01-01.png" width="200">
 </td></tr>
 </table>
 
+The first argument is the layer to capture.
 An optional rectangle crops the screenshot:
 
 <table>
 <tr><td><pre>
 > pico.output.screenshot (
-    'crop.png',
+    'window',
+    "crop.png",
     {'%', x=0.5, y=0.5, w=0.25, h=0.25},
   )
 </pre>
 </td><td>
-<img src="img/guide-11-01-02.png" width="200">
+<img src="../../tst/asr/guide-10-01-02.png" width="200">
 </td></tr>
 </table>
 
@@ -1242,7 +1244,7 @@ An optional rectangle crops the screenshot:
 To play a sound file:
 
 ```lua
-> pico.output.sound('path/to/sound.wav')
+> pico.output.sound("path/to/sound.wav")
 ```
 
 ### 10.3. Fullscreen Mode
