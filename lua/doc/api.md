@@ -129,7 +129,9 @@ In alphabetical order:
       (`'!'` exclusive, `'='` shared, `'~'` replace) as the first
       argument. Note: realm modes are distinct from dim modes
       (`'!'`/`'%'`/`'#'`) used inside `Rect`/`Pos`/`Dim` tables.
-    - `up` is the parent layer name (string) or `nil` for the main layer.
+    - `up` is the parent layer name (string), or `nil` to create an
+      orphan layer not attached to the tree (must be composited
+      manually via `pico.output.draw.layer`).
     - All creators (except `images`) accept an **optional trailing
       `rect: Rect`** that sets `scene.target` of the new layer in one
       call.
