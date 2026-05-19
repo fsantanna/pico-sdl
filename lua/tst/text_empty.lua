@@ -4,12 +4,12 @@ pico.init(true)
 
 -- pico.get.text: empty string, abs mode -> {0, 0}
 do
-    local dim = pico.get.text("", {'!', w=nil, h=10})
+    local dim = pico.get.text({'!', w=nil, h=10}, "")
     assert(dim.w==0 and dim.h==0)
 end
 -- pico.get.text: empty string, pct mode -> {0, 0}
 do
-    local dim = pico.get.text("", {'%', w=nil, h=0.1})
+    local dim = pico.get.text({'%', w=nil, h=0.1}, "")
     assert(dim.w==0 and dim.h==0)
 end
 

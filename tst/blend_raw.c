@@ -24,7 +24,7 @@ int main (void) {
     }
     {
         puts("text dimming");
-        Pico_Abs_Dim dim = pico_get_text("SOME TEXT", &(Pico_Rel_Dim){'!',{0,10}});
+        Pico_Abs_Dim dim = pico_get_text(&(Pico_Rel_Dim){'!',{0,10}}, "SOME TEXT");
         Pico_Rel_Rect r = {'!', {32-dim.w/2, 18-5, 0, 10}, PICO_ANCHOR_NW};
         for (int a=255; a>0; a-=5) {
             pico_output_clear();

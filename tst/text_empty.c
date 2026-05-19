@@ -7,13 +7,13 @@ int main (void) {
     // pico_get_text: empty string, abs mode -> {0, 0}
     {
         Pico_Rel_Dim d = { '!', {0, 10} };
-        Pico_Abs_Dim r = pico_get_text("", &d);
+        Pico_Abs_Dim r = pico_get_text(&d, "");
         assert(r.w==0 && r.h==0);
     }
     // pico_get_text: empty string, pct mode -> {0, 0}
     {
         Pico_Rel_Dim d = { '%', {0, 0.1} };
-        Pico_Abs_Dim r = pico_get_text("", &d);
+        Pico_Abs_Dim r = pico_get_text(&d, "");
         assert(r.w==0 && r.h==0);
     }
 

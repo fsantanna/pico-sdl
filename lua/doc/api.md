@@ -118,7 +118,12 @@ In alphabetical order:
     - **pico.get.scene**: Gets scene configuration.
         - `pico.get.scene () -> { dim: Dim, tile: Tile, target: Rect, source: Rect, clip: Rect, clear: boolean }`
     - **pico.get.text**: Gets text dimensions.
-        - `pico.get.text (text: string, dim: Dim) -> Dim`
+        - `pico.get.text (dim: Dim, text: string) -> Dim`
+        - `dim` is **required** and must be a table: `h` is the
+          input font size (in `dim.mode`'s realm).
+        - `w` is filled in by the call (when initially `0`).
+        - Returns a fresh absolute `{w, h}` table (pixels).
+        - No string-mode shorthand: `h` cannot be conveyed.
     - **pico.get.video**: Gets video information.
         - `pico.get.video (path: string [, rect: Rect]) -> Video`
     - **pico.get.window**: Gets window configuration.

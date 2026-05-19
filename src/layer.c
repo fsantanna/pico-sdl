@@ -205,8 +205,8 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Abs_Dim dim = pico_get_text (
-                lbl,
-                &(Pico_Rel_Dim){ '!', {0, H} }
+                &(Pico_Rel_Dim){ '!', {0, H} },
+                lbl
             );
             pico_output_draw_text (
                 lbl,
@@ -224,8 +224,8 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
             Pico_Abs_Dim dim = pico_get_text(
-                lbl,
-                &(Pico_Rel_Dim){ '!', {0, H} });
+                &(Pico_Rel_Dim){ '!', {0, H} },
+                lbl);
             pico_output_draw_text (
                 lbl,
                 (Pico_Rel_Rect) {

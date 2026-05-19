@@ -834,23 +834,23 @@ static int l_get_effect (lua_State* L) {
     return 1;
 }
 
-static int l_get_text (lua_State* L) {
-    const char* text = luaL_checkstring(L, 1);  // text | dim
-    luaL_checktype(L, 2, LUA_TTABLE);
+static int l_get_text (lua_State* L) {      // dim | text
+    luaL_checktype(L, 1, LUA_TTABLE);
+    const char* text = luaL_checkstring(L, 2);
 
-    Pico_Rel_Dim dim = C_rel_dim(L, 2);
-    Pico_Abs_Dim abs = pico_get_text(text, &dim);
+    Pico_Rel_Dim dim = C_rel_dim(L, 1);
+    Pico_Abs_Dim abs = pico_get_text(&dim, text);
 
     lua_pushnumber(L, dim.w);
-    lua_setfield(L, 2, "w");
+    lua_setfield(L, 1, "w");
     lua_pushnumber(L, dim.h);
-    lua_setfield(L, 2, "h");
+    lua_setfield(L, 1, "h");
 
-    lua_newtable(L);                                // text | dim | abs
+    lua_newtable(L);                        // dim | text | abs
     lua_pushnumber(L, abs.w);
     lua_setfield(L, -2, "w");
     lua_pushnumber(L, abs.h);
-    lua_setfield(L, -2, "h");                       // text | dim | *abs*
+    lua_setfield(L, -2, "h");               // dim | text | *abs*
     return 1;
 }
 

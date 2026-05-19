@@ -574,27 +574,27 @@ Pico_Mouse pico_get_mouse (const char* layer, Pico_Rel_Pos* pos);
 Uint32 pico_get_now (void);
 
 /// @brief Gets the dimensions of the given text (shared caching).
-/// @param text text to measure
 /// @param dim dim with h for font size (mode '!' or '%'),
 ///            w filled in
+/// @param text text to measure
 /// @return absolute dimensions
 /// @sa pico_get_text_mode
-Pico_Abs_Dim pico_get_text (const char* text, Pico_Rel_Dim* dim);
+Pico_Abs_Dim pico_get_text (Pico_Rel_Dim* dim, const char* text);
 
 /// @brief Gets text dimensions with explicit realm mode and
 ///        layer key.
 /// @param mode realm mode ('!' exclusive, '=' shared,
 ///             '~' replace)
 /// @param key layer key
-/// @param text text to measure
 /// @param dim dim with h for font size (mode '!' or '%'),
 ///            w filled in
+/// @param text text to measure
 /// @return absolute dimensions
 /// @sa pico_get_text
 Pico_Abs_Dim pico_get_text_mode (
     int mode,
-    const char* key, const char* text,
-    Pico_Rel_Dim* dim
+    const char* key, Pico_Rel_Dim* dim,
+    const char* text
 );
 
 /// @brief Gets the entire scene state of the current layer.
