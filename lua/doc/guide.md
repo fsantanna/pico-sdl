@@ -1140,48 +1140,34 @@ returns the appropriate `'walk-XX'` layer.
 
 ## 9. Auxiliary Functions
 
-`pico-lua` provides utility functions for coordinate conversion and collision
-detection.
-
 ### 9.1. Coordinate Conversions
 
-The `pico.cv` functions convert relative coordinates to absolute:
+The set of `pico.cv.*` functions converts coordinates between modes and between
+layers:
 
 ```lua
-> pos = pico.cv.pos { '%', x=0.5, y=0.5 }
+> pos = pico.cv.pos('!', {'%', x=0.5, y=0.5})
 > print(pos.x, pos.y)
 50   50
 ```
 
-```lua
-> rect = pico.cv.rect { '%', x=0.5, y=0.5, w=0.3, h=0.3, anchor='C' }
-> print(rect.x, rect.y, rect.w, rect.h)
-35   35   30   30
-```
+In the example, we convert a percentage into raw coordinates, assuming the
+default `100x100` world layer.
 
-An optional `base` rectangle can serve as the reference frame:
+Optional layer arguments can project across frames:
 
 ```lua
-> base = { '!', x=0, y=0, w=50, h=50 }
-> pos = pico.cv.pos({'%', x=0.5, y=0.5}, base)
-> print(pos.x, pos.y)
-25   25
+TODO
 ```
 
 ### 9.2. Collision Detection
 
-The `pico.vs` functions test for collisions:
+`pico.vs.*` tests overlaps between points and rectangles:
 
 ```lua
-> r = { '!', x=50, y=50, w=20, h=20 }
-> p = { '!', x=55, y=55 }
-> print(pico.vs.pos_rect(p, r))
+> r = {'!', x=50, y=50, w=20, h=20}
+> print(pico.vs.pos.rect({'!', x=55, y=55}, r))
 true
-```
-
-```lua
-> r1 = { '!', x=50, y=50, w=20, h=20 }
-> r2 = { '!', x=60, y=60, w=20, h=20 }
-> print(pico.vs.rect_rect(r1, r2))
+> print(pico.vs.rect.rect(r, {'!', x=60, y=60, w=20, h=20}))
 true
 ```
