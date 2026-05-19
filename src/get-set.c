@@ -38,7 +38,7 @@ int pico_get_expert (int* fps) {
     return G.expert.on;
 }
 
-Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* rel) {
+Pico_Abs_Dim pico_get_image (Pico_Rel_Dim* rel, const char* path) {
     _pico_guard();
     if (rel == NULL) {
         Pico_Layer* layer = _pico_layer_image('=', NULL, path);

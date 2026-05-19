@@ -272,7 +272,7 @@ static void L_image_get_dim (lua_State* L, int i, const char* path) {
     luaL_checktype(L, i, LUA_TTABLE);               // rel
 
     Pico_Rel_Dim dim = C_rel_dim(L, i);
-    Pico_Abs_Dim abs = pico_get_image(path, &dim);
+    Pico_Abs_Dim abs = pico_get_image(&dim, path);
 
     lua_pushnumber(L, dim.w);
     lua_setfield(L, i, "w");

@@ -9,22 +9,22 @@ int main (void) {
     // pico_get_image
     {
         {
-            Pico_Abs_Dim dim = pico_get_image("../res/open.png", NULL);
+            Pico_Abs_Dim dim = pico_get_image(NULL, "../res/open.png");
             assert(dim.w==48 && dim.h==48);
         }
         {
             Pico_Rel_Dim d = { '!', {0, 24} };
-            Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
+            Pico_Abs_Dim r = pico_get_image(&d, "../res/open.png");
             assert(r.w==24 && r.h==24);
         }
         {
             Pico_Rel_Dim d = { '!', {48, 0} };
-            Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
+            Pico_Abs_Dim r = pico_get_image(&d, "../res/open.png");
             assert(r.w==48 && r.h==48);
         }
         {
             Pico_Rel_Dim d = { '!', {0, 0} };
-            Pico_Abs_Dim r = pico_get_image("../res/open.png", &d);
+            Pico_Abs_Dim r = pico_get_image(&d, "../res/open.png");
             assert(r.w==48 && r.h==48);
         }
     }

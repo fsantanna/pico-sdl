@@ -420,10 +420,10 @@ PICO_STYLE  pico_get_pencil_style (void);
 int pico_get_expert (int* fps);
 
 /// @brief Gets the dimensions of the given image.
-/// @param path image filepath
 /// @param dim optional dim with w/h to complete (NULL returns raw dimensions)
+/// @param path image filepath
 /// @return absolute dimensions (missing w or h filled based on aspect ratio)
-Pico_Abs_Dim pico_get_image (const char* path, Pico_Rel_Dim* dim);
+Pico_Abs_Dim pico_get_image (Pico_Rel_Dim* dim, const char* path);
 
 /// @brief Gets current layer key.
 /// @return layer key
