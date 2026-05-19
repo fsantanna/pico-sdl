@@ -1165,6 +1165,15 @@ Optional layer arguments can project across frames:
 Here we project a `100x100` rectangle centered in the `500x500` window,
 obtaining a centered-`20%` world rectangle.
 
+`pico.cv.dim` projects dimensions the same way, without a position
+component:
+
+```lua
+> d = pico.cv.dim('world', '!', 'window', {'!', w=100, h=100})
+> print(d.w, d.h)
+20   20
+```
+
 ### 9.2. Collision Detection
 
 The set of `pico.vs.*` functions tests overlaps between points and rectangles:
@@ -1190,3 +1199,6 @@ true
 
 In the example, we compare the whole world with a centered `50%` region of
 the window, which must overlap since the world is inside the window by default.
+
+For the sake of completion, `pico-lua` also provides `pico.vs.pos.pos` and
+`pico.vs.rect.pos`.
