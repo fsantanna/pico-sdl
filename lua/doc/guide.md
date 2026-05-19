@@ -682,8 +682,10 @@ Finally, close the window (e.g., `ALT+F4`) to escape from the loop.
 Layers are independent views, in which you can draw shapes separately, and
 then compose them to form complex scenes.
 
-The main logical world is itself a layer, as well as images, texts, buffers,
+The main logical world is itself a layer, as well as images, texts, pixmaps,
 and videos.
+Calls like `pico.output.draw.image(path,rect)` internally create a layer and
+cache it by its identifier, so repeated calls reuse it.
 Therefore, all discussed [#view properties](#5-advanced-views) also apply to
 layers.
 
