@@ -9,8 +9,8 @@ do
 
     local pct = {'%', w=nil, h=0.1}
     local dim = pico.get.text(pct, "ABC")
+    assert(dim == pct)
     assert(pct.w*100//1==17 and pct.h*100//1==10)
-    assert(dim.w==17 and dim.h==10)
 
     local pct = {'%', h=0.2}
     pico.get.text(pct, "ABC")

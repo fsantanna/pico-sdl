@@ -839,18 +839,14 @@ static int l_get_text (lua_State* L) {      // dim | text
     const char* text = luaL_checkstring(L, 2);
 
     Pico_Rel_Dim dim = C_rel_dim(L, 1);
-    Pico_Abs_Dim abs = pico_get_text(&dim, text);
+    pico_get_text(&dim, text);
 
     lua_pushnumber(L, dim.w);
     lua_setfield(L, 1, "w");
     lua_pushnumber(L, dim.h);
     lua_setfield(L, 1, "h");
 
-    lua_newtable(L);                        // dim | text | abs
-    lua_pushnumber(L, abs.w);
-    lua_setfield(L, -2, "w");
-    lua_pushnumber(L, abs.h);
-    lua_setfield(L, -2, "h");               // dim | text | *abs*
+    lua_settop(L, 1);                       // *dim*
     return 1;
 }
 

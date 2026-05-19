@@ -122,7 +122,9 @@ In alphabetical order:
         - `dim` is **required** and must be a table: `h` is the
           input font size (in `dim.mode`'s realm).
         - `w` is filled in by the call (when initially `0`).
-        - Returns a fresh absolute `{w, h}` table (pixels).
+        - Returns the rel `Dim` (the same table passed in,
+          mutated). To get pixels, use `'!'` mode or multiply
+          by the scene dim.
         - No string-mode shorthand: `h` cannot be conveyed.
     - **pico.get.video**: Gets video information.
         - `pico.get.video (path: string [, rect: Rect]) -> Video`
