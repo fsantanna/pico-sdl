@@ -22,7 +22,7 @@ int main (void) {
         pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
         pico_set_layer(old);
         pico_output_clear();
-        pico_output_present();
+        pico_output_present(1);
         _pico_check("layer-clip-01");
     }
 
@@ -32,7 +32,7 @@ int main (void) {
         pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 2.0, 2.0}, PICO_ANCHOR_C});
         pico_set_layer(old);
         pico_output_clear();
-        pico_output_present();
+        pico_output_present(1);
         _pico_check("layer-clip-02");
     }
 
@@ -46,7 +46,7 @@ int main (void) {
             &(Pico_Rel_Rect){'%', {0, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
         pico_output_draw_layer("img",
             &(Pico_Rel_Rect){'%', {1.0, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
-        pico_output_present();
+        pico_output_present(1);
         _pico_check("layer-clip-03");
     }
 
@@ -57,7 +57,7 @@ int main (void) {
         pico_set_scene_src((Pico_Rel_Rect){'%', {0.5, 0.5, 2.0, 2.0}, PICO_ANCHOR_C});
         pico_set_layer(old);
         pico_output_clear();
-        pico_output_present();
+        pico_output_present(1);
         _pico_check("layer-clip-04");
     }
 
@@ -71,7 +71,7 @@ int main (void) {
             (Pico_Rel_Rect){'%', {0.5, 0.5, 0.25, 0.25}, PICO_ANCHOR_C});
         pico_set_scene_src(
             (Pico_Rel_Rect){'%', {0.5, 0.2, 1.0, 1.0}, PICO_ANCHOR_C});
-        pico_output_present();
+        pico_output_present(1);
         _pico_check("layer-clip-05");
     }
 
@@ -98,7 +98,7 @@ int main (void) {
         // reset world.scene.src so case 6 tests Phase A aux only
         pico_set_scene_src(
             (Pico_Rel_Rect){'%', {0.5, 0.5, 1.0, 1.0}, PICO_ANCHOR_C});
-        pico_output_present();
+        pico_output_present(1);
         _pico_check("layer-clip-06");
     }
 

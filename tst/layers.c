@@ -70,7 +70,7 @@ int main (void) {
 
     // present works on world
     puts("present works on world");
-    pico_output_present();
+    pico_output_present(1);
 
     // pico_layer_empty reuse (content preserved)
     puts("layer_empty reuse");

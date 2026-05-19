@@ -120,7 +120,7 @@ int main (void) {
             );
         }
 
-        pico_output_present();
+        pico_output_present(0);
 
         /* Events */
         Pico_Event evt;

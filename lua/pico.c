@@ -1612,7 +1612,8 @@ static int l_output_draw_video (lua_State* L) {
 }
 
 static int l_output_present (lua_State* L) {
-    pico_output_present();
+    int layers = lua_isnoneornil(L, 1) ? 1 : lua_toboolean(L, 1);
+    pico_output_present(layers);
     return 0;
 }
 

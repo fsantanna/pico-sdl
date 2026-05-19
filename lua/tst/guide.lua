@@ -328,10 +328,6 @@ pico.check("guide-02-01-01")
 
 -- §8.b: present flushes buffered draws
 pico.set.window { title="guide-08-00-02" }
-local old = pico.get.layer()
-pico.set.layer("window")
-pico.output.draw.layers()
-pico.set.layer(old)
 pico.output.present()
 pico.check("guide-08-00-02")
 

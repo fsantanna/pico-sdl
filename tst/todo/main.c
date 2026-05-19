@@ -102,7 +102,7 @@ int main (void) {
         pico_set_expert(1, 0);
         pico_set_cursor(up);
         pico_output_writeln("expert");
-        pico_output_present();
+        pico_output_present(0);
         pico_input_delay(2000);
         pico_set_expert(0, 0);
         pico_output_clear();
