@@ -22,7 +22,7 @@ In alphabetical order:
     - `{ tag='key.dn'|'key.up',
         key: string, ctrl: boolean, shift: boolean, alt: boolean }`
     - `{ tag='mouse.motion'|'mouse.button.dn'|'mouse.button.up',
-        '!', x: integer, y: integer,
+        '!', x: integer, y: integer, anchor: Anchor,
         left: boolean, right: boolean, middle: boolean }`
 - **Flip**: `'none'` | `'horizontal'` | `'vertical'` | `'both'`
 - **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, anchor: Anchor, left: boolean, right: boolean, middle: boolean }`
@@ -55,7 +55,7 @@ In alphabetical order:
         - **table**: filled in-place (mode/anchor read from input);
           returns the same table.
         - **mode string** (`'!'`, `'%'`, `'#'`): builds and returns
-          a fresh value; anchor defaults to `'NW'` (Pos/Rect only).
+          a fresh value; anchor defaults to `'C'` (center; Pos/Rect only).
     - Args are matched left-to-right against the 4-slot template
       `(L_to, to_or_mode, L_fr, fr)`. Both explicit `nil`s and
       trailing/leading omissions are accepted; a mismatched type
@@ -125,26 +125,37 @@ In alphabetical order:
     - **pico.input.loop**: Blocks on event loop until quit.
         - `pico.input.loop ()`
 - **pico.layer**
-    - All layer creators accept an optional mode prefix
-      (`'!'`|`'%'`|`'#'`|`'='`) as the first argument.
+    - All layer creators accept an optional **realm** mode prefix
+      (`'!'` exclusive, `'='` shared, `'~'` replace) as the first
+      argument. Note: realm modes are distinct from dim modes
+      (`'!'`/`'%'`/`'#'`) used inside `Rect`/`Pos`/`Dim` tables.
     - `up` is the parent layer name (string) or `nil` for the main layer.
     - All creators (except `images`) accept an **optional trailing
       `rect: Rect`** that sets `scene.target` of the new layer in one
-      call. For `image` and `video` it requires an explicit `key`.
+      call.
     - **pico.layer.empty**: Creates an empty layer.
         - `pico.layer.empty ([mode,] up: string?, key: string,
-          clear: boolean, dim: Dim [, tile: Tile])`
+          clear: boolean, dim: Dim)`
         - `pico.layer.empty ([mode,] up: string?, key: string,
-          clear: boolean, rect: Rect [, tile: Tile])`
+          clear: boolean, rect: Rect)`
+        - `pico.layer.empty ([mode,] up: string?, key: string,
+          clear: boolean, dim: Dim, tile: Tile)`
+        - `pico.layer.empty ([mode,] up: string?, key: string,
+          clear: boolean, dim: Dim, tile: Tile, rect: Rect)`
         - `clear`: sets `scene.clear` (true = auto-clear each frame).
-        - When the 4th arg is a `Rect` (has `x` field): its
-          `mode/w/h` are used as the layer `Dim`, and the full
+        - When the 4th arg is a `Rect` (has `x` field, no `tile`):
+          its `mode/w/h` are used as the layer `Dim`, and the full
           `Rect` is set as `scene.target` (one-call create+place).
+        - When `tile` is supplied, that conflation does not apply:
+          slot 4 is read as `Dim` only (any `x`/`y` on it are
+          ignored), and the optional trailing `rect` (slot 6) sets
+          `scene.target`.
     - **pico.layer.image**: Creates a layer from an image file.
         - `pico.layer.image ([mode,] up: string?, key: string?, path: string
           [, rect: Rect])`
-        - If `key` is omitted, uses `path` itself as the layer name
-          (and `rect` is not allowed in that form).
+        - If `key` is omitted, uses `path` itself as the layer name.
+        - Default realm: `'!'` (exclusive) when `key` is given;
+          `'='` (shared/cached) when `key` is omitted.
     - **pico.layer.images**: Creates sub-layer images from a reference
         "sprite sheet" image.
         - `pico.layer.images ([mode,] up: string?, key: string, path: string, t: table) -> {string}`
@@ -162,18 +173,19 @@ In alphabetical order:
     - **pico.layer.pixmap**: Creates a layer from a pixmap.
         - `pico.layer.pixmap ([mode,] up: string?, key: string,
           pixmap: {{Color}} [, rect: Rect])`
+    - **pico.layer.sub**: Creates a sub-layer from a source layer.
+        - `pico.layer.sub ([mode,] up: string?, key: string,
+          src: string, crop: Rect [, rect: Rect])`
+        - Source must exist and cannot be a sub-layer itself.
     - **pico.layer.text**: Creates a layer from text.
         - `pico.layer.text ([mode,] up: string?, key: string,
           height: integer, text: string [, rect: Rect])`
     - **pico.layer.video**: Creates a layer from a video file.
         - `pico.layer.video ([mode,] up: string?, key: string?, path: string
           [, rect: Rect])`
-        - If `key` is omitted, uses `path` itself as the layer name
-          (and `rect` is not allowed in that form).
-    - **pico.layer.sub**: Creates a sub-layer from a source layer.
-        - `pico.layer.sub ([mode,] up: string?, key: string,
-          src: string, crop: Rect [, rect: Rect])`
-        - Source must exist and cannot be a sub-layer itself.
+        - If `key` is omitted, uses `path` itself as the layer name.
+        - Default realm: `'!'` (exclusive) when `key` is given;
+          `'='` (shared/cached) when `key` is omitted.
 - **pico.output**
     - **pico.output.clear**: Clears screen.
         - `pico.output.clear ()`
@@ -247,8 +259,11 @@ In alphabetical order:
           possible, `N>0` = fixed FPS. Explicit `nil` errors.
         - Returns frame period in ms: `-1` = block forever, `0` = immediate, `N>0` = frame period
     - **pico.set.layer**: Switches the target layer.
-        - `pico.set.layer (name: string) -> string`
+        - `pico.set.layer (name: string) -> string?`
         - Returns the previous layer name (useful for save/restore).
+        - Returns `nil` only on the very first call before any
+          layer has been set (otherwise returns the previous
+          layer name).
         - `name` must be a string; `nil` errors. The two predefined
           layers are `"world"` (default) and `"window"` (expert mode).
     - **pico.set.mouse**: Sets mouse cursor position. `pos` is
