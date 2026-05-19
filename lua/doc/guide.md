@@ -8,6 +8,7 @@
 6.  [Events](#6-events)
 7.  [Layers](#7-layers)
 8.  [Expert Mode](#8-expert-mode)
+9.  [Auxiliary Functions](#9-auxiliary-functions)
 
 ## 1. Introduction
 
@@ -682,8 +683,10 @@ Finally, close the window (e.g., `ALT+F4`) to escape from the loop.
 Layers are independent views, in which you can draw shapes separately, and
 then compose them to form complex scenes.
 
-The main logical world is itself a layer, as well as images, texts, buffers,
+The main logical world is itself a layer, as well as images, texts, pixmaps,
 and videos.
+Calls like `pico.output.draw.image(path,rect)` internally create a layer and
+cache it by its identifier, so repeated calls reuse it.
 Therefore, all discussed [#view properties](#5-advanced-views) also apply to
 layers.
 
@@ -1134,3 +1137,68 @@ walk down (`01-04`), up (`05-08`), right (`09-12`), left (`13-16`).
 
 Then, at each loop step, the call to `walk` decodes the current state and
 returns the appropriate `'walk-XX'` layer.
+
+## 9. Auxiliary Functions
+
+### 9.1. Coordinate Conversions
+
+The set of `pico.cv.*` functions converts coordinates between modes and between
+layers:
+
+```lua
+> pos = pico.cv.pos('!', {'%', x=0.5, y=0.5})
+> print(pos.x, pos.y)
+50   50
+```
+
+In the example, we convert a percentage into raw coordinates, assuming the
+default `100x100` world layer.
+
+Optional layer arguments can project across frames:
+
+```lua
+> r = pico.cv.rect('world', '%', 'window', {'!', x=250, y=250, w=100, h=100})
+> print(r.x, r.y, r.w, r.h)
+0.5   0.5   0.2   0.2
+```
+
+Here we project a `100x100` rectangle centered in the `500x500` window,
+obtaining a centered-`20%` world rectangle.
+
+`pico.cv.dim` projects dimensions the same way, without a position
+component:
+
+```lua
+> d = pico.cv.dim('world', '!', 'window', {'!', w=100, h=100})
+> print(d.w, d.h)
+20   20
+```
+
+### 9.2. Collision Detection
+
+The set of `pico.vs.*` functions tests overlaps between points and rectangles:
+
+```lua
+> pico.vs.pos.rect (
+    {'%', x=0.55, y=0.75},
+    {'!', x=50, y=50, w=20, h=20}
+  )
+false
+```
+
+In the example, the point at `(55, 75)` of the world falls outside the
+rectangle, which spans `(40, 40)` to `(60, 60)`.
+
+Optional layer arguments can test across frames.
+When a rect side is omitted, it defaults to that layer's bounds:
+
+```lua
+> pico.vs.rect.rect("world", "window", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+true
+```
+
+In the example, we compare the whole world with a centered `50%` region of
+the window, which must overlap since the world is inside the window by default.
+
+For the sake of completion, `pico-lua` also provides `pico.vs.pos.pos` and
+`pico.vs.rect.pos`.
