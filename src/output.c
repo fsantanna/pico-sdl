@@ -21,7 +21,7 @@ void pico_output_clear (void) {
     );
     Pico_Abs_Rect r = _pico_abs_rect(G.layer->scene.clip, NULL, NULL);
     SDL_RenderFillRect(G.window.ren, &r);
-    _pico_output_present(0, 1);
+    _pico_output_present(0);
 }
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect rect) {
@@ -54,7 +54,7 @@ void pico_output_draw_line (Pico_Rel_Pos p1, Pico_Rel_Pos p2) {
     Pico_Abs_Pos i1 = _pico_abs_pos(p1, NULL);
     Pico_Abs_Pos i2 = _pico_abs_pos(p2, NULL);
     SDL_RenderDrawLine(G.window.ren, i1.x,i1.y, i2.x,i2.y);
-    _pico_output_present(0, 1);
+    _pico_output_present(0);
 }
 
 void pico_output_draw_oval (Pico_Rel_Rect rect) {
@@ -77,7 +77,7 @@ void pico_output_draw_oval (Pico_Rel_Rect rect) {
             );
             break;
     }
-    _pico_output_present(0, 1);
+    _pico_output_present(0);
 }
 
 void pico_output_draw_pixel (Pico_Rel_Pos pos) {
@@ -88,7 +88,7 @@ void pico_output_draw_pixel (Pico_Rel_Pos pos) {
     Pico_Abs_Pos i = _pico_abs_pos(pos, NULL);
     SDL_RenderDrawPoint(G.window.ren, i.x, i.y);
         // TODO: could use PointF, but 4.5->4 (not 5 desired)
-    _pico_output_present(0, 1);
+    _pico_output_present(0);
 }
 
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
@@ -101,7 +101,7 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
     );
     SDL_RenderDrawPoints(G.window.ren, vs, n);
-    _pico_output_present(0, 1);
+    _pico_output_present(0);
 }
 
 void pico_output_draw_pixmap (
@@ -141,7 +141,7 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
             );
             break;
     }
-    _pico_output_present(0, 1);
+    _pico_output_present(0);
 }
 
 void pico_output_draw_rect (Pico_Rel_Rect rect) {
@@ -159,7 +159,7 @@ void pico_output_draw_rect (Pico_Rel_Rect rect) {
             SDL_RenderDrawRect(G.window.ren, &i);
             break;
     }
-    _pico_output_present(0, 1);
+    _pico_output_present(0);
 }
 
 void pico_output_draw_text (const char* text, Pico_Rel_Rect rect) {
@@ -218,10 +218,10 @@ void pico_output_draw_tri (
             );
             break;
     }
-    _pico_output_present(0, 1);
+    _pico_output_present(0);
 }
 
-void _pico_output_present (int force, int layers) {
+void _pico_output_present (int force) {
     _pico_guard();
     if (G.window.ing.out) {
         return;
@@ -235,7 +235,7 @@ void _pico_output_present (int force, int layers) {
 
     G.window.ing.out = 1;
 
-    if (layers) {
+    if (!G.expert.on) {
         SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
         Pico_Color c = G.window.layer.effect.color;
         SDL_SetRenderDrawColor(G.window.ren, c.r, c.g, c.b, c.a);
@@ -258,8 +258,14 @@ void _pico_output_present (int force, int layers) {
 
 void pico_output_present (int layers) {
     _pico_guard();
-    assert(G.expert.on || layers);
-    _pico_output_present(1, layers);
+    if (G.expert.on) {
+        if (layers) {
+            pico_output_draw_layers();
+        }
+    } else {
+        assert(layers);
+    }
+    _pico_output_present(1);
 }
 
 void pico_output_draw_layers (void) {
