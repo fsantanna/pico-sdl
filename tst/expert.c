@@ -17,7 +17,7 @@ int main (void) {
     pico_output_draw_layers();
     pico_set_layer(prev);
 
-    pico_output_present();
+    pico_output_present(0);
     _pico_check("expert-03");
 
     // test: delay returns dt

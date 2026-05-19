@@ -96,6 +96,30 @@ int main (void) {
         _pico_check("image_raw-08");
     }
 
+    // OFF-SCREEN: draws beyond bounds by more than the image width
+    // must not crash -- clipping math goes negative when offset >> width
+    {
+        puts("show off-screen right");
+        pico_output_clear();
+        Pico_Rel_Rect r = { '!', {150, 50, 15, 15}, PICO_ANCHOR_NW };
+        pico_output_draw_image("../res/open.png", r);
+        _pico_check("image_raw-09");
+    }
+    {
+        puts("show off-screen left");
+        pico_output_clear();
+        Pico_Rel_Rect r = { '!', {-50, 50, 15, 15}, PICO_ANCHOR_NW };
+        pico_output_draw_image("../res/open.png", r);
+        _pico_check("image_raw-10");
+    }
+    {
+        puts("show off-screen below");
+        pico_output_clear();
+        Pico_Rel_Rect r = { '!', {50, 150, 15, 15}, PICO_ANCHOR_NW };
+        pico_output_draw_image("../res/open.png", r);
+        _pico_check("image_raw-11");
+    }
+
     pico_init(0);
     return 0;
 }

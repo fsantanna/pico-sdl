@@ -59,7 +59,7 @@ int main (void) {
         );
 
         pico_output_draw_layers();   // expert: compose world onto window.tex
-        pico_output_present();       // expert: manual present before screenshot
+        pico_output_present(0);      // expert: manual present before screenshot
         _pico_check("window-01");
         pico_set_layer("world");
     }

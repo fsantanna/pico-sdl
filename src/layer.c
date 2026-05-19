@@ -292,6 +292,15 @@ void _pico_layer_output (
         }
         int max_w, max_h;
         SDL_QueryTexture(SDL_GetRenderTarget(G.window.ren), NULL, NULL, &max_w, &max_h);
+
+        // fully off-screen: nothing to do
+        if (
+            dst.x+dst.w <= 0 || dst.y+dst.h <= 0 ||
+            dst.x >= max_w || dst.y >= max_h
+        ) {
+            return;
+        }
+
         //if (dst.x<0 || dst.y<0 || dst.x+dst.w>max_w || dst.y+dst.h>max_h)
         {
             aux(&dst, &src, max_w, max_h);
@@ -315,7 +324,7 @@ void _pico_layer_output (
         }
     }
 
-    _pico_output_present(0);
+    _pico_output_present(0, 1);
 }
 ///////////////////////////////////////////////////////////////////////////////
 // LAYER

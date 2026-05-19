@@ -368,8 +368,11 @@ void pico_output_draw_text_mode (
 
 /// @brief Shows what has been drawn onto the screen.
 /// Only does anything on expert mode.
+/// @param layers If non-zero, composites the layer hierarchy onto
+/// window.tex before mirroring to the framebuffer. In non-expert
+/// mode `layers` must be 1 (asserted).
 /// @sa pico_set_expert
-void pico_output_present (void);
+void pico_output_present (int layers);
 
 /// @brief Composites the layer hierarchy (window's children, including
 /// world) onto window.tex. Called automatically by pico_output_present

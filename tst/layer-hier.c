@@ -26,7 +26,7 @@ int main (void) {
     );
 
     pico_set_layer(old);
-    pico_output_present();
+    pico_output_present(1);
     _pico_check("layer-hier-01");
 
     pico_layer_image("world", "img", "../res/open.png");
@@ -34,7 +34,7 @@ int main (void) {
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.7, 0.7, 0.4, 0.4}, PICO_ANCHOR_C});
 
     pico_set_layer(old);
-    pico_output_present();
+    pico_output_present(1);
     _pico_check("layer-hier-02");
 
     static Pico_Color buf[4] = {
@@ -46,7 +46,7 @@ int main (void) {
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.7, 0.3, 0.4, 0.4}, PICO_ANCHOR_C});
 
     pico_set_layer(old);
-    pico_output_present();
+    pico_output_present(1);
     _pico_check("layer-hier-03");
 
     pico_set_pencil_color(PICO_COLOR_GREEN);
@@ -55,7 +55,7 @@ int main (void) {
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.3, 0.7, 0.4, 0.4}, PICO_ANCHOR_C});
 
     pico_set_layer(old);
-    pico_output_present();
+    pico_output_present(1);
     _pico_check("layer-hier-04");
 
     ///////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ int main (void) {
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C});
     pico_set_effect_alpha(0x80);
     pico_set_layer(old);
-    pico_output_present();
+    pico_output_present(1);
     _pico_check("layer-hier-05");
 
     // sub-layers: crop blue and green from "buf", parented under "over"
@@ -83,7 +83,7 @@ int main (void) {
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.40, 0.9, 0.10, 0.10}, PICO_ANCHOR_C});
 
     pico_set_layer(old);
-    pico_output_present();
+    pico_output_present(1);
     _pico_check("layer-hier-06");
 
     pico_init(0);

@@ -37,13 +37,13 @@ int main (void) {
 
     // composite frame 1: both red
     pico_set_layer(old);
-    pico_output_present();
+    pico_output_present(1);
     _pico_check("keep-01");
 
     // frame 2: do NOT draw on layers, just composite again
     // left (keep=0) should be cleared after frame 1 composite
     // right (keep=1) should retain red rect
-    pico_output_present();
+    pico_output_present(1);
     _pico_check("keep-02");
 
     pico_init(0);
