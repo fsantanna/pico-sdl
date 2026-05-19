@@ -1157,17 +1157,36 @@ default `100x100` world layer.
 Optional layer arguments can project across frames:
 
 ```lua
-TODO
+> r = pico.cv.rect('world', '%', 'window', {'!', x=250, y=250, w=100, h=100})
+> print(r.x, r.y, r.w, r.h)
+0.5   0.5   0.2   0.2
 ```
+
+Here we project a `100x100` rectangle centered in the `500x500` window,
+obtaining a centered-`20%` world rectangle.
 
 ### 9.2. Collision Detection
 
-`pico.vs.*` tests overlaps between points and rectangles:
+The set of `pico.vs.*` functions tests overlaps between points and rectangles:
 
 ```lua
-> r = {'!', x=50, y=50, w=20, h=20}
-> print(pico.vs.pos.rect({'!', x=55, y=55}, r))
-true
-> print(pico.vs.rect.rect(r, {'!', x=60, y=60, w=20, h=20}))
+> pico.vs.pos.rect (
+    {'%', x=0.55, y=0.75},
+    {'!', x=50, y=50, w=20, h=20}
+  )
+false
+```
+
+In the example, the point at `(55, 75)` of the world falls outside the
+rectangle, which spans `(40, 40)` to `(60, 60)`.
+
+Optional layer arguments can test across frames.
+When a rect side is omitted, it defaults to that layer's bounds:
+
+```lua
+> pico.vs.rect.rect("world", "window", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 true
 ```
+
+In the example, we compare the whole world with a centered `50%` region of
+the window, which must overlap since the world is inside the window by default.
