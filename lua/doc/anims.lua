@@ -37,12 +37,14 @@ local paths = {
 -- independently from position advancement.
 
 local steps = 40
-local function walk (side, step, fstep)
+local function walk (side, t, ft)
+    local step  = t  // 50                  -- 20 FPS -> 50 ms/frame
+    local fstep = ft // 50
     local path = paths[side]
     local leg = path[(step // steps) % #path + 1]
-    local t = (step % steps) / steps
-    local x = leg.x + (leg.tx - leg.x) * t
-    local y = leg.y + (leg.ty - leg.y) * t
+    local r = (step % steps) / steps
+    local x = leg.x + (leg.tx - leg.x) * r
+    local y = leg.y + (leg.ty - leg.y) * r
     local f = dirs[leg.dir]
     return frames[f[(fstep // 4) % 4 + 1]], x, y
 end
@@ -54,7 +56,7 @@ end
 local f1, x1, y1 = walk('clock',   0, 0)
 local f2, x2, y2 = walk('counter', 0, 0)
 
-local step = 0
+local t = 0
 
 while true do
     pico.output.draw.rect { '%', x=0.3, y=0.3, w=0.4, h=0.4 }
@@ -63,14 +65,14 @@ while true do
     pico.output.draw.layer(f2, {'%', x=x2, y=y2, w=0.15})
     pico.output.present()
 
-    local e = pico.input.event('quit')
+    local e, dt = pico.input.event('quit')
     if e then
         break
     end
 
-    step = step + 1
-    f1, x1, y1 = walk('clock',   step*2, step)
-    f2, x2, y2 = walk('counter', step,   step)
+    t = t + dt
+    f1, x1, y1 = walk('clock',   t*2, t)
+    f2, x2, y2 = walk('counter', t,   t)
 end
 
 pico.init(false)

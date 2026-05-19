@@ -1073,7 +1073,7 @@ pico.set.expert(true, 20)
 local f1, x1, y1 = walk('clock',   0, 0)    -- clockwise (faster)
 local f2, x2, y2 = walk('counter', 0, 0)    -- counter clockwise
 
-local step = 0
+local t = 0
 
 while true do                               -- main loop
     -- redraw the scene
@@ -1092,21 +1092,21 @@ while true do                               -- main loop
     pico.output.present()
 
     -- handle events
-    local e = pico.input.event('quit')
+    local e, dt = pico.input.event('quit')
     if e then
         break
     end
 
-    step = step + 1                         -- handle animations
-    f1, x1, y1 = walk('clock',   step*2, step)
-    f2, x2, y2 = walk('counter', step,   step)
+    t = t + dt                              -- handle animations
+    f1, x1, y1 = walk('clock',   t*2, t)
+    f2, x2, y2 = walk('counter', t,   t)
 end
 ```
 
 Now, we set FPS to `20` to animate the sprites every `50ms`.
 
 The function `walk` (see the full source) receives a clock direction and the
-current step, returning the sprite and positions to apply.
+elapsed time, returning the sprite and positions to apply.
 
 The main loop redraws the whole scene (rectangle paths and sprites) and awaits
 the next clock tick.
