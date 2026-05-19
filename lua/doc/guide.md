@@ -906,7 +906,6 @@ appears on the screen yet, since we have not called `pico.output.present`:
 
 <table>
 <tr><td><pre>
-> pico.output.draw.layers()
 > pico.output.present()
 </pre>
 </td><td>
