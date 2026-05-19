@@ -2,73 +2,49 @@ v0.5 (may/26)
 -------------
 
 Additions:
-    - layers as a hierarchy:
-        - window is now a layer ("window"); world its child ("world")
-        - `up` (parent) parameter on all layer creators
-        - `pico_output_draw_layer`: draw any layer onto current
-        - `pico_output_draw_layers`: composite the full hier
-            - auto-called by `pico_output_present` in non-expert mode
-        - per-layer screenshot
-    - `pico.layer.pixmap`: layer from RGBA pixel data
-    - `pico.layer.empty`: tile cols x rows + tile size at creation
-    - layer creators: optional trailing `rect` sets scene.dst
-    - layer realm modes (`!` excl, `=` shared, `~` replace):
-        - `pico_layer_*_mode` variants
-    - bulk getters/setters via structs:
-        - `Pico_Layer_Pencil`, `Pico_Layer_Effect`,
-          `Pico_Layer_Scene`, `Pico_Window`
-    - `pico.in.*` (rect, pos, dim): compose child onto parent rect
-    - `pico.vs.*`: collision with layer args, flexible parsing,
-      added `rect_pos`, layer bounds as default rect
-    - `pico.cv.*` redesigned: `(L_to, to, L_fr, fr)` with
-      ancestor/descendant projection
-    - `pico_set_mouse`: warp cursor (round-trips with get)
-    - mouse get/set: optional layer arg, full anchor support
-    - `pico_color_hex`: `0xRRGGBB` / `0xRRGGBBAA` -> color
-    - embedded DejaVu Sans font (no external file required)
-    - tile grid overlay (per-layer)
+    - layers as a tree hierarchy:
+        - window <- world <- custom layers
+        - `up` parameter on layer constructors
+        - composite hierarchy:
+            - explicit: `pico.output.draw.layers`
+            - implicit: `pico.output.present` (non expert or explicit argument)
+    - `pico.xin.*`: nest child onto parent `Rect`
+    - `pico.set.mouse`: warp cursor
+    - `pico.color.hex`: `0xRRGGBBAA` format
     - CLI: `--version`, `--help` for `pico-sdl` and `pico-lua`
 
 Modifications:
-    - renames (breaking):
-        - `view`   -> `scene`   (clip, dim, dst, src, tile, clear)
-        - `show`   -> `effect`  (alpha, color, flip, grid, rotate)
-        - `draw`   -> `pencil`  (color, font, style)
-        - `target` -> `dst`     (C only; Lua keeps `target`)
-        - `source` -> `src`     (C only; Lua keeps `source`)
-        - `keep`   -> `clear`   (inverted semantics)
-        - `root`   -> `world`   (predefined layer name)
-        - `parent` -> `up`      (layer creation)
+    - `{Rect,Dim,Pos}`: flattened, `up` chain removed
+    - Views split in three APIs:
+        - `scene` (clip, dim, dst, src, tile, clear)
+        - `effect` (alpha, color, flip, grid, rotate)
+        - `pencil` (color, font, style)
+    - Layers
+        - constructors: optional trailing `Rect` as scene target
         - `pico.layer.buffer` -> `pico.layer.pixmap`
-    - public C API: pointer args/out-params -> plain values
-    - `Pico_Rel_{Rect,Dim,Pos}`: flattened, `up` chain removed
-    - state get/set: no more optional `layer` arg
-      (use `pico_set_layer` to switch)
-    - `pico_set_layer`: returns previous layer name
-    - `pico_set_expert(on, fps) -> ms`: cleaner three-mode return
-      (-1 block, 0 immediate, N>0 frame period)
-    - `pico_get_mouse`: takes `Pico_Rel_Pos*` (mode + anchor)
-    - `Pico_Window` slimmed to `{fs, show, title}`;
-      color/dim moved to its scene
-    - colors: unified always-RGBA (`Pico_Color_A` removed)
-    - `pico_get_image` / `pico_get_video`: `dim`/`rect` template
-      completes missing `w` or `h` from aspect ratio
+        - `pico.set.layer`: returns previous layer name
+        - tile grid overlay
+    - Getters/Setters:
+        - `pico.set.expert(on, fps) -> ms`:
+            - `ms`: -1 block, 0 immediate, N>0 frame period
+        - `pico.get.mouse`: accepts mode or `Pos` template, and layer
+        - `pico.get/set.window` (fs, show, title)
+        - `pico.get.{image,video,text}`: refactor parameters and return
+    - `pico.output.screenshot`: accepts layer parameter
+    - `pico.{cv,vs}.*`: extended to handle layers
 
 Removals:
-    - `pico.push` / `pico.pop` (state stack)
-    - `pico.set { ... }` all-at-once setter
-    - `Pico_Color_A` type
-    - `_color_clear` / `_color_clear_alpha` (replaced by `scene.clear`)
-    - `'w'` window-pixel mode (window is now a regular layer)
-    - `PICO_LAYER_WINDOW` / `PICO_LAYER_WORLD` enums (use strings)
-    - `Pico_Layer.parent` (not needed at runtime)
+    - `'w'` window mode (now a regular layer)
+    - C:
+        - type `Pico_Color_A`
+    - Lua:
+        - `pico.push` / `pico.pop` (retained by layers)
+        - `pico.set { ... }` (multiple pico.set.* APIs)
 
-Documentation:
-    - `lua/doc/api.md`: full API reference (types + operations)
-    - `lua/doc/guide.md`: expanded chapters
-      (events, layers, tiles, anchors, animations, hierarchy)
-    - `lua/doc/rects.lua`, `lua/doc/anims.lua`: runnable examples
-    - embedded result images (`res/`, `lua/doc/img/`)
+v0.4 (xxx/xx)
+-------------
+
+Skipped to use `v0.5` as a major update.
 
 v0.3 (mar/26)
 -------------

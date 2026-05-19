@@ -6,7 +6,7 @@ Releases `pico-sdl` and downstream consumers in one pass.
 
 | #  | project                          | rockspec name      | scheme         | from → to            | status      |
 |----|----------------------------------|--------------------|----------------|----------------------|-------------|
-| 1  | `pico-sdl`                       | `pico-sdl`         | repo + rockspec| v0.4-dev → **v0.5**  | rockspec done |
+| 1  | `pico-sdl`                       | `pico-sdl`         | repo + rockspec| v0.4-dev → **v0.5**  | rockspec + HISTORY done |
 | 2  | `lua-atmos/env-pico`             | `atmos-env-pico`   | rockspec       | 0.1-3 → **0.2-1**    | pending     |
 | 3  | `lua-atmos/pico-birds`           | —                  | git branch     | v0.4 → **v0.5**      | code done   |
 | 4  | `lua-atmos/pico-rocks`           | —                  | git branch     | v0.4 → **v0.5**      | code done   |
@@ -18,9 +18,14 @@ and pico-birds / pico-rocks READMEs reference env-pico version.
 
 ## Status (as of 2026-05-19)
 
+**Resume point:** §1.4 in progress — bump versions in `Makefile`, `README.md`,
+`lua/README.md`, `.claude/CLAUDE.md` (HISTORY.md ✓ done). Then §1.5–§1.8.
+
+Working dir for §1: `/x/pico-sdl/.work/2026-05-release` (worktree on `2026-05-release` branch).
+
 | § | done                          | pending                              |
 |---|-------------------------------|--------------------------------------|
-| 1 | C tests, Lua tests            | rockspec, version bumps, push, upload|
+| 1 | C+Lua tests, rockspec, HISTORY.md | Makefile + README + lua/README + CLAUDE.md bumps, push, upload |
 | 2 | —                             | all (waits on §1)                    |
 | 3 | get.image fix, smoke-test     | README, commit, branch               |
 | 4 | API migration, smoke-test     | README, commit, branch               |
@@ -60,7 +65,7 @@ cd lua && make tests
 | `Makefile`           | rockspec version → `0.5-1`     |
 | `README.md`          | bump version (3 places)        |
 | `lua/README.md`      | bump version (4 places)        |
-| `HISTORY.md`         | add `v0.5` section             |
+| `HISTORY.md`         | add `v0.5` section ✓           |
 | `.claude/CLAUDE.md`  | rockspec → `0.5-1`             |
 
 ### 1.5. Commit and push main
