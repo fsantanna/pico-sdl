@@ -9,6 +9,7 @@
 7.  [Layers](#7-layers)
 8.  [Expert Mode](#8-expert-mode)
 9.  [Auxiliary Functions](#9-auxiliary-functions)
+10. [Extras](#10-extras)
 
 ## 1. Introduction
 
@@ -1202,3 +1203,66 @@ the window, which must overlap since the world is inside the window by default.
 
 For the sake of completion, `pico-lua` also provides `pico.vs.pos.pos` and
 `pico.vs.rect.pos`.
+
+## 10. Extras
+
+### 10.1. Screenshots
+
+To save a screenshot of the current window, we call
+`pico.output.screenshot`:
+
+<table>
+<tr><td><pre>
+> pico.init(false) ; pico.init(true)
+> pico.set.color.draw 'red'
+> pico.output.draw.rect { '%', x=0.5, y=0.5, w=0.5, h=0.5 }
+> pico.output.screenshot('my-screenshot.png')
+</pre>
+</td><td>
+<img src="img/guide-11-01-01.png" width="200">
+</td></tr>
+</table>
+
+An optional rectangle crops the screenshot:
+
+<table>
+<tr><td><pre>
+> pico.output.screenshot (
+    'crop.png',
+    {'%', x=0.5, y=0.5, w=0.25, h=0.25},
+  )
+</pre>
+</td><td>
+<img src="img/guide-11-01-02.png" width="200">
+</td></tr>
+</table>
+
+### 10.2. Playing Sounds
+
+To play a sound file:
+
+```lua
+> pico.output.sound('path/to/sound.wav')
+```
+
+### 10.3. Fullscreen Mode
+
+To enter fullscreen mode:
+
+```lua
+> pico.set.window { fullscreen=true }
+```
+
+To leave fullscreen mode:
+
+```lua
+> pico.set.window { fullscreen=false }
+```
+
+The current fullscreen state can be queried with `pico.get.window()`:
+
+```lua
+> w = pico.get.window()
+> print(w.fullscreen)
+false
+```
