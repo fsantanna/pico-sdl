@@ -999,7 +999,9 @@ while true do                       -- main loop
     -- handle events
     local e = pico.input.event()
     assert(e, "no FPS set here")
-    if e.tag == 'mouse.motion' then
+    if e.tag == 'quit' then
+        break
+    elseif e.tag == 'mouse.motion' then
         m = pico.get.mouse '!'
     elseif e.tag == 'key.dn' then
         if     e.key == 'Up'    then k.y = k.y - 1
@@ -1020,8 +1022,9 @@ They use the raw mode `'!'` and start centered at `(4,4)` and `(5,5)`.
 
 The main loop first draws their initial positions and awaits
 `pico.input.event`.
-In this example, we only handle `mouse.motion` and `key.dn` events:
+In this example, we only handle `quit`, `mouse.motion` and `key.dn` events:
 
+- on a quit event, we escape the loop to terminate the application;
 - for the mouse, we update `m.x` and `m.y` based on the received event `e`;
 - for the keyboard, we update `k.x` or `k.y` depending on `e.key`.
 
