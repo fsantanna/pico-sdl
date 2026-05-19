@@ -875,35 +875,38 @@ update the screen all at once.
 
 ## 8. Expert Mode
 
-By default, each drawing operation in the root layer becomes immediately
-visible on the screen.
+By default, as seen in previous sections, each drawing operation becomes
+immediately visible on the screen.
 
 However, to keep visual objects in perfect sync, most games and non-trivial
 applications require to draw them simultaneously on every frame.
 
-With `pico.set.expert`, drawing operations are buffered until an explicit
-call to `pico.output.present`, which updates the screen with all objects at
-once:
+For this reason, `pico-lua` supports an expert mode that buffers drawing
+operations until an explicit call to `pico.output.present`, which updates the
+screen with all objects at once:
+
+To enable the expert mode, we call `pico.set.expert`:
 
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
 > pico.set.expert(true)
 > pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.4, h=0.4 }
-> pico.input.delay(1000) -- artificial delay
-> pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.4, h=0.4 }
-> pico.input.delay(1000) -- artificial delay
+  pico.input.delay(1000) -- artificial delay
+  pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.4, h=0.4 }
+  pico.input.delay(1000) -- artificial delay
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-02-01-01.png" width="200">
 </td></tr>
 </table>
 
-Although the code above takes at least `2s` to complete, nothing appears on
-the screen yet, since we have not called `pico.output.present`:
+Note that although the code above takes at least `2s` to complete, nothing
+appears on the screen yet, since we have not called `pico.output.present`:
 
 <table>
 <tr><td><pre>
+> pico.output.draw.layers()
 > pico.output.present()
 </pre>
 </td><td>
