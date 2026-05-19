@@ -11,18 +11,18 @@ pico.set.effect { color='white' }
 -- pico.get.image
 do
     local pct = {'%', h=0.24}
-    local abs = pico.get.image("../../res/open.png", pct)
-    assert(abs.w==24 and abs.h==24)
+    local dim = pico.get.image(pct, "../../res/open.png")
+    assert(dim == pct)
     assert(round(pct.w*100)==24 and round(pct.h*100)==24)
 
     local pct = {'%', w=0.48}
-    local abs = pico.get.image("../../res/open.png", pct)
-    assert(abs.w==48 and abs.h==48)
+    local dim = pico.get.image(pct, "../../res/open.png")
+    assert(dim == pct)
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 
     local pct = {'%'}
-    local abs = pico.get.image("../../res/open.png", pct)
-    assert(abs.w==48 and abs.h==48)
+    local dim = pico.get.image(pct, "../../res/open.png")
+    assert(dim == pct)
     assert(round(pct.w*100)==48 and round(pct.h*100)==48)
 
 --[[
