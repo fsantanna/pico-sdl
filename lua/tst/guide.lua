@@ -331,4 +331,33 @@ pico.set.window { title="guide-08-00-02" }
 pico.output.present()
 pico.check("guide-08-00-02")
 
+-------------------------------------------------------------------------------
+-- Section 9: Auxiliary Functions
+-------------------------------------------------------------------------------
+
+-- §9.1.a: cv.pos -- percentage to raw (default 100x100 world)
+pico.init(false); pico.init(true)
+local pos = pico.cv.pos('!', {'%', x=0.5, y=0.5})
+assert(pos.x == 50 and pos.y == 50)
+
+-- §9.1.b: cv.rect -- cross-frame projection (window ! -> world %)
+local r = pico.cv.rect('world', '%', 'window', {'!', x=250, y=250, w=100, h=100})
+assert(r.x*100//1 == 50 and r.y*100//1 == 50
+   and r.w*100//1 == 20 and r.h*100//1 == 20)
+
+-- §9.1.c: cv.dim -- cross-frame dimension projection
+local d = pico.cv.dim('world', '!', 'window', {'!', w=100, h=100})
+assert(d.w == 20 and d.h == 20)
+
+-- §9.2.a: vs.pos.rect -- point outside rectangle
+assert(pico.vs.pos.rect(
+    {'%', x=0.55, y=0.75},
+    {'!', x=50, y=50, w=20, h=20}
+) == false)
+
+-- §9.2.b: vs.rect.rect -- cross-layer overlap
+assert(pico.vs.rect.rect(
+    "world", "window", {'%', x=0.5, y=0.5, w=0.5, h=0.5}
+) == true)
+
 pico.init(false)
