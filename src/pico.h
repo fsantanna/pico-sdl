@@ -59,7 +59,7 @@ typedef struct {
 } Pico_Keyboard;
 
 typedef struct {
-    char mode;              // 'w', '!', '%', '#'
+    char mode;              // '!', '%', '#'
     float x, y;
     Pico_Anchor anchor;
     unsigned left   : 1;
