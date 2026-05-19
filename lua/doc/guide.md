@@ -875,32 +875,34 @@ update the screen all at once.
 
 ## 8. Expert Mode
 
-By default, each drawing operation in the root layer becomes immediately
-visible on the screen.
+By default, as seen in previous sections, each drawing operation becomes
+immediately visible on the screen.
 
 However, to keep visual objects in perfect sync, most games and non-trivial
 applications require to draw them simultaneously on every frame.
 
-With `pico.set.expert`, drawing operations are buffered until an explicit
-call to `pico.output.present`, which updates the screen with all objects at
-once:
+For this reason, `pico-lua` supports an expert mode that buffers drawing
+operations until an explicit call to `pico.output.present`, which updates the
+screen with all objects at once:
+
+To enable the expert mode, we call `pico.set.expert`:
 
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
 > pico.set.expert(true)
 > pico.output.draw.rect { '%', x=0.33, y=0.33, w=0.4, h=0.4 }
-> pico.input.delay(1000) -- artificial delay
-> pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.4, h=0.4 }
-> pico.input.delay(1000) -- artificial delay
+  pico.input.delay(1000) -- artificial delay
+  pico.output.draw.rect { '%', x=0.66, y=0.66, w=0.4, h=0.4 }
+  pico.input.delay(1000) -- artificial delay
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-02-01-01.png" width="200">
 </td></tr>
 </table>
 
-Although the code above takes at least `2s` to complete, nothing appears on
-the screen yet, since we have not called `pico.output.present`:
+Note that although the code above takes at least `2s` to complete, nothing
+appears on the screen yet, since we have not called `pico.output.present`:
 
 <table>
 <tr><td><pre>
@@ -931,7 +933,6 @@ This is what a main loop in `pico-lua` looks like:
 pico.set.expert(true, 40)           -- 40 FPS
 
 while true do                       -- main loop
-    pico.output.clear()
     pico.output.*()                 -- scene redrawing
     pico.output.present()
 
@@ -948,8 +949,9 @@ end
 The call to `pico.set.expert` serves two purposes:
 
 1. Disables automatic screen update that would happen after every single draw
-   call.
-    Now, all redrawing between `clear` and `present` appears as a single frame.
+    call.
+    Now, all redrawing between successive calls to `present` appears as a
+    single frame.
     Even with hundreds of objects, the screen update is instantaneous.
 
 2. Sets the FPS rate to `40`, making `pico.input.event` awake every `25ms`.
@@ -987,16 +989,19 @@ local k = {'!', x=4, y=4}           -- key pixel
 local m = {'!', x=5, y=5}           -- mouse pixel
 
 while true do                       -- main loop
-    pico.output.clear()             -- redraw scene
+    -- redraw scene
     pico.set.pencil { color='red' }
     pico.output.draw.pixel(m)
     pico.set.pencil { color='blue' }
     pico.output.draw.pixel(k)
     pico.output.present()
 
-    local e = pico.input.event()    -- handle events
+    -- handle events
+    local e = pico.input.event()
     assert(e, "no FPS set here")
-    if e.tag == 'mouse.motion' then
+    if e.tag == 'quit' then
+        break
+    elseif e.tag == 'mouse.motion' then
         m = pico.get.mouse '!'
     elseif e.tag == 'key.dn' then
         if     e.key == 'Up'    then k.y = k.y - 1
@@ -1017,8 +1022,9 @@ They use the raw mode `'!'` and start centered at `(4,4)` and `(5,5)`.
 
 The main loop first draws their initial positions and awaits
 `pico.input.event`.
-In this example, we only handle `mouse.motion` and `key.dn` events:
+In this example, we only handle `quit`, `mouse.motion` and `key.dn` events:
 
+- on a quit event, we escape the loop to terminate the application;
 - for the mouse, we update `m.x` and `m.y` based on the received event `e`;
 - for the keyboard, we update `k.x` or `k.y` depending on `e.key`.
 
@@ -1067,10 +1073,10 @@ pico.set.expert(true, 20)
 local f1, x1, y1 = walk('clock',   0, 0)    -- clockwise (faster)
 local f2, x2, y2 = walk('counter', 0, 0)    -- counter clockwise
 
-local step = 0
+local t = 0
 
 while true do                               -- main loop
-    pico.output.clear()                     -- redraw the scene
+    -- redraw the scene
     pico.output.draw.rect {
         '%', x=0.3, y=0.3, w=0.4, h=0.4     -- rect path (top-left)
     }
@@ -1085,21 +1091,22 @@ while true do                               -- main loop
     )
     pico.output.present()
 
-    local e = pico.input.event('quit')      -- handle events
+    -- handle events
+    local e, dt = pico.input.event('quit')
     if e then
         break
     end
 
-    step = step + 1                         -- handle animations
-    f1, x1, y1 = walk('clock',   step*2, step)
-    f2, x2, y2 = walk('counter', step,   step)
+    t = t + dt                              -- handle animations
+    f1, x1, y1 = walk('clock',   t*2, t)
+    f2, x2, y2 = walk('counter', t,   t)
 end
 ```
 
 Now, we set FPS to `20` to animate the sprites every `50ms`.
 
 The function `walk` (see the full source) receives a clock direction and the
-current step, returning the sprite and positions to apply.
+elapsed time, returning the sprite and positions to apply.
 
 The main loop redraws the whole scene (rectangle paths and sprites) and awaits
 the next clock tick.

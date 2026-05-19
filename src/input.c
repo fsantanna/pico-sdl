@@ -231,17 +231,17 @@ static void _sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
 int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
     _pico_guard();
     int t0 = SDL_GetTicks();
+    int ti = t0;
     while (1) {
         Pico_Event out;
         SDL_Event sdl;
         int has = (timeout == -1) ? SDL_WaitEvent(&sdl) : SDL_WaitEventTimeout(&sdl, timeout);
-        int t1 = SDL_GetTicks();
-        int dt = t1 - t0;
+        int tn = SDL_GetTicks();
         if (!has && timeout!=-1) {
             if (evt != NULL) {
                 evt->type = PICO_EVENT_NONE;
             }
-            return dt;
+            return tn - t0;
         }
 
         _sdl_to_pico(&sdl, &out);
@@ -253,14 +253,15 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
             if (evt != NULL) {
                 *evt = out;
             }
-            return dt;
+            return tn - t0;
         } else {
             // continue
         }
 
         if (timeout != -1) {
+            int dt = tn - ti;
             timeout = MAX(0, timeout-dt);
-            t0 = t1;
+            ti = tn;
         }
     }
 }
