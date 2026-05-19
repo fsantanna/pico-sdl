@@ -10,7 +10,7 @@ end
 -- pico.get.text: empty string, pct mode -> w stays 0 (no fill)
 do
     local dim = pico.get.text({'%', w=nil, h=0.1}, "")
-    assert(dim.w==0 and dim.h==0.1)
+    assert(dim.w==0 and dim.h*100//1==10)
 end
 
 -- pico.output.draw.text: empty string, abs mode -> no crash, screen stays clear

@@ -841,8 +841,10 @@ static int l_get_text (lua_State* L) {      // dim | text
     Pico_Rel_Dim dim = C_rel_dim(L, 1);
     pico_get_text(&dim, text);
 
-    lua_pushnumber(L, dim.w);               // h is input-only, no write-back
+    lua_pushnumber(L, dim.w);
     lua_setfield(L, 1, "w");
+    lua_pushnumber(L, dim.h);
+    lua_setfield(L, 1, "h");
 
     lua_settop(L, 1);                       // *dim*
     return 1;
