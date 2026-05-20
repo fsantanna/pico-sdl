@@ -18,14 +18,13 @@ and pico-birds / pico-rocks READMEs reference env-pico version.
 
 ## Status (as of 2026-05-19)
 
-**Resume point:** §1.4 in progress — bump versions in `Makefile`, `README.md`,
-`lua/README.md`, `.claude/CLAUDE.md` (HISTORY.md ✓ done). Then §1.5–§1.8.
+**Resume point:** §1.5 — commit + push `main`. §1.4 done.
 
 Working dir for §1: `/x/pico-sdl/.work/2026-05-release` (worktree on `2026-05-release` branch).
 
 | § | done                          | pending                              |
 |---|-------------------------------|--------------------------------------|
-| 1 | C+Lua tests, rockspec, HISTORY.md | Makefile + README + lua/README + CLAUDE.md bumps, push, upload |
+| 1 | C+Lua tests, rockspec, HISTORY.md, version bumps | push, upload |
 | 2 | —                             | all (waits on §1)                    |
 | 3 | get.image fix, smoke-test     | README, commit, branch               |
 | 4 | API migration, smoke-test     | README, commit, branch               |
@@ -58,15 +57,14 @@ cd lua && make tests
     - same content as v0.5-1 (only `version` + `branch` differ)
     - archive to `lua/old/` only when content changes (new deps/sources)
 
-### 1.4. Update files
+### 1.4. Update files [DONE]
 
-| File                 | Change                         |
-|----------------------|--------------------------------|
-| `Makefile`           | rockspec version → `0.5-1`     |
-| `README.md`          | bump version (3 places)        |
-| `lua/README.md`      | bump version (4 places)        |
-| `HISTORY.md`         | add `v0.5` section ✓           |
-| `.claude/CLAUDE.md`  | rockspec → `0.5-1`             |
+| File             | Change                                                  |
+|------------------|---------------------------------------------------------|
+| `Makefile`       | `make lua` rockspec → `0.5-1`; `--version` check → `v0.5` |
+| `README.md`      | prepend `v0.5` list entry; stable + api link → `v0.5`   |
+| `lua/README.md`  | prepend `v0.5`; stable + install `0.5`; dev rockspec → `dev-2` |
+| `HISTORY.md`     | add `v0.5` section                                      |
 
 ### 1.5. Commit and push main
 
