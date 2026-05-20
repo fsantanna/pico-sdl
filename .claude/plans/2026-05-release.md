@@ -16,6 +16,10 @@ Releases `pico-sdl` and downstream consumers in one pass.
 Execute in order — env-pico needs new pico-sdl on LuaRocks,
 and pico-birds / pico-rocks READMEs reference env-pico version.
 
+**Invariant:** after each project finishes, `main` (or `master`) must equal
+the new `vX.Y` branch — i.e., the default branch is never left behind.
+`pico-rocks` uses `master`; all others use `main`.
+
 ## Status
 
 **Resume point:** —
@@ -66,9 +70,13 @@ cd lua && make tests
 
 ### 1.5. Commit and push main
 
+If on a worktree branch, fast-forward `main` first.
+
 ```bash
 git add -A
 git commit -m "release: v0.5"
+git checkout main
+git merge --ff-only 2026-05-release
 git push origin main
 ```
 
@@ -78,8 +86,10 @@ Triggers:
 
 ### 1.6. Create release branch and push
 
+Branch from `main` so `main == v0.5`.
+
 ```bash
-git branch v0.5
+git branch v0.5 main
 git push origin v0.5
 ```
 
@@ -142,8 +152,10 @@ git push origin main
 
 ### 2.5. Create release branch and push
 
+Branch from `main` so `main == v0.2`.
+
 ```bash
-git branch v0.2
+git branch v0.2 main
 git push origin v0.2
 ```
 
@@ -194,9 +206,18 @@ git push origin main
 
 ### 3.4. Create release branch and push
 
+Branch from `main` so `main == v0.5`.
+
 ```bash
-git branch v0.5
+git branch v0.5 main
 git push origin v0.5
+```
+
+### 3.5. Verify default branch parity
+
+```bash
+test "$(git rev-parse main)" = "$(git rev-parse v0.5)"
+test "$(git rev-parse origin/main)" = "$(git rev-parse origin/v0.5)"
 ```
 
 ---
@@ -219,14 +240,23 @@ pico-lua battle.lua
 | `README.md` | `git checkout v0.4` → `git checkout v0.5`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 4.3. Commit, push main, create branch
+### 4.3. Commit, push master, create branch
+
+Default branch here is `master` (not `main`).
 
 ```bash
 git add -A
 git commit -m "release: v0.5"
-git push origin main
-git branch v0.5
+git push origin master
+git branch v0.5 master
 git push origin v0.5
+```
+
+### 4.4. Verify default branch parity
+
+```bash
+test "$(git rev-parse master)" = "$(git rev-parse v0.5)"
+test "$(git rev-parse origin/master)" = "$(git rev-parse origin/v0.5)"
 ```
 
 ---
@@ -256,8 +286,15 @@ for f in birds-*.atm; do atmos "$f"; done
 git add -A
 git commit -m "release: v0.7"
 git push origin main
-git branch v0.7
+git branch v0.7 main
 git push origin v0.7
+```
+
+### 5.4. Verify default branch parity
+
+```bash
+test "$(git rev-parse main)" = "$(git rev-parse v0.7)"
+test "$(git rev-parse origin/main)" = "$(git rev-parse origin/v0.7)"
 ```
 
 ---
@@ -280,14 +317,23 @@ atmos battle.atm
 | `README.md` | `git checkout v0.6` → `git checkout v0.7`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 6.3. Commit, push main, create branch
+### 6.3. Commit, push master, create branch
+
+Default branch here is `master` (not `main`).
 
 ```bash
 git add -A
 git commit -m "release: v0.7"
-git push origin main
-git branch v0.7
+git push origin master
+git branch v0.7 master
 git push origin v0.7
+```
+
+### 6.4. Verify default branch parity
+
+```bash
+test "$(git rev-parse master)" = "$(git rev-parse v0.7)"
+test "$(git rev-parse origin/master)" = "$(git rev-parse origin/v0.7)"
 ```
 
 ---
