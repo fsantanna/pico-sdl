@@ -18,18 +18,16 @@ and pico-birds / pico-rocks READMEs reference env-pico version.
 
 ## Status (as of 2026-05-19)
 
-**Resume point:** §1.5 — commit + push `main`. §1.4 done.
-
-Working dir for §1: `/x/pico-sdl/.work/2026-05-release` (worktree on `2026-05-release` branch).
+**Resume point:** §7 — announce. §1–§6 complete (commits, pushes, branches, uploads run by user).
 
 | § | done                          | pending                              |
 |---|-------------------------------|--------------------------------------|
-| 1 | C+Lua tests, rockspec, HISTORY.md, version bumps | push, upload |
-| 2 | —                             | all (waits on §1)                    |
-| 3 | get.image fix, smoke-test     | README, commit, branch               |
-| 4 | API migration, smoke-test     | README, commit, branch               |
-| 5 | API migration, get.image, smoke-test | README, commit, branch        |
-| 6 | API migration, smoke-test     | README, commit, branch               |
+| 1 | all                           | —                                    |
+| 2 | all                           | —                                    |
+| 3 | all                           | —                                    |
+| 4 | all                           | —                                    |
+| 5 | all                           | —                                    |
+| 6 | all                           | —                                    |
 | 7 | —                             | announce                             |
 
 ---
@@ -90,8 +88,7 @@ Triggers `docs-version.yml` for `v0.5/` on gh-pages.
 ### 1.7. Verify local install with luarocks make
 
 ```bash
-cd lua
-sudo luarocks make pico-sdl-0.5-1.rockspec
+sudo luarocks --lua-version=5.4 make lua/pico-sdl-0.5-1.rockspec
 pico-lua lua/doc/rects.lua
 pico-lua lua/doc/anims.lua
 ```
@@ -114,20 +111,20 @@ Working dir: `/x/lua-atmos/env-pico`.
 
 Requires pico-sdl 0.5 already on LuaRocks (from §1.8).
 
-### 2.1. Create rockspec
+### 2.1. Create rockspec [DONE]
 
-- Create `atmos-env-pico-0.2-1.rockspec` (branch = `"v0.2"`)
-- Move previous `atmos-env-pico-*-1.rockspec` to `old/`
-- Bump dep: `pico-sdl >= 0.5`
+- Created `atmos-env-pico-0.2-1.rockspec` (branch `"v0.2"`, dep `pico-sdl >= 0.5`)
+- `atmos-env-pico-0.1-3.rockspec` → `old/` (via `git mv`)
+- `atmos >= 0.6` dep kept as-is
 
-### 2.2. Update files
+### 2.2. Update files [DONE]
 
 | File          | Change                                |
 |---------------|---------------------------------------|
-| `README.md`   | bump version refs (if any)            |
-| rockspec      | branch + version + pico-sdl dep       |
+| `README.md`   | no version refs — no-op               |
+| rockspec      | done in §2.1                          |
 
-### 2.3. Smoke-test examples
+### 2.3. Smoke-test examples [DONE]
 
 ```bash
 lua5.4 exs/click-drag-cancel.lua
@@ -135,7 +132,7 @@ lua5.4 exs/across.lua
 lua5.4 exs/hello.lua
 ```
 
-### 2.4. Commit and push main
+### 2.4. Commit and push main [DONE]
 
 ```bash
 git add -A
@@ -143,21 +140,21 @@ git commit -m "release: v0.2"
 git push origin main
 ```
 
-### 2.5. Create release branch and push
+### 2.5. Create release branch and push [DONE]
 
 ```bash
 git branch v0.2
 git push origin v0.2
 ```
 
-### 2.6. Verify local install with luarocks make
+### 2.6. Verify local install with luarocks make [DONE]
 
 ```bash
 sudo luarocks make atmos-env-pico-0.2-1.rockspec
 lua5.4 exs/click-drag-cancel.lua
 ```
 
-### 2.7. Publish and verify LuaRocks
+### 2.7. Publish and verify LuaRocks [DONE]
 
 ```bash
 luarocks upload atmos-env-pico-0.2-1.rockspec
@@ -186,14 +183,14 @@ birds-07/08/09/10/11.lua (+ birds-11 pause block).
 for f in birds-*.lua; do pico-lua "$f"; done
 ```
 
-### 3.2. Update README
+### 3.2. Update README [DONE]
 
 | File        | Change                                       |
 |-------------|----------------------------------------------|
 | `README.md` | `git checkout v0.4` → `git checkout v0.5`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 3.3. Commit and push main
+### 3.3. Commit and push main [DONE]
 
 ```bash
 git add -A
@@ -201,7 +198,7 @@ git commit -m "release: v0.5"
 git push origin main
 ```
 
-### 3.4. Create release branch and push
+### 3.4. Create release branch and push [DONE]
 
 ```bash
 git branch v0.5
@@ -231,14 +228,14 @@ pico-lua main.lua
 pico-lua battle.lua
 ```
 
-### 4.2. Update README
+### 4.2. Update README [DONE]
 
 | File        | Change                                       |
 |-------------|----------------------------------------------|
 | `README.md` | `git checkout v0.4` → `git checkout v0.5`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 4.3. Commit, push main, create branch
+### 4.3. Commit, push main, create branch [DONE]
 
 ```bash
 git add -A
@@ -281,14 +278,14 @@ Same one-liner collapse applied across birds-07/08/09/10/11.atm
 for f in birds-*.atm; do atmos "$f"; done
 ```
 
-### 5.2. Update README
+### 5.2. Update README [DONE]
 
 | File        | Change                                       |
 |-------------|----------------------------------------------|
 | `README.md` | `git checkout v0.6` → `git checkout v0.7`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 5.3. Commit, push main, create branch
+### 5.3. Commit, push main, create branch [DONE]
 
 ```bash
 git add -A
@@ -321,14 +318,14 @@ atmos main.atm
 atmos battle.atm
 ```
 
-### 6.2. Update README
+### 6.2. Update README [DONE]
 
 | File        | Change                                       |
 |-------------|----------------------------------------------|
 | `README.md` | `git checkout v0.6` → `git checkout v0.7`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 6.3. Commit, push main, create branch
+### 6.3. Commit, push main, create branch [DONE]
 
 ```bash
 git add -A
