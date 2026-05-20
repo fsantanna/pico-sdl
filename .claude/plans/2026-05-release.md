@@ -6,12 +6,12 @@ Releases `pico-sdl` and downstream consumers in one pass.
 
 | #  | project                          | rockspec name      | scheme         | from → to            | status      |
 |----|----------------------------------|--------------------|----------------|----------------------|-------------|
-| 1  | `pico-sdl`                       | `pico-sdl`         | repo + rockspec| v0.4-dev → **v0.5**  | —           |
-| 2  | `lua-atmos/env-pico`             | `atmos-env-pico`   | rockspec       | 0.1-3 → **0.2-1**    | —           |
-| 3  | `lua-atmos/pico-birds`           | —                  | git branch     | v0.4 → **v0.5**      | —           |
-| 4  | `lua-atmos/pico-rocks`           | —                  | git branch     | v0.4 → **v0.5**      | —           |
-| 5  | `atmos-lang/pico-birds`          | —                  | git branch     | v0.6 → **v0.7**      | —           |
-| 6  | `atmos-lang/pico-rocks`          | —                  | git branch     | v0.6 → **v0.7**      | —           |
+| 1  | `pico-sdl`                       | `pico-sdl`         | repo + rockspec| v0.4-dev → **v0.5**  | partial: branch ✓, main ✗, LuaRocks ✗ |
+| 2  | `lua-atmos/env-pico`             | `atmos-env-pico`   | rockspec       | 0.1-3 → **0.2-1**    | partial: branch ✓, origin/main ✗, LuaRocks ✗ |
+| 3  | `lua-atmos/pico-birds`           | —                  | git branch     | v0.4 → **v0.5**      | partial: v0.5 ✓, main ✗ |
+| 4  | `lua-atmos/pico-rocks`           | —                  | git branch     | v0.4 → **v0.5**      | partial: v0.5 ✓, master ✗ |
+| 5  | `atmos-lang/pico-birds`          | —                  | git branch     | v0.6 → **v0.7**      | partial: v0.7 ✓, main ✗ |
+| 6  | `atmos-lang/pico-rocks`          | —                  | git branch     | v0.6 → **v0.7**      | partial: v0.7 ✓, master ✗ |
 
 Execute in order — env-pico needs new pico-sdl on LuaRocks,
 and pico-birds / pico-rocks READMEs reference env-pico version.
@@ -22,17 +22,32 @@ the new `vX.Y` branch — i.e., the default branch is never left behind.
 
 ## Status
 
-**Resume point:** —
+**Resume point:** sync default branches + publish 2 rockspecs.
 
-| § | done | pending |
-|---|------|---------|
-| 1 | —    | all     |
-| 2 | —    | all     |
-| 3 | —    | all     |
-| 4 | —    | all     |
-| 5 | —    | all     |
-| 6 | —    | all     |
-| 7 | —    | all     |
+Release branches all exist on origin (`v0.5` ×4, `v0.2`, `v0.7` ×2),
+but the **invariant is violated everywhere** — `main` / `master` is
+1 commit behind its release branch in every repo.
+Plus the two LuaRocks publishes are pending.
+
+| § | done                          | pending                          |
+|---|-------------------------------|----------------------------------|
+| 1 | 1.3, 1.4, 1.6                 | 1.1, 1.2, 1.5, 1.7, 1.8          |
+| 2 | 2.1, 2.2, 2.5                 | 2.3, 2.4 (push origin/main), 2.6, 2.7 |
+| 3 | 3.2, 3.4                      | 3.1, 3.3, 3.5                    |
+| 4 | 4.2, 4.3 (branch only)        | 4.1, 4.3 (push master), 4.4      |
+| 5 | 5.2, 5.3 (branch only)        | 5.1, 5.3 (push main), 5.4        |
+| 6 | 6.2, 6.3 (branch only)        | 6.1, 6.3 (push master), 6.4      |
+| 7 | —                             | all                              |
+
+Notes:
+- Smoke-tests (1.1, 1.2, 2.3, 3.1, 4.1, 5.1, 6.1) and luarocks-make
+  verifications (1.7, 2.6) are not verifiable from repo state — user
+  must confirm or re-run.
+- LuaRocks search confirms:
+    - `pico-sdl` latest published = **0.3.1-1** (needs 0.5-1) → 1.8 pending
+    - `atmos-env-pico` latest published = **0.1-3** (needs 0.2-1) → 2.7 pending
+- env-pico: local `main` already at v0.2 tip but **not pushed** to
+  origin/main (still at 2b2aaea).
 
 ---
 
