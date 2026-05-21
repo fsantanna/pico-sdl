@@ -6,12 +6,12 @@ Releases `pico-sdl` and downstream consumers in one pass.
 
 | #  | project                          | rockspec name      | scheme         | from → to            | status      |
 |----|----------------------------------|--------------------|----------------|----------------------|-------------|
-| 1  | `pico-sdl`                       | `pico-sdl`         | repo + rockspec| v0.4-dev → **v0.5**  | partial: branch ✓, main ✗, LuaRocks ✗ |
-| 2  | `lua-atmos/env-pico`             | `atmos-env-pico`   | rockspec       | 0.1-3 → **0.2-1**    | partial: branch ✓, origin/main ✗, LuaRocks ✗ |
-| 3  | `lua-atmos/pico-birds`           | —                  | git branch     | v0.4 → **v0.5**      | partial: local v0.5 ✓, README ✗, origin/v0.5 ✗, main ✗ |
-| 4  | `lua-atmos/pico-rocks`           | —                  | git branch     | v0.4 → **v0.5**      | partial: v0.5 ✓ (README+push), master ✗ |
-| 5  | `atmos-lang/pico-birds`          | —                  | git branch     | v0.6 → **v0.7**      | partial: v0.7 ✓ (README+push), main ✗ |
-| 6  | `atmos-lang/pico-rocks`          | —                  | git branch     | v0.6 → **v0.7**      | partial: v0.7 ✓ (README+push), master ✗ |
+| 1  | `pico-sdl`                       | `pico-sdl`         | repo + rockspec| v0.4-dev → **v0.5**  | **done** |
+| 2  | `lua-atmos/env-pico`             | `atmos-env-pico`   | rockspec       | 0.1-3 → **0.2-1**    | **done** |
+| 3  | `lua-atmos/pico-birds`           | —                  | git branch     | v0.4 → **v0.5**      | **done** |
+| 4  | `lua-atmos/pico-rocks`           | —                  | git branch     | v0.4 → **v0.5**      | **done** |
+| 5  | `atmos-lang/pico-birds`          | —                  | git branch     | v0.6 → **v0.7**      | **done** |
+| 6  | `atmos-lang/pico-rocks`          | —                  | git branch     | v0.6 → **v0.7**      | **done** |
 
 Execute in order — env-pico needs new pico-sdl on LuaRocks,
 and pico-birds / pico-rocks READMEs reference env-pico version.
@@ -27,19 +27,18 @@ only touch the work/release branches; they do **not** push `main`/`master`.
 
 ## Status
 
-**Resume point:** finish §3 commit; then continue §4–§6 work-branch
-edits + pushes, then §1/§2 LuaRocks publish, then §7 batch sync.
+**Resume point:** §8 announce (manual). All code + LuaRocks + branches synced.
 
 | § | done                          | pending                          |
 |---|-------------------------------|----------------------------------|
-| 1 | 1.1, 1.2, 1.3, 1.4, 1.6       | 1.5, 1.7, 1.8                    |
-| 2 | 2.1, 2.2, 2.5                 | 2.3, 2.4, 2.6, 2.7               |
-| 3 | 3.1, 3.2, 3.4                 | 3.3                              |
-| 4 | 4.1, 4.2, 4.3                 | —                                |
-| 5 | 5.1, 5.2, 5.3                 | —                                |
-| 6 | 6.1, 6.2, 6.3                 | —                                |
-| 7 | —                             | all (default-branch sync batch)  |
-| 8 | —                             | all (announce)                   |
+| 1 | 1.1–1.8                       | —                                |
+| 2 | 2.1–2.7                       | —                                |
+| 3 | 3.1–3.4                       | —                                |
+| 4 | 4.1–4.3                       | —                                |
+| 5 | 5.1–5.3                       | —                                |
+| 6 | 6.1–6.3                       | —                                |
+| 7 | 7.1–7.6                       | —                                |
+| 8 | —                             | all (announce, manual)           |
 
 Notes:
 - Smoke-tests (1.1, 1.2, 2.3, 3.1, 4.1, 5.1, 6.1) and luarocks-make
@@ -128,9 +127,26 @@ pico-lua lua/doc/anims.lua
 
 ## 2. atmos-env-pico 0.2-1
 
-Working dir: `/x/lua-atmos/env-pico`.
+Working dir: `/x/lua-atmos/env-pico/.work/v0.2`
+(worktree on `v0.2`; main repo at `/x/lua-atmos/env-pico`).
 
-Requires pico-sdl 0.5 already on LuaRocks (from §1.8).
+Requires pico-sdl 0.5 on LuaRocks — **✓ live as `0.5-1`**.
+
+### Checklist
+
+- [x] 2.1. rockspec `0.2-1` (branch=v0.2, dep pico-sdl≥0.5)
+- [x] 2.2. README — no version refs needed
+- [x] 2.3. smoke-test `exs/*.lua`
+- [x] 2.4. commit on `v0.2` (`1567507`)
+- [x] 2.5. push `origin v0.2`
+- [x] 2.6. `luarocks make` + smoke-test
+- [x] 2.7. publish + verify on LuaRocks (`0.2-1` live)
+
+### Observed state (2026-05-21)
+
+- worktree clean on `v0.2` at `1567507`, tracking `origin/v0.2`
+- `main` at `2b2aaea` (behind; sync in §7.2)
+- main repo still has stale `0.1-3.rockspec` at root (only on `main`; `v0.2` already cleaned)
 
 ### 2.1. Create rockspec
 
@@ -399,18 +415,38 @@ test "$(git rev-parse origin/<default>)" = "$(git rev-parse origin/<release>)"
 
 ### Checklist
 
-- [ ] 7.1. pico-sdl: main ← v0.5
-- [ ] 7.2. env-pico: main ← v0.2
-- [ ] 7.3. lua-atmos/pico-birds: main ← v0.5
-- [ ] 7.4. lua-atmos/pico-rocks: master ← v0.5
-- [ ] 7.5. atmos-lang/pico-birds: main ← v0.7
-- [ ] 7.6. atmos-lang/pico-rocks: master ← v0.7
+- [x] 7.1. pico-sdl: main ← v0.5 (at `85bae55`)
+- [x] 7.2. env-pico: main ← v0.2 (at `1567507`)
+- [x] 7.3. lua-atmos/pico-birds: main ← v0.5 (at `dd7044e`)
+- [x] 7.4. lua-atmos/pico-rocks: master ← v0.5 (at `503da7f`)
+- [x] 7.5. atmos-lang/pico-birds: main ← v0.7 (at `1171d0c`)
+- [x] 7.6. atmos-lang/pico-rocks: master ← v0.7 (at `74dab5a`)
 
 ---
 
 ## 8. Announce (manual)
 
-- Twitter
-- Students
-- SDL lists
-- Lua lists
+### Channels
+
+| channel    | audience                              | content                                  |
+|------------|---------------------------------------|------------------------------------------|
+| Twitter    | public / followers                    | short post, link, screenshot/gif         |
+| Students   | direct (class list / Discord / email) | what's new, how to upgrade               |
+| SDL lists  | SDL community mailing list            | release notes + repo link                |
+| Lua lists  | lua-l mailing list                    | LuaRocks install command + repo link     |
+
+### Highlights
+
+- `pico-sdl v0.5` — on LuaRocks as `0.5-1`
+- `atmos-env-pico 0.2-1` — now requires `pico-sdl >= 0.5`
+- Tutorial repos:
+    - `lua-atmos/pico-birds v0.5`, `lua-atmos/pico-rocks v0.5`
+    - `atmos-lang/pico-birds v0.7`, `atmos-lang/pico-rocks v0.7`
+- See `HISTORY.md` `v0.5` section for the per-feature changelog.
+
+### Checklist
+
+- [ ] 8.1. Twitter
+- [ ] 8.2. Students
+- [ ] 8.3. SDL lists
+- [ ] 8.4. Lua lists
