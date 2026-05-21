@@ -8,10 +8,10 @@ Releases `pico-sdl` and downstream consumers in one pass.
 |----|----------------------------------|--------------------|----------------|----------------------|-------------|
 | 1  | `pico-sdl`                       | `pico-sdl`         | repo + rockspec| v0.4-dev → **v0.5**  | partial: branch ✓, main ✗, LuaRocks ✗ |
 | 2  | `lua-atmos/env-pico`             | `atmos-env-pico`   | rockspec       | 0.1-3 → **0.2-1**    | partial: branch ✓, origin/main ✗, LuaRocks ✗ |
-| 3  | `lua-atmos/pico-birds`           | —                  | git branch     | v0.4 → **v0.5**      | partial: v0.5 ✓, main ✗ |
-| 4  | `lua-atmos/pico-rocks`           | —                  | git branch     | v0.4 → **v0.5**      | partial: v0.5 ✓, master ✗ |
-| 5  | `atmos-lang/pico-birds`          | —                  | git branch     | v0.6 → **v0.7**      | partial: v0.7 ✓, main ✗ |
-| 6  | `atmos-lang/pico-rocks`          | —                  | git branch     | v0.6 → **v0.7**      | partial: v0.7 ✓, master ✗ |
+| 3  | `lua-atmos/pico-birds`           | —                  | git branch     | v0.4 → **v0.5**      | partial: local v0.5 ✓, README ✗, origin/v0.5 ✗, main ✗ |
+| 4  | `lua-atmos/pico-rocks`           | —                  | git branch     | v0.4 → **v0.5**      | partial: v0.5 ✓ (README+push), master ✗ |
+| 5  | `atmos-lang/pico-birds`          | —                  | git branch     | v0.6 → **v0.7**      | partial: v0.7 ✓ (README+push), main ✗ |
+| 6  | `atmos-lang/pico-rocks`          | —                  | git branch     | v0.6 → **v0.7**      | partial: v0.7 ✓ (README+push), master ✗ |
 
 Execute in order — env-pico needs new pico-sdl on LuaRocks,
 and pico-birds / pico-rocks READMEs reference env-pico version.
@@ -20,24 +20,26 @@ and pico-birds / pico-rocks READMEs reference env-pico version.
 the new `vX.Y` branch — i.e., the default branch is never left behind.
 `pico-rocks` uses `master`; all others use `main`.
 
+**Sync strategy:** all default-branch syncs (FF `main`/`master` → push)
+are **batched into §7**, executed after every project's release-branch
+work and LuaRocks publish is verified. Per-project sections (§1–§6)
+only touch the work/release branches; they do **not** push `main`/`master`.
+
 ## Status
 
-**Resume point:** sync default branches + publish 2 rockspecs.
-
-Release branches all exist on origin (`v0.5` ×4, `v0.2`, `v0.7` ×2),
-but the **invariant is violated everywhere** — `main` / `master` is
-1 commit behind its release branch in every repo.
-Plus the two LuaRocks publishes are pending.
+**Resume point:** finish §3 commit; then continue §4–§6 work-branch
+edits + pushes, then §1/§2 LuaRocks publish, then §7 batch sync.
 
 | § | done                          | pending                          |
 |---|-------------------------------|----------------------------------|
 | 1 | 1.3, 1.4, 1.6                 | 1.1, 1.2, 1.5, 1.7, 1.8          |
-| 2 | 2.1, 2.2, 2.5                 | 2.3, 2.4 (push origin/main), 2.6, 2.7 |
-| 3 | 3.2, 3.4                      | 3.1, 3.3, 3.5                    |
-| 4 | 4.2, 4.3 (branch only)        | 4.1, 4.3 (push master), 4.4      |
-| 5 | 5.2, 5.3 (branch only)        | 5.1, 5.3 (push main), 5.4        |
-| 6 | 6.2, 6.3 (branch only)        | 6.1, 6.3 (push master), 6.4      |
-| 7 | —                             | all                              |
+| 2 | 2.1, 2.2, 2.5                 | 2.3, 2.4, 2.6, 2.7               |
+| 3 | 3.1, 3.2, 3.4                 | 3.3                              |
+| 4 | 4.1, 4.2, 4.3                 | —                                |
+| 5 | 5.1, 5.2, 5.3                 | —                                |
+| 6 | 6.1, 6.2, 6.3                 | —                                |
+| 7 | —                             | all (default-branch sync batch)  |
+| 8 | —                             | all (announce)                   |
 
 Notes:
 - Smoke-tests (1.1, 1.2, 2.3, 3.1, 4.1, 5.1, 6.1) and luarocks-make
@@ -83,32 +85,25 @@ cd lua && make tests
 | `lua/README.md`  | prepend `v0.5`; stable + install `0.5`; dev rockspec → `dev-2` |
 | `HISTORY.md`     | add `v0.5` section                                      |
 
-### 1.5. Commit and push main
+### 1.5. Commit on work branch
 
-If on a worktree branch, fast-forward `main` first.
+Stay on `2026-05-release` (or current worktree branch). Main FF + push
+are deferred to §7.
 
 ```bash
 git add -A
 git commit -m "release: v0.5"
-git checkout main
-git merge --ff-only 2026-05-release
-git push origin main
 ```
-
-Triggers:
-- `tests.yml` — CI validates
-- `docs.yml` — deploys docs to gh-pages `main/`
 
 ### 1.6. Create release branch and push
 
-Branch from `main` so `main == v0.5`.
+Branch `v0.5` from current HEAD; push triggers `docs-version.yml`
+for `v0.5/` on gh-pages.
 
 ```bash
-git branch v0.5 main
+git branch v0.5
 git push origin v0.5
 ```
-
-Triggers `docs-version.yml` for `v0.5/` on gh-pages.
 
 ### 1.7. Verify local install with luarocks make
 
@@ -157,20 +152,19 @@ lua5.4 exs/across.lua
 lua5.4 exs/hello.lua
 ```
 
-### 2.4. Commit and push main
+### 2.4. Commit on work branch
+
+Main push deferred to §7.
 
 ```bash
 git add -A
 git commit -m "release: v0.2"
-git push origin main
 ```
 
 ### 2.5. Create release branch and push
 
-Branch from `main` so `main == v0.2`.
-
 ```bash
-git branch v0.2 main
+git branch v0.2
 git push origin v0.2
 ```
 
@@ -194,9 +188,19 @@ lua5.4 exs/click-drag-cancel.lua
 
 ## 3. lua-atmos/pico-birds v0.5
 
-Working dir: `/x/lua-atmos/pico-birds`.
+Working dir: `/x/lua-atmos/pico-birds/.work/v0.5`
+(worktree on branch `v0.5`; main repo at `/x/lua-atmos/pico-birds`).
 
 No rockspec — versioning is git-branch only.
+
+Main FF + push deferred to §7. Parity check also in §7.
+
+### Checklist
+
+- [x] 3.1. smoke-test `birds-*.lua`
+- [x] 3.2. README: `git checkout v0.4` → `v0.5`; env-pico `0.1` → `0.2`
+- [x] 3.3. commit on `v0.5` (`3155a3d`)
+- [x] 3.4. push `origin v0.5` (at `dd7044e`)
 
 ### 3.1. Smoke-test all steps
 
@@ -211,35 +215,39 @@ for f in birds-*.lua; do pico-lua "$f"; done
 | `README.md` | `git checkout v0.4` → `git checkout v0.5`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 3.3. Commit and push main
+### 3.3. Commit on `v0.5`
 
 ```bash
 git add -A
 git commit -m "release: v0.5"
-git push origin main
 ```
 
-### 3.4. Create release branch and push
-
-Branch from `main` so `main == v0.5`.
+### 3.4. Push `origin v0.5`
 
 ```bash
-git branch v0.5 main
 git push origin v0.5
-```
-
-### 3.5. Verify default branch parity
-
-```bash
-test "$(git rev-parse main)" = "$(git rev-parse v0.5)"
-test "$(git rev-parse origin/main)" = "$(git rev-parse origin/v0.5)"
 ```
 
 ---
 
 ## 4. lua-atmos/pico-rocks v0.5
 
-Working dir: `/x/lua-atmos/pico-rocks`.
+Working dir: `/x/lua-atmos/pico-rocks/.work/v0.5`
+(worktree on branch `v0.5`; main repo at `/x/lua-atmos/pico-rocks`).
+
+Master push deferred to §7.
+
+### Checklist
+
+- [x] 4.1. smoke-test `main.lua`, `battle.lua`
+- [x] 4.2. README: `v0.5`, env-pico `0.2`
+- [x] 4.3. commit + push `origin v0.5` (at `503da7f`)
+
+### Observed state (2026-05-21)
+
+- worktree clean on `v0.5`; `origin/v0.5` exists at `503da7f`
+- `master` at `3d5d6b4`, behind `v0.5` (sync in §7.4)
+- README already updated: `git checkout v0.5`, `atmos-env-pico 0.2`
 
 ### 4.1. Smoke-test
 
@@ -255,32 +263,38 @@ pico-lua battle.lua
 | `README.md` | `git checkout v0.4` → `git checkout v0.5`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 4.3. Commit, push master, create branch
+### 4.3. Commit on work branch + push `v0.5`
 
-Default branch here is `master` (not `main`).
+Default branch here is `master` (not `main`). Master push deferred to §7.
 
 ```bash
 git add -A
 git commit -m "release: v0.5"
-git push origin master
-git branch v0.5 master
+git branch v0.5
 git push origin v0.5
-```
-
-### 4.4. Verify default branch parity
-
-```bash
-test "$(git rev-parse master)" = "$(git rev-parse v0.5)"
-test "$(git rev-parse origin/master)" = "$(git rev-parse origin/v0.5)"
 ```
 
 ---
 
 ## 5. atmos-lang/pico-birds v0.7
 
-Working dir: `/x/atmos-lang/pico-birds`.
+Working dir: `/x/atmos-lang/pico-birds/.work/v0.7`
+(worktree on branch `v0.7`; main repo at `/x/atmos-lang/pico-birds`).
 
 Atmos-language flavor (separate version track from §3).
+Main push deferred to §7.
+
+### Checklist
+
+- [x] 5.1. smoke-test `birds-*.atm`
+- [x] 5.2. README: `git checkout v0.6` → `v0.7`; env-pico `0.1` → `0.2`
+- [x] 5.3. commit on `v0.7` (`7912ec3`); push `origin v0.7` (at `1171d0c`)
+
+### Observed state (2026-05-21)
+
+- worktree clean on `v0.7` at `95418e5` (same as `main`; no work commit yet)
+- `v0.7` is local-only; `origin/v0.7` does **not** exist
+- README still shows `git checkout v0.6` and `atmos-env-pico 0.1`
 
 ### 5.1. Smoke-test all steps
 
@@ -295,28 +309,36 @@ for f in birds-*.atm; do atmos "$f"; done
 | `README.md` | `git checkout v0.6` → `git checkout v0.7`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 5.3. Commit, push main, create branch
+### 5.3. Commit on work branch + push `v0.7`
+
+Main push deferred to §7.
 
 ```bash
 git add -A
 git commit -m "release: v0.7"
-git push origin main
-git branch v0.7 main
+git branch v0.7
 git push origin v0.7
-```
-
-### 5.4. Verify default branch parity
-
-```bash
-test "$(git rev-parse main)" = "$(git rev-parse v0.7)"
-test "$(git rev-parse origin/main)" = "$(git rev-parse origin/v0.7)"
 ```
 
 ---
 
 ## 6. atmos-lang/pico-rocks v0.7
 
-Working dir: `/x/atmos-lang/pico-rocks`.
+Working dir: `/x/atmos-lang/pico-rocks/.work/v0.7`
+(worktree on branch `v0.7`; main repo at `/x/atmos-lang/pico-rocks`).
+
+Master push deferred to §7.
+
+### Checklist
+
+- [x] 6.1. smoke-test `main.atm`, `battle.atm`
+- [x] 6.2. README: `git checkout v0.6` → `v0.7`; env-pico `0.1` → `0.2`
+- [x] 6.3. commit on `v0.7`; push `origin v0.7` (at `74dab5a`)
+
+### Observed state (2026-05-21)
+
+- worktree clean on `v0.7` at `74dab5a`, tracking `origin/v0.7`
+- `master` at `8dd6ab7` (behind; sync in §7.6)
 
 ### 6.1. Smoke-test
 
@@ -332,28 +354,60 @@ atmos battle.atm
 | `README.md` | `git checkout v0.6` → `git checkout v0.7`    |
 | `README.md` | bump atmos-env-pico install to `0.2`         |
 
-### 6.3. Commit, push master, create branch
+### 6.3. Commit on work branch + push `v0.7`
 
-Default branch here is `master` (not `main`).
+Default branch here is `master` (not `main`). Master push deferred to §7.
 
 ```bash
 git add -A
 git commit -m "release: v0.7"
-git push origin master
-git branch v0.7 master
+git branch v0.7
 git push origin v0.7
-```
-
-### 6.4. Verify default branch parity
-
-```bash
-test "$(git rev-parse master)" = "$(git rev-parse v0.7)"
-test "$(git rev-parse origin/master)" = "$(git rev-parse origin/v0.7)"
 ```
 
 ---
 
-## 7. Announce (manual)
+## 7. Sync default branches (batch)
+
+Run **only after** every project's release-branch work, LuaRocks
+publishes (§1.8, §2.7), and verifications are complete.
+
+For each repo: FF default branch to the release branch, push, verify.
+
+| repo                       | default | release | dir                                       |
+|----------------------------|---------|---------|-------------------------------------------|
+| `pico-sdl`                 | main    | v0.5    | `/x/pico-sdl`                             |
+| `lua-atmos/env-pico`       | main    | v0.2    | `/x/lua-atmos/env-pico`                   |
+| `lua-atmos/pico-birds`     | main    | v0.5    | `/x/lua-atmos/pico-birds`                 |
+| `lua-atmos/pico-rocks`     | master  | v0.5    | `/x/lua-atmos/pico-rocks`                 |
+| `atmos-lang/pico-birds`    | main    | v0.7    | `/x/atmos-lang/pico-birds`                |
+| `atmos-lang/pico-rocks`    | master  | v0.7    | `/x/atmos-lang/pico-rocks`                |
+
+Per-repo procedure (substitute `<default>` and `<release>`):
+
+```bash
+git checkout <default>
+git pull --ff-only
+git merge --ff-only <release>
+git push origin <default>
+
+# parity check
+test "$(git rev-parse <default>)" = "$(git rev-parse <release>)"
+test "$(git rev-parse origin/<default>)" = "$(git rev-parse origin/<release>)"
+```
+
+### Checklist
+
+- [ ] 7.1. pico-sdl: main ← v0.5
+- [ ] 7.2. env-pico: main ← v0.2
+- [ ] 7.3. lua-atmos/pico-birds: main ← v0.5
+- [ ] 7.4. lua-atmos/pico-rocks: master ← v0.5
+- [ ] 7.5. atmos-lang/pico-birds: main ← v0.7
+- [ ] 7.6. atmos-lang/pico-rocks: master ← v0.7
+
+---
+
+## 8. Announce (manual)
 
 - Twitter
 - Students
