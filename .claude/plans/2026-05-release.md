@@ -80,6 +80,7 @@ cd lua && make tests
 
 | File             | Change                                                  |
 |------------------|---------------------------------------------------------|
+| `pico-sdl`       | `VERSION=v0.4-dev` → `v0.5` (line 3)                    |
 | `Makefile`       | `make lua` rockspec → `0.5-1`; `--version` check → `v0.5` |
 | `README.md`      | prepend `v0.5` list entry; stable + api link → `v0.5`   |
 | `lua/README.md`  | prepend `v0.5`; stable + install `0.5`; dev rockspec → `dev-2` |
