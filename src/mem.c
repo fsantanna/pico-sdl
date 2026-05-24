@@ -22,8 +22,69 @@ void _pico_mem_free_font (int n, const void* key, void* value) {
     TTF_CloseFont((TTF_Font*)value);
 }
 
+// Detach this layer from the parent-child graph before freeing it.
+// Three borrowed-pointer caches reference data->name (which
+// free(data->name) at the bottom of _pico_mem_free_layer will
+// invalidate):
+//   - parent's  hier.dn.fst / hier.dn.lst
+//   - sibling's hier.nxt
+//   - each child's hier.up
+// Runs for realm '~' replace, realm_leave pop, and realm_close.
+// Each block asserts the chain invariants it touches.
+static void _detach_layer (Pico_Layer* data) {
+    // splice self out of parent's child chain
+    if (data->hier.up != NULL) {
+        Pico_Layer* UP = (Pico_Layer*) realm_get(
+            G.realm, strlen(data->hier.up)+1, data->hier.up
+        );
+        assert(UP!=NULL && "bug found");
+        const char* prv = NULL;
+        const char* cur = UP->hier.dn.fst;
+        while (cur!=NULL && cur!=data->name) {
+            Pico_Layer* CUR = (Pico_Layer*) realm_get(
+                G.realm, strlen(cur)+1, cur
+            );
+            assert(CUR!=NULL && "bug found");
+            prv = cur;
+            cur = CUR->hier.nxt;
+        }
+        assert(cur==data->name && "bug found");
+        if (prv == NULL) {
+            UP->hier.dn.fst = data->hier.nxt;
+        } else {
+            Pico_Layer* PRV = (Pico_Layer*) realm_get(
+                G.realm, strlen(prv)+1, prv
+            );
+            assert(PRV!=NULL && "bug found");
+            PRV->hier.nxt = data->hier.nxt;
+        }
+        if (UP->hier.dn.lst == data->name) {
+            UP->hier.dn.lst = prv;
+        }
+    }
+
+    // detach own children — null each child's hier.up so a later
+    // free does not splice against our (soon-to-be freed) name
+    {
+        const char* cur = data->hier.dn.fst;
+        const char* lst = NULL;
+        while (cur != NULL) {
+            Pico_Layer* CUR = (Pico_Layer*) realm_get(
+                G.realm, strlen(cur)+1, cur
+            );
+            assert(CUR!=NULL && "bug found");
+            assert(CUR->hier.up==data->name && "bug found");
+            lst = cur;
+            cur = CUR->hier.nxt;
+            CUR->hier.up = NULL;
+        }
+        assert(lst==data->hier.dn.lst && "bug found");
+    }
+}
+
 void _pico_mem_free_layer (int n, const void* key, void* value) {
     Pico_Layer* data = (Pico_Layer*)value;
+    _detach_layer(data);
     if (data->type == PICO_LAYER_VIDEO) {
         _pico_video_free_layer((Pico_Layer_Video*)data);
     }
