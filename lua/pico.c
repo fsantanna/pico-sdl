@@ -422,6 +422,16 @@ static int l_quit (lua_State* L) {
     return 0;
 }
 
+static int l_push (lua_State* L) {
+    pico_push();
+    return 0;
+}
+
+static int l_pop (lua_State* L) {
+    pico_pop();
+    return 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // CV: unified pos/rect/dim — (L_to, to_or_mode, L_fr, fr)
 ///////////////////////////////////////////////////////////////////////////////
@@ -1676,6 +1686,8 @@ static int l_output_sound (lua_State* L) {
 static const luaL_Reg ll_all[] = {
     { "init", l_init },
     { "quit", l_quit },
+    { "push", l_push },
+    { "pop",  l_pop  },
     { NULL, NULL }
 };
 

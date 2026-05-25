@@ -1,4 +1,5 @@
 #include "pico.h"
+#include "_pico.h"
 #include "../check.h"
 
 /* push/pop scope test.
@@ -35,8 +36,10 @@ int main (void) {
 
     pico_output_present(1);
     _pico_check("stack-01");
+    assert(realm_get(G.realm, strlen("box")+1, "box") != NULL);
 
     pico_pop();
+    assert(realm_get(G.realm, strlen("box")+1, "box") == NULL);
 
     pico_set_effect_color(PICO_COLOR_BLACK);
     pico_output_clear();
