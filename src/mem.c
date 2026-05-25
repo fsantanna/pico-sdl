@@ -84,6 +84,13 @@ static void _detach_layer (Pico_Layer* data) {
 
 void _pico_mem_free_layer (int n, const void* key, void* value) {
     Pico_Layer* data = (Pico_Layer*)value;
+    // '~' replace: realm still has us (entry unlinked only on leave /
+    // close). Refuse to replace a parent — the new layer would silently
+    // orphan the children's subtree.
+    if (realm_get(G.realm, n, key) == data) {
+        assert(data->hier.dn.fst == NULL
+            && "cannot '~' replace a layer with children");
+    }
     _detach_layer(data);
     if (data->type == PICO_LAYER_VIDEO) {
         _pico_video_free_layer((Pico_Layer_Video*)data);
