@@ -245,6 +245,15 @@ void pico_init (int on);
 /// @brief Pushes a quit event.
 void pico_quit (void);
 
+/// @brief Opens a new scope. Entries created until the matching
+///        `pico_pop` are released together when it runs.
+void pico_push (void);
+
+/// @brief Closes the current scope, freeing every entry created
+///        since the matching `pico_push`. Requires the current
+///        target layer to be `world` or `window` (depth-0 statics).
+void pico_pop (void);
+
 /// @}
 
 /// @defgroup Input

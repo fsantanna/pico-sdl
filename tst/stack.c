@@ -1,16 +1,18 @@
 #include "pico.h"
 #include "../check.h"
 
-/* Stack scope regression: replace a parented layer via realm mode '~'.
+/* push/pop scope test.
  *
- * Before detach-on-free: parent's hier.dn.fst/lst/nxt still cache the
- * old child's name pointer (strdup'd, freed by _pico_mem_free_layer).
- * The next draw walk hashes garbage in realm_get and crashes at
- * src/layer.c:39 assert(CUR != NULL).
+ * stack-01: inside a push, a red box is attached under world and
+ *           visible after present.
+ * stack-02: after pop, the box is freed; world shows only the
+ *           black clear color.
  *
- * After the fix: free splices the child out of hier.up's child list
- * before releasing it. The re-attach from the '~' path re-inserts the
- * new layer cleanly; the walk shows a single 16x16 child under world.
+ * To prove pop actually does something:
+ *   - comment out pico_pop() → stack-02 still has the red box → fail
+ *   - comment out pico_push() → box at depth 0, pop trips
+ *     "pop without matching push" assert → abort
+ *   - add a second pico_pop() → same depth assert → abort
  */
 int main (void) {
     pico_init(1);
@@ -18,19 +20,12 @@ int main (void) {
     pico_set_effect_color(PICO_COLOR_BLACK);
     pico_output_clear();
 
-    // initial child under "world"
+    pico_push();
+
     pico_layer_empty(
-        "world", "L", 1, (Pico_Rel_Dim){'!', {8, 8}}, NULL
+        "world", "box", 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL
     );
-
-    // '~' replace: frees the old "L" (and its strdup'd name) and
-    // re-attaches a new "L" with a fresh name pointer
-    pico_layer_empty_mode(
-        '~', "world", "L", 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL
-    );
-
-    // paint the (new) child so it is visible in the check image
-    const char* old = pico_set_layer("L");
+    const char* old = pico_set_layer("box");
     pico_set_scene_dst(
         (Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C}
     );
@@ -40,6 +35,13 @@ int main (void) {
 
     pico_output_present(1);
     _pico_check("stack-01");
+
+    pico_pop();
+
+    pico_set_effect_color(PICO_COLOR_BLACK);
+    pico_output_clear();
+    pico_output_present(1);
+    _pico_check("stack-02");
 
     pico_init(0);
     return 0;

@@ -243,3 +243,18 @@ void pico_quit (void) {
     SDL_PushEvent(&e);
 }
 
+void pico_push (void) {
+    _pico_guard();
+    realm_enter(G.realm);
+}
+
+void pico_pop (void) {
+    _pico_guard();
+    pico_assert(
+        (G.layer == &G.world || G.layer == &G.window.layer)
+        && "pop: target must be world or window"
+    );
+    pico_assert(G.realm->depth > 1 && "pop without matching push");
+    realm_leave(G.realm);
+}
+
