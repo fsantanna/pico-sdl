@@ -95,6 +95,14 @@ void _pico_mem_free_layer (int n, const void* key, void* value) {
     free(data);
 }
 
+// Detach-only callback for static layers (G.world, G.window.layer).
+// Their struct, texture, and string-literal name are owned by pico
+// itself, not by the realm — so we just disown children / splice
+// from parent, and let pico_init(false) free the rest.
+void _pico_mem_detach_layer (int n, const void* key, void* value) {
+    _detach_layer((Pico_Layer*)value);
+}
+
 void _pico_mem_free_sound (int n, const void* key, void* value) {
     Mix_FreeChunk((Mix_Chunk*)value);
 }

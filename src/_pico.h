@@ -178,9 +178,10 @@ void _pico_layer_draw_all (Pico_Layer* UP);
 // mem
 ///////////////////////////////////////////////////////////////////////////////
 
-void _pico_mem_free_font  (int, const void*, void*);
-void _pico_mem_free_layer (int, const void*, void*);
-void _pico_mem_free_sound (int, const void*, void*);
+void _pico_mem_free_font    (int, const void*, void*);
+void _pico_mem_free_layer   (int, const void*, void*);
+void _pico_mem_free_sound   (int, const void*, void*);
+void _pico_mem_detach_layer (int, const void*, void*);
 
 void* _pico_mem_alloc_layer_pixmap (int, const void*, void*);
 void* _pico_mem_alloc_layer_empty  (int, const void*, void*);

@@ -83,10 +83,12 @@ void pico_init (int on) {
             assert(realm != NULL);
             realm_enter(realm);
             realm_put (
-                realm, '!', strlen("window")+1, "window", NULL, NULL, &G.window.layer
+                realm, '!', strlen("window")+1, "window",
+                _pico_mem_detach_layer, NULL, &G.window.layer
             );
             realm_put (
-                realm, '!', strlen("world")+1,  "world",  NULL, NULL, &G.world
+                realm, '!', strlen("world")+1, "world",
+                _pico_mem_detach_layer, NULL, &G.world
             );
         }
 
