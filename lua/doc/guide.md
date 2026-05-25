@@ -877,6 +877,31 @@ The next code listing implements this layout:
 After the scene is composed, we simply call `pico.output.present` to
 update the screen all at once.
 
+### 7.5. Scopes
+
+Layers (and other realm-managed resources) belong to a scope.
+The default scope opens at `pico.init(true)` and closes at
+`pico.init(false)`.
+Inside a program, scopes can be nested with `pico.push` and
+`pico.pop`, releasing every entry created in the scope when it
+closes:
+
+```
+pico.push()                                 -- begin scope
+pico.layer.image("world", "bg", "menu.png")
+pico.layer.text ("world", "ttl", 40, "PLAY")
+-- ... use the scene ...
+pico.pop()                                  -- frees bg, ttl, everything
+```
+
+This is convenient for scene transitions (e.g., menu → game):
+`pico.pop()` followed by `pico.push()` tears down the current
+scene and starts a fresh one.
+
+`pico.pop` requires the current target layer to be `world` or
+`window` (the two depth-0 statics that never get popped).
+Restore the target before calling `pop`.
+
 ## 8. Expert Mode
 
 By default, as seen in previous sections, each drawing operation becomes

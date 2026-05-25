@@ -282,6 +282,13 @@ In alphabetical order:
             - `pico.output.draw.tri (p1: Pos, p2: Pos, p3: Pos)`
         - **pico.output.draw.video**: Draws video frame.
             - `pico.output.draw.video (path: string, rect: Rect) -> boolean`
+- **pico.pop**: Closes the current scope, freeing every resource
+  created since the matching `pico.push`. Requires the current
+  target layer to be `world` or `window`.
+    - `pico.pop ()`
+- **pico.push**: Opens a new scope. Resources created until the
+  matching `pico.pop` are released together when it runs.
+    - `pico.push ()`
 - **pico.quit**: Pushes a quit event to terminate the application.
     - `pico.quit ()`
 - **pico.set**
