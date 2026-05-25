@@ -62,9 +62,8 @@ TTF_Font* _pico_font_get (const char* path, int h) {
     snprintf(key, sizeof(key), "/font/%s/%d", path_str, h);
     int n = strlen(key) + 1;
     _pico_mem_alloc_font_t ctx = { path, h };
-    const void* k = key;
     TTF_Font* ret = realm_put(
-        G.realm, '=', n, &k,
+        G.realm, '=', n, (const void**)&(const char*){key},
         _pico_mem_free_font, _pico_mem_alloc_font, &ctx
     );
     assert(ret != NULL);
@@ -83,14 +82,14 @@ void pico_init (int on) {
         {
             assert(realm != NULL);
             realm_enter(realm);
-            const void* win = "window";
-            const void* wld = "world";
             realm_put (
-                realm, '!', strlen("window")+1, &win,
+                realm, '!', strlen("window")+1,
+                (const void**)&(const char*){"window"},
                 _pico_mem_detach_layer, NULL, &G.window.layer
             );
             realm_put (
-                realm, '!', strlen("world")+1, &wld,
+                realm, '!', strlen("world")+1,
+                (const void**)&(const char*){"world"},
                 _pico_mem_detach_layer, NULL, &G.world
             );
         }
