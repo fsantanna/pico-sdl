@@ -31,7 +31,7 @@ realm_t* realm_open  (int n);
 void     realm_close (realm_t* r);
 void     realm_enter (realm_t* r);
 void     realm_leave (realm_t* r);
-void*    realm_put   (realm_t* r, int mode, int n, const void* key,
+void*    realm_put   (realm_t* r, int mode, int n, const void** key,
                       realm_free_t free, realm_alloc_t alloc, void* ctx);
 void*    realm_get   (realm_t* r, int n, const void* key);
 
@@ -119,13 +119,13 @@ void realm_leave (realm_t* r) {
     }
 }
 
-void* realm_put (realm_t* r, int mode, int n, const void* key,
+void* realm_put (realm_t* r, int mode, int n, const void** key,
                  realm_free_t free_, realm_alloc_t alloc, void* ctx) {
     assert(r->depth > 0);
     if (mode == '=') {
         assert(alloc != NULL);
     }
-    realm_entry** pp = realm_find(r, n, key);
+    realm_entry** pp = realm_find(r, n, *key);
 
     /* Key exists */
     if (*pp != NULL) {
@@ -135,24 +135,25 @@ void* realm_put (realm_t* r, int mode, int n, const void* key,
                 assert(0 && "realm: exclusive key exists");
                 return NULL;
             case '=':
+                *key = e->key;
                 return e->value;
             case '~': {
-                void* nv = (alloc != NULL) ? alloc(n, key, ctx) : ctx;
+                void* nv = (alloc != NULL) ? alloc(n, e->key, ctx) : ctx;
                 if (e->free != NULL) {
                     e->free(e->n, e->key, e->value);
                 }
                 e->depth = r->depth - 1;
                 e->value = nv;
                 e->free = free_;
+                *key = e->key;
                 return nv;
             }
             default: assert(0 && "bug found");
         }
     }
 
-    /* Key does not exist: create */
+    /* Key does not exist: create entry first so alloc gets stable e->key */
     else {
-        void* nv = (alloc != NULL) ? alloc(n, key, ctx) : ctx;
         realm_entry* e = malloc(sizeof(realm_entry));
         if (e == NULL) {
             return NULL;
@@ -162,13 +163,15 @@ void* realm_put (realm_t* r, int mode, int n, const void* key,
             free(e);
             return NULL;
         }
-        memcpy(e->key, key, n);
-        e->n = n;
-        e->value = nv;
+        memcpy(e->key, *key, n);
+        e->n     = n;
         e->depth = r->depth - 1;
-        e->free = free_;
-        e->next = NULL;
-        *pp = e;
+        e->free  = free_;
+        e->next  = NULL;
+        void* nv = (alloc != NULL) ? alloc(n, e->key, ctx) : ctx;
+        e->value = nv;
+        *pp      = e;
+        *key     = e->key;
         return nv;
     }
 }

@@ -68,7 +68,7 @@ Pico_Layer* _pico_layer_pixmap (
     assert(pixels!=NULL && "pixels required");
     _pico_mem_alloc_pixmap_t ctx = { dim, pixels };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
-        G.realm, mode, strlen(key)+1, key,
+        G.realm, mode, strlen(key)+1, (const void**)&key,
         _pico_mem_free_layer, _pico_mem_alloc_layer_pixmap, &ctx
     );
     assert(ret != NULL);
@@ -81,7 +81,7 @@ Pico_Layer* _pico_layer_image (
     assert(path!=NULL && "image path required");
     const char* str = (key != NULL) ? key : path;
     Pico_Layer* ret = (Pico_Layer*) realm_put (
-        G.realm, mode, strlen(str)+1, str,
+        G.realm, mode, strlen(str)+1, (const void**)&str,
         _pico_mem_free_layer, _pico_mem_alloc_layer_image, (void*)path
     );
     assert(ret != NULL);
@@ -111,7 +111,7 @@ Pico_Layer* _pico_layer_text (
 
     _pico_mem_alloc_text_t ctx = { height, text };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
-        G.realm, mode, strlen(str)+1, str,
+        G.realm, mode, strlen(str)+1, (const void**)&str,
         _pico_mem_free_layer, _pico_mem_alloc_layer_text, &ctx
     );
     assert(ret != NULL);
@@ -370,7 +370,7 @@ void pico_layer_empty_mode (
     assert(key!=NULL && "layer key required");
     _pico_mem_alloc_empty_t ctx = { up, clear, dim, tile };
     void* ret = realm_put (
-        G.realm, mode, strlen(key)+1, key,
+        G.realm, mode, strlen(key)+1, (const void**)&key,
         _pico_mem_free_layer, _pico_mem_alloc_layer_empty, &ctx
     );
     assert(ret != NULL);
@@ -418,7 +418,7 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
 
     _pico_mem_alloc_sub_t ctx = { par, *crop };
     void* ret = realm_put (
-        G.realm, mode, strlen(key)+1, key,
+        G.realm, mode, strlen(key)+1, (const void**)&key,
         _pico_mem_free_layer, _pico_mem_alloc_layer_sub, &ctx
     );
     assert(ret != NULL);

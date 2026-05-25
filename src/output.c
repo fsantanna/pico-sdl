@@ -280,7 +280,7 @@ static void _output_sound_cache (const char* path, int cache) {
     if (cache) {
         int n = strlen(path) + 1;
         mix = (Mix_Chunk*)realm_put(
-            G.realm, '=', n, path,
+            G.realm, '=', n, (const void**)&path,
             _pico_mem_free_sound, _pico_mem_alloc_sound, (void*)path
         );
     } else {
