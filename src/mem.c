@@ -91,7 +91,6 @@ void _pico_mem_free_layer (int n, const void* key, void* value) {
     if (data->type != PICO_LAYER_SUB) {
         SDL_DestroyTexture(data->tex);
     }
-    free(data->name);
     free(data);
 }
 
@@ -119,7 +118,7 @@ Pico_Layer* _pico_mem_layer_new (
     assert(data != NULL);
     *data = (Pico_Layer) {
         .type = type,
-        .name = strdup(key),
+        .name = (char*)key,
         .tex  = tex,
         .pencil = {
             .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL
@@ -136,7 +135,6 @@ Pico_Layer* _pico_mem_layer_new (
             .clip  = {'%', {.5,.5,1,1}, PICO_ANCHOR_C},
         },
     };
-    assert(data->name != NULL);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
     return data;
 }
