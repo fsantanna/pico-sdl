@@ -144,8 +144,8 @@ void* realm_put (realm_t* r, int mode, int n, const void** key,
                 }
                 e->depth = r->depth - 1;
                 e->value = nv;
-                e->free = free_;
-                *key = e->key;
+                e->free  = free_;
+                *key     = e->key;
                 return nv;
             }
             default: assert(0 && "bug found");
