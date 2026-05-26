@@ -899,13 +899,11 @@ releases them before the next begins, keeping memory bounded over time:
 > pico.init(false) ; pico.init(true)
 > for i=1, 5 do
     pico.push()
-    pico.layer.text (
-        "world", "scene "..i, 40, "Scene "..i,
-        {'%', x=0.5, y=0.5}
-    )
+    pico.output.clear()
+    pico.output.draw.text(i, {'%', x=0.5, y=0.5, h=0.7})
     pico.output.present()
     pico.input.delay(500)
-    pico.pop()
+    pico.pop()  -- releases implicit allocated text layer
   end
 ```
 
