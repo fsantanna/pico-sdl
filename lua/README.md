@@ -57,7 +57,7 @@ pico.init(false)
 ## Luarocks
 
 ```
-sudo apt install libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+sudo apt install liblua5.4-dev libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
 sudo luarocks install pico-sdl 0.5
 pico-lua lua/tst/cross.lua
 ```
