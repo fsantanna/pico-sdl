@@ -901,7 +901,6 @@ releases them before the next begins, keeping memory bounded over time:
     pico.push()
     pico.output.clear()
     pico.output.draw.text(i, {'%', x=0.5, y=0.5, h=0.7})
-    pico.output.present()
     pico.input.delay(500)
     pico.pop()  -- releases implicit allocated text layer
   end
