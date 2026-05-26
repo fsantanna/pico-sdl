@@ -314,6 +314,25 @@ pico.set.layer("world")
 pico.output.present()
 pico.check("guide-07-04-02")
 
+-- §7.5: memory stack -- scoped layers via push/pop
+--                       (delay omitted in tests)
+pico.init(false); pico.init(true)
+pico.set.window { title="guide-07-05-01" }
+for i=1, 5 do
+    pico.push()
+    pico.layer.text (
+        "world", "scene "..i, 40, "Scene "..i,
+        {'%', x=0.5, y=0.5}
+    )
+    pico.output.present()
+    if i == 5 then pico.check("guide-07-05-01") end
+    pico.pop()
+end
+-- after the loop, every scoped layer was popped -> empty world
+pico.set.window { title="guide-07-05-02" }
+pico.output.present()
+pico.check("guide-02-01-01")
+
 -------------------------------------------------------------------------------
 -- Section 8: Expert Mode
 -------------------------------------------------------------------------------

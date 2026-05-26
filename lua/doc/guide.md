@@ -877,30 +877,42 @@ The next code listing implements this layout:
 After the scene is composed, we simply call `pico.output.present` to
 update the screen all at once.
 
-### 7.5. Scopes
+### 7.5. Memory Stack
 
-Layers (and other realm-managed resources) belong to a scope.
-The default scope opens at `pico.init(true)` and closes at
-`pico.init(false)`.
-Inside a program, scopes can be nested with `pico.push` and
-`pico.pop`, releasing every entry created in the scope when it
-closes:
+Layers are memory resources that require a mechanism for consistent allocations
+and matching deallocations.
+`pico-lua` relies on a stack that provides deterministic bulk deallocations in
+scope transitions within applications.
 
+The default scope opens at `pico.init(true)` and closes at `pico.init(false)`.
+A program can also manipulate scopes explicitly through `pico.push`, which
+introduces a fresh scope, and `pico.pop`, which releases all resources in the
+current scope.
+
+As the next example illustrates, explicit scopes are convenient for
+applications that move through long sequences of scenes (e.g., menu `->` game
+`->` game-over `->` ...).
+Each scene allocates its own layers under a fresh `push`, and a single `pop`
+releases them before the next begins, keeping memory bounded over time:
+
+```lua
+> pico.init(false) ; pico.init(true)
+> for i=1, 5 do
+    pico.push()
+    pico.layer.text (
+        "world", "scene "..i, 40, "Scene "..i,
+        {'%', x=0.5, y=0.5}
+    )
+    pico.output.present()
+    pico.input.delay(500)
+    pico.pop()
+  end
 ```
-pico.push()                                 -- begin scope
-pico.layer.image("world", "bg", "menu.png")
-pico.layer.text ("world", "ttl", 40, "PLAY")
--- ... use the scene ...
-pico.pop()                                  -- frees bg, ttl, everything
-```
 
-This is convenient for scene transitions (e.g., menu → game):
-`pico.pop()` followed by `pico.push()` tears down the current
-scene and starts a fresh one.
-
-`pico.pop` requires the current target layer to be `world` or
-`window` (the two depth-0 statics that never get popped).
-Restore the target before calling `pop`.
+In the example, the loop represents a continuous, possibly infinite, sequence
+of scenes, which would accumulate new layers per iteration.
+The stack not only keeps the memory footprint constant over time, but also
+helps to organise and reason about the application memory.
 
 ## 8. Expert Mode
 
