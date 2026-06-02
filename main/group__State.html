@@ -133,6 +133,12 @@ Functions</h2></td></tr>
 <tr class="memitem:gad8096755f80edff4454acefb07ec307e" id="r_gad8096755f80edff4454acefb07ec307e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#gad8096755f80edff4454acefb07ec307e">pico_layer_image_mode</a> (int mode, const char *up, const char *key, const char *path)</td></tr>
 <tr class="memdesc:gad8096755f80edff4454acefb07ec307e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a layer from an image file.  <br /></td></tr>
 <tr class="separator:gad8096755f80edff4454acefb07ec307e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga815ef2b50f76b0c62c92394252111a4e" id="r_ga815ef2b50f76b0c62c92394252111a4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga815ef2b50f76b0c62c92394252111a4e">pico_layer_screenshot</a> (const char *up, const char *key, const char *src, const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
+<tr class="memdesc:ga815ef2b50f76b0c62c92394252111a4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a layer from a screenshot of a layer (exclusive mode). Captures the same pixels as pico_output_screenshot, but stores them in a new layer instead of a PNG file.  <br /></td></tr>
+<tr class="separator:ga815ef2b50f76b0c62c92394252111a4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7d7ff8f0e15935962beb691159d8b2c2" id="r_ga7d7ff8f0e15935962beb691159d8b2c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga7d7ff8f0e15935962beb691159d8b2c2">pico_layer_screenshot_mode</a> (int mode, const char *up, const char *key, const char *src, const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect)</td></tr>
+<tr class="memdesc:ga7d7ff8f0e15935962beb691159d8b2c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a layer from a screenshot of a layer. Captures the same pixels as pico_output_screenshot, but stores them in a new layer instead of a PNG file.  <br /></td></tr>
+<tr class="separator:ga7d7ff8f0e15935962beb691159d8b2c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0050e4c154315511e21f3520773da7ff" id="r_ga0050e4c154315511e21f3520773da7ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga0050e4c154315511e21f3520773da7ff">pico_layer_sub</a> (const char *up, const char *key, const char *parent, const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *crop)</td></tr>
 <tr class="memdesc:ga0050e4c154315511e21f3520773da7ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a sub-layer (crop) from an existing layer (exclusive mode). Shares the parent's texture — no copy.  <br /></td></tr>
 <tr class="separator:ga0050e4c154315511e21f3520773da7ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1286,6 +1292,113 @@ Functions</h2></td></tr>
     <tr><td class="paramname">key</td><td>layer key (must not be NULL or start with '/') </td></tr>
     <tr><td class="paramname">dim</td><td>pixmap dimensions </td></tr>
     <tr><td class="paramname">pixels</td><td>RGBA pixel data (must remain valid while layer exists) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga815ef2b50f76b0c62c92394252111a4e" name="ga815ef2b50f76b0c62c92394252111a4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga815ef2b50f76b0c62c92394252111a4e">&#9670;&#160;</a></span>pico_layer_screenshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pico_layer_screenshot </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>up</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *&#160;</td>
+          <td class="paramname"><em>rect</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a layer from a screenshot of a layer (exclusive mode). Captures the same pixels as pico_output_screenshot, but stores them in a new layer instead of a PNG file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>layer key (must not be NULL or start with '/') </td></tr>
+    <tr><td class="paramname">src</td><td>layer to capture (NULL uses current layer) </td></tr>
+    <tr><td class="paramname">rect</td><td>region to capture (NULL captures full layer) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga7d7ff8f0e15935962beb691159d8b2c2" name="ga7d7ff8f0e15935962beb691159d8b2c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7d7ff8f0e15935962beb691159d8b2c2">&#9670;&#160;</a></span>pico_layer_screenshot_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pico_layer_screenshot_mode </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>up</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *&#160;</td>
+          <td class="paramname"><em>rect</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a layer from a screenshot of a layer. Captures the same pixels as pico_output_screenshot, but stores them in a new layer instead of a PNG file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td>realm mode ('!' exclusive, '=' shared, '~' replace) </td></tr>
+    <tr><td class="paramname">key</td><td>layer key (must not be NULL or start with '/') </td></tr>
+    <tr><td class="paramname">src</td><td>layer to capture (NULL uses current layer) </td></tr>
+    <tr><td class="paramname">rect</td><td>region to capture (NULL captures full layer) </td></tr>
   </table>
   </dd>
 </dl>
