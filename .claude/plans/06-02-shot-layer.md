@@ -62,4 +62,8 @@ Key decisions
 - [x] surface owns pixels (no `buf`)
 - [x] unify layer + rect resolution inside `_pico_shot`
 - [x] restore render target + clip after capture (anchor_pct fix)
-- [ ] verify full suite green
+- [x] verify full C suite green (`make test T=shot`)
+- [x] Lua binding `pico.layer.screenshot` + mirrored `shot.lua` tests
+- [x] verify full Lua suite green (`cd lua/ && make tests`)
+- [x] docs: `pico.h` doxygen + `lua/doc/api.md` + `lua/doc/guide.md` §10.1
+- [x] guide test: `lua/tst/guide.lua` §10.1.c scene (`guide-10-01-03`)

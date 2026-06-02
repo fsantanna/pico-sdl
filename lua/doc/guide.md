@@ -1299,6 +1299,16 @@ An optional rectangle crops the screenshot:
 </td></tr>
 </table>
 
+We can also create a new layer from a screenshot with `pico.layer.screenshot`:
+
+```lua
+> pico.layer.screenshot(nil, "snap", 'window')
+> pico.output.draw.layer("snap", {'%', x=0.5, y=0.5, w=0.3})
+```
+
+In the example, we freeze the `window` into `snap`, then compose it back onto
+the world at `30%` size.
+
 ### 10.2. Playing Sounds
 
 To play a sound file:

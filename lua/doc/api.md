@@ -209,6 +209,14 @@ In alphabetical order:
     - **pico.layer.pixmap**: Creates a layer from a pixmap.
         - `pico.layer.pixmap ([mode,] up: string?, key: string,
           pixmap: {{Color}} [, rect: Rect])`
+    - **pico.layer.screenshot**: Creates a layer from a screenshot of a
+      layer.
+        - `pico.layer.screenshot ([mode,] up: string?, key: string,
+          src: string? [, region: Rect])`
+        - `src`: layer to capture; `nil` means current layer.
+        - `region`: area in `src`'s frame; `nil` captures full.
+        - Captures the same pixels as `pico.output.screenshot`, but stores
+          them in a new layer instead of a file.
     - **pico.layer.sub**: Creates a sub-layer from a source layer.
         - `pico.layer.sub ([mode,] up: string?, key: string,
           src: string, crop: Rect [, rect: Rect])`
