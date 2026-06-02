@@ -10,6 +10,8 @@ int main (void) {
     pico_init(1);
     pico_output_clear();
 
+    // PICO_OUTPUT_SCREENSHOT
+
     {
         puts("entire screen - 01");
         Pico_Rel_Rect r = { '!', {10, 10, 20, 20}, PICO_ANCHOR_NW };
@@ -149,6 +151,67 @@ int main (void) {
         pico_set_layer("world");
         assert(!strcmp(f, "out/shot-video.png"));
         check(f, "asr/shot-video.png");
+    }
+
+    // PICO_LAYER_SCREENSHOT
+
+    // 1. capture an existing layer into a new layer; the new layer must
+    // hold the same pixels, so its screenshot matches empty1's reference
+    {
+        puts("screenshot layer - reuse empty1");
+        pico_layer_screenshot(NULL, "snap_empty", "empty1", NULL);
+        pico_set_layer("snap_empty");
+        const char* f = pico_output_screenshot(NULL, "out/shot-snap-empty.png", NULL);
+        pico_set_layer("world");
+        assert(!strcmp(f, "out/shot-snap-empty.png"));
+        check(f, "asr/shot-empty.png");
+    }
+
+    // 2. compose a multi-layer scene on world, capture it as one layer,
+    // clear, redraw the capture, and confirm it matches the original scene
+    {
+        puts("screenshot layer - scene round-trip");
+
+        pico_layer_empty(NULL, "red", 1, (Pico_Rel_Dim){'!', {20, 20}}, NULL);
+        pico_set_layer("red");
+        pico_set_effect_color((Pico_Color){0xFF, 0, 0, 0xFF});
+        pico_output_clear();
+
+        pico_layer_empty(NULL, "blue", 1, (Pico_Rel_Dim){'!', {20, 20}}, NULL);
+        pico_set_layer("blue");
+        pico_set_effect_color((Pico_Color){0, 0, 0xFF, 0xFF});
+        pico_output_clear();
+
+        pico_set_layer("world");
+        pico_set_effect_color((Pico_Color){0x20, 0x20, 0x20, 0xFF});
+        pico_output_clear();
+        pico_output_draw_layer("red", &(Pico_Rel_Rect){ '!', {20, 20, 20, 20}, PICO_ANCHOR_NW });
+        pico_output_draw_layer("blue", &(Pico_Rel_Rect){ '!', {50, 40, 20, 20}, PICO_ANCHOR_NW });
+
+        const char* f1 = pico_output_screenshot("world", "out/shot-scene.png", NULL);
+        check(f1, "asr/shot-scene.png");
+
+        pico_layer_screenshot(NULL, "snap_scene", "world", NULL);
+        pico_set_layer("world");
+        pico_output_clear();
+        pico_output_draw_layer("snap_scene", NULL);
+        const char* f2 = pico_output_screenshot("world", "out/shot-scene-2.png", NULL);
+        check(f2, "asr/shot-scene.png");
+        pico_set_layer("world");
+    }
+
+    // 3. capture a relative region of a layer; the rect resolves against
+    // the source layer (empty1 = 64x32), so this yields its left half
+    {
+        puts("screenshot layer - region (pct)");
+        pico_layer_screenshot(NULL, "snap_half", "empty1",
+            &(Pico_Rel_Rect){ '%', {0, 0, 0.5, 1.0}, PICO_ANCHOR_NW }
+        );
+        pico_set_layer("snap_half");
+        const char* f = pico_output_screenshot(NULL, "out/shot-snap-half.png", NULL);
+        pico_set_layer("world");
+        assert(!strcmp(f, "out/shot-snap-half.png"));
+        check(f, "asr/shot-snap-half.png");
     }
 
     pico_init(0);
