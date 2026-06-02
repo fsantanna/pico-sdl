@@ -295,25 +295,12 @@ static void _output_sound_cache (const char* path, int cache) {
     }
 }
 
-const char* pico_output_screenshot (const char* layer, const char* path, const Pico_Rel_Rect* rect) {
-    _pico_guard();
-    const char* old = NULL;
-    if (layer != NULL) {
-        old = pico_set_layer(layer);
-    }
-    Pico_Layer* L = G.layer;
-    Pico_Abs_Rect ri = (rect == NULL)
-        ? (Pico_Abs_Rect){0, 0, L->scene.dim.w, L->scene.dim.h}
-        : _pico_abs_rect(*rect, NULL, NULL);
-
-    const char* ret = path;
-    if (path == NULL) {
-        static char _path_[32] = "";
-        time_t ts = time(NULL);
-        struct tm* ti = localtime(&ts);
-        assert(strftime(_path_, 32, "pico-sdl-%Y%m%d-%H%M%S.png", ti) == 28);
-        ret = _path_;
-    }
+// captures region rect of named layer (NULL == current) into a fresh RGBA32
+// surface that owns its pixels (NULL rect captures the whole layer)
+SDL_Surface* _pico_shot (const char* layer, const Pico_Rel_Rect* rect) {
+    Pico_Layer* L = (layer != NULL) ? _pico_layer_name(layer) : G.layer;
+    Pico_Abs_Rect lr = {0, 0, L->scene.dim.w, L->scene.dim.h};
+    Pico_Abs_Rect ri = (rect == NULL) ? lr : _pico_abs_rect(*rect, &lr, NULL);
 
     // window screenshots read the framebuffer directly (SDL forces alpha=255
     // for fb pixels, matching what the user sees on screen)
@@ -336,22 +323,41 @@ const char* pico_output_screenshot (const char* layer, const char* path, const P
     SDL_SetRenderTarget(G.window.ren, tex);
     pico_input_delay(5);            // TODO: bug if removed
 
-    void* buf = malloc(4 * ri.w * ri.h);
-    assert(buf != NULL);
-    SDL_RenderReadPixels(G.window.ren, &ri, SDL_PIXELFORMAT_RGBA32, buf, 4*ri.w);
-    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom (
-        buf, ri.w, ri.h, 32, 4*ri.w, SDL_PIXELFORMAT_RGBA32
+    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormat (
+        0, ri.w, ri.h, 32, SDL_PIXELFORMAT_RGBA32
     );
-    pico_assert(IMG_SavePNG(sfc, ret) == 0);
-    free(buf);
-    SDL_FreeSurface(sfc);
+    pico_assert(sfc != NULL);
+    SDL_RenderReadPixels(G.window.ren, &ri, SDL_PIXELFORMAT_RGBA32, sfc->pixels, sfc->pitch);
     if (tmp != NULL) {
         SDL_DestroyTexture(tmp);
     }
 
-    if (layer != NULL) {
-        pico_set_layer(old);
+    // restore render target + clip to the current layer (the capture above
+    // retargeted the renderer)
+    SDL_SetRenderTarget(G.window.ren, G.layer->tex);
+    Pico_Abs_Rect cr = _pico_abs_rect(G.layer->scene.clip, NULL, NULL);
+    SDL_RenderSetClipRect(G.window.ren, &cr);
+
+    return sfc;
+}
+
+const char* pico_output_screenshot (const char* layer, const char* path, const Pico_Rel_Rect* rect) {
+    _pico_guard();
+
+    SDL_Surface* sfc = _pico_shot(layer, rect);
+
+    const char* ret = path;
+    if (path == NULL) {
+        static char _path_[32] = "";
+        time_t ts = time(NULL);
+        struct tm* ti = localtime(&ts);
+        assert(strftime(_path_, 32, "pico-sdl-%Y%m%d-%H%M%S.png", ti) == 28);
+        ret = _path_;
     }
+
+    pico_assert(IMG_SavePNG(sfc, ret) == 0);
+    SDL_FreeSurface(sfc);
+
     return ret;
 }
 

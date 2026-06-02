@@ -513,6 +513,26 @@ void pico_layer_image (const char* up, const char* key, const char* path);
 void pico_layer_image_mode (int mode,
     const char* up, const char* key, const char* path);
 
+/// @brief Creates a layer from a screenshot of a layer (exclusive
+///        mode).
+/// Captures the same pixels as pico_output_screenshot, but stores
+/// them in a new layer instead of a PNG file.
+/// @param key layer key (must not be NULL or start with '/')
+/// @param src layer to capture (NULL uses current layer)
+/// @param rect region to capture (NULL captures full layer)
+void pico_layer_screenshot (const char* up, const char* key,
+    const char* src, const Pico_Rel_Rect* rect);
+
+/// @brief Creates a layer from a screenshot of a layer.
+/// Captures the same pixels as pico_output_screenshot, but stores
+/// them in a new layer instead of a PNG file.
+/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
+/// @param key layer key (must not be NULL or start with '/')
+/// @param src layer to capture (NULL uses current layer)
+/// @param rect region to capture (NULL captures full layer)
+void pico_layer_screenshot_mode (int mode, const char* up, const char* key,
+    const char* src, const Pico_Rel_Rect* rect);
+
 /// @brief Creates a sub-layer (crop) from an existing layer
 ///        (exclusive mode).
 /// Shares the parent's texture — no copy.

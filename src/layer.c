@@ -395,6 +395,29 @@ void pico_layer_image_mode (
     }
 }
 
+void pico_layer_screenshot (const char* up, const char* key,
+    const char* src, const Pico_Rel_Rect* rect)
+{
+    _pico_guard();
+    pico_layer_screenshot_mode('!', up, key, src, rect);
+}
+
+void pico_layer_screenshot_mode (int mode, const char* up, const char* key,
+    const char* src, const Pico_Rel_Rect* rect)
+{
+    _pico_guard();
+    assert(key!=NULL && "layer key required");
+    _pico_mem_alloc_shot_t ctx = { src, rect };
+    void* ret = realm_put (
+        G.realm, mode, strlen(key)+1, (const void**)&key,
+        _pico_mem_free_layer, _pico_mem_alloc_layer_shot, &ctx
+    );
+    assert(ret != NULL);
+    if (up != NULL) {
+        _pico_layer_attach(up, key);
+    }
+}
+
 void pico_layer_sub (const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop)
 {

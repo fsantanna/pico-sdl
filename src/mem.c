@@ -165,6 +165,23 @@ void* _pico_mem_alloc_layer_pixmap (int n, const void* key, void* ctx) {
     );
 }
 
+void* _pico_mem_alloc_layer_shot (int n, const void* key, void* ctx) {
+    _pico_mem_alloc_shot_t* c = (_pico_mem_alloc_shot_t*)ctx;
+
+    // same capture as pico_output_screenshot, then upload to a texture
+    // instead of writing a PNG
+    SDL_Surface* sfc = _pico_shot(c->src, c->rect);
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
+    pico_assert(tex != NULL);
+    Pico_Abs_Dim dim = { sfc->w, sfc->h };
+    SDL_FreeSurface(sfc);
+
+    return _pico_mem_layer_new (
+        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        (const char*)key, tex, dim
+    );
+}
+
 void* _pico_mem_alloc_layer_empty (int n, const void* key, void* ctx) {
     _pico_mem_alloc_empty_t* arg = (_pico_mem_alloc_empty_t*)ctx;
 

@@ -101,6 +101,11 @@ typedef struct {
     int h;
 } _pico_mem_alloc_font_t;
 
+typedef struct {
+    const char*          src;
+    const Pico_Rel_Rect* rect;
+} _pico_mem_alloc_shot_t;
+
 ///////////////////////////////////////////////////////////////////////////////
 // STATE
 ///////////////////////////////////////////////////////////////////////////////
@@ -143,6 +148,7 @@ TTF_Font*    _pico_font_get   (const char* path, int h);
 ///////////////////////////////////////////////////////////////////////////////
 
 void _pico_output_present (int force);
+SDL_Surface* _pico_shot (const char* layer, const Pico_Rel_Rect* rect);
 
 ///////////////////////////////////////////////////////////////////////////////
 // aux
@@ -184,6 +190,7 @@ void _pico_mem_free_sound   (int, const void*, void*);
 void _pico_mem_detach_layer (int, const void*, void*);
 
 void* _pico_mem_alloc_layer_pixmap (int, const void*, void*);
+void* _pico_mem_alloc_layer_shot   (int, const void*, void*);
 void* _pico_mem_alloc_layer_empty  (int, const void*, void*);
 void* _pico_mem_alloc_layer_image  (int, const void*, void*);
 void* _pico_mem_alloc_layer_sub    (int, const void*, void*);
