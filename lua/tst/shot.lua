@@ -143,4 +143,61 @@ do
     check(f, "../../tst/asr/shot-video.png")
 end
 
+-- PICO.LAYER.SCREENSHOT
+
+-- 1. capture an existing layer into a new layer; reuses empty1's reference
+do
+    print("screenshot layer - reuse empty1")
+    pico.layer.screenshot(nil, "snap_empty", "empty1")
+    pico.set.layer("snap_empty")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-snap-empty.png")
+    pico.set.layer("world")
+    assert(f == "../../tst/out/shot-snap-empty.png")
+    check(f, "../../tst/asr/shot-empty.png")
+end
+
+-- 2. compose a multi-layer scene, capture it, clear, redraw, compare
+do
+    print("screenshot layer - scene round-trip")
+
+    pico.layer.empty(nil, "red", true, {'!', w=20, h=20})
+    pico.set.layer("red")
+    pico.set.effect { color={'!', r=0xFF, g=0, b=0} }
+    pico.output.clear()
+
+    pico.layer.empty(nil, "blue", true, {'!', w=20, h=20})
+    pico.set.layer("blue")
+    pico.set.effect { color={'!', r=0, g=0, b=0xFF} }
+    pico.output.clear()
+
+    pico.set.layer("world")
+    pico.set.effect { color={'!', r=0x20, g=0x20, b=0x20} }
+    pico.output.clear()
+    pico.output.draw.layer("red", {'!', x=20, y=20, w=20, h=20, anchor='NW'})
+    pico.output.draw.layer("blue", {'!', x=50, y=40, w=20, h=20, anchor='NW'})
+
+    local f1 = pico.output.screenshot("world", "../../tst/out/shot-scene.png")
+    check(f1, "../../tst/asr/shot-scene.png")
+
+    pico.layer.screenshot(nil, "snap_scene", "world")
+    pico.set.layer("world")
+    pico.output.clear()
+    pico.output.draw.layer("snap_scene")
+    local f2 = pico.output.screenshot("world", "../../tst/out/shot-scene-2.png")
+    check(f2, "../../tst/asr/shot-scene.png")
+    pico.set.layer("world")
+end
+
+-- 3. capture a relative region; resolves against the source layer (64x32)
+do
+    print("screenshot layer - region (pct)")
+    pico.layer.screenshot(nil, "snap_half", "empty1",
+        {'%', x=0, y=0, w=0.5, h=1.0, anchor='NW'})
+    pico.set.layer("snap_half")
+    local f = pico.output.screenshot(nil, "../../tst/out/shot-snap-half.png")
+    pico.set.layer("world")
+    assert(f == "../../tst/out/shot-snap-half.png")
+    check(f, "../../tst/asr/shot-snap-half.png")
+end
+
 pico.init(false)

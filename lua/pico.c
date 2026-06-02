@@ -1396,6 +1396,25 @@ static int l_layer_sub (lua_State* L) {
     return 0;
 }
 
+static int l_layer_screenshot (lua_State* L) {
+    // [m] | up | me | src | [region]
+    char m = L_realm_opt(L);
+    if (!m) m = '!';
+
+    const char* up  = lua_tostring(L, 2);
+    const char* me  = luaL_checkstring(L, 3);
+    const char* src = lua_tostring(L, 4);   // nil -> current layer
+
+    Pico_Rel_Rect rect, *xrect=NULL;
+    if (lua_istable(L, 5)) {
+        rect = C_rel_rect(L, 5);
+        xrect = &rect;
+    }
+
+    pico_layer_screenshot_mode(m, up, me, src, xrect);
+    return 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 static int l_input_delay (lua_State* L) {
@@ -1762,12 +1781,13 @@ static const luaL_Reg ll_set[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_layer[] = {
-    { "empty",  l_layer_empty  },
-    { "image",  l_layer_image  },
-    { "pixmap", l_layer_pixmap },
-    { "sub",    l_layer_sub    },
-    { "text",   l_layer_text   },
-    { "video",  l_layer_video  },
+    { "empty",      l_layer_empty      },
+    { "image",      l_layer_image      },
+    { "pixmap",     l_layer_pixmap     },
+    { "screenshot", l_layer_screenshot },
+    { "sub",        l_layer_sub        },
+    { "text",       l_layer_text       },
+    { "video",      l_layer_video      },
     { NULL, NULL }
 };
 
