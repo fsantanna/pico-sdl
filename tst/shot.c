@@ -1,3 +1,5 @@
+#include <SDL2/SDL.h>
+
 #include "pico.h"
 #include "../check.h"
 
@@ -212,6 +214,36 @@ int main (void) {
         pico_set_layer("world");
         assert(!strcmp(f, "out/shot-snap-half.png"));
         check(f, "asr/shot-snap-half.png");
+    }
+
+    // 4. regression: a capture must not be corrupted by a present fired from
+    // the event loop during the capture's internal delay. A queued resize
+    // event makes _pico_shot's pico_input_delay present, which rebinds the
+    // render target to the *current* layer; the capture must still read the
+    // requested layer (else it returns a blank/wrong screenshot).
+    {
+        puts("screenshot layer - render-target race");
+        pico_layer_empty(NULL, "race_cur", 1,
+            (Pico_Rel_Dim){'!', {64, 32}}, NULL);
+        pico_set_layer("race_cur");
+        pico_set_effect_color((Pico_Color){0x00, 0x80, 0x00, 0xFF});
+        pico_output_clear();        // current layer: solid green, != empty1
+
+        // queue an event the capture's internal pico_input_delay will pick up;
+        // resizing to the current size keeps the window content unchanged
+        SDL_Event e = {0};
+        e.type = SDL_WINDOWEVENT;
+        e.window.event = SDL_WINDOWEVENT_RESIZED;
+        e.window.data1 = PICO_DIM_PHY.w;
+        e.window.data2 = PICO_DIM_PHY.h;
+        SDL_PushEvent(&e);
+
+        // capture empty1 while race_cur is current: must match empty1's
+        // reference, not race_cur's blank/green content
+        const char* f = pico_output_screenshot("empty1", "out/shot-race.png", NULL);
+        pico_set_layer("world");
+        assert(!strcmp(f, "out/shot-race.png"));
+        check(f, "asr/shot-empty.png");
     }
 
     pico_init(0);

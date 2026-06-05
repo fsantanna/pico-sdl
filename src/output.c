@@ -320,8 +320,15 @@ SDL_Surface* _pico_shot (const char* layer, const Pico_Rel_Rect* rect) {
             tex = tmp;
         }
     }
-    SDL_SetRenderTarget(G.window.ren, tex);
     pico_input_delay(5);            // TODO: bug if removed
+
+    // bind the capture target *after* the delay: pico_input_delay runs the
+    // event loop, and any event that triggers a present (resize, ctrl-aids,
+    // ...) resets the render target to G.layer->tex. Binding here -- right
+    // before ReadPixels -- guarantees we read `tex` and not the current
+    // layer (which would yield a blank/wrong screenshot, e.g. capturing
+    // "world" while another layer is current).
+    SDL_SetRenderTarget(G.window.ren, tex);
 
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormat (
         0, ri.w, ri.h, 32, SDL_PIXELFORMAT_RGBA32
