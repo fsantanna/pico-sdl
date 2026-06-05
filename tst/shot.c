@@ -214,6 +214,32 @@ int main (void) {
         check(f, "asr/shot-snap-half.png");
     }
 
+    // world screenshot must survive expert-mode auto-clear (regression).
+    // reproduces the "world layer" scene above, but in expert mode where
+    // world.scene.clear==1: present() composites then blanks world.tex, so
+    // the shot currently comes back empty and mismatches asr/shot-world.png.
+    {
+        puts("world layer (expert auto-clear)");
+        pico_set_expert(1, 0);
+        pico_set_layer("world");
+
+        pico_set_effect_color((Pico_Color){0x10, 0x10, 0x10, 0xFF});
+        pico_output_clear();
+        pico_set_pencil_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
+        pico_output_draw_rect(
+            (Pico_Rel_Rect){ '!', {10, 10, 30, 30}, PICO_ANCHOR_NW }
+        );
+        pico_output_present(1);
+
+        const char* f =
+            pico_output_screenshot("world", "out/shot-world-expert.png", NULL);
+        assert(!strcmp(f, "out/shot-world-expert.png"));
+        check(f, "asr/shot-world.png");
+
+        pico_set_expert(0, 0);
+        pico_set_layer("world");
+    }
+
     pico_init(0);
     return 0;
 }

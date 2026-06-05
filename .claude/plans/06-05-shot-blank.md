@@ -62,20 +62,29 @@ Leave `G.world.effect.grid = 0;` as-is.
 an explicit `pico_output_clear()` on it (which clears the target directly,
 regardless of the flag).
 
-### 4. Drop the color-change implicit clear
+### 4. Keep the color-change clear (revised)
 
-`src/get-set.c` — `pico_set_effect_color` (~268-274)
-Remove the `if (L->scene.clear && L->hier.up!=NULL) { ... RenderClear ... }`
-block.
-It belonged to the old implicit-clear mechanism; with E, clearing is explicit.
-Safe for current tests — every test that sets a clear-layer's color follows it
-with an explicit `pico_output_clear()` (e.g. tst/shot.c "empty layer" and
-"scene round-trip").
+`src/get-set.c` — `pico_set_effect_color`
+KEEP the `if (L->scene.clear && L->hier.up!=NULL) { ... RenderClear ... }`
+block. It is orthogonal to the screenshot bug (fires on set_effect_color, not
+on present) and is relied upon by guide.lua §7.4 to paint an auto-clear
+panel's background via `pico.set.effect { color=... }` without an explicit
+clear. With E, world.scene.clear==0 so it no longer fires for world; it still
+fires for cascade-clear child layers, as before.
 
-### 5. Fix the one program relying on implicit clear
+### 5. Fix programs relying on implicit clear
 
-`logo.lua` — game loop top (~62)
-Add `pico.output.clear()` as the first statement inside `while true do`.
+Survey correction: `logo.lua` is a static generator (no expert/loop) — NOT
+affected. The only programs that draw+present in expert mode without an
+explicit per-frame clear are two doc examples:
+
+- `lua/doc/anims.lua` loop (~61-76): add `pico.output.clear()` as first line.
+- `lua/doc/rects.lua` loop (~16-36): add `pico.output.clear()` as first line.
+
+Every other expert program (tst/window, tst/todo/video, tst/todo/rain,
+gen-guide-*-gif.lua, lua/tst/todo/*) already clears explicitly — unaffected.
+Adding the explicit clear yields visually identical frames, so the committed
+gifs / `tst/asr/guide-*` images stay valid (no regeneration).
 
 ### 6. Docs
 
@@ -86,8 +95,10 @@ Add `pico.output.clear()` as the first statement inside `while true do`.
   redefine as "cascade-clear flag: cleared when an ancestor cascades".
 - `pico_set_scene_clear` (711): add a one-line doc with the same meaning.
 
-Optionally mirror the wording in `lua/doc/` where `clear` / `expert` are
-described (low priority).
+`lua/doc/guide.md`
+- §8 main-loop sketch (~973) and rects example (~1029): add the explicit
+  `pico.output.clear()` at the loop top to match the new model.
+- line ~721: reword "automatically cleared" to the cascade-flag meaning.
 
 ## Out of scope / notes
 
@@ -104,9 +115,10 @@ described (low priority).
 | src/layer.c   | `_pico_layer_draw_all` ~47-53      | remove post-composite clear    |
 | src/output.c  | `pico_output_clear` + new helper   | recursive cascade clear        |
 | src/get-set.c | `pico_set_expert` ~227             | remove world clear assignment  |
-| src/get-set.c | `pico_set_effect_color` ~268       | remove color-change clear      |
 | src/pico.h    | clear-related docstrings           | document cascade semantics     |
-| logo.lua      | loop top ~62                       | add explicit clear             |
+| lua/doc/anims.lua | loop top ~62                   | add explicit clear             |
+| lua/doc/rects.lua | loop top ~17                   | add explicit clear             |
+| lua/doc/guide.md  | §8 sketch/example, ~721        | explicit clear + reword        |
 
 ## Verification
 
