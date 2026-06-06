@@ -1,5 +1,7 @@
 # 06-05 shot blank — explicit cascade clear
 
+Status: DONE — all C + lua tests pass.
+
 ## Context
 
 `pico_output_screenshot("world")` (and `pico_layer_screenshot(..,"world",..)`)
@@ -34,6 +36,16 @@ Only `logo.lua` does this today; it gets an explicit `clear()`.
 `src/layer.c` — `_pico_layer_draw_all` (~47-53)
 Delete the whole `if (CUR->scene.clear) { ... RenderClear ... }` block.
 Layers are no longer wiped during `present()`.
+
+### 1b. Shared hierarchy walk `_pico_layer_traverse`
+
+`src/layer.c` / `src/_pico.h`
+Extract the depth-first child walk shared by compositing and clearing into
+`_pico_layer_traverse(up, pre, pos)` — `pre(UP,CUR)` runs before descending,
+`pos(UP,CUR)` after; either may be NULL.
+`_pico_layer_draw_all` becomes a thin wrapper: save `G.layer`, traverse with
+`pre=set target CUR`, `pos=set G.layer=UP + composite CUR`, restore `G.layer`.
+The cascade clear (below) reuses the same primitive with a single `pre`.
 
 ### 2. Cascade clear in `pico_output_clear`
 
@@ -99,6 +111,14 @@ gifs / `tst/asr/guide-*` images stay valid (no regeneration).
 - §8 main-loop sketch (~973) and rects example (~1029): add the explicit
   `pico.output.clear()` at the loop top to match the new model.
 - line ~721: reword "automatically cleared" to the cascade-flag meaning.
+
+## Test fallout (behavior change)
+
+- `tst/keep.c` asserted the per-present auto-wipe directly (left=clear=1 wiped
+  in frame 2 without redraw). Adapted to the E model: frame 2 calls
+  `pico_output_clear()`, whose cascade wipes `left` (clear=1) and skips `right`
+  (clear=0) — identical pixels, so `asr/keep-02.png` stays valid.
+- `tst/video.c`, `lua/tst/video.lua`: clear explicitly each frame — unaffected.
 
 ## Out of scope / notes
 

@@ -224,7 +224,6 @@ int pico_set_expert (int on, int fps) {
         G.expert.t0 = SDL_GetTicks();
     }
     G.world.effect.grid = 0;
-    G.world.scene.clear = on ? 1 : 0;
     return G.expert.ms;
 }
 
@@ -265,6 +264,8 @@ void pico_set_effect_color (Pico_Color color) {
     _pico_guard();
     Pico_Layer* L = G.layer;
     L->effect.color = color;
+    // repaint the background of a cascade-clear layer immediately, so its
+    // effect color takes effect without an explicit pico_output_clear
     if (L->scene.clear && L->hier.up!=NULL) {
         assert(L->type != PICO_LAYER_SUB); // clear would corrupt parent
         SDL_SetRenderTarget(G.window.ren, L->tex);

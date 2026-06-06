@@ -180,6 +180,11 @@ Pico_Layer* _pico_layer_text (
 void _pico_layer_output   (Pico_Layer* layer, const Pico_Rel_Rect* rect);
 void _pico_layer_draw_all (Pico_Layer* UP);
 
+// depth-first child walk: pre(UP,CUR) runs before descending into CUR,
+// pos(UP,CUR) after; either callback may be NULL
+typedef void (*_pico_layer_traverse_cb_t) (Pico_Layer* up, Pico_Layer* cur);
+void _pico_layer_traverse (Pico_Layer* up, _pico_layer_traverse_cb_t pre, _pico_layer_traverse_cb_t pos);
+
 ///////////////////////////////////////////////////////////////////////////////
 // mem
 ///////////////////////////////////////////////////////////////////////////////

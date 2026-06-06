@@ -14,13 +14,36 @@
 // OUTPUT
 ///////////////////////////////////////////////////////////////////////////////
 
+// full-clears CUR if flagged scene.clear, with its own effect.color (clip
+// disabled so the whole texture is wiped); used as a traverse pre-callback
+// to cascade the clear down to every flagged descendant
+static void _pico_output_clear_pre (Pico_Layer* UP, Pico_Layer* CUR) {
+    if (CUR->scene.clear) {
+        SDL_SetRenderTarget(G.window.ren, CUR->tex);
+        SDL_RenderSetClipRect(G.window.ren, NULL);
+        Pico_Color c = CUR->effect.color;
+        SDL_SetRenderDrawColor(G.window.ren, c.r, c.g, c.b, c.a);
+        SDL_RenderClear(G.window.ren);
+    }
+}
+
 void pico_output_clear (void) {
     _pico_guard();
+    Pico_Layer* L = G.layer;
+
+    // clear the current layer over its clip
     SDL_SetRenderDrawColor(G.window.ren,
-        G.layer->effect.color.r, G.layer->effect.color.g, G.layer->effect.color.b, G.layer->effect.color.a
+        L->effect.color.r, L->effect.color.g, L->effect.color.b, L->effect.color.a
     );
-    Pico_Abs_Rect r = _pico_abs_rect(G.layer->scene.clip, NULL, NULL);
+    Pico_Abs_Rect r = _pico_abs_rect(L->scene.clip, NULL, NULL);
     SDL_RenderFillRect(G.window.ren, &r);
+
+    // cascade the clear down to flagged descendants, then restore the
+    // current layer's render target + clip (the cascade retargets above)
+    _pico_layer_traverse(L, _pico_output_clear_pre, NULL);
+    SDL_SetRenderTarget(G.window.ren, L->tex);
+    SDL_RenderSetClipRect(G.window.ren, &r);
+
     _pico_output_present(0);
 }
 

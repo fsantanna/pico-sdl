@@ -40,9 +40,11 @@ int main (void) {
     pico_output_present(1);
     _pico_check("keep-01");
 
-    // frame 2: do NOT draw on layers, just composite again
-    // left (keep=0) should be cleared after frame 1 composite
-    // right (keep=1) should retain red rect
+    // frame 2: do NOT draw on layers; clear (cascades to clear=1 children),
+    // then composite again
+    // left  (clear=1) is wiped by the cascade   -> blank
+    // right (clear=0) is skipped by the cascade -> retains red rect
+    pico_output_clear();
     pico_output_present(1);
     _pico_check("keep-02");
 

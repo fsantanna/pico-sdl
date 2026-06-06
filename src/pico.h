@@ -299,7 +299,9 @@ void pico_input_loop (void);
 /// @brief Draw primitives, play sounds, etc.
 /// @{
 
-/// @brief Clears screen with color set by @ref pico_set_effect_color.
+/// @brief Clears the current layer with the color set by
+/// @ref pico_set_effect_color, then cascades the clear down to every
+/// descendant layer flagged with scene.clear (see @ref pico_layer_empty).
 void pico_output_clear (void);
 
 /// @brief Draws an RGBA pixmap.
@@ -480,7 +482,8 @@ void pico_layer_pixmap_mode (int mode, const char* up, const char* key,
 
 /// @brief Creates an empty layer (exclusive mode).
 /// @param key   layer key (must not be NULL or start with '/')
-/// @param clear initial scene.clear value
+/// @param clear cascade-clear flag: when set, the layer is cleared
+///              whenever an ancestor's @ref pico_output_clear cascades
 /// @param dim   layer dimensions; '%' resolves against parent
 ///              `up`'s scene.dim (or current layer if up==NULL)
 void pico_layer_empty (
@@ -491,7 +494,8 @@ void pico_layer_empty (
 /// @brief Creates an empty layer.
 /// @param mode  realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param key   layer key (must not be NULL or start with '/')
-/// @param clear initial scene.clear value
+/// @param clear cascade-clear flag: when set, the layer is cleared
+///              whenever an ancestor's @ref pico_output_clear cascades
 /// @param dim   layer dimensions; '%' resolves against parent
 ///              `up`'s scene.dim (or current layer if up==NULL)
 void pico_layer_empty_mode (
@@ -708,6 +712,9 @@ void pico_set_scene       (Pico_Layer_Scene scene);
 void pico_set_scene_clip  (Pico_Rel_Rect clip);
 void pico_set_scene_dim   (Pico_Rel_Dim dim);
 void pico_set_scene_dst   (Pico_Rel_Rect dst);
+/// @brief Sets the cascade-clear flag of the current layer (cleared when
+/// an ancestor's @ref pico_output_clear cascades). Not allowed on
+/// world / window / sub-layers.
 void pico_set_scene_clear (int on);
 void pico_set_scene_src   (Pico_Rel_Rect src);
 void pico_set_scene_tile  (Pico_Abs_Dim tile);

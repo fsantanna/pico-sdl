@@ -30,29 +30,37 @@ void _pico_layer_attach (const char* up, const char* dn) {
     }
 }
 
-void _pico_layer_draw_all (Pico_Layer* UP) {
-    Pico_Layer* old = G.layer;
-    G.layer = UP;
+void _pico_layer_traverse (Pico_Layer* UP, _pico_layer_traverse_cb_t pre, _pico_layer_traverse_cb_t pos) {
     const char* cur = UP->hier.dn.fst;
     while (cur != NULL) {
         Pico_Layer* CUR = (Pico_Layer*) realm_get(G.realm, strlen(cur)+1, cur);
         assert(CUR != NULL);
-
-        SDL_SetRenderTarget(G.window.ren, CUR->tex);
-        _pico_layer_draw_all(CUR);
-
-        SDL_SetRenderTarget(G.window.ren, UP->tex);
-        _pico_layer_output(CUR, NULL);
-
-        // post-composite clear: allows drawing bw presents
-        if (CUR->scene.clear) {
-            SDL_SetRenderTarget(G.window.ren, CUR->tex);
-            Pico_Color c = CUR->effect.color;
-            SDL_SetRenderDrawColor(G.window.ren, c.r, c.g, c.b, c.a);
-            SDL_RenderClear(G.window.ren);
+        if (pre != NULL) {
+            pre(UP, CUR);
+        }
+        _pico_layer_traverse(CUR, pre, pos);
+        if (pos != NULL) {
+            pos(UP, CUR);
         }
         cur = CUR->hier.nxt;
     }
+}
+
+// target CUR so the recursion draws CUR's children onto it
+static void _pico_draw_all_pre (Pico_Layer* UP, Pico_Layer* CUR) {
+    SDL_SetRenderTarget(G.window.ren, CUR->tex);
+}
+
+// composite CUR onto UP (G.layer=UP so _pico_layer_output reads UP's pencil)
+static void _pico_draw_all_pos (Pico_Layer* UP, Pico_Layer* CUR) {
+    G.layer = UP;
+    SDL_SetRenderTarget(G.window.ren, UP->tex);
+    _pico_layer_output(CUR, NULL);
+}
+
+void _pico_layer_draw_all (Pico_Layer* UP) {
+    Pico_Layer* old = G.layer;
+    _pico_layer_traverse(UP, _pico_draw_all_pre, _pico_draw_all_pos);
     G.layer = old;
 }
 
