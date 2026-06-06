@@ -718,7 +718,7 @@ Two notes about `pico.layer.empty` to be discussed further in
 [#Hierarchy](#74-hierarchy):
 
 - the first argument (`nil`) is the optional parent layer
-- the third argument (`false`) determines if the layer is automatically cleared
+- the third argument (`false`) determines if layer traversal automatically clears it
 
 ### 7.2. Compositing
 
@@ -971,6 +971,7 @@ This is what a main loop in `pico-lua` looks like:
 pico.set.expert(true, 40)           -- 40 FPS
 
 while true do                       -- main loop
+    pico.output.clear()
     pico.output.*()                 -- scene redrawing
     pico.output.present()
 
@@ -1028,6 +1029,7 @@ local m = {'!', x=5, y=5}           -- mouse pixel
 
 while true do                       -- main loop
     -- redraw scene
+    pico.output.clear()
     pico.set.pencil { color='red' }
     pico.output.draw.pixel(m)
     pico.set.pencil { color='blue' }

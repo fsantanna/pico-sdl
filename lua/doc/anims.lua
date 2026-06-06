@@ -59,6 +59,7 @@ local f2, x2, y2 = walk('counter', 0, 0)
 local t = 0
 
 while true do
+    pico.output.clear()
     pico.output.draw.rect { '%', x=0.3, y=0.3, w=0.4, h=0.4 }
     pico.output.draw.rect { '%', x=0.6, y=0.6, w=0.4, h=0.4 }
     pico.output.draw.layer(f1, {'%', x=x1, y=y1, w=0.15})
