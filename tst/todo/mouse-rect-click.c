@@ -31,16 +31,16 @@ int main (void) {
             break;
         }
 
-        Pico_Mouse win = pico_get_mouse('w', NULL);
-        Pico_Mouse pct = pico_get_mouse('%', &r);
+        Pico_Mouse win = pico_get_mouse("window", &(Pico_Rel_Pos){ .mode='!', .anchor=PICO_ANCHOR_NW });
+        Pico_Mouse pct = pico_get_mouse("A", &(Pico_Rel_Pos){ .mode='%', .anchor=PICO_ANCHOR_NW });
         printf(">>> w %4.0f %4.0f | %% %5.3f %5.3f", win.x, win.y, pct.x, pct.y);
 
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_NW };
-        if (pico_vs_pos_rect(&pos, &btn1)) {
+        if (pico_vs_pos_rect(NULL, &pos, NULL, &btn1)) {
             printf(" | click 1");
-        } else if (pico_vs_pos_rect(&pos, &btn2)) {
+        } else if (pico_vs_pos_rect(NULL, &pos, NULL, &btn2)) {
             printf(" | click 2");
-        } else if (pico_vs_pos_rect(&pos, &btn3)) {
+        } else if (pico_vs_pos_rect(NULL, &pos, NULL, &btn3)) {
             printf(" | click 3");
         }
         printf("\n");

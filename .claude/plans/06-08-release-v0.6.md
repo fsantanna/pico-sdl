@@ -26,39 +26,57 @@ and pico-birds / pico-rocks READMEs reference env-pico version.
 
 Working dir: `/x/pico-sdl`.
 
-### 1.1. Run C tests
+### 1.1. Run C tests — ✅ pass
 
 ```bash
 make tests
 ```
 
-### 1.2. Build Lua native module and run Lua tests
+### 1.2. Build Lua native module and run Lua tests — ✅ pass
+
+Rebuild the static archive first (see §8.1 stale-archive delta):
 
 ```bash
+make lib
 cd lua && make tests
 ```
 
 ### 1.3. Run non-automated tests (manual)
 
-Interactive C tests:
+Interactive C tests (live in `tst/todo/`, not `tst/todo_*`):
 
 ```bash
-./pico-sdl tst/todo_main.c
-./pico-sdl tst/todo_cross.c
-./pico-sdl tst/todo_scale.c
-./pico-sdl tst/todo_control.c
-./pico-sdl tst/todo_rain.c
-./pico-sdl tst/todo_hide.c
-./pico-sdl tst/todo_video.c
-./pico-sdl tst/todo_input_timeout.c
+./pico-sdl tst/todo/main.c
+./pico-sdl tst/todo/cross.c
+./pico-sdl tst/todo/scale.c
+./pico-sdl tst/todo/control.c
+./pico-sdl tst/todo/rain.c
+./pico-sdl tst/todo/hide.c
+./pico-sdl tst/todo/video.c
+./pico-sdl tst/todo/input_timeout.c
 ```
 
-Guide examples:
+Guide examples (`pico-lua` is at `./lua/pico-lua` unless installed):
 
 ```bash
-pico-lua lua/doc/rects.lua
-pico-lua lua/doc/anims.lua
+./lua/pico-lua lua/doc/rects.lua
+./lua/pico-lua lua/doc/anims.lua
 ```
+
+C examples were updated to the newest API (all compile):
+
+- `doc/exs/anchor.c` — per-call anchor (was `pico_set_anchor`)
+- `doc/exs/event_loop.c` — `Pico_Event`, `pico_output_present(0)`
+- `tst/todo/main.c` — `Pico_Rel_*` draw idiom, `pico_set_effect_grid`
+- `tst/todo/mouse-rect-click.c` — 4-arg `pico_vs_pos_rect`,
+  layer-based `pico_get_mouse`
+- `tst/todo/scale.c` — scale reframed as world `scene_dim` zoom
+  (`pico_set_scale` removed) → **regen asr baselines**:
+  `make gen T=todo/scale`
+
+`anchor.c` prose in surrounding doc `.md` still references the old
+`pico_set_anchor` model — manual doc review pending.
+`tst/todo/main.c` `#if TODO` blocks left on old API (parked).
 
 ### 1.4. Create rockspec
 
@@ -331,9 +349,27 @@ this run back into the reusable template
 Keep a running list here of everything that diverged from the
 template while running 06-08:
 
-- [ ] steps that were missing / out of order
-- [ ] commands that failed or needed extra flags
-- [ ] files that needed bumping but were not in any table
+- [x] **stale archive**: `lua/Makefile:16` `../src/libpico-sdl.a:`
+      has no prerequisites, so it never rebuilds when `src/*.c`
+      change. Lua build linked an old `.a` missing
+      `pico_layer_screenshot_mode` → `make tests` failed. Add a
+      `make lib` (or `make clean lib`) step before `cd lua` in
+      §1.2.
+- [x] **§1.5 `.claude/CLAUDE.md` row is stale**: that file has no
+      rockspec/version reference — drop the row from the template.
+- [x] **§1.5 `lua/README.md` count wrong**: only 3 version places
+      (L13 list, L20 stable, L61 install), not 4.
+- [x] **untracked cleanup not in template**: before §1.6 remove
+      stray files (this run: `lua/pico.c.orig`, `tst/mouse_old.c`,
+      `tst/second.png`, `tst/x.png`).
+- [x] **§1.3 paths wrong**: template lists `tst/todo_*.c`; actual
+      is `tst/todo/*.c`. Guide cmd needs `./lua/pico-lua` (not bare
+      `pico-lua`) unless installed.
+- [x] **`tst/todo/*` + `doc/exs/*` drift behind the API**: several
+      used removed calls (`pico_set_anchor`/`set_scale`/
+      `set_scene_raw`, `Pico_Dim/Pos/Rect`, `_pct`/`_raw` draws).
+      Neither dir is covered by `make tests` — add a "compile all
+      `tst/todo/*.c` + `doc/exs/*.c`" gate before the §1.3 manual run.
 - [ ] downstream version-pinning surprises
 - [ ] new triggers / CI workflows
 

@@ -8,9 +8,9 @@ int main() {
         int timeout = 16, accum = 0; // timeout is 1000 / FRAMERATE
         while (timeout > 0) {
             int before = pico_get_now();
-            SDL_Event event;
+            Pico_Event event;
             pico_input_event_timeout(&event, 0, timeout);
-            if (event.type == SDL_QUIT) {
+            if (event.type == PICO_EVENT_QUIT) {
                 break;
             }
             // process events ...
@@ -23,7 +23,7 @@ int main() {
         // update ...
         pico_output_clear();
         // draw ...
-        pico_output_present();
+        pico_output_present(0);
     }
 
     pico_init(0);

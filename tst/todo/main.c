@@ -5,7 +5,7 @@ int main (void) {
 
     puts("shows dark screen");
     {
-        Pico_Dim phy, log;
+        Pico_Abs_Dim phy, log;
         pico_set_layer("window");
         phy = pico_get_scene_dim();
         pico_set_layer("world");
@@ -41,8 +41,8 @@ int main (void) {
 
     puts("shows centered image");
     {
-        Pico_Rect_Pct r = { 0.5,0.5, 0,0, PICO_ANCHOR_C };
-        pico_output_draw_image_pct("open.png", &r);
+        Pico_Rel_Rect r = { '%', {0.5,0.5, 0,0}, PICO_ANCHOR_C };
+        pico_output_draw_image("open.png", r);
         pico_input_delay(2000);
     }
 
@@ -52,25 +52,25 @@ int main (void) {
         pico_set_pencil_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_clear();
         {
-            Pico_Pos_Pct p = { 0.5,0.5, PICO_ANCHOR_C };
-            pico_output_draw_pixel_pct(&p);
+            Pico_Rel_Pos p = { '%', {0.5,0.5}, PICO_ANCHOR_C };
+            pico_output_draw_pixel(p);
         }
         {
-            Pico_Rect_Pct r = { 0.75,0.25, 0.2,0.2, PICO_ANCHOR_C };
-            pico_output_draw_rect_pct(&r);
+            Pico_Rel_Rect r = { '%', {0.75,0.25, 0.2,0.2}, PICO_ANCHOR_C };
+            pico_output_draw_rect(r);
         }
         {
-            Pico_Rect_Pct r = { 0.25,0.75, 0.2,0.2, PICO_ANCHOR_C };
-            pico_output_draw_oval_pct(&r);
+            Pico_Rel_Rect r = { '%', {0.25,0.75, 0.2,0.2}, PICO_ANCHOR_C };
+            pico_output_draw_oval(r);
         }
         pico_input_delay(2000);
     }
 
     puts("shows centered \"Hello!\" (on top of shapes)");
     {
-        int w = pico_get_text(20, "Hello!");
-        Pico_Rect r = {50-w/2, 50-5, 0, 20};
-        pico_output_draw_text_raw("Hello!", r);
+        Pico_Abs_Dim dim = pico_get_text(&(Pico_Rel_Dim){ '!', {0, 20} }, "Hello!");
+        Pico_Rel_Rect r = { '!', {50-dim.w/2, 50-5, 0, 20}, PICO_ANCHOR_NW };
+        pico_output_draw_text("Hello!", r);
         pico_input_delay(2000);
     }
 
@@ -79,7 +79,7 @@ int main (void) {
     {
         Pico_Event e;
         pico_input_event(&e, PICO_EVENT_MOUSE_BUTTON_DN);
-        pico_output_draw_pixel_raw((Pico_Pos){e.mouse.x,e.mouse.y});
+        pico_output_draw_pixel((Pico_Rel_Pos){ e.mouse.mode, {e.mouse.x, e.mouse.y}, e.mouse.anchor });
         pico_input_delay(2000);
     }
 
@@ -91,7 +91,7 @@ int main (void) {
 
     puts("disables grid");
     {
-        pico_set_scene_raw(0, -1, NULL, NULL, NULL, NULL, NULL);
+        pico_set_effect_grid(0);
         pico_input_delay(2000);
     }
 
