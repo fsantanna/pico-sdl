@@ -68,15 +68,46 @@ C examples were updated to the newest API (all compile):
 - `doc/exs/anchor.c` — per-call anchor (was `pico_set_anchor`)
 - `doc/exs/event_loop.c` — `Pico_Event`, `pico_output_present(0)`
 - `tst/todo/main.c` — `Pico_Rel_*` draw idiom, `pico_set_effect_grid`
-- `tst/todo/mouse-rect-click.c` — 4-arg `pico_vs_pos_rect`,
-  layer-based `pico_get_mouse`
+- `tst/todo/mouse-rect-click.c` — 4-arg `pico_vs_pos_rect`; layer
+  must be **tree-attached** (`up="world"` + `scene.dst` + `present(1)`)
+  for `pico_get_mouse("A")` to share the window root
+- `tst/todo/mouse-rect.c` — same tree-attach fix
+- `tst/todo/cross.c` — made interactive (animated, no screenshots)
 - `tst/todo/scale.c` — scale reframed as world `scene_dim` zoom
   (`pico_set_scale` removed) → **regen asr baselines**:
   `make gen T=todo/scale`
+- `tst/todo/w-mouse.c` — **deleted** (demoed removed mode `'w'`)
+
+All remaining `tst/todo/*.c` compile with `-Wall -Werror`.
 
 `anchor.c` prose in surrounding doc `.md` still references the old
 `pico_set_anchor` model — manual doc review pending.
 `tst/todo/main.c` `#if TODO` blocks left on old API (parked).
+
+### 1.3.1. Explicit next steps (resume on another machine)
+
+Done so far (this machine):
+
+- C examples migrated to v0.6 API; all `tst/todo/*.c` + `doc/exs/*.c`
+  compile `-Wall -Werror`.
+- `tst/todo/w-mouse.c` deleted.
+- Interactively verified: `main`, `control`, `cross`, `mouse-rect`.
+
+Pending interactive runs (`./pico-sdl tst/todo/<f>.c`):
+
+1. `mouse-rect-click.c` — click the 3 buttons → prints `click 1/2/3`.
+2. `hide.c` — key → hide 1s → show → key → hide → exit.
+3. `input_timeout.c` — follow the 3 console prompts; expect all OK.
+4. `rain.c` — animated rain; close window to quit.
+5. `segfault.c` — expected: aborts on `_pico_guard` (no `pico_init`).
+6. `video.c` — needs `video.y4m` beside it; seek/speed controls.
+
+Then:
+
+7. `make gen T=todo/scale` to regenerate scale asr baselines,
+   then `make test T=todo/scale`.
+8. Guide examples: `./lua/pico-lua lua/doc/rects.lua` and `anims.lua`.
+9. Resume the release at §1.4 (rockspec) → §1.5 (file bumps).
 
 ### 1.4. Create rockspec
 

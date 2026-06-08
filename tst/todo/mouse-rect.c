@@ -3,19 +3,21 @@
 int main (void) {
     pico_init(1);
 
-    /* Create layer 50x50, draw centered circle */
-    pico_layer_empty(NULL, "A", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
-    pico_set_layer("A");
+    /* World background */
+    pico_set_effect_color(PICO_COLOR_BLACK);
+    pico_output_clear();
+
+    /* Layer 50x50 under world: red oval, positioned distorted 2:1 */
+    pico_layer_empty("world", "A", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    const char* old = pico_set_layer("A");
+    pico_set_scene_clear(0);
+    pico_set_scene_dst((Pico_Rel_Rect){ '%', {0.6, 0.3, 0.8, 0.4}, PICO_ANCHOR_C });
     pico_set_effect_color(PICO_COLOR_RED);
     pico_output_clear();
     pico_output_draw_oval((Pico_Rel_Rect){ '%', {0.3, 0.6, 0.5, 0.5}, PICO_ANCHOR_C });
-    pico_set_layer("world");
 
-    /* Draw layer distorted 2:1 on main */
-    Pico_Rel_Rect r = { '%', {0.6, 0.3, 0.8, 0.4}, PICO_ANCHOR_C };
-    pico_set_effect_color(PICO_COLOR_BLACK);
-    pico_output_clear();
-    pico_output_draw_layer("A", &r);
+    pico_set_layer(old);
+    pico_output_present(1);
 
     /* Event loop */
     Pico_Event evt;
@@ -23,9 +25,9 @@ int main (void) {
         if (evt.type == PICO_EVENT_QUIT) {
             break;
         }
-        Pico_Mouse win = pico_get_mouse('w', NULL);
-        Pico_Mouse raw = pico_get_mouse('!', &r);
-        Pico_Mouse pct = pico_get_mouse('%', &r);
+        Pico_Mouse win = pico_get_mouse("window", &(Pico_Rel_Pos){ .mode='!', .anchor=PICO_ANCHOR_NW });
+        Pico_Mouse raw = pico_get_mouse("A", &(Pico_Rel_Pos){ .mode='!', .anchor=PICO_ANCHOR_NW });
+        Pico_Mouse pct = pico_get_mouse("A", &(Pico_Rel_Pos){ .mode='%', .anchor=PICO_ANCHOR_NW });
         printf(
             ">>> w %4.0f %4.0f | ! %6.1f %6.1f | %% %5.3f %5.3f\n",
             win.x, win.y, raw.x, raw.y, pct.x, pct.y

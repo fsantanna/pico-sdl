@@ -1,3 +1,8 @@
+#if 0
+$ cd tst/todo/
+$ ../../pico-sdl main.c
+#endif
+
 #include "pico.h"
 
 int main (void) {
@@ -28,7 +33,7 @@ int main (void) {
 
     puts("plays sound");
     {
-        pico_output_sound("start.wav");
+        pico_output_sound("../../res/start.wav");
         pico_input_delay(2000);
     }
 
@@ -42,7 +47,7 @@ int main (void) {
     puts("shows centered image");
     {
         Pico_Rel_Rect r = { '%', {0.5,0.5, 0,0}, PICO_ANCHOR_C };
-        pico_output_draw_image("open.png", r);
+        pico_output_draw_image("../../res/open.png", r);
         pico_input_delay(2000);
     }
 
@@ -79,7 +84,8 @@ int main (void) {
     {
         Pico_Event e;
         pico_input_event(&e, PICO_EVENT_MOUSE_BUTTON_DN);
-        pico_output_draw_pixel((Pico_Rel_Pos){ e.mouse.mode, {e.mouse.x, e.mouse.y}, e.mouse.anchor });
+        Pico_Mouse m = pico_get_mouse(NULL, &(Pico_Rel_Pos){ .mode='!', .anchor=PICO_ANCHOR_NW });
+        pico_output_draw_pixel((Pico_Rel_Pos){ '!', {m.x, m.y}, PICO_ANCHOR_NW });
         pico_input_delay(2000);
     }
 

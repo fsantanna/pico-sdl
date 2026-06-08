@@ -8,21 +8,24 @@ int main (void) {
     Pico_Rel_Rect btn2 = { '%', {0.50, 0.50, 0.15, 0.30}, PICO_ANCHOR_C };
     Pico_Rel_Rect btn3 = { '%', {0.75, 0.50, 0.15, 0.30}, PICO_ANCHOR_C };
 
-    pico_layer_empty(NULL, "A", 1, (Pico_Rel_Dim){'!', {120, 50}}, NULL);
-    pico_set_layer("A");
+    /* World background */
+    pico_set_effect_color(PICO_COLOR_BLACK);
+    pico_output_clear();
+
+    /* Layer under world at bottom-right, 35%x35% (distorted) */
+    pico_layer_empty("world", "A", 1, (Pico_Rel_Dim){'!', {120, 50}}, NULL);
+    const char* old = pico_set_layer("A");
+    pico_set_scene_clear(0);
+    pico_set_scene_dst((Pico_Rel_Rect){ '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE });
     pico_set_effect_color(PICO_COLOR_NAVY);
     pico_output_clear();
     pico_set_pencil_color(PICO_COLOR_WHITE);
     pico_output_draw_rect(btn1);
     pico_output_draw_rect(btn2);
     pico_output_draw_rect(btn3);
-    pico_set_layer("world");
 
-    /* Draw layer at bottom-right, 35%x35% of screen (distorted) */
-    Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE };
-    pico_set_effect_color(PICO_COLOR_BLACK);
-    pico_output_clear();
-    pico_output_draw_layer("A", &r);
+    pico_set_layer(old);
+    pico_output_present(1);
 
     /* Event loop */
     Pico_Event evt;
