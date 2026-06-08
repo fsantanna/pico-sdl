@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION=v0.5
+VERSION=v0.6
 
 if [ "$1" = --version ]; then
     echo pico-sdl $VERSION
