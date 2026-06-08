@@ -1,3 +1,16 @@
+v0.6 (jun/26)
+-------------
+
+Additions:
+    - `pico.push` / `pico.pop`: explicit memory scopes with bulk deallocation
+    - `pico.layer.screenshot`: capture layer into new layer
+    - `pico.color.transparent` (was missing)
+
+Modifications:
+    - Layer hierarchy:
+        - no more automatic clear
+        - `pico.output.clear` traverses and clears
+
 v0.5 (may/26)
 -------------
 
