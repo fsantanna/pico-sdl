@@ -193,7 +193,7 @@ do
         {
             pico.color.alpha('red', 0xFF),
             pico.color.alpha('red', 0x80),
-            pico.color.alpha('black', 0),
+            'transparent',
         },
     }
     local r = {'%', x=0.5, y=0.5, w=0, h=0}

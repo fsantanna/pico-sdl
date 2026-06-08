@@ -1905,6 +1905,8 @@ int luaopen_pico_native (lua_State* L) {
         lua_setfield(L, -2, "black");                           // pico | G | clrs
         lua_pushlightuserdata(L, (void*)&PICO_COLOR_WHITE);     // . | white
         lua_setfield(L, -2, "white");                           // .
+        lua_pushlightuserdata(L, (void*)&PICO_COLOR_TRANSPARENT);
+        lua_setfield(L, -2, "transparent");                     // .
         lua_pushlightuserdata(L, (void*)&PICO_COLOR_GRAY);      // . | gray
         lua_setfield(L, -2, "gray");                            // .
         lua_pushlightuserdata(L, (void*)&PICO_COLOR_SILVER);    // . | silver
