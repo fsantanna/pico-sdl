@@ -104,17 +104,17 @@ Guide examples verified: `lua/doc/rects.lua`, `lua/doc/anims.lua`.
 ### 1.4. Create rockspec
 
 - `lua/pico-sdl-0.6-1.rockspec` (branch = `"v0.6"`) — already present
-- Move previous `lua/pico-sdl-*-1.rockspec` to `lua/old/`
+- Previous `0.5-1` already in `lua/old/`; `dev-2` stays. **§1.4 done.**
 
-### 1.5. Update files
+### 1.5. Update files — ✅ done
 
-| File                 | Change                         |
-|----------------------|--------------------------------|
-| `Makefile`           | rockspec version → `0.6-1`     |
-| `README.md`          | bump version (3 places)        |
-| `lua/README.md`      | bump version (4 places)        |
-| `HISTORY.md`         | add new version section        |
-| `.claude/CLAUDE.md`  | rockspec → `0.6-1`             |
+| File                 | Change                         | status |
+|----------------------|--------------------------------|--------|
+| `Makefile`           | rockspec version → `0.6-1`     | ✅ already |
+| `README.md`          | bump version (3 places)        | ✅ done |
+| `lua/README.md`      | bump version (**3** places)    | ✅ done |
+| `HISTORY.md`         | add new version section        | ✅ already |
+| `.claude/CLAUDE.md`  | (no version ref — template row stale) | n/a |
 
 ### 1.6. Commit and push main
 

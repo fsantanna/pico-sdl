@@ -10,6 +10,7 @@
 ***Lua binding for [pico-sdl](../)***
 
 [
+    [`v0.6`](https://github.com/fsantanna/pico-sdl/tree/v0.6/lua/) |
     [`v0.5`](https://github.com/fsantanna/pico-sdl/tree/v0.5/lua/) |
     [`v0.3.1`](https://github.com/fsantanna/pico-sdl/tree/v0.3.1/lua/) |
     [`v0.2`](https://github.com/fsantanna/pico-sdl/tree/v0.2/lua/) |
@@ -17,7 +18,7 @@
 ]
 
 This is the unstable `main` branch.
-Please, switch to stable [`v0.5`](https://github.com/fsantanna/pico-sdl/tree/v0.5/lua/).
+Please, switch to stable [`v0.6`](https://github.com/fsantanna/pico-sdl/tree/v0.6/lua/).
 
 [
     [About](#about)                 |
@@ -58,7 +59,7 @@ pico.init(false)
 
 ```
 sudo apt install liblua5.4-dev libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
-sudo luarocks install pico-sdl 0.5
+sudo luarocks install pico-sdl 0.6
 pico-lua lua/tst/cross.lua
 ```
 
