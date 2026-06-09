@@ -14,7 +14,7 @@
 #include "pico.h"
 #include <stdio.h>
 
-#define VIDEO_PATH "video.y4m"
+#define VIDEO_PATH "../../res/video.y4m"
 #define BAR_H 10
 
 int main (void) {
@@ -120,7 +120,7 @@ int main (void) {
             );
         }
 
-        pico_output_present(0);
+        pico_output_present(1);
 
         /* Events */
         Pico_Event evt;

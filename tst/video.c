@@ -1,6 +1,8 @@
 #include "pico.h"
 #include "../check.h"
 
+#define VIDEO "../res/video.y4m"
+
 int main (void) {
     pico_init(1);
     pico_set_window_title("Video");
@@ -9,7 +11,7 @@ int main (void) {
     /* pico_get_video: check Y4M header parsing */
     {
         puts("get_video: dimensions and fps");
-        Pico_Video info = pico_get_video(NULL, "video.y4m");
+        Pico_Video info = pico_get_video(NULL, VIDEO);
         assert(info.dim.w == 10);
         assert(info.dim.h == 10);
         assert(info.fps == 10);
@@ -20,7 +22,7 @@ int main (void) {
     /* pico_layer_video: create layer */
     {
         puts("layer_video: create");
-        pico_layer_video(NULL, "vid", "video.y4m");
+        pico_layer_video(NULL, "vid", VIDEO);
     }
 
     /* pico_set_video: first frame (0) */
@@ -91,7 +93,7 @@ int main (void) {
     {
         puts("draw_video: first call");
         pico_output_clear();
-        int ok = pico_output_draw_video("video.y4m",
+        int ok = pico_output_draw_video(VIDEO,
             (Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         assert(ok == 1);

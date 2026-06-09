@@ -48,7 +48,6 @@ Interactive C tests (live in `tst/todo/`, not `tst/todo_*`):
 ```bash
 ./pico-sdl tst/todo/main.c
 ./pico-sdl tst/todo/cross.c
-./pico-sdl tst/todo/scale.c
 ./pico-sdl tst/todo/control.c
 ./pico-sdl tst/todo/rain.c
 ./pico-sdl tst/todo/hide.c
@@ -73,9 +72,7 @@ C examples were updated to the newest API (all compile):
   for `pico_get_mouse("A")` to share the window root
 - `tst/todo/mouse-rect.c` — same tree-attach fix
 - `tst/todo/cross.c` — made interactive (animated, no screenshots)
-- `tst/todo/scale.c` — scale reframed as world `scene_dim` zoom
-  (`pico_set_scale` removed) → **regen asr baselines**:
-  `make gen T=todo/scale`
+- `tst/todo/scale.c` — **deleted** (demoed removed `pico_set_scale`)
 - `tst/todo/w-mouse.c` — **deleted** (demoed removed mode `'w'`)
 
 All remaining `tst/todo/*.c` compile with `-Wall -Werror`.
@@ -91,23 +88,18 @@ Done so far (this machine):
 - C examples migrated to v0.6 API; all `tst/todo/*.c` + `doc/exs/*.c`
   compile `-Wall -Werror`.
 - `tst/todo/w-mouse.c` deleted.
-- Interactively verified: `main`, `control`, `cross`, `mouse-rect`.
+- Interactively verified: `main`, `control`, `cross`, `mouse-rect`,
+  `mouse-rect-click`, `hide`, `input_timeout`, `rain`, `video`.
+  - `rain`/`video`: `present(0)`→`present(1)` (expert composite).
+  - `video`: `VIDEO_PATH` → `../../res/video.y4m`.
 
-Pending interactive runs (`./pico-sdl tst/todo/<f>.c`):
+All `tst/todo/*.c` interactive demos verified (incl. `segfault`:
+clean `_pico_guard` abort = pass).
 
-1. `mouse-rect-click.c` — click the 3 buttons → prints `click 1/2/3`.
-2. `hide.c` — key → hide 1s → show → key → hide → exit.
-3. `input_timeout.c` — follow the 3 console prompts; expect all OK.
-4. `rain.c` — animated rain; close window to quit.
-5. `segfault.c` — expected: aborts on `_pico_guard` (no `pico_init`).
-6. `video.c` — needs `video.y4m` beside it; seek/speed controls.
+Guide examples verified: `lua/doc/rects.lua`, `lua/doc/anims.lua`.
 
-Then:
-
-7. `make gen T=todo/scale` to regenerate scale asr baselines,
-   then `make test T=todo/scale`.
-8. Guide examples: `./lua/pico-lua lua/doc/rects.lua` and `anims.lua`.
-9. Resume the release at §1.4 (rockspec) → §1.5 (file bumps).
+**§1.3 complete.** Resume the release at §1.4 (rockspec) → §1.5
+(file bumps).
 
 ### 1.4. Create rockspec
 
