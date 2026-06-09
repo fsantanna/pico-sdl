@@ -396,12 +396,13 @@ template while running 06-08:
 - [ ] downstream version-pinning surprises
 - [ ] new triggers / CI workflows
 
-### 8.2. Edit `release.md`
+### 8.2. Edit `release.md` — ✅ done
 
-| File                       | Change                                    |
-|----------------------------|-------------------------------------------|
-| `.claude/plans/release.md` | apply 8.1 deltas, keep `<ver>` generic    |
-| `.claude/plans/release.md` | reset any baked numbers back to `<ver>`   |
+Applied to `.claude/plans/release.md` (kept `<ver>` generic):
 
-Do NOT copy `0.6`-specific values into the template — it must
-stay version-agnostic for the next cascade.
+- §1.2: `make lib` before `cd lua` (stale-archive note).
+- §1.3: paths `tst/todo_*.c`→`tst/todo/*.c`; refreshed file list;
+  `pico-lua`→`./lua/pico-lua`; added a compile-all gate for
+  `tst/todo/*.c` + `doc/exs/*.c`.
+- §1.5: dropped stale `.claude/CLAUDE.md` row; `lua/README.md` 4→3.
+- §1.6: added "remove untracked strays" step before commit.

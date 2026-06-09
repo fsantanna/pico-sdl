@@ -33,30 +33,42 @@ make tests
 
 ### 1.2. Build Lua native module and run Lua tests
 
+`lua/Makefile` does NOT rebuild a stale `../src/libpico-sdl.a`
+(its rule has no prerequisites), so rebuild the archive first
+whenever `src/*.c` changed:
+
 ```bash
+make lib
 cd lua && make tests
 ```
 
 ### 1.3. Run non-automated tests (manual)
 
-Interactive C tests:
+First confirm every manual example still compiles (neither dir is
+covered by `make tests`):
 
 ```bash
-./pico-sdl tst/todo_main.c
-./pico-sdl tst/todo_cross.c
-./pico-sdl tst/todo_scale.c
-./pico-sdl tst/todo_control.c
-./pico-sdl tst/todo_rain.c
-./pico-sdl tst/todo_hide.c
-./pico-sdl tst/todo_video.c
-./pico-sdl tst/todo_input_timeout.c
+for f in tst/todo/*.c doc/exs/*.c; do
+    gcc "$f" src/libpico-sdl.a -I src -lm \
+        -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lSDL2_gfx \
+        -o /tmp/ck || echo "FAIL $f"
+done
 ```
 
-Guide examples:
+Interactive C tests (live in `tst/todo/`):
 
 ```bash
-pico-lua lua/doc/rects.lua
-pico-lua lua/doc/anims.lua
+for f in main cross control rain hide video input_timeout \
+         mouse-rect mouse-rect-click; do
+    ./pico-sdl tst/todo/$f.c
+done
+```
+
+Guide examples (`pico-lua` is at `./lua/pico-lua` unless installed):
+
+```bash
+./lua/pico-lua lua/doc/rects.lua
+./lua/pico-lua lua/doc/anims.lua
 ```
 
 ### 1.4. Create rockspec
@@ -70,13 +82,16 @@ pico-lua lua/doc/anims.lua
 |----------------------|--------------------------------|
 | `Makefile`           | rockspec version → `<ver>-1`   |
 | `README.md`          | bump version (3 places)        |
-| `lua/README.md`      | bump version (4 places)        |
+| `lua/README.md`      | bump version (3 places)        |
 | `HISTORY.md`         | add new version section        |
-| `.claude/CLAUDE.md`  | rockspec → `<ver>-1`           |
 
 ### 1.6. Commit and push main
 
+Remove untracked stray files first (`.orig`, scratch `.png`,
+old test sources, etc.):
+
 ```bash
+git status --porcelain   # review, then delete strays
 git add -A
 git commit -m "release: v<ver>"
 git push origin main
