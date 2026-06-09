@@ -144,7 +144,7 @@ int main (void) {
 
     {
         puts("video layer");
-        pico_layer_video(NULL, "vid1", "video.y4m");
+        pico_layer_video(NULL, "vid1", "../res/video.y4m");
         pico_set_layer("vid1");
         assert(pico_set_video("vid1", 0) == 1);
         const char* f = pico_output_screenshot(NULL, "out/shot-video.png", NULL);
