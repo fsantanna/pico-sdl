@@ -243,6 +243,7 @@ Functions</h2></td></tr>
 <tr class="memitem:ga5e47db50c9e49d0c9ece917a647db9db" id="r_ga5e47db50c9e49d0c9ece917a647db9db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga5e47db50c9e49d0c9ece917a647db9db">pico_set_scene_dst</a> (<a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> dst)</td></tr>
 <tr class="separator:ga5e47db50c9e49d0c9ece917a647db9db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7805a413d513654534c632544f29d8ba" id="r_ga7805a413d513654534c632544f29d8ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga7805a413d513654534c632544f29d8ba">pico_set_scene_clear</a> (int on)</td></tr>
+<tr class="memdesc:ga7805a413d513654534c632544f29d8ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the cascade-clear flag of the current layer (cleared when an ancestor's <a class="el" href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a> cascades). Not allowed on world / window / sub-layers.  <br /></td></tr>
 <tr class="separator:ga7805a413d513654534c632544f29d8ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1f95a15e4d44770c9f87cc720c9fa5d5" id="r_ga1f95a15e4d44770c9f87cc720c9fa5d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga1f95a15e4d44770c9f87cc720c9fa5d5">pico_set_scene_src</a> (<a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> src)</td></tr>
 <tr class="separator:ga1f95a15e4d44770c9f87cc720c9fa5d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1027,7 +1028,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>layer key (must not be NULL or start with '/') </td></tr>
-    <tr><td class="paramname">clear</td><td>initial scene.clear value </td></tr>
+    <tr><td class="paramname">clear</td><td>cascade-clear flag: when set, the layer is cleared whenever an ancestor's <a class="el" href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a> cascades </td></tr>
     <tr><td class="paramname">dim</td><td>layer dimensions; '' resolves against parent <code>up</code>'s scene.dim (or current layer if up==NULL) </td></tr>
   </table>
   </dd>
@@ -1090,7 +1091,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">mode</td><td>realm mode ('!' exclusive, '=' shared, '~' replace) </td></tr>
     <tr><td class="paramname">key</td><td>layer key (must not be NULL or start with '/') </td></tr>
-    <tr><td class="paramname">clear</td><td>initial scene.clear value </td></tr>
+    <tr><td class="paramname">clear</td><td>cascade-clear flag: when set, the layer is cleared whenever an ancestor's <a class="el" href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a> cascades </td></tr>
     <tr><td class="paramname">dim</td><td>layer dimensions; '' resolves against parent <code>up</code>'s scene.dim (or current layer if up==NULL) </td></tr>
   </table>
   </dd>
@@ -2088,6 +2089,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Sets the cascade-clear flag of the current layer (cleared when an ancestor's <a class="el" href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a> cascades). Not allowed on world / window / sub-layers. </p>
 
 </div>
 </div>

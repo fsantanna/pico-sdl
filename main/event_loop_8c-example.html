@@ -83,9 +83,9 @@ $(function() {
 <div class="line">        <span class="keywordtype">int</span> timeout = 16, accum = 0; <span class="comment">// timeout is 1000 / FRAMERATE</span></div>
 <div class="line">        <span class="keywordflow">while</span> (timeout &gt; 0) {</div>
 <div class="line">            <span class="keywordtype">int</span> before = <a id="a1" name="a1"></a><a class="code hl_function" href="group__State.html#ga20838f46d25a4201f8e9c20f800c244c">pico_get_now</a>();</div>
-<div class="line">            SDL_Event event;</div>
-<div class="line">            <a id="a2" name="a2"></a><a class="code hl_function" href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271">pico_input_event_timeout</a>(&amp;event, 0, timeout);</div>
-<div class="line">            <span class="keywordflow">if</span> (event.type == SDL_QUIT) {</div>
+<div class="line">            <a id="_a2" name="_a2"></a><a class="code hl_struct" href="structPico__Event.html">Pico_Event</a> event;</div>
+<div class="line">            <a id="a3" name="a3"></a><a class="code hl_function" href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271">pico_input_event_timeout</a>(&amp;event, 0, timeout);</div>
+<div class="line">            <span class="keywordflow">if</span> (event.<a id="a4" name="a4"></a><a class="code hl_variable" href="structPico__Event.html#af303ecd1849dfbae8e3587c65ab1799c">type</a> == PICO_EVENT_QUIT) {</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
 <div class="line">            }</div>
 <div class="line">            <span class="comment">// process events ...</span></div>
@@ -96,9 +96,9 @@ $(function() {
 <div class="line"> </div>
 <div class="line">        <span class="keywordtype">float</span> delta = 0.001f * accum;</div>
 <div class="line">        <span class="comment">// update ...</span></div>
-<div class="line">        <a id="a3" name="a3"></a><a class="code hl_function" href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a>();</div>
+<div class="line">        <a id="a5" name="a5"></a><a class="code hl_function" href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a>();</div>
 <div class="line">        <span class="comment">// draw ...</span></div>
-<div class="line">        <a id="a4" name="a4"></a><a class="code hl_function" href="group__Output.html#ga79ddb7f830b35883b3dcfe62dad5478f">pico_output_present</a>();</div>
+<div class="line">        <a id="a6" name="a6"></a><a class="code hl_function" href="group__Output.html#ga79ddb7f830b35883b3dcfe62dad5478f">pico_output_present</a>(0);</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <a class="code hl_function" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>(0);</div>
@@ -106,9 +106,11 @@ $(function() {
 <div class="line">}</div>
 <div class="ttc" id="agroup__Init_html_gab655caa50f1f8060182dc24f2d11e589"><div class="ttname"><a href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a></div><div class="ttdeci">void pico_init(int on)</div><div class="ttdoc">Initializes and terminates pico.</div></div>
 <div class="ttc" id="agroup__Input_html_gad5d55e2e4aed69260a035694a0d3e271"><div class="ttname"><a href="group__Input.html#gad5d55e2e4aed69260a035694a0d3e271">pico_input_event_timeout</a></div><div class="ttdeci">int pico_input_event_timeout(Pico_Event *evt, int type, int timeout)</div><div class="ttdoc">Stops the program until a matching event occurs or a timeout is reached. All input functions delegate...</div></div>
-<div class="ttc" id="agroup__Output_html_ga03bc7bb9c76b7168ae4e1ec1a409f129"><div class="ttname"><a href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a></div><div class="ttdeci">void pico_output_clear(void)</div><div class="ttdoc">Clears screen with color set by pico_set_effect_color.</div></div>
+<div class="ttc" id="agroup__Output_html_ga03bc7bb9c76b7168ae4e1ec1a409f129"><div class="ttname"><a href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a></div><div class="ttdeci">void pico_output_clear(void)</div><div class="ttdoc">Clears the current layer with the color set by pico_set_effect_color, then cascades the clear down to...</div></div>
 <div class="ttc" id="agroup__Output_html_ga79ddb7f830b35883b3dcfe62dad5478f"><div class="ttname"><a href="group__Output.html#ga79ddb7f830b35883b3dcfe62dad5478f">pico_output_present</a></div><div class="ttdeci">void pico_output_present(int layers)</div><div class="ttdoc">Shows what has been drawn onto the screen. Only does anything on expert mode.</div></div>
 <div class="ttc" id="agroup__State_html_ga20838f46d25a4201f8e9c20f800c244c"><div class="ttname"><a href="group__State.html#ga20838f46d25a4201f8e9c20f800c244c">pico_get_now</a></div><div class="ttdeci">Uint32 pico_get_now(void)</div><div class="ttdoc">Gets the amount of ticks that passed since pico was initialized.</div></div>
+<div class="ttc" id="astructPico__Event_html"><div class="ttname"><a href="structPico__Event.html">Pico_Event</a></div><div class="ttdef"><b>Definition</b> pico.h:70</div></div>
+<div class="ttc" id="astructPico__Event_html_af303ecd1849dfbae8e3587c65ab1799c"><div class="ttname"><a href="structPico__Event.html#af303ecd1849dfbae8e3587c65ab1799c">Pico_Event::type</a></div><div class="ttdeci">PICO_EVENT type</div><div class="ttdef"><b>Definition</b> pico.h:71</div></div>
 </div><!-- fragment --> </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
