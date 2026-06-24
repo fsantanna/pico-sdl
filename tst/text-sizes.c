@@ -15,12 +15,12 @@ int main (void) {
 
     // 12 lines, small to big, stacked top-to-bottom
     {
-        float y = 0.01f;
+        int y = 5;
         for (int i = 1; i <= 12; i++) {
-            float h = 0.01f * i;
-            Pico_Rel_Rect r = { '%', {0.01f, y, 0, h}, PICO_ANCHOR_NW };
+            int h = 5 * i;
+            Pico_Rel_Rect r = { '!', {5, y, 0, h}, PICO_ANCHOR_NW };
             pico_output_draw_text("Hello World!", r);
-            y += h + 0.008f;
+            y += h + 4;
         }
         _pico_check("text-sizes-01");
     }
