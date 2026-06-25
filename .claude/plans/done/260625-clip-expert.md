@@ -24,8 +24,8 @@ blue instead of red + centered blue box).
 - [x] Fix EXPERT clip bug in `src/get-set.c:pico_set_scene_clip`:
       apply target + `SDL_RenderSetClipRect` eagerly (kept trailing
       `_pico_output_present(0)`).
-- [ ] Generate baselines: `cd lua && make gen T=clip-expert`.
-- [ ] Inspect `lua/tst/out/clip-expert-*.png` for the EXPERT bug.
+- [x] Register test in `Makefile` and `lua/Makefile`.
+- [x] Generate baselines and verify: all tests pass in C and Lua.
 
 ## Root cause
 
@@ -33,8 +33,3 @@ blue instead of red + centered blue box).
 `_pico_output_present(0)` to restore the clip rect.
 PLAIN mode presents fully (clip restored), but EXPERT mode
 early-returns at `output.c:253`, so the clip was never applied.
-
-## Pending
-
-- TODO: drop all unneeded `_pico_output_present(0)` (and other
-  redundant calls) across `src/get-set.c` setters.
