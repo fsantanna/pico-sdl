@@ -82,7 +82,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga03bc7bb9c76b7168ae4e1ec1a409f129" id="r_ga03bc7bb9c76b7168ae4e1ec1a409f129"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga03bc7bb9c76b7168ae4e1ec1a409f129">pico_output_clear</a> (void)</td></tr>
-<tr class="memdesc:ga03bc7bb9c76b7168ae4e1ec1a409f129"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears screen with color set by <a class="el" href="group__State.html#ga3a84fb1cd762dad6bb0b99c3b7fbc8f4">pico_set_effect_color</a>.  <br /></td></tr>
+<tr class="memdesc:ga03bc7bb9c76b7168ae4e1ec1a409f129"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the current layer with the color set by <a class="el" href="group__State.html#ga3a84fb1cd762dad6bb0b99c3b7fbc8f4">pico_set_effect_color</a>, then cascades the clear down to every descendant layer flagged with scene.clear (see <a class="el" href="group__State.html#ga45eec7ff32224ff58d3b5399151c5d29">pico_layer_empty</a>).  <br /></td></tr>
 <tr class="separator:ga03bc7bb9c76b7168ae4e1ec1a409f129"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1dea1e45a0179dcb8dbee7eba88f931c" id="r_ga1dea1e45a0179dcb8dbee7eba88f931c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga1dea1e45a0179dcb8dbee7eba88f931c">pico_output_draw_pixmap</a> (const char *key, <a class="el" href="structPico__Abs__Dim.html">Pico_Abs_Dim</a> dim, const <a class="el" href="structPico__Color.html">Pico_Color</a> pixmap[], <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> rect)</td></tr>
 <tr class="memdesc:ga1dea1e45a0179dcb8dbee7eba88f931c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws an RGBA pixmap.  <br /></td></tr>
@@ -155,8 +155,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Clears screen with color set by <a class="el" href="group__State.html#ga3a84fb1cd762dad6bb0b99c3b7fbc8f4">pico_set_effect_color</a>. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_loop_8c-example.html#a3">event_loop.c</a>.</dd>
+<p>Clears the current layer with the color set by <a class="el" href="group__State.html#ga3a84fb1cd762dad6bb0b99c3b7fbc8f4">pico_set_effect_color</a>, then cascades the clear down to every descendant layer flagged with scene.clear (see <a class="el" href="group__State.html#ga45eec7ff32224ff58d3b5399151c5d29">pico_layer_empty</a>). </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_loop_8c-example.html#a5">event_loop.c</a>.</dd>
 </dl>
 
 </div>
@@ -691,7 +691,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__State.html#gab4fae47a6d4d354593eed0461d9391f2" title="Toggles expert mode (manual present, frame pacing).">pico_set_expert</a> </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_loop_8c-example.html#a4">event_loop.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="event_loop_8c-example.html#a6">event_loop.c</a>.</dd>
 </dl>
 
 </div>
