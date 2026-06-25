@@ -313,7 +313,11 @@ void pico_set_scene (Pico_Layer_Scene view) {
 
 void pico_set_scene_clip (Pico_Rel_Rect clip) {
     _pico_guard();
-    G.layer->scene.clip = clip;
+    Pico_Layer* L = G.layer;
+    L->scene.clip = clip;
+    Pico_Abs_Rect r = _pico_abs_rect(clip, NULL, NULL);
+    SDL_SetRenderTarget(G.window.ren, L->tex);
+    SDL_RenderSetClipRect(G.window.ren, &r);
     _pico_output_present(0);
 }
 
