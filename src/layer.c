@@ -309,11 +309,16 @@ void _pico_layer_output (
             return;
         }
 
-        //if (dst.x<0 || dst.y<0 || dst.x+dst.w>max_w || dst.y+dst.h>max_h)
-        {
-            aux(&dst, &src, max_w, max_h);
-            aux(&src, &dst, sup->w, sup->h);
+        // degenerate (zero/negative) dst or src: nothing to draw
+        if (dst.w<=0 || dst.h<=0 || src.w<=0 || src.h<=0) {
+            return;
         }
+
+        aux(&dst, &src, max_w, max_h);
+        if (src.w<=0 || src.h<=0) {
+            return; // dst-clip may have shrunk src to nothing
+        }
+        aux(&src, &dst, sup->w, sup->h);
     }
 
     SDL_SetTextureAlphaMod(layer->tex, G.layer->pencil.color.a*layer->effect.alpha/255);
