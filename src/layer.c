@@ -79,7 +79,7 @@ Pico_Layer* _pico_layer_pixmap (
         G.realm, mode, strlen(key)+1, (const void**)&key,
         _pico_mem_free_layer, _pico_mem_alloc_layer_pixmap, &ctx
     );
-    assert(ret != NULL);
+    pico_assert_key(ret, key);
     return ret;
 }
 
@@ -92,7 +92,7 @@ Pico_Layer* _pico_layer_image (
         G.realm, mode, strlen(str)+1, (const void**)&str,
         _pico_mem_free_layer, _pico_mem_alloc_layer_image, (void*)path
     );
-    assert(ret != NULL);
+    pico_assert_key(ret, str);
     return ret;
 }
 
@@ -122,7 +122,7 @@ Pico_Layer* _pico_layer_text (
         G.realm, mode, strlen(str)+1, (const void**)&str,
         _pico_mem_free_layer, _pico_mem_alloc_layer_text, &ctx
     );
-    assert(ret != NULL);
+    pico_assert_key(ret, str);
     return ret;
 }
 
@@ -386,7 +386,7 @@ void pico_layer_empty_mode (
         G.realm, mode, strlen(key)+1, (const void**)&key,
         _pico_mem_free_layer, _pico_mem_alloc_layer_empty, &ctx
     );
-    assert(ret != NULL);
+    pico_assert_key(ret, key);
     if (up != NULL) {
         _pico_layer_attach(up, key);
     }
@@ -425,7 +425,7 @@ void pico_layer_screenshot_mode (int mode, const char* up, const char* key,
         G.realm, mode, strlen(key)+1, (const void**)&key,
         _pico_mem_free_layer, _pico_mem_alloc_layer_shot, &ctx
     );
-    assert(ret != NULL);
+    pico_assert_key(ret, key);
     if (up != NULL) {
         _pico_layer_attach(up, key);
     }
@@ -457,7 +457,7 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
         G.realm, mode, strlen(key)+1, (const void**)&key,
         _pico_mem_free_layer, _pico_mem_alloc_layer_sub, &ctx
     );
-    assert(ret != NULL);
+    pico_assert_key(ret, key);
     if (up != NULL) {
         _pico_layer_attach(up, key);
     }

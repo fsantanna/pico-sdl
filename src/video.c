@@ -152,7 +152,7 @@ static Pico_Layer_Video* _layer_video (
         G.realm, mode, strlen(str)+1, (const void**)&str,
         _pico_mem_free_layer, _alloc_layer_video, (void*)path
     );
-    assert(ret != NULL);
+    pico_assert_key(ret, str);
     return ret;
 }
 
@@ -167,8 +167,7 @@ void pico_layer_video_mode (
     _pico_guard();
     assert(path != NULL && "video path required");
     const char* str = (key != NULL) ? key : path;
-    void* ret = _layer_video(mode, key, path);
-    assert(ret != NULL);
+    _layer_video(mode, key, path);
     if (up != NULL) {
         _pico_layer_attach(up, str);
     }
@@ -179,7 +178,6 @@ void pico_layer_video_mode (
 Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path) {
     _pico_guard();
     Pico_Layer_Video* vs = _layer_video('=', path, path);
-    pico_assert(vs != NULL);
 
     Pico_Video info = {
         .dim   = vs->base.scene.dim,
@@ -262,7 +260,6 @@ int pico_set_video (const char* key, int frame) {
 
 int pico_output_draw_video (const char* path, Pico_Rel_Rect rect) {
     Pico_Layer_Video* vs = _layer_video('=', path, path);
-    pico_assert(vs != NULL);
 
     /* Auto-sync: calculate frame from elapsed time */
     if (vs->t0 == 0) {

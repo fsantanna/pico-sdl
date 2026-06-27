@@ -82,16 +82,18 @@ void pico_init (int on) {
         {
             assert(realm != NULL);
             realm_enter(realm);
-            realm_put (
+            void* win = realm_put (
                 realm, '!', strlen("window")+1,
                 (const void**)&(const char*){"window"},
                 _pico_mem_detach_layer, NULL, &G.window.layer
             );
-            realm_put (
+            pico_assert_key(win, "window");
+            void* wld = realm_put (
                 realm, '!', strlen("world")+1,
                 (const void**)&(const char*){"world"},
                 _pico_mem_detach_layer, NULL, &G.world
             );
+            pico_assert_key(wld, "world");
         }
 
         pico_assert_0(SDL_Init(SDL_INIT_EVERYTHING));

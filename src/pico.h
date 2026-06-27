@@ -135,6 +135,12 @@ extern const Pico_Color PICO_COLOR_TRANSPARENT;
 #define pico_assert_0(x) pico_assert((x) == 0)
 #define pico_assert_X(x) pico_assert((x) != NULL)
 
+#define pico_assert_key(x, key) \
+    if ((x) == NULL) { \
+        fprintf(stderr, "invalid key : %s\n", key); \
+        assert(0 && "invalid key"); \
+    }
+
 typedef struct {
     float w;
     float h;
