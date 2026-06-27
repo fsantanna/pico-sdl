@@ -13,6 +13,10 @@ Modifications:
     - no more automatic clear
     - `pico.output.clear` traverses and clears
 
+PATCHES:
+
+- `0.6-2`: fix clip in expert mode
+
 v0.5 (may/26)
 -------------
 
