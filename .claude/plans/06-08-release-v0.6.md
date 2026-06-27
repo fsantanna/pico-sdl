@@ -116,6 +116,11 @@ Guide examples verified: `lua/doc/rects.lua`, `lua/doc/anims.lua`.
 | `HISTORY.md`         | add new version section        | ✅ already |
 | `.claude/CLAUDE.md`  | (no version ref — template row stale) | n/a |
 
+> **§1.6–§1.9 ✅ done** — committed + pushed `main`; `v0.6` branch
+> pushed to origin; `luarocks make` ok; **`pico-sdl 0.6-1` live on
+> luarocks.org**. Section 1 complete. Leftover artifact: untracked
+> `pico-sdl-0.6-1.src.rock` (safe to delete).
+
 ### 1.6. Commit and push main
 
 ```bash

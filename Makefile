@@ -24,7 +24,7 @@ realm:
 		-o src/realm.hc
 
 lua:
-	sudo luarocks make lua/pico-sdl-0.6-1.rockspec --lua-version=5.4
+	sudo luarocks make lua/pico-sdl-0.6-2.rockspec --lua-version=5.4
 
 test: lib
 	$(EXE) tst/$(T).c
@@ -46,6 +46,7 @@ tests: lib
 	$(EXE) tst/blend_pct.c
 	$(EXE) tst/blend_raw.c
 	$(EXE) tst/clear_alpha.c
+	$(EXE) tst/clip-expert.c
 	$(EXE) tst/clip_pct.c
 	$(EXE) tst/clip_raw.c
 	$(EXE) tst/collide_pct.c
