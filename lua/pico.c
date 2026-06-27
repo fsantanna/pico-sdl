@@ -1153,9 +1153,6 @@ static int l_set_scene (lua_State* L) {
     lua_getfield(L, 1, "source");           // T | src
     if (!lua_isnil(L, -1)) {
         src = C_rel_rect(L, lua_gettop(L));
-        if (src.w <= 0 || src.h <= 0) {
-            return luaL_error(L, "invalid source");
-        }
         xsrc = &src;
     }
     lua_pop(L, 1);                          // T
