@@ -15,6 +15,7 @@ Modifications:
 
 PATCHES:
 
+- `0.6-3`: check `realm_put`,  don't check layers limits (ignore)
 - `0.6-2`: fix clip in expert mode
 
 v0.5 (may/26)
