@@ -132,6 +132,7 @@ void* realm_put (realm_t* r, int mode, int n, const void** key,
         realm_entry* e = *pp;
         switch (mode) {
             case '!':
+                fprintf(stderr, "invalid key %s\n", key);
                 assert(0 && "realm: exclusive key exists");
                 return NULL;
             case '=':
