@@ -40,8 +40,23 @@ int main (void) {
             memcpy(buf, msg, i);
             buf[i] = '\0';
             pico_output_clear();
+
+            // texts (white)
+            pico_set_pencil_color((Pico_Color){255, 255, 255, 0xFF});
             pico_output_draw_text(buf, r1);
             pico_output_draw_text(buf, r2);
+
+            // enclosing boxes (red stroke), sized to the measured text
+            pico_set_pencil_color((Pico_Color){255, 0, 0, 0xFF});
+            pico_set_pencil_style(PICO_STYLE_STROKE);
+            Pico_Rel_Dim m1 = { '!', {0, 12} };
+            pico_get_text(&m1, buf);
+            pico_output_draw_rect((Pico_Rel_Rect){ '!', {75, 200, m1.w, 12}, PICO_ANCHOR_W });
+            Pico_Rel_Dim m2 = { '%', {0, 0.025} };
+            pico_get_text(&m2, buf);
+            pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.15, 0.5, m2.w, 0.025}, PICO_ANCHOR_W });
+            pico_set_pencil_style(PICO_STYLE_FILL);
+
             pico_input_delay(50);
         }
         _pico_check("text-sizes-02");
