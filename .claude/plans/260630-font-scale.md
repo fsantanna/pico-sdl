@@ -55,17 +55,53 @@ pixel height; then the existing downstream math is exactly 1:1
 and the blur in one move.
 
 Resolve a pixel height to the point size whose `TTF_FontHeight`
-matches it, instead of using the pixel height as the point size:
+matches it, instead of using the pixel height as the point size.
 
-- in `_tex_text` (or `_pico_font_get`), given target pixel height
-  `h`:
-    - open a probe at some `p0`, read `fh0 = TTF_FontHeight`
-    - pick `p = round(h * p0 / fh0)`; adjust +/-1 until
-      `TTF_FontHeight(p) <= h` (largest that fits)
-    - cache the font by the *pixel height* key, storing the chosen
-      point size
-- the rendered surface is then `<= h` tall; with `H0 == h` the
-  auto-width path yields `scale = 1`.
+`TTF_FontHeight(ptsize)` is the only way to learn the pixel height,
+and it grows ~linearly with `ptsize` (factor `k ~= 1.25`, but
+font-dependent and unknown ahead of time).
+So invert it by probing once, then correcting.
+
+### Probe algorithm
+
+Given target pixel height `h`:
+
+1. probe: open the font at any `p0` (e.g. `p0 = h`), read
+   `fh0 = TTF_FontHeight(p0)`.
+   This measures the ratio `k = fh0 / p0`.
+2. estimate: `p = round(h * p0 / fh0)` (i.e. `round(h / k)`).
+3. correct +/-1 (linearity is not exact, TTF rounds internally):
+    - `while (TTF_FontHeight(p)   >  h) p--;`
+    - `while (TTF_FontHeight(p+1) <= h) p++;`
+   This yields the *largest* point size with
+   `TTF_FontHeight(p) <= h`.
+
+Worked example, `h = 30`:
+
+| step     | value                                   |
+|----------|-----------------------------------------|
+| probe    | `TTF_FontHeight(30) = 40` -> `k = 1.33` |
+| estimate | `round(30 * 30 / 40) = 22`              |
+| check    | `FontHeight(22) = 29 <= 30`  (fits)     |
+| check    | `FontHeight(23) = 31  > 30`  (overflow) |
+| chosen   | `ptsize = 22`  ->  surface `H0 = 29`    |
+
+### Notes
+
+- "Fits" means the *typographic* line height
+  (`TTF_FontHeight` = ascent + descent) `<= h`, not the visible
+  ink.
+  This keeps baselines consistent and guarantees text never
+  spills past the requested box.
+- The surface lands at/just-under `h` (`29 <= 30`), never over.
+  Scale becomes a *constant* `h/H0` (`30/29 ~= 1.03`), the same
+  every frame -> no wobble.
+  The jitter came from the scale *changing*, not from it being
+  slightly off 1.
+- Do the resolution in `_tex_text` (or a small helper), keeping
+  `_pico_font_get` keyed by point size, so other callers are
+  unaffected.
+- With `H0 ~= h` the auto-width path yields `scale ~= 1`.
 
 Auto-width (`rect.w == 0`) is the case to make exact.
 Explicit `rect.w` keeps today's deliberate stretch.
@@ -83,8 +119,12 @@ Removes the flicker but keeps the constant down-scale blur.
 - Text gets slightly smaller for a given `h`
   (`h` now means pixel height, as documented, not point size).
   Apps that tuned `h` as point size will see ~0.8x text.
-- Font cache key changes from point size to pixel height; check
-  every `_pico_font_get` caller.
+- Resolve inside `_tex_text` and cache the text layer by pixel
+  height `h` (storing the chosen point size); keep
+  `_pico_font_get` keyed by point size so its other callers stay
+  unchanged.
+- Surface lands at/just-under `h` (e.g. 29 for `h=30`); the
+  leftover 0..1 px is intended, scale stays constant.
 - `pico.get.text` must use the same resolution so measured and
   drawn sizes agree.
 
