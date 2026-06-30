@@ -72,7 +72,29 @@ left region (first 8 chars) across CONSECUTIVE typewriter frames
 - the reverted float-blit fixed both modes (removed width
   re-quantisation); a scoped `'%'` fix is the alternative.
 
-### Fix applied: native-size blit for auto-width text
+### FIX (applied): native-size blit for auto-width text
+
+`pico_output_draw_text_mode` (`src/output.c`): when `rect.w == 0`, set
+the destination to the glyph layer's NATIVE `W0 x H0` (mode-aware)
+instead of a stretched width + requested height. Scale becomes exactly
+1 -> no per-char width re-quantisation (jitter) and no stretch (blur).
+
+- root cause was NOT mode ('!' vs '%') nor only fractional input:
+  jitter occurs whenever the requested pixel height has no exact
+  ptsize match, so the glyph surface `H0 != requested H` and the blit
+  stretches `H0 -> H` with a per-char-rounded width.
+  e.g. H=22 -> ptsize 18 -> H0=21 -> stretch 21->22 wobbles.
+- verified (W anchor, ptsize ON), consec-frame jitter -> 0:
+  H = 14, 20, 22, 29 all STABLE (was JITTER at 14/22/29).
+- `pico_get_text` unchanged: still reports the requested (logical)
+  size; the native raster size is an internal, unobservable detail.
+- heights where `H0 == H` (e.g. 20) are byte-identical to before;
+  only the mismatched heights re-render -> partial text baseline regen.
+- explicit-width text and non-text layers untouched.
+
+(superseded earlier note below)
+
+### (earlier) native-size blit notes
 
 `pico_output_draw_text_mode` (`src/output.c`): when `rect.w == 0`,
 blit the glyph surface at its NATIVE size (`W0 x H0`) instead of
