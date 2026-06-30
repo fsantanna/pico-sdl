@@ -128,6 +128,31 @@ Removes the flicker but keeps the constant down-scale blur.
 - `pico.get.text` must use the same resolution so measured and
   drawn sizes agree.
 
+## Test
+
+Visual test `tst/text-sizes.c` (merged from `260624-text-sizes`).
+Exercises growing text heights, a natural harness for this fix.
+
+### Goal
+
+- 500x500 world/window
+- 10x "Hello World!" text output
+- 1 per line
+- small to big
+
+### Steps
+
+- [x] Create `tst/text-sizes.c`
+    - `pico_init(1)`
+    - window + world scene dim 500x500
+    - loop 10 lines, NW anchor, growing height
+    - stack each line below the previous
+
+### Notes
+
+- Follow `tst/font.c` / `tst/colors.c` style.
+- Abs `'!'` rects for text.
+
 ## Out of scope
 
 - The downstream typewriter can also avoid the issue by rendering
