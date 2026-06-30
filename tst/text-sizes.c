@@ -25,15 +25,16 @@ int main (void) {
         _pico_check("text-sizes-01");
     }
 
-    // repro of intro.atm flicker: small text, W anchor, redrawn
-    // (cleared) each frame as the prefix grows -> left edge shimmers
-    // ~1px because auto-width re-quantises per char.
-    // r1 '!' vs r2 '%' at the same pixel height (12 ~= 0.025*500):
-    // isolates whether the flicker is mode-specific or size-driven.
+    // repro of intro.atm flicker: typewriter, redrawn (cleared) each
+    // frame as the prefix grows. r1 '!' and r2 '%' at the SAME integer
+    // height (22px = 0.044*500). 22 still jitters: ptsize lands the
+    // glyph surface at H0 != 22, so box_h != H0 and the auto-width
+    // re-quantises per char (20 happens to match H0 -> stays stable).
+    // Stacked so the boxes share a border (r1 bottom = r2 top = y211).
     {
         const char* msg = "The quick brown fox jumps over the lazy dog.";
-        Pico_Rel_Rect r1 = { '!', {75, 200, 0, 12}, PICO_ANCHOR_W };
-        Pico_Rel_Rect r2 = { '%', {0.15, 0.5, 0, 0.025}, PICO_ANCHOR_W };
+        Pico_Rel_Rect r1 = { '!', {20, 200, 0, 22}, PICO_ANCHOR_W };
+        Pico_Rel_Rect r2 = { '%', {0.04, 0.444, 0, 0.044}, PICO_ANCHOR_W };
         char buf[128];
         int n = strlen(msg);
         for (int i = 1; i <= n; i++) {
@@ -49,12 +50,12 @@ int main (void) {
             // enclosing boxes (red stroke), sized to the measured text
             pico_set_pencil_color((Pico_Color){255, 0, 0, 0xFF});
             pico_set_pencil_style(PICO_STYLE_STROKE);
-            Pico_Rel_Dim m1 = { '!', {0, 12} };
+            Pico_Rel_Dim m1 = { '!', {0, 22} };
             pico_get_text(&m1, buf);
-            pico_output_draw_rect((Pico_Rel_Rect){ '!', {75, 200, m1.w, 12}, PICO_ANCHOR_W });
-            Pico_Rel_Dim m2 = { '%', {0, 0.025} };
+            pico_output_draw_rect((Pico_Rel_Rect){ '!', {20, 200, m1.w, 22}, PICO_ANCHOR_W });
+            Pico_Rel_Dim m2 = { '%', {0, 0.044} };
             pico_get_text(&m2, buf);
-            pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.15, 0.5, m2.w, 0.025}, PICO_ANCHOR_W });
+            pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.04, 0.444, m2.w, 0.044}, PICO_ANCHOR_W });
             pico_set_pencil_style(PICO_STYLE_FILL);
 
             pico_input_delay(50);
