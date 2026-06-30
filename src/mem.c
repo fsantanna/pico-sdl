@@ -240,8 +240,31 @@ void* _pico_mem_alloc_layer_sub (int n, const void* key, void* ctx) {
 
 static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
     SDL_Color c = { G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, 0xFF };
+
+#if 1
+    // resolve target pixel height to a point size: largest p with
+    // TTF_FontHeight(p) <= height. probe once to estimate the
+    // ptsize/pixel ratio, then correct +/-1 (TTF rounds internally).
+    const char* font = G.layer->pencil.font;
+    int ptsize;
+    {
+        int p0 = height > 0 ? height : 1;
+        int fh0 = TTF_FontHeight(_pico_font_get(font, p0));
+        if (fh0 <= 0) {
+            ptsize = p0;
+        } else {
+            ptsize = (height * p0 + fh0 / 2) / fh0;
+            if (ptsize < 1) ptsize = 1;
+            while (ptsize > 1 && TTF_FontHeight(_pico_font_get(font, ptsize)) > height) ptsize--;
+            while (TTF_FontHeight(_pico_font_get(font, ptsize + 1)) <= height) ptsize++;
+        }
+    }
+    TTF_Font* ttf = _pico_font_get(font, ptsize);
+#else
     TTF_Font* ttf = _pico_font_get(G.layer->pencil.font, height);
-    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
+#endif
+
+    SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text, c);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
     pico_assert(tex != NULL);

@@ -47,7 +47,92 @@ It also blurs every text draw, since nothing is ever 1:1.
 | `src/output.c`| `pico_output_draw_text_mode`   | aspect-width + scaled output  |
 | `src/geom.c`  | `_raw_dim` / `_f_rat`          | rounded aspect math           |
 
+## Measured: ptsize fixes `'!'`, `'%'` still jitters
+
+2x2 (ptsize off/on x mode). Metric: sum of changed-px in a FIXED
+left region (first 8 chars) across CONSECUTIVE typewriter frames
+(L vs L+1) -- the faithful typewriter case. self-diff sanity = 0.
+
+| ptsize | `'!'` abs    | `'%'` pct    |
+|--------|--------------|--------------|
+| OFF    | JITTER (106) | JITTER (329) |
+| ON     | STABLE (0)   | JITTER (411) |
+
+- ptsize ON fixes `'!'` (jitter -> stable); `'%'` jitters either way.
+- explains `pingus/story/intro.atm` (uses `'%'`): still flickers
+  after the ptsize fix.
+- (earlier far-apart-length measurement falsely showed `'!'` stable
+  when OFF; consecutive-frame comparison is the correct method.)
+- likely `'%'` cause: in `pico_output_draw_text_mode` the glyph
+  surface renders at `dim.h = round(rect.h*scene.h)` (e.g.
+  `round(12.5)=13`) but auto-width scales to the unrounded `12.5`;
+  that fractional render-vs-box mismatch makes the per-string width
+  rounding drift. `'!'` uses the same integer for both -> ptsize
+  alignment is enough.
+- the reverted float-blit fixed both modes (removed width
+  re-quantisation); a scoped `'%'` fix is the alternative.
+
+### FIX (applied): native-size blit for auto-width text
+
+`pico_output_draw_text_mode` (`src/output.c`): when `rect.w == 0`, set
+the destination to the glyph layer's NATIVE `W0 x H0` (mode-aware)
+instead of a stretched width + requested height. Scale becomes exactly
+1 -> no per-char width re-quantisation (jitter) and no stretch (blur).
+
+- root cause was NOT mode ('!' vs '%') nor only fractional input:
+  jitter occurs whenever the requested pixel height has no exact
+  ptsize match, so the glyph surface `H0 != requested H` and the blit
+  stretches `H0 -> H` with a per-char-rounded width.
+  e.g. H=22 -> ptsize 18 -> H0=21 -> stretch 21->22 wobbles.
+- verified (W anchor, ptsize ON), consec-frame jitter -> 0:
+  H = 14, 20, 22, 29 all STABLE (was JITTER at 14/22/29).
+- `pico_get_text` unchanged: still reports the requested (logical)
+  size; the native raster size is an internal, unobservable detail.
+- heights where `H0 == H` (e.g. 20) are byte-identical to before;
+  only the mismatched heights re-render -> partial text baseline regen.
+- explicit-width text and non-text layers untouched.
+
+(superseded earlier note below)
+
+### (earlier) native-size blit notes
+
+`pico_output_draw_text_mode` (`src/output.c`): when `rect.w == 0`,
+blit the glyph surface at its NATIVE size (`W0 x H0`) instead of
+recomputing width from the (fractional) aspect. Scale is then
+exactly 1 in both axes, so width never re-quantises per frame.
+Mode-aware unit conversion for `'!'` / `'%'` / `'#'`.
+
+Re-measured 2x2 (consec-frame metric), fix present:
+
+| ptsize | `'!'`      | `'%'`      |
+|--------|------------|------------|
+| OFF    | STABLE (0) | STABLE (0) |
+| ON     | STABLE (0) | STABLE (0) |
+
+- jitter eliminated in all cases; ptsize now governs only size
+  (native height ~= requested only when ptsize ON).
+- needs a FULL text-baseline regen (auto-width text size changes).
+
 ## Fix
+
+- [x] Inline pixel-height -> point-size resolution in `_tex_text`
+      (`src/mem.c`), nested block before `TTF_RenderText_Solid`.
+      Single point: drawn text and `pico.get.text` both flow
+      through `_tex_text` -> layer dim, so they stay consistent.
+      `_pico_font_get` stays keyed by point size.
+- [ ] ~~Float-dest blit~~ (reverted): tried `SDL_RenderCopyExF`
+      with unrounded float dst in `_pico_layer_output` (+
+      `_pico_raw_rect`). Did not resolve the reported jitter and
+      had a large blast radius (all blits float-positioned -> every
+      visual baseline would churn). Reverted `src/layer.c`,
+      `src/geom.c`, `src/_pico.h`. Keeping only the ptsize fix as
+      the simpler solution.
+- [ ] Switch glyph rendering `Solid` -> `Blended` in `_tex_text`
+      (`src/mem.c`): `TTF_RenderText_Solid` -> `TTF_RenderText_Blended`.
+      Anti-aliased alpha glyphs soften the sub-pixel scale step and
+      blend cleaner when scaled. Requires a FULL test regen (every
+      text baseline changes): `make gen` for all text tests + the
+      `lua/` equivalents, then review.
 
 Render the glyphs so the surface height *equals* the requested
 pixel height; then the existing downstream math is exactly 1:1
