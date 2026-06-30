@@ -49,6 +49,25 @@ It also blurs every text draw, since nothing is ever 1:1.
 
 ## Fix
 
+- [x] Inline pixel-height -> point-size resolution in `_tex_text`
+      (`src/mem.c`), nested block before `TTF_RenderText_Solid`.
+      Single point: drawn text and `pico.get.text` both flow
+      through `_tex_text` -> layer dim, so they stay consistent.
+      `_pico_font_get` stays keyed by point size.
+- [ ] ~~Float-dest blit~~ (reverted): tried `SDL_RenderCopyExF`
+      with unrounded float dst in `_pico_layer_output` (+
+      `_pico_raw_rect`). Did not resolve the reported jitter and
+      had a large blast radius (all blits float-positioned -> every
+      visual baseline would churn). Reverted `src/layer.c`,
+      `src/geom.c`, `src/_pico.h`. Keeping only the ptsize fix as
+      the simpler solution.
+- [ ] Switch glyph rendering `Solid` -> `Blended` in `_tex_text`
+      (`src/mem.c`): `TTF_RenderText_Solid` -> `TTF_RenderText_Blended`.
+      Anti-aliased alpha glyphs soften the sub-pixel scale step and
+      blend cleaner when scaled. Requires a FULL test regen (every
+      text baseline changes): `make gen` for all text tests + the
+      `lua/` equivalents, then review.
+
 Render the glyphs so the surface height *equals* the requested
 pixel height; then the existing downstream math is exactly 1:1
 (`round(h*W0/h) = W0`, `scale = 1`), which removes both the flicker
