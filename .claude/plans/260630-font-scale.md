@@ -47,6 +47,50 @@ It also blurs every text draw, since nothing is ever 1:1.
 | `src/output.c`| `pico_output_draw_text_mode`   | aspect-width + scaled output  |
 | `src/geom.c`  | `_raw_dim` / `_f_rat`          | rounded aspect math           |
 
+## Measured: ptsize fixes `'!'`, `'%'` still jitters
+
+2x2 (ptsize off/on x mode). Metric: sum of changed-px in a FIXED
+left region (first 8 chars) across CONSECUTIVE typewriter frames
+(L vs L+1) -- the faithful typewriter case. self-diff sanity = 0.
+
+| ptsize | `'!'` abs    | `'%'` pct    |
+|--------|--------------|--------------|
+| OFF    | JITTER (106) | JITTER (329) |
+| ON     | STABLE (0)   | JITTER (411) |
+
+- ptsize ON fixes `'!'` (jitter -> stable); `'%'` jitters either way.
+- explains `pingus/story/intro.atm` (uses `'%'`): still flickers
+  after the ptsize fix.
+- (earlier far-apart-length measurement falsely showed `'!'` stable
+  when OFF; consecutive-frame comparison is the correct method.)
+- likely `'%'` cause: in `pico_output_draw_text_mode` the glyph
+  surface renders at `dim.h = round(rect.h*scene.h)` (e.g.
+  `round(12.5)=13`) but auto-width scales to the unrounded `12.5`;
+  that fractional render-vs-box mismatch makes the per-string width
+  rounding drift. `'!'` uses the same integer for both -> ptsize
+  alignment is enough.
+- the reverted float-blit fixed both modes (removed width
+  re-quantisation); a scoped `'%'` fix is the alternative.
+
+### Fix applied: native-size blit for auto-width text
+
+`pico_output_draw_text_mode` (`src/output.c`): when `rect.w == 0`,
+blit the glyph surface at its NATIVE size (`W0 x H0`) instead of
+recomputing width from the (fractional) aspect. Scale is then
+exactly 1 in both axes, so width never re-quantises per frame.
+Mode-aware unit conversion for `'!'` / `'%'` / `'#'`.
+
+Re-measured 2x2 (consec-frame metric), fix present:
+
+| ptsize | `'!'`      | `'%'`      |
+|--------|------------|------------|
+| OFF    | STABLE (0) | STABLE (0) |
+| ON     | STABLE (0) | STABLE (0) |
+
+- jitter eliminated in all cases; ptsize now governs only size
+  (native height ~= requested only when ptsize ON).
+- needs a FULL text-baseline regen (auto-width text size changes).
+
 ## Fix
 
 - [x] Inline pixel-height -> point-size resolution in `_tex_text`
