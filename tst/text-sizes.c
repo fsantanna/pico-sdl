@@ -32,7 +32,8 @@ int main (void) {
     // re-quantises per char (20 happens to match H0 -> stays stable).
     // Stacked so the boxes share a border (r1 bottom = r2 top = y211).
     {
-        const char* msg = "The quick brown fox jumps over the lazy dog.";
+        //const char* msg = "The quick brown fox jumps over the lazy dog. Yes!";
+        const char* msg = "For a long time, the Pingus have lived hapilly.";
         Pico_Rel_Rect r1 = { '!', {20, 200, 0, 22}, PICO_ANCHOR_W };
         Pico_Rel_Rect r2 = { '%', {0.04, 0.444, 0, 0.044}, PICO_ANCHOR_W };
         char buf[128];
@@ -58,9 +59,13 @@ int main (void) {
             pico_output_draw_rect((Pico_Rel_Rect){ '%', {0.04, 0.444, m2.w, 0.044}, PICO_ANCHOR_W });
             pico_set_pencil_style(PICO_STYLE_FILL);
 
+            // capture start / middle / end of the reveal
+            if (i == 1)   _pico_check("text-sizes-02");
+            if (i == n/2) _pico_check("text-sizes-03");
+            if (i == n)   _pico_check("text-sizes-04");
+
             pico_input_delay(50);
         }
-        _pico_check("text-sizes-02");
     }
 
     pico_init(0);

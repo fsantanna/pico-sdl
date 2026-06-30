@@ -264,7 +264,7 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
     TTF_Font* ttf = _pico_font_get(G.layer->pencil.font, height);
 #endif
 
-    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
+    SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text, c);
     pico_assert(sfc != NULL);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
     pico_assert(tex != NULL);
