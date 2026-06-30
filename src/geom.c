@@ -631,3 +631,11 @@ Pico_Abs_Rect _pico_abs_rect (
     return _rnd_rect(_raw_rect(rect, base, ratio));
 }
 
+// unrounded float rect: keeps sub-pixel width so scaled blits (text)
+// do not re-quantise per call
+SDL_FRect _pico_raw_rect (
+    Pico_Rel_Rect rect, const Pico_Abs_Rect* base, const Pico_Abs_Dim* ratio
+) {
+    return _raw_rect(rect, base, ratio);
+}
+
