@@ -1,3 +1,10 @@
+v0.7 (???/??)
+-------------
+
+Fixes:
+
+- text rendering: uses valid native height for texture dimensions
+
 v0.6 (jun/26)
 -------------
 
