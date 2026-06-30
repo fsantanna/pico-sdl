@@ -25,20 +25,21 @@ int main (void) {
         _pico_check("text-sizes-01");
     }
 
-    // last line: typewriter reveal, char by char, on one NW line.
-    // no clear between chars -> overlapping prefixes: stable scaling
-    // overlaps each prefix exactly, a per-call re-quantised scale
-    // smears/shifts it (the jitter).
+    // repro of intro.atm flicker: small text, W anchor, redrawn
+    // (cleared) each frame as the prefix grows -> left edge shimmers
+    // ~1px because auto-width re-quantises per char.
+    // r1 '!' vs r2 '%' at the same pixel height (12 ~= 0.025*500):
+    // isolates whether the flicker is mode-specific or size-driven.
     {
-        pico_output_clear();
         const char* msg = "The quick brown fox jumps over the lazy dog.";
-        Pico_Rel_Rect r1 = { '!', { 50, 200, 0, 20}, PICO_ANCHOR_W };
-        Pico_Rel_Rect r2 = { '%', {0.1, 0.6, 0, 0.04}, PICO_ANCHOR_W };
+        Pico_Rel_Rect r1 = { '!', {75, 200, 0, 12}, PICO_ANCHOR_W };
+        Pico_Rel_Rect r2 = { '%', {0.15, 0.5, 0, 0.025}, PICO_ANCHOR_W };
         char buf[128];
         int n = strlen(msg);
         for (int i = 1; i <= n; i++) {
             memcpy(buf, msg, i);
             buf[i] = '\0';
+            pico_output_clear();
             pico_output_draw_text(buf, r1);
             pico_output_draw_text(buf, r2);
             pico_input_delay(50);
