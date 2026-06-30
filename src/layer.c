@@ -1,7 +1,6 @@
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
-#include <math.h>
 
 #include <SDL2/SDL.h>
 
@@ -260,41 +259,41 @@ void _pico_layer_output (
     if (rect->w == 0 || rect->h == 0) {
         dp = &layer->scene.dim;
     }
-    SDL_FRect dst = _pico_raw_rect(*rect, NULL, dp);
+    SDL_Rect dst = _pico_abs_rect(*rect, NULL, dp);
 
     Pico_Abs_Dim* sup = (layer->type == PICO_LAYER_SUB) ?
                             &((Pico_Layer_Sub*)layer)->sup : &layer->scene.dim;
-    SDL_FRect src = _pico_raw_rect (
+    Pico_Abs_Rect src = _pico_abs_rect (
         layer->scene.src, &(Pico_Abs_Rect){0, 0, sup->w, sup->h}, NULL
     );
 
     // clip dst to current layer (parent) bounds, propagate to src
     {
-        void aux (SDL_FRect* a, SDL_FRect* b, float max_w, float max_h) {
+        void aux (SDL_Rect* a, SDL_Rect* b, int max_w, int max_h) {
             assert(a->w>0 && a->h>0);
-            float sw = b->w / a->w;
-            float sh = b->h / a->h;
+            float sw = b->w / (float)a->w;
+            float sh = b->h / (float)a->h;
             if (a->x < 0) {
-                float d = -a->x;
+                int d = -a->x;
                 b->x += (d * sw);
                 b->w -= (d * sw);
                 a->w -= d;
                 a->x = 0;
             }
             if (a->y < 0) {
-                float d = -a->y;
+                int d = -a->y;
                 b->y += (d * sh);
                 b->h -= (d * sh);
                 a->h -= d;
                 a->y = 0;
             }
             if (a->x+a->w > max_w) {
-                float d = (a->x + a->w) - max_w;
+                int d = (a->x + a->w) - max_w;
                 b->w -= (d * sw);
                 a->w -= d;
             }
             if (a->y+a->h > max_h) {
-                float d = (a->y + a->h) - max_h;
+                int d = (a->y + a->h) - max_h;
                 b->h -= (d * sh);
                 a->h -= d;
             }
@@ -323,29 +322,18 @@ void _pico_layer_output (
     }
 
     SDL_SetTextureAlphaMod(layer->tex, G.layer->pencil.color.a*layer->effect.alpha/255);
-    SDL_FPoint center = {
+    SDL_Point center = {
         dst.w * layer->effect.rotate.anchor.x,
         dst.h * layer->effect.rotate.anchor.y
     };
-
-    // src is integer (texel coords); dst stays float to avoid per-call
-    // re-quantisation of scaled blits
-    SDL_Rect srci = {
-        floorf(src.x+0.5f), floorf(src.y+0.5f),
-        floorf(src.w+0.5f), floorf(src.h+0.5f)
-    };
-    SDL_RenderCopyExF(G.window.ren, layer->tex, &srci, &dst,
-                      layer->effect.rotate.angle, &center,
-                      layer->effect.flip);
+    SDL_RenderCopyEx(G.window.ren, layer->tex, &src, &dst,
+                     layer->effect.rotate.angle, &center,
+                     layer->effect.flip);
 
     if (layer->effect.grid) {
-        SDL_Rect dsti = {
-            floorf(dst.x+0.5f), floorf(dst.y+0.5f),
-            floorf(dst.w+0.5f), floorf(dst.h+0.5f)
-        };
-        _show_tile(&layer->scene, dsti);
+        _show_tile(&layer->scene, dst);
         if (G.layer == &G.window.layer) {
-            _show_grid(layer, srci, dsti);
+            _show_grid(layer, src, dst);
         }
     }
 
