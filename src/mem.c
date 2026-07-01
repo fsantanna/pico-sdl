@@ -240,42 +240,45 @@ void* _pico_mem_alloc_layer_sub (int n, const void* key, void* ctx) {
 
 static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
     SDL_Color c = { G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, 0xFF };
-
-#if 1
-    // resolve target pixel height to a point size: largest p with
-    // TTF_FontHeight(p) <= height. probe once to estimate the
-    // ptsize/pixel ratio, then correct +/-1 (TTF rounds internally).
     const char* font = G.layer->pencil.font;
-    int ptsize;
-    {
-        int p0 = height > 0 ? height : 1;
-        int fh0 = TTF_FontHeight(_pico_font_get(font, p0));
-        if (fh0 <= 0) {
-            ptsize = p0;
-        } else {
-            ptsize = (height * p0 + fh0 / 2) / fh0;
-            if (ptsize < 1) ptsize = 1;
-            while (ptsize > 1 && TTF_FontHeight(_pico_font_get(font, ptsize)) > height) ptsize--;
-            while (TTF_FontHeight(_pico_font_get(font, ptsize + 1)) <= height) ptsize++;
+
+    // resolve target pixel height to a point size: the largest ptsize
+    // with TTF_FontHeight(ptsize) <= height. probe once to estimate the
+    // pt/px ratio, then correct +/-1 (TTF rounds internally). ttf/fh
+    // stay live through the walk, so the resolved font is never re-read.
+    int ptsize = height > 0 ? height : 1;
+    TTF_Font* ttf = _pico_font_get(font, ptsize);
+    int fh = TTF_FontHeight(ttf);
+    if (fh > 0) {
+        ptsize = (height * ptsize + fh / 2) / fh;
+        if (ptsize < 1) ptsize = 1;
+        ttf = _pico_font_get(font, ptsize);
+        fh = TTF_FontHeight(ttf);
+        while (ptsize > 1 && fh > height) {
+            ttf = _pico_font_get(font, --ptsize);
+            fh = TTF_FontHeight(ttf);
+        }
+        for (;;) {
+            TTF_Font* up = _pico_font_get(font, ptsize + 1);
+            int uh = TTF_FontHeight(up);
+            if (uh > height) break;
+            ptsize++;
+            ttf = up;
+            fh = uh;
         }
     }
-    TTF_Font* ttf = _pico_font_get(font, ptsize);
-#else
-    TTF_Font* ttf = _pico_font_get(G.layer->pencil.font, height);
-#endif
 
-    int fh = TTF_FontHeight(ttf);
     SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text, c);
     pico_assert(sfc != NULL);
 
-    // pin the raster to the font's max height (TTF_FontHeight) so the
-    // layer dim never changes with the string's ascenders/descenders.
-    // a content-independent box height keeps a non-top anchor from
-    // turning a per-string height change into a vertical snap on reveal.
+    // pin the raster to the font's max height (fh) so the layer dim
+    // never changes with the string's ascenders/descenders. a content-
+    // independent box height keeps a non-top anchor from turning a
+    // per-string height change into a vertical snap on reveal.
     SDL_Surface* box = SDL_CreateRGBSurfaceWithFormat(0, sfc->w, fh, 32, SDL_PIXELFORMAT_RGBA32);
     pico_assert(box != NULL);
     SDL_SetSurfaceBlendMode(sfc, SDL_BLENDMODE_NONE);
-    SDL_BlitSurface(sfc, NULL, box, &(SDL_Rect){ 0, 0, sfc->w, sfc->h });
+    SDL_BlitSurface(sfc, NULL, box, NULL);
 
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, box);
     pico_assert(tex != NULL);
