@@ -222,6 +222,89 @@ Removes the flicker but keeps the constant down-scale blur.
 - `pico.get.text` must use the same resolution so measured and
   drawn sizes agree.
 
+## Follow-up: residual VERTICAL snap on reveal (anchor-coupled)
+
+The horizontal jitter is gone, but the downstream typewriter
+(`pingus/story/intro.atm`, `'%'`, `anchor=:W`) still shows a 1px
+*vertical* snap: as the reveal grows, the already-typed prefix jumps
+up ~1px the moment a descender first enters the string.
+The native-size blit fixed the X axis and exposed a Y-axis coupling.
+
+### Measured (port, fixed lib installed)
+
+Growing substring of
+`"For a long time, the Pingus have lived happily in peace"` into the
+SAME `'%'` rect (`x=0.15, h=0.025`); only the anchor differs.
+
+anchor `:W` (vertical center), `y=0.60`, ink bbox:
+
+| len | first new glyph | top | height | bottom |
+|-----|-----------------|-----|--------|--------|
+| 6   | caps / x-height | 406 | 9      | 415    |
+| 8   | ...             | 406 | 9      | 415    |
+| 10  | `g` (descender) | 405 | 13     | 418    |
+| 20  | ...             | 405 | 13     | 418    |
+
+top 406 -> 405 exactly when `g` (in "lon**g**") appears.
+
+anchor `:NW` (top), same sweep:
+
+| len | top | height | bottom |
+|-----|-----|--------|--------|
+| 6   | 413 | 9      | 422    |
+| 8   | 413 | 9      | 422    |
+| 10  | 413 | 13     | 426    |
+| 20  | 413 | 13     | 426    |
+
+top CONSTANT (413); the descender grows DOWNWARD only -> no snap.
+
+### Why appending in X moves the line in Y
+
+Not obvious, so spelled out:
+
+1. `TTF_RenderText_*` renders the whole string to one surface whose
+   vertical extent depends on CONTENT: it grows when the revealed
+   substring first includes a descender (`g p y j q`) or a tall
+   ascender.
+2. The auto-width fix blits that surface at its NATIVE `W0 x H0`, so
+   the destination box HEIGHT = the (content-dependent) glyph height.
+3. An anchor positions the box by a reference point:
+    - `NW` / top   -> box TOP is fixed (height-invariant).
+    - `W` / `C`    -> box CENTER is fixed; `top = center - H0/2`.
+    - `SW` / `SE`  -> box BOTTOM is fixed; `top = bottom - H0`.
+   Only the top anchor is invariant to `H0`.
+4. So when appending a char grows `H0` (a descender entered), any
+   non-top anchor recomputes the top edge -> the whole already-typed
+   prefix shifts. A center anchor splits the growth, so a
+   bottom-growing descender pushes the top UP ~half the delta = the
+   observed 1px snap-up.
+
+So the chain is: X edit changes the string's *content* -> content
+changes the surface's *height* -> a non-top anchor turns a height
+change into a *vertical position* change.
+`content -> H0 -> (anchor) -> Y`.
+
+Open question the anchor tests settle: is `H0` genuinely
+content-dependent, or is the surface a constant `FontHeight` and the
+motion is anchor-rounding of the center?
+Either way the cure is the same: place text vertically from a
+content-INDEPENDENT height.
+
+### `output_text` adjustment (proposed)
+
+For auto-width text, decouple vertical placement from the tight glyph
+surface:
+
+- keep native WIDTH (kills the horizontal wobble), but
+- derive the box HEIGHT (and the anchor math) from a
+  content-independent metric -- the font line-height
+  (`TTF_FontHeight`) or the requested `h` -- so descenders extend
+  WITHIN a fixed box instead of resizing it.
+
+Equivalent framing: make the glyph layer's height the font
+line-height (constant per size), padding the tight raster, so `H0`
+never changes with the string and every anchor is stable.
+
 ## Test
 
 Visual test `tst/text-sizes.c` (merged from `260624-text-sizes`).
@@ -247,11 +330,78 @@ Exercises growing text heights, a natural harness for this fix.
 - Follow `tst/font.c` / `tst/colors.c` style.
 - Abs `'!'` rects for text.
 
+### Extend: NW / C / SE anchor reveal (vertical-snap harness)
+
+Add a block that runs the SAME typewriter reveal three times, once
+per anchor (`NW`, `C`, `SE`), stacked or in columns, with red boxes
+sized to `pico_get_text` and start/mid/end captures.
+This is the harness that pins down the `output_text` vertical fix.
+
+Expected BEFORE the fix (settled prefix during the reveal):
+
+| anchor | settled prefix        |
+|--------|-----------------------|
+| NW     | stable (top pinned)   |
+| C      | snaps ~1px (center)   |
+| SE     | snaps ~full delta (bottom pinned) |
+
+- [x] `tst/text-sizes.c`: added the NW/C/SE reveal block +
+      captures (`text-sizes-05` len 6, `-06` len 10 = descender in,
+      `-07` full). Each anchor has a fixed GREEN guide at its
+      reference y + a RED measured box; comparing `-05` vs `-06`
+      shows whether C/SE text drifts off the guide when `g` enters
+      (= content-dependent box height) while NW stays glued. Settles
+      the open question by inspection: `make int T=text-sizes`.
+- [x] `tst/text-sizes.c`: added Y-snap REPRO (`text-sizes-08`) in
+      port conditions -- '%' mode, `h=0.025`, `W` (center-y) anchor.
+      Overlays len-8 "For a lo" (RED, no descender) and len-10
+      "For a long" (CYAN, 'g') at the SAME anchor. Coincident caps =
+      no in-lib snap (surface height = constant `TTF_FontHeight`, so
+      likely port-side); a 1px RED fringe = the snap reproduced.
+      Sharper than the `'!'` NW/C/SE harness, which cannot snap
+      (integer height, constant surface).
+- [~] `lua/tst/text-sizes.lua`: mirror it. WON'T DO -- the C repro
+      already proved no in-lib snap; a lua mirror adds nothing.
+- [x] fix the box height: pin the glyph raster to `TTF_FontHeight` in
+      `_tex_text` (`src/mem.c`) so the layer dim is content-independent
+      -> a non-top anchor can no longer snap. Blit the rendered surface
+      onto an `sfc->w x TTF_FontHeight` box; report `dim.h = fh`.
+- [ ] regen text baselines after the fix IF any change. On a machine
+      where `sfc->h == FontHeight` (e.g. this one) the padded raster is
+      byte-identical -> no churn; on a machine where they differ, the
+      pinned height re-rasters -> regen those text baselines.
+
 ## Status
 
-Complete. All three coordinated changes landed; C + lua text
-baselines regenerated; full test suite passes (C + lua). Ready to
-move to `.claude/plans/done/`.
+DONE (pending port re-trace). Horizontal-jitter fix (native-blit +
+ptsize + Blended) landed. The residual VERTICAL snap DID reproduce --
+but only where SDL_ttf returns a content-varying surface height. On
+this machine `sfc->h == TTF_FontHeight` (constant), so `text-sizes-08/
+09` showed no snap and an earlier note wrongly called it a no-op. The
+PORT's SDL_ttf returns a tighter surface: instrumenting the placement
+rect (`fprintf` of the abs text rect in `pico_output_draw_text_mode`)
+caught it live --
+
+    alon  -> h=15 y=329
+    along -> h=16 y=328      # 'g' enters: box +1 -> W anchor -1px
+
+The box height was tracking `sfc->h`, which varied with content;
+`y = y_ref - 0.5*h` turned +1 height into -1 y.
+
+### Fix
+
+Pin the raster to `TTF_FontHeight(ttf)` in `_tex_text` (`src/mem.c`):
+render the string, blit onto an `sfc->w x fh` surface, report
+`dim.h = fh`. Box height now depends only on font+ptsize, never the
+string -> constant `y`, scale stays 1 (no A-style vertical breathing).
+
+Local trace after the fix (this machine, `sfc->h` already == fh):
+`For a l..long` all `h=21`, `y` constant (190/212); width only grows.
+Byte-identical raster here -> no local baseline churn expected.
+
+Remaining: re-run the PORT trace to confirm `y` holds; regen any
+text baselines that change on machines where `sfc->h != fh`; strip
+the debug `fprintf` in `src/output.c`.
 
 ## TODO
 

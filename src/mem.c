@@ -264,12 +264,24 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
     TTF_Font* ttf = _pico_font_get(G.layer->pencil.font, height);
 #endif
 
+    int fh = TTF_FontHeight(ttf);
     SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text, c);
     pico_assert(sfc != NULL);
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
+
+    // pin the raster to the font's max height (TTF_FontHeight) so the
+    // layer dim never changes with the string's ascenders/descenders.
+    // a content-independent box height keeps a non-top anchor from
+    // turning a per-string height change into a vertical snap on reveal.
+    SDL_Surface* box = SDL_CreateRGBSurfaceWithFormat(0, sfc->w, fh, 32, SDL_PIXELFORMAT_RGBA32);
+    pico_assert(box != NULL);
+    SDL_SetSurfaceBlendMode(sfc, SDL_BLENDMODE_NONE);
+    SDL_BlitSurface(sfc, NULL, box, &(SDL_Rect){ 0, 0, sfc->w, sfc->h });
+
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, box);
     pico_assert(tex != NULL);
-    *dim = (Pico_Abs_Dim){ sfc->w, sfc->h };
+    *dim = (Pico_Abs_Dim){ sfc->w, fh };
     SDL_FreeSurface(sfc);
+    SDL_FreeSurface(box);
     return tex;
 }
 
