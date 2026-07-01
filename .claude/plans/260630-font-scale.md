@@ -113,31 +113,40 @@ Re-measured 2x2 (consec-frame metric), fix present:
   (native height ~= requested only when ptsize ON).
 - needs a FULL text-baseline regen (auto-width text size changes).
 
-## Fix
+## Fix (applied in `e7e8887`)
 
-- [x] Inline pixel-height -> point-size resolution in `_tex_text`
-      (`src/mem.c`), nested block before `TTF_RenderText_Solid`.
-      Single point: drawn text and `pico.get.text` both flow
-      through `_tex_text` -> layer dim, so they stay consistent.
+The landed fix is THREE coordinated changes, not the ptsize probe
+alone -- the measurements above show ptsize alone left `'%'`
+jittering; the native-size blit is what actually removes it.
+
+- [x] Native-size blit for auto-width text in
+      `pico_output_draw_text_mode` (`src/output.c`): when
+      `rect.w == 0`, set dest to the glyph layer's NATIVE `W0 x H0`
+      (mode-aware `'!'` / `'%'` / `'#'`). Scale becomes exactly 1 ->
+      no per-char width re-quantisation (jitter) and no stretch
+      (blur). THE jitter fix.
+- [x] Pixel-height -> point-size resolution in `_tex_text`
+      (`src/mem.c`), probe block before render (guarded `#if 1`).
+      Single point: drawn text and `pico.get.text` both flow through
+      `_tex_text` -> layer dim, so they stay consistent.
       `_pico_font_get` stays keyed by point size.
-- [ ] ~~Float-dest blit~~ (reverted): tried `SDL_RenderCopyExF`
-      with unrounded float dst in `_pico_layer_output` (+
-      `_pico_raw_rect`). Did not resolve the reported jitter and
-      had a large blast radius (all blits float-positioned -> every
-      visual baseline would churn). Reverted `src/layer.c`,
-      `src/geom.c`, `src/_pico.h`. Keeping only the ptsize fix as
-      the simpler solution.
-- [ ] Switch glyph rendering `Solid` -> `Blended` in `_tex_text`
-      (`src/mem.c`): `TTF_RenderText_Solid` -> `TTF_RenderText_Blended`.
-      Anti-aliased alpha glyphs soften the sub-pixel scale step and
-      blend cleaner when scaled. Requires a FULL test regen (every
-      text baseline changes): `make gen` for all text tests + the
-      `lua/` equivalents, then review.
+- [x] `Solid` -> `Blended` glyph render in `_tex_text` (`src/mem.c`):
+      `TTF_RenderText_Blended`. Anti-aliased alpha softens the
+      residual sub-pixel scale step. FULL text-baseline regen done
+      (`95e426b`, `42353d6`) plus the remaining C + lua text baselines
+      (`guide-07-04-01`, `set-01..03`, ...). All tests pass (C + lua).
+- [ ] ~~Float-dest blit~~ (reverted): `SDL_RenderCopyExF` with
+      unrounded float dst in `_pico_layer_output` (+ `_pico_raw_rect`).
+      Did not resolve the jitter and churned every blit baseline.
+      Reverted `src/layer.c`, `src/geom.c`, `src/_pico.h`.
 
-Render the glyphs so the surface height *equals* the requested
-pixel height; then the existing downstream math is exactly 1:1
-(`round(h*W0/h) = W0`, `scale = 1`), which removes both the flicker
-and the blur in one move.
+### Point-size resolution (detail of the `_tex_text` change)
+
+Render the glyphs so the surface height *equals* the requested pixel
+height; then the auto-width math is ~1:1 (`round(h*W0/h) = W0`,
+`scale ~= 1`). On its own this was NOT enough for `'%'` (see the 2x2
+tables) -- it aligns `'!'`; the native-size blit above is what
+removes the residual `'%'` jitter. Both shipped together.
 
 Resolve a pixel height to the point size whose `TTF_FontHeight`
 matches it, instead of using the pixel height as the point size.
@@ -238,13 +247,19 @@ Exercises growing text heights, a natural harness for this fix.
 - Follow `tst/font.c` / `tst/colors.c` style.
 - Abs `'!'` rects for text.
 
+## Status
+
+Complete. All three coordinated changes landed; C + lua text
+baselines regenerated; full test suite passes (C + lua). Ready to
+move to `.claude/plans/done/`.
+
 ## TODO
 
-- Fix lua tests: `colors-0X` fails (pixmap alpha `0x80`, ~342px /
-  Δ68). Unrelated to font-scale (colors.lua draws no text) -- a
-  pre-existing alpha / driver / screenshot-timing flake. Re-run to
-  confirm flaky vs stale baseline; add a `-CI.png` variant or
-  tolerance, or regen on this machine after visual check.
+- [x] Fix lua tests: text baselines stale after the Blended +
+      native-size change (`guide-07-04-01`, ...). Regenerated and
+      verified; suite green. The earlier `colors-0X` note was a
+      pre-existing alpha / screenshot-timing flake unrelated to
+      font-scale; no longer failing on re-run.
 
 ## Out of scope
 
