@@ -81,6 +81,7 @@ tests: pico_native.so
 	$(TST) tst/size_raw.lua
 	$(TST) tst/style.lua
 	$(TST) tst/text_empty.lua
+	$(TST) tst/text-sizes.lua
 	$(TST) tst/tile-grid.lua
 	$(TST) tst/tiles.lua
 	$(TST) tst/video.lua

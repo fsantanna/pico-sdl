@@ -85,6 +85,7 @@ tests: lib
 	$(EXE) tst/size_raw.c
 	$(EXE) tst/style.c
 	$(EXE) tst/text_empty.c
+	$(EXE) tst/text-sizes.c
 	$(EXE) tst/tile-grid.c
 	$(EXE) tst/tiles.c
 	$(EXE) tst/video.c
