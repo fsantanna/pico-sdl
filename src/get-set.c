@@ -107,10 +107,16 @@ Pico_Abs_Dim pico_get_text_mode (
 
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
+        // auto-width: report the NATIVE drawn size (same as
+        // pico_output_draw_text_mode blits) so measured == drawn. the
+        // requested height only picks the ptsize; the box height is the
+        // font's content-independent cell (>= requested).
         Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h} };
         int h = _pico_abs_dim(&rel_h, NULL, NULL).h;
         Pico_Layer* layer = _pico_layer_text(mode, key, h, text);
-        return _pico_abs_dim(rel, NULL, &layer->scene.dim);
+        Pico_Abs_Dim nat = layer->scene.dim;
+        *rel = _pico_rel_dim(nat, rel->mode);
+        return nat;
     } else {
         return _pico_abs_dim(rel, NULL, NULL);
     }

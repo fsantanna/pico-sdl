@@ -245,19 +245,24 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
         G.layer->pencil.color.b,
         G.layer->pencil.color.a,
     };
-    // open at the requested height, then pad the raster to the font's
-    // line-skip (TTF_FontLineSkip). the layer dim then depends only on
-    // the font size, never on the string's ascenders/descenders -- a
-    // content-independent box height keeps a non-top anchor from turning
-    // a per-string height change into a vertical snap on reveal.
+    // pad the raster to a content-independent box height so the layer
+    // dim depends only on the font size, never on the string's
+    // ascenders/descenders -- a fixed box keeps a non-top anchor from
+    // turning a per-string height change into a vertical snap on reveal.
+    // the box is the max of the line-skip and the reference cell "|gjpqy"
+    // (tallest glyph + deepest descenders), which bounds any string's
+    // raster (metrics under-report the raster, so we measure it).
     TTF_Font* ttf = _pico_font_get(G.layer->pencil.font, height);
-    int ls = TTF_FontLineSkip(ttf);
+    int ref;
+    TTF_SizeText(ttf, "|gjpqy", &(int){0}, &ref);
+    int H = ref > TTF_FontLineSkip(ttf) ? ref : TTF_FontLineSkip(ttf);
 
     SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text, c);
     pico_assert(sfc != NULL);
+    assert(sfc->h <= H && "text raster exceeds reference cell");
 
     SDL_Surface* box = SDL_CreateRGBSurfaceWithFormat (
-        0, sfc->w, ls, 32, SDL_PIXELFORMAT_RGBA32
+        0, sfc->w, H, 32, SDL_PIXELFORMAT_RGBA32
     );
     pico_assert(box != NULL);
     SDL_SetSurfaceBlendMode(sfc, SDL_BLENDMODE_NONE);
@@ -265,7 +270,7 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
 
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, box);
     pico_assert(tex != NULL);
-    *dim = (Pico_Abs_Dim){ sfc->w, ls };
+    *dim = (Pico_Abs_Dim){ sfc->w, H };
     SDL_FreeSurface(sfc);
     SDL_FreeSurface(box);
     return tex;

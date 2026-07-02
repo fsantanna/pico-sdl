@@ -205,26 +205,13 @@ void pico_output_draw_text_mode (
     Pico_Layer* layer = _pico_layer_text(mode, key, dim.h, text);
 
     if (rect.w == 0) {
-        // auto-width: blit the glyph surface at its NATIVE size so the
+        // auto-width: blit the glyph layer at its NATIVE size so the
         // scale is exactly 1 (no stretch -> no per-char width
-        // re-quantisation = no jitter). The requested height already
-        // picked the ptsize; the native-vs-requested ~1px gap is an
-        // internal detail (pico_get_text still reports the requested size).
-        Pico_Abs_Dim nat = layer->scene.dim;
-        switch (rect.mode) {
-            case '!':
-                rect.w = nat.w;
-                rect.h = nat.h;
-                break;
-            case '%':
-                rect.w = (float)nat.w / G.layer->scene.dim.w;
-                rect.h = (float)nat.h / G.layer->scene.dim.h;
-                break;
-            case '#':
-                rect.w = (float)nat.w / G.layer->scene.tile.w;
-                rect.h = (float)nat.h / G.layer->scene.tile.h;
-                break;
-        }
+        // re-quantisation = no jitter). pico_get_text reports the same
+        // native size, so measured == drawn.
+        Pico_Rel_Dim nat = _pico_rel_dim(layer->scene.dim, rect.mode);
+        rect.w = nat.w;
+        rect.h = nat.h;
     }
 
     _pico_layer_output(layer, &rect);

@@ -305,6 +305,23 @@ Equivalent framing: make the glyph layer's height the font
 line-height (constant per size), padding the tight raster, so `H0`
 never changes with the string and every anchor is stable.
 
+### Refactor: share the native-dim -> rel-mode conversion
+
+The auto-width native->mode switch (`'!'`/`'%'`/`'#'`) is duplicated
+in `pico_output_draw_text_mode` (`src/output.c`) and
+`pico_get_text_mode` (`src/get-set.c`).
+It is exactly the inverse of `_pico_abs_dim`, and geom.c already has
+it as the `static _rel_dim`.
+
+- [ ] Promote `_rel_dim` -> `_pico_rel_dim` (drop `static`, declare in
+      `src/_pico.h` next to `_pico_abs_dim`).
+- [ ] `get-set.c`: `_pico_rel_dim((SDL_FDim){nat.w,nat.h}, rel, NULL)`
+      (rel is already a `Pico_Rel_Dim*`) -> the switch goes away.
+- [ ] `output.c`: build `Pico_Rel_Dim d = { rect.mode }`, call
+      `_pico_rel_dim(...)`, copy back `rect.w/h`.
+- Orthogonal to the vertical fix: it changes WHICH dim is fed in, not
+  the mode conversion -> safe to land first.
+
 ## Test
 
 Visual test `tst/text-sizes.c` (merged from `260624-text-sizes`).
@@ -399,25 +416,46 @@ Two concerns were separated:
 Dropped the exactness. `_tex_text` (`src/mem.c`) now:
 1. `ttf = _pico_font_get(font, height)` -- open at the requested size
    directly (no probe, no correction loop, no intermediate-ptsize
-   font opens).
-2. `fh = TTF_FontHeight(ttf)`; render; blit onto an `sfc->w x fh`
-   surface; report `dim.h = fh`.
+   font opens). `h` behaves as a POINT size.
+2. content-independent box height
+   `H = max(TTF_SizeText("|gjpqy"), TTF_FontLineSkip(ttf))`; render
+   Blended; blit the tight raster top-aligned onto an `sfc->w x H`
+   surface; `assert(sfc->h <= H)`; report `dim = {sfc->w, H}`.
 
-Box height = `TTF_FontHeight(font, height)` -- a function of
-(font, height) only, never the string -> constant `y`, no snap.
-Trade: `h` now behaves as a POINT size, so text renders ~`1.25*h`
-px tall (`H = FontHeight(h) >= h`). `pico_get_text` reports the same
-`fh` (same `_tex_text` path), so measured == drawn.
+Why `H` this way (see the long investigation):
+- NO font metric bounds the raster: `TTF_RenderText` surfaces exceed
+  `FontHeight`/`LineSkip`/glyph-metrics by up to +1px (FreeType
+  hinting/rounding; SDL_ttf #118). Measured: render > FontHeight in
+  28/43 sizes; `LineSkip == FontHeight` for both bundled fonts.
+- `TTF_SizeText` == the actual render height (per-string, content-dep).
+  So `SizeText` over a reference cell "|gjpqy" (tallest glyph `|` +
+  deepest descenders) == the max render over ALL strings, exactly, in
+  every (font,size) tested -> content-INDEPENDENT constant, no render.
+- `max(.., LineSkip)` keeps a full line box for fonts with leading.
+- `assert(sfc->h <= H)` (>=, not ==: most strings are shorter than the
+  cell) catches any glyph beyond the reference instead of clipping.
+- top-align is proven pixel-stable: the shared prefix of a growing
+  string is byte-identical across frames (SDL extends downward only),
+  so a constant box => no snap for ANY anchor.
 
-Verified: compiles `-Wall -Werror`; `text-sizes` renders clean
-(sharp Blended ladder small->big), runs through all captures.
+`pico_get_text` (`src/get-set.c`) updated to report the same native
+drawn size `{nat.w, H}` (mirrors the draw switch) -> measured ==
+drawn. `tst/font.c` get_text asserts updated (10 -> 11 = the cell).
+
+Fixes all three: horizontal jitter (native-width blit, `src/output.c`
+unchanged), vertical snap (constant `H`), and descender clipping
+(`H` bounds the raster; earlier `FontHeight` pad clipped `font-01`).
+
+Verified: compiles `-Wall -Werror`; `font.c` passes (was asserting),
+`font-01` `g` descenders intact; `text-sizes` renders clean.
 
 Remaining:
-- FULL text-baseline regen (every text is ~1.25x bigger now): C
-  `make gen` for all text tests + the `lua/` equivalents, then review.
+- FULL text-baseline regen (Blended + new sizing): C `make gen` for
+  all text tests + `lua/` equivalents, then review.
 - debug `fprintf` in `src/output.c` already removed.
 - confirm no calling app hard-depends on text being exactly `h` px
-  tall (larger `H` shifts `h`-keyed layouts by ~1.25).
+  tall; S/SW/SE anchors now float text up by the constant descender
+  reserve (line-box bottom, not ink bottom).
 
 ## TODO
 

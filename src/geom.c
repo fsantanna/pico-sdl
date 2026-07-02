@@ -631,3 +631,12 @@ Pico_Abs_Rect _pico_abs_rect (
     return _rnd_rect(_raw_rect(rect, base, ratio));
 }
 
+// abs dim -> rel dim in the given mode, relative to the current scene
+// ('%' by G.layer scene dim, '#' by tile). used to express a text
+// layer's native size back in the caller's units.
+Pico_Rel_Dim _pico_rel_dim (Pico_Abs_Dim abs, char mode) {
+    Pico_Rel_Dim ret = { .mode = mode };
+    _rel_dim((SDL_FDim){abs.w, abs.h}, &ret, NULL);
+    return ret;
+}
+
