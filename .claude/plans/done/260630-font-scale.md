@@ -395,8 +395,9 @@ Expected BEFORE the fix (settled prefix during the reveal):
 
 ## Status
 
-ALL TESTS PASS (C + lua). Only the downstream port re-trace remains
-(external to this repo). Ready to move to `done/`.
+ALL TESTS PASS (C + lua), incl. the brush-font follow-up
+(`"|gjpqyA"` cell, `tst/font-brush.c`). Only the downstream port
+re-trace remains (external to this repo). Ready to move to `done/`.
 
 Horizontal-jitter fix (native-blit + ptsize; `Solid` render) landed. The residual VERTICAL snap DID reproduce --
 but only where SDL_ttf returns a content-varying surface height. On
