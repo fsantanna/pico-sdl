@@ -243,7 +243,7 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
         G.layer->pencil.color.r,
         G.layer->pencil.color.g,
         G.layer->pencil.color.b,
-        G.layer->pencil.color.a,
+        0xFF,
     };
     // pad the raster to a content-independent box height so the layer
     // dim depends only on the font size, never on the string's
