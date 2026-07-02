@@ -212,16 +212,12 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             int v = src.x + (x * src.w / dst.w);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            Pico_Abs_Dim dim = pico_get_text (
-                &(Pico_Rel_Dim){ '!', {0, H} },
-                lbl
-            );
             pico_output_draw_text (
                 lbl,
                 (Pico_Rel_Rect) {
                     '!',
-                    {dst.x+x-dim.w/2, dst.y+10-dim.h/2, 0, dim.h},
-                    PICO_ANCHOR_NW
+                    {dst.x+x, dst.y+10, 0, H},
+                    PICO_ANCHOR_C
                 }
             );
         }
@@ -231,15 +227,12 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             int v = src.y + (y * src.h / dst.h);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            Pico_Abs_Dim dim = pico_get_text(
-                &(Pico_Rel_Dim){ '!', {0, H} },
-                lbl);
             pico_output_draw_text (
                 lbl,
                 (Pico_Rel_Rect) {
                     '!',
-                    {dst.x+10-dim.w/2, dst.y+y-dim.h/2, 0, dim.h},
-                    PICO_ANCHOR_NW
+                    {dst.x+10, dst.y+y, 0, H},
+                    PICO_ANCHOR_C
                 }
             );
         }

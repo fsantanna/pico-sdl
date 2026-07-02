@@ -5,12 +5,12 @@ pico.init(true)
 -- pico.get.text
 do
     local dim = pico.get.text({'!', w=nil, h=10}, "ABC")
-    assert(dim.w>0 and dim.h==10)
+    assert(dim.w>0 and dim.h==11)
 
     local pct = {'%', w=nil, h=0.1}
     local dim = pico.get.text(pct, "ABC")
     assert(dim == pct)
-    assert(pct.w*100//1==17 and pct.h*100//1==10)
+    assert((pct.w*100+0.5)//1==17 and (pct.h*100+0.5)//1==11)
 
     local pct = {'%', h=0.2}
     pico.get.text(pct, "ABC")

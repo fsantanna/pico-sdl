@@ -257,7 +257,7 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
     TTF_SizeText(ttf, "|gjpqy", &(int){0}, &ref);
     int H = ref > TTF_FontLineSkip(ttf) ? ref : TTF_FontLineSkip(ttf);
 
-    SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text, c);
+    SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
     pico_assert(sfc != NULL);
     assert(sfc->h <= H && "text raster exceeds reference cell");
 
