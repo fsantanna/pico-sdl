@@ -239,50 +239,33 @@ void* _pico_mem_alloc_layer_sub (int n, const void* key, void* ctx) {
 }
 
 static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) {
-    SDL_Color c = { G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, 0xFF };
-    const char* font = G.layer->pencil.font;
-
-    // resolve target pixel height to a point size: the largest ptsize
-    // with TTF_FontHeight(ptsize) <= height. probe once to estimate the
-    // pt/px ratio, then correct +/-1 (TTF rounds internally). ttf/fh
-    // stay live through the walk, so the resolved font is never re-read.
-    int ptsize = height > 0 ? height : 1;
-    TTF_Font* ttf = _pico_font_get(font, ptsize);
-    int fh = TTF_FontHeight(ttf);
-    if (fh > 0) {
-        ptsize = (height * ptsize + fh / 2) / fh;
-        if (ptsize < 1) ptsize = 1;
-        ttf = _pico_font_get(font, ptsize);
-        fh = TTF_FontHeight(ttf);
-        while (ptsize > 1 && fh > height) {
-            ttf = _pico_font_get(font, --ptsize);
-            fh = TTF_FontHeight(ttf);
-        }
-        for (;;) {
-            TTF_Font* up = _pico_font_get(font, ptsize + 1);
-            int uh = TTF_FontHeight(up);
-            if (uh > height) break;
-            ptsize++;
-            ttf = up;
-            fh = uh;
-        }
-    }
+    SDL_Color c = {
+        G.layer->pencil.color.r,
+        G.layer->pencil.color.g,
+        G.layer->pencil.color.b,
+        G.layer->pencil.color.a,
+    };
+    // open at the requested height, then pad the raster to the font's
+    // line-skip (TTF_FontLineSkip). the layer dim then depends only on
+    // the font size, never on the string's ascenders/descenders -- a
+    // content-independent box height keeps a non-top anchor from turning
+    // a per-string height change into a vertical snap on reveal.
+    TTF_Font* ttf = _pico_font_get(G.layer->pencil.font, height);
+    int ls = TTF_FontLineSkip(ttf);
 
     SDL_Surface* sfc = TTF_RenderText_Blended(ttf, text, c);
     pico_assert(sfc != NULL);
 
-    // pin the raster to the font's max height (fh) so the layer dim
-    // never changes with the string's ascenders/descenders. a content-
-    // independent box height keeps a non-top anchor from turning a
-    // per-string height change into a vertical snap on reveal.
-    SDL_Surface* box = SDL_CreateRGBSurfaceWithFormat(0, sfc->w, fh, 32, SDL_PIXELFORMAT_RGBA32);
+    SDL_Surface* box = SDL_CreateRGBSurfaceWithFormat (
+        0, sfc->w, ls, 32, SDL_PIXELFORMAT_RGBA32
+    );
     pico_assert(box != NULL);
     SDL_SetSurfaceBlendMode(sfc, SDL_BLENDMODE_NONE);
     SDL_BlitSurface(sfc, NULL, box, NULL);
 
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, box);
     pico_assert(tex != NULL);
-    *dim = (Pico_Abs_Dim){ sfc->w, fh };
+    *dim = (Pico_Abs_Dim){ sfc->w, ls };
     SDL_FreeSurface(sfc);
     SDL_FreeSurface(box);
     return tex;

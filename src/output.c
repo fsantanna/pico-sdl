@@ -227,8 +227,6 @@ void pico_output_draw_text_mode (
         }
     }
 
-    SDL_Rect _dbg = _pico_abs_rect(rect, NULL, NULL);
-    fprintf(stderr, "DBG text y=%d x=%d w=%d h=%d '%s'\n", _dbg.y, _dbg.x, _dbg.w, _dbg.h, text);
     _pico_layer_output(layer, &rect);
 }
 

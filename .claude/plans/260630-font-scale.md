@@ -388,20 +388,36 @@ caught it live --
 The box height was tracking `sfc->h`, which varied with content;
 `y = y_ref - 0.5*h` turned +1 height into -1 y.
 
-### Fix
+### Fix (simplified -- final)
 
-Pin the raster to `TTF_FontHeight(ttf)` in `_tex_text` (`src/mem.c`):
-render the string, blit onto an `sfc->w x fh` surface, report
-`dim.h = fh`. Box height now depends only on font+ptsize, never the
-string -> constant `y`, scale stays 1 (no A-style vertical breathing).
+Two concerns were separated:
+- SNAP is fixed by a content-independent box height (pad raster to
+  `TTF_FontHeight`), NOT by ptsize resolution.
+- EXACT `h`-as-pixels was the ONLY thing the probe/estimate/correction
+  machinery bought, against SDL_ttf's point-size-only API.
 
-Local trace after the fix (this machine, `sfc->h` already == fh):
-`For a l..long` all `h=21`, `y` constant (190/212); width only grows.
-Byte-identical raster here -> no local baseline churn expected.
+Dropped the exactness. `_tex_text` (`src/mem.c`) now:
+1. `ttf = _pico_font_get(font, height)` -- open at the requested size
+   directly (no probe, no correction loop, no intermediate-ptsize
+   font opens).
+2. `fh = TTF_FontHeight(ttf)`; render; blit onto an `sfc->w x fh`
+   surface; report `dim.h = fh`.
 
-Remaining: re-run the PORT trace to confirm `y` holds; regen any
-text baselines that change on machines where `sfc->h != fh`; strip
-the debug `fprintf` in `src/output.c`.
+Box height = `TTF_FontHeight(font, height)` -- a function of
+(font, height) only, never the string -> constant `y`, no snap.
+Trade: `h` now behaves as a POINT size, so text renders ~`1.25*h`
+px tall (`H = FontHeight(h) >= h`). `pico_get_text` reports the same
+`fh` (same `_tex_text` path), so measured == drawn.
+
+Verified: compiles `-Wall -Werror`; `text-sizes` renders clean
+(sharp Blended ladder small->big), runs through all captures.
+
+Remaining:
+- FULL text-baseline regen (every text is ~1.25x bigger now): C
+  `make gen` for all text tests + the `lua/` equivalents, then review.
+- debug `fprintf` in `src/output.c` already removed.
+- confirm no calling app hard-depends on text being exactly `h` px
+  tall (larger `H` shifts `h`-keyed layouts by ~1.25).
 
 ## TODO
 
