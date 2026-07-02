@@ -130,11 +130,14 @@ jittering; the native-size blit is what actually removes it.
       Single point: drawn text and `pico.get.text` both flow through
       `_tex_text` -> layer dim, so they stay consistent.
       `_pico_font_get` stays keyed by point size.
-- [x] `Solid` -> `Blended` glyph render in `_tex_text` (`src/mem.c`):
-      `TTF_RenderText_Blended`. Anti-aliased alpha softens the
-      residual sub-pixel scale step. FULL text-baseline regen done
-      (`95e426b`, `42353d6`) plus the remaining C + lua text baselines
-      (`guide-07-04-01`, `set-01..03`, ...). All tests pass (C + lua).
+- [x] ~~`Solid` -> `Blended`~~ (REVERTED to `Solid`): Blended was
+      tried to soften the residual scale step, but with the native-blit
+      fix scale is exactly 1, so its only effect was anti-aliasing --
+      which BLURS tiny text into illegibility (`anchor-01` metric
+      labels, embedded pixel font ~5px, became gray blobs). The
+      native-blit already removes the jitter/blur it was meant to fix,
+      so `Solid` (crisp) is the correct render. `_tex_text` uses
+      `TTF_RenderText_Solid`.
 - [ ] ~~Float-dest blit~~ (reverted): `SDL_RenderCopyExF` with
       unrounded float dst in `_pico_layer_output` (+ `_pico_raw_rect`).
       Did not resolve the jitter and churned every blit baseline.
@@ -313,12 +316,13 @@ in `pico_output_draw_text_mode` (`src/output.c`) and
 It is exactly the inverse of `_pico_abs_dim`, and geom.c already has
 it as the `static _rel_dim`.
 
-- [ ] Promote `_rel_dim` -> `_pico_rel_dim` (drop `static`, declare in
-      `src/_pico.h` next to `_pico_abs_dim`).
-- [ ] `get-set.c`: `_pico_rel_dim((SDL_FDim){nat.w,nat.h}, rel, NULL)`
-      (rel is already a `Pico_Rel_Dim*`) -> the switch goes away.
-- [ ] `output.c`: build `Pico_Rel_Dim d = { rect.mode }`, call
-      `_pico_rel_dim(...)`, copy back `rect.w/h`.
+- [x] Promote `_rel_dim` -> `_pico_rel_dim (Pico_Abs_Dim, char mode)`
+      (public wrapper in `geom.c`, declared in `src/_pico.h` next to
+      `_pico_abs_dim`).
+- [x] `get-set.c`: `pico_get_text_mode` auto-width branch uses
+      `_pico_rel_dim(nat, rel->mode)` -> switch gone.
+- [x] `output.c`: `pico_output_draw_text_mode` auto-width block uses
+      `_pico_rel_dim(layer->scene.dim, rect.mode)` -> switch gone.
 - Orthogonal to the vertical fix: it changes WHICH dim is fed in, not
   the mode conversion -> safe to land first.
 
@@ -377,8 +381,9 @@ Expected BEFORE the fix (settled prefix during the reveal):
       likely port-side); a 1px RED fringe = the snap reproduced.
       Sharper than the `'!'` NW/C/SE harness, which cannot snap
       (integer height, constant surface).
-- [~] `lua/tst/text-sizes.lua`: mirror it. WON'T DO -- the C repro
-      already proved no in-lib snap; a lua mirror adds nothing.
+- [x] `lua/tst/text-sizes.lua`: full mirror of `text-sizes.c` (all 9
+      captures `-01..-09`), added after the design settled to exercise
+      the lua binding through the same paths. Passes.
 - [x] fix the box height: pin the glyph raster to `TTF_FontHeight` in
       `_tex_text` (`src/mem.c`) so the layer dim is content-independent
       -> a non-top anchor can no longer snap. Blit the rendered surface
@@ -390,8 +395,10 @@ Expected BEFORE the fix (settled prefix during the reveal):
 
 ## Status
 
-DONE (pending port re-trace). Horizontal-jitter fix (native-blit +
-ptsize + Blended) landed. The residual VERTICAL snap DID reproduce --
+ALL TESTS PASS (C + lua). Only the downstream port re-trace remains
+(external to this repo). Ready to move to `done/`.
+
+Horizontal-jitter fix (native-blit + ptsize; `Solid` render) landed. The residual VERTICAL snap DID reproduce --
 but only where SDL_ttf returns a content-varying surface height. On
 this machine `sfc->h == TTF_FontHeight` (constant), so `text-sizes-08/
 09` showed no snap and an earlier note wrongly called it a no-op. The
@@ -450,12 +457,23 @@ Verified: compiles `-Wall -Werror`; `font.c` passes (was asserting),
 `font-01` `g` descenders intact; `text-sizes` renders clean.
 
 Remaining:
-- FULL text-baseline regen (Blended + new sizing): C `make gen` for
-  all text tests + `lua/` equivalents, then review.
-- debug `fprintf` in `src/output.c` already removed.
-- confirm no calling app hard-depends on text being exactly `h` px
-  tall; S/SW/SE anchors now float text up by the constant descender
-  reserve (line-box bottom, not ink bottom).
+- [x] FULL text-baseline regen (Solid + new sizing): C `make gen` for
+      all text tests + `lua/` equivalents, reviewed. Suite green
+      (C + lua).
+- [x] debug `fprintf` in `src/output.c` removed.
+- [ ] confirm no calling app hard-depends on text being exactly `h` px
+      tall; S/SW/SE anchors now float text up by the constant descender
+      reserve (line-box bottom, not ink bottom). (port re-trace)
+
+Test-translation fixes surfaced during regen (auto vs explicit width
+diverged once auto-width height became the cell `H`, not the requested
+`h`):
+- `lua/tst/font.lua`: get_text asserts 10 -> 11 (cell); line 13
+  switched `*100//1` (floor) -> `(*100+0.5)//1` (round) so `0.11f`
+  doesn't truncate to 10.
+- `lua/tst/blend_raw.lua`: block-2 rect `w=d.w` -> `w=0` to match C's
+  auto-width (`blend_raw.c` uses `w=0`); explicit width was stretching
+  the 11px cell to 10px and mismatching the C-generated baseline.
 
 ## TODO
 
@@ -464,6 +482,87 @@ Remaining:
       verified; suite green. The earlier `colors-0X` note was a
       pre-existing alpha / screenshot-timing flake unrelated to
       font-scale; no longer failing on re-run.
+
+## Follow-up: reference cell under-bounds decorative fonts
+
+The constant `H = max(SizeText("|gjpqy"), LineSkip)` was verified only
+against the two bundled fonts (`DejaVuSans`, `tiny`).
+A downstream app (SNKRX, font `PixulBrush.ttf`) aborts on the safety
+net `assert(sfc->h <= H)` (`_tex_text`, `src/mem.c`): some glyph
+rasters taller than the `"|gjpqy"` cell, so the cell is NOT a
+universal bound.
+
+    lua5.4: src/mem.c:262: _tex_text: Assertion
+    `sfc->h <= H && "text raster exceeds reference cell"' failed.
+    Aborted (core dumped)
+
+### Root cause
+
+`"|gjpqy"` assumes `|` is the tallest glyph and `gjpqy` the deepest.
+That holds for the bundled fonts but not for decorative / brush
+fonts, whose glyphs (flourishes, tall caps, deep tails) can exceed
+both extremes.
+The bound is font-specific, yet the code hardcodes one literal cell.
+
+Discovered (probe): the culprit glyph is a PLAIN capital `A`, not a
+decorative outlier -- in PixulBrush `A` renders 1px taller than the
+`"|gjpqy"` cell (`10 -> 11` at pt6, `36 -> 37` at pt22). `SizeText`
+and `RenderText` AGREE (both 11 for `A`), so it is a wrong-reference
+string, not a metric under-report. Nearly all caps/digits overshoot.
+
+### Fix (applied -- minimal): add `A` to the reference cell
+
+`_tex_text` (`src/mem.c`): reference `"|gjpqy"` -> `"|gjpqyA"`.
+- [x] validated: over pt 6..120, ALL printable ASCII of PixulBrush
+      now has `render <= H` (0 fails).
+- [x] no baseline churn: `SizeText("|gjpqyA") == SizeText("|gjpqy")`
+      for both bundled fonts (DejaVu, tiny) at every size -> `H`
+      unchanged there; existing C + lua baselines stay valid.
+- [x] `tst/font-brush.c`: minimal repro (draw `"A"` @h=6 with
+      `PixulBrush.ttf`) -- aborted before, renders now.
+- still a fixed literal: a future font could exceed even `A`; the
+  glyph-scan below stays the robust fallback if that recurs.
+
+### Fix direction (fallback, if a fixed cell is ever defeated again)
+
+Keep `H` content-INDEPENDENT (the anchor-stability invariant), but
+make it a true per-`(font,size)` bound instead of a fixed cell:
+
+- compute `H` as the max raster height over the font's printable
+  glyph set (`0x20..0x7E`), measured once per `(font,size)` and
+  cached alongside the font entry;
+- a single-line string's raster height is bounded by its glyphs'
+  max ascent + max descent, so scanning the glyphs bounds every
+  string while staying content-independent;
+- keep `assert(sfc->h <= H)` as the safety net, now against the
+  computed bound rather than the literal cell.
+
+Weaker alternative: just widen the reference string -- but any fixed
+literal is defeated by the next font, so prefer the scan.
+
+### Font (how to copy)
+
+Copy the offending font into `res/` (the test-font dir, alongside
+`DejaVuSans.ttf`):
+
+    cp /x/x/SNKRX/assets/fonts/PixulBrush.ttf \
+       /x/pico-sdl/res/PixulBrush.ttf
+
+Source: SNKRX `../assets/fonts/PixulBrush.ttf` (~15 KB).
+
+### Test case to add
+
+New case in `tst/font.c` (following the `../res/DejaVuSans.ttf`
+pattern), or a dedicated `tst/font-brush.c`:
+
+- [ ] `pico_set_pencil_font("../res/PixulBrush.ttf")`.
+- [ ] draw the full printable-ASCII line at the SNKRX sizes
+      (button `h`, plus the hover-scaled `1.3x`) -- the exact case
+      that aborts today.
+- [ ] regression asserts: renders WITHOUT aborting (`sfc->h <= H`),
+      and `pico_get_text` height is CONSTANT across strings of
+      different content (proves `H` stayed content-independent).
+- [ ] capture a baseline (`font-brush-01`).
 
 ## Out of scope
 

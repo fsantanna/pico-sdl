@@ -249,12 +249,14 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
     // dim depends only on the font size, never on the string's
     // ascenders/descenders -- a fixed box keeps a non-top anchor from
     // turning a per-string height change into a vertical snap on reveal.
-    // the box is the max of the line-skip and the reference cell "|gjpqy"
-    // (tallest glyph + deepest descenders), which bounds any string's
-    // raster (metrics under-report the raster, so we measure it).
+    // the box is the max of the line-skip and the reference cell
+    // "|gjpqyA" (tallest glyph + deepest descenders; 'A' because some
+    // brush/decorative fonts render caps taller than '|'), which bounds
+    // any string's raster (metrics under-report the raster, so we
+    // measure it).
     TTF_Font* ttf = _pico_font_get(G.layer->pencil.font, height);
     int ref;
-    TTF_SizeText(ttf, "|gjpqy", &(int){0}, &ref);
+    TTF_SizeText(ttf, "|gjpqyA", &(int){0}, &ref);
     int H = ref > TTF_FontLineSkip(ttf) ? ref : TTF_FontLineSkip(ttf);
 
     SDL_Surface* sfc = TTF_RenderText_Solid(ttf, text, c);
