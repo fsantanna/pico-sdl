@@ -3,7 +3,8 @@ v0.7 (???/??)
 
 Fixes:
 
-- text rendering: uses valid native height for texture dimensions
+- window clip: was not clipping at all
+- text rendering: now uses reasonable native height
 
 v0.6 (jun/26)
 -------------

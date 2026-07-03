@@ -52,16 +52,22 @@ child copies in full.
 
 ## Plan
 
-- [ ] 1. FIRST: failing test `tst/window-clip.c` (+ `lua` mirror) that
-      pins the desired behaviour; confirm it FAILS on current code.
-- [ ] 2. Fix `_pico_draw_all_pos` (`src/layer.c`): apply `UP->scene.clip`
-      before `_pico_layer_output`.
-- [ ] 3. Re-check `tst/clip-expert.c` `clip-expert-02`: does the same
-      fix make it pass, or is the expert direct-draw clip a separate
-      path? Note the finding.
-- [ ] 4. Regen affected baselines; run full suite (C + lua); confirm no
-      regressions (default clips are full, so untouched callers are
-      byte-identical).
+- [x] 1. Failing test `tst/window-clip.c` (+ `lua/tst/window-clip.lua`).
+      Split into two blocks, both broken pre-fix (full red):
+      - `window-clip-01` PLAIN  -- green via window effect (clear) colour
+      - `window-clip-02` EXPERT -- green drawn on the window layer
+- [x] 2. Fixed `_pico_draw_all_pos` (`src/layer.c`): re-apply
+      `UP->scene.clip` as SDL clip after the retarget, before
+      `_pico_layer_output`. One idiom shared with every other retarget
+      path.
+- [x] 3. `clip-expert-02` is a SEPARATE path -- expert *direct-draw*
+      (draws on `world`, then presents), not the composite. The fix
+      does not touch it; its baseline was unchanged and the suite still
+      passes. Its own clip-ignored behaviour remains an independent
+      open item (not in this plan's scope).
+- [x] 4. Regenerated `window-clip-01/02` baselines (C + lua); full
+      suite passes, no regressions (default clips are full -> untouched
+      callers byte-identical).
 
 ## Failing test (do this first)
 
