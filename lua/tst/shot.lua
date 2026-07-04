@@ -89,7 +89,7 @@ end
 
 do
     print("pixmap layer")
-    pico.layer.pixmap { key="pmap1", pix={
+    pico.layer.pixmap { key="pmap1", pixels={
         {{r=255, g=  0, b=  0, a=255}, {r=  0, g=255, b=  0, a=255}},
         {{r=  0, g=  0, b=255, a=255}, {r=255, g=255, b=  0, a=255}},
     } }
@@ -148,7 +148,7 @@ end
 -- 1. capture an existing layer into a new layer; reuses empty1's reference
 do
     print("screenshot layer - reuse empty1")
-    pico.layer.screenshot { key="snap_empty", src="empty1" }
+    pico.layer.screenshot { key="snap_empty", sup="empty1" }
     pico.set.layer("snap_empty")
     local f = pico.output.screenshot(nil, "../../tst/out/shot-snap-empty.png")
     pico.set.layer("world")
@@ -179,7 +179,7 @@ do
     local f1 = pico.output.screenshot("world", "../../tst/out/shot-scene.png")
     check(f1, "../../tst/asr/shot-scene.png")
 
-    pico.layer.screenshot { key="snap_scene", src="world" }
+    pico.layer.screenshot { key="snap_scene", sup="world" }
     pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.layer("snap_scene")
@@ -191,7 +191,7 @@ end
 -- 3. capture a relative crop; resolves against the source layer (64x32)
 do
     print("screenshot layer - crop (pct)")
-    pico.layer.screenshot { key="snap_half", src="empty1",
+    pico.layer.screenshot { key="snap_half", sup="empty1",
         crop={'%', x=0, y=0, w=0.5, h=1.0, anchor='NW'} }
     pico.set.layer("snap_half")
     local f = pico.output.screenshot(nil, "../../tst/out/shot-snap-half.png")
@@ -206,7 +206,7 @@ end
 do
     print("screenshot layer - target (+ crop)")
     local r = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
-    pico.layer.screenshot { key="snap_tgt", src="empty1",
+    pico.layer.screenshot { key="snap_tgt", sup="empty1",
         crop={'%', x=0, y=0, w=0.5, h=1.0, anchor='NW'}, target=r }
     pico.set.layer("snap_tgt")
     local s = pico.get.scene()

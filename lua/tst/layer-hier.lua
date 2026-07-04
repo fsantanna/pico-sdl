@@ -32,7 +32,7 @@ pico.layer.image { up="world", key="img", path="../../res/open.png",
 pico.output.present()
 pico.check("layer-hier-02")
 
-pico.layer.pixmap { up="world", key="buf", pix={
+pico.layer.pixmap { up="world", key="buf", pixels={
     {{r=255, g=0,   b=0,   a=255}, {r=0, g=255, b=0,   a=255}},
     {{r=0,   g=0,   b=255, a=255}, {r=255, g=255, b=0, a=255}},
 }, target={'%', x=0.7, y=0.3, w=0.4, h=0.4, anchor='C'} }

@@ -415,7 +415,7 @@ pico.output.screenshot("window", "../../tst/out/guide-10-01-02.png",
 
 -- §10.1.c: screenshot a layer into a new layer, then redraw it
 pico.set.window { title="guide-10-01-03" }
-pico.layer.screenshot { key="snap", src="window" }
+pico.layer.screenshot { key="snap", sup="window" }
 pico.output.draw.layer("snap", {'%', x=0.5, y=0.5, w=0.3})
 pico.check("guide-10-01-03")
 

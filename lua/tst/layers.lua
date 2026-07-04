@@ -91,7 +91,7 @@ do
     local r = {'%', x=0.5, y=0.5, w=0.25, h=0.25, anchor='C'}
     local px = {{ {'!',r=0xFF,g=0,b=0}, {'!',r=0,g=0xFF,b=0} },
                 { {'!',r=0,g=0,b=0xFF}, {'!',r=0xFF,g=0xFF,b=0} }}
-    pico.layer.pixmap { up="world", key="px_with_target", pix=px, target=r }
+    pico.layer.pixmap { up="world", key="px_with_target", pixels=px, target=r }
     pico.set.layer("px_with_target")
     local s = pico.get.scene()
     assert(s.target[1] == '%')
