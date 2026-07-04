@@ -84,8 +84,10 @@ shrinks the migration (existing `tile=` call sites stay valid).
 
 ### Shared validation (all constructors)
 
-- Unknown field -> error naming it (kills silent typos).
-- Missing REQ field -> error naming it.
+- Missing REQ field -> error naming it (`luaL_argcheck` at call
+  sites).
+- Unknown fields are IGNORED (rejection was implemented, then
+  reverted: simpler bindings preferred over typo defense).
 - `target` accepted in both attach modes; semantics per
   [260704-layer-target.md] SS3 (stored raw, lazy resolve).
 - `screenshot` gains `target` for full parity (applied after

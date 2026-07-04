@@ -1,45 +1,41 @@
 local M = require "pico_native"
 
-function M.layer.images (m, up, key, path, t)
-    if not t then
-        up, key, path, t = m, up, key, path
-        m = '!'
-    end
-    assert(key, "layer.images: key required")
-    M.layer.image(m, up, key, path)
+function M.layer.images (t)
+    assert(t.key, "layer.images: key required")
+    M.layer.image(t)
     local names = {}
-    local mode = t[1]
+    local mode = t.sheet[1]
     assert(mode=='#' or mode=='!', "expected '#' or '!' mode")
 
-    -- Grid form: {w=cols, h=rows, n=count"}
+    -- Grid form: {'#', w=cols, h=rows, [n=count], [key=prefix]}
     if mode == '#' then
-        assert(t.w and t.h, "mode '#' requires 'w' and 'h'")
-        local cols = t.w
-        local rows = t.h
-        local dim = M.get.image(key)
+        assert(t.sheet.w and t.sheet.h, "mode '#' requires 'w' and 'h'")
+        local cols = t.sheet.w
+        local rows = t.sheet.h
+        local dim = M.get.image(t.key)
         local tw = dim.w / cols
         local th = dim.h / rows
-        local n = t.n or (cols * rows)
+        local n = t.sheet.n or (cols * rows)
         local i = 0
         for row = 0, rows - 1 do
             for col = 0, cols - 1 do
                 i = i + 1
                 if i > n then break end
-                local sub = string.format("%s-%02d", (t.key or key), i)
-                M.layer.sub(up, sub, key,
-                    {'!', x=col*tw, y=row*th,
-                          w=tw, h=th, anchor='NW'})
+                local sub = string.format("%s-%02d", (t.sheet.key or t.key), i)
+                M.layer.sub { up=t.up, key=sub, sup=t.key,
+                    crop={'!', x=col*tw, y=row*th,
+                               w=tw, h=th, anchor='NW'} }
                 names[#names+1] = sub
             end
             if i >= n then break end
         end
 
-    -- Explicit form: {key=rect, ...}
+    -- Explicit form: {'!', [name1=Rect, name2=Rect, ...]}
     else
-        for k, crop in pairs(t) do
+        for k, crop in pairs(t.sheet) do
             if k ~= 1 then
-                local sub = key .. "-" .. k
-                M.layer.sub(up, sub, key, crop)
+                local sub = t.key .. "-" .. k
+                M.layer.sub { up=t.up, key=sub, sup=t.key, crop=crop }
                 names[#names+1] = sub
             end
         end
