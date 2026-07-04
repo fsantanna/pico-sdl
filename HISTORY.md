@@ -3,9 +3,11 @@ v0.7 (???/??)
 
 Modifications:
 
-- Layer target:
-    - detached assumes current layer as parent
-    - both attached/detached with lazy evaluation (w/h=0) at request time
+- Layers:
+    - constructor: table format (was positional)
+    - target:
+        - detached assumes current layer as parent
+        - both attached/detached with lazy evaluation (w/h=0) at request time
 
 Fixes:
 
