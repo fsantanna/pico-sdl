@@ -359,22 +359,9 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
 
 void pico_set_scene_dst (Pico_Rel_Rect dst) {
     _pico_guard();
-    Pico_Layer* L = G.layer;
-    if (dst.w==0 || dst.h==0) {
-        // aspect-fill: resolve eagerly so cv walks and draw-time
-        // see a concrete '!' rect. Pb (parent box) is offset for
-        // '!' and '#' modes (size unused) and base for '%' mode.
-        // a detached layer has no parent box here (G.layer==L at set
-        // time), so aspect-fill needs an attached layer.
-        assert(L->hier.up!=NULL && "detached scene.target needs w,h");
-        Pico_Layer* P = _pico_layer_name(L->hier.up);
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        Pico_Abs_Rect f = _pico_abs_rect(dst, &Pb, &L->scene.dim);
-        dst = (Pico_Rel_Rect) {
-            '!', {f.x, f.y, f.w, f.h}, PICO_ANCHOR_NW
-        };
-    }
-    L->scene.dst = dst;
+    // stored raw; resolved lazily at each use (draw + cv/vs walks)
+    // with the layer's dim as aspect ratio for w/h==0
+    G.layer->scene.dst = dst;
     _pico_output_present(0);
 }
 

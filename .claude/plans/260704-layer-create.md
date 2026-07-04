@@ -103,8 +103,8 @@ shrinks the migration (existing `tile=` call sites stay valid).
 | lua/pico.c | `l_layer_screenshot` | table form |
 | lua/pico.c | drop `L_realm_opt`, `L_opt_dst`, `L_is_rect` | subsumed by kw parsing |
 
-C API unchanged (no kwargs in C); constructor-target for C tracked as
-[260704-layer-target.md] SS2 option A.
+C API unchanged (no kwargs in C); C constructor-target DECIDED as
+set-after pattern, docs only ([260704-layer-target.md] SS2 option B).
 
 ## Migration (no legacy)
 

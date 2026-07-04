@@ -279,4 +279,43 @@ do
            pico.vs.pos.rect(nil, p_out, 'att_vs', nil))
 end
 
+print "detached target: lazy aspect-fill and '%' mode"
+do
+    print('', 'h=0 aspect-fills lazily from the layer dim')
+    -- det_asp dim 50x50 (1:1): (10,10,40,0) fills to (10,10,40,40)
+    pico.layer.empty(nil, 'det_asp', true, {'!', w=50, h=50})
+    pico.set.layer('det_asp')
+    pico.set.scene { target = {'!', x=10, y=10, w=40, h=0, anchor='NW'} }
+    pico.set.layer('world')
+    local p_in  = {'!', x=20, y=20, anchor='NW'}
+    local p_out = {'!', x=20, y=60, anchor='NW'}
+    assert(    pico.vs.pos.rect(nil, p_in,  'det_asp', nil))
+    assert(not pico.vs.pos.rect(nil, p_out, 'det_asp', nil))
+
+    print('', "'%' target resolves against the current layer")
+    -- world 100x100: (0.5,0.5,0.4,0.4) C -> (30,30,40,40)
+    pico.layer.empty(nil, 'det_pct', true, {'!', w=50, h=50})
+    pico.set.layer('det_pct')
+    pico.set.scene { target = {'%', x=0.5, y=0.5, w=0.4, h=0.4, anchor='C'} }
+    pico.set.layer('world')
+    local q_in  = {'!', x=35, y=35, anchor='NW'}
+    local q_out = {'!', x=75, y=75, anchor='NW'}
+    assert(    pico.vs.pos.rect(nil, q_in,  'det_pct', nil))
+    assert(not pico.vs.pos.rect(nil, q_out, 'det_pct', nil))
+end
+
+print "attached target re-resolves on parent resize (lazy)"
+do
+    -- world 100x100: (0,0,50,50); p (75,75) outside
+    pico.layer.empty('world', 'att_lazy', true, {'!', w=50, h=50})
+    pico.set.layer('att_lazy')
+    pico.set.scene { target = {'%', x=0, y=0, w=0.5, h=0, anchor='NW'} }
+    pico.set.layer('world')
+    local p = {'!', x=75, y=75, anchor='NW'}
+    assert(not pico.vs.pos.rect(nil, p, 'att_lazy', nil))
+    -- world 200x200: same target now (0,0,100,100); p inside
+    pico.set.scene { dim = {'!', w=200, h=200} }
+    assert(pico.vs.pos.rect(nil, p, 'att_lazy', nil))
+end
+
 pico.init(false)

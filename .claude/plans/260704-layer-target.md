@@ -169,7 +169,10 @@ Rules of thumb (document in api.md/guide):
 
 - [x] Decide §2 constructor option: B (no C change)
 - [x] Decide lazy-everywhere (§3) incl. resize semantics: accepted
-- [ ] Implement store-raw + ratio threading (get-set.c + geom.c)
-- [ ] Re-run existing goldens (view-target 05-07, vs sub_aspect) —
-  values identical in theory; confirm
-- [ ] Tests + docs
+- [x] Implement store-raw + ratio threading (get-set.c + geom.c;
+  `_root_rect` resolves locally before cv, which has no ratio)
+- [x] Tests: vs.c/vs.lua — detached h=0, detached '%', attached
+  re-resolve on parent resize
+- [ ] Re-run goldens (view-target 05-07, vs sub_aspect) + new cases
+  (user runs)
+- [ ] Docs (api.md/guide: resolution table §4; C set-after example)

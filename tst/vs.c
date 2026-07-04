@@ -247,9 +247,10 @@ int main (void) {
         assert(pico_vs_rect_pos("sub_sub_tight", NULL, NULL, &p_out) == 0);
     }
 
-    // scene.dst with w=0 or h=0 means aspect-fill (resolved in
-    // pico_set_scene_dst, get-set.c). Without the fill _vs_rect
-    // returns an empty rect and no point ever lands inside.
+    // scene.dst with w=0 or h=0 means aspect-fill, resolved lazily
+    // at each use with the layer's dim as ratio (geom.c walks +
+    // _root_rect). Without the fill _vs_rect would see an empty rect
+    // and no point ever lands inside.
     pico_layer_empty("world", "sub_aspect", 1,
                      (Pico_Rel_Dim){'!', {50, 50}}, NULL);
     pico_set_layer("sub_aspect");
@@ -302,6 +303,50 @@ int main (void) {
                pico_vs_pos_rect(NULL, &p_in,  "att_vs", NULL));
         assert(pico_vs_pos_rect(NULL, &p_out, "det_vs", NULL) ==
                pico_vs_pos_rect(NULL, &p_out, "att_vs", NULL));
+    }
+
+    // detached target with h=0: lazy aspect-fill from the layer's dim
+    pico_layer_empty(NULL, "det_asp", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer("det_asp");
+    pico_set_scene_dst((Pico_Rel_Rect){'!', {10, 10, 40, 0}, PICO_ANCHOR_NW});
+    pico_set_layer("world");
+    {
+        puts("vs_pos_rect - detached target h=0 aspect-fills lazily");
+        // det_asp dim 50x50 (1:1): (10,10,40,0) fills to (10,10,40,40)
+        Pico_Rel_Pos p_in  = { '!', {20, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p_out = { '!', {20, 60}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p_in,  "det_asp", NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, "det_asp", NULL) == 0);
+    }
+
+    // detached target in '%' mode: resolves against the current layer
+    pico_layer_empty(NULL, "det_pct", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer("det_pct");
+    pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_C});
+    pico_set_layer("world");
+    {
+        puts("vs_pos_rect - detached '%' target vs world");
+        // world 100x100: (0.5,0.5,0.4,0.4) C -> (30,30,40,40)
+        Pico_Rel_Pos p_in  = { '!', {35, 35}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p_out = { '!', {75, 75}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p_in,  "det_pct", NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, "det_pct", NULL) == 0);
+    }
+
+    // lazy re-resolution: an attached '%' target with w-only tracks a
+    // later parent resize (was frozen under eager aspect-fill)
+    pico_layer_empty("world", "att_lazy", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer("att_lazy");
+    pico_set_scene_dst((Pico_Rel_Rect){'%', {0, 0, 0.5, 0}, PICO_ANCHOR_NW});
+    pico_set_layer("world");
+    {
+        puts("vs_pos_rect - attached target re-resolves on parent resize");
+        // world 100x100: (0,0,50,50); p (75,75) outside
+        Pico_Rel_Pos p = { '!', {75, 75}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p, "att_lazy", NULL) == 0);
+        // world 200x200: same target now (0,0,100,100); p inside
+        pico_set_scene_dim((Pico_Rel_Dim){'!', {200, 200}});
+        assert(pico_vs_pos_rect(NULL, &p, "att_lazy", NULL) == 1);
     }
 
     pico_init(0);
