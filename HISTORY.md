@@ -3,8 +3,9 @@ v0.7 (???/??)
 
 Modifications:
 
-- detached layer now supports target (assumes current layer as parent)
-
+- layer target
+    - detached assumes current layer as parent
+    - both attached/detached with lazy evaluation (w/h=0) at request time
 
 Fixes:
 

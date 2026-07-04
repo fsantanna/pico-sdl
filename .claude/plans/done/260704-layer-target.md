@@ -160,10 +160,10 @@ Rules of thumb (document in api.md/guide):
 - rect-as-dim with `target.w/h = 0`: stays an error (no honest
   aspect source for an empty layer).
 
-## Open Questions
+## Won't Do
 
-- Should `set_scene_dim` keep `assert(mode != '%')`? ('%' dim at
-  creation already works via mem.c; setter is stricter — unify?)
+- `set_scene_dim` `%`-assert unification: dim concern, not target;
+  revisit under [260704-layer-create.md] if it bites there.
 
 ## Status
 
@@ -173,6 +173,8 @@ Rules of thumb (document in api.md/guide):
   `_root_rect` resolves locally before cv, which has no ratio)
 - [x] Tests: vs.c/vs.lua — detached h=0, detached '%', attached
   re-resolve on parent resize
-- [ ] Re-run goldens (view-target 05-07, vs sub_aspect) + new cases
-  (user runs)
-- [ ] Docs (api.md/guide: resolution table §4; C set-after example)
+- [x] Re-run goldens (view-target 05-07, vs sub_aspect) + new cases:
+  all tests pass (user-run)
+- [x] Docs: api.md (set.scene target + orphan note), guide.md 7.4
+  (resolution table), pico.h (set_scene_dst doxygen + set-after
+  example)
