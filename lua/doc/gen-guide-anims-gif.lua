@@ -6,8 +6,8 @@ pico.init(true)
 pico.output.clear()
 pico.set.expert(true, 20)
 
-local frames = pico.layer.images("walk",
-    "img/walk.png", {'#', w=4, h=4})
+local frames = pico.layer.images { key="walk",
+    path="img/walk.png", sheet={'#', w=4, h=4} }
 local dirs = {
     down  = { 1,  2,  3,  4},
     up    = { 5,  6,  7,  8},

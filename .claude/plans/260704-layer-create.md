@@ -132,12 +132,22 @@ pico.layer.empty("world", "bg3", false, r)
 pico.layer.empty { up="world", key="bg3", target=r }
 ```
 
+## Open Questions
+
+- `text.height` -> `dim: Dim` (approved, PENDING apply): `h`
+  required, `w` must be 0/absent (inferred); `'%'`/`'#'` resolve
+  against `up` (or current layer if detached).
+
 ## Decisions (closed)
 
 - Tile: sibling form A only (embedded `dim.tile` rejected, see above).
 - image/video: keep implicit `'='`-when-no-key mode rule.
-- `screenshot`: gains `target` now (parity); `region` stays source
-  crop.
+- `screenshot`: gains `target` now (parity); `region` RENAMED to
+  `crop`, `src` RENAMED to `sup` (full unification with
+  `sub{sup, crop}`: sub = live view, screenshot = frozen copy).
+- `pixmap.pix` RENAMED to `pixels` (matches the C param name).
+- Visual test for shot target: draw with no rect into world SE
+  quadrant -> new golden `shot-snap-target.png` (user generates).
 - `set.*` naming: already aligned (`clear` consistent; `mode` is
   creation-only; `target` unified by this plan). No renames.
 

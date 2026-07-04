@@ -698,7 +698,7 @@ redirect further drawing operations to it:
 
 ```lua
 > pico.output.clear()
-> pico.layer.empty(nil, "flag", false, {'!', w=300, h=200})
+> pico.layer.empty { key="flag", dim={'!', w=300, h=200} }
 > pico.set.layer("flag")
 > pico.set.pencil { color={ r=0x00, g=0x2B, b=0x7F } }
   pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
@@ -798,9 +798,9 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.layer.sub(nil, "blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15})
-> pico.layer.sub(nil, "yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15})
-> pico.layer.sub(nil, "red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15})
+> pico.layer.sub { key="blue",   sup="flag", crop={'%', x=0.25, y=0.5, w=0.1, h=0.15} }
+> pico.layer.sub { key="yellow", sup="flag", crop={'%', x=0.50, y=0.5, w=0.1, h=0.15} }
+> pico.layer.sub { key="red",    sup="flag", crop={'%', x=0.75, y=0.5, w=0.1, h=0.15} }
 > pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
 > pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
 > pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
@@ -826,9 +826,9 @@ When creating a layer (e.g., `me`), we can pass another layer (e.g., `up`) to
 become its parent:
 
 ```
-pico.layer.empty("up", "me", ...)   -- "up" is parent of "me"
-pico.set.layer("me")                -- setup "me"
-pico.set.scene {                    -- position "me" within "up"
+pico.layer.empty { up="up", key="me", ... }  -- "up" is parent of "me"
+pico.set.layer("me")                         -- setup "me"
+pico.set.scene {                             -- position "me" within "up"
     target = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 }
 ```
@@ -852,20 +852,20 @@ The next code listing implements this layout:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.layer.image (
-    "world", "I", "open.png", {'%', x=0.3, y=0.3, w=0.4}
-  )
+> pico.layer.image {
+    up="world", key="I", path="open.png", target={'%', x=0.3, y=0.3, w=0.4},
+  }
 > do
-    pico.layer.empty("world", "P", true, {'!', w=100, h=50})
+    pico.layer.empty { up="world", key="P", clear=true, dim={'!', w=100, h=50} }
     pico.set.layer("P")
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
-    pico.layer.text (
-        "P", "T1", 20, "Hello",  {'%', x=0.5, y=0.3, h=0.6}
-    )
-    pico.layer.text (
-        "P", "T2", 20, "World!", {'%', x=0.5, y=0.7, h=0.4}
-    )
+    pico.layer.text {
+        up="P", key="T1", height=20, text="Hello",  target={'%', x=0.5, y=0.3, h=0.6},
+    }
+    pico.layer.text {
+        up="P", key="T2", height=20, text="World!", target={'%', x=0.5, y=0.7, h=0.4},
+    }
   end
 > pico.output.present()
 </pre>
@@ -1157,9 +1157,9 @@ In the omitted initialization, we use [#sub-layers](#73-sub-layers) to crop the
 `4x4` sprite sheet above:
 
 ```lua
-local frames = pico.layer.images (
-    nil, "walk", "img/walk.png", {'#', w=4, h=4}
-)
+local frames = pico.layer.images {
+    key="walk", path="img/walk.png", sheet={'#', w=4, h=4},
+}
 
 local dirs = {
     down  = { 1,  2,  3,  4},   -- walk-01 -> walk-04
@@ -1304,7 +1304,7 @@ An optional rectangle crops the screenshot:
 We can also create a new layer from a screenshot with `pico.layer.screenshot`:
 
 ```lua
-> pico.layer.screenshot(nil, "snap", 'window')
+> pico.layer.screenshot { key="snap", sup='window' }
 > pico.output.draw.layer("snap", {'%', x=0.5, y=0.5, w=0.3})
 ```
 
