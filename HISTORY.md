@@ -3,7 +3,7 @@ v0.7 (???/??)
 
 Modifications:
 
-- layer target
+- Layer target:
     - detached assumes current layer as parent
     - both attached/detached with lazy evaluation (w/h=0) at request time
 
@@ -37,7 +37,7 @@ v0.5 (may/26)
 
 Additions:
 
-- layers as a tree hierarchy:
+- Layers as a tree hierarchy:
     - window <- world <- custom layers
     - `up` parameter on layer constructors
     - composite hierarchy:
