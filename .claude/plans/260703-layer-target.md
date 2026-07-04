@@ -19,112 +19,169 @@ projection walk.
 
 | file:line | fact |
 | --------------------- | ------------------------------------------- |
-| get-set.c:360 | `pico_set_scene_dst` asserts `hier.up!=NULL` |
+| get-set.c:363 | `pico_set_scene_dst` asserts `hier.up!=NULL` |
 | get-set.c:368 | aspect-fill branch reads parent via `hier.up` |
-| geom.c:59,97 | `_pos_root_to` / `_rect_root_to` stop at `up==NULL` |
+| layer.c:257 | `draw.layer` resolves `dst` vs `G.layer` dim (base=NULL) |
+| geom.c:59,97 | `_pos/_rect_root_to` stop at `up==NULL` |
+| geom.c:41,77,117 | `_dim/_pos/_rect_root_fr` stop at `up==NULL` |
 | geom.c:229 | `_root_of` walks `up` to top; detached = own root |
-| geom.c:247 | `_root_rect` identity-projects a detached rect |
-| layer.c:250 | `_pico_layer_output`: `rect==NULL` -> `scene.dst` |
-| pico.c:1559 | `l_output_draw_layer`: rect already optional |
-| pico.c:1146 | `set.scene` maps Lua key `target` -> `scene.dst` |
-| _pico.h:32 | `hier.up`: "NULL = root or detached" (overloaded) |
+| geom.c:247 | `_root_rect`: detached hits `L==R` -> own interior |
+| geom.c:262 | `_root_rect` else branch reads `L->hier.up` |
+| mem.c:140 | default `dst = '%' {.5,.5,1,1}` (centered, full) |
+| pico.c:207 | `world` is attached to `window` |
+| pico.c:1146 (lua) | `set.scene` maps Lua key `target` -> `scene.dst` |
+| pico.c:1559 (lua) | `l_output_draw_layer`: rect already optional |
 
-Consequences:
+### Where `scene.dst` is read
 
-- Setting `target` on a detached layer aborts (SIGABRT).
-- `draw.layer(id)` (no rect) would already work if `dst` were set.
-- The projection walk treats a detached layer as its own root, so a
-  window-space mouse never maps into it.
+| reader | path | detached? |
+| ---------------------------- | --------------------------- | ----------------- |
+| `_pico_layer_output(L,NULL)` | `draw.layer` / auto-cascade | manual `draw.layer` |
+| `_*_root_to/_fr` walk | `cv` / `vs` | yes |
+| `_root_rect` else branch | `vs` | yes |
 
-## Problem
+Auto-cascade never enumerates a detached layer (no `up`, so
+`_pico_layer_traverse` skips it). So setting `dst` on a detached layer
+is inert except for manual `draw.layer` and `vs`/`cv`.
 
-`scene.dst` currently means "placement inside `hier.up`".
-A detached layer has no `hier.up`, so `dst` has no reference frame.
-Two distinct concepts are conflated on `hier.up`:
+## Key Insight
 
-- draw cascade parent (who auto-draws me as a child)
-- geometry reference (whose frame my target is expressed in)
+The reference frame for a detached layer's `target` is the **current
+layer** (`G.layer`), resolved at **use time**, not capture time:
 
-A detached layer wants the second without the first: it is blitted
-manually, but still needs a reference frame for `target` + `vs`.
+- `draw.layer(det)` already resolves `dst` against `G.layer->scene.dim`
+  (`layer.c:257`, base=NULL). No change; works today.
+- `vs`/`cv` just need the projection walk to continue into `G.layer`
+  instead of stopping at the detached layer.
 
-## Proposal
+At the `vs` call, `G.layer` is the frame the caller is working in
+(world, in SNKRX) — the same frame the manual blit used — so it lines
+up by construction. No stored reference, no `hier.ref` field, no
+set-time capture.
 
-Introduce a geometry reference for detached layers, separate from the
-draw cascade. A detached layer with a target behaves, for geometry and
-projection only, as if placed at `target` inside a reference layer,
-while remaining outside the auto-draw cascade.
+A bonus: a detached layer blitted into several frames just uses
+whatever frame is current at each `vs` call, so there is no
+"single stored target" limitation to document.
 
-### Reference frame
-
-`target` on a detached layer is expressed relative to a reference
-layer. Default: the current layer at the time `target` is set
-(mirrors `draw.layer`, whose rect is in the current render target's
-frame). Optionally overridable later.
-
-For SNKRX cards the reference resolves to `world`, matching the manual
-`draw.layer(id, rct)` blit.
-
-### Approach A (preferred): new `hier.ref` field
-
-- Add `const char* ref` to `hier` (geometry-only reference).
-- `pico_set_scene_dst` on a detached layer: drop the hard assert;
-  require `ref` to be resolvable (capture current layer if unset);
-  use `ref` as the parent box in the aspect-fill branch.
-- Projection walk (`_pos_root_to`, `_rect_root_to`, `_dim_root_to`
-  and their `_fr` twins, plus `_root_of`): when `up==NULL` and
-  `ref!=NULL`, continue the walk into `ref` using `dst` as placement,
-  instead of stopping.
-- Draw cascade (`draw.layers`, child enumeration via `hier.dn`/`nxt`)
-  ignores `ref`, so the layer is not auto-drawn.
-
-### Approach B (smaller, riskier): reuse `hier.up` as reference
-
-Attach for geometry but exclude from the cascade (do not link into the
-parent's `dn.fst/lst` / `nxt`). Less code, but overloads `up` further
-and risks cascade code assuming `up` implies a child link.
-
-## Implementation Sketch (Approach A)
+## Implementation
 
 | file | place | change |
-| ------------ | ---------------------------- | ------------------------- |
-| _pico.h | `Pico_Layer.hier` | add `const char* ref` |
-| get-set.c | `pico_set_scene_dst` | relax assert; use `ref` box |
-| get-set.c | `pico_get_scene_dst` | return stored `dst` if set |
-| geom.c | `_pos_root_to` `_rect_root_to` `_dim_root_to` | walk into `ref` on detach |
-| geom.c | `_pos_root_fr` `_rect_root_fr` `_dim_root_fr` | symmetric down-walk |
-| geom.c | `_root_of` | follow `ref` when `up==NULL` |
-| layer.c | `_pico_layer_output` | already `dst`-default: no change |
-| pico.c (lua) | `l_output_draw_layer` | already optional: no change |
+| ------------ | -------------------------------- | ----------------------- |
+| get-set.c | `pico_set_scene_dst` | drop assert; store `dst` |
+| geom.c | `_dim/_pos/_rect_root_to` | splice `G.layer` on detach |
+| geom.c | `_dim/_pos/_rect_root_fr` | symmetric down-walk |
+| geom.c | `_root_of` | follow `G.layer` on detach |
+| geom.c | `_root_rect` else branch | use `G.layer` name |
+| layer.c | `_pico_layer_output` | none (already `dst`-default) |
+| pico.c (lua) | `l_output_draw_layer` | none (already optional) |
 
-### Open questions
+### Detached-root predicate
 
-- Reference capture: current-layer-at-set vs explicit param on
-  `set.scene { target=..., ref=... }`.
-- Should `get.scene.target` return the raw rel rect or the resolved
-  `!` rect?
-- Aspect-fill (`w==0`/`h==0`) target on detached: resolve against `ref`
-  dim; confirm anchor handling matches the attached path.
-- Multiple blits: a detached layer may be `draw.layer`-ed into several
-  targets/frames; `vs` uses only the single stored `target`. Document
-  that `vs` tracks the target, not each manual blit.
+The walk must still stop at a true root, but continue past a detached
+user layer. Reuse the existing pointer checks:
+
+```c
+// treat as a root: stop the walk
+int _is_root (Pico_Layer* L) {
+    return L->hier.up == NULL &&
+           (L == &G.world || L == &G.window.layer || L == G.layer);
+}
+```
+
+- `world` / `window`: true roots (checks used at get-set.c:342,
+  pico.c:256).
+- `L == G.layer`: a detached layer that *is* the current target;
+  projecting it into itself would loop. Stop.
+
+### Projection walk (per `_pos_root_to`, mirror the rest)
+
+```c
+if (L->hier.up == NULL) {
+    if (_is_root(L)) { *out = p; return L; }
+    // detached: current layer is the reference frame
+    Pico_Layer* P = G.layer;
+    // project p through L->scene.dst into P's frame, then recurse
+    ...
+    return _pos_root_to(P, p, out);
+}
+```
+
+- `_*_root_to`: use `L->scene.dst` as placement in `G.layer`, recurse
+  into `G.layer`.
+- `_*_root_fr`: symmetric; recurse into `G.layer` first, then map down
+  through `L->scene.dst`.
+- `_root_of`: `while (!_is_root(L)) L = up ? up : G.layer;`
+- `_root_rect` else branch (geom.c:262): pass `G.layer->name` instead
+  of `L->hier.up` when `L->hier.up == NULL`.
+
+Since `world.up == "window"`, a detached layer resolves
+detached -> `G.layer` (world) -> window, sharing window as the root
+with a window-space position. Collision maps correctly.
+
+### `pico_set_scene_dst` (detached path)
+
+```c
+// drop: assert(L->hier.up != NULL ...)
+if (dst.w==0 || dst.h==0) {
+    if (L->hier.up == NULL) {
+        assert(0 && "detached target needs explicit w,h");
+    }
+    // existing aspect-fill via hier.up parent box
+    ...
+}
+L->scene.dst = dst;
+```
+
+Aspect-fill (`w==0`/`h==0`) needs a parent box; on a detached layer
+`G.layer==L` at set time, so there is no box to fit against. SNKRX
+passes an explicit-w/h card rect, so require explicit w,h and assert
+otherwise. Lazy aspect-fill is Won't Do.
+
+## Decisions (closed)
+
+- **Reference:** current layer at use time (no `hier.ref`, no capture).
+- **Aspect-fill on detached:** unsupported; require explicit w,h.
+- **`get.scene.target`:** return the raw stored `dst` (attached
+  aspect-fill is already stored resolved at set-time), symmetric with
+  the attached path.
+
+## Tests (written first, reuse existing files + golden)
+
+| file | cases | golden |
+| ----------------------- | ------------------------------------- | ------------ |
+| tst/vs.c | detached target: p-in-world vs bounds, point-in-det-frame, parity vs attached sibling | none (assert) |
+| lua/tst/vs.lua | mirror of the above | none (assert) |
+| tst/view-target.c | case 08: detached stored target + `draw.layer(NULL)` | view-target-04 |
+| lua/tst/view-target.lua | case 09: same | view-target-04 |
+
+The visual case draws the detached `bg` via its stored `scene.dst`
+(rect=NULL). That calls the same `_pico_layer_output` with the same
+rect as the explicit-rect blit of case 04, so it renders
+pixel-identically — reuse the existing `view-target-04.png`, no new
+golden. It doubles as a stored-target vs explicit-rect equivalence
+assertion.
+
+Tests target the intended behavior, so they abort/fail until the
+implementation lands (TDD).
 
 ## Verification (manual, later)
 
-- `detached_target.lua`: `set.scene{target}` no longer aborts.
-- Extend `lua/tst/vs.lua`: detached layer + target, assert
-  `vs.pos.rect('window', p, det, inner)` matches the attached case.
+- `make test T=vs` and `T=view-target` (C); `cd lua && make test ...`.
 - SNKRX `Card`: `Object(nil, id, rect, 1)` hover works with the manual
   blit unchanged.
 
 ## Won't Do
 
+- `hier.ref` field / Approach A / Approach B (reference is `G.layer`).
+- Lazy aspect-fill target on a detached layer.
 - Auto-drawing detached layers (keep manual `draw.layer`).
-- Re-parenting / cascade changes beyond the geometry reference.
+- Re-parenting / cascade changes.
 
 ## Status
 
-- [ ] Decide Approach A vs B
-- [ ] Decide reference-capture semantics
-- [ ] Implement projection + set/get dst
-- [ ] Verify (script + vs.lua + SNKRX)
+- [x] Decide reference model (current layer, use-time)
+- [x] Write tests (vs.c/lua, view-target.c/lua; reuse view-target-04)
+- [x] `pico_set_scene_dst`: drop assert, guard aspect-fill
+- [x] Projection walk: `_is_root`, `_walk_up`, `_*_root_to/_fr`, `_root_of`
+- [x] `_root_rect` else branch
+- [ ] Verify (make test vs + view-target + SNKRX)

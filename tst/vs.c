@@ -265,6 +265,45 @@ int main (void) {
         assert(pico_vs_pos_rect(NULL, &p_out, "sub_aspect", NULL) == 0);
     }
 
+    // detached layer w/ target: the projection reference is the
+    // CURRENT layer (world here), resolved at vs time. Mirrors a
+    // manual draw.layer(det, target) blit into world.
+    pico_layer_empty(NULL, "det_vs", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer("det_vs");
+    pico_set_scene_dst((Pico_Rel_Rect){'!', {10, 10, 40, 40}, PICO_ANCHOR_NW});
+    pico_set_layer("world");
+    {
+        puts("vs_pos_rect - detached target, p in world vs det bounds");
+        // det target = world (10,10,40,40): p_in inside, p_out outside
+        Pico_Rel_Pos p_in  = { '!', {20, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p_out = { '!', {60, 60}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p_in,  "det_vs", NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, "det_vs", NULL) == 0);
+    }
+    {
+        puts("vs_pos_pos - detached, point in det frame maps to world");
+        // det 50x50 -> world (10,10,40,40): scale 0.8, offset 10.
+        // det (25,25) -> world (10+25*0.8, 10+25*0.8) = (30,30)
+        Pico_Rel_Pos p1 = { '!', {25, 25}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p2 = { '!', {30, 30}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_pos("det_vs", &p1, NULL, &p2) == 1);
+    }
+    // parity: an ATTACHED sibling with the same target must collide
+    // identically to the detached layer.
+    pico_layer_empty("world", "att_vs", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer("att_vs");
+    pico_set_scene_dst((Pico_Rel_Rect){'!', {10, 10, 40, 40}, PICO_ANCHOR_NW});
+    pico_set_layer("world");
+    {
+        puts("vs_pos_rect - detached matches attached sibling");
+        Pico_Rel_Pos p_in  = { '!', {20, 20}, PICO_ANCHOR_NW };
+        Pico_Rel_Pos p_out = { '!', {60, 60}, PICO_ANCHOR_NW };
+        assert(pico_vs_pos_rect(NULL, &p_in,  "det_vs", NULL) ==
+               pico_vs_pos_rect(NULL, &p_in,  "att_vs", NULL));
+        assert(pico_vs_pos_rect(NULL, &p_out, "det_vs", NULL) ==
+               pico_vs_pos_rect(NULL, &p_out, "att_vs", NULL));
+    }
+
     pico_init(0);
     return 0;
 }

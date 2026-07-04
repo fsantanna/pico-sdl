@@ -1,6 +1,11 @@
 v0.7 (???/??)
 -------------
 
+Modifications:
+
+- detached layer now supports target (assumes current layer as parent)
+
+
 Fixes:
 
 - window clip: was not clipping at all

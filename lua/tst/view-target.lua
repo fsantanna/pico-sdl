@@ -54,6 +54,21 @@ do
     pico.check("view-target-04")
 end
 
+-- 04b: detached stored target == explicit-rect draw. Storing "bg"'s
+--      target and drawing with no rect must render identically to the
+--      explicit-rect blit of test 04. Runs before bg2 (an attached
+--      child of world) exists, so the cascade adds nothing.
+do
+    print("target: detached stored target matches explicit rect (04)")
+    pico.set.layer("bg")
+    pico.set.scene { target = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'} }
+    pico.set.layer("world")
+    pico.set.effect { color='black' }
+    pico.output.clear()
+    pico.output.draw.layer("bg")
+    pico.check("view-target-04")
+end
+
 -- 05: target h only, w=0 -> w inferred from 2:1 layer aspect
 do
     print("target: h only, w inferred")

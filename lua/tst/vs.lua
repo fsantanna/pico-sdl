@@ -246,4 +246,37 @@ do
     assert(not pico.vs.rect.pos('sub_sub_tight', nil, nil, p_out))
 end
 
+print "detached layer w/ target (reference = current layer)"
+do
+    -- det 50x50, target = world (10,10,40,40); the reference frame is
+    -- resolved at vs time against the current layer (world). Mirrors a
+    -- manual draw.layer(det, target) blit.
+    pico.layer.empty(nil, 'det_vs', true, {'!', w=50, h=50})
+    pico.set.layer('det_vs')
+    pico.set.scene { target = {'!', x=10, y=10, w=40, h=40, anchor='NW'} }
+    pico.set.layer('world')
+
+    print('', 'p in world vs det bounds (r2=nil)')
+    local p_in  = {'!', x=20, y=20, anchor='NW'}
+    local p_out = {'!', x=60, y=60, anchor='NW'}
+    assert(    pico.vs.pos.rect(nil, p_in,  'det_vs', nil))
+    assert(not pico.vs.pos.rect(nil, p_out, 'det_vs', nil))
+
+    print('', 'point in det frame maps to world (scale 0.8)')
+    -- det (25,25) -> world (10+25*0.8, 10+25*0.8) = (30,30)
+    local d1 = {'!', x=25, y=25, anchor='NW'}
+    local w1 = {'!', x=30, y=30, anchor='NW'}
+    assert(pico.vs.pos.pos('det_vs', d1, nil, w1))
+
+    print('', 'detached matches attached sibling')
+    pico.layer.empty('world', 'att_vs', true, {'!', w=50, h=50})
+    pico.set.layer('att_vs')
+    pico.set.scene { target = {'!', x=10, y=10, w=40, h=40, anchor='NW'} }
+    pico.set.layer('world')
+    assert(pico.vs.pos.rect(nil, p_in,  'det_vs', nil) ==
+           pico.vs.pos.rect(nil, p_in,  'att_vs', nil))
+    assert(pico.vs.pos.rect(nil, p_out, 'det_vs', nil) ==
+           pico.vs.pos.rect(nil, p_out, 'att_vs', nil))
+end
+
 pico.init(false)

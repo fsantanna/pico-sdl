@@ -21,13 +21,27 @@ static Pico_Abs_Rect _rnd_rect (SDL_FRect  f);
 // Root-mediated walk: fromL → root → toL.
 // fromL and toL must share a root (typically window).
 
+// A layer stops the walk at the window root, or at the current layer
+// when it is detached (projecting it into itself would loop). A
+// detached non-root layer instead projects through its scene.dst into
+// the current layer, its geometry reference frame.
+static int _is_root (Pico_Layer* L) {
+    return (L == &G.window.layer) || (L==G.layer && L->hier.up==NULL);
+}
+
+// The parent layer for the walk: hier.up if attached, else the current
+// layer (reference frame for a detached layer's scene.dst).
+static Pico_Layer* _walk_up (Pico_Layer* L) {
+    return (L->hier.up == NULL) ? G.layer : _pico_layer_name(L->hier.up);
+}
+
 // up: walk d (in L's frame) to root; *out is d in root's frame.
 static Pico_Layer* _dim_root_to (Pico_Layer* L, SDL_FDim d, SDL_FDim* out) {
-    if (L->hier.up == NULL) {
+    if (_is_root(L)) {
         *out = d;
         return L;
     }
-    Pico_Layer* P = _pico_layer_name(L->hier.up);
+    Pico_Layer* P = _walk_up(L);
     Pico_Abs_Rect Lb = {0, 0, L->scene.dim.w, L->scene.dim.h};
     Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
     SDL_FRect src = _raw_rect(L->scene.src, &Lb, NULL);
@@ -39,11 +53,11 @@ static Pico_Layer* _dim_root_to (Pico_Layer* L, SDL_FDim d, SDL_FDim* out) {
 
 // down: project d (in L's root's frame) into L's frame.
 static Pico_Layer* _dim_root_fr (Pico_Layer* L, SDL_FDim d, SDL_FDim* out) {
-    if (L->hier.up == NULL) {
+    if (_is_root(L)) {
         *out = d;
         return L;
     }
-    Pico_Layer* P = _pico_layer_name(L->hier.up);
+    Pico_Layer* P = _walk_up(L);
     Pico_Layer* R = _dim_root_fr(P, d, &d);
     Pico_Abs_Rect Lb = {0, 0, L->scene.dim.w, L->scene.dim.h};
     Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
@@ -57,11 +71,11 @@ static Pico_Layer* _dim_root_fr (Pico_Layer* L, SDL_FDim d, SDL_FDim* out) {
 
 // up: walk p (in L's frame) to root; *out is p in root's frame.
 static Pico_Layer* _pos_root_to (Pico_Layer* L, SDL_FPoint p, SDL_FPoint* out) {
-    if (L->hier.up == NULL) {
+    if (_is_root(L)) {
         *out = p;
         return L;
     }
-    Pico_Layer* P = _pico_layer_name(L->hier.up);
+    Pico_Layer* P = _walk_up(L);
     Pico_Abs_Rect Lb = {0, 0, L->scene.dim.w, L->scene.dim.h};
     Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
     SDL_FRect src = _raw_rect(L->scene.src, &Lb, NULL);
@@ -75,11 +89,11 @@ static Pico_Layer* _pos_root_to (Pico_Layer* L, SDL_FPoint p, SDL_FPoint* out) {
 
 // down: project p (in L's root's frame) into L's frame.
 static Pico_Layer* _pos_root_fr (Pico_Layer* L, SDL_FPoint p, SDL_FPoint* out) {
-    if (L->hier.up == NULL) {
+    if (_is_root(L)) {
         *out = p;
         return L;
     }
-    Pico_Layer* P = _pico_layer_name(L->hier.up);
+    Pico_Layer* P = _walk_up(L);
     Pico_Layer* R = _pos_root_fr(P, p, &p);
     Pico_Abs_Rect Lb = {0, 0, L->scene.dim.w, L->scene.dim.h};
     Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
@@ -95,11 +109,11 @@ static Pico_Layer* _pos_root_fr (Pico_Layer* L, SDL_FPoint p, SDL_FPoint* out) {
 
 // up: walk r (in L's frame) to root; *out is r in root's frame.
 static Pico_Layer* _rect_root_to (Pico_Layer* L, SDL_FRect r, SDL_FRect* out) {
-    if (L->hier.up == NULL) {
+    if (_is_root(L)) {
         *out = r;
         return L;
     }
-    Pico_Layer* P = _pico_layer_name(L->hier.up);
+    Pico_Layer* P = _walk_up(L);
     Pico_Abs_Rect Lb = {0, 0, L->scene.dim.w, L->scene.dim.h};
     Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
     SDL_FRect src = _raw_rect(L->scene.src, &Lb, NULL);
@@ -115,11 +129,11 @@ static Pico_Layer* _rect_root_to (Pico_Layer* L, SDL_FRect r, SDL_FRect* out) {
 
 // down: project r (in L's root's frame) into L's frame.
 static Pico_Layer* _rect_root_fr (Pico_Layer* L, SDL_FRect r, SDL_FRect* out) {
-    if (L->hier.up == NULL) {
+    if (_is_root(L)) {
         *out = r;
         return L;
     }
-    Pico_Layer* P = _pico_layer_name(L->hier.up);
+    Pico_Layer* P = _walk_up(L);
     Pico_Layer* R = _rect_root_fr(P, r, &r);
     Pico_Abs_Rect Lb = {0, 0, L->scene.dim.w, L->scene.dim.h};
     Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
@@ -227,8 +241,8 @@ Pico_Rel_Dim pico_in_dim (Pico_Rel_Rect out, Pico_Rel_Dim in) {
 // Returns the root layer of L (top of the hier.up chain).
 // For attached layers this is window; detached subtrees have their own root.
 static Pico_Layer* _root_of (Pico_Layer* L) {
-    while (L->hier.up != NULL) {
-        L = _pico_layer_name(L->hier.up);
+    while (!_is_root(L)) {
+        L = _walk_up(L);
     }
     return L;
 }
@@ -259,7 +273,9 @@ static Pico_Rel_Rect _root_rect (const char* layer, const Pico_Rel_Rect* r) {
         ret.w = L->scene.dim.w;
         ret.h = L->scene.dim.h;
     } else {
-        pico_cv_rect(R->name, &ret, L->hier.up, &L->scene.dst);
+        // detached: scene.dst is placed in the current layer's frame
+        Pico_Layer* P = _walk_up(L);
+        pico_cv_rect(R->name, &ret, P->name, &L->scene.dst);
     }
 
     return ret;
