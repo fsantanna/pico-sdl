@@ -161,8 +161,10 @@ pixel-identically — reuse the existing `view-target-04.png`, no new
 golden. It doubles as a stored-target vs explicit-rect equivalence
 assertion.
 
-Tests target the intended behavior, so they abort/fail until the
-implementation lands (TDD).
+The visual case runs as `04b`, immediately after case 04 and BEFORE
+case 05 creates `bg2`. `bg2` is an attached child of `world`, so the
+draw cascade auto-composites it onto `world` on every present; running
+`04b` before it exists keeps the frame identical to the `04` golden.
 
 ## Verification (manual, later)
 
@@ -184,4 +186,5 @@ implementation lands (TDD).
 - [x] `pico_set_scene_dst`: drop assert, guard aspect-fill
 - [x] Projection walk: `_is_root`, `_walk_up`, `_*_root_to/_fr`, `_root_of`
 - [x] `_root_rect` else branch
-- [ ] Verify (make test vs + view-target + SNKRX)
+- [x] Verify: `make test T=view-target` passes (04b reuses golden)
+- [ ] Verify: `make test T=vs` + lua + SNKRX (pending user run)
