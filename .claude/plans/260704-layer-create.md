@@ -144,8 +144,10 @@ pico.layer.empty { up="world", key="bg3", target=r }
 ## Status
 
 - [x] Decide open questions (all closed)
-- [ ] `L_kw_*` helpers + validation
-- [ ] Rewrite 7 constructors
-- [ ] Test: `shot` with `target` (+ `region` combined)
-- [ ] Migrate lua/tst + docs + samples
-- [ ] User runs: `make tests` (C) + `cd lua && make tests`
+- [x] `L_kw_*` helpers + validation (check/str/int/bool/realm/tab/
+  target; unknown-field and missing-field errors)
+- [x] Rewrite 7 constructors + `images` wrapper (init.lua, `sheet=`)
+- [x] Test: `shot` with `target` (+ `region` combined)
+- [x] Migrate lua/tst (20 files) + tst/todo (3) + doc/*.lua (2) +
+  api.md + guide.md
+- [x] User runs: `make tests` (C) + `cd lua && make tests` — all pass

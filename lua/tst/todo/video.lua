@@ -34,7 +34,7 @@ pico.set.scene{
     dim  = {'!', w=win_w, h=win_h},
 }
 
-pico.layer.video('!', nil, "vid", VIDEO_PATH)
+pico.layer.video { mode='!', key="vid", path=VIDEO_PATH }
 
 local speed = 1.0
 local paused = false

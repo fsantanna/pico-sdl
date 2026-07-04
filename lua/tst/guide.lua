@@ -241,7 +241,7 @@ pico.check("guide-06-03-01")
 
 -- §7.1: create the "flag" layer (no check; nothing on screen yet)
 pico.output.clear()
-pico.layer.empty(nil, "flag", false, {'!', w=300, h=200})
+pico.layer.empty { key="flag", dim={'!', w=300, h=200} }
 pico.set.layer("flag")
 pico.set.pencil { color={ r=0x00, g=0x2B, b=0x7F } }
 pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
@@ -283,9 +283,9 @@ pico.check("guide-07-02-03")
 
 -- §7.3: sub-layers cropping each stripe of the flag
 pico.set.window { title="guide-07-03-01" }
-pico.layer.sub(nil, "blue",   "flag", {'%', x=0.25, y=0.5, w=0.1, h=0.15})
-pico.layer.sub(nil, "yellow", "flag", {'%', x=0.50, y=0.5, w=0.1, h=0.15})
-pico.layer.sub(nil, "red",    "flag", {'%', x=0.75, y=0.5, w=0.1, h=0.15})
+pico.layer.sub { key="blue",   sup="flag", crop={'%', x=0.25, y=0.5, w=0.1, h=0.15} }
+pico.layer.sub { key="yellow", sup="flag", crop={'%', x=0.50, y=0.5, w=0.1, h=0.15} }
+pico.layer.sub { key="red",    sup="flag", crop={'%', x=0.75, y=0.5, w=0.1, h=0.15} }
 pico.output.clear()
 pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
 pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
@@ -295,20 +295,20 @@ pico.check("guide-07-03-01")
 -- §7.4: hierarchy -- root has image (top) and panel (bottom); panel has 2 texts
 pico.init(false); pico.init(true)
 pico.set.window { title="guide-07-04-01" }
-pico.layer.image (
-    "world", "pic", "../../res/open.png", {'%', x=0.3, y=0.3, w=0.4}
-)
+pico.layer.image {
+    up="world", key="pic", path="../../res/open.png", target={'%', x=0.3, y=0.3, w=0.4},
+}
 do
-    pico.layer.empty("world", "panel", true, {'!', w=100, h=50})
+    pico.layer.empty { up="world", key="panel", clear=true, dim={'!', w=100, h=50} }
     pico.set.layer("panel")
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
-    pico.layer.text (
-        "panel", "H", 20, "Hello", {'%', x=0.5, y=0.3, h=0.6}
-    )
-    pico.layer.text (
-        "panel", "W", 20, "World!", {'%', x=0.5, y=0.7, h=0.4}
-    )
+    pico.layer.text {
+        up="panel", key="H", height=20, text="Hello", target={'%', x=0.5, y=0.3, h=0.6},
+    }
+    pico.layer.text {
+        up="panel", key="W", height=20, text="World!", target={'%', x=0.5, y=0.7, h=0.4},
+    }
 end
 pico.set.layer("world")
 pico.output.present()
@@ -415,7 +415,7 @@ pico.output.screenshot("window", "../../tst/out/guide-10-01-02.png",
 
 -- §10.1.c: screenshot a layer into a new layer, then redraw it
 pico.set.window { title="guide-10-01-03" }
-pico.layer.screenshot(nil, "snap", "window")
+pico.layer.screenshot { key="snap", src="window" }
 pico.output.draw.layer("snap", {'%', x=0.5, y=0.5, w=0.3})
 pico.check("guide-10-01-03")
 

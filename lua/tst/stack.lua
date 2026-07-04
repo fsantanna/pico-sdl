@@ -17,7 +17,7 @@ pico.output.clear()
 
 pico.push()
 
-pico.layer.empty("world", "box", false, {'!', w=16, h=16})
+pico.layer.empty { up="world", key="box", dim={'!', w=16, h=16} }
 do
     local old = pico.set.layer("box")
     pico.set.scene {

@@ -39,7 +39,7 @@ end
 
 print "pico.cv.* sub-layer 2-hop walk"
 do
-    pico.layer.empty('world', 'sub_cv', true, {'!', w=50, h=50})
+    pico.layer.empty { up='world', key='sub_cv', clear=true, dim={'!', w=50, h=50} }
     pico.set.layer 'sub_cv'
 
     print('', 'pos sub -> world')
@@ -107,8 +107,8 @@ do
     -- Each 50x50 in world 100x100 (scale 2x).
     -- Default scene.dst fills cur, so they overlap entirely.
     -- A point at (5,10) in sub_a maps to (10,20) in world maps to (5,10) in sub_b.
-    pico.layer.empty('world', 'sib_a', true, {'!', w=50, h=50})
-    pico.layer.empty('world', 'sib_b', true, {'!', w=50, h=50})
+    pico.layer.empty { up='world', key='sib_a', clear=true, dim={'!', w=50, h=50} }
+    pico.layer.empty { up='world', key='sib_b', clear=true, dim={'!', w=50, h=50} }
 
     print('', 'pos sib_a -> sib_b')
     local p = pico.cv.pos('sib_b', '!', 'sib_a', {'!', x=5, y=10})
@@ -127,10 +127,10 @@ do
     -- abs is 9.5,19.5 in B; through A (+12.5) -> 22,32 in A abs; through world
     -- (+25) -> 47,57; through window (5x) -> 235,285. Reported as 235.5,285.5
     -- after the +0.5 C echo.
-    pico.layer.empty('world', 'A', true,
-        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
-    pico.layer.empty('A', 'B', true,
-        {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+    pico.layer.empty { up='world', key='A', clear=true,
+        target={'%', x=0.5, y=0.5, w=0.5, h=0.5} }
+    pico.layer.empty { up='A', key='B', clear=true,
+        target={'%', x=0.5, y=0.5, w=0.5, h=0.5} }
     pico.set.layer 'B'
 
     print('', 'pos B -> A')
