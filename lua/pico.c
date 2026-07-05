@@ -988,7 +988,11 @@ static int l_set_pencil (lua_State* L) {
 
     lua_getfield(L, 1, "font");             // T | font
     if (!lua_isnil(L, -1)) {
-        draw.font = luaL_checkstring(L, -1);
+        if (lua_isboolean(L,-1) && lua_toboolean(L,-1)==0) {
+            draw.font = NULL;   // false: resets to built-in font
+        } else {
+            draw.font = luaL_checkstring(L, -1);
+        }
     }
     lua_pop(L, 1);                          // T
 

@@ -147,6 +147,8 @@ pico.layer.empty { up="world", key="bg3", target=r }
   `'%'`/`'#'` resolve against `up` (or current layer if detached).
 - Visual test for shot target: draw with no rect into world SE
   quadrant -> new golden `shot-snap-target.png` (user generates).
+- lua/pico.c signature comments keep `{ [mode], [up], key, ... }`
+  order while api.md shows `mode, key, up` — WON'T DO (cosmetic).
 - `set.*` naming: already aligned (`clear` consistent; `mode` is
   creation-only; `target` unified by this plan). No renames.
 

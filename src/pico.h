@@ -565,20 +565,18 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
 
 /// @brief Creates a layer from text (exclusive mode).
 /// @param key layer key (must not be NULL or start with '/')
-/// @param height text height in pixels
+/// @param dim text dimensions; `h` is the font height
 /// @param text the text to render
 /// @note Uses current font and draw color
-void pico_layer_text (const char* up, const char* key,
-    int height, const char* text);
+void pico_layer_text (const char* up, const char* key, Pico_Rel_Dim dim, const char* text);
 
 /// @brief Creates a layer from text.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param key layer key (must not be NULL or start with '/')
-/// @param height text height in pixels
+/// @param dim text dimensions; `h` is the font height
 /// @param text the text to render
 /// @note Uses current font and draw color
-void pico_layer_text_mode (int mode, const char* up, const char* key,
-    int height, const char* text);
+void pico_layer_text_mode (int mode, const char* up, const char* key, Pico_Rel_Dim dim, const char* text);
 
 /// @brief Creates a video layer from a Y4M file (exclusive mode).
 /// @param key layer key (NULL uses path, otherwise must not

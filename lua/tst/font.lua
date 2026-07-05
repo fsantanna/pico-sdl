@@ -52,4 +52,11 @@ do
     pico.check("font-04")
 end
 
+-- pico.set.pencil.font: false resets to the built-in font
+do
+    assert(pico.get.pencil().font == "../../res/DejaVuSans.ttf")
+    pico.set.pencil{font=false}
+    assert(pico.get.pencil().font == nil)
+end
+
 pico.init(false)
