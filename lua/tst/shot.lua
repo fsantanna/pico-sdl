@@ -124,7 +124,7 @@ end
 do
     print("text layer")
     pico.set.pencil { color={'!', r=0xFF, g=0xFF, b=0xFF} }
-    pico.layer.text { key="txt1", height=16, text="hello" }
+    pico.layer.text { key="txt1", dim={'!', h=16}, text="hello" }
     pico.set.layer("txt1")
     local f = pico.output.screenshot(nil, "../../tst/out/shot-text.png")
     pico.set.layer("world")

@@ -50,7 +50,7 @@ int main (void) {
     _pico_check("layer-hier-03");
 
     pico_set_pencil_color(PICO_COLOR_GREEN);
-    pico_layer_text("world", "txt", 10, "hello");
+    pico_layer_text("world", "txt", (Pico_Rel_Dim){'!', {0, 10}}, "hello");
     old = pico_set_layer("txt");
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.3, 0.7, 0.4, 0.4}, PICO_ANCHOR_C});
 

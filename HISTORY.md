@@ -4,7 +4,9 @@ v0.7 (???/??)
 Modifications:
 
 - Layers:
-    - constructor: table format (was positional)
+    - constructor:
+        - new table format arguments (was positional)
+        - text `dim` argument (was height)
     - target:
         - detached assumes current layer as parent
         - both attached/detached with lazy evaluation (w/h=0) at request time

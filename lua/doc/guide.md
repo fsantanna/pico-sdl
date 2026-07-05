@@ -861,10 +861,10 @@ The next code listing implements this layout:
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
     pico.layer.text {
-        up="P", key="T1", height=20, text="Hello",  target={'%', x=0.5, y=0.3, h=0.6},
+        up="P", key="T1", dim={'!', h=20}, text="Hello",  target={'%', x=0.5, y=0.3, h=0.6},
     }
     pico.layer.text {
-        up="P", key="T2", height=20, text="World!", target={'%', x=0.5, y=0.7, h=0.4},
+        up="P", key="T2", dim={'!', h=20}, text="World!", target={'%', x=0.5, y=0.7, h=0.4},
     }
   end
 > pico.output.present()

@@ -134,12 +134,6 @@ pico.layer.empty("world", "bg3", false, r)
 pico.layer.empty { up="world", key="bg3", target=r }
 ```
 
-## Open Questions
-
-- `text.height` -> `dim: Dim` (approved, PENDING apply): `h`
-  required, `w` must be 0/absent (inferred); `'%'`/`'#'` resolve
-  against `up` (or current layer if detached).
-
 ## Decisions (closed)
 
 - Tile: sibling form A only (embedded `dim.tile` rejected, see above).
@@ -148,6 +142,9 @@ pico.layer.empty { up="world", key="bg3", target=r }
   `crop`, `src` RENAMED to `sup` (full unification with
   `sub{sup, crop}`: sub = live view, screenshot = frozen copy).
 - `pixmap.pix` RENAMED to `pixels` (matches the C param name).
+- `text.height` RENAMED to `dim: Dim`: `h` required, `w` must be
+  0/absent (always inferred from the text, as in `get.text`);
+  `'%'`/`'#'` resolve against `up` (or current layer if detached).
 - Visual test for shot target: draw with no rect into world SE
   quadrant -> new golden `shot-snap-target.png` (user generates).
 - `set.*` naming: already aligned (`clear` consistent; `mode` is
@@ -163,3 +160,8 @@ pico.layer.empty { up="world", key="bg3", target=r }
 - [x] Migrate lua/tst (20 files) + tst/todo (3) + doc/*.lua (2) +
   api.md + guide.md
 - [x] User runs: `make tests` (C) + `cd lua && make tests` — all pass
+- [x] Renames applied post-review: `sup`, `crop`, `pixels`,
+  `text.dim` (resolve moved into C `pico_layer_text_mode`)
+- [x] Golden `shot-snap-target.png` generated + verified
+- [x] Final full-suite run: all pass (after root `make lib` — stale
+  `.a` ABI mismatch bit once; see TODO 26)

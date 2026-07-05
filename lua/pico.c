@@ -1354,7 +1354,7 @@ static int l_layer_pixmap (lua_State* L) {
     // pixels
     lua_getfield(L, 1, "pixels");           // T | pixels
     int i = lua_gettop(L);
-    luaL_argcheck(L, (lua_type(L,i)==LUA_TTABLE), 1, "required 'pixels' table");
+    luaL_argcheck(L, (lua_type(L,i) == LUA_TTABLE), 1, "required 'pixels' table");
     Pico_Abs_Dim dim = C_pixmap_dim(L, i);
     Pico_Color buf[dim.h][dim.w];
     C_pixmap_fill(L, i, dim, (Pico_Color*)buf);
@@ -1369,7 +1369,7 @@ static int l_layer_pixmap (lua_State* L) {
 }
 
 static int l_layer_text (lua_State* L) {
-    // { [mode], [up], key, height, text, [target] }
+    // { [mode], [up], key, dim, text, [target] }
 
     // [mode]
     char m = L_realm_opt(L);
@@ -1383,8 +1383,13 @@ static int l_layer_text (lua_State* L) {
     // key
     const char* key = L_key(L, 1);
 
-    // height
-    int height = C_asrfieldnum(L, 1, "height");
+    // dim (h required; w always inferred from the text)
+    Pico_Rel_Dim dim;
+    lua_getfield(L, 1, "dim");              // T | dim
+    int i = lua_gettop(L);
+    luaL_argcheck(L, (lua_type(L,i) == LUA_TTABLE), 1, "required 'dim' table");
+    dim = C_rel_dim(L, i);
+    lua_pop(L, 1);                          // T
 
     // text
     lua_getfield(L, 1, "text");             // T | text
@@ -1392,7 +1397,7 @@ static int l_layer_text (lua_State* L) {
     lua_pop(L, 1);                          // T
     luaL_argcheck(L, text!=NULL, 1, "required 'text'");
 
-    pico_layer_text_mode(m, up, key, height, text);
+    pico_layer_text_mode(m, up, key, dim, text);
 
     // [target]
     L_opt_dst(L, key);

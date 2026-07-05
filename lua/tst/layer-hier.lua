@@ -40,7 +40,7 @@ pico.output.present()
 pico.check("layer-hier-03")
 
 pico.set.pencil { color='green' }
-pico.layer.text { up="world", key="txt", height=10, text="hello",
+pico.layer.text { up="world", key="txt", dim={'!', h=10}, text="hello",
     target={'%', x=0.3, y=0.7, w=0.4, h=0.4, anchor='C'} }
 pico.output.present()
 pico.check("layer-hier-04")

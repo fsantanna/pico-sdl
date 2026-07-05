@@ -459,18 +459,30 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
 }
 
 void pico_layer_text (
-    const char* up, const char* key, int height, const char* text
+    const char* up, const char* key, Pico_Rel_Dim dim, const char* text
 ) {
     _pico_guard();
-    pico_layer_text_mode('!', up, key, height, text);
+    pico_layer_text_mode('!', up, key, dim, text);
 }
 
 void pico_layer_text_mode (
-    int mode, const char* up, const char* key, int height, const char* text
+    int mode, const char* up, const char* key, Pico_Rel_Dim dim, const char* text
 ) {
     _pico_guard();
     assert(key!=NULL && "layer key required");
-    _pico_layer_text(mode, key, height, text);
+    assert(!(dim.w==0 && dim.h==0) && "invalid dim");
+    assert(dim.w==0 && "invalid dim.w : not implemented");
+
+    // resolve dim.h against up's scene.dim (or current if detached)
+    Pico_Abs_Rect base, *xbase=NULL;
+    if (up != NULL) {
+        Pico_Layer* par = _pico_layer_name(up);
+        base = (Pico_Abs_Rect) {0, 0, par->scene.dim.w, par->scene.dim.h};
+        xbase = &base;
+    }
+    Pico_Abs_Dim abs = _pico_abs_dim(&dim, xbase, NULL);
+
+    _pico_layer_text(mode, key, abs.h, text);
     if (up != NULL) {
         _pico_layer_attach(up, key);
     }

@@ -106,6 +106,26 @@
     - Alternatives: `pico_set_alpha`, `pico_set_target`, etc.
     - See item 6 (`pico.set.draw.*` group)
 
+25. `pico.layer.text` dim: implement `w`-given combinations
+    - Contract: all `dim` w/h combinations valid, except `w=h=0`
+      (permanent error); missing ones raise "not implemented"
+    - Implement in C (`pico_layer_text_mode`, layer.c) — the dim
+      resolve already lives there; Lua binding passes `dim` through
+    - `w!=0, h=0` (optimal-h): probe render at reference height,
+      `h = w * h_probe / w_probe`, re-render (approximate `w`;
+      fonts are not linear across sizes)
+    - `w!=0, h!=0` (forced box): render at `h`, occupy exactly
+      `w` — needs a bake/resample step (or compose with target)
+    - Consider symmetric support in `pico.get.text`
+      (currently asserts `h!=0`)
+
+26. `lua/Makefile`: `../src/libpico-sdl.a` has no source deps
+    - Editing `src/*.c` then running only `cd lua && make tests`
+      links `pico_native.so` against a stale `.a` (silent ABI
+      mismatch when signatures change; bit during layer-create work)
+    - Add prerequisite on `../src/*.c ../src/*.h` (or always
+      recurse)
+
 22. `'w'` vs `r`-relative divergence near edges
     - `pico_output_draw_pixel({'w', ...})` snaps through screen log grid
       (5 win px / log px) while collision via `up = &r` is continuous
