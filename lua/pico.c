@@ -432,6 +432,17 @@ static int l_pop (lua_State* L) {
     return 0;
 }
 
+static int l_id (lua_State* L) {
+    const char* pre = luaL_optstring(L, 1, NULL);
+    int id = pico_id();
+    if (pre == NULL) {
+        lua_pushinteger(L, id);
+    } else {
+        lua_pushfstring(L, "%s-%d", pre, id);
+    }
+    return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // CV: unified pos/rect/dim — (L_to, to_or_mode, L_fr, fr)
 ///////////////////////////////////////////////////////////////////////////////
@@ -1206,20 +1217,6 @@ static int l_set_window (lua_State* L) {
 // argument at index 1. Fields are read inline (getfield/pop, as in
 // l_set_scene); field strings stay anchored by the table itself.
 
-// Layer name from the "key" field:
-//  - asr fails when absent
-
-static const char* L_key (lua_State* L, int asr) {
-    luaL_checktype(L, 1, LUA_TTABLE);       // T
-    lua_getfield(L, 1, "key");              // T | key
-    const char* key = lua_tostring(L, -1);
-    lua_pop(L, 1);                          // T
-    if (asr) {
-        luaL_argcheck(L, key!=NULL, 1, "required 'key'");
-    }
-    return key;
-}
-
 // Realm mode from the "mode" field:
 //  - '!' exclusive, '=' shared, '~' replace
 //  - Returns '\0' when absent (caller picks default).
@@ -1253,7 +1250,7 @@ static void L_opt_dst (lua_State* L, const char* key) {
 }
 
 static int l_layer_empty (lua_State* L) {
-    // { [mode], [up], key, [clear], [dim], [tile], [target] }
+    // { [mode], [up], [key], [clear], [dim], [tile], [target] }
 
     // [mode]
     char m = L_realm_opt(L);
@@ -1264,8 +1261,10 @@ static int l_layer_empty (lua_State* L) {
     const char* up = lua_tostring(L, -1);
     lua_pop(L, 1);                          // T
 
-    // key
-    const char* key = L_key(L, 1);
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
     // [clear]
     lua_getfield(L, 1, "clear");            // T | clear
@@ -1296,12 +1295,13 @@ static int l_layer_empty (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_layer_empty_mode(m, up, key, clear, dim, xtile);
+    key = pico_layer_empty_mode(m, up, key, clear, dim, xtile);
 
     // [target]
     L_opt_dst(L, key);
 
-    return 0;
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_image (lua_State* L) {
@@ -1316,7 +1316,9 @@ static int l_layer_image (lua_State* L) {
     lua_pop(L, 1);                          // T
 
     // [key]
-    const char* key = L_key(L, 0);
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
     // path
     lua_getfield(L, 1, "path");             // T | path
@@ -1328,20 +1330,18 @@ static int l_layer_image (lua_State* L) {
     if (!m) {
         m = (key == NULL) ? '=' : '!';
     }
-    if (key == NULL) {
-        key = f;
-    }
 
-    pico_layer_image_mode(m, up, key, f);
+    key = pico_layer_image_mode(m, up, key, f);
 
     // [target]
     L_opt_dst(L, key);
 
-    return 0;
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_pixmap (lua_State* L) {
-    // { [mode], [up], key, pixels, [target] }
+    // { [mode], [up], [key], pixels, [target] }
 
     // [mode]
     char m = L_realm_opt(L);
@@ -1352,8 +1352,10 @@ static int l_layer_pixmap (lua_State* L) {
     const char* up = lua_tostring(L, -1);
     lua_pop(L, 1);                          // T
 
-    // key
-    const char* key = L_key(L, 1);
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
     // pixels
     lua_getfield(L, 1, "pixels");           // T | pixels
@@ -1364,16 +1366,17 @@ static int l_layer_pixmap (lua_State* L) {
     C_pixmap_fill(L, i, dim, (Pico_Color*)buf);
     lua_pop(L, 1);                          // T
 
-    pico_layer_pixmap_mode(m, up, key, dim, (Pico_Color*)buf);
+    key = pico_layer_pixmap_mode(m, up, key, dim, (Pico_Color*)buf);
 
     // [target]
     L_opt_dst(L, key);
 
-    return 0;
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_text (lua_State* L) {
-    // { [mode], [up], key, dim, text, [target] }
+    // { [mode], [up], [key], dim, text, [target] }
 
     // [mode]
     char m = L_realm_opt(L);
@@ -1384,8 +1387,10 @@ static int l_layer_text (lua_State* L) {
     const char* up = lua_tostring(L, -1);
     lua_pop(L, 1);                          // T
 
-    // key
-    const char* key = L_key(L, 1);
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
     // dim (h required; w always inferred from the text)
     Pico_Rel_Dim dim;
@@ -1401,12 +1406,13 @@ static int l_layer_text (lua_State* L) {
     lua_pop(L, 1);                          // T
     luaL_argcheck(L, text!=NULL, 1, "required 'text'");
 
-    pico_layer_text_mode(m, up, key, dim, text);
+    key = pico_layer_text_mode(m, up, key, dim, text);
 
     // [target]
     L_opt_dst(L, key);
 
-    return 0;
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_video (lua_State* L) {
@@ -1421,7 +1427,9 @@ static int l_layer_video (lua_State* L) {
     lua_pop(L, 1);                          // T
 
     // [key]
-    const char* key = L_key(L, 0);
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
     // path
     lua_getfield(L, 1, "path");             // T | path
@@ -1433,20 +1441,18 @@ static int l_layer_video (lua_State* L) {
     if (!m) {
         m = (key == NULL) ? '=' : '!';
     }
-    if (key == NULL) {
-        key = f;
-    }
 
-    pico_layer_video_mode(m, up, key, f);
+    key = pico_layer_video_mode(m, up, key, f);
 
     // [target]
     L_opt_dst(L, key);
 
-    return 0;
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_sub (lua_State* L) {
-    // { [mode], [up], key, sup, crop, [target] }
+    // { [mode], [up], [key], sup, crop, [target] }
 
     // [mode]
     char m = L_realm_opt(L);
@@ -1457,8 +1463,10 @@ static int l_layer_sub (lua_State* L) {
     const char* up = lua_tostring(L, -1);
     lua_pop(L, 1);                          // T
 
-    // key
-    const char* key = L_key(L, 1);
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
     // sup
     lua_getfield(L, 1, "sup");              // T | sup
@@ -1473,16 +1481,17 @@ static int l_layer_sub (lua_State* L) {
     Pico_Rel_Rect crop = C_rel_rect(L, i);
     lua_pop(L, 1);                          // T
 
-    pico_layer_sub_mode(m, up, key, sup, &crop);
+    key = pico_layer_sub_mode(m, up, key, sup, &crop);
 
     // [target]
     L_opt_dst(L, key);
 
-    return 0;
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_screenshot (lua_State* L) {
-    // { [mode], [up], key, [sup], [crop], [target] }
+    // { [mode], [up], [key], [sup], [crop], [target] }
 
     // [mode]
     char m = L_realm_opt(L);
@@ -1493,8 +1502,10 @@ static int l_layer_screenshot (lua_State* L) {
     const char* up = lua_tostring(L, -1);
     lua_pop(L, 1);                          // T
 
-    // key
-    const char* key = L_key(L, 1);
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
     // [sup]
     lua_getfield(L, 1, "sup");              // T | sup
@@ -1511,12 +1522,13 @@ static int l_layer_screenshot (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    pico_layer_screenshot_mode(m, up, key, sup, xrect);
+    key = pico_layer_screenshot_mode(m, up, key, sup, xrect);
 
     // [target]
     L_opt_dst(L, key);
 
-    return 0;
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1811,6 +1823,7 @@ static const luaL_Reg ll_all[] = {
     { "quit", l_quit },
     { "push", l_push },
     { "pop",  l_pop  },
+    { "id",   l_id   },
     { NULL, NULL }
 };
 

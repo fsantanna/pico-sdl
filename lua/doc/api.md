@@ -142,6 +142,11 @@ In alphabetical order:
           preserving from the video's natural pixel size.
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { fullscreen: boolean, show: boolean, title: string }`
+- **pico.id**: Returns a unique monotonic id.
+    - `pico.id () -> integer`
+    - `pico.id (prefix: string) -> string`
+    - Starts at 1 and is never reset.
+    - The prefix form returns `"<prefix>-N"`.
 - **pico.init**: Initializes and finalizes pico.
     - `pico.init (on: boolean)`
 - **pico.input**
@@ -163,13 +168,13 @@ In alphabetical order:
         ```
         pico.layer.empty {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name
+            key:    string,     -- layer name (default: auto '/id-N')
             up:     string,     -- parent layer (default: detached)
             clear:  boolean,    -- cascade-clear flag, requires up (default: false)
             dim:    Dim,        -- texture size (default: target w/h)
             tile:   Tile,       -- tile size in px, dim in TILES (default: none)
             target: Rect,       -- scene.target placement (default: fill parent)
-        }
+        } -> string             -- layer key
         ```
     - **pico.layer.image**: Creates a layer from an image file.
         ```
@@ -179,14 +184,14 @@ In alphabetical order:
             up:     string,     -- parent layer (default: detached)
             path:   string,     -- image file
             target: Rect,       -- scene.target placement (default: fill parent)
-        }
+        } -> string             -- layer key
         ```
     - **pico.layer.images**: Creates sub-layer images from a reference
         "sprite sheet" image.
         ```
         pico.layer.images {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- base layer name (and prefix for sub layers)
+            key:    string,     -- base layer name and sub prefix (default: path)
             up:     string,     -- parent of the generated sub-layers
             path:   string,     -- sprite sheet image file
             sheet:  table,      -- grid or explicit spec (below)
@@ -205,45 +210,45 @@ In alphabetical order:
         ```
         pico.layer.pixmap {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name
+            key:    string,     -- layer name (default: auto '/id-N')
             up:     string,     -- parent layer (default: detached)
             pixels: {{Color}},  -- pixel matrix (rows of colors)
             target: Rect,       -- scene.target placement (default: fill parent)
-        }
+        } -> string             -- layer key
         ```
     - **pico.layer.screenshot**: Creates a layer from a screenshot of a
       layer.
         ```
         pico.layer.screenshot {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name
+            key:    string,     -- layer name (default: auto '/id-N')
             up:     string,     -- parent layer (default: detached)
             sup:    string,     -- source layer to capture from (default: current)
             crop:   Rect,       -- area in sup's frame (default: full)
             target: Rect,       -- scene.target placement (default: fill parent)
-        }
+        } -> string             -- layer key
         ```
     - **pico.layer.sub**: Creates a sub-layer from a source layer.
         ```
         pico.layer.sub {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name
+            key:    string,     -- layer name (default: auto '/id-N')
             up:     string,     -- parent layer (default: detached)
             sup:    string,     -- source layer to crop from
             crop:   Rect,       -- area in sup's frame (live view)
             target: Rect,       -- scene.target placement (default: fill parent)
-        }
+        } -> string             -- layer key
         ```
     - **pico.layer.text**: Creates a layer from text.
         ```
         pico.layer.text {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name
+            key:    string,     -- layer name (default: auto '/id-N')
             up:     string,     -- parent layer (default: detached)
             dim:    Dim,        -- h: font height (resolves against `up`)
             text:   string,     -- text to render
             target: Rect,       -- scene.target placement (default: fill parent)
-        }
+        } -> string             -- layer key
         ```
         - uses the current pencil font and color.
         - `dim.w` is always inferred from the text
@@ -255,7 +260,7 @@ In alphabetical order:
             up:     string,     -- parent layer (default: detached)
             path:   string,     -- video file (Y4M format)
             target: Rect,       -- scene.target placement (default: fill parent)
-        }
+        } -> string             -- layer key
         ```
 - **pico.output**
     - **pico.output.clear**: Clears screen.
