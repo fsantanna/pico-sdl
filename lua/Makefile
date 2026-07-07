@@ -55,6 +55,7 @@ tests: pico_native.so
 	$(TST) tst/get-set.lua
 	$(TST) tst/guide.lua
 	$(TST) tst/guide-hier.lua
+	$(TST) tst/id.lua
 	$(TST) tst/image_pct.lua
 	$(TST) tst/image_raw.lua
 	$(TST) tst/in.lua

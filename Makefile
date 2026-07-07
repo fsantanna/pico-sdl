@@ -59,6 +59,7 @@ tests: lib
 	$(EXE) tst/expert_fps.c
 	$(EXE) tst/font.c
 	$(EXE) tst/get-set.c
+	$(EXE) tst/id.c
 	$(EXE) tst/image_pct.c
 	$(EXE) tst/image_raw.c
 	$(EXE) tst/init.c
