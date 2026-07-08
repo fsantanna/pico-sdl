@@ -1,20 +1,20 @@
 pico.init(true)
 
-print "pico.id: monotonic integer"
+print "pico.unique: monotonic integer"
 do
-    local a = pico.id()
-    local b = pico.id()
+    local a = pico.unique()
+    local b = pico.unique()
     assert(math.type(a) == 'integer')
     assert(a >= 1)
     assert(b == a+1)
 end
 
-print "pico.id: prefix form"
+print "pico.unique: prefix form"
 do
-    local s = pico.id("bullet")
-    local n = tonumber(s:match("^bullet%-(%d+)$"))
+    local s = pico.unique("bullet")
+    local n = tonumber(s:match("^bullet%.(%d+)$"))
     assert(n ~= nil)
-    assert(pico.id() == n+1)
+    assert(pico.unique() == n+1)
 end
 
 print "layer constructors return the key"
@@ -27,17 +27,17 @@ do
     assert(p == "p1")
 end
 
-print "key omitted: auto-generates /id-N"
+print "key omitted: auto-generates /unique/N"
 do
     local a = pico.layer.empty { dim={'!', w=10, h=10} }
     local b = pico.layer.empty { dim={'!', w=10, h=10} }
-    assert(a:match("^/id%-%d+$"))
-    assert(b:match("^/id%-%d+$"))
+    assert(a:match("^/unique/%d+$"))
+    assert(b:match("^/unique/%d+$"))
     assert(a ~= b)
     local s = pico.layer.sub { sup=a, crop={'%', x=0.5, y=0.5, w=1, h=1} }
-    assert(s:match("^/id%-%d+$"))
+    assert(s:match("^/unique/%d+$"))
     local h = pico.layer.screenshot { sup=a }
-    assert(h:match("^/id%-%d+$"))
+    assert(h:match("^/unique/%d+$"))
 end
 
 print "image: key omitted defaults to path"

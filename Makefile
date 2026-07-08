@@ -59,7 +59,6 @@ tests: lib
 	$(EXE) tst/expert_fps.c
 	$(EXE) tst/font.c
 	$(EXE) tst/get-set.c
-	$(EXE) tst/id.c
 	$(EXE) tst/image_pct.c
 	$(EXE) tst/image_raw.c
 	$(EXE) tst/init.c
@@ -89,6 +88,7 @@ tests: lib
 	$(EXE) tst/text-sizes.c
 	$(EXE) tst/tile-grid.c
 	$(EXE) tst/tiles.c
+	$(EXE) tst/unique.c
 	$(EXE) tst/video.c
 	$(EXE) tst/view-target.c
 	$(EXE) tst/view_raw.c

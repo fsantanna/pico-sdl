@@ -55,7 +55,6 @@ tests: pico_native.so
 	$(TST) tst/get-set.lua
 	$(TST) tst/guide.lua
 	$(TST) tst/guide-hier.lua
-	$(TST) tst/id.lua
 	$(TST) tst/image_pct.lua
 	$(TST) tst/image_raw.lua
 	$(TST) tst/in.lua
@@ -85,6 +84,7 @@ tests: pico_native.so
 	$(TST) tst/text-sizes.lua
 	$(TST) tst/tile-grid.lua
 	$(TST) tst/tiles.lua
+	$(TST) tst/unique.lua
 	$(TST) tst/video.lua
 	$(TST) tst/view-target.lua
 	$(TST) tst/view_raw.lua

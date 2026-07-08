@@ -3,7 +3,7 @@ v0.7 (???/??)
 
 Additions:
 
-- `pico.id`: unique monotonic id
+- `pico.unique`: unique monotonic id
 
 Modifications:
 
@@ -12,7 +12,7 @@ Modifications:
         - new table format arguments (was positional)
         - text `dim` argument (was height)
         - returns the layer key (was void)
-        - `key` is optional (defaults to unique `/id-N`)
+        - `key` is optional (defaults to unique `/unique/N`)
     - target:
         - detached assumes current layer as parent
         - both attached/detached with lazy evaluation (w/h=0) at request time

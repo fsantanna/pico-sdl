@@ -142,11 +142,6 @@ In alphabetical order:
           preserving from the video's natural pixel size.
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { fullscreen: boolean, show: boolean, title: string }`
-- **pico.id**: Returns a unique monotonic id.
-    - `pico.id () -> integer`
-    - `pico.id (prefix: string) -> string`
-    - Starts at 1 and is never reset.
-    - The prefix form returns `"<prefix>-N"`.
 - **pico.init**: Initializes and finalizes pico.
     - `pico.init (on: boolean)`
 - **pico.input**
@@ -168,7 +163,7 @@ In alphabetical order:
         ```
         pico.layer.empty {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name (default: auto '/id-N')
+            key:    string,     -- layer name (default: auto '/unique/N')
             up:     string,     -- parent layer (default: detached)
             clear:  boolean,    -- cascade-clear flag, requires up (default: false)
             dim:    Dim,        -- texture size (default: target w/h)
@@ -210,7 +205,7 @@ In alphabetical order:
         ```
         pico.layer.pixmap {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name (default: auto '/id-N')
+            key:    string,     -- layer name (default: auto '/unique/N')
             up:     string,     -- parent layer (default: detached)
             pixels: {{Color}},  -- pixel matrix (rows of colors)
             target: Rect,       -- scene.target placement (default: fill parent)
@@ -221,7 +216,7 @@ In alphabetical order:
         ```
         pico.layer.screenshot {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name (default: auto '/id-N')
+            key:    string,     -- layer name (default: auto '/unique/N')
             up:     string,     -- parent layer (default: detached)
             sup:    string,     -- source layer to capture from (default: current)
             crop:   Rect,       -- area in sup's frame (default: full)
@@ -232,7 +227,7 @@ In alphabetical order:
         ```
         pico.layer.sub {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name (default: auto '/id-N')
+            key:    string,     -- layer name (default: auto '/unique/N')
             up:     string,     -- parent layer (default: detached)
             sup:    string,     -- source layer to crop from
             crop:   Rect,       -- area in sup's frame (live view)
@@ -243,7 +238,7 @@ In alphabetical order:
         ```
         pico.layer.text {
             mode:   string,     -- realm mode (default: '!')
-            key:    string,     -- layer name (default: auto '/id-N')
+            key:    string,     -- layer name (default: auto '/unique/N')
             up:     string,     -- parent layer (default: detached)
             dim:    Dim,        -- h: font height (resolves against `up`)
             text:   string,     -- text to render
@@ -396,6 +391,11 @@ In alphabetical order:
             title:      string,     -- window title
         }
         ```
+- **pico.unique**: Returns a unique monotonic id.
+    - `pico.unique () -> integer`
+    - `pico.unique (prefix: string) -> string`
+    - Starts at 1 and is never reset.
+    - The prefix form returns `"<prefix>.N"`.
 - **pico.vs**
     - Collision checks.
       Each side has the canonical shape `(Lx, vx)` where `Lx` is the

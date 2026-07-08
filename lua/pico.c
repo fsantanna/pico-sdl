@@ -432,13 +432,13 @@ static int l_pop (lua_State* L) {
     return 0;
 }
 
-static int l_id (lua_State* L) {
+static int l_unique (lua_State* L) {
     const char* pre = luaL_optstring(L, 1, NULL);
-    int id = pico_id();
+    int id = pico_unique();
     if (pre == NULL) {
         lua_pushinteger(L, id);
     } else {
-        lua_pushfstring(L, "%s-%d", pre, id);
+        lua_pushfstring(L, "%s.%d", pre, id);
     }
     return 1;
 }
@@ -1819,11 +1819,11 @@ static int l_output_sound (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_all[] = {
-    { "init", l_init },
-    { "quit", l_quit },
-    { "push", l_push },
-    { "pop",  l_pop  },
-    { "id",   l_id   },
+    { "init",   l_init   },
+    { "quit",   l_quit   },
+    { "push",   l_push   },
+    { "pop",    l_pop    },
+    { "unique", l_unique },
     { NULL, NULL }
 };
 

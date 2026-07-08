@@ -469,10 +469,10 @@ Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path);
 
 /// @brief Returns a unique monotonic id.
 /// Starts at 1 and is never reset, not even by @ref pico_init.
-/// Used internally to auto-generate layer keys `/id-N` when a
+/// Used internally to auto-generate layer keys `/unique/N` when a
 /// constructor receives a NULL key.
 /// @return unique id
-int pico_id (void);
+int pico_unique (void);
 
 /// @brief Creates a layer from a pixmap (exclusive mode).
 /// @param key layer key (NULL auto-generates; must not start with '/')

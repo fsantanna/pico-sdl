@@ -239,8 +239,8 @@ const char* pico_set_layer (const char* key) {
     Pico_Layer* data = (Pico_Layer*)realm_get (
         G.realm, strlen(key)+1, key
     );
-    pico_assert(data!=NULL && "layer does not exist");
-    //pico_assert(data->type!=PICO_LAYER_SUB &&
+    assert(data!=NULL && "layer does not exist");
+    //assert(data->type!=PICO_LAYER_SUB &&
     //    "cannot set render target to sub-layer");
     G.layer = data;
 

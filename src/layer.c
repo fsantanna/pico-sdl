@@ -338,18 +338,18 @@ void _pico_layer_output (
 // LAYER
 ///////////////////////////////////////////////////////////////////////////////
 
-int pico_id (void) {
+int pico_unique (void) {
     static int id = 0;
     return ++id;
 }
 
-// Auto-generates a unique key "/id-N" into buf when key is NULL.
+// Auto-generates a unique key "/unique/N" into buf when key is NULL.
 // The '/' prefix is reserved (users cannot create such keys), so
 // generated keys never collide with user keys.
 
-static const char* _key_id (const char* key, char* buf, int n) {
+static const char* _key_unique (const char* key, char* buf, int n) {
     if (key == NULL) {
-        snprintf(buf, n, "/id-%d", pico_id());
+        snprintf(buf, n, "/unique/%d", pico_unique());
         key = buf;
     }
     return key;
@@ -373,8 +373,8 @@ const char* pico_layer_pixmap_mode (
     const Pico_Color* pixels
 ) {
     _pico_guard();
-    char buf[16];
-    key = _key_id(key, buf, sizeof(buf));
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
     Pico_Layer* ret = _pico_layer_pixmap(mode, key, dim, pixels);
     if (up != NULL) {
         _pico_layer_attach(up, ret->name);
@@ -395,8 +395,8 @@ const char* pico_layer_empty_mode (
     Pico_Rel_Dim dim, Pico_Abs_Dim* tile
 ) {
     _pico_guard();
-    char buf[16];
-    key = _key_id(key, buf, sizeof(buf));
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
     _pico_mem_alloc_empty_t ctx = { up, clear, dim, tile };
     void* ret = realm_put (
         G.realm, mode, strlen(key)+1, (const void**)&key,
@@ -436,8 +436,8 @@ const char* pico_layer_screenshot_mode (int mode, const char* up, const char* ke
     const char* src, const Pico_Rel_Rect* rect)
 {
     _pico_guard();
-    char buf[16];
-    key = _key_id(key, buf, sizeof(buf));
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
     _pico_mem_alloc_shot_t ctx = { src, rect };
     void* ret = realm_put (
         G.realm, mode, strlen(key)+1, (const void**)&key,
@@ -463,8 +463,8 @@ const char* pico_layer_sub_mode (int mode, const char* up, const char* key,
     _pico_guard();
     assert(parent!=NULL   && "parent key required");
     assert(crop!=NULL     && "crop rect required");
-    char buf[16];
-    key = _key_id(key, buf, sizeof(buf));
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
 
     Pico_Layer* par = (Pico_Layer*)realm_get(
         G.realm, strlen(parent)+1, parent);
@@ -497,8 +497,8 @@ const char* pico_layer_text_mode (
     _pico_guard();
     assert(!(dim.w==0 && dim.h==0) && "invalid dim");
     assert(dim.w==0 && "invalid dim.w : not implemented");
-    char buf[16];
-    key = _key_id(key, buf, sizeof(buf));
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
 
     // resolve dim.h against up's scene.dim (or current if detached)
     Pico_Abs_Rect base, *xbase=NULL;
