@@ -115,9 +115,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga1cce4c04435bb6104badd5ac7404a4b0" id="r_ga1cce4c04435bb6104badd5ac7404a4b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structPico__Video.html">Pico_Video</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga1cce4c04435bb6104badd5ac7404a4b0">pico_get_video</a> (<a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> *rect, const char *path)</td></tr>
 <tr class="memdesc:ga1cce4c04435bb6104badd5ac7404a4b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets video properties.  <br /></td></tr>
 <tr class="separator:ga1cce4c04435bb6104badd5ac7404a4b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga907c9324e83ef3e75fa58104c5f1854b" id="r_ga907c9324e83ef3e75fa58104c5f1854b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga907c9324e83ef3e75fa58104c5f1854b">pico_id</a> (void)</td></tr>
-<tr class="memdesc:ga907c9324e83ef3e75fa58104c5f1854b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique monotonic id. Starts at 1 and is never reset, not even by <a class="el" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>. Used internally to auto-generate layer keys <code>/id-N</code> when a constructor receives a NULL key.  <br /></td></tr>
-<tr class="separator:ga907c9324e83ef3e75fa58104c5f1854b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6d8bfab5f50d559380acd874443e06cd" id="r_ga6d8bfab5f50d559380acd874443e06cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga6d8bfab5f50d559380acd874443e06cd">pico_unique</a> (void)</td></tr>
+<tr class="memdesc:ga6d8bfab5f50d559380acd874443e06cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique monotonic id. Starts at 1 and is never reset, not even by <a class="el" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>. Used internally to auto-generate layer keys <code>/unique/N</code> when a constructor receives a NULL key.  <br /></td></tr>
+<tr class="separator:ga6d8bfab5f50d559380acd874443e06cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2883f78386dc2617a4d9f562cad6dab5" id="r_ga2883f78386dc2617a4d9f562cad6dab5"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__State.html#ga2883f78386dc2617a4d9f562cad6dab5">pico_layer_pixmap</a> (const char *up, const char *key, <a class="el" href="structPico__Abs__Dim.html">Pico_Abs_Dim</a> dim, const <a class="el" href="structPico__Color.html">Pico_Color</a> *pixels)</td></tr>
 <tr class="memdesc:ga2883f78386dc2617a4d9f562cad6dab5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a layer from a pixmap (exclusive mode).  <br /></td></tr>
 <tr class="separator:ga2883f78386dc2617a4d9f562cad6dab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -980,27 +980,6 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="ga907c9324e83ef3e75fa58104c5f1854b" name="ga907c9324e83ef3e75fa58104c5f1854b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga907c9324e83ef3e75fa58104c5f1854b">&#9670;&#160;</a></span>pico_id()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int pico_id </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns a unique monotonic id. Starts at 1 and is never reset, not even by <a class="el" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>. Used internally to auto-generate layer keys <code>/id-N</code> when a constructor receives a NULL key. </p>
-<dl class="section return"><dt>Returns</dt><dd>unique id </dd></dl>
 
 </div>
 </div>
@@ -2339,6 +2318,27 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="ga6d8bfab5f50d559380acd874443e06cd" name="ga6d8bfab5f50d559380acd874443e06cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6d8bfab5f50d559380acd874443e06cd">&#9670;&#160;</a></span>pico_unique()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int pico_unique </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a unique monotonic id. Starts at 1 and is never reset, not even by <a class="el" href="group__Init.html#gab655caa50f1f8060182dc24f2d11e589">pico_init</a>. Used internally to auto-generate layer keys <code>/unique/N</code> when a constructor receives a NULL key. </p>
+<dl class="section return"><dt>Returns</dt><dd>unique id </dd></dl>
 
 </div>
 </div>
