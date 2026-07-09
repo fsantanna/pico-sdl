@@ -46,16 +46,19 @@ void _pico_layer_traverse (Pico_Layer* UP, _pico_layer_traverse_cb_t pre, _pico_
     }
 }
 
-// target CUR so the recursion draws CUR's children onto it
+// target CUR so the recursion draws CUR's children onto it (a no-op
+// target-switch when CUR has no children of its own, so it's fine to
+// leave unchecked here -- _pico_draw_all_pos below asserts for real
+// once a layer is actually drawn INTO)
 static void _pico_draw_all_pre (Pico_Layer* UP, Pico_Layer* CUR) {
-    // fails for layers whose tex isn't SDL_TEXTUREACCESS_TARGET (image/
-    // pixmap/shot layers) -- such layers cannot host child layers
-    pico_assert_0(SDL_SetRenderTarget(G.window.ren, CUR->tex));
+    SDL_SetRenderTarget(G.window.ren, CUR->tex);
 }
 
 // composite CUR onto UP (G.layer=UP so _pico_layer_output reads UP's pencil)
 static void _pico_draw_all_pos (Pico_Layer* UP, Pico_Layer* CUR) {
     G.layer = UP;
+    // fails if UP's tex isn't SDL_TEXTUREACCESS_TARGET (image/pixmap/
+    // shot layers) -- such layers cannot host child layers
     pico_assert_0(SDL_SetRenderTarget(G.window.ren, UP->tex));
     Pico_Abs_Rect r = _pico_abs_rect(UP->scene.clip, NULL, NULL);
     SDL_RenderSetClipRect(G.window.ren, &r);
