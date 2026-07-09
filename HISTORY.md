@@ -1,9 +1,26 @@
 v0.7 (???/??)
 -------------
 
+Additions:
+
+- `pico.unique`: unique monotonic id
+
+Modifications:
+
+- Layers:
+    - constructor:
+        - new table format arguments (was positional)
+        - text `dim` argument (was height)
+        - returns the layer key (was void)
+        - `key` is optional (defaults to unique `/unique/N`)
+    - target:
+        - detached assumes current layer as parent
+        - both attached/detached with lazy evaluation (w/h=0) at request time
+
 Fixes:
 
-- text rendering: uses valid native height for texture dimensions
+- window clip: was not clipping at all
+- text rendering: now uses reasonable native height
 
 v0.6 (jun/26)
 -------------
@@ -30,7 +47,7 @@ v0.5 (may/26)
 
 Additions:
 
-- layers as a tree hierarchy:
+- Layers as a tree hierarchy:
     - window <- world <- custom layers
     - `up` parameter on layer constructors
     - composite hierarchy:

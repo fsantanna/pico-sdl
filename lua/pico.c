@@ -432,6 +432,17 @@ static int l_pop (lua_State* L) {
     return 0;
 }
 
+static int l_unique (lua_State* L) {
+    const char* pre = luaL_optstring(L, 1, NULL);
+    int id = pico_unique();
+    if (pre == NULL) {
+        lua_pushinteger(L, id);
+    } else {
+        lua_pushfstring(L, "%s.%d", pre, id);
+    }
+    return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // CV: unified pos/rect/dim — (L_to, to_or_mode, L_fr, fr)
 ///////////////////////////////////////////////////////////////////////////////
@@ -988,7 +999,11 @@ static int l_set_pencil (lua_State* L) {
 
     lua_getfield(L, 1, "font");             // T | font
     if (!lua_isnil(L, -1)) {
-        draw.font = luaL_checkstring(L, -1);
+        if (lua_isboolean(L,-1) && lua_toboolean(L,-1)==0) {
+            draw.font = NULL;   // false: resets to built-in font
+        } else {
+            draw.font = luaL_checkstring(L, -1);
+        }
     }
     lua_pop(L, 1);                          // T
 
@@ -1198,221 +1213,322 @@ static int l_set_window (lua_State* L) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// Optional realm mode at arg 1 ('!', '=', '~'). If present, keep it.
-// Otherwise insert nil at slot 1 so the realm slot is always explicit.
-// Returns the realm char, or '\0' when absent (caller picks default).
+// Keyword-table constructors: every pico.layer.* takes a single table
+// argument at index 1. Fields are read inline (getfield/pop, as in
+// l_set_scene); field strings stay anchored by the table itself.
+
+// Realm mode from the "mode" field:
+//  - '!' exclusive, '=' shared, '~' replace
+//  - Returns '\0' when absent (caller picks default).
+
 static char L_realm_opt (lua_State* L) {
-    char m = '\0';
-    if (lua_isstring(L, 1)) {
-        size_t len;
-        const char* s = lua_tolstring(L, 1, &len);
-        if (len==1 && (s[0]=='!' || s[0]=='=' || s[0]=='~')) {
-            m = s[0];
-        }
+    luaL_checktype(L, 1, LUA_TTABLE);       // T
+    lua_getfield(L, 1, "mode");             // T | mode
+    const char* s = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+    if (s == NULL) {
+        return '\0';
+    } else {
+        int ok = (s[0]=='!' || s[0]=='=' || s[0]=='~');
+        luaL_argcheck(L, ok, 1, "invalid 'mode'");
+        return s[0];
     }
-    if (m == '\0') {
-        lua_pushnil(L);
-        lua_insert(L, 1);
-    }
-    return m;
 }
 
-static void L_opt_dst (lua_State* L, int i, const char* me) {
-    if (lua_gettop(L) >= i) {
+// Applies the optional "target" field as `key`'s scene.dst.
+
+static void L_opt_dst (lua_State* L, const char* key) {
+    lua_getfield(L, 1, "target");           // T | target
+    int i = lua_gettop(L);
+    if (!lua_isnil(L, i)) {
         Pico_Rel_Rect dst = C_rel_rect(L, i);
-        const char* old = pico_set_layer(me);
+        const char* old = pico_set_layer(key);
         pico_set_scene_dst(dst);
         pico_set_layer(old);
     }
-}
-
-// True if table at idx i has a non-nil `x` field (Rect-shaped).
-static int L_is_rect (lua_State* L, int i) {
-    lua_getfield(L, i, "x");
-    int yes = !lua_isnil(L, -1);
-    lua_pop(L, 1);
-    return yes;
+    lua_pop(L, 1);                          // T
 }
 
 static int l_layer_empty (lua_State* L) {
-    // [m] | up | me | clear | Rect
-    // [m] | up | me | clear | Dim
-    // [m] | up | me | clear | Dim | Tile | [Rect]
+    // { [mode], [up], [key], [clear], [dim], [tile], [target] }
 
+    // [mode]
     char m = L_realm_opt(L);
     if (!m) m = '!';
 
-    const char* up = lua_tostring(L, 2);
-    const char* me = luaL_checkstring(L, 3);
+    // [up]
+    lua_getfield(L, 1, "up");               // T | up
+    const char* up = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
-    luaL_checktype(L, 4, LUA_TBOOLEAN);
-    int clear = lua_toboolean(L, 4);
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
-    // [Dim | Rect] (Rect also sets scene.target via its full shape).
-    luaL_checktype(L, 5, LUA_TTABLE);
-    Pico_Rel_Dim dim = C_rel_dim(L, 5);
+    // [clear]
+    lua_getfield(L, 1, "clear");            // T | clear
+    int clear = lua_toboolean(L, -1);
+    lua_pop(L, 1);                          // T
+    luaL_argcheck(L, !(clear && up==NULL), 1, "unexpected 'clear'");
 
-    int ok = 0;
-    Pico_Rel_Rect dst;
-
-    int n = lua_gettop(L);
-    if (n == 5) {
-        pico_layer_empty_mode(m, up, me, clear, dim, NULL);
-        if (L_is_rect(L, 5)) {
-            // [m] | up | me | clear | Rect
-            ok = 1;
-            dst = C_rel_rect(L, 5);
-        } else {
-            // [m] | up | me | clear | Dim
-        }
-    } else {
-        // [m] | up | me | clear | Dim | Tile | [Rect]
-        luaL_checktype(L, 6, LUA_TTABLE);
-        assert(!L_is_rect(L, 6));
-        Pico_Abs_Dim tile = {
-            C_asrfieldnum(L, 6, "w"),
-            C_asrfieldnum(L, 6, "h"),
-        };
-        pico_layer_empty_mode(m, up, me, clear, dim, &tile);
-        if (n >= 7) {
-            ok = 1;
-            dst = C_rel_rect(L, 7);
-        }
+    // [dim] (or target)
+    Pico_Rel_Dim dim;
+    lua_getfield(L, 1, "dim");              // T | dim
+    int j = lua_gettop(L);
+    if (lua_isnil(L, j)) {
+        lua_pop(L, 1);                      // T
+        lua_getfield(L, 1, "target");       // T | target
+        luaL_argcheck(L, !lua_isnil(L,-1), 1, "'dim' required");
     }
+    dim = C_rel_dim(L, j);
+    lua_pop(L, 1);                          // T
 
-    if (ok) {
-        const char* old = pico_set_layer(me);
-        pico_set_scene_dst(dst);
-        pico_set_layer(old);
+    // [tile]
+    Pico_Abs_Dim tile, *xtile=NULL;
+    lua_getfield(L, 1, "tile");             // T | tile
+    int i = lua_gettop(L);
+    if (!lua_isnil(L, i)) {
+        tile.w = C_asrfieldnum(L, i, "w");
+        tile.h = C_asrfieldnum(L, i, "h");
+        xtile = &tile;
     }
+    lua_pop(L, 1);                          // T
 
-    return 0;
+    key = pico_layer_empty_mode(m, up, key, clear, dim, xtile);
+
+    // [target]
+    L_opt_dst(L, key);
+
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_image (lua_State* L) {
-    // [m] | up | [me] | path | [Rect]
+    // { [mode], [up], [key], path, [target] }
+
+    // [mode]
     char m = L_realm_opt(L);
 
-    if (lua_isstring(L, 4)) {
-        // [m] | up | me | path | [Rect]
-        if (!m) m = '!';
-    } else {
-        // [m] | up | path | [Rect]
-        if (!m) m = '=';
-        lua_pushnil(L);
-        assert(lua_gettop(L) >= 3);
-        lua_insert(L, 3);               // [m] | up | nil | path | [Rect]
+    // [up]
+    lua_getfield(L, 1, "up");               // T | up
+    const char* up = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+
+    // path
+    lua_getfield(L, 1, "path");             // T | path
+    const char* f = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+    luaL_argcheck(L, f!=NULL, 1, "required 'path'");
+
+    // no key: cache by path (shared realm)
+    if (!m) {
+        m = (key == NULL) ? '=' : '!';
     }
-    // [m] | up | [me] | path | [Rect]
 
-    const char* up = lua_tostring(L, 2);
-    const char* me = lua_tostring(L, 3);
-    const char* f  = luaL_checkstring(L, 4);
+    key = pico_layer_image_mode(m, up, key, f);
 
-    if (me == NULL) {
-        me = f;
-    }
+    // [target]
+    L_opt_dst(L, key);
 
-    pico_layer_image_mode(m, up, me, f);
-    L_opt_dst(L, 5, me);
-    return 0;
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_pixmap (lua_State* L) {
-    // [m] | up | me | pix | [Rect]
+    // { [mode], [up], [key], pixels, [target] }
+
+    // [mode]
     char m = L_realm_opt(L);
     if (!m) m = '!';
 
-    const char* up = lua_tostring(L, 2);
-    const char* me = luaL_checkstring(L, 3);
+    // [up]
+    lua_getfield(L, 1, "up");               // T | up
+    const char* up = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
-    luaL_checktype(L, 4, LUA_TTABLE);
-    Pico_Abs_Dim dim = C_pixmap_dim(L, 4);
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+
+    // pixels
+    lua_getfield(L, 1, "pixels");           // T | pixels
+    int i = lua_gettop(L);
+    luaL_argcheck(L, (lua_type(L,i) == LUA_TTABLE), 1, "required 'pixels' table");
+    Pico_Abs_Dim dim = C_pixmap_dim(L, i);
     Pico_Color buf[dim.h][dim.w];
-    C_pixmap_fill(L, 4, dim, (Pico_Color*)buf);
+    C_pixmap_fill(L, i, dim, (Pico_Color*)buf);
+    lua_pop(L, 1);                          // T
 
-    pico_layer_pixmap_mode(m, up, me, dim, (Pico_Color*)buf);
-    L_opt_dst(L, 5, me);
-    return 0;
+    key = pico_layer_pixmap_mode(m, up, key, dim, (Pico_Color*)buf);
+
+    // [target]
+    L_opt_dst(L, key);
+
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_text (lua_State* L) {
-    // [m] | up | me | height | text | [Rect]
+    // { [mode], [up], [key], dim, text, [target] }
+
+    // [mode]
     char m = L_realm_opt(L);
     if (!m) m = '!';
 
-    const char* up = lua_tostring(L, 2);
-    const char* me = luaL_checkstring(L, 3);
-    int height = luaL_checkinteger(L, 4);
-    const char* text = luaL_checkstring(L, 5);
+    // [up]
+    lua_getfield(L, 1, "up");               // T | up
+    const char* up = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
-    pico_layer_text_mode(m, up, me, height, text);
-    L_opt_dst(L, 6, me);
-    return 0;
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+
+    // dim (h required; w always inferred from the text)
+    Pico_Rel_Dim dim;
+    lua_getfield(L, 1, "dim");              // T | dim
+    int i = lua_gettop(L);
+    luaL_argcheck(L, (lua_type(L,i) == LUA_TTABLE), 1, "required 'dim' table");
+    dim = C_rel_dim(L, i);
+    lua_pop(L, 1);                          // T
+
+    // text
+    lua_getfield(L, 1, "text");             // T | text
+    const char* text = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+    luaL_argcheck(L, text!=NULL, 1, "required 'text'");
+
+    key = pico_layer_text_mode(m, up, key, dim, text);
+
+    // [target]
+    L_opt_dst(L, key);
+
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_video (lua_State* L) {
-    // [m] | up | [me] | path | [Rect]
+    // { [mode], [up], [key], path, [target] }
+
+    // [mode]
     char m = L_realm_opt(L);
 
-    if (lua_isstring(L, 4)) {
-        // [m] | up | me | path | [Rect]
-        if (!m) m = '!';
-    } else {
-        // [m] | up | path | [Rect]
-        if (!m) m = '=';
-        lua_pushnil(L);
-        assert(lua_gettop(L) >= 3);
-        lua_insert(L, 3);               // [m] | up | nil | path | [Rect]
+    // [up]
+    lua_getfield(L, 1, "up");               // T | up
+    const char* up = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+
+    // path
+    lua_getfield(L, 1, "path");             // T | path
+    const char* f = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+    luaL_argcheck(L, f!=NULL, 1, "required 'path'");
+
+    // no key: cache by path (shared realm)
+    if (!m) {
+        m = (key == NULL) ? '=' : '!';
     }
-    // [m] | up | [me] | path | [Rect]
 
-    const char* up = lua_tostring(L, 2);
-    const char* me = lua_tostring(L, 3);
-    const char* f  = luaL_checkstring(L, 4);
+    key = pico_layer_video_mode(m, up, key, f);
 
-    if (me == NULL) {
-        me = f;
-    }
+    // [target]
+    L_opt_dst(L, key);
 
-    pico_layer_video_mode(m, up, me, f);
-    L_opt_dst(L, 5, me);
-    return 0;
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_sub (lua_State* L) {
-    // [m] | up | me | sup | crop | [Rect]
+    // { [mode], [up], [key], sup, crop, [target] }
+
+    // [mode]
     char m = L_realm_opt(L);
     if (!m) m = '!';
 
-    const char* up = lua_tostring(L, 2);
-    const char* me = luaL_checkstring(L, 3);
-    const char* sup = luaL_checkstring(L, 4);
-    luaL_checktype(L, 5, LUA_TTABLE);
-    Pico_Rel_Rect crop = C_rel_rect(L, 5);
+    // [up]
+    lua_getfield(L, 1, "up");               // T | up
+    const char* up = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
-    pico_layer_sub_mode(m, up, me, sup, &crop);
-    L_opt_dst(L, 6, me);
-    return 0;
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+
+    // sup
+    lua_getfield(L, 1, "sup");              // T | sup
+    const char* sup = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+    luaL_argcheck(L, sup!=NULL, 1, "required 'sup'");
+
+    // crop
+    lua_getfield(L, 1, "crop");             // T | crop
+    int i = lua_gettop(L);
+    luaL_argcheck(L, !lua_isnil(L,i), 1, "required 'crop'");
+    Pico_Rel_Rect crop = C_rel_rect(L, i);
+    lua_pop(L, 1);                          // T
+
+    key = pico_layer_sub_mode(m, up, key, sup, &crop);
+
+    // [target]
+    L_opt_dst(L, key);
+
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 static int l_layer_screenshot (lua_State* L) {
-    // [m] | up | me | src | [region]
+    // { [mode], [up], [key], [sup], [crop], [target] }
+
+    // [mode]
     char m = L_realm_opt(L);
     if (!m) m = '!';
 
-    const char* up  = lua_tostring(L, 2);
-    const char* me  = luaL_checkstring(L, 3);
-    const char* src = lua_tostring(L, 4);   // nil -> current layer
+    // [up]
+    lua_getfield(L, 1, "up");               // T | up
+    const char* up = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
 
+    // [key]
+    lua_getfield(L, 1, "key");              // T | key
+    const char* key = lua_tostring(L, -1);
+    lua_pop(L, 1);                          // T
+
+    // [sup]
+    lua_getfield(L, 1, "sup");              // T | sup
+    const char* sup = lua_tostring(L, -1);  // NULL -> current layer
+    lua_pop(L, 1);                          // T
+
+    // [crop]
     Pico_Rel_Rect rect, *xrect=NULL;
-    if (lua_istable(L, 5)) {
-        rect = C_rel_rect(L, 5);
+    lua_getfield(L, 1, "crop");             // T | crop
+    int i = lua_gettop(L);
+    if (!lua_isnil(L, i)) {
+        rect = C_rel_rect(L, i);
         xrect = &rect;
     }
+    lua_pop(L, 1);                          // T
 
-    pico_layer_screenshot_mode(m, up, me, src, xrect);
-    return 0;
+    key = pico_layer_screenshot_mode(m, up, key, sup, xrect);
+
+    // [target]
+    L_opt_dst(L, key);
+
+    lua_pushstring(L, key);                 // T | key
+    return 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1703,10 +1819,11 @@ static int l_output_sound (lua_State* L) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_all[] = {
-    { "init", l_init },
-    { "quit", l_quit },
-    { "push", l_push },
-    { "pop",  l_pop  },
+    { "init",   l_init   },
+    { "quit",   l_quit   },
+    { "push",   l_push   },
+    { "pop",    l_pop    },
+    { "unique", l_unique },
     { NULL, NULL }
 };
 

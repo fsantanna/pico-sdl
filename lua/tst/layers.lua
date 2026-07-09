@@ -15,14 +15,14 @@ assert(layer == "world")
 
 -- create bg layer (32x32)
 print("create and switch to layer")
-pico.layer.empty('!', nil, "background", false, {'!', w=32, h=32})
+pico.layer.empty { mode='!', key="background", dim={'!', w=32, h=32} }
 pico.set.layer("background")
 layer = pico.get.layer()
 assert(layer == "background")
 
 -- create ui layer (48x48)
 print("switch to another layer")
-pico.layer.empty('!', nil, "ui", false, {'!', w=48, h=48})
+pico.layer.empty { mode='!', key="ui", dim={'!', w=48, h=48} }
 pico.set.layer("ui")
 layer = pico.get.layer()
 assert(layer == "ui")
@@ -73,7 +73,7 @@ print("layer.empty: rect-as-dim shortcut sets dim + target")
 do
     -- world is 100x100; '%' w=0.5,h=0.5 -> 50x50 layer
     local r = {'%', x=0.25, y=0.75, w=0.5, h=0.5, anchor='C'}
-    pico.layer.empty("world", "rect_shortcut", true, r)
+    pico.layer.empty { up="world", key="rect_shortcut", clear=true, target=r }
     pico.set.layer("rect_shortcut")
     local s = pico.get.scene()
     -- dim derived from w/h (rect's '%' resolved against parent world)
@@ -91,7 +91,7 @@ do
     local r = {'%', x=0.5, y=0.5, w=0.25, h=0.25, anchor='C'}
     local px = {{ {'!',r=0xFF,g=0,b=0}, {'!',r=0,g=0xFF,b=0} },
                 { {'!',r=0,g=0,b=0xFF}, {'!',r=0xFF,g=0xFF,b=0} }}
-    pico.layer.pixmap("world", "px_with_target", px, r)
+    pico.layer.pixmap { up="world", key="px_with_target", pixels=px, target=r }
     pico.set.layer("px_with_target")
     local s = pico.get.scene()
     assert(s.target[1] == '%')

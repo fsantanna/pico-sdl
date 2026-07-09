@@ -59,6 +59,21 @@ int main (void) {
         _pico_check("view-target-04");
     }
 
+    // 04b: detached stored target == explicit-rect draw. Storing "bg"'s
+    // target and drawing with rect=NULL must render identically to the
+    // explicit-rect blit of case 04. Runs before bg2 (an attached child
+    // of world) exists, so the cascade adds nothing.
+    {
+        puts("target: detached stored target matches explicit rect (04)");
+        const char* old = pico_set_layer("bg");
+        pico_set_scene_dst((Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
+        pico_set_layer(old);
+        pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
+        pico_output_clear();
+        pico_output_draw_layer("bg", NULL);
+        _pico_check("view-target-04");
+    }
+
     // 05: target h only, w=0 -> w inferred from 2:1 layer aspect
     {
         puts("target: h only, w inferred");

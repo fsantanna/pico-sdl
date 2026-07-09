@@ -134,7 +134,7 @@ int main (void) {
     {
         puts("text layer");
         pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
-        pico_layer_text(NULL, "txt1", 16, "hello");
+        pico_layer_text(NULL, "txt1", (Pico_Rel_Dim){'!', {0, 16}}, "hello");
         pico_set_layer("txt1");
         const char* f = pico_output_screenshot(NULL, "out/shot-text.png", NULL);
         pico_set_layer("world");

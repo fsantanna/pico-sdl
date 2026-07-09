@@ -107,10 +107,16 @@ Pico_Abs_Dim pico_get_text_mode (
 
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
+        // auto-width: report the NATIVE drawn size (same as
+        // pico_output_draw_text_mode blits) so measured == drawn. the
+        // requested height only picks the ptsize; the box height is the
+        // font's content-independent cell (>= requested).
         Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h} };
         int h = _pico_abs_dim(&rel_h, NULL, NULL).h;
         Pico_Layer* layer = _pico_layer_text(mode, key, h, text);
-        return _pico_abs_dim(rel, NULL, &layer->scene.dim);
+        Pico_Abs_Dim nat = layer->scene.dim;
+        *rel = _pico_rel_dim(nat, rel->mode);
+        return nat;
     } else {
         return _pico_abs_dim(rel, NULL, NULL);
     }
@@ -233,8 +239,8 @@ const char* pico_set_layer (const char* key) {
     Pico_Layer* data = (Pico_Layer*)realm_get (
         G.realm, strlen(key)+1, key
     );
-    pico_assert(data!=NULL && "layer does not exist");
-    //pico_assert(data->type!=PICO_LAYER_SUB &&
+    assert(data!=NULL && "layer does not exist");
+    //assert(data->type!=PICO_LAYER_SUB &&
     //    "cannot set render target to sub-layer");
     G.layer = data;
 
@@ -353,20 +359,9 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
 
 void pico_set_scene_dst (Pico_Rel_Rect dst) {
     _pico_guard();
-    Pico_Layer* L = G.layer;
-    assert(L->hier.up!=NULL && "scene.dst requires layer to be attached");
-    if (dst.w==0 || dst.h==0) {
-        // aspect-fill: resolve eagerly so cv walks and draw-time
-        // see a concrete '!' rect. Pb (parent box) is offset for
-        // '!' and '#' modes (size unused) and base for '%' mode.
-        Pico_Layer* P = _pico_layer_name(L->hier.up);
-        Pico_Abs_Rect Pb = {0, 0, P->scene.dim.w, P->scene.dim.h};
-        Pico_Abs_Rect f = _pico_abs_rect(dst, &Pb, &L->scene.dim);
-        dst = (Pico_Rel_Rect) {
-            '!', {f.x, f.y, f.w, f.h}, PICO_ANCHOR_NW
-        };
-    }
-    L->scene.dst = dst;
+    // stored raw; resolved lazily at each use (draw + cv/vs walks)
+    // with the layer's dim as aspect ratio for w/h==0
+    G.layer->scene.dst = dst;
     _pico_output_present(0);
 }
 

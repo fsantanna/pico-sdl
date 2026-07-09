@@ -5,12 +5,12 @@ pico.init(true)
 -- pico.get.text
 do
     local dim = pico.get.text({'!', w=nil, h=10}, "ABC")
-    assert(dim.w>0 and dim.h==10)
+    assert(dim.w>0 and dim.h==11)
 
     local pct = {'%', w=nil, h=0.1}
     local dim = pico.get.text(pct, "ABC")
     assert(dim == pct)
-    assert(pct.w*100//1==17 and pct.h*100//1==10)
+    assert((pct.w*100+0.5)//1==17 and (pct.h*100+0.5)//1==11)
 
     local pct = {'%', h=0.2}
     pico.get.text(pct, "ABC")
@@ -50,6 +50,13 @@ do
     local r = {'%', x=0.5, y=0.5, h=0.2}
     pico.output.draw.text("hg - gh", r)
     pico.check("font-04")
+end
+
+-- pico.set.pencil.font: false resets to the built-in font
+do
+    assert(pico.get.pencil().font == "../../res/DejaVuSans.ttf")
+    pico.set.pencil{font=false}
+    assert(pico.get.pencil().font == nil)
 end
 
 pico.init(false)

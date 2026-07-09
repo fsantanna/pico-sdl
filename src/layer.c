@@ -55,6 +55,8 @@ static void _pico_draw_all_pre (Pico_Layer* UP, Pico_Layer* CUR) {
 static void _pico_draw_all_pos (Pico_Layer* UP, Pico_Layer* CUR) {
     G.layer = UP;
     SDL_SetRenderTarget(G.window.ren, UP->tex);
+    Pico_Abs_Rect r = _pico_abs_rect(UP->scene.clip, NULL, NULL);
+    SDL_RenderSetClipRect(G.window.ren, &r);
     _pico_layer_output(CUR, NULL);
 }
 
@@ -212,16 +214,12 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             int v = src.x + (x * src.w / dst.w);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            Pico_Abs_Dim dim = pico_get_text (
-                &(Pico_Rel_Dim){ '!', {0, H} },
-                lbl
-            );
             pico_output_draw_text (
                 lbl,
                 (Pico_Rel_Rect) {
                     '!',
-                    {dst.x+x-dim.w/2, dst.y+10-dim.h/2, 0, dim.h},
-                    PICO_ANCHOR_NW
+                    {dst.x+x, dst.y+10, 0, H},
+                    PICO_ANCHOR_C
                 }
             );
         }
@@ -231,15 +229,12 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             int v = src.y + (y * src.h / dst.h);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            Pico_Abs_Dim dim = pico_get_text(
-                &(Pico_Rel_Dim){ '!', {0, H} },
-                lbl);
             pico_output_draw_text (
                 lbl,
                 (Pico_Rel_Rect) {
                     '!',
-                    {dst.x+10-dim.w/2, dst.y+y-dim.h/2, 0, dim.h},
-                    PICO_ANCHOR_NW
+                    {dst.x+10, dst.y+y, 0, H},
+                    PICO_ANCHOR_C
                 }
             );
         }
@@ -343,17 +338,34 @@ void _pico_layer_output (
 // LAYER
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_layer_pixmap (
+int pico_unique (void) {
+    static int id = 0;
+    return ++id;
+}
+
+// Auto-generates a unique key "/unique/N" into buf when key is NULL.
+// The '/' prefix is reserved (users cannot create such keys), so
+// generated keys never collide with user keys.
+
+static const char* _key_unique (const char* key, char* buf, int n) {
+    if (key == NULL) {
+        snprintf(buf, n, "/unique/%d", pico_unique());
+        key = buf;
+    }
+    return key;
+}
+
+const char* pico_layer_pixmap (
     const char* up,
     const char* key,
     Pico_Abs_Dim dim,
     const Pico_Color* pixels
 ) {
     _pico_guard();
-    pico_layer_pixmap_mode('!', up, key, dim, pixels);
+    return pico_layer_pixmap_mode('!', up, key, dim, pixels);
 }
 
-void pico_layer_pixmap_mode (
+const char* pico_layer_pixmap_mode (
     int mode,
     const char* up,
     const char* key,
@@ -361,26 +373,30 @@ void pico_layer_pixmap_mode (
     const Pico_Color* pixels
 ) {
     _pico_guard();
-    _pico_layer_pixmap(mode, key, dim, pixels);
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
+    Pico_Layer* ret = _pico_layer_pixmap(mode, key, dim, pixels);
     if (up != NULL) {
-        _pico_layer_attach(up, key);
+        _pico_layer_attach(up, ret->name);
     }
+    return ret->name;
 }
 
-void pico_layer_empty (
+const char* pico_layer_empty (
     const char* up, const char* key, int clear,
     Pico_Rel_Dim dim, Pico_Abs_Dim* tile
 ) {
     _pico_guard();
-    pico_layer_empty_mode('!', up, key, clear, dim, tile);
+    return pico_layer_empty_mode('!', up, key, clear, dim, tile);
 }
 
-void pico_layer_empty_mode (
+const char* pico_layer_empty_mode (
     int mode, const char* up, const char* key, int clear,
     Pico_Rel_Dim dim, Pico_Abs_Dim* tile
 ) {
     _pico_guard();
-    assert(key!=NULL && "layer key required");
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
     _pico_mem_alloc_empty_t ctx = { up, clear, dim, tile };
     void* ret = realm_put (
         G.realm, mode, strlen(key)+1, (const void**)&key,
@@ -390,36 +406,38 @@ void pico_layer_empty_mode (
     if (up != NULL) {
         _pico_layer_attach(up, key);
     }
+    return key;
 }
 
-void pico_layer_image (const char* up, const char* key, const char* path) {
+const char* pico_layer_image (const char* up, const char* key, const char* path) {
     _pico_guard();
-    pico_layer_image_mode('!', up, key, path);
+    return pico_layer_image_mode('!', up, key, path);
 }
 
-void pico_layer_image_mode (
+const char* pico_layer_image_mode (
     int mode, const char* up, const char* key, const char* path
 ) {
     _pico_guard();
-    const char* str = (key != NULL) ? key : path;
-    _pico_layer_image(mode, key, path);
+    Pico_Layer* ret = _pico_layer_image(mode, key, path);
     if (up != NULL) {
-        _pico_layer_attach(up, str);
+        _pico_layer_attach(up, ret->name);
     }
+    return ret->name;
 }
 
-void pico_layer_screenshot (const char* up, const char* key,
+const char* pico_layer_screenshot (const char* up, const char* key,
     const char* src, const Pico_Rel_Rect* rect)
 {
     _pico_guard();
-    pico_layer_screenshot_mode('!', up, key, src, rect);
+    return pico_layer_screenshot_mode('!', up, key, src, rect);
 }
 
-void pico_layer_screenshot_mode (int mode, const char* up, const char* key,
+const char* pico_layer_screenshot_mode (int mode, const char* up, const char* key,
     const char* src, const Pico_Rel_Rect* rect)
 {
     _pico_guard();
-    assert(key!=NULL && "layer key required");
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
     _pico_mem_alloc_shot_t ctx = { src, rect };
     void* ret = realm_put (
         G.realm, mode, strlen(key)+1, (const void**)&key,
@@ -429,22 +447,24 @@ void pico_layer_screenshot_mode (int mode, const char* up, const char* key,
     if (up != NULL) {
         _pico_layer_attach(up, key);
     }
+    return key;
 }
 
-void pico_layer_sub (const char* up, const char* key,
+const char* pico_layer_sub (const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop)
 {
     _pico_guard();
-    pico_layer_sub_mode('!', up, key, parent, crop);
+    return pico_layer_sub_mode('!', up, key, parent, crop);
 }
 
-void pico_layer_sub_mode (int mode, const char* up, const char* key,
+const char* pico_layer_sub_mode (int mode, const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop)
 {
     _pico_guard();
-    assert(key!=NULL      && "sub-layer key required");
     assert(parent!=NULL   && "parent key required");
     assert(crop!=NULL     && "crop rect required");
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
 
     Pico_Layer* par = (Pico_Layer*)realm_get(
         G.realm, strlen(parent)+1, parent);
@@ -461,22 +481,37 @@ void pico_layer_sub_mode (int mode, const char* up, const char* key,
     if (up != NULL) {
         _pico_layer_attach(up, key);
     }
+    return key;
 }
 
-void pico_layer_text (
-    const char* up, const char* key, int height, const char* text
+const char* pico_layer_text (
+    const char* up, const char* key, Pico_Rel_Dim dim, const char* text
 ) {
     _pico_guard();
-    pico_layer_text_mode('!', up, key, height, text);
+    return pico_layer_text_mode('!', up, key, dim, text);
 }
 
-void pico_layer_text_mode (
-    int mode, const char* up, const char* key, int height, const char* text
+const char* pico_layer_text_mode (
+    int mode, const char* up, const char* key, Pico_Rel_Dim dim, const char* text
 ) {
     _pico_guard();
-    assert(key!=NULL && "layer key required");
-    _pico_layer_text(mode, key, height, text);
+    assert(!(dim.w==0 && dim.h==0) && "invalid dim");
+    assert(dim.w==0 && "invalid dim.w : not implemented");
+    char buf[24];
+    key = _key_unique(key, buf, sizeof(buf));
+
+    // resolve dim.h against up's scene.dim (or current if detached)
+    Pico_Abs_Rect base, *xbase=NULL;
     if (up != NULL) {
-        _pico_layer_attach(up, key);
+        Pico_Layer* par = _pico_layer_name(up);
+        base = (Pico_Abs_Rect) {0, 0, par->scene.dim.w, par->scene.dim.h};
+        xbase = &base;
     }
+    Pico_Abs_Dim abs = _pico_abs_dim(&dim, xbase, NULL);
+
+    Pico_Layer* ret = _pico_layer_text(mode, key, abs.h, text);
+    if (up != NULL) {
+        _pico_layer_attach(up, ret->name);
+    }
+    return ret->name;
 }

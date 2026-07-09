@@ -467,131 +467,148 @@ Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////
 
+/// @brief Returns a unique monotonic id.
+/// Starts at 1 and is never reset, not even by @ref pico_init.
+/// Used internally to auto-generate layer keys `/unique/N` when a
+/// constructor receives a NULL key.
+/// @return unique id
+int pico_unique (void);
+
 /// @brief Creates a layer from a pixmap (exclusive mode).
-/// @param key layer key (must not be NULL or start with '/')
+/// @param key layer key (NULL auto-generates; must not start with '/')
 /// @param dim pixmap dimensions
 /// @param pixels RGBA pixel data (must remain valid while layer
 ///               exists)
-void pico_layer_pixmap (const char* up, const char* key,
+/// @return stored layer key
+const char* pico_layer_pixmap (const char* up, const char* key,
                         Pico_Abs_Dim dim,
                         const Pico_Color* pixels);
 
 /// @brief Creates a layer from a pixmap.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (must not be NULL or start with '/')
+/// @param key layer key (NULL auto-generates; must not start with '/')
 /// @param dim pixmap dimensions
 /// @param pixels RGBA pixel data (must remain valid while layer
 ///               exists)
-void pico_layer_pixmap_mode (int mode, const char* up, const char* key,
+/// @return stored layer key
+const char* pico_layer_pixmap_mode (int mode, const char* up, const char* key,
                              Pico_Abs_Dim dim,
                              const Pico_Color* pixels);
 
 /// @brief Creates an empty layer (exclusive mode).
-/// @param key   layer key (must not be NULL or start with '/')
+/// @param key   layer key (NULL auto-generates; must not start with '/')
 /// @param clear cascade-clear flag: when set, the layer is cleared
 ///              whenever an ancestor's @ref pico_output_clear cascades
 /// @param dim   layer dimensions; '%' resolves against parent
 ///              `up`'s scene.dim (or current layer if up==NULL)
-void pico_layer_empty (
+/// @return stored layer key
+const char* pico_layer_empty (
     const char* up, const char* key, int clear,
     Pico_Rel_Dim dim, Pico_Abs_Dim* tile
 );
 
 /// @brief Creates an empty layer.
 /// @param mode  realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key   layer key (must not be NULL or start with '/')
+/// @param key   layer key (NULL auto-generates; must not start with '/')
 /// @param clear cascade-clear flag: when set, the layer is cleared
 ///              whenever an ancestor's @ref pico_output_clear cascades
 /// @param dim   layer dimensions; '%' resolves against parent
 ///              `up`'s scene.dim (or current layer if up==NULL)
-void pico_layer_empty_mode (
+/// @return stored layer key
+const char* pico_layer_empty_mode (
     int mode, const char* up, const char* key, int clear,
     Pico_Rel_Dim dim, Pico_Abs_Dim* tile
 );
 
 /// @brief Creates a layer from an image file (exclusive mode).
-/// @param key layer key (NULL uses path, otherwise must not
-///            start with '/')
+/// @param key layer key (NULL uses path, otherwise must not start with '/')
 /// @param path path to the image file
-void pico_layer_image (const char* up, const char* key, const char* path);
+/// @return stored layer key
+const char* pico_layer_image (const char* up, const char* key, const char* path);
 
 /// @brief Creates a layer from an image file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (NULL uses path, otherwise must not
-///            start with '/')
+/// @param key layer key (NULL uses path, otherwise must not start with '/')
 /// @param path path to the image file
-void pico_layer_image_mode (int mode,
+/// @return stored layer key
+const char* pico_layer_image_mode (int mode,
     const char* up, const char* key, const char* path);
 
 /// @brief Creates a layer from a screenshot of a layer (exclusive
 ///        mode).
 /// Captures the same pixels as pico_output_screenshot, but stores
 /// them in a new layer instead of a PNG file.
-/// @param key layer key (must not be NULL or start with '/')
+/// @param key layer key (NULL auto-generates; must not start with '/')
 /// @param src layer to capture (NULL uses current layer)
 /// @param rect region to capture (NULL captures full layer)
-void pico_layer_screenshot (const char* up, const char* key,
+/// @return stored layer key
+const char* pico_layer_screenshot (const char* up, const char* key,
     const char* src, const Pico_Rel_Rect* rect);
 
 /// @brief Creates a layer from a screenshot of a layer.
 /// Captures the same pixels as pico_output_screenshot, but stores
 /// them in a new layer instead of a PNG file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (must not be NULL or start with '/')
+/// @param key layer key (NULL auto-generates; must not start with '/')
 /// @param src layer to capture (NULL uses current layer)
 /// @param rect region to capture (NULL captures full layer)
-void pico_layer_screenshot_mode (int mode, const char* up, const char* key,
+/// @return stored layer key
+const char* pico_layer_screenshot_mode (int mode, const char* up, const char* key,
     const char* src, const Pico_Rel_Rect* rect);
 
 /// @brief Creates a sub-layer (crop) from an existing layer
 ///        (exclusive mode).
 /// Shares the parent's texture — no copy.
-/// @param key layer key (must not be NULL)
+/// @param key layer key (NULL auto-generates)
 /// @param parent parent layer key (must exist, must not be a
 ///               sub-layer)
 /// @param crop source rectangle within the parent
-void pico_layer_sub (const char* up, const char* key,
+/// @return stored layer key
+const char* pico_layer_sub (const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a sub-layer (crop) from an existing layer.
 /// Shares the parent's texture — no copy.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (must not be NULL)
+/// @param key layer key (NULL auto-generates)
 /// @param parent parent layer key (must exist, must not be a
 ///               sub-layer)
 /// @param crop source rectangle within the parent
-void pico_layer_sub_mode (int mode, const char* up, const char* key,
+/// @return stored layer key
+const char* pico_layer_sub_mode (int mode, const char* up, const char* key,
     const char* parent, const Pico_Rel_Rect* crop);
 
 /// @brief Creates a layer from text (exclusive mode).
-/// @param key layer key (must not be NULL or start with '/')
-/// @param height text height in pixels
+/// @param key layer key (NULL auto-generates; must not start with '/')
+/// @param dim text dimensions; `h` is the font height
 /// @param text the text to render
 /// @note Uses current font and draw color
-void pico_layer_text (const char* up, const char* key,
-    int height, const char* text);
+/// @return stored layer key
+const char* pico_layer_text (const char* up, const char* key, Pico_Rel_Dim dim, const char* text);
 
 /// @brief Creates a layer from text.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (must not be NULL or start with '/')
-/// @param height text height in pixels
+/// @param key layer key (NULL auto-generates; must not start with '/')
+/// @param dim text dimensions; `h` is the font height
 /// @param text the text to render
 /// @note Uses current font and draw color
-void pico_layer_text_mode (int mode, const char* up, const char* key,
-    int height, const char* text);
+/// @return stored layer key
+const char* pico_layer_text_mode (int mode, const char* up, const char* key, Pico_Rel_Dim dim, const char* text);
 
 /// @brief Creates a video layer from a Y4M file (exclusive mode).
 /// @param key layer key (NULL uses path, otherwise must not
 ///            start with '/')
 /// @param path path to the Y4M video file
-void pico_layer_video (const char* up, const char* key, const char* path);
+/// @return stored layer key
+const char* pico_layer_video (const char* up, const char* key, const char* path);
 
 /// @brief Creates a video layer from a Y4M file.
 /// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
 /// @param key layer key (NULL uses path, otherwise must not
 ///            start with '/')
 /// @param path path to the Y4M video file
-void pico_layer_video_mode (int mode,
+/// @return stored layer key
+const char* pico_layer_video_mode (int mode,
     const char* up, const char* key, const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////

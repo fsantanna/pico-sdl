@@ -48,7 +48,7 @@ end
 
 print "child layer projection (4-arg)"
 do
-    pico.layer.empty('world', 'sub_vs', true, {'!', w=50, h=50})
+    pico.layer.empty { up='world', key='sub_vs', clear=true, dim={'!', w=50, h=50} }
 
     print('', 'pos in sub vs rect in cur')
     -- sub:10,20 -> cur:20,40 (sub 50x50 fills cur 100x100, scale 2x)
@@ -69,8 +69,8 @@ end
 print "rect_rect bounds (2-string)"
 do
     -- two direct children of world; cur is world
-    pico.layer.empty('world', 'sub_a', true, {'!', w=50, h=50})
-    pico.layer.empty('world', 'sub_b', true, {'!', w=50, h=50})
+    pico.layer.empty { up='world', key='sub_a', clear=true, dim={'!', w=50, h=50} }
+    pico.layer.empty { up='world', key='sub_b', clear=true, dim={'!', w=50, h=50} }
     -- both default scene.dst fills world; bounds overlap
     assert(pico.vs.rect.rect('sub_a', 'sub_b'))
 end
@@ -169,7 +169,7 @@ end
 
 print "deep descendant (grandchild)"
 do
-    pico.layer.empty('sub_vs', 'sub_sub_vs', true, {'!', w=25, h=25})
+    pico.layer.empty { up='sub_vs', key='sub_sub_vs', clear=true, dim={'!', w=25, h=25} }
     -- sub_sub:10,10 -> sub_vs:20,20 -> world:40,40 (scale 4x)
     local p1 = {'!', x=10, y=10, anchor='NW'}
     local p2 = {'!', x=40, y=40, anchor='NW'}
@@ -221,9 +221,8 @@ do
     -- sub_vs (50x50) fills world (100x100), scale 2x.
     -- sub_sub_tight covers only top-left 10x10 of sub_vs ->
     -- top-left 20x20 of world after projection.
-    pico.layer.empty('sub_vs', 'sub_sub_tight', true,
-        --{'!', w=10, h=10},
-        {'!', x=0, y=0, w=10, h=10, anchor='NW'})
+    pico.layer.empty { up='sub_vs', key='sub_sub_tight', clear=true,
+        target={'!', x=0, y=0, w=10, h=10, anchor='NW'} }
 
     -- world:(15,15) is inside 20x20 projected bounds,
     -- but OUTSIDE the unprojected 10x10 dst if misread in world.
@@ -244,6 +243,78 @@ do
     assert(not pico.vs.pos.rect(nil, p_out, 'sub_sub_tight', nil))
     assert(    pico.vs.rect.pos('sub_sub_tight', nil, nil, p_in))
     assert(not pico.vs.rect.pos('sub_sub_tight', nil, nil, p_out))
+end
+
+print "detached layer w/ target (reference = current layer)"
+do
+    -- det 50x50, target = world (10,10,40,40); the reference frame is
+    -- resolved at vs time against the current layer (world). Mirrors a
+    -- manual draw.layer(det, target) blit.
+    pico.layer.empty { key='det_vs', dim={'!', w=50, h=50} }
+    pico.set.layer('det_vs')
+    pico.set.scene { target = {'!', x=10, y=10, w=40, h=40, anchor='NW'} }
+    pico.set.layer('world')
+
+    print('', 'p in world vs det bounds (r2=nil)')
+    local p_in  = {'!', x=20, y=20, anchor='NW'}
+    local p_out = {'!', x=60, y=60, anchor='NW'}
+    assert(    pico.vs.pos.rect(nil, p_in,  'det_vs', nil))
+    assert(not pico.vs.pos.rect(nil, p_out, 'det_vs', nil))
+
+    print('', 'point in det frame maps to world (scale 0.8)')
+    -- det (25,25) -> world (10+25*0.8, 10+25*0.8) = (30,30)
+    local d1 = {'!', x=25, y=25, anchor='NW'}
+    local w1 = {'!', x=30, y=30, anchor='NW'}
+    assert(pico.vs.pos.pos('det_vs', d1, nil, w1))
+
+    print('', 'detached matches attached sibling')
+    pico.layer.empty { up='world', key='att_vs', clear=true, dim={'!', w=50, h=50} }
+    pico.set.layer('att_vs')
+    pico.set.scene { target = {'!', x=10, y=10, w=40, h=40, anchor='NW'} }
+    pico.set.layer('world')
+    assert(pico.vs.pos.rect(nil, p_in,  'det_vs', nil) ==
+           pico.vs.pos.rect(nil, p_in,  'att_vs', nil))
+    assert(pico.vs.pos.rect(nil, p_out, 'det_vs', nil) ==
+           pico.vs.pos.rect(nil, p_out, 'att_vs', nil))
+end
+
+print "detached target: lazy aspect-fill and '%' mode"
+do
+    print('', 'h=0 aspect-fills lazily from the layer dim')
+    -- det_asp dim 50x50 (1:1): (10,10,40,0) fills to (10,10,40,40)
+    pico.layer.empty { key='det_asp', dim={'!', w=50, h=50} }
+    pico.set.layer('det_asp')
+    pico.set.scene { target = {'!', x=10, y=10, w=40, h=0, anchor='NW'} }
+    pico.set.layer('world')
+    local p_in  = {'!', x=20, y=20, anchor='NW'}
+    local p_out = {'!', x=20, y=60, anchor='NW'}
+    assert(    pico.vs.pos.rect(nil, p_in,  'det_asp', nil))
+    assert(not pico.vs.pos.rect(nil, p_out, 'det_asp', nil))
+
+    print('', "'%' target resolves against the current layer")
+    -- world 100x100: (0.5,0.5,0.4,0.4) C -> (30,30,40,40)
+    pico.layer.empty { key='det_pct', dim={'!', w=50, h=50} }
+    pico.set.layer('det_pct')
+    pico.set.scene { target = {'%', x=0.5, y=0.5, w=0.4, h=0.4, anchor='C'} }
+    pico.set.layer('world')
+    local q_in  = {'!', x=35, y=35, anchor='NW'}
+    local q_out = {'!', x=75, y=75, anchor='NW'}
+    assert(    pico.vs.pos.rect(nil, q_in,  'det_pct', nil))
+    assert(not pico.vs.pos.rect(nil, q_out, 'det_pct', nil))
+end
+
+print "attached target re-resolves on parent resize (lazy)"
+do
+    -- world 100x100: (0,0,50,50); p (75,75) outside
+    pico.layer.empty { up='world', key='att_lazy', clear=true, dim={'!', w=50, h=50} }
+    pico.set.layer('att_lazy')
+    pico.set.scene { target = {'%', x=0, y=0, w=0.5, h=0, anchor='NW'} }
+    pico.set.layer('world')
+    local p = {'!', x=75, y=75, anchor='NW'}
+    assert(not pico.vs.pos.rect(nil, p, 'att_lazy', nil))
+    -- world 200x200: same target now (0,0,100,100); p inside
+    pico.set.scene { dim = {'!', w=200, h=200} }
+    assert(pico.vs.pos.rect(nil, p, 'att_lazy', nil))
 end
 
 pico.init(false)

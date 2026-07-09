@@ -71,7 +71,7 @@ In alphabetical order:
     - **pico.cv.dim**: Projects a Dim (no position component).
         - `pico.cv.dim (L_to: string?, to: Dim, L_fr: string?, fr: Dim) -> Dim`
         - `pico.cv.dim (L_to: string?, mode: string, L_fr: string?, fr: Dim) -> Dim`
-- **pico.get**
+- **pico.get**: Getters for various properties and settings.
     - **pico.get.effect**: Gets effect configuration.
         - `pico.get.effect () -> { alpha: integer, color: Color, flip: Flip, grid: boolean, rotate: Rotation }`
     - **pico.get.image**: Gets image dimensions.
@@ -158,78 +158,105 @@ In alphabetical order:
           `'mouse.motion'`, `'mouse.button.dn'`, `'mouse.button.up'`
     - **pico.input.loop**: Blocks on event loop until quit.
         - `pico.input.loop ()`
-- **pico.layer**
-    - All layer creators accept an optional **realm** mode prefix
-      (`'!'` exclusive, `'='` shared, `'~'` replace) as the first
-      argument. Note: realm modes are distinct from dim modes
-      (`'!'`/`'%'`/`'#'`) used inside `Rect`/`Pos`/`Dim` tables.
-    - `up` is the parent layer name (string), or `nil` to create an
-      orphan layer not attached to the tree (must be composited
-      manually via `pico.output.draw.layer`).
-    - All creators (except `images`) accept an **optional trailing
-      `rect: Rect`** that sets `scene.target` of the new layer in one
-      call.
+- **pico.layer**: Creates layers from various constructors.
     - **pico.layer.empty**: Creates an empty layer.
-        - `pico.layer.empty ([mode,] up: string?, key: string,
-          clear: boolean, dim: Dim)`
-        - `pico.layer.empty ([mode,] up: string?, key: string,
-          clear: boolean, rect: Rect)`
-        - `pico.layer.empty ([mode,] up: string?, key: string,
-          clear: boolean, dim: Dim, tile: Tile)`
-        - `pico.layer.empty ([mode,] up: string?, key: string,
-          clear: boolean, dim: Dim, tile: Tile, rect: Rect)`
-        - `clear`: sets `scene.clear` (true = auto-clear each frame).
-        - When the 4th arg is a `Rect` (has `x` field, no `tile`):
-          its `mode/w/h` are used as the layer `Dim`, and the full
-          `Rect` is set as `scene.target` (one-call create+place).
-        - When `tile` is supplied, that conflation does not apply:
-          slot 4 is read as `Dim` only (any `x`/`y` on it are
-          ignored), and the optional trailing `rect` (slot 6) sets
-          `scene.target`.
+        ```
+        pico.layer.empty {
+            mode:   string,     -- realm mode (default: '!')
+            key:    string,     -- layer name (default: auto '/unique/N')
+            up:     string,     -- parent layer (default: detached)
+            clear:  boolean,    -- cascade-clear flag, requires up (default: false)
+            dim:    Dim,        -- texture size (default: target w/h)
+            tile:   Tile,       -- tile size in px, dim in TILES (default: none)
+            target: Rect,       -- scene.target placement (default: fill parent)
+        } -> string             -- layer key
+        ```
     - **pico.layer.image**: Creates a layer from an image file.
-        - `pico.layer.image ([mode,] up: string?, key: string?, path: string
-          [, rect: Rect])`
-        - If `key` is omitted, uses `path` itself as the layer name.
-        - Default realm: `'!'` (exclusive) when `key` is given;
-          `'='` (shared/cached) when `key` is omitted.
+        ```
+        pico.layer.image {
+            mode:   string,     -- realm mode (default: '!' or '=' when key absent)
+            key:    string,     -- layer name (default: path)
+            up:     string,     -- parent layer (default: detached)
+            path:   string,     -- image file
+            target: Rect,       -- scene.target placement (default: fill parent)
+        } -> string             -- layer key
+        ```
     - **pico.layer.images**: Creates sub-layer images from a reference
         "sprite sheet" image.
-        - `pico.layer.images ([mode,] up: string?, key: string, path: string, t: table) -> {string}`
-            - `t`:
-                - **Grid**: `{ '#', w: integer, h: integer, [n: integer], [key: string] }`
-                    - generates sub-layers `"<key>-01"`, `"<key>-02"`, ...
-                        - the inner `key` overrides the outer `key` prefix
-                    - uses left-to-right order
-                    - `n` limits the count (default `w*h`)
-                - **Explicit**: `{ '!', [name1: Rect, name2: Rect, ...] }`
-                    - generates sub-layers `"<key>-<name>"` for each given
-                        `name=crop` pair
-            - Each sub-layer attaches to the same `up` parent as the image.
-        - Returns the list of generated sub-layer names.
+        ```
+        pico.layer.images {
+            mode:   string,     -- realm mode (default: '!')
+            key:    string,     -- base layer name and sub prefix (default: path)
+            up:     string,     -- parent of the generated sub-layers
+            path:   string,     -- sprite sheet image file
+            sheet:  table,      -- grid or explicit spec (below)
+        } -> {string}           -- generated sub-layer names
+        ```
+        - `sheet`:
+            - **Grid**: `{ '#', w: integer, h: integer, [n: integer], [key: string] }`
+                - generates sub-layers `"<key>-01"`, `"<key>-02"`, ...
+                    - the inner `key` overrides the outer `key` prefix
+                - uses left-to-right order
+                - `n` limits the count (default `w*h`)
+            - **Explicit**: `{ '!', [name1: Rect, name2: Rect, ...] }`
+                - generates sub-layers `"<key>-<name>"` for each given
+                    `name=crop` pair
     - **pico.layer.pixmap**: Creates a layer from a pixmap.
-        - `pico.layer.pixmap ([mode,] up: string?, key: string,
-          pixmap: {{Color}} [, rect: Rect])`
+        ```
+        pico.layer.pixmap {
+            mode:   string,     -- realm mode (default: '!')
+            key:    string,     -- layer name (default: auto '/unique/N')
+            up:     string,     -- parent layer (default: detached)
+            pixels: {{Color}},  -- pixel matrix (rows of colors)
+            target: Rect,       -- scene.target placement (default: fill parent)
+        } -> string             -- layer key
+        ```
     - **pico.layer.screenshot**: Creates a layer from a screenshot of a
       layer.
-        - `pico.layer.screenshot ([mode,] up: string?, key: string,
-          src: string? [, region: Rect])`
-        - `src`: layer to capture; `nil` means current layer.
-        - `region`: area in `src`'s frame; `nil` captures full.
-        - Captures the same pixels as `pico.output.screenshot`, but stores
-          them in a new layer instead of a file.
+        ```
+        pico.layer.screenshot {
+            mode:   string,     -- realm mode (default: '!')
+            key:    string,     -- layer name (default: auto '/unique/N')
+            up:     string,     -- parent layer (default: detached)
+            sup:    string,     -- source layer to capture from (default: current)
+            crop:   Rect,       -- area in sup's frame (default: full)
+            target: Rect,       -- scene.target placement (default: fill parent)
+        } -> string             -- layer key
+        ```
     - **pico.layer.sub**: Creates a sub-layer from a source layer.
-        - `pico.layer.sub ([mode,] up: string?, key: string,
-          src: string, crop: Rect [, rect: Rect])`
-        - Source must exist and cannot be a sub-layer itself.
+        ```
+        pico.layer.sub {
+            mode:   string,     -- realm mode (default: '!')
+            key:    string,     -- layer name (default: auto '/unique/N')
+            up:     string,     -- parent layer (default: detached)
+            sup:    string,     -- source layer to crop from
+            crop:   Rect,       -- area in sup's frame (live view)
+            target: Rect,       -- scene.target placement (default: fill parent)
+        } -> string             -- layer key
+        ```
     - **pico.layer.text**: Creates a layer from text.
-        - `pico.layer.text ([mode,] up: string?, key: string,
-          height: integer, text: string [, rect: Rect])`
+        ```
+        pico.layer.text {
+            mode:   string,     -- realm mode (default: '!')
+            key:    string,     -- layer name (default: auto '/unique/N')
+            up:     string,     -- parent layer (default: detached)
+            dim:    Dim,        -- h: font height (resolves against `up`)
+            text:   string,     -- text to render
+            target: Rect,       -- scene.target placement (default: fill parent)
+        } -> string             -- layer key
+        ```
+        - uses the current pencil font and color.
+        - `dim.w` is always inferred from the text
     - **pico.layer.video**: Creates a layer from a video file.
-        - `pico.layer.video ([mode,] up: string?, key: string?, path: string
-          [, rect: Rect])`
-        - If `key` is omitted, uses `path` itself as the layer name.
-        - Default realm: `'!'` (exclusive) when `key` is given;
-          `'='` (shared/cached) when `key` is omitted.
+        ```
+        pico.layer.video {
+            mode:   string,     -- realm mode (default: '!' or '=' when key absent)
+            key:    string,     -- layer name (default: path)
+            up:     string,     -- parent layer (default: detached)
+            path:   string,     -- video file (Y4M format)
+            target: Rect,       -- scene.target placement (default: fill parent)
+        } -> string             -- layer key
+        ```
 - **pico.output**
     - **pico.output.clear**: Clears screen.
         - `pico.output.clear ()`
@@ -299,11 +326,20 @@ In alphabetical order:
     - `pico.push ()`
 - **pico.quit**: Pushes a quit event to terminate the application.
     - `pico.quit ()`
-- **pico.set**
+- **pico.set**: Setters for various properties and settings.
+    - omitted table fields keep their current values
     - **pico.set.dim**: Sets both window and world to the same dimensions.
         - `pico.set.dim (dim: Dim)`
     - **pico.set.effect**: Sets effect configuration.
-        - `pico.set.effect (cfg: { [alpha: integer], [color: Color], [flip: Flip], [grid: boolean], [rotate: Rotation] })`
+        ```
+        pico.set.effect {
+            alpha:  integer,    -- layer opacity 0-255
+            color:  Color,      -- background (clear) color
+            flip:   Flip,       -- mirror the layer
+            grid:   boolean,    -- show the grid aid
+            rotate: Rotation,   -- rotation angle + anchor
+        }
+        ```
     - **pico.set.expert**: Toggles expert mode.
         - `pico.set.expert (on: boolean [, fps: integer|boolean]) -> integer`
         - fps: omitted or `false` = wait forever, `true` = as fast as
@@ -327,15 +363,39 @@ In alphabetical order:
             - `pico.set.mouse(nil, pos)` — explicit nil = cur
             - `pico.set.mouse('window', pos)` — named layer's frame
     - **pico.set.pencil**: Sets pencil configuration.
-        - `pico.set.pencil (cfg: { [color: Color], [font: string?], [style: 'fill'|'stroke'] })`
+        ```
+        pico.set.pencil {
+            color:  Color,              -- drawing color
+            font:   string,             -- TTF path (false: reset to built-in)
+            style:  'fill'|'stroke',    -- shape drawing style
+        }
+        ```
     - **pico.set.scene**: Sets scene configuration.
-        - `pico.set.scene (cfg: { [dim: Dim], [source: Rect], [clip: Rect], [target: Rect], [tile: Tile], [clear: boolean] })`
-        - `tile` sets tile size in pixels (required when `dim` mode is `'#'`)
-        - `clear`: when true, the layer auto-clears each frame
+        ```
+        pico.set.scene {
+            dim:    Dim,        -- texture size (recreates and clears)
+            source: Rect,       -- visible crop of the layer
+            clip:   Rect,       -- drawing clip region
+            target: Rect,       -- placement in parent (resolved at each use)
+            tile:   Tile,       -- tile size in px (required for '#' dim)
+            clear:  boolean,    -- cascade-clear flag
+        }
+        ```
     - **pico.set.video**: Sets video frame.
         - `pico.set.video (name: string, frame: integer) -> boolean`
     - **pico.set.window**: Sets window configuration.
-        - `pico.set.window (cfg: { [fullscreen: boolean], [show: boolean], [title: string] })`
+        ```
+        pico.set.window {
+            fullscreen: boolean,    -- fullscreen mode
+            show:       boolean,    -- window visibility
+            title:      string,     -- window title
+        }
+        ```
+- **pico.unique**: Returns a unique monotonic id.
+    - `pico.unique () -> integer`
+    - `pico.unique (prefix: string) -> string`
+    - Starts at 1 and is never reset.
+    - The prefix form returns `"<prefix>.N"`.
 - **pico.vs**
     - Collision checks.
       Each side has the canonical shape `(Lx, vx)` where `Lx` is the

@@ -25,7 +25,7 @@ do
     print("text dimming")
     local d = {'!', w=0, h=10}
     pico.get.text(d, "SOME TEXT")
-    local r = {'!', x=32-d.w//2, y=18-5, w=d.w, h=10, anchor='NW'}
+    local r = {'!', x=32-d.w//2, y=18-5, w=nil, h=10, anchor='NW'}
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.pencil { color=pico.color.alpha('red', a) }

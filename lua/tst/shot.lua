@@ -75,7 +75,7 @@ end
 
 do
     print("empty layer")
-    pico.layer.empty(nil, "empty1", false, {'!', w=64, h=32})
+    pico.layer.empty { key="empty1", clear=false, dim={'!', w=64, h=32} }
     pico.set.layer("empty1")
     pico.set.effect { color={'!', r=0x00, g=0x80, b=0x00} }
     pico.output.clear()
@@ -89,10 +89,10 @@ end
 
 do
     print("pixmap layer")
-    pico.layer.pixmap(nil, "pmap1", {
+    pico.layer.pixmap { key="pmap1", pixels={
         {{r=255, g=  0, b=  0, a=255}, {r=  0, g=255, b=  0, a=255}},
         {{r=  0, g=  0, b=255, a=255}, {r=255, g=255, b=  0, a=255}},
-    })
+    } }
     pico.set.layer("pmap1")
     local f = pico.output.screenshot(nil, "../../tst/out/shot-pixmap.png")
     pico.set.layer("world")
@@ -102,8 +102,8 @@ end
 
 do
     print("sub layer")
-    pico.layer.sub(nil, "sub1", "empty1",
-        {'!', x=0, y=0, w=32, h=16, anchor='NW'})
+    pico.layer.sub { key="sub1", sup="empty1",
+        crop={'!', x=0, y=0, w=32, h=16, anchor='NW'} }
     pico.set.layer("sub1")
     local f = pico.output.screenshot(nil, "../../tst/out/shot-sub.png")
     pico.set.layer("world")
@@ -113,7 +113,7 @@ end
 
 do
     print("image layer")
-    pico.layer.image(nil, "img1", "../../res/open.png")
+    pico.layer.image { key="img1", path="../../res/open.png" }
     pico.set.layer("img1")
     local f = pico.output.screenshot(nil, "../../tst/out/shot-image.png")
     pico.set.layer("world")
@@ -124,7 +124,7 @@ end
 do
     print("text layer")
     pico.set.pencil { color={'!', r=0xFF, g=0xFF, b=0xFF} }
-    pico.layer.text(nil, "txt1", 16, "hello")
+    pico.layer.text { key="txt1", dim={'!', h=16}, text="hello" }
     pico.set.layer("txt1")
     local f = pico.output.screenshot(nil, "../../tst/out/shot-text.png")
     pico.set.layer("world")
@@ -134,7 +134,7 @@ end
 
 do
     print("video layer")
-    pico.layer.video(nil, "vid1", "video.y4m")
+    pico.layer.video { key="vid1", path="video.y4m" }
     pico.set.layer("vid1")
     assert(pico.set.video("vid1", 0) == true)
     local f = pico.output.screenshot(nil, "../../tst/out/shot-video.png")
@@ -148,7 +148,7 @@ end
 -- 1. capture an existing layer into a new layer; reuses empty1's reference
 do
     print("screenshot layer - reuse empty1")
-    pico.layer.screenshot(nil, "snap_empty", "empty1")
+    pico.layer.screenshot { key="snap_empty", sup="empty1" }
     pico.set.layer("snap_empty")
     local f = pico.output.screenshot(nil, "../../tst/out/shot-snap-empty.png")
     pico.set.layer("world")
@@ -160,12 +160,12 @@ end
 do
     print("screenshot layer - scene round-trip")
 
-    pico.layer.empty(nil, "red", true, {'!', w=20, h=20})
+    pico.layer.empty { key="red", dim={'!', w=20, h=20} }
     pico.set.layer("red")
     pico.set.effect { color={'!', r=0xFF, g=0, b=0} }
     pico.output.clear()
 
-    pico.layer.empty(nil, "blue", true, {'!', w=20, h=20})
+    pico.layer.empty { key="blue", dim={'!', w=20, h=20} }
     pico.set.layer("blue")
     pico.set.effect { color={'!', r=0, g=0, b=0xFF} }
     pico.output.clear()
@@ -179,7 +179,7 @@ do
     local f1 = pico.output.screenshot("world", "../../tst/out/shot-scene.png")
     check(f1, "../../tst/asr/shot-scene.png")
 
-    pico.layer.screenshot(nil, "snap_scene", "world")
+    pico.layer.screenshot { key="snap_scene", sup="world" }
     pico.set.layer("world")
     pico.output.clear()
     pico.output.draw.layer("snap_scene")
@@ -188,16 +188,38 @@ do
     pico.set.layer("world")
 end
 
--- 3. capture a relative region; resolves against the source layer (64x32)
+-- 3. capture a relative crop; resolves against the source layer (64x32)
 do
-    print("screenshot layer - region (pct)")
-    pico.layer.screenshot(nil, "snap_half", "empty1",
-        {'%', x=0, y=0, w=0.5, h=1.0, anchor='NW'})
+    print("screenshot layer - crop (pct)")
+    pico.layer.screenshot { key="snap_half", sup="empty1",
+        crop={'%', x=0, y=0, w=0.5, h=1.0, anchor='NW'} }
     pico.set.layer("snap_half")
     local f = pico.output.screenshot(nil, "../../tst/out/shot-snap-half.png")
     pico.set.layer("world")
     assert(f == "../../tst/out/shot-snap-half.png")
     check(f, "../../tst/asr/shot-snap-half.png")
+end
+
+-- 4. constructor target: screenshot layer placed via target field,
+--    combined with crop; stored as scene.target (raw), then drawn
+--    with no rect (uses the target) into world's SE quadrant
+do
+    print("screenshot layer - target (+ crop)")
+    local r = {'%', x=1, y=1, w=0.5, h=0.5, anchor='SE'}
+    pico.layer.screenshot { key="snap_tgt", sup="empty1",
+        crop={'%', x=0, y=0, w=0.5, h=1.0, anchor='NW'}, target=r }
+    pico.set.layer("snap_tgt")
+    local s = pico.get.scene()
+    assert(s.target[1] == '%')
+    assert(s.target.x == 1 and s.target.y == 1)
+    assert(s.target.w == 0.5 and s.target.h == 0.5)
+    pico.set.layer("world")
+    pico.set.effect { color='black' }
+    pico.output.clear()
+    pico.output.draw.layer("snap_tgt")
+    local f = pico.output.screenshot("world", "../../tst/out/shot-snap-target.png")
+    assert(f == "../../tst/out/shot-snap-target.png")
+    check(f, "../../tst/asr/shot-snap-target.png")
 end
 
 pico.init(false)

@@ -156,21 +156,21 @@ static Pico_Layer_Video* _layer_video (
     return ret;
 }
 
-void pico_layer_video (const char* up, const char* key, const char* path) {
+const char* pico_layer_video (const char* up, const char* key, const char* path) {
     _pico_guard();
-    pico_layer_video_mode('!', up, key, path);
+    return pico_layer_video_mode('!', up, key, path);
 }
 
-void pico_layer_video_mode (
+const char* pico_layer_video_mode (
     int mode, const char* up, const char* key, const char* path
 ) {
     _pico_guard();
     assert(path != NULL && "video path required");
-    const char* str = (key != NULL) ? key : path;
-    _layer_video(mode, key, path);
+    Pico_Layer_Video* ret = _layer_video(mode, key, path);
     if (up != NULL) {
-        _pico_layer_attach(up, str);
+        _pico_layer_attach(up, ret->base.name);
     }
+    return ret->base.name;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

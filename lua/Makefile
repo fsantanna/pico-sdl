@@ -35,7 +35,7 @@ gen:
 tests: pico_native.so
 	@echo "Running tests..."
 	./pico-lua --help | grep -q "Usage: pico-lua"
-	./pico-lua --version | grep -q "v0.6"
+	./pico-lua --version | grep -q "v0.7"
 	$(TST) tst/anchor.lua
 	$(TST) tst/blend_pct.lua
 	$(TST) tst/blend_raw.lua
@@ -81,8 +81,10 @@ tests: pico_native.so
 	$(TST) tst/size_raw.lua
 	$(TST) tst/style.lua
 	$(TST) tst/text_empty.lua
+	$(TST) tst/text-sizes.lua
 	$(TST) tst/tile-grid.lua
 	$(TST) tst/tiles.lua
+	$(TST) tst/unique.lua
 	$(TST) tst/video.lua
 	$(TST) tst/view-target.lua
 	$(TST) tst/view_raw.lua

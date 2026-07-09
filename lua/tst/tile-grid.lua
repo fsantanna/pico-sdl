@@ -70,7 +70,7 @@ pico.set.effect { grid=false }
 -- Layer A: 4x4 tiles of 4x4 pixels, grid enabled
 do
     print("layer A: 4x4 tiles, grid on")
-    pico.layer.empty(nil, "layerA", false, {'!', w=16, h=16})
+    pico.layer.empty { key="layerA", dim={'!', w=16, h=16} }
     pico.set.layer("layerA")
     pico.set.effect { grid=true }
     pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
@@ -83,7 +83,7 @@ end
 -- Layer B: 8x4 non-square tiles, grid enabled
 do
     print("layer B: 8x4 non-square tiles, grid on")
-    pico.layer.empty(nil, "layerB", true, {'!', w=16, h=16})
+    pico.layer.empty { key="layerB", dim={'!', w=16, h=16} }
     pico.set.layer("layerB")
     pico.set.effect { grid=true }
     pico.set.scene { dim={'#', w=8, h=4}, tile={w=2, h=4} }
@@ -96,7 +96,7 @@ end
 -- Layer C: 4x4 tiles of 4x4 pixels, grid disabled
 do
     print("layer C: 4x4 tiles, grid off")
-    pico.layer.empty(nil, "layerC", false, {'!', w=16, h=16})
+    pico.layer.empty { key="layerC", dim={'!', w=16, h=16} }
     pico.set.layer("layerC")
     pico.set.effect { grid=false }
     pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
