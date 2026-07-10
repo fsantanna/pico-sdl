@@ -17,6 +17,9 @@ Pico_Layer* _pico_layer_name (const char* name) {
 void _pico_layer_attach (const char* up, const char* dn) {
     Pico_Layer* UP = _pico_layer_name(up);
     Pico_Layer* DN = _pico_layer_name(dn);
+    int access;
+    SDL_QueryTexture(UP->tex, NULL, &access, NULL, NULL);
+    assert(access==SDL_TEXTUREACCESS_TARGET && "layer cannot host children");
     DN->hier.up = UP->name;
     DN->hier.nxt = NULL;
     if (UP->hier.dn.fst == NULL) {
