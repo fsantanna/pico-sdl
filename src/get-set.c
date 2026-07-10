@@ -30,6 +30,11 @@ PICO_STYLE pico_get_pencil_style (void) {
     return G.layer->pencil.style;
 }
 
+int pico_get_aids (void) {
+    _pico_guard();
+    return G.aids;
+}
+
 int pico_get_expert (int* fps) {
     _pico_guard();
     if (fps != NULL) {
@@ -212,6 +217,11 @@ void pico_set_pencil_font (const char* path) {
 void pico_set_pencil_style (PICO_STYLE style) {
     _pico_guard();
     G.layer->pencil.style = style;
+}
+
+void pico_set_aids (int on) {
+    _pico_guard();
+    G.aids = on;
 }
 
 int pico_set_expert (int on, int fps) {

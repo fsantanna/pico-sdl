@@ -115,6 +115,7 @@ typedef struct PicoState {
     realm_t*      realm;
     Pico_Layer    world;
     Pico_Layer*   layer;
+    int           aids;
     struct {
         int on;
         int fps;

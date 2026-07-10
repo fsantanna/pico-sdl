@@ -57,12 +57,13 @@ void pico_set_mouse (const char* layer, Pico_Rel_Pos pos) {
 }
 
 // Handles auto aids: quit/exit, window resize, ctrl+zoom/scroll/grid.
+// Toggled via pico_set_aids.
 //
 
 static int _event_handler (Pico_Event* pico, int do_exit) {
     switch (pico->type) {
         case PICO_EVENT_QUIT: {
-            if (!G.expert.on && do_exit) {
+            if (G.aids && !G.expert.on && do_exit) {
                 exit(0);
             }
             break;
@@ -81,7 +82,7 @@ static int _event_handler (Pico_Event* pico, int do_exit) {
         }
 
         case PICO_EVENT_KEY_DN: {
-            if (!pico->keyboard.ctrl) {
+            if (!G.aids || !pico->keyboard.ctrl) {
                 break;
             }
             switch (pico->keyboard.key) {

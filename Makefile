@@ -16,7 +16,7 @@ lib: src/libpico-sdl.a
 src/libpico-sdl.a: $(OBJS)
 	ar rcs $@ $^
 
-src/%.o: src/%.c
+src/%.o: src/%.c $(wildcard src/*.h)
 	gcc -Wall -Werror -g -fPIC -I src -c -o $@ $<
 
 realm:
@@ -41,6 +41,7 @@ tests: lib
 	./pico-sdl | grep -q "Usage: pico-sdl"
 	./pico-sdl --help | grep -q "Usage: pico-sdl"
 	./pico-sdl --version | grep -q "v0.6"
+	$(EXE) tst/aids.c
 	$(EXE) tst/anchor_pct.c
 	$(EXE) tst/anchor_raw.c
 	$(EXE) tst/blend_pct.c

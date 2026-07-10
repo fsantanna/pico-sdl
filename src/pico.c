@@ -169,6 +169,7 @@ void pico_init (int on) {
                 },
             },
             .layer  = NULL,
+            .aids   = 1,
             .expert = {0, 0, -1, 0},
             .window = {
                 .win = win,

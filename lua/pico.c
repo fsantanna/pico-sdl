@@ -1025,6 +1025,17 @@ static int l_set_pencil (lua_State* L) {
     return 0;
 }
 
+static int l_get_aids (lua_State* L) {
+    lua_pushboolean(L, pico_get_aids());
+    return 1;
+}
+
+static int l_set_aids (lua_State* L) {
+    luaL_checktype(L, 1, LUA_TBOOLEAN);     // ok
+    pico_set_aids(lua_toboolean(L, 1));
+    return 0;
+}
+
 static int l_set_expert (lua_State* L) {
     luaL_checktype(L, 1, LUA_TBOOLEAN);     // ok | [fps]
     int on = lua_toboolean(L, 1);
@@ -1866,6 +1877,7 @@ static const luaL_Reg ll_color[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_get[] = {
+    { "aids",     l_get_aids     },
     { "effect",   l_get_effect   },
     { "image",    l_get_image    },
     { "keyboard", l_get_keyboard },
@@ -1883,6 +1895,7 @@ static const luaL_Reg ll_get[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 static const luaL_Reg ll_set[] = {
+    { "aids",   l_set_aids   },
     { "dim",    l_set_dim    },
     { "effect", l_set_effect },
     { "expert", l_set_expert },

@@ -4,6 +4,7 @@ v0.7 (???/??)
 Additions:
 
 - `pico.unique`: unique monotonic id
+- `pico.get/set.aids`: enable/disable aids
 
 Modifications:
 
@@ -21,6 +22,7 @@ Fixes:
 
 - window clip: was not clipping at all
 - text rendering: now uses reasonable native height
+- layer attach: parent texture must be targetable
 
 v0.6 (jun/26)
 -------------
