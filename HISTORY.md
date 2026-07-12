@@ -8,6 +8,7 @@ Additions:
 
 Modifications:
 
+- `pico.output.draw.text.{fix,dyn}`: sufix is mandatory
 - Layers:
     - constructor:
         - new table format arguments (was positional)

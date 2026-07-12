@@ -45,50 +45,63 @@ Make the naive patterns cheap and leak-free:
 - (optional, separate) plain `draw.text` of varying strings does
   not accumulate textures forever.
 
-## Task 1: realm `eq` callback (decided design)
+## Task 1: realm fingerprints + text dyn/fix — DONE (untested)
 
-Content-awareness lives in the REALM, not in `layer.c`, via an
-optional equality callback passed to `realm_put`:
+Final design (2026-07-11), after iterating through: eq callback
+→ sibling `"\0"+key` fp entry → **fp bytes stored IN the realm
+entry** (opaque bytes, realm never interprets them — consistent
+with "realm assumes nothing"):
 
 ```c
-typedef int (*realm_eq)(int n, const void* key, void* value, void* ctx);
+void* realm_put_fp (realm_t* r, int mode, int n, const void** key,
+                    int fn, const void* fp,
+                    realm_free_t free, realm_alloc_t alloc, void* ctx);
+// realm_put(...) = realm_put_fp(..., 0, NULL, ...)
 ```
 
-Semantics per mode when the key exists:
+Semantics when the key exists (fn==0 = no fingerprint = today):
 
-| mode  | eq given, equal | eq given, differs      | eq NULL        |
+| mode  | fp equal        | fp differs             | no fp          |
 |-------|-----------------|------------------------|----------------|
-| `'~'` | return existing | replace (today)        | replace (today)|
+| `'~'` | return existing | replace + new fp       | replace (today)|
 | `'='` | return existing | **assert fail**        | return (today) |
 | `'!'` | return NULL     | return NULL            | return NULL    |
 
-- `'~'` becomes "replace unless equal": unchanged text is a
-  cache hit — no alloc, no free, no raster.
-- `'='` with `eq` asserts content matches — turns today's
-  silent stale hit (e.g. `draw_pixmap` new pixels on existing
-  key, `output.c:138`) into a caught bug pointing to `'~'`.
-- Rejected alternatives: compare in `layer.c` before `realm_put`
-  (2 lookups, duplicated per call site); realm-stored flat
-  fingerprint bytes (no callback, but forces flat identity).
+Text fp = the content string `/text/<font>/<h>/<r.g.b>/<text>`
+(already built for the auto-key; now built always and passed as
+fp — auto-key case is trivially equal).
 
-Steps:
+API: mode stays optional; two blessed shorthands (dyn/fix):
 
-- [ ] `realm.hc`: add `realm_eq eq` param to `realm_put`;
-      consult it in `'~'` (keep-if-equal) and `'='` (assert)
-      key-exists branches
-- [ ] update all `realm_put` call sites (~11) to pass `NULL`
-- [ ] extend `Pico_Layer` (text variant) to store `text` copy,
-      `height`, `font` path copy, `color`
-      (color baked at raster time — compare vs CURRENT pencil)
-- [ ] free the stored copies in `_pico_mem_free_layer`
-- [ ] `_pico_layer_text`: pass an `eq` impl comparing stored
-      `(text, height, font, color)` vs request + current pencil
+- `pico_output_draw_text_fix(text, rect)` = `('=', NULL)` —
+  immutable value, shared by content, do NOT feed varying text
+- `pico_output_draw_text_dyn(key, text, rect)` = `('~', key)` —
+  mutable slot, re-raster only on change
+- plain `pico_output_draw_text` REMOVED; `_mode` kept underneath
+- Lua: `pico.output.draw.text.fix/dyn` (text became a subtable)
+- `pico_layer_text_mode('~')` gets the optimization for free
+  (fp lives in `_pico_layer_text`)
+
+Steps done:
+
+- [x] `realm.hc`: `fn/fp` in entry, `realm_fp_set/eq`,
+      `realm_put_fp`, `realm_put` wrapper, fp freed with entry
+- [x] `_pico_layer_text`: always build fp, pass to `realm_put_fp`
+- [x] `output.c`: `_fix`/`_dyn` wrappers; plain removed
+- [x] `pico.h`: decls + docs (fix warns about varying text)
+- [x] `lua/pico.c`: `l_output_draw_text_fix/dyn`, nested reg
+- [x] sweep `tst/*.c` (10 files), `lua/tst/*.lua` (12 files),
+      `lua/doc/guide.md`, `layer.c` internal calls → `fix`
+- [x] compiles clean (`-Wall -Werror`: pico.c layer.c output.c,
+      lua/pico.c syntax)
 - [ ] caveat from `mem.c:92`: `'~'` replace asserts no children;
-      the eq-hit path sidesteps the assert (good — document)
-- [ ] later: `eq` impls for pixmap (pixels) and image (path)
-- [ ] test: `tst/` case calling `layer.text ['~']` twice with
-      same/different text and asserting texture identity/change
-      (e.g. via `pico.get` on the layer or a counter hook)
+      the fp-hit path sidesteps the assert (good — document)
+- [ ] test: `tst/` case calling text `'~'` twice with
+      same/different text asserting texture identity/change
+- [ ] later: fp adopters — pixmap (pixel hash), image+key (path,
+      maybe mtime), sub (parent+crop bytes), empty (dim+tile);
+      screenshot N/A (content changes by nature)
+- [ ] verify: `make tests` + `cd lua && make tests` (user runs)
 
 ## Task 2: ~~LRU sweep for `'='` auto-keys~~ — WON'T DO
 
@@ -114,31 +127,39 @@ counter; pico keeps the `/unique/N` string FORMAT:
 - rejected: raw int `n` as key — layer names round-trip through
   the public API as C strings (`strlen`-based lookups, Lua)
 - note: `pico_unique()` now requires `pico_init` (uses `G.realm`)
-- [ ] verify: `make tests` (user runs)
+- note: `realm.hc` is vendored from `fsantanna/realm-allocator`
+  v0.1 (`make realm` overwrites!) — upstream `realm_unique` (and
+  future `eq`), then bump the pin
+- [x] Makefile: `src/%.o` deps now include `src/*.hc`
+- [x] verify: `make tests` — all pass (2026-07-11)
 
 ## API surface
 
-Public pico API: no signature changes.
-Internal: `realm_put` gains the `eq` param (realm.hc is
-internal). Behavior change only:
-
-- `'~'` with equal content returns the existing layer
-  (observable via texture pointer identity; document in api.md
-  under `pico.layer.text`).
-- `'='` with `eq` given asserts content equality.
+- BREAKING: `pico_output_draw_text` → `_fix`; Lua `draw.text(`
+  → `draw.text.fix(` (all in-repo callers swept)
+- NEW: `pico_output_draw_text_dyn` / Lua `draw.text.dyn`
+- `'~'` with equal fingerprint returns the existing layer
+  (observable via texture pointer identity)
+- `'='` with differing fingerprint asserts
 
 ## Consumer (FrescoGO) after this lands
 
 `tela.atm` can call, per frame, with a stable per-widget id:
 
 ```atm
+pico.output.draw.text.dyn("/mmss", mmss, rs.mmss)
+```
+
+or, when a persistent layer is wanted:
+
+```atm
 pico.layer.text [mode='~', key="/mmss", dim=['%', h=rs.mmss.h], text=mmss]
 pico.output.draw.layer("/mmss", rs.mmss)
 ```
 
-no app-side change-cache needed (Task 2 dropped: plain
-`draw.text` of varying strings remains accumulating — use the
-keyed `'~'` pattern above).
+both are re-raster-on-change now; no app-side change-cache
+needed (Task 2 dropped: `draw.text.fix` of varying strings
+remains accumulating — the `fix` name warns about it).
 
 ## Pending / open
 
