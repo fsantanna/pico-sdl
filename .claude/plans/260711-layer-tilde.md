@@ -53,10 +53,10 @@ entry** (opaque bytes, realm never interprets them — consistent
 with "realm assumes nothing"):
 
 ```c
-void* realm_put_fp (realm_t* r, int mode, int n, const void** key,
-                    int fn, const void* fp,
-                    realm_free_t free, realm_alloc_t alloc, void* ctx);
-// realm_put(...) = realm_put_fp(..., 0, NULL, ...)
+void* realm_put (realm_t* r, int mode, int n, const void** key,
+                 int fn, const void* fp,
+                 realm_free_t free, realm_alloc_t alloc, void* ctx);
+// single function: fn=0/fp=NULL = no fingerprint (old behavior)
 ```
 
 Semantics when the key exists (fn==0 = no fingerprint = today):
@@ -84,8 +84,15 @@ API: mode stays optional; two blessed shorthands (dyn/fix):
 
 Steps done:
 
-- [x] `realm.hc`: `fn/fp` in entry, `realm_fp_set/eq`,
-      `realm_put_fp`, `realm_put` wrapper, fp freed with entry
+- [x] `realm.hc`: `fn/fp` in entry, `realm_fp_set/eq`, fp freed
+      with entry; single `realm_put` gains `fn, fp` params
+      (no `_fp` wrapper — all ~10 call sites pass `0, NULL`)
+- [x] hardening after review (2026-07-12): `'='` mismatch
+      returns NULL (soft, like `'!'`); `'~'` is
+      acquire-then-commit (failure = entry untouched);
+      `realm_fp_set(int* dfn, void** dfp, ..)` reused by both
+      paths; NULL alloc result → cleanup + return NULL (never
+      stored: would be ambiguous with `realm_get` "absent")
 - [x] `_pico_layer_text`: always build fp, pass to `realm_put_fp`
 - [x] `output.c`: `_fix`/`_dyn` wrappers; plain removed
 - [x] `pico.h`: decls + docs (fix warns about varying text)

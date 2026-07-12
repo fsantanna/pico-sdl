@@ -366,14 +366,29 @@ void pico_output_draw_oval (Pico_Rel_Rect rect);
 /// @param ps array of vertex positions (mode determines coordinates)
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps);
 
-/// @brief Draws text (shared caching by text content).
+/// @brief Draws fixed text (shared caching by text content).
+/// Each distinct (font, height, color, text) is rasterized once
+/// and cached for the enclosing scope. Do NOT use for varying
+/// text (clock, counters): every distinct string accumulates a
+/// texture — use pico_output_draw_text_dyn instead.
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
-void pico_output_draw_text (const char* text, Pico_Rel_Rect rect);
+void pico_output_draw_text_fix (const char* text, Pico_Rel_Rect rect);
+
+/// @brief Draws dynamic text under a caller key.
+/// Re-rasterizes only when (font, height, color, text) changes;
+/// unchanged calls are cache hits. Keeps a single texture per
+/// key regardless of how often the text varies.
+/// @param key layer key (required)
+/// @param text text to draw
+/// @param rect drawing rectangle (mode determines coordinates)
+void pico_output_draw_text_dyn (const char* key, const char* text, Pico_Rel_Rect rect);
 
 /// @brief Draws text with explicit realm mode and layer key.
+/// Underlies pico_output_draw_text_fix ('=', NULL) and
+/// pico_output_draw_text_dyn ('~', key).
 /// @param mode realm mode ('!' exclusive, '=' shared,
-///             '~' replace)
+///             '~' replace-if-changed)
 /// @param key layer key
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)

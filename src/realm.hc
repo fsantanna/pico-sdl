@@ -18,6 +18,8 @@ typedef struct realm_entry {
     void*               value;
     int                 depth;
     realm_free_t        free;
+    int                 fn;
+    void*               fp;
     struct realm_entry* next;
 } realm_entry;
 
@@ -33,6 +35,7 @@ void     realm_close  (realm_t* r);
 void     realm_enter  (realm_t* r);
 void     realm_leave  (realm_t* r);
 void*    realm_put    (realm_t* r, int mode, int n, const void** key,
+                       int fn, const void* fp,
                        realm_free_t free, realm_alloc_t alloc, void* ctx);
 void*    realm_get    (realm_t* r, int n, const void* key);
 int      realm_unique (realm_t* r);
@@ -74,7 +77,29 @@ static void realm_remove_entry (realm_entry** pp) {
         e->free(e->n, e->key, e->value);
     }
     free(e->key);
+    free(e->fp);
     free(e);
+}
+
+/* Copy fingerprint into *dfn / *dfp; on failure clears them, returns 0 */
+static int realm_fp_set (int* dfn, void** dfp, int fn, const void* fp) {
+    *dfn = 0;
+    *dfp = NULL;
+    if (fn > 0) {
+        assert(fp != NULL);
+        *dfp = malloc(fn);
+        if (*dfp == NULL) {
+            return 0;
+        }
+        memcpy(*dfp, fp, fn);
+        *dfn = fn;
+    }
+    return 1;
+}
+
+/* Both fingerprints present and equal? */
+static int realm_fp_eq (realm_entry* e, int fn, const void* fp) {
+    return (fn>0 && e->fn==fn && memcmp(e->fp,fp,fn)==0);
 }
 
 realm_t* realm_open (int n) {
@@ -127,6 +152,7 @@ int realm_unique (realm_t* r) {
 }
 
 void* realm_put (realm_t* r, int mode, int n, const void** key,
+                 int fn, const void* fp,
                  realm_free_t free_, realm_alloc_t alloc, void* ctx) {
     assert(r->depth > 0);
     if (mode == '=') {
@@ -142,13 +168,37 @@ void* realm_put (realm_t* r, int mode, int n, const void** key,
                 //assert(0 && "realm: exclusive key exists");
                 return NULL;
             case '=':
+                /* '=' claims content is unchanged: verify fingerprints */
+                if (fn>0 && !realm_fp_eq(e, fn, fp)) {
+                    return NULL; // changed fingerprint
+                }
                 *key = e->key;
                 return e->value;
             case '~': {
+                /* equal fingerprints: keep value, no alloc/free */
+                if (realm_fp_eq(e, fn, fp)) {
+                    *key = e->key;
+                    return e->value;
+                }
+                /* acquire first: entry untouched on any failure */
+                int nfn;
+                void* nfp;
+                if (!realm_fp_set(&nfn, &nfp, fn, fp)) {
+                    return NULL;
+                }
                 void* nv = (alloc != NULL) ? alloc(n, e->key, ctx) : ctx;
+                if (nv == NULL) {
+                    free(nfp);
+                    return NULL;
+                }
+
+                /* commit: release old, install new */
                 if (e->free != NULL) {
                     e->free(e->n, e->key, e->value);
                 }
+                free(e->fp);
+                e->fn    = nfn;
+                e->fp    = nfp;
                 e->depth = r->depth - 1;
                 e->value = nv;
                 e->free  = free_;
@@ -165,21 +215,33 @@ void* realm_put (realm_t* r, int mode, int n, const void** key,
         if (e == NULL) {
             return NULL;
         }
+        e->fn  = 0;
+        e->fp  = NULL;
         e->key = malloc(n);
         if (e->key == NULL) {
-            free(e);
-            return NULL;
+            goto _ERR;
         }
         memcpy(e->key, *key, n);
+        if (!realm_fp_set(&e->fn, &e->fp, fn, fp)) {
+            goto _ERR;
+        }
         e->n     = n;
         e->depth = r->depth - 1;
         e->free  = free_;
         e->next  = NULL;
         void* nv = (alloc != NULL) ? alloc(n, e->key, ctx) : ctx;
+        if (nv == NULL) {
+            goto _ERR;
+        }
         e->value = nv;
         *pp      = e;
         *key     = e->key;
         return nv;
+    _ERR:
+        free(e->fp);
+        free(e->key);
+        free(e);
+        return NULL;
     }
 }
 

@@ -1766,11 +1766,20 @@ static int l_output_draw_rect (lua_State* L) {
     return 0;
 }
 
-static int l_output_draw_text (lua_State* L) {
+static int l_output_draw_text_fix (lua_State* L) {
     const char* text = luaL_checkstring(L, 1);  // text | rect
     luaL_checktype(L, 2, LUA_TTABLE);
     Pico_Rel_Rect rect = C_rel_rect(L, 2);
-    pico_output_draw_text(text, rect);
+    pico_output_draw_text_fix(text, rect);
+    return 0;
+}
+
+static int l_output_draw_text_dyn (lua_State* L) {
+    const char* key = luaL_checkstring(L, 1);   // key | text | rect
+    const char* text = luaL_checkstring(L, 2);
+    luaL_checktype(L, 3, LUA_TTABLE);
+    Pico_Rel_Rect rect = C_rel_rect(L, 3);
+    pico_output_draw_text_dyn(key, text, rect);
     return 0;
 }
 
@@ -1951,9 +1960,14 @@ static const luaL_Reg ll_output_draw[] = {
     { "pixmap", l_output_draw_pixmap },
     { "poly",   l_output_draw_poly   },
     { "rect",   l_output_draw_rect   },
-    { "text",   l_output_draw_text   },
     { "tri",    l_output_draw_tri    },
     { "video",  l_output_draw_video  },
+    { NULL, NULL }
+};
+
+static const luaL_Reg ll_output_draw_text[] = {
+    { "fix", l_output_draw_text_fix },
+    { "dyn", l_output_draw_text_dyn },
     { NULL, NULL }
 };
 
@@ -1992,6 +2006,8 @@ int luaopen_pico_native (lua_State* L) {
 
     luaL_newlib(L, ll_output);              // pico | output
     luaL_newlib(L, ll_output_draw);         // pico | output | draw
+    luaL_newlib(L, ll_output_draw_text);    // pico | output | draw | text
+    lua_setfield(L, -2, "text");            // pico | output | draw
     lua_setfield(L, -2, "draw");            // pico | output
     lua_setfield(L, -2, "output");          // pico
 

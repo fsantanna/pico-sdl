@@ -81,7 +81,7 @@ Pico_Layer* _pico_layer_pixmap (
     assert(pixels!=NULL && "pixels required");
     _pico_mem_alloc_pixmap_t ctx = { dim, pixels };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
-        G.realm, mode, strlen(key)+1, (const void**)&key,
+        G.realm, mode, strlen(key)+1, (const void**)&key, 0, NULL,
         _pico_mem_free_layer, _pico_mem_alloc_layer_pixmap, &ctx
     );
     pico_assert_key(ret, key);
@@ -94,7 +94,7 @@ Pico_Layer* _pico_layer_image (
     assert(path!=NULL && "image path required");
     const char* str = (key != NULL) ? key : path;
     Pico_Layer* ret = (Pico_Layer*) realm_put (
-        G.realm, mode, strlen(str)+1, (const void**)&str,
+        G.realm, mode, strlen(str)+1, (const void**)&str, 0, NULL,
         _pico_mem_free_layer, _pico_mem_alloc_layer_image, (void*)path
     );
     pico_assert_key(ret, str);
@@ -106,25 +106,22 @@ Pico_Layer* _pico_layer_text (
 ) {
     assert(text!=NULL && text[0]!='\0' && "text required");
 
-    const char* str;
-    char* str_buf = NULL;
-    if (key == NULL) {
-        const char* font = G.layer->pencil.font;
-        Pico_Color clr = G.layer->pencil.color;
-        const char* font_str = font ? font : "null";
-        int buflen = strlen("/text/") + strlen(font_str) + 1
-            + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
-        str_buf = alloca(buflen);
-        snprintf(str_buf, buflen, "/text/%s/%d/%d.%d.%d/%s",
-                 font_str, height, clr.r, clr.g, clr.b, text);
-        str = str_buf;
-    } else {
-        str = key;
-    }
+    // content fingerprint: everything that forces a re-raster;
+    // doubles as the auto-key when key is NULL
+    const char* font = G.layer->pencil.font;
+    Pico_Color clr = G.layer->pencil.color;
+    const char* font_str = font ? font : "null";
+    int buflen = strlen("/text/") + strlen(font_str) + 1
+        + 10 + 1 + 3+1+3+1+3 + 1 + strlen(text) + 1;
+    char* fp = alloca(buflen);
+    snprintf(fp, buflen, "/text/%s/%d/%d.%d.%d/%s",
+             font_str, height, clr.r, clr.g, clr.b, text);
+    const char* str = (key != NULL) ? key : fp;
 
     _pico_mem_alloc_text_t ctx = { height, text };
     Pico_Layer* ret = (Pico_Layer*) realm_put (
         G.realm, mode, strlen(str)+1, (const void**)&str,
+        strlen(fp)+1, fp,
         _pico_mem_free_layer, _pico_mem_alloc_layer_text, &ctx
     );
     pico_assert_key(ret, str);
@@ -217,7 +214,7 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             int v = src.x + (x * src.w / dst.w);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            pico_output_draw_text (
+            pico_output_draw_text_fix (
                 lbl,
                 (Pico_Rel_Rect) {
                     '!',
@@ -232,7 +229,7 @@ static void _show_grid (Pico_Layer* layer, Pico_Abs_Rect src, SDL_Rect dst) {
             int v = src.y + (y * src.h / dst.h);
             char lbl[8];
             snprintf(lbl, sizeof(lbl), "%d", v);
-            pico_output_draw_text (
+            pico_output_draw_text_fix (
                 lbl,
                 (Pico_Rel_Rect) {
                     '!',
@@ -401,7 +398,7 @@ const char* pico_layer_empty_mode (
     key = _key_unique(key, buf, sizeof(buf));
     _pico_mem_alloc_empty_t ctx = { up, clear, dim, tile };
     void* ret = realm_put (
-        G.realm, mode, strlen(key)+1, (const void**)&key,
+        G.realm, mode, strlen(key)+1, (const void**)&key, 0, NULL,
         _pico_mem_free_layer, _pico_mem_alloc_layer_empty, &ctx
     );
     pico_assert_key(ret, key);
@@ -442,7 +439,7 @@ const char* pico_layer_screenshot_mode (int mode, const char* up, const char* ke
     key = _key_unique(key, buf, sizeof(buf));
     _pico_mem_alloc_shot_t ctx = { src, rect };
     void* ret = realm_put (
-        G.realm, mode, strlen(key)+1, (const void**)&key,
+        G.realm, mode, strlen(key)+1, (const void**)&key, 0, NULL,
         _pico_mem_free_layer, _pico_mem_alloc_layer_shot, &ctx
     );
     pico_assert_key(ret, key);
@@ -476,7 +473,7 @@ const char* pico_layer_sub_mode (int mode, const char* up, const char* key,
 
     _pico_mem_alloc_sub_t ctx = { par, *crop };
     void* ret = realm_put (
-        G.realm, mode, strlen(key)+1, (const void**)&key,
+        G.realm, mode, strlen(key)+1, (const void**)&key, 0, NULL,
         _pico_mem_free_layer, _pico_mem_alloc_layer_sub, &ctx
     );
     pico_assert_key(ret, key);

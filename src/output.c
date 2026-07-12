@@ -185,9 +185,15 @@ void pico_output_draw_rect (Pico_Rel_Rect rect) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_text (const char* text, Pico_Rel_Rect rect) {
+void pico_output_draw_text_fix (const char* text, Pico_Rel_Rect rect) {
     _pico_guard();
     pico_output_draw_text_mode('=', NULL, text, rect);
+}
+
+void pico_output_draw_text_dyn (const char* key, const char* text, Pico_Rel_Rect rect) {
+    _pico_guard();
+    assert(key!=NULL && "layer key required");
+    pico_output_draw_text_mode('~', key, text, rect);
 }
 
 void pico_output_draw_text_mode (
@@ -308,7 +314,7 @@ static void _output_sound_cache (const char* path, int cache) {
     if (cache) {
         int n = strlen(path) + 1;
         mix = (Mix_Chunk*)realm_put(
-            G.realm, '=', n, (const void**)&path,
+            G.realm, '=', n, (const void**)&path, 0, NULL,
             _pico_mem_free_sound, _pico_mem_alloc_sound, (void*)path
         );
     } else {

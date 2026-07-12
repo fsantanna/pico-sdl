@@ -149,7 +149,7 @@ static Pico_Layer_Video* _layer_video (
     assert(path!=NULL && "video path required");
     const char* str = (key != NULL) ? key : path;
     Pico_Layer_Video* ret = (Pico_Layer_Video*) realm_put(
-        G.realm, mode, strlen(str)+1, (const void**)&str,
+        G.realm, mode, strlen(str)+1, (const void**)&str, 0, NULL,
         _pico_mem_free_layer, _alloc_layer_video, (void*)path
     );
     pico_assert_key(ret, str);

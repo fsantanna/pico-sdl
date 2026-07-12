@@ -242,13 +242,13 @@ Let's restart `pico-lua` for the next examples:
 
 ### 3.3. Text, Image and Pixmap
 
-To write text, we call `pico.output.draw.text`:
+To write text, we call `pico.output.draw.text.fix`:
 
 <table>
 <tr><td><pre>
-> pico.output.draw.text("Hello", {'!', x=50, y=33, h=30})
+> pico.output.draw.text.fix("Hello", {'!', x=50, y=33, h=30})
 > pico.set.pencil { font='DejaVuSans.ttf' }
-> pico.output.draw.text("Hello", {'!', x=50, y=66, h=30})
+> pico.output.draw.text.fix("Hello", {'!', x=50, y=66, h=30})
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-03-03-01.png" width="200">
@@ -900,7 +900,7 @@ releases them before the next begins, keeping memory bounded over time:
 > for i=1, 5 do
     pico.push()
     pico.output.clear()
-    pico.output.draw.text(i, {'%', x=0.5, y=0.5, h=0.7})
+    pico.output.draw.text.fix(i, {'%', x=0.5, y=0.5, h=0.7})
     pico.input.delay(500)
     pico.pop()  -- releases implicit allocated text layer
   end
