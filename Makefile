@@ -20,7 +20,7 @@ src/%.o: src/%.c $(wildcard src/*.h) $(wildcard src/*.hc)
 	gcc -Wall -Werror -g -fPIC -I src -c -o $@ $<
 
 realm:
-	curl -sL https://raw.githubusercontent.com/fsantanna/realm-allocator/v0.1/realm.h \
+	curl -sL https://raw.githubusercontent.com/fsantanna/realm-allocator/v0.2/realm.h \
 		-o src/realm.hc
 
 lua:

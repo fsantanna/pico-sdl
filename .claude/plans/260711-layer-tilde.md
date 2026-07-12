@@ -108,13 +108,12 @@ Steps done:
       identity; added to Makefile tests
 - [x] test: `lua/tst/text-dyn.lua` (visual via `pico.check`) —
       dyn hit/change/color, fix; added to lua Makefile
-- [ ] run: `make test T=text-dyn`; lua needs references first:
-      `cd lua && make gen T=text-dyn`, inspect, then tests
+- [x] run: both suites + `text-dyn` C and Lua — all pass
+      (2026-07-12)
       caveat: C color-change check asserts pointer inequality —
       could in theory false-fail on SDL pointer reuse
-- [ ] later: fp adopters — pixmap (pixel hash), image+key (path,
-      maybe mtime), sub (parent+crop bytes), empty (dim+tile);
-      screenshot N/A (content changes by nature)
+- fp adopters (pixmap/image/sub/empty) — WON'T DO (2026-07-12):
+  text was the motivating case; others adopt on demand
 - [x] verify: `make tests` + `cd lua && make tests` — all pass
       (2026-07-12, after realm hardening + goto unwind)
 
@@ -142,9 +141,12 @@ counter; pico keeps the `/unique/N` string FORMAT:
 - rejected: raw int `n` as key — layer names round-trip through
   the public API as C strings (`strlen`-based lookups, Lua)
 - note: `pico_unique()` now requires `pico_init` (uses `G.realm`)
-- note: `realm.hc` is vendored from `fsantanna/realm-allocator`
-  v0.1 (`make realm` overwrites!) — upstream `realm_unique` (and
-  future `eq`), then bump the pin
+- [x] upstreamed: `realm-allocator` main == local `realm.hc`
+      (verified 2026-07-12, modulo header-guard name)
+- [x] `make realm` pin bumped v0.1 → v0.2 (`Makefile:23`)
+- [ ] cut the v0.2 tag upstream (only v0.1 exists as of
+      2026-07-12): `git tag v0.2 && git push --tags` in
+      realm-allocator — until then `make realm` 404s
 - [x] Makefile: `src/%.o` deps now include `src/*.hc`
 - [x] verify: `make tests` — all pass (2026-07-11)
 
@@ -181,7 +183,13 @@ remains accumulating — the `fix` name warns about it).
 - [x] does color live in pencil at creation only? (yes: baked at
       raster time) — compare must use the CURRENT pencil color
       vs the stored one (folded into Task 1 eq impl)
-- [ ] `dim` resolution for detached text layers: confirm `'%'`
-      `h` resolves against window when `up` is absent
-- [ ] `draw.layer(key, rect)` with `rect.w=0`: confirm it infers
-      native width like `draw.text` does (FrescoGO relies on it)
+- [x] `dim` resolution for detached text layers: `'%'` with no
+      base resolves against the CURRENT layer (`geom.c:381`,
+      `G.layer->scene.dim`) — window only when current layer is
+      the window. verified 2026-07-12
+- [x] `draw.layer(key, rect)` with `rect.w=0`: works —
+      `_pico_layer_output` passes the layer's native dim as
+      aspect ratio (`layer.c:254`, `_f_rat`): `w=0` → from `h`
+      by native aspect; `w=h=0` → full native. not buggy;
+      recorded here as a FrescoGO consumer prerequisite.
+      verified 2026-07-12
