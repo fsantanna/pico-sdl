@@ -17,7 +17,7 @@ do
     for i = 1, 12 do
         local h = 5 * i
         local r = {'!', x=5, y=y, w=0, h=h, anchor='NW'}
-        pico.output.draw.text("Hello World!", r)
+        pico.output.draw.text.fix("Hello World!", r)
         y = y + h + 4
     end
     pico.check("text-sizes-01")
@@ -40,8 +40,8 @@ do
 
         -- texts (white)
         pico.set.pencil { color='white', style='fill' }
-        pico.output.draw.text(s, r1)
-        pico.output.draw.text(s, r2)
+        pico.output.draw.text.fix(s, r1)
+        pico.output.draw.text.fix(s, r2)
 
         -- enclosing boxes (red stroke), sized to the measured text
         pico.set.pencil { color='red', style='stroke' }
@@ -82,7 +82,7 @@ do
 
             -- revealed text (white)
             pico.set.pencil { color='white', style='fill' }
-            pico.output.draw.text(s, {'!', x=ax[a], y=ay[a], w=0, h=h, anchor=an[a]})
+            pico.output.draw.text.fix(s, {'!', x=ax[a], y=ay[a], w=0, h=h, anchor=an[a]})
 
             -- measured box (red stroke)
             pico.set.pencil { color='red', style='stroke' }
@@ -112,12 +112,12 @@ do
 
     -- short prefix (no descender) in RED
     pico.set.pencil { color='red', style='fill' }
-    pico.output.draw.text(msg:sub(1, 16), {'%', x=0.15, y=0.60, w=0, h=0.025, anchor='W'})
+    pico.output.draw.text.fix(msg:sub(1, 16), {'%', x=0.15, y=0.60, w=0, h=0.025, anchor='W'})
     pico.check("text-sizes-08")
 
     -- full string ('g'/'y' descenders) in CYAN, same anchor
     pico.set.pencil { color='cyan', style='fill' }
-    pico.output.draw.text(msg, {'%', x=0.15, y=0.60, w=0, h=0.025, anchor='W'})
+    pico.output.draw.text.fix(msg, {'%', x=0.15, y=0.60, w=0, h=0.025, anchor='W'})
     pico.check("text-sizes-09")
 end
 

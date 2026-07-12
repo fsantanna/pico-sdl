@@ -29,7 +29,7 @@ do
     for a = 255, 1, -5 do
         pico.output.clear()
         pico.set.pencil { color=pico.color.alpha('red', a) }
-        pico.output.draw.text("SOME TEXT", r)
+        pico.output.draw.text.fix("SOME TEXT", r)
         pico.input.delay(10)
         if a == 120 then
             pico.check("blend_raw-02")

@@ -19,7 +19,7 @@ int main (void) {
         for (int i = 1; i <= 12; i++) {
             int h = 5 * i;
             Pico_Rel_Rect r = { '!', {5, y, 0, h}, PICO_ANCHOR_NW };
-            pico_output_draw_text("Hello World!", r);
+            pico_output_draw_text_fix("Hello World!", r);
             y += h + 4;
         }
         _pico_check("text-sizes-01");
@@ -45,8 +45,8 @@ int main (void) {
 
             // texts (white)
             pico_set_pencil_color((Pico_Color){255, 255, 255, 0xFF});
-            pico_output_draw_text(buf, r1);
-            pico_output_draw_text(buf, r2);
+            pico_output_draw_text_fix(buf, r1);
+            pico_output_draw_text_fix(buf, r2);
 
             // enclosing boxes (red stroke), sized to the measured text
             pico_set_pencil_color((Pico_Color){255, 0, 0, 0xFF});
@@ -96,7 +96,7 @@ int main (void) {
 
                 // revealed text (white)
                 pico_set_pencil_color((Pico_Color){255, 255, 255, 0xFF});
-                pico_output_draw_text(buf, (Pico_Rel_Rect){ '!', {ax[a], ay[a], 0, h}, an[a] });
+                pico_output_draw_text_fix(buf, (Pico_Rel_Rect){ '!', {ax[a], ay[a], 0, h}, an[a] });
 
                 // measured box (red stroke)
                 Pico_Rel_Dim m = { '!', {0, h} };
@@ -134,7 +134,7 @@ int main (void) {
         pico_set_pencil_color((Pico_Color){255, 0, 0, 0xFF});
         memcpy(buf, msg, 128);
         buf[16] = '\0';
-        pico_output_draw_text(buf, r);
+        pico_output_draw_text_fix(buf, r);
 
         _pico_check("text-sizes-08");
 
@@ -142,7 +142,7 @@ int main (void) {
         pico_set_pencil_color((Pico_Color){0, 255, 255, 0xFF});
         memcpy(buf, msg, 128);
         buf[strlen(msg)+1] = '\0';
-        pico_output_draw_text(buf, r);
+        pico_output_draw_text_fix(buf, r);
 
         _pico_check("text-sizes-09");
     }

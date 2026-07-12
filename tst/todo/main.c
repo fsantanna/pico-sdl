@@ -75,7 +75,7 @@ int main (void) {
     {
         Pico_Abs_Dim dim = pico_get_text(&(Pico_Rel_Dim){ '!', {0, 20} }, "Hello!");
         Pico_Rel_Rect r = { '!', {50-dim.w/2, 50-5, 0, 20}, PICO_ANCHOR_NW };
-        pico_output_draw_text("Hello!", r);
+        pico_output_draw_text_fix("Hello!", r);
         pico_input_delay(2000);
     }
 
@@ -128,7 +128,7 @@ int main (void) {
         pico_set_pencil_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_pencil_color((Pico_Color){0xFF,0x00,0x00, 0xFF});
-        pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
+        pico_output_draw_text_fix(pico_pos((Pico_Pct){25,75}), "X");
         pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
         pico_input_delay(250);
     }
@@ -142,7 +142,7 @@ int main (void) {
         pico_set_pencil_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
         pico_output_draw_rect((Pico_Rect){ct.x,ct.y,10,10});
         pico_set_pencil_color((Pico_Color){0xFF,0x00,0x00, 0xFF});
-        pico_output_draw_text(pico_pos((Pico_Pct){25,75}), "X");
+        pico_output_draw_text_fix(pico_pos((Pico_Pct){25,75}), "X");
         pico_output_draw_line(ct, pico_pos((Pico_Pct){100,0}));
         pico_input_delay(250);
     }
@@ -154,7 +154,7 @@ int main (void) {
     for (int i=0; i<20; i++) {
         pico_set_scroll((Pico_Pos){10-i,10-i});
         pico_output_clear();
-        pico_output_draw_text(pt, "Uma frase bem grande...");
+        pico_output_draw_text_fix(pt, "Uma frase bem grande...");
         pico_input_delay(250);
     }
 #endif

@@ -68,7 +68,7 @@ int main (void) {
     for (int i=0; i<50; i++) {
         pico_set_scene_src((Pico_Rel_Rect){ '!', {i, i, 100, 100}, PICO_ANCHOR_NW });
         pico_output_clear();
-        pico_output_draw_text("Uma frase bem grande...",
+        pico_output_draw_text_fix("Uma frase bem grande...",
             (Pico_Rel_Rect){ '!', {10, 50, 0, 10}, PICO_ANCHOR_NW });
         pico_input_delay(10);
         //pico_input_event(NULL, PICO_EVENT_KEY_DN);

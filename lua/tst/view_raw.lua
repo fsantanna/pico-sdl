@@ -60,7 +60,7 @@ for i = 0, 49 do
         source = {'!', x=i, y=i, w=100, h=100, anchor='NW'}
     }
     pico.output.clear()
-    pico.output.draw.text("Uma frase bem grande...", {'!', x=10, y=50, w=0, h=10, anchor='NW'})
+    pico.output.draw.text.fix("Uma frase bem grande...", {'!', x=10, y=50, w=0, h=10, anchor='NW'})
     pico.input.delay(10)
     if i == 0 then
         pico.check("view_raw-03")

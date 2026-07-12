@@ -83,7 +83,7 @@ while true do
         frame, total - 1, speed,
         paused and "  [PAUSED]" or "")
     pico.set.pencil { color='white' }
-    pico.output.draw.text(label,
+    pico.output.draw.text.fix(label,
         {'!', x=2, y=win_h - BAR_H,
               w=0, h=BAR_H, anchor='NW'})
 

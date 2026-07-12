@@ -44,7 +44,7 @@ int main (void) {
             pico_output_clear();
             pico_set_pencil_color((Pico_Color){255,0,0,a});
             pico_output_draw_rect(z);
-            pico_output_draw_text("SOME TEXT", r);
+            pico_output_draw_text_fix("SOME TEXT", r);
             pico_input_delay(10);
             if (a == 120) {
                 _pico_check("blend_pct-03");

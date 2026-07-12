@@ -123,12 +123,12 @@ do
     print("TEXT")
     pico.set.rotate(0)
     pico.output.clear()
-    pico.output.draw.text(pt, "HEY")
+    pico.output.draw.text.fix(pt, "HEY")
     pico.input.delay(500)
     for i=1, 72 do
         pico.set.rotate(pico.get.rotate() + 5)
         pico.output.clear()
-        pico.output.draw.text(pt, "HEY")
+        pico.output.draw.text.fix(pt, "HEY")
         pico.input.delay(50)
     end
     pico.input.delay(500)

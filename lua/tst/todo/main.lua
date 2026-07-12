@@ -52,7 +52,7 @@ print "shows oval -> pixel -> rect"
 pico.input.delay(2000)
 
 -- DRAW_TEXT
-pico.output.draw.text(pt, "Hello!")
+pico.output.draw.text.fix(pt, "Hello!")
 
 print "shows centered \"Hello!\" (on top of shapes)"
 pico.input.delay(2000)
@@ -117,7 +117,7 @@ for i=1, 20 do
     pico.set.pencil { color={r=0xFF,g=0xFF,b=0xFF,a=0xFF} }
     pico.output.draw.rect { x=ct.x, y=ct.y, w=10, h=10 }
     pico.set.pencil { color={r=0xFF,g=0x00,b=0x00,a=0xFF} }
-    pico.output.draw.text(pico.pos{x=25,y=75}, "X")
+    pico.output.draw.text.fix(pico.pos{x=25,y=75}, "X")
     pico.output.draw.line(ct, pico.pos{x=100,y=0})
     pico.input.delay(250)
 end
@@ -131,7 +131,7 @@ for i=1, 20 do
     pico.set.pencil { color={r=0xFF,g=0xFF,b=0xFF,a=0xFF} }
     pico.output.draw.rect { x=ct.x, y=ct.y, w=10, h=10 }
     pico.set.pencil { color={r=0xFF,g=0x00,b=0x00,a=0xFF} }
-    pico.output.draw.text(pico.pos{x=25,y=75}, "X")
+    pico.output.draw.text.fix(pico.pos{x=25,y=75}, "X")
     pico.output.draw.line(ct, pico.pos{x=100,y=0})
     pico.input.delay(250)
 end
@@ -143,7 +143,7 @@ print("scrolls right/down")
 for i=0, 19 do
     pico.set.scroll { x=10-i, y=10-i }
     pico.output.clear()
-    pico.output.draw.text(pt, "Uma frase bem grande...")
+    pico.output.draw.text.fix(pt, "Uma frase bem grande...")
     pico.input.delay(250)
 end
 

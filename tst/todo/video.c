@@ -110,7 +110,7 @@ int main (void) {
             pico_set_pencil_color(
                 (Pico_Color){0xFF, 0xFF, 0xFF, 0xFF}
             );
-            pico_output_draw_text(
+            pico_output_draw_text_fix(
                 label,
                 (Pico_Rel_Rect){
                     '!',

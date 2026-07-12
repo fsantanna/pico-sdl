@@ -12,11 +12,11 @@ pico.output.draw.rect { '%', x=0.7,  y=0.6,  w=0.25, h=0.15 }   -- T1
 pico.output.draw.rect { '%', x=0.7,  y=0.8,  w=0.25, h=0.15 }   -- T2
 
 pico.set.pencil { color='white', style='fill' }
-pico.output.draw.text('R',  {'%', x=0.1,  y=0.99, h=0.2,  anchor='SW'})
-pico.output.draw.text('P',  {'%', x=0.94, y=0.9,  h=0.12, anchor='SE'})
-pico.output.draw.text('I',  {'%', x=0.25, y=0.25, h=0.15, anchor='C' })
-pico.output.draw.text('T1', {'%', x=0.7,  y=0.6,  h=0.1,  anchor='C' })
-pico.output.draw.text('T2', {'%', x=0.7,  y=0.8,  h=0.1,  anchor='C' })
+pico.output.draw.text.fix('R',  {'%', x=0.1,  y=0.99, h=0.2,  anchor='SW'})
+pico.output.draw.text.fix('P',  {'%', x=0.94, y=0.9,  h=0.12, anchor='SE'})
+pico.output.draw.text.fix('I',  {'%', x=0.25, y=0.25, h=0.15, anchor='C' })
+pico.output.draw.text.fix('T1', {'%', x=0.7,  y=0.6,  h=0.1,  anchor='C' })
+pico.output.draw.text.fix('T2', {'%', x=0.7,  y=0.8,  h=0.1,  anchor='C' })
 
 pico.check("guide-07-04-01")
 

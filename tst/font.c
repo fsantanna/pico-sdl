@@ -31,12 +31,12 @@ int main (void) {
 
     {
         Pico_Rel_Rect r = { '!', {10,10, 0,10}, PICO_ANCHOR_NW };
-        pico_output_draw_text("hg - gh", r);
+        pico_output_draw_text_fix("hg - gh", r);
         _pico_check("font-01");
     }
     {
         Pico_Rel_Rect r = { '%', {0.5,0.5, 0,0.2}, PICO_ANCHOR_C };
-        pico_output_draw_text("hg - gh", r);
+        pico_output_draw_text_fix("hg - gh", r);
         _pico_check("font-02");
     }
 
@@ -46,12 +46,12 @@ int main (void) {
     pico_set_pencil_font("../res/DejaVuSans.ttf");
     {
         Pico_Rel_Rect r = { '!', {10,10, 0,10}, PICO_ANCHOR_NW };
-        pico_output_draw_text("hg - gh", r);
+        pico_output_draw_text_fix("hg - gh", r);
         _pico_check("font-03");
     }
     {
         Pico_Rel_Rect r = { '%', {0.5,0.5, 0,0.2}, PICO_ANCHOR_C };
-        pico_output_draw_text("hg - gh", r);
+        pico_output_draw_text_fix("hg - gh", r);
         _pico_check("font-04");
     }
 

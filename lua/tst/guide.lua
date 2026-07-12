@@ -82,9 +82,9 @@ pico.check("guide-02-01-01")
 
 -- §3.3.a: two texts, second uses DejaVu
 pico.set.window { title="guide-03-03-01" }
-pico.output.draw.text("Hello", {'!', x=50, y=33, h=30})
+pico.output.draw.text.fix("Hello", {'!', x=50, y=33, h=30})
 pico.set.pencil { font='../../res/DejaVuSans.ttf' }
-pico.output.draw.text("Hello", {'!', x=50, y=66, h=30})
+pico.output.draw.text.fix("Hello", {'!', x=50, y=66, h=30})
 pico.check("guide-03-03-01")
 
 -- §3.3.b: image (clear + draw)
@@ -321,7 +321,7 @@ pico.set.window { title="guide-07-05-01" }
 for i=1, 5 do
     pico.push()
     pico.output.clear()
-    pico.output.draw.text(i, {'%', x=0.5, y=0.5, h=0.7})
+    pico.output.draw.text.fix(i, {'%', x=0.5, y=0.5, h=0.7})
     if i==3 then pico.check("guide-07-05-01") end
     pico.pop()
 end
