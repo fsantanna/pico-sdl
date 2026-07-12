@@ -86,7 +86,9 @@ void _pico_mem_free_layer (int n, const void* key, void* value) {
     Pico_Layer* data = (Pico_Layer*)value;
     // '~' replace: realm still has us (entry unlinked only on leave /
     // close). Refuse to replace a parent — the new layer would silently
-    // orphan the children's subtree.
+    // orphan the children's subtree. Note: equal-fingerprint '~' hits
+    // return before free/alloc, so an unchanged parent is redrawn
+    // freely; only a REAL content change on a parent asserts here.
     if (realm_get(G.realm, n, key) == data) {
         assert(data->hier.dn.fst == NULL
             && "cannot '~' replace a layer with children");

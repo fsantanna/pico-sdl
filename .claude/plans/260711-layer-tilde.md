@@ -101,8 +101,9 @@ Steps done:
       `lua/doc/guide.md`, `layer.c` internal calls → `fix`
 - [x] compiles clean (`-Wall -Werror`: pico.c layer.c output.c,
       lua/pico.c syntax)
-- [ ] caveat from `mem.c:92`: `'~'` replace asserts no children;
-      the fp-hit path sidesteps the assert (good — document)
+- [x] caveat from `mem.c:92`: `'~'` replace asserts no children;
+      fp-hit path sidesteps it — documented in the
+      `_pico_mem_free_layer` comment (2026-07-12)
 - [x] test: `tst/text-dyn.c` (white-box via `_pico.h`) — dyn
       hit/miss by text and color, layer `'~'` API, fix auto-key
       identity; added to Makefile tests
