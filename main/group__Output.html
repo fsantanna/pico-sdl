@@ -114,11 +114,14 @@ Functions</h2></td></tr>
 <tr class="memitem:ga0f6f3a91beb5e90578165cdf2a609eb4" id="r_ga0f6f3a91beb5e90578165cdf2a609eb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga0f6f3a91beb5e90578165cdf2a609eb4">pico_output_draw_poly</a> (int n, const <a class="el" href="structPico__Rel__Pos.html">Pico_Rel_Pos</a> *ps)</td></tr>
 <tr class="memdesc:ga0f6f3a91beb5e90578165cdf2a609eb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a polygon.  <br /></td></tr>
 <tr class="separator:ga0f6f3a91beb5e90578165cdf2a609eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0f4b5e8c1b56adb253816b4be532ca4c" id="r_ga0f4b5e8c1b56adb253816b4be532ca4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga0f4b5e8c1b56adb253816b4be532ca4c">pico_output_draw_text</a> (const char *text, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> rect)</td></tr>
-<tr class="memdesc:ga0f4b5e8c1b56adb253816b4be532ca4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws text (shared caching by text content).  <br /></td></tr>
-<tr class="separator:ga0f4b5e8c1b56adb253816b4be532ca4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac602f6691deb0ccb4075f658ae5320a2" id="r_gac602f6691deb0ccb4075f658ae5320a2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#gac602f6691deb0ccb4075f658ae5320a2">pico_output_draw_text_fix</a> (const char *text, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> rect)</td></tr>
+<tr class="memdesc:gac602f6691deb0ccb4075f658ae5320a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws fixed text (shared caching by text content). Each distinct (font, height, color, text) is rasterized once and cached for the enclosing scope. Do NOT use for varying text (clock, counters): every distinct string accumulates a texture — use pico_output_draw_text_dyn instead.  <br /></td></tr>
+<tr class="separator:gac602f6691deb0ccb4075f658ae5320a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaca4398ad2d50723c491af2c888f4057e" id="r_gaca4398ad2d50723c491af2c888f4057e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#gaca4398ad2d50723c491af2c888f4057e">pico_output_draw_text_dyn</a> (const char *key, const char *text, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> rect)</td></tr>
+<tr class="memdesc:gaca4398ad2d50723c491af2c888f4057e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws dynamic text under a caller key. Re-rasterizes only when (font, height, color, text) changes; unchanged calls are cache hits. Keeps a single texture per key regardless of how often the text varies.  <br /></td></tr>
+<tr class="separator:gaca4398ad2d50723c491af2c888f4057e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae63ef3a3b798234375b8d437f87f8a27" id="r_gae63ef3a3b798234375b8d437f87f8a27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#gae63ef3a3b798234375b8d437f87f8a27">pico_output_draw_text_mode</a> (int mode, const char *key, const char *text, <a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a> rect)</td></tr>
-<tr class="memdesc:gae63ef3a3b798234375b8d437f87f8a27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws text with explicit realm mode and layer key.  <br /></td></tr>
+<tr class="memdesc:gae63ef3a3b798234375b8d437f87f8a27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws text with explicit realm mode and layer key. Underlies pico_output_draw_text_fix ('=', NULL) and pico_output_draw_text_dyn ('~', key).  <br /></td></tr>
 <tr class="separator:gae63ef3a3b798234375b8d437f87f8a27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga79ddb7f830b35883b3dcfe62dad5478f" id="r_ga79ddb7f830b35883b3dcfe62dad5478f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Output.html#ga79ddb7f830b35883b3dcfe62dad5478f">pico_output_present</a> (int layers)</td></tr>
 <tr class="memdesc:ga79ddb7f830b35883b3dcfe62dad5478f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows what has been drawn onto the screen. Only does anything on expert mode.  <br /></td></tr>
@@ -497,14 +500,58 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga0f4b5e8c1b56adb253816b4be532ca4c" name="ga0f4b5e8c1b56adb253816b4be532ca4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga0f4b5e8c1b56adb253816b4be532ca4c">&#9670;&#160;</a></span>pico_output_draw_text()</h2>
+<a id="gaca4398ad2d50723c491af2c888f4057e" name="gaca4398ad2d50723c491af2c888f4057e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaca4398ad2d50723c491af2c888f4057e">&#9670;&#160;</a></span>pico_output_draw_text_dyn()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void pico_output_draw_text </td>
+          <td class="memname">void pico_output_draw_text_dyn </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structPico__Rel__Rect.html">Pico_Rel_Rect</a>&#160;</td>
+          <td class="paramname"><em>rect</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draws dynamic text under a caller key. Re-rasterizes only when (font, height, color, text) changes; unchanged calls are cache hits. Keeps a single texture per key regardless of how often the text varies. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>layer key (required) </td></tr>
+    <tr><td class="paramname">text</td><td>text to draw </td></tr>
+    <tr><td class="paramname">rect</td><td>drawing rectangle (mode determines coordinates) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gac602f6691deb0ccb4075f658ae5320a2" name="gac602f6691deb0ccb4075f658ae5320a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac602f6691deb0ccb4075f658ae5320a2">&#9670;&#160;</a></span>pico_output_draw_text_fix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pico_output_draw_text_fix </td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>text</em>, </td>
@@ -523,7 +570,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Draws text (shared caching by text content). </p>
+<p>Draws fixed text (shared caching by text content). Each distinct (font, height, color, text) is rasterized once and cached for the enclosing scope. Do NOT use for varying text (clock, counters): every distinct string accumulates a texture — use pico_output_draw_text_dyn instead. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">text</td><td>text to draw </td></tr>
@@ -572,10 +619,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Draws text with explicit realm mode and layer key. </p>
+<p>Draws text with explicit realm mode and layer key. Underlies pico_output_draw_text_fix ('=', NULL) and pico_output_draw_text_dyn ('~', key). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mode</td><td>realm mode ('!' exclusive, '=' shared, '~' replace) </td></tr>
+    <tr><td class="paramname">mode</td><td>realm mode ('!' exclusive, '=' shared, '~' replace-if-changed) </td></tr>
     <tr><td class="paramname">key</td><td>layer key </td></tr>
     <tr><td class="paramname">text</td><td>text to draw </td></tr>
     <tr><td class="paramname">rect</td><td>drawing rectangle (mode determines coordinates) </td></tr>
