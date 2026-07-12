@@ -103,12 +103,20 @@ Steps done:
       lua/pico.c syntax)
 - [ ] caveat from `mem.c:92`: `'~'` replace asserts no children;
       the fp-hit path sidesteps the assert (good — document)
-- [ ] test: `tst/` case calling text `'~'` twice with
-      same/different text asserting texture identity/change
+- [x] test: `tst/text-dyn.c` (white-box via `_pico.h`) — dyn
+      hit/miss by text and color, layer `'~'` API, fix auto-key
+      identity; added to Makefile tests
+- [x] test: `lua/tst/text-dyn.lua` (visual via `pico.check`) —
+      dyn hit/change/color, fix; added to lua Makefile
+- [ ] run: `make test T=text-dyn`; lua needs references first:
+      `cd lua && make gen T=text-dyn`, inspect, then tests
+      caveat: C color-change check asserts pointer inequality —
+      could in theory false-fail on SDL pointer reuse
 - [ ] later: fp adopters — pixmap (pixel hash), image+key (path,
       maybe mtime), sub (parent+crop bytes), empty (dim+tile);
       screenshot N/A (content changes by nature)
-- [ ] verify: `make tests` + `cd lua && make tests` (user runs)
+- [x] verify: `make tests` + `cd lua && make tests` — all pass
+      (2026-07-12, after realm hardening + goto unwind)
 
 ## Task 2: ~~LRU sweep for `'='` auto-keys~~ — WON'T DO
 
