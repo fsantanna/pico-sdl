@@ -16,7 +16,7 @@ lib: src/libpico-sdl.a
 src/libpico-sdl.a: $(OBJS)
 	ar rcs $@ $^
 
-src/%.o: src/%.c $(wildcard src/*.h)
+src/%.o: src/%.c $(wildcard src/*.h) $(wildcard src/*.hc)
 	gcc -Wall -Werror -g -fPIC -I src -c -o $@ $<
 
 realm:
