@@ -45,56 +45,87 @@ Make the naive patterns cheap and leak-free:
 - (optional, separate) plain `draw.text` of varying strings does
   not accumulate textures forever.
 
-## Task 1: content-compare on `'~'` text layers
+## Task 1: realm `eq` callback (decided design)
 
-In `_pico_layer_text` (`layer.c:104`), before the `realm_put`:
+Content-awareness lives in the REALM, not in `layer.c`, via an
+optional equality callback passed to `realm_put`:
 
-- `realm_get` the key; if a layer exists AND it is a TEXT layer
-  AND its `(text, height, font, color)` match the request,
-  return it untouched (no alloc, no free).
-- Otherwise fall through to the current `'~'` replace.
+```c
+typedef int (*realm_eq)(int n, const void* key, void* value, void* ctx);
+```
 
-Requires the text layer to remember its inputs:
+Semantics per mode when the key exists:
 
+| mode  | eq given, equal | eq given, differs      | eq NULL        |
+|-------|-----------------|------------------------|----------------|
+| `'~'` | return existing | replace (today)        | replace (today)|
+| `'='` | return existing | **assert fail**        | return (today) |
+| `'!'` | return NULL     | return NULL            | return NULL    |
+
+- `'~'` becomes "replace unless equal": unchanged text is a
+  cache hit — no alloc, no free, no raster.
+- `'='` with `eq` asserts content matches — turns today's
+  silent stale hit (e.g. `draw_pixmap` new pixels on existing
+  key, `output.c:138`) into a caught bug pointing to `'~'`.
+- Rejected alternatives: compare in `layer.c` before `realm_put`
+  (2 lookups, duplicated per call site); realm-stored flat
+  fingerprint bytes (no callback, but forces flat identity).
+
+Steps:
+
+- [ ] `realm.hc`: add `realm_eq eq` param to `realm_put`;
+      consult it in `'~'` (keep-if-equal) and `'='` (assert)
+      key-exists branches
+- [ ] update all `realm_put` call sites (~11) to pass `NULL`
 - [ ] extend `Pico_Layer` (text variant) to store `text` copy,
       `height`, `font` path copy, `color`
-      (some may already be derivable; check `scene.dim` vs
-      `height`)
+      (color baked at raster time — compare vs CURRENT pencil)
 - [ ] free the stored copies in `_pico_mem_free_layer`
-- [ ] compare in `_pico_layer_text` for mode `'~'` only
-      (`'='` auto-key already embeds content in the key;
-      `'!'` semantics unchanged)
+- [ ] `_pico_layer_text`: pass an `eq` impl comparing stored
+      `(text, height, font, color)` vs request + current pencil
 - [ ] caveat from `mem.c:92`: `'~'` replace asserts no children;
-      the compare-hit path sidesteps the assert (good — document)
+      the eq-hit path sidesteps the assert (good — document)
+- [ ] later: `eq` impls for pixmap (pixels) and image (path)
 - [ ] test: `tst/` case calling `layer.text ['~']` twice with
       same/different text and asserting texture identity/change
       (e.g. via `pico.get` on the layer or a counter hook)
 
-## Task 2 (optional/follow-up): LRU sweep for `'='` auto-keys
+## Task 2: ~~LRU sweep for `'='` auto-keys~~ — WON'T DO
 
-Fixes unkeyed varying `draw.text` without API change:
+No GC in the realm — decided 2026-07-11.
+Varying text must use an explicit key + `'~'` (Task 1 makes it
+cheap). Plain `draw.text` of varying strings keeps accumulating;
+document the pattern in `api.md` instead.
 
-- [ ] stamp realm entries with `gen = G.frame` on every `'='`
-      hit of a `/text/`-prefixed key
-- [ ] `pico_output_present` increments `G.frame`; periodically
-      (e.g. 1x/s) sweep `/text/` entries with `gen` older than
-      K frames
-- [ ] never touch user-named layers (explicit `key` outside the
-      reserved `/text/` namespace)
-- [ ] texts drawn every frame stay cached (zero re-raster);
-      intermittent texts (blink) re-raster on reappearing —
-      acceptable
+## Task 3: realm owns unique COUNTER (refactor) — DONE
 
-Note: auto push/pop per frame is NOT an alternative — it would
-re-rasterize everything every frame and destroy user layers.
+Final design (revised 2026-07-11): realm must assume NOTHING
+about keys (generic `(n, bytes)` store), so it owns only the
+counter; pico keeps the `/unique/N` string FORMAT:
+
+- [x] `realm_t.unique` field + `realm_unique(r)` in `realm.hc`
+- [x] `pico_unique()` delegates to `realm_unique(G.realm)` —
+      single source, no `/unique/N` collisions
+- [x] `_key_unique` stays in `layer.c` (string format is pico's
+      convention, not realm's)
+- rejected: `realm_put` generating on `*key==NULL` — implemented
+  then reverted; it leaked string assumptions (`snprintf`,
+  `strlen`, namespace) into the generic realm
+- rejected: raw int `n` as key — layer names round-trip through
+  the public API as C strings (`strlen`-based lookups, Lua)
+- note: `pico_unique()` now requires `pico_init` (uses `G.realm`)
+- [ ] verify: `make tests` (user runs)
 
 ## API surface
 
-No signature changes. Behavior change only:
+Public pico API: no signature changes.
+Internal: `realm_put` gains the `eq` param (realm.hc is
+internal). Behavior change only:
 
 - `'~'` with equal content returns the existing layer
   (observable via texture pointer identity; document in api.md
   under `pico.layer.text`).
+- `'='` with `eq` given asserts content equality.
 
 ## Consumer (FrescoGO) after this lands
 
@@ -105,14 +136,15 @@ pico.layer.text [mode='~', key="/mmss", dim=['%', h=rs.mmss.h], text=mmss]
 pico.output.draw.layer("/mmss", rs.mmss)
 ```
 
-no app-side change-cache needed; with Task 2, even plain
-`draw.text` becomes safe for varying strings.
+no app-side change-cache needed (Task 2 dropped: plain
+`draw.text` of varying strings remains accumulating — use the
+keyed `'~'` pattern above).
 
 ## Pending / open
 
-- [ ] does color live in pencil at creation only? (yes: baked at
+- [x] does color live in pencil at creation only? (yes: baked at
       raster time) — compare must use the CURRENT pencil color
-      vs the stored one
+      vs the stored one (folded into Task 1 eq impl)
 - [ ] `dim` resolution for detached text layers: confirm `'%'`
       `h` resolves against window when `up` is absent
 - [ ] `draw.layer(key, rect)` with `rect.w=0`: confirm it infers

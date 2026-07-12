@@ -342,8 +342,7 @@ void _pico_layer_output (
 ///////////////////////////////////////////////////////////////////////////////
 
 int pico_unique (void) {
-    static int id = 0;
-    return ++id;
+    return realm_unique(G.realm);
 }
 
 // Auto-generates a unique key "/unique/N" into buf when key is NULL.

@@ -25,15 +25,17 @@ typedef struct {
     int            n;
     realm_entry**  entries;
     int            depth;
+    int            unique;
 } realm_t;
 
-realm_t* realm_open  (int n);
-void     realm_close (realm_t* r);
-void     realm_enter (realm_t* r);
-void     realm_leave (realm_t* r);
-void*    realm_put   (realm_t* r, int mode, int n, const void** key,
-                      realm_free_t free, realm_alloc_t alloc, void* ctx);
-void*    realm_get   (realm_t* r, int n, const void* key);
+realm_t* realm_open   (int n);
+void     realm_close  (realm_t* r);
+void     realm_enter  (realm_t* r);
+void     realm_leave  (realm_t* r);
+void*    realm_put    (realm_t* r, int mode, int n, const void** key,
+                       realm_free_t free, realm_alloc_t alloc, void* ctx);
+void*    realm_get    (realm_t* r, int n, const void* key);
+int      realm_unique (realm_t* r);
 
 #endif
 
@@ -87,6 +89,7 @@ realm_t* realm_open (int n) {
     }
     r->n = n;
     r->depth = 0;
+    r->unique = 0;
     return r;
 }
 
@@ -117,6 +120,10 @@ void realm_leave (realm_t* r) {
             }
         }
     }
+}
+
+int realm_unique (realm_t* r) {
+    return ++r->unique;
 }
 
 void* realm_put (realm_t* r, int mode, int n, const void** key,
