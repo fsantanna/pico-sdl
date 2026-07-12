@@ -145,9 +145,8 @@ counter; pico keeps the `/unique/N` string FORMAT:
 - [x] upstreamed: `realm-allocator` main == local `realm.hc`
       (verified 2026-07-12, modulo header-guard name)
 - [x] `make realm` pin bumped v0.1 → v0.2 (`Makefile:23`)
-- [ ] cut the v0.2 tag upstream (only v0.1 exists as of
-      2026-07-12): `git tag v0.2 && git push --tags` in
-      realm-allocator — until then `make realm` 404s
+- [x] v0.2 tag cut upstream; verified `make realm` v0.2 ==
+      local `realm.hc` (modulo header guard) — 2026-07-12
 - [x] Makefile: `src/%.o` deps now include `src/*.hc`
 - [x] verify: `make tests` — all pass (2026-07-11)
 
