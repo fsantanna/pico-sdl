@@ -348,7 +348,9 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
 void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect);
 
 /// @brief Draws a rectangle.
-/// @param rect rectangle to draw (mode determines coordinates)
+/// @param rect rectangle to draw (mode determines coordinates);
+///        omitting w or h (0) copies the other dimension in
+///        absolute pixels, drawing a square
 void pico_output_draw_rect (Pico_Rel_Rect rect);
 
 /// @brief Draws a triangle.
@@ -358,7 +360,9 @@ void pico_output_draw_rect (Pico_Rel_Rect rect);
 void pico_output_draw_tri (Pico_Rel_Pos p1, Pico_Rel_Pos p2, Pico_Rel_Pos p3);
 
 /// @brief Draws an ellipse.
-/// @param rect bounding rectangle (mode determines coordinates)
+/// @param rect bounding rectangle (mode determines coordinates);
+///        omitting w or h (0) copies the other dimension in
+///        absolute pixels, drawing a circle
 void pico_output_draw_oval (Pico_Rel_Rect rect);
 
 /// @brief Draws a polygon.

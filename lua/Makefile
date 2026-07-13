@@ -74,6 +74,7 @@ tests: pico_native.so
 	$(TST) tst/pos.lua
 	$(TST) tst/quit.lua
 	$(TST) tst/rect.lua
+	$(TST) tst/rect-circle.lua
 	$(TST) tst/rot-flip.lua
 	$(TST) tst/set.lua
 	$(TST) tst/sheet.lua

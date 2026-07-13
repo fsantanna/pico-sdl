@@ -82,7 +82,10 @@ void pico_output_draw_line (Pico_Rel_Pos p1, Pico_Rel_Pos p2) {
 
 void pico_output_draw_oval (Pico_Rel_Rect rect) {
     _pico_guard();
-    Pico_Abs_Rect i = _pico_abs_rect(rect, NULL, NULL);
+    // w or h omitted (0): complete the other as a pixel square (circle)
+    Pico_Abs_Dim sqr = { 1, 1 };
+    Pico_Abs_Dim* rat = ((rect.w==0) != (rect.h==0)) ? &sqr : NULL;
+    Pico_Abs_Rect i = _pico_abs_rect(rect, NULL, rat);
     SDL_SetRenderDrawColor(G.window.ren,
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
     );
@@ -173,7 +176,10 @@ void pico_output_draw_rect (Pico_Rel_Rect rect) {
         G.layer->pencil.color.r, G.layer->pencil.color.g, G.layer->pencil.color.b, G.layer->pencil.color.a
     );
 
-    Pico_Abs_Rect i = _pico_abs_rect(rect, NULL, NULL);
+    // w or h omitted (0): complete the other as a pixel square
+    Pico_Abs_Dim sqr = { 1, 1 };
+    Pico_Abs_Dim* rat = ((rect.w==0) != (rect.h==0)) ? &sqr : NULL;
+    Pico_Abs_Rect i = _pico_abs_rect(rect, NULL, rat);
     switch (G.layer->pencil.style) {
         case PICO_STYLE_FILL:
             SDL_RenderFillRect(G.window.ren, &i);

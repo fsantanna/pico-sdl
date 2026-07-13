@@ -15,7 +15,7 @@ In alphabetical order:
         `'pink'`, `'brown'`, `'lime'`, `'teal'`, `'navy'`, `'maroon'`,
         `'olive'`
 - **Dim**: `{ ['!'|'%'|'#'], [w: number], [h: number] }`
-    - Missing `w` or `h` defaults to 0 ("infer from source").
+    - missing `w` or `h` is infered from source
 - **Event**: `{ tag: string, ... }`
     - `{ tag='quit' }`
     - `{ tag='window.resize', w: integer, h: integer }`
@@ -28,7 +28,7 @@ In alphabetical order:
 - **Mouse**: `{ ['!'|'%'|'#'], x: number, y: number, anchor: Anchor, left: boolean, right: boolean, middle: boolean }`
 - **Pos**: `{ x: number, y: number [,'!'|'%'|'#', anchor: Anchor] }`
 - **Rect**: `{ x: number, y: number, [w: number], [h: number] [,'!'|'%'|'#', anchor: Anchor] }`
-    - Missing `w` or `h` defaults to 0 ("infer from source").
+    - missing `w` or `h` is infered from source
 - **Rotation**: `{ angle: integer, anchor: Anchor }`
 - **Tile**: `{ w: integer, h: integer }`
 - **Video**: `{ dim: Dim, fps: integer, frame: integer, done: boolean }`
@@ -138,8 +138,6 @@ In alphabetical order:
           built rect (string-form / nil / no-arg). Only
           `mode`/`w`/`h` are meaningful for dim use; `x`/`y`
           may be present (zero by default).
-        - Missing `w`/`h` (zero) axes are filled aspect-
-          preserving from the video's natural pixel size.
     - **pico.get.window**: Gets window configuration.
         - `pico.get.window () -> { fullscreen: boolean, show: boolean, title: string }`
 - **pico.init**: Initializes and finalizes pico.
@@ -301,6 +299,7 @@ In alphabetical order:
             - `pico.output.draw.line (p1: Pos, p2: Pos)`
         - **pico.output.draw.oval**: Draws oval.
             - `pico.output.draw.oval (rect: Rect)`
+            - missing `w` or `h` draws a circle based on the given `h` or `w`
         - **pico.output.draw.pixel**: Draws pixel.
             - `pico.output.draw.pixel (pos: Pos)`
         - **pico.output.draw.pixels**: Draws multiple pixels.
@@ -311,6 +310,7 @@ In alphabetical order:
             - `pico.output.draw.poly (ps: {Pos})`
         - **pico.output.draw.rect**: Draws rectangle.
             - `pico.output.draw.rect (rect: Rect)`
+            - missing `w` or `h` draws a square based on the given `h` or `w`
         - **pico.output.draw.text**: Draws text.
             - `pico.output.draw.text (text: string, rect: Rect)`
         - **pico.output.draw.tri**: Draws triangle.

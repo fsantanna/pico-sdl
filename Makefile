@@ -79,6 +79,7 @@ tests: lib
 	$(EXE) tst/pos.c
 	$(EXE) tst/quit.c
 	$(EXE) tst/rect.c
+	$(EXE) tst/rect-circle.c
 	$(EXE) tst/rot-flip.c
 	$(EXE) tst/sheet.c
 	$(EXE) tst/shot.c
