@@ -10,7 +10,7 @@
 Pico_Layer* _pico_layer_name (const char* name) {
     assert(name != NULL);
     Pico_Layer* L = (Pico_Layer*) realm_get(G.realm, strlen(name)+1, name);
-    pico_assert(L!=NULL && "layer does not exist");
+    assert(L!=NULL && "layer does not exist");
     return L;
 }
 

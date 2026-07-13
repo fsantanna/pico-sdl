@@ -253,11 +253,10 @@ void pico_push (void) {
 
 void pico_pop (void) {
     _pico_guard();
-    pico_assert(
-        (G.layer == &G.world || G.layer == &G.window.layer)
-        && "pop: target must be world or window"
+    assert((G.layer==&G.world || G.layer==&G.window.layer) &&
+        "pop: target must be world or window"
     );
-    pico_assert(G.realm->depth > 1 && "pop without matching push");
+    assert(G.realm->depth>1 && "pop without matching push");
     realm_leave(G.realm);
 }
 

@@ -64,7 +64,7 @@ void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect) {
 
     Pico_Layer* layer = (Pico_Layer*)realm_get(
         G.realm, strlen(key)+1, key);
-    pico_assert(layer!=NULL && "layer does not exist");
+    assert(layer!=NULL && "layer does not exist");
 
     _pico_layer_output(layer, rect);
 }

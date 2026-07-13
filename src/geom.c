@@ -165,7 +165,7 @@ void pico_cv_dim (
 
     Pico_Layer* R_fr = _dim_root_to(S, d1, &d2);
     Pico_Layer* R_to = _dim_root_fr(T, d2, &d3);
-    pico_assert(R_fr == R_to && "cv: layers must share a root");
+    assert(R_fr == R_to && "cv: layers must share a root");
 
     _rel_dim(d3, to, &(Pico_Abs_Rect){0, 0, T->scene.dim.w, T->scene.dim.h});
 }
@@ -183,7 +183,7 @@ void pico_cv_pos (
 
     Pico_Layer* R_fr = _pos_root_to(S, p1, &p2);
     Pico_Layer* R_to = _pos_root_fr(T, p2, &p3);
-    pico_assert(R_fr == R_to && "cv: layers must share a root");
+    assert(R_fr == R_to && "cv: layers must share a root");
 
     _rel_pos(p3, to, &(Pico_Abs_Rect){0, 0, T->scene.dim.w, T->scene.dim.h});
 }
@@ -201,7 +201,7 @@ void pico_cv_rect (
 
     Pico_Layer* R_fr = _rect_root_to(S, r1, &r2);
     Pico_Layer* R_to = _rect_root_fr(T, r2, &r3);
-    pico_assert(R_fr == R_to && "cv: layers must share a root");
+    assert(R_fr == R_to && "cv: layers must share a root");
 
     _rel_rect(r3, to, &(Pico_Abs_Rect){0, 0, T->scene.dim.w, T->scene.dim.h});
 }

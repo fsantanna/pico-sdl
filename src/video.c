@@ -205,7 +205,7 @@ int pico_set_video (const char* key, int frame) {
     int n = strlen(key) + 1;
     Pico_Layer* layer = (Pico_Layer*)realm_get(
         G.realm, n, key);
-    pico_assert(layer != NULL && "layer does not exist");
+    assert(layer != NULL && "layer does not exist");
 
     /* Get video state from layer */
     Pico_Layer_Video* vs = (Pico_Layer_Video*)layer;
