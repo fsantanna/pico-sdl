@@ -56,7 +56,6 @@ Note: in `%` and `#` modes the two axes have different scales;
 ## Progress
 
 - code, docs, tests written; syntax-checked with gcc
-- pending: user runs `make gen T=rect-circle` to create
-  `tst/asr/rect-circle-0[1-5].png`, then `make tests` in both
-  `.` and `lua/`
-- plan can move to `.claude/plans/done/` after tests pass
+- 0/0 case settled as no-op (user confirmed)
+- asr images generated; all tests pass (C and Lua)
+- plan complete
