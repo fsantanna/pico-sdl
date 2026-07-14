@@ -10,6 +10,7 @@ Modifications:
 
 - `pico.output.draw.text.{fix,dyn}`: sufix is mandatory
 - Layers:
+    - defaults to transparent background (was black)
     - constructor:
         - new table format arguments (was positional)
         - text `dim` argument (was height)

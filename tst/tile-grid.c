@@ -83,6 +83,7 @@ int main (void) {
         const char* old = pico_set_layer("layerA");
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };
+        pico_set_effect_color(PICO_COLOR_BLACK);
         pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_RED);
@@ -97,6 +98,7 @@ int main (void) {
         const char* old = pico_set_layer("layerB");
         Pico_Rel_Dim log = { '#', {8, 4} };
         Pico_Abs_Dim tile = { 2, 4 };
+        pico_set_effect_color(PICO_COLOR_BLACK);
         pico_set_effect_grid(1); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_GREEN);
@@ -111,6 +113,7 @@ int main (void) {
         const char* old = pico_set_layer("layerC");
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };
+        pico_set_effect_color(PICO_COLOR_BLACK);
         pico_set_effect_grid(0); pico_set_scene_tile(tile); pico_set_scene_dim(log);
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_BLUE);

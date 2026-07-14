@@ -72,7 +72,7 @@ do
     print("layer A: 4x4 tiles, grid on")
     pico.layer.empty { key="layerA", dim={'!', w=16, h=16} }
     pico.set.layer("layerA")
-    pico.set.effect { grid=true }
+    pico.set.effect { grid=true, color='black' }
     pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear()
     pico.set.pencil { color='red' }
@@ -85,7 +85,7 @@ do
     print("layer B: 8x4 non-square tiles, grid on")
     pico.layer.empty { key="layerB", dim={'!', w=16, h=16} }
     pico.set.layer("layerB")
-    pico.set.effect { grid=true }
+    pico.set.effect { grid=true, color='black' }
     pico.set.scene { dim={'#', w=8, h=4}, tile={w=2, h=4} }
     pico.output.clear()
     pico.set.pencil { color='green' }
@@ -98,7 +98,7 @@ do
     print("layer C: 4x4 tiles, grid off")
     pico.layer.empty { key="layerC", dim={'!', w=16, h=16} }
     pico.set.layer("layerC")
-    pico.set.effect { grid=false }
+    pico.set.effect { grid=false, color='black' }
     pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
     pico.output.clear()
     pico.set.pencil { color='blue' }

@@ -27,6 +27,13 @@ int main (void) {
     pico_output_draw_layer("overlay", &(Pico_Rel_Rect){'%', {0.5, 0.5, 0.75, 0.75}, PICO_ANCHOR_C});
     _pico_check("clear_alpha-01");
 
+    // default effect.color is transparent: red shows through
+    pico_output_clear();
+    pico_layer_empty("world", "defclr", 1, (Pico_Rel_Dim){'!', {64, 36}}, NULL);
+    pico_output_clear();
+    pico_output_present(1);
+    _pico_check("clear_alpha-02");
+
     pico_init(0);
     return 0;
 }

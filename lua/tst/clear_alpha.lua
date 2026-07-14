@@ -23,4 +23,11 @@ pico.set.layer("world")
 pico.output.draw.layer("overlay", {'%', x=0.5, y=0.5, w=0.75, h=0.75, anchor='C'})
 pico.check("clear_alpha-01")
 
+-- default effect.color is transparent: red shows through
+pico.output.clear()
+pico.layer.empty { up="world", key="defclr", clear=true, dim={'!', w=64, h=36} }
+pico.output.clear()
+pico.output.present()
+pico.check("clear_alpha-02")
+
 pico.init(false)

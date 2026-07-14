@@ -133,7 +133,7 @@ Pico_Layer* _pico_mem_layer_new (
             .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL
         },
         .effect = {
-            .alpha=0xFF, .color={0, 0, 0, 0xFF}, .flip=PICO_FLIP_NONE, .grid=0, .rotate={0, PICO_ANCHOR_C}
+            .alpha=0xFF, .color=PICO_COLOR_TRANSPARENT, .flip=PICO_FLIP_NONE, .grid=0, .rotate={0, PICO_ANCHOR_C}
         },
         .scene = {
             .clear = clear,
