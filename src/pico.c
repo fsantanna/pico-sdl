@@ -47,6 +47,14 @@ void _pico_guard (void) {
     }
 }
 
+// makes L the current render target: point the renderer at L->tex and
+// set the clip from L->scene.clip (the canonical target+clip dance)
+void _pico_target (Pico_Layer* L) {
+    SDL_SetRenderTarget(G.window.ren, L->tex);
+    Pico_Abs_Rect r = _pico_abs_rect(L->scene.clip, NULL, NULL);
+    SDL_RenderSetClipRect(G.window.ren, &r);
+}
+
 SDL_Texture* _pico_tex_create (Pico_Abs_Dim dim) {
     SDL_Texture* tex = SDL_CreateTexture (
         G.window.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,

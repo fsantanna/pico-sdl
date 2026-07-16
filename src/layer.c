@@ -57,9 +57,7 @@ static void _pico_draw_all_pre (Pico_Layer* UP, Pico_Layer* CUR) {
 // composite CUR onto UP (G.layer=UP so _pico_layer_output reads UP's pencil)
 static void _pico_draw_all_pos (Pico_Layer* UP, Pico_Layer* CUR) {
     G.layer = UP;
-    SDL_SetRenderTarget(G.window.ren, UP->tex);
-    Pico_Abs_Rect r = _pico_abs_rect(UP->scene.clip, NULL, NULL);
-    SDL_RenderSetClipRect(G.window.ren, &r);
+    _pico_target(UP);
     _pico_layer_output(CUR, NULL);
 }
 

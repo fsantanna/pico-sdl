@@ -254,9 +254,7 @@ const char* pico_set_layer (const char* key) {
     //    "cannot set render target to sub-layer");
     G.layer = data;
 
-    SDL_SetRenderTarget(G.window.ren, G.layer->tex);
-    Pico_Abs_Rect r = _pico_abs_rect(G.layer->scene.clip, NULL, NULL);
-    SDL_RenderSetClipRect(G.window.ren, &r);
+    _pico_target(G.layer);
     return old;
 }
 
@@ -320,9 +318,7 @@ void pico_set_scene (Pico_Layer_Scene view) {
     L->tex = _pico_tex_create(view.dim);
     SDL_BlendMode mode = (L == &G.world) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
     SDL_SetTextureBlendMode(L->tex, mode);
-    SDL_SetRenderTarget(G.window.ren, L->tex);
-    Pico_Abs_Rect r = _pico_abs_rect(L->scene.clip, NULL, NULL);
-    SDL_RenderSetClipRect(G.window.ren, &r);
+    _pico_target(L);
     pico_output_clear();
     _pico_output_present(0);
 }
@@ -331,9 +327,7 @@ void pico_set_scene_clip (Pico_Rel_Rect clip) {
     _pico_guard();
     Pico_Layer* L = G.layer;
     L->scene.clip = clip;
-    Pico_Abs_Rect r = _pico_abs_rect(clip, NULL, NULL);
-    SDL_SetRenderTarget(G.window.ren, L->tex);
-    SDL_RenderSetClipRect(G.window.ren, &r);
+    _pico_target(L);
     _pico_output_present(0);
 }
 
@@ -354,9 +348,7 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
         )
     );
 
-    Pico_Abs_Rect r = _pico_abs_rect(L->scene.clip, NULL, NULL);
-    SDL_SetRenderTarget(G.window.ren, L->tex);
-    SDL_RenderSetClipRect(G.window.ren, &r);
+    _pico_target(L);
 
     if (L == &G.window.layer) {
         assert(!G.window.pub.fs);
