@@ -6,10 +6,11 @@ pico.set.dim {'!', w=480, h=480}
 pico.set.effect { grid=false }
 
 -- Layer "map": 20x15 cols/rows of 16x16 tiles -> 320x240 px texture.
--- view.tile must be set at birth so '#'-mode works without pico.set.scene.
+-- dim='#' (cells) with tile in px: D = 20*16 x 15*16 = 320x240.
+-- view.tile set at birth so '#'-mode works without pico.set.scene.
 do
     print("layer map: 20x15 tiles of 16x16")
-    pico.layer.empty { key="map", dim={'!', w=20, h=15}, tile={w=16, h=16} }
+    pico.layer.empty { key="map", dim={'#', w=20, h=15}, tile={w=16, h=16} }
     local old = pico.set.layer("map")
     pico.set.effect { grid=true }
     pico.set.pencil { color='red' }

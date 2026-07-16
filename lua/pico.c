@@ -253,6 +253,18 @@ static Pico_Rel_Dim C_rel_dim (lua_State* L, int i) {
     };
 }
 
+// like C_rel_dim but the mode is optional and defaults to '!' (px):
+// the common tile spec `{w=..,h=..}` stays pixel-sized
+static Pico_Rel_Dim C_rel_tile (lua_State* L, int i) {
+    assert(i > 0);
+    assert(lua_type(L,i) == LUA_TTABLE);
+    return (Pico_Rel_Dim) {
+        .mode = C_mode_t(L, i, 0),
+        .w = C_optfieldnum(L, i, "w"),
+        .h = C_optfieldnum(L, i, "h"),
+    };
+}
+
 static Pico_Rel_Pos C_rel_pos (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
@@ -1136,7 +1148,7 @@ static int l_set_scene (lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);       // T
 
     Pico_Rel_Dim  dim,  *xdim=NULL;
-    Pico_Abs_Dim  tile, *xtile=NULL;
+    Pico_Rel_Dim  tile, *xtile=NULL;
     Pico_Rel_Rect dst,  *xdst=NULL;
     Pico_Rel_Rect src,  *xsrc=NULL;
     Pico_Rel_Rect clip, *xclip=NULL;
@@ -1156,8 +1168,7 @@ static int l_set_scene (lua_State* L) {
 
     lua_getfield(L, 1, "tile");             // T | tile
     if (!lua_isnil(L, -1)) {
-        tile.w = C_asrfieldnum(L, lua_gettop(L), "w");
-        tile.h = C_asrfieldnum(L, lua_gettop(L), "h");
+        tile = C_rel_tile(L, lua_gettop(L));
         xtile = &tile;
     }
     lua_pop(L, 1);                          // T
@@ -1183,8 +1194,9 @@ static int l_set_scene (lua_State* L) {
     }
     lua_pop(L, 1);                          // T
 
-    if (xtile != NULL) { pico_set_scene_tile(*xtile); }
-    if (xdim  != NULL) { pico_set_scene_dim(*xdim);  }
+    if (xtile != NULL || xdim != NULL) {
+        pico_set_scene_dim_tile(xdim, xtile);
+    }
     if (xclip != NULL) { pico_set_scene_clip(*xclip); }
     if (xdst  != NULL) { pico_set_scene_dst(*xdst);  }
     if (xsrc  != NULL) { pico_set_scene_src(*xsrc);  }
@@ -1296,12 +1308,11 @@ static int l_layer_empty (lua_State* L) {
     lua_pop(L, 1);                          // T
 
     // [tile]
-    Pico_Abs_Dim tile, *xtile=NULL;
+    Pico_Rel_Dim tile, *xtile=NULL;
     lua_getfield(L, 1, "tile");             // T | tile
     int i = lua_gettop(L);
     if (!lua_isnil(L, i)) {
-        tile.w = C_asrfieldnum(L, i, "w");
-        tile.h = C_asrfieldnum(L, i, "h");
+        tile = C_rel_tile(L, i);
         xtile = &tile;
     }
     lua_pop(L, 1);                          // T

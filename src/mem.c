@@ -187,29 +187,37 @@ void* _pico_mem_alloc_layer_shot (int n, const void* key, void* ctx) {
 void* _pico_mem_alloc_layer_empty (int n, const void* key, void* ctx) {
     _pico_mem_alloc_empty_t* arg = (_pico_mem_alloc_empty_t*)ctx;
 
-    // resolve rel dim against parent's scene.dim
-    Pico_Abs_Dim dim;
+    // resolve (dim, tile) jointly; '%' dim against parent's scene.dim
+    Pico_Abs_Dim dim, tile;
     if (arg->up == NULL) {
         // falls back to G.layer->scene.dim
-        dim = _pico_abs_dim(&arg->dim, NULL, NULL);
+        _pico_resolve_dim_tile(arg->dim, arg->tile, NULL, &dim, &tile);
     } else {
         Pico_Layer* par = _pico_layer_name(arg->up);
         Pico_Abs_Rect base = (Pico_Abs_Rect) {
             0, 0, par->scene.dim.w, par->scene.dim.h
         };
-        dim = _pico_abs_dim(&arg->dim, &base, NULL);
+        _pico_resolve_dim_tile(arg->dim, arg->tile, &base, &dim, &tile);
+    }
+
+    SDL_Texture* tex = _pico_tex_create(dim);
+    Pico_Layer* lay = _pico_mem_layer_new (
+        arg->clear, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
+        (const char*)key, tex, dim
+    );
+
+    // clear new layer
+    {
+        Pico_Layer* old = G.layer;
+        G.layer = lay;
+        _pico_layer_target(lay);
+        pico_output_clear();
+        G.layer = old;
+        _pico_layer_target(G.layer);
     }
 
     if (arg->tile != NULL) {
-        dim.w *= arg->tile->w;
-        dim.h *= arg->tile->h;
-    }
-    Pico_Layer* lay = _pico_mem_layer_new (
-        arg->clear, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
-        (const char*)key, _pico_tex_create(dim), dim
-    );
-    if (arg->tile != NULL) {
-        lay->scene.tile = *arg->tile;
+        lay->scene.tile = tile;
     }
     return lay;
 }

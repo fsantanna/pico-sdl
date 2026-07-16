@@ -328,14 +328,10 @@ void pico_set_scene_clip (Pico_Rel_Rect clip) {
     _pico_output_present(0);
 }
 
-void pico_set_scene_dim (Pico_Rel_Dim dim) {
-    _pico_guard();
-    assert(dim.mode != '%');
-    Pico_Layer* L = G.layer;
-    Pico_Abs_Dim di = _pico_abs_dim(&dim, NULL, NULL);
+// apply an already-resolved abs dim: swap the texture and refresh
+static void _apply_scene_dim (Pico_Layer* L, Pico_Abs_Dim di) {
     L->scene.dim = di;
     assert(L->tex != NULL);
-
     SDL_DestroyTexture(L->tex);
     L->tex = _pico_tex_create(di);
 
@@ -346,6 +342,38 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
     } else {
         pico_output_clear();
     }
+}
+
+void pico_set_scene_dim (Pico_Rel_Dim dim) {
+    _pico_guard();
+    assert(dim.mode != '%');
+    Pico_Abs_Dim di = _pico_abs_dim(&dim, NULL, NULL);
+    _apply_scene_dim(G.layer, di);
+}
+
+// joint dim+tile setter (see plans/260710-tiles.md §7); either may be
+// NULL. tile-only resolves against the current scene.dim.
+void pico_set_scene_dim_tile (const Pico_Rel_Dim* dim, const Pico_Rel_Dim* tile) {
+    _pico_guard();
+    Pico_Layer* L = G.layer;
+    if (dim != NULL) {
+        // both / dim-only: '%' forbidden (no parent frame in set.scene)
+        assert(dim->mode != '%');
+        Pico_Abs_Dim di, ti;
+        _pico_resolve_dim_tile(*dim, tile, NULL, &di, &ti);
+        _apply_scene_dim(L, di);
+        if (tile != NULL) {
+            L->scene.tile = ti;
+        }
+    } else if (tile != NULL) {
+        // tile-only: resolve against the current scene.dim
+        Pico_Abs_Rect base = { 0, 0, L->scene.dim.w, L->scene.dim.h };
+        Pico_Rel_Dim keep = _pico_rel_dim(L->scene.dim, '!');
+        Pico_Abs_Dim di, ti;
+        _pico_resolve_dim_tile(keep, tile, &base, &di, &ti);
+        L->scene.tile = ti;
+    }
+    _pico_output_present(0);
 }
 
 void pico_set_scene_dst (Pico_Rel_Rect dst) {

@@ -9,11 +9,12 @@ int main (void) {
     pico_set_effect_grid(0);
 
     // Layer "map": 20x15 cols/rows of 16x16 tiles -> 320x240 px texture.
-    // view.tile must be set at birth so '#'-mode works without pico_set_scene.
+    // dim='#' (cells) with tile='!' (px): D = 20*16 x 15*16 = 320x240.
+    // view.tile set at birth so '#'-mode works without pico_set_scene.
     {
         puts("layer map: 20x15 tiles of 16x16");
-        Pico_Abs_Dim tile = { 16, 16 };
-        pico_layer_empty(NULL, "map", 1, (Pico_Rel_Dim){'!', {20, 15}}, &tile);
+        Pico_Rel_Dim tile = { '!', {16, 16} };
+        pico_layer_empty(NULL, "map", 1, (Pico_Rel_Dim){'#', {20, 15}}, &tile);
         const char* old = pico_set_layer("map");
         pico_set_effect_grid(1);
         pico_output_clear();

@@ -83,7 +83,7 @@ typedef struct {
     const char*   up;
     int           clear;
     Pico_Rel_Dim  dim;
-    Pico_Abs_Dim* tile;
+    Pico_Rel_Dim* tile;
 } _pico_mem_alloc_empty_t;
 
 typedef struct {
@@ -161,6 +161,16 @@ Pico_Abs_Pos  _pico_abs_pos  (Pico_Rel_Pos pos, const Pico_Abs_Rect* base);
 Pico_Abs_Rect _pico_abs_rect (Pico_Rel_Rect rect, const Pico_Abs_Rect* base,
                               const Pico_Abs_Dim* ratio);
 Pico_Rel_Dim  _pico_rel_dim  (Pico_Abs_Dim abs, char mode);
+
+// resolve a (dim, tile) pair jointly (see plans/260710-tiles.md §7).
+// tile==NULL: no tiles, out_tile={0,0}, dim resolved as usual.
+// otherwise: out_dim=D, out_tile=T per the §7 matrix (floor, rejects).
+// base is the parent/reference frame for dim='%' (NULL = current scene).
+void _pico_resolve_dim_tile (
+    Pico_Rel_Dim dim, const Pico_Rel_Dim* tile,
+    const Pico_Abs_Rect* base,
+    Pico_Abs_Dim* out_dim, Pico_Abs_Dim* out_tile
+);
 
 ///////////////////////////////////////////////////////////////////////////////
 // layers

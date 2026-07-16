@@ -528,7 +528,7 @@ const char* pico_layer_pixmap_mode (int mode, const char* up, const char* key,
 /// @return stored layer key
 const char* pico_layer_empty (
     const char* up, const char* key, int clear,
-    Pico_Rel_Dim dim, Pico_Abs_Dim* tile
+    Pico_Rel_Dim dim, Pico_Rel_Dim* tile
 );
 
 /// @brief Creates an empty layer.
@@ -541,7 +541,7 @@ const char* pico_layer_empty (
 /// @return stored layer key
 const char* pico_layer_empty_mode (
     int mode, const char* up, const char* key, int clear,
-    Pico_Rel_Dim dim, Pico_Abs_Dim* tile
+    Pico_Rel_Dim dim, Pico_Rel_Dim* tile
 );
 
 /// @brief Creates a layer from an image file (exclusive mode).
@@ -770,6 +770,9 @@ void pico_set_scene_dst   (Pico_Rel_Rect dst);
 void pico_set_scene_clear (int on);
 void pico_set_scene_src   (Pico_Rel_Rect src);
 void pico_set_scene_tile  (Pico_Abs_Dim tile);
+/// @brief Sets scene dim and/or tile jointly (see §7 mode matrix).
+/// Either pointer may be NULL; tile-only resolves against current dim.
+void pico_set_scene_dim_tile (const Pico_Rel_Dim* dim, const Pico_Rel_Dim* tile);
 
 /// @brief Sets the entire window state.
 /// @param win new window state

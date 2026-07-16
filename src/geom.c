@@ -389,6 +389,7 @@ static SDL_FDim _raw_dim (
             break;
         }
         case '#':
+            assert(G.layer->scene.tile.w > 0 && G.layer->scene.tile.h > 0);
             ret = _f_rat(dim->w * G.layer->scene.tile.w, dim->h * G.layer->scene.tile.h, ratio);
             if (dim->w == 0) dim->w = ret.w / G.layer->scene.tile.w;
             if (dim->h == 0) dim->h = ret.h / G.layer->scene.tile.h;
@@ -428,6 +429,7 @@ static SDL_FPoint _raw_pos (Pico_Rel_Pos pos, const Pico_Abs_Rect* base) {
             break;
         }
         case '#':
+            assert(G.layer->scene.tile.w > 0 && G.layer->scene.tile.h > 0);
             ret = (SDL_FPoint) {
                 p.x + (pos.x - 1 + pos.anchor.x)*G.layer->scene.tile.w,
                 p.y + (pos.y - 1 + pos.anchor.y)*G.layer->scene.tile.h,
@@ -477,6 +479,7 @@ static SDL_FRect _raw_rect (
             break;
         }
         case '#': {
+            assert(G.layer->scene.tile.w > 0 && G.layer->scene.tile.h > 0);
             SDL_FDim d = _f_rat (
                 rect.w * G.layer->scene.tile.w,
                 rect.h * G.layer->scene.tile.h,
@@ -522,6 +525,7 @@ static void _rel_dim (
             break;
         }
         case '#':
+            //assert(G.layer->scene.tile.w > 0 && G.layer->scene.tile.h > 0);
             to->w = flt.w / G.layer->scene.tile.w;
             to->h = flt.h / G.layer->scene.tile.h;
             break;
@@ -558,6 +562,7 @@ static void _rel_pos (
             break;
         }
         case '#':
+            assert(G.layer->scene.tile.w > 0 && G.layer->scene.tile.h > 0);
             to->x = (flt.x - p.x) / G.layer->scene.tile.w + 1 - to->anchor.x;
             to->y = (flt.y - p.y) / G.layer->scene.tile.h + 1 - to->anchor.y;
             break;
@@ -598,6 +603,7 @@ static void _rel_rect (
             break;
         }
         case '#':
+            assert(G.layer->scene.tile.w > 0 && G.layer->scene.tile.h > 0);
             to->w = flt.w / (float)G.layer->scene.tile.w;
             to->h = flt.h / (float)G.layer->scene.tile.h;
             to->x = (flt.x - p.x) / G.layer->scene.tile.w + 1
@@ -643,6 +649,46 @@ Pico_Abs_Dim _pico_abs_dim (
     Pico_Rel_Dim* dim, const Pico_Abs_Rect* base, const Pico_Abs_Dim* ratio
 ) {
     return _rnd_dim(_raw_dim(dim, base, ratio));
+}
+
+// joint (dim, tile) resolution, see plans/260710-tiles.md §7
+void _pico_resolve_dim_tile (
+    Pico_Rel_Dim dim, const Pico_Rel_Dim* tile,
+    const Pico_Abs_Rect* base,
+    Pico_Abs_Dim* out_dim, Pico_Abs_Dim* out_tile
+) {
+    // no tile: resolve dim as usual, no grid
+    if (tile == NULL) {
+        *out_dim = _pico_abs_dim(&dim, base, NULL);
+        *out_tile = (Pico_Abs_Dim) { 0, 0 };
+        return;
+    }
+    Pico_Abs_Dim D, T;
+    if (dim.mode == '#') {
+        // dim='#' needs T first, so tile must be absolute ('!')
+        assert(tile->mode == '!' && "dim='#' requires tile='!'");
+        T = (Pico_Abs_Dim) { tile->w, tile->h };
+        D = (Pico_Abs_Dim) { dim.w * T.w, dim.h * T.h };
+    } else {
+        // dim independent ('!'/'%'): resolve D first, then T
+        D = _pico_abs_dim(&dim, base, NULL);
+        switch (tile->mode) {
+            case '!':
+                T = (Pico_Abs_Dim) { tile->w, tile->h };
+                break;
+            case '#':
+                assert(tile->w > 0 && tile->h > 0);
+                T = (Pico_Abs_Dim) { D.w / (int)tile->w, D.h / (int)tile->h };
+                break;
+            case '%':
+                T = (Pico_Abs_Dim) { tile->w * D.w, tile->h * D.h };
+                break;
+            default:
+                assert(0 && "invalid tile mode");
+        }
+    }
+    *out_dim = D;
+    *out_tile = T;
 }
 
 Pico_Abs_Pos _pico_abs_pos (Pico_Rel_Pos pos, const Pico_Abs_Rect* base) {

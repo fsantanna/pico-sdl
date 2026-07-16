@@ -389,7 +389,7 @@ const char* pico_layer_pixmap_mode (
 
 const char* pico_layer_empty (
     const char* up, const char* key, int clear,
-    Pico_Rel_Dim dim, Pico_Abs_Dim* tile
+    Pico_Rel_Dim dim, Pico_Rel_Dim* tile
 ) {
     _pico_guard();
     return pico_layer_empty_mode('!', up, key, clear, dim, tile);
@@ -397,7 +397,7 @@ const char* pico_layer_empty (
 
 const char* pico_layer_empty_mode (
     int mode, const char* up, const char* key, int clear,
-    Pico_Rel_Dim dim, Pico_Abs_Dim* tile
+    Pico_Rel_Dim dim, Pico_Rel_Dim* tile
 ) {
     _pico_guard();
     char buf[24];
