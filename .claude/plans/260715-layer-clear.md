@@ -50,7 +50,16 @@ Two defects combine to produce the symptom:
 - [x] Fix `pico_output_clear`: wrap `RenderFillRect` in
       `SDL_BLENDMODE_NONE`, restore `SDL_BLENDMODE_BLEND`
 - [ ] User runs tests to confirm both pass
-- [ ] Add `tst/clear-transp.c` to Makefile `tests` list
+- [x] Add `tst/clear-transp.c` to Makefile `tests` list
+
+## Won't do
+
+- Merge the two tests into one: they guard different fixes with
+  different determinism.
+  `clear-transp` fails under the software renderer (CI guard);
+  `push-pop-recycle` passes there even when broken (SDL zero-fills
+  surfaces) and only reproduces on an accelerated renderer, so it
+  stays a manual GPU repro, out of the `tests` list.
 
 ## Notes
 
