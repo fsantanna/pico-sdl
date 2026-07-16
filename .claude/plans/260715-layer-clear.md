@@ -31,8 +31,9 @@ Two defects combine to produce the symptom:
 ## Items
 
 - [x] Diagnose old-texture leak
-- [x] Failing test: `tst/clear-transp.c`
-      (deterministic, transparent clear no-op)
+- [x] Transparent-clear regression: merged into `tst/clear_alpha.c`
+      (self-compare: red layer wiped transparent -> green world stays
+      unchanged); was standalone `tst/clear-transp.c`, now deleted
 - [x] Repro test: `tst/push-pop-recycle.c`
       (user scenario; fails only on accelerated renderers)
 - [x] Fix `_pico_tex_create`: clear new texture to transparent
@@ -49,14 +50,14 @@ Two defects combine to produce the symptom:
       sites (`output.c`, `get-set.c`, `layer.c`); `-Wall -Werror`
 - [x] Fix `pico_output_clear`: wrap `RenderFillRect` in
       `SDL_BLENDMODE_NONE`, restore `SDL_BLENDMODE_BLEND`
-- [ ] User runs tests to confirm both pass
-- [x] Add `tst/clear-transp.c` to Makefile `tests` list
+- [ ] Regenerate `clear_alpha` golden: clear now overwrites (was
+      blend), so the `-01` asr is stale (`make gen T=clear_alpha`)
+- [ ] User runs tests to confirm all pass
 
 ## Won't do
 
-- Merge the two tests into one: they guard different fixes with
-  different determinism.
-  `clear-transp` fails under the software renderer (CI guard);
+- Merge `push-pop-recycle` into `clear_alpha`: different determinism.
+  `clear_alpha` fails under the software renderer (CI guard);
   `push-pop-recycle` passes there even when broken (SDL zero-fills
   surfaces) and only reproduces on an accelerated renderer, so it
   stays a manual GPU repro, out of the `tests` list.
