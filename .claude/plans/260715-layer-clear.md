@@ -37,8 +37,16 @@ Two defects combine to produce the symptom:
       (user scenario; fails only on accelerated renderers)
 - [x] Fix `_pico_tex_create`: clear new texture to transparent
       (save/restore render target)
-- [x] Update `valgrind.supp` `sdl-init` line: 99 -> 106
-      (`SDL_Init` shifted by the new clear block)
+- [x] Update `valgrind.supp` `sdl-init` line: 99 -> 108
+      (`SDL_Init` shifted by clear block; helper now in `layer.c`)
+- [x] Simplify `_pico_tex_create`: whole wipe + restore guarded by
+      `if (G.init)` (init textures are opaque and fully repainted, so
+      they skip it); restore via `_pico_layer_target(G.layer)`; trusts
+      "caller sets color"; removed now-redundant `_pico_layer_target(L)`
+      in `pico_set_scene` and `pico_set_scene_dim`
+- [x] Refactor: extract `_pico_layer_target(Pico_Layer*)` in
+      `layer.c` (target + clip dance) and replace the 8 duplicated
+      sites (`output.c`, `get-set.c`, `layer.c`); `-Wall -Werror`
 - [ ] Fix `pico_output_clear`: fill with `SDL_BLENDMODE_NONE`
       around the `FillRect` (or use `SDL_RenderClear` over clip)
 - [ ] User runs tests to confirm both pass

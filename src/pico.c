@@ -53,22 +53,14 @@ SDL_Texture* _pico_tex_create (Pico_Abs_Dim dim) {
         dim.w, dim.h
     );
     pico_assert(tex != NULL);
-    {
-        // defaults new textures to transparent
-        SDL_Texture* prev = SDL_GetRenderTarget(G.window.ren);
-        Uint8 r, g, b, a;
-        SDL_GetRenderDrawColor(G.window.ren, &r, &g, &b, &a);
-        SDL_bool clip_on = SDL_RenderIsClipEnabled(G.window.ren);
-        SDL_Rect clip;
-        SDL_RenderGetClipRect(G.window.ren, &clip);
-
+    // at runtime, default new textures to transparent then restore the
+    // render target to the current layer; during pico_init there is no
+    // layer yet and the init textures are opaque and fully repainted
+    if (G.init) {
         SDL_SetRenderTarget(G.window.ren, tex);
         SDL_SetRenderDrawColor(G.window.ren, 0, 0, 0, 0);
         SDL_RenderClear(G.window.ren);
-
-        SDL_SetRenderTarget(G.window.ren, prev);
-        SDL_SetRenderDrawColor(G.window.ren, r, g, b, a);
-        SDL_RenderSetClipRect(G.window.ren, clip_on ? &clip : NULL);
+        _pico_layer_target(G.layer);
     }
     return tex;
 }

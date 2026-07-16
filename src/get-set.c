@@ -318,7 +318,6 @@ void pico_set_scene (Pico_Layer_Scene view) {
     L->tex = _pico_tex_create(view.dim);
     SDL_BlendMode mode = (L == &G.world) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
     SDL_SetTextureBlendMode(L->tex, mode);
-    _pico_layer_target(L);
     pico_output_clear();
     _pico_output_present(0);
 }
@@ -347,8 +346,6 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
                 SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND
         )
     );
-
-    _pico_layer_target(L);
 
     if (L == &G.window.layer) {
         assert(!G.window.pub.fs);
