@@ -52,16 +52,21 @@ SDL_Texture* _pico_tex_create (Pico_Abs_Dim dim) {
         G.window.ren, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
         dim.w, dim.h
     );
-    pico_assert(tex != NULL);
-    // at runtime, default new textures to transparent then restore the
-    // render target to the current layer; during pico_init there is no
-    // layer yet and the init textures are opaque and fully repainted
-    if (G.init) {
-        SDL_SetRenderTarget(G.window.ren, tex);
-        SDL_SetRenderDrawColor(G.window.ren, 0, 0, 0, 0);
-        SDL_RenderClear(G.window.ren);
-        _pico_layer_target(G.layer);
+
+    SDL_BlendMode mode;
+    if (!G.init) {
+        mode = SDL_BLENDMODE_NONE;
+    } else if (G.layer == &G.window.layer) {
+        mode = SDL_BLENDMODE_NONE;
+    } else if (G.layer == &G.world) {
+        mode = SDL_BLENDMODE_NONE;
+    } else {
+        mode = SDL_BLENDMODE_BLEND;
     }
+    pico_assert_0 (
+        SDL_SetTextureBlendMode(tex, mode)
+    );
+
     return tex;
 }
 
@@ -138,14 +143,7 @@ void pico_init (int on) {
             // textures
             G.window.ren = ren;
             phy = _pico_tex_create(PICO_DIM_PHY);
-            pico_assert_0 (
-                SDL_SetTextureBlendMode(phy, SDL_BLENDMODE_NONE)
-            );
-
             log = _pico_tex_create(PICO_DIM_LOG);
-            pico_assert_0 (
-                SDL_SetTextureBlendMode(log, SDL_BLENDMODE_NONE)
-            );
         }
 
         G = (typeof(G)) {
@@ -156,13 +154,13 @@ void pico_init (int on) {
                 .name = "world",
                 .tex  = log,
                 .pencil = {
-                    .color = {0xFF, 0xFF, 0xFF, 0xFF},
+                    .color = PICO_COLOR_WHITE,
                     .font  = NULL,
                     .style = PICO_STYLE_FILL,
                 },
                 .effect = {
                     .alpha  = 0xFF,
-                    .color  = {0, 0, 0, 0xFF},
+                    .color  = PICO_COLOR_BLACK,
                     .flip   = PICO_FLIP_NONE,
                     .grid   = 1,
                     .rotate = {0, PICO_ANCHOR_C},
@@ -188,7 +186,7 @@ void pico_init (int on) {
                     .name = "window",
                     .tex  = phy,
                     .pencil = {
-                        .color = {0xFF, 0xFF, 0xFF, 0xFF},
+                        .color = PICO_COLOR_WHITE,
                         .font  = NULL,
                         .style = PICO_STYLE_FILL,
                     },

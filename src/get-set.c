@@ -316,8 +316,6 @@ void pico_set_scene (Pico_Layer_Scene view) {
     }
     L->scene = view;
     L->tex = _pico_tex_create(view.dim);
-    SDL_BlendMode mode = (L == &G.world) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
-    SDL_SetTextureBlendMode(L->tex, mode);
     pico_output_clear();
     _pico_output_present(0);
 }
@@ -338,20 +336,8 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
     L->scene.dim = di;
     assert(L->tex != NULL);
 
-    // create the new tex before destroying the old one: _pico_tex_create
-    // restores the render target to G.layer->tex (== L->tex), which must
-    // still be alive; then destroy the old and re-target the fresh tex
-    SDL_Texture* old = L->tex;
+    SDL_DestroyTexture(L->tex);
     L->tex = _pico_tex_create(di);
-    SDL_DestroyTexture(old);
-    //_pico_layer_target(L);
-    pico_assert_0 (
-        SDL_SetTextureBlendMode (
-            L->tex,
-            (L==&G.window.layer || L==&G.world) ?
-                SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND
-        )
-    );
 
     if (L == &G.window.layer) {
         assert(!G.window.pub.fs);
