@@ -23,7 +23,7 @@ int main (void) {
     // reference: plain green world
     pico_set_effect_color((Pico_Color){0x00, 0xFF, 0x00, 0xFF});
     pico_output_clear();
-    pico_output_screenshot("world", "out/clear-transp-ref.png", NULL);
+    pico_output_screenshot("world", "/tmp/clear-transp-ref.png", NULL);
 
     // detached layer painted solid red
     pico_layer_empty(NULL, "a", 0, (Pico_Rel_Dim){'!', {64, 36}}, NULL);
@@ -38,9 +38,9 @@ int main (void) {
     // composite over the green world: world must remain plain green
     pico_set_layer("world");
     pico_output_draw_layer("a", NULL);
-    pico_output_screenshot("world", "out/clear-transp-01.png", NULL);
+    pico_output_screenshot("world", "/tmp/clear-transp-01.png", NULL);
 
-    assert(_pico_cmp_files("out/clear-transp-ref.png", "out/clear-transp-01.png") && "transparent clear must wipe the layer");
+    assert(_pico_cmp_files("/tmp/clear-transp-ref.png", "/tmp/clear-transp-01.png") && "transparent clear must wipe the layer");
 
     pico_init(0);
     return 0;

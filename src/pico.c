@@ -53,6 +53,23 @@ SDL_Texture* _pico_tex_create (Pico_Abs_Dim dim) {
         dim.w, dim.h
     );
     pico_assert(tex != NULL);
+    {
+        // defaults new textures to transparent
+        SDL_Texture* prev = SDL_GetRenderTarget(G.window.ren);
+        Uint8 r, g, b, a;
+        SDL_GetRenderDrawColor(G.window.ren, &r, &g, &b, &a);
+        SDL_bool clip_on = SDL_RenderIsClipEnabled(G.window.ren);
+        SDL_Rect clip;
+        SDL_RenderGetClipRect(G.window.ren, &clip);
+
+        SDL_SetRenderTarget(G.window.ren, tex);
+        SDL_SetRenderDrawColor(G.window.ren, 0, 0, 0, 0);
+        SDL_RenderClear(G.window.ren);
+
+        SDL_SetRenderTarget(G.window.ren, prev);
+        SDL_SetRenderDrawColor(G.window.ren, r, g, b, a);
+        SDL_RenderSetClipRect(G.window.ren, clip_on ? &clip : NULL);
+    }
     return tex;
 }
 

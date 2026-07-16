@@ -35,14 +35,14 @@ Two defects combine to produce the symptom:
       (deterministic, transparent clear no-op)
 - [x] Repro test: `tst/push-pop-recycle.c`
       (user scenario; fails only on accelerated renderers)
-- [ ] Fix `_pico_tex_create`: clear new texture to transparent
+- [x] Fix `_pico_tex_create`: clear new texture to transparent
       (save/restore render target)
+- [x] Update `valgrind.supp` `sdl-init` line: 99 -> 106
+      (`SDL_Init` shifted by the new clear block)
 - [ ] Fix `pico_output_clear`: fill with `SDL_BLENDMODE_NONE`
       around the `FillRect` (or use `SDL_RenderClear` over clip)
 - [ ] User runs tests to confirm both pass
 - [ ] Add `tst/clear-transp.c` to Makefile `tests` list
-- [ ] Update `valgrind.supp` `sdl-init` line if `src/pico.c`
-      line numbers shift
 
 ## Notes
 
