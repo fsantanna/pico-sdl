@@ -141,7 +141,6 @@ extern PicoState G;
 ///////////////////////////////////////////////////////////////////////////////
 
 void         _pico_guard      (void);
-void         _pico_target      (Pico_Layer* L);
 SDL_Texture* _pico_tex_create (Pico_Abs_Dim dim);
 TTF_Font*    _pico_font_get   (const char* path, int h);
 
@@ -168,6 +167,7 @@ Pico_Rel_Dim  _pico_rel_dim  (Pico_Abs_Dim abs, char mode);
 ///////////////////////////////////////////////////////////////////////////////
 
 Pico_Layer* _pico_layer_name   (const char* name);
+void        _pico_layer_target (Pico_Layer* L);
 void        _pico_layer_attach (const char* up, const char* dn);
 
 Pico_Layer* _pico_layer_pixmap (

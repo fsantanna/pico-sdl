@@ -14,6 +14,14 @@ Pico_Layer* _pico_layer_name (const char* name) {
     return L;
 }
 
+// makes L the current render target: point the renderer at L->tex and
+// set the clip from L->scene.clip (the canonical target+clip dance)
+void _pico_layer_target (Pico_Layer* L) {
+    SDL_SetRenderTarget(G.window.ren, L->tex);
+    Pico_Abs_Rect r = _pico_abs_rect(L->scene.clip, NULL, NULL);
+    SDL_RenderSetClipRect(G.window.ren, &r);
+}
+
 void _pico_layer_attach (const char* up, const char* dn) {
     Pico_Layer* UP = _pico_layer_name(up);
     Pico_Layer* DN = _pico_layer_name(dn);
@@ -57,7 +65,7 @@ static void _pico_draw_all_pre (Pico_Layer* UP, Pico_Layer* CUR) {
 // composite CUR onto UP (G.layer=UP so _pico_layer_output reads UP's pencil)
 static void _pico_draw_all_pos (Pico_Layer* UP, Pico_Layer* CUR) {
     G.layer = UP;
-    _pico_target(UP);
+    _pico_layer_target(UP);
     _pico_layer_output(CUR, NULL);
 }
 
