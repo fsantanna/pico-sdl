@@ -337,8 +337,14 @@ void pico_set_scene_dim (Pico_Rel_Dim dim) {
     Pico_Abs_Dim di = _pico_abs_dim(&dim, NULL, NULL);
     L->scene.dim = di;
     assert(L->tex != NULL);
-    SDL_DestroyTexture(L->tex);
+
+    // create the new tex before destroying the old one: _pico_tex_create
+    // restores the render target to G.layer->tex (== L->tex), which must
+    // still be alive; then destroy the old and re-target the fresh tex
+    SDL_Texture* old = L->tex;
     L->tex = _pico_tex_create(di);
+    SDL_DestroyTexture(old);
+    //_pico_layer_target(L);
     pico_assert_0 (
         SDL_SetTextureBlendMode (
             L->tex,
