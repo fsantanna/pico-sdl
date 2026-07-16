@@ -50,16 +50,15 @@ Two defects combine to produce the symptom:
       sites (`output.c`, `get-set.c`, `layer.c`); `-Wall -Werror`
 - [x] Fix `pico_output_clear`: wrap `RenderFillRect` in
       `SDL_BLENDMODE_NONE`, restore `SDL_BLENDMODE_BLEND`
-- [ ] Regenerate `clear_alpha` golden: clear now overwrites (was
-      blend), so the `-01` asr is stale (`make gen T=clear_alpha`);
+- [x] Regenerate `clear_alpha` golden: clear now overwrites (was
+      blend), so the `-01` asr was stale (`make gen T=clear_alpha`);
       goldens are shared with lua (both shot `"window"` -> `tst/asr/`),
-      so one regen covers C + lua
+      so one regen covered C + lua
 - [x] Lua: no binding change (links `libpico-sdl.a`, API unchanged);
       mirrored the transparent-wipe block into `lua/tst/clear_alpha.lua`
       (self-compare via `io`); removed 2 stray `tst/asr/clear_alpha-
       transp-*.png` (self-compare reads `out/`, never `asr/`)
-- [ ] User runs tests to confirm all pass
-      (`make tests`; `cd lua && make test T=clear_alpha`)
+- [x] All tests pass (C `make tests` + lua `make tests`)
 
 ## Won't do
 
