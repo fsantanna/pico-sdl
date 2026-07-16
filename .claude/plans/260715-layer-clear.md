@@ -51,8 +51,15 @@ Two defects combine to produce the symptom:
 - [x] Fix `pico_output_clear`: wrap `RenderFillRect` in
       `SDL_BLENDMODE_NONE`, restore `SDL_BLENDMODE_BLEND`
 - [ ] Regenerate `clear_alpha` golden: clear now overwrites (was
-      blend), so the `-01` asr is stale (`make gen T=clear_alpha`)
+      blend), so the `-01` asr is stale (`make gen T=clear_alpha`);
+      goldens are shared with lua (both shot `"window"` -> `tst/asr/`),
+      so one regen covers C + lua
+- [x] Lua: no binding change (links `libpico-sdl.a`, API unchanged);
+      mirrored the transparent-wipe block into `lua/tst/clear_alpha.lua`
+      (self-compare via `io`); removed 2 stray `tst/asr/clear_alpha-
+      transp-*.png` (self-compare reads `out/`, never `asr/`)
 - [ ] User runs tests to confirm all pass
+      (`make tests`; `cd lua && make test T=clear_alpha`)
 
 ## Won't do
 
@@ -66,4 +73,5 @@ Two defects combine to produce the symptom:
 
 - Run repro on real hardware (accelerated renderer):
   `./pico-sdl tst/push-pop-recycle.c`
-- Deterministic test: `make test T=clear-transp`
+- Deterministic transparent-wipe assert now lives in
+  `tst/clear_alpha.c` and `lua/tst/clear_alpha.lua`
