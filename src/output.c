@@ -31,12 +31,15 @@ void pico_output_clear (void) {
     _pico_guard();
     Pico_Layer* L = G.layer;
 
-    // clear the current layer over its clip
+    // clear the current layer over its clip; overwrite instead of blend
+    // (the global BLENDMODE_BLEND would make a transparent fill a no-op)
     SDL_SetRenderDrawColor(G.window.ren,
         L->effect.color.r, L->effect.color.g, L->effect.color.b, L->effect.color.a
     );
     Pico_Abs_Rect r = _pico_abs_rect(L->scene.clip, NULL, NULL);
+    SDL_SetRenderDrawBlendMode(G.window.ren, SDL_BLENDMODE_NONE);
     SDL_RenderFillRect(G.window.ren, &r);
+    SDL_SetRenderDrawBlendMode(G.window.ren, SDL_BLENDMODE_BLEND);
 
     // cascade the clear down to flagged descendants, then restore the
     // current layer's render target + clip (the cascade retargets above)

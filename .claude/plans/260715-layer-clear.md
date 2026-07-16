@@ -47,8 +47,8 @@ Two defects combine to produce the symptom:
 - [x] Refactor: extract `_pico_layer_target(Pico_Layer*)` in
       `layer.c` (target + clip dance) and replace the 8 duplicated
       sites (`output.c`, `get-set.c`, `layer.c`); `-Wall -Werror`
-- [ ] Fix `pico_output_clear`: fill with `SDL_BLENDMODE_NONE`
-      around the `FillRect` (or use `SDL_RenderClear` over clip)
+- [x] Fix `pico_output_clear`: wrap `RenderFillRect` in
+      `SDL_BLENDMODE_NONE`, restore `SDL_BLENDMODE_BLEND`
 - [ ] User runs tests to confirm both pass
 - [ ] Add `tst/clear-transp.c` to Makefile `tests` list
 
