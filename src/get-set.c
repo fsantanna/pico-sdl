@@ -192,11 +192,11 @@ const char* pico_get_window_title (void) {
 
 void pico_set_dim (Pico_Rel_Dim dim) {
     _pico_guard();
-    const char* old = pico_set_layer("window");
+    Pico_Layer* old = _pico_set_layer(&G.window.layer);
     pico_set_scene_dim(dim);
-    pico_set_layer("world");
+    _pico_set_layer(&G.world);
     pico_set_scene_dim(dim);
-    pico_set_layer(old);
+    _pico_set_layer(old);
 }
 
 void pico_set_pencil (Pico_Layer_Pencil pencil) {
@@ -245,17 +245,10 @@ int pico_set_expert (int on, int fps) {
 
 const char* pico_set_layer (const char* key) {
     _pico_guard();
-    const char* old = (G.layer == NULL) ? NULL : G.layer->name;
-    Pico_Layer* data = (Pico_Layer*)realm_get (
-        G.realm, strlen(key)+1, key
-    );
-    assert(data!=NULL && "layer does not exist");
-    //assert(data->type!=PICO_LAYER_SUB &&
-    //    "cannot set render target to sub-layer");
-    G.layer = data;
-
-    _pico_layer_target(G.layer);
-    return old;
+    Pico_Layer* data = _pico_layer_name(key);
+    //assert(data->type!=PICO_LAYER_SUB && "cannot set render target to sub-layer");
+    Pico_Layer* old = _pico_set_layer(data);
+    return (old == NULL) ? NULL : old->name;
 }
 
 
@@ -324,7 +317,7 @@ void pico_set_scene_clip (Pico_Rel_Rect clip) {
     _pico_guard();
     Pico_Layer* L = G.layer;
     L->scene.clip = clip;
-    _pico_layer_target(L);
+    _pico_set_layer(L);
     _pico_output_present(0);
 }
 

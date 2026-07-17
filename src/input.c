@@ -74,9 +74,9 @@ static int _event_handler (Pico_Event* pico, int do_exit) {
                 G.window.ing.fs = 0;
             } else {
                 Pico_Rel_Dim phy = { '!', {pico->window.w, pico->window.h} };
-                const char* old = pico_set_layer("window");
+                Pico_Layer* old = _pico_set_layer(&G.window.layer);
                 pico_set_scene_dim(phy);
-                pico_set_layer(old);
+                _pico_set_layer(old);
             }
             break;
         }

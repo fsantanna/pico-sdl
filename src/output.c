@@ -44,7 +44,7 @@ void pico_output_clear (void) {
     // cascade the clear down to flagged descendants, then restore the
     // current layer's render target + clip (the cascade retargets above)
     _pico_layer_traverse(L, _output_clear_pre, NULL);
-    _pico_layer_target(L);
+    _pico_set_layer(L);
 
     _pico_output_present(0);
 }
@@ -293,7 +293,7 @@ void _pico_output_present (int force) {
     G.window.ing.out = 0;
 
     // restore current layer's render target + clip
-    _pico_layer_target(G.layer);
+    _pico_set_layer(G.layer);
 }
 
 void pico_output_present (int layers) {
@@ -374,7 +374,7 @@ SDL_Surface* _pico_shot (const char* layer, const Pico_Rel_Rect* rect) {
 
     // restore render target + clip to the current layer (the capture above
     // retargeted the renderer)
-    _pico_layer_target(G.layer);
+    _pico_set_layer(G.layer);
 
     return sfc;
 }

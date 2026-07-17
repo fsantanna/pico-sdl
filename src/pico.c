@@ -213,7 +213,7 @@ void pico_init (int on) {
         };
 
         _pico_layer_attach("window", "world");
-        pico_set_layer("world");
+        _pico_set_layer(&G.world);
         pico_output_clear();
 
         // prevents WMs to resize window at start

@@ -177,7 +177,7 @@ void _pico_resolve_dim_tile (
 ///////////////////////////////////////////////////////////////////////////////
 
 Pico_Layer* _pico_layer_name   (const char* name);
-void        _pico_layer_target (Pico_Layer* L);
+Pico_Layer* _pico_set_layer    (Pico_Layer* L);
 void        _pico_layer_attach (const char* up, const char* dn);
 
 Pico_Layer* _pico_layer_pixmap (

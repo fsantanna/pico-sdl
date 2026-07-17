@@ -207,14 +207,9 @@ void* _pico_mem_alloc_layer_empty (int n, const void* key, void* ctx) {
     );
 
     // clear new layer
-    {
-        Pico_Layer* old = G.layer;
-        G.layer = lay;
-        _pico_layer_target(lay);
-        pico_output_clear();
-        G.layer = old;
-        _pico_layer_target(G.layer);
-    }
+    Pico_Layer* old = _pico_set_layer(lay);
+    pico_output_clear();
+    _pico_set_layer(old);
 
     if (arg->tile != NULL) {
         lay->scene.tile = tile;
