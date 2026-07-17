@@ -135,7 +135,7 @@ pico.check("guide-04-00-01")
 pico.init(false)
 pico.init(true)
 pico.set.window { title="guide-04-01-01" }
-local tile = { w=20, h=20 }
+local tile = { '!', w=20, h=20 }
 pico.set.layer("window")
 pico.set.scene {
     tile = tile,

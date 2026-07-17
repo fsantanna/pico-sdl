@@ -253,18 +253,6 @@ static Pico_Rel_Dim C_rel_dim (lua_State* L, int i) {
     };
 }
 
-// like C_rel_dim but the mode is optional and defaults to '!' (px):
-// the common tile spec `{w=..,h=..}` stays pixel-sized
-static Pico_Rel_Dim C_rel_tile (lua_State* L, int i) {
-    assert(i > 0);
-    assert(lua_type(L,i) == LUA_TTABLE);
-    return (Pico_Rel_Dim) {
-        .mode = C_mode_t(L, i, 0),
-        .w = C_optfieldnum(L, i, "w"),
-        .h = C_optfieldnum(L, i, "h"),
-    };
-}
-
 static Pico_Rel_Pos C_rel_pos (lua_State* L, int i) {
     assert(i > 0);
     assert(lua_type(L,i) == LUA_TTABLE);
@@ -1168,7 +1156,7 @@ static int l_set_scene (lua_State* L) {
 
     lua_getfield(L, 1, "tile");             // T | tile
     if (!lua_isnil(L, -1)) {
-        tile = C_rel_tile(L, lua_gettop(L));
+        tile = C_rel_dim(L, lua_gettop(L));
         xtile = &tile;
     }
     lua_pop(L, 1);                          // T
@@ -1312,7 +1300,7 @@ static int l_layer_empty (lua_State* L) {
     lua_getfield(L, 1, "tile");             // T | tile
     int i = lua_gettop(L);
     if (!lua_isnil(L, i)) {
-        tile = C_rel_tile(L, i);
+        tile = C_rel_dim(L, i);
         xtile = &tile;
     }
     lua_pop(L, 1);                          // T

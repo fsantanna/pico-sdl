@@ -23,7 +23,7 @@ end
 do
     print("pixel + tile grid (4x4 tiles)")
     pico.set.effect { grid=true }
-    pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
+    pico.set.scene { dim={'#', w=4, h=4}, tile={'!', w=4, h=4} }
     pico.output.clear()
     pico.set.pencil { color='green' }
     pico.output.draw.rect {'#', x=1, y=1, w=2, h=2, anchor='NW'}
@@ -34,7 +34,7 @@ end
 do
     print("pixel + tile grid (8x8 tiles)")
     pico.set.effect { grid=true }
-    pico.set.scene { dim={'#', w=8, h=8}, tile={w=2, h=2} }
+    pico.set.scene { dim={'#', w=8, h=8}, tile={'!', w=2, h=2} }
     pico.output.clear()
     pico.set.pencil { color='blue' }
     pico.output.draw.rect {'#', x=3, y=3, w=2, h=2, anchor='NW'}
@@ -45,7 +45,7 @@ end
 do
     print("pixel + tile grid (non-square 4x2 tiles)")
     pico.set.effect { grid=true }
-    pico.set.scene { dim={'#', w=4, h=8}, tile={w=4, h=2} }
+    pico.set.scene { dim={'#', w=4, h=8}, tile={'!', w=4, h=2} }
     pico.output.clear()
     pico.set.pencil { color='yellow' }
     pico.output.draw.rect {'#', x=2, y=4, w=1, h=2, anchor='NW'}
@@ -56,7 +56,7 @@ end
 do
     print("grid disabled")
     pico.set.effect { grid=false }
-    pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
+    pico.set.scene { dim={'#', w=4, h=4}, tile={'!', w=4, h=4} }
     pico.output.clear()
     pico.set.pencil { color='red' }
     pico.output.draw.rect {'#', x=2, y=2, w=1, h=1, anchor='C'}
@@ -73,7 +73,7 @@ do
     pico.layer.empty { key="layerA", dim={'!', w=16, h=16} }
     pico.set.layer("layerA")
     pico.set.effect { grid=true, color='black' }
-    pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
+    pico.set.scene { dim={'#', w=4, h=4}, tile={'!', w=4, h=4} }
     pico.output.clear()
     pico.set.pencil { color='red' }
     pico.output.draw.rect {'#', x=1, y=1, w=2, h=2, anchor='NW'}
@@ -86,7 +86,7 @@ do
     pico.layer.empty { key="layerB", dim={'!', w=16, h=16} }
     pico.set.layer("layerB")
     pico.set.effect { grid=true, color='black' }
-    pico.set.scene { dim={'#', w=8, h=4}, tile={w=2, h=4} }
+    pico.set.scene { dim={'#', w=8, h=4}, tile={'!', w=2, h=4} }
     pico.output.clear()
     pico.set.pencil { color='green' }
     pico.output.draw.rect {'#', x=5, y=2, w=2, h=1, anchor='NW'}
@@ -99,7 +99,7 @@ do
     pico.layer.empty { key="layerC", dim={'!', w=16, h=16} }
     pico.set.layer("layerC")
     pico.set.effect { grid=false, color='black' }
-    pico.set.scene { dim={'#', w=4, h=4}, tile={w=4, h=4} }
+    pico.set.scene { dim={'#', w=4, h=4}, tile={'!', w=4, h=4} }
     pico.output.clear()
     pico.set.pencil { color='blue' }
     pico.output.draw.rect {'#', x=3, y=3, w=1, h=1, anchor='NW'}

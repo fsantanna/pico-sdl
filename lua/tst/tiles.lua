@@ -13,7 +13,7 @@ end
 -- 160x160 physical window
 local phy  = {'!', w=160, h=160}
 local log  = {'#', w=4, h=4}
-local tile = {w=4, h=4}
+local tile = {'!', w=4, h=4}
 pico.set.window { title="Tiles" }
 pico.set.layer("window")
 pico.set.scene { dim=phy }

@@ -10,7 +10,7 @@ pico.set.effect { grid=false }
 -- view.tile set at birth so '#'-mode works without pico.set.scene.
 do
     print("layer map: 20x15 tiles of 16x16")
-    pico.layer.empty { key="map", dim={'#', w=20, h=15}, tile={w=16, h=16} }
+    pico.layer.empty { key="map", dim={'#', w=20, h=15}, tile={'!', w=16, h=16} }
     local old = pico.set.layer("map")
     pico.set.effect { grid=true }
     pico.set.pencil { color='red' }

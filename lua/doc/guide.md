@@ -395,7 +395,7 @@ dimensions:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> tile = { w=20, h=20 }         -- tile size (20x20 physical)
+> tile = { '!', w=20, h=20 }    -- tile size (20x20 physical)
 > pico.set.layer("window")
   pico.set.scene {
     tile = tile,

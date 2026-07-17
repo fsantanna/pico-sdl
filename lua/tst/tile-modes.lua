@@ -39,7 +39,7 @@ check("g4", 100, 100, 33, 33)
 
 -- G5: canonical tiled layer, dim='#' cells + bare tile (defaults '!')
 print("G5: dim='#' + tile (default '!')")
-pico.layer.empty { up="world", key="g5", clear=true, dim={'#', w=20, h=15}, tile={w=16, h=16} }
+pico.layer.empty { up="world", key="g5", clear=true, dim={'#', w=20, h=15}, tile={'!', w=16, h=16} }
 check("g5", 320, 240, 16, 16)
 
 -- G6: set.scene joint (dim='#' + tile='!')
