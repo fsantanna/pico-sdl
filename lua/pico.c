@@ -939,6 +939,8 @@ static int l_get_scene (lua_State* L) {
     lua_setfield(L, -2, "dim");         // T
 
     lua_newtable(L);                    // T | tile
+    lua_pushliteral(L, "!");
+    lua_rawseti(L, -2, 1);
     lua_pushinteger(L, view.tile.w);
     lua_setfield(L, -2, "w");
     lua_pushinteger(L, view.tile.h);

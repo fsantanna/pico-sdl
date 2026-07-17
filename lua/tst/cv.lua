@@ -191,9 +191,14 @@ do
     local out = pico.cv.rect('%', 'window', {'!', x=250, y=250, w=50, h=50, anchor='NW'})
     assert(out and out[1]=='%')
 
+    -- '#' output uses the *target* layer's tile:
+    -- world 10x20 -> window px 50x100 -> window tiles 5x10
     print('', "dim with '#'")
+    pico.set.layer 'window'
+    pico.set.scene { tile={'!', w=10, h=10} }
+    pico.set.layer 'world'
     local out = pico.cv.dim('window', '#', {'!', w=10, h=20})
-    assert(out and out[1]=='#')
+    assert(out and out[1]=='#' and out.w==5 and out.h==10)
 
     print('', "invalid mode-string 'z' errors")
     assert(not pcall(pico.cv.pos, 'window', 'z', nil, {'!', x=0, y=0, anchor='NW'}))
