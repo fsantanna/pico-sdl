@@ -30,7 +30,7 @@ In alphabetical order:
 - **Rect**: `{ x: number, y: number, [w: number], [h: number] [,'!'|'%'|'#', anchor: Anchor] }`
     - missing `w` or `h` is infered from source
 - **Rotation**: `{ angle: integer, anchor: Anchor }`
-- **Tile**: `{ w: integer, h: integer }`
+- **Tile**: `{ ['!'|'#'|'%'], w: integer, h: integer }`
 - **Video**: `{ dim: Dim, fps: integer, frame: integer, done: boolean }`
 
 ## Operations
@@ -165,7 +165,7 @@ In alphabetical order:
             up:     string,     -- parent layer (default: detached)
             clear:  boolean,    -- cascade-clear flag, requires up (default: false)
             dim:    Dim,        -- texture size (default: target w/h)
-            tile:   Tile,       -- tile size in px, dim in TILES (default: none)
+            tile:   Tile,       -- tile size (default: none) (see `pico.set.scene`)
             target: Rect,       -- scene.target placement (default: fill parent)
         } -> string             -- layer key
         ```
@@ -377,10 +377,16 @@ In alphabetical order:
             source: Rect,       -- visible crop of the layer
             clip:   Rect,       -- drawing clip region
             target: Rect,       -- placement in parent (resolved at each use)
-            tile:   Tile,       -- tile size in px (required for '#' dim)
+            tile:   Tile,       -- tile size
             clear:  boolean,    -- cascade-clear flag
         }
         ```
+        - if `tile` is given, it is resolved in conjunction with `dim`:
+            - `dim '!'` / `tile '!'`: both in px
+            - `dim '!'` / `tile '#'`: `tile` counts cells (tile = ⌊dim/t⌋)
+            - `dim '!'` / `tile '%'`: `tile` is a fraction (tile = ⌊t·dim⌋)
+            - `dim '#'` / `tile '!'`: `dim` counts cells (dim = d·tile)
+            - `dim '#'` / `tile '#'|'%'`: invalid modes
     - **pico.set.video**: Sets video frame.
         - `pico.set.video (name: string, frame: integer) -> boolean`
     - **pico.set.window**: Sets window configuration.

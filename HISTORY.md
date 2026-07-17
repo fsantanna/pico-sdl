@@ -9,6 +9,9 @@ Additions:
 Modifications:
 
 - `pico.output.draw.text.{fix,dyn}`: sufix is mandatory
+- Tiles:
+    - require positioning mode
+    - new combinations between `dim x tile`
 - Layers:
     - defaults to transparent background (was black)
     - constructor:
