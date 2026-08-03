@@ -28,6 +28,7 @@ Fixes:
 - window clip: was not clipping at all
 - text rendering: now uses reasonable native height
 - layer attach: parent texture must be targetable
+- event flooding: generate tick regardless
 
 v0.6 (jun/26)
 -------------

@@ -269,18 +269,30 @@ int pico_input_event_timeout (Pico_Event* evt, int type, int timeout) {
 
 int pico_input_event (Pico_Event* evt, int type) {
     _pico_guard();
+
+    // no pacing: poll (ms==0) or block forever (ms==-1)
     if (G.expert.ms==0 || G.expert.ms==-1) {
         return pico_input_event_timeout(evt, type, G.expert.ms);
     }
 
+    // late frame: resync t0, tick now with no event
     int now = SDL_GetTicks();
     int cur = (G.expert.t0 + G.expert.ms) - now;
     if (cur <= 0) {
         while (G.expert.t0+G.expert.ms <= now) {
             G.expert.t0 += G.expert.ms;
         }
+#if 0
         cur = 0;
+#else
+        if (evt != NULL) {
+            evt->type = PICO_EVENT_NONE;
+        }
+        return 0;
+#endif
     }
+
+    // wait until deadline: NONE means frame tick, so advance t0
     Pico_Event xevt;
     if (evt == NULL) {
         evt = &xevt;
