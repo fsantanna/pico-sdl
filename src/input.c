@@ -276,10 +276,17 @@ int pico_input_event (Pico_Event* evt, int type) {
     int now = SDL_GetTicks();
     int cur = (G.expert.t0 + G.expert.ms) - now;
     if (cur <= 0) {
+        // Frame deadline already reached: report it now, instead of
+        // dequeuing a pending event (eg mouse motion, which fires at a much
+        // higher rate than most FPS caps and would otherwise starve NONE
+        // forever while the mouse keeps moving).
         while (G.expert.t0+G.expert.ms <= now) {
             G.expert.t0 += G.expert.ms;
         }
-        cur = 0;
+        if (evt != NULL) {
+            evt->type = PICO_EVENT_NONE;
+        }
+        return 0;
     }
     Pico_Event xevt;
     if (evt == NULL) {
