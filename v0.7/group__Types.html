@@ -124,6 +124,8 @@ Macros</h2></td></tr>
 <tr class="separator:ga82ef40d2a534128887caad6859c27d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9587ec64871805f944c9fbc51dc5af68" id="r_ga9587ec64871805f944c9fbc51dc5af68"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Types.html#ga9587ec64871805f944c9fbc51dc5af68">pico_assert_X</a>(x)&#160;&#160;&#160;<a class="el" href="group__Types.html#ga69736840d78e46b1cb6821422f942859">pico_assert</a>((x) != NULL)</td></tr>
 <tr class="separator:ga9587ec64871805f944c9fbc51dc5af68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga653582fc7273f1be327b533288293a58" id="r_ga653582fc7273f1be327b533288293a58"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Types.html#ga653582fc7273f1be327b533288293a58">pico_assert_key</a>(x,  key)</td></tr>
+<tr class="separator:ga653582fc7273f1be327b533288293a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -195,6 +197,38 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+</div>
+</div>
+<a id="ga653582fc7273f1be327b533288293a58" name="ga653582fc7273f1be327b533288293a58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga653582fc7273f1be327b533288293a58">&#9670;&#160;</a></span>pico_assert_key</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define pico_assert_key</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">x, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">key&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">if</span> ((x) == NULL) { \</div>
+<div class="line">        fprintf(stderr, <span class="stringliteral">&quot;invalid key : %s\n&quot;</span>, key); \</div>
+<div class="line">        assert(0 &amp;&amp; <span class="stringliteral">&quot;invalid key&quot;</span>); \</div>
+<div class="line">    }</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="ga9587ec64871805f944c9fbc51dc5af68" name="ga9587ec64871805f944c9fbc51dc5af68"></a>
