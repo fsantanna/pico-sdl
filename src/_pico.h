@@ -114,6 +114,7 @@ typedef struct PicoState {
     struct {
         unsigned init:   1;
         unsigned aids:   1;
+        unsigned loop:   1;
         unsigned expert: 1;
     } flags;
     realm_t*      realm;

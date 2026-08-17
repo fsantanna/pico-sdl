@@ -1,3 +1,12 @@
+v0.8 (xxx/xx)
+-------------
+
+Fixes:
+
+- quit event:
+    - clean shutdown before exit (was skipping teardown)
+    - `pico.input.loop`: just escapes the loop (was exiting the process)
+
 v0.7 (aug/26)
 -------------
 

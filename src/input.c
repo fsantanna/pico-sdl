@@ -63,7 +63,8 @@ void pico_set_mouse (const char* layer, Pico_Rel_Pos pos) {
 static int _event_handler (Pico_Event* pico, int do_exit) {
     switch (pico->type) {
         case PICO_EVENT_QUIT: {
-            if (G.aids && !G.expert.on && do_exit) {
+            if (G.flags.aids && !G.flags.expert && do_exit && !G.flags.loop) {
+                pico_init(0);
                 exit(0);
             }
             break;
@@ -311,6 +312,8 @@ int pico_input_delay (int ms) {
 
 void pico_input_loop (void) {
     _pico_guard();
+    G.flags.loop = 1;
     pico_input_event(NULL, PICO_EVENT_QUIT);
+    G.flags.loop = 0;
 }
 
