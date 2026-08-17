@@ -805,13 +805,13 @@ For instance, the field `key` identifies the sub-layer for further operations.
 
 ### 7.4. Hierarchy
 
-Layers in `pico-lua` can form a tree hierarchy that `pico.output.present`
+Layers in `pico-lua` can form a tree hierarchy which `pico.output.present`
 traverses automatically to compose the full scene onto the screen.
 
-When creating a layer (e.g., `me`), we can pass another layer (e.g., `up`) to
-become its parent:
+When creating a new layer, we can pass an `up` layer to become its parent:
 
 ```
+-- incomplete: dont execute this code
 pico.layer.empty { up="up", key="me", ... }  -- "up" is parent of "me"
 pico.set.layer("me")                         -- setup "me"
 pico.set.scene {                             -- position "me" within "up"
@@ -824,7 +824,7 @@ In the example, the child layer `me` is centered inside parent layer `up`.
 
 <img src="../../tst/asr/guide-07-04-01.png" width="200" align="right">
 
-Suppose we want to draw the layout in the figure in the right:
+As an example, suppose we want to draw the layout in the figure in the right:
 The world layer (shown as `R` in the figure) contains the image layer `I`
 and panel layer `P`, which contains the text layers `T1` and `T2`.
 
@@ -838,10 +838,10 @@ The next code listing implements this layout:
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.layer.image {
+> pico.layer.image {    -- image at top-left
     up="world", key="I", path="open.png", target={'%', x=0.3, y=0.3, w=0.4},
   }
-> do
+> do                    -- panel at bottom-right
     pico.layer.empty { up="world", key="P", clear=true, dim={'!', w=100, h=50} }
     pico.set.layer("P")
     pico.set.effect { color='silver' }
@@ -867,7 +867,8 @@ update the screen all at once.
 
 Layers are memory resources that require a mechanism for consistent allocations
 and matching deallocations.
-`pico-lua` relies on a stack that provides deterministic bulk deallocations in
+
+`pico-lua` supports a stack mechanism for deterministic bulk deallocations in
 scope transitions within applications.
 
 The default scope opens at `pico.init(true)` and closes at `pico.init(false)`.
