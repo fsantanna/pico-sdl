@@ -32,7 +32,7 @@ PICO_STYLE pico_get_pencil_style (void) {
 
 int pico_get_aids (void) {
     _pico_guard();
-    return G.aids;
+    return G.flags.aids;
 }
 
 int pico_get_expert (int* fps) {
@@ -40,7 +40,7 @@ int pico_get_expert (int* fps) {
     if (fps != NULL) {
         *fps = G.expert.fps;
     }
-    return G.expert.on;
+    return G.flags.expert;
 }
 
 Pico_Abs_Dim pico_get_image (Pico_Rel_Dim* rel, const char* path) {
@@ -221,13 +221,13 @@ void pico_set_pencil_style (PICO_STYLE style) {
 
 void pico_set_aids (int on) {
     _pico_guard();
-    G.aids = on;
+    G.flags.aids = !!on;
 }
 
 int pico_set_expert (int on, int fps) {
     _pico_guard();
     assert(fps >= -1);
-    G.expert.on  = on;
+    G.flags.expert = !!on;
     G.expert.fps = fps;
     {
         if (fps == 0) {

@@ -111,13 +111,15 @@ typedef struct {
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef struct PicoState {
-    int           init;
+    struct {
+        unsigned init:   1;
+        unsigned aids:   1;
+        unsigned expert: 1;
+    } flags;
     realm_t*      realm;
     Pico_Layer    world;
     Pico_Layer*   layer;
-    int           aids;
     struct {
-        int on;
         int fps;
         int ms;
         int t0;

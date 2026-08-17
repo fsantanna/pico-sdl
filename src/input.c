@@ -82,7 +82,7 @@ static int _event_handler (Pico_Event* pico, int do_exit) {
         }
 
         case PICO_EVENT_KEY_DN: {
-            if (!G.aids || !pico->keyboard.ctrl) {
+            if (!G.flags.aids || !pico->keyboard.ctrl) {
                 break;
             }
             switch (pico->keyboard.key) {

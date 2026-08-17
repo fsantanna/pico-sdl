@@ -269,7 +269,7 @@ void _pico_output_present (int force) {
         return;
     } else if (force) {
         // ok
-    } else if (G.expert.on) {
+    } else if (G.flags.expert) {
         return;
     } else if (!(G.layer==&G.world || G.layer==&G.window.layer)) {
         return;  // auto-present only on root layers (world or window)
@@ -277,7 +277,7 @@ void _pico_output_present (int force) {
 
     G.window.ing.out = 1;
 
-    if (!G.expert.on) {
+    if (!G.flags.expert) {
         SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
         Pico_Color c = G.window.layer.effect.color;
         SDL_SetRenderDrawColor(G.window.ren, c.r, c.g, c.b, c.a);
@@ -298,7 +298,7 @@ void _pico_output_present (int force) {
 
 void pico_output_present (int layers) {
     _pico_guard();
-    if (G.expert.on) {
+    if (G.flags.expert) {
         if (layers) {
             pico_output_draw_layers();
         }

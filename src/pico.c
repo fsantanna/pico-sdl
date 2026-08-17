@@ -41,7 +41,7 @@ PicoState G = { 0 };
 ///////////////////////////////////////////////////////////////////////////////
 
 void _pico_guard (void) {
-    if (!G.init) {
+    if (!G.flags.init) {
         fprintf(stderr, "ERROR : pico-sdl is not initialized\n");
         abort();
     }
@@ -54,7 +54,7 @@ SDL_Texture* _pico_tex_create (Pico_Abs_Dim dim) {
     );
 
     SDL_BlendMode mode;
-    if (!G.init) {
+    if (!G.flags.init) {
         mode = SDL_BLENDMODE_NONE;
     } else if (G.layer == &G.window.layer) {
         mode = SDL_BLENDMODE_NONE;
@@ -90,7 +90,7 @@ TTF_Font* _pico_font_get (const char* path, int h) {
 
 void pico_init (int on) {
     if (on) {
-        assert(G.init == 0);
+        assert(G.flags.init == 0);
 
         realm_t* realm = realm_open(PICO_HASH_BUK);
         {
@@ -147,7 +147,7 @@ void pico_init (int on) {
         }
 
         G = (typeof(G)) {
-            .init  = 1,
+            .flags = { .init=1, .aids=1 },
             .realm = realm,
             .world = {
                 .type = PICO_LAYER_PLAIN,
@@ -176,8 +176,7 @@ void pico_init (int on) {
                 },
             },
             .layer  = NULL,
-            .aids   = 1,
-            .expert = {0, 0, -1, 0},
+            .expert = {0, -1, 0},
             .window = {
                 .win = win,
                 .ren = ren,
@@ -222,8 +221,8 @@ void pico_init (int on) {
         SDL_SetWindowResizable(G.window.win, 1);
     }
     else {
-        assert(G.init == 1);
-        G.init = 0;
+        assert(G.flags.init == 1);
+        G.flags.init = 0;
 
         assert(G.realm != NULL);
         realm_close(G.realm);
