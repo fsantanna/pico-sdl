@@ -44,3 +44,7 @@ Fix segfault/hang on abnormal exit of pico-lua scripts.
 - [ ] add `atexit` guard in `lua/pico.c` `l_init(true)`
 - [ ] verify: SIGINT loop on `anims.lua` → no segfault/hang
 - [ ] decide: fold into `v0.7` branch or post-release
+
+# See also
+
+- `260817-loop.md`: `exit(0)` on quit event (related teardown)
