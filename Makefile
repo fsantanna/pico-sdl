@@ -24,7 +24,7 @@ realm:
 		-o src/realm.hc
 
 lua:
-	sudo luarocks make lua/pico-sdl-0.6-2.rockspec --lua-version=5.4
+	sudo luarocks make lua/pico-sdl-0.7-1.rockspec --lua-version=5.4
 
 test: lib
 	$(EXE) tst/$(T).c
@@ -40,7 +40,7 @@ tests: lib
 	@echo "Running tests..."
 	./pico-sdl | grep -q "Usage: pico-sdl"
 	./pico-sdl --help | grep -q "Usage: pico-sdl"
-	./pico-sdl --version | grep -q "v0.6"
+	./pico-sdl --version | grep -q "v0.7"
 	$(EXE) tst/aids.c
 	$(EXE) tst/anchor_pct.c
 	$(EXE) tst/anchor_raw.c

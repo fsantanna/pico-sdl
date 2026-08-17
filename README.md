@@ -10,6 +10,7 @@
 ***A 2D graphics library for C and Lua***
 
 [
+    [`v0.7`](https://github.com/fsantanna/pico-sdl/tree/v0.7/) |
     [`v0.6`](https://github.com/fsantanna/pico-sdl/tree/v0.6/) |
     [`v0.5`](https://github.com/fsantanna/pico-sdl/tree/v0.5/) |
     [`v0.3.1`](https://github.com/fsantanna/pico-sdl/tree/v0.3.1/) |
@@ -18,7 +19,7 @@
 ]
 
 This is the unstable `main` branch.
-Please, switch to stable [`v0.6`](https://github.com/fsantanna/pico-sdl/tree/v0.6).
+Please, switch to stable [`v0.7`](https://github.com/fsantanna/pico-sdl/tree/v0.7).
 
 [
     [About](#about)                 |
@@ -129,7 +130,7 @@ Run:
 
 - [Doxygen API][api]
 
-[api]: https://fsantanna.github.io/pico-sdl/v0.6/
+[api]: https://fsantanna.github.io/pico-sdl/v0.7/
 
 # Testing
 
