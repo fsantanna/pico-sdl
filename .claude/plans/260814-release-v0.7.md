@@ -16,6 +16,35 @@ Releases `pico-sdl` `0.7` and downstream consumers in one pass.
 Execute in order — env-pico needs new pico-sdl on LuaRocks,
 and pico-birds / pico-rocks READMEs reference env-pico version.
 
+## Resume point (2026-08-17, switching machines)
+
+- Section 1 (pico-sdl) DONE: `0.7-1` on LuaRocks; `v0.7` pushed
+    - main-sync deferred to end (batch)
+    - ⚠ open: Ctrl-C on `anims.lua` → segfault on teardown
+    - strays left untracked on purpose (font/tile WIP)
+- Resume at §2.4: env-pico commit on `v0.4`
+- Work state (all UNCOMMITTED, local only — must commit+push
+  before other machine can pull):
+    - env-pico: branch `v0.4` (no upstream); README,
+      `exs/click-drag-cancel.lua` (text.dyn), rockspec `0.4-1`,
+      plan `260815-release-v0.4.md`
+    - lua-atmos/pico-birds: branch `v0.7` (no upstream);
+      README + birds-02..11 (layer.image table args)
+    - lua-atmos/pico-rocks: branch `v0.7` (no upstream);
+      README, `main.lua` (text.dyn/fix), `ts.lua` (layer.images)
+    - atmos-lang/pico-birds: on `main` — CREATE branch first;
+      birds-*.atm (layer.image + watching v0.8 syntax)
+    - atmos-lang/pico-rocks: on `master` — CREATE branch first;
+      `main.atm`, `ts.atm`
+    - atmos-lang/atmos: branch `v0.8`; `doc/manual.md` (`x`→`(x)`)
+      among other user edits (separate track)
+- All smoke-tests already pass headless vs pico-sdl 0.7
+  (see per-section Status blocks)
+- Interactive still pending: pico-rocks gameplay after ENTER
+  (both lua and atm flavors)
+- Target versions decided: env-pico 0.4; lua-atmos birds/rocks
+  v0.7; atmos-lang birds/rocks v0.9
+
 ---
 
 ## 1. pico-sdl `0.7`
@@ -29,6 +58,12 @@ Status:
     - demos + guide examples ran headless w/o crash
     - true input checks (mouse/key) not possible headless
 - §1.4 ✅ rockspec `0.7-1` created; `0.6-3` → `lua/old/`
+- §1.6–1.7 ✅ committed + pushed `origin/v0.7`
+- §1.8 ✅ luarocks make + guide examples ok (user)
+    - ⚠ Ctrl-C on `anims.lua` → segfault on teardown (investigate)
+- §1.3b ✅ interactive `tst/todo` demos verified by user
+- §1.9 ✅ `0.7-1` live on luarocks.org; installed + verified
+- Section 1 done (main-sync deferred to end)
 - §1.5 ✅ bumps: `pico-sdl` script, `Makefile`, READMEs,
   `HISTORY.md` date (aug/26)
 - Strategy change: work on branch `v0.7` (created, current);
