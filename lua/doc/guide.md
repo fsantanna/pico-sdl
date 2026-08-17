@@ -51,11 +51,11 @@ To initialize `pico-lua`, we pass `true` to `pico.init`:
 </td></tr>
 </table>
 
-We immediately see a `500x500` **physical pixels** window divided in small
-`5x5` rectangles representing `100x100` **logical pixels**.
+We immediately see a window of `100x100` **logical pixels**, built on top of
+`500x500` **physical pixels** divided in small `5x5` rectangles.
 
 In the context of `pico-lua`, we use the term **world** to designate the
-logical view, which applications typically use as the main reference.
+logical layer, and **window** for the physical layer.
 
 By default, note that `pico-lua` conventionally exhibits the grid and
 coordinate labels to aid development with visual inspection.
@@ -78,16 +78,17 @@ appropriate layer:
 </td></tr>
 </table>
 
-Note that `window` and `world` are pre-defined layers, which we discuss in
-[#Layers](#7-layers).
+The character `'!'` indicates a dimension in "raw mode".
+We discuss [#Positioning Modes](#4-positioning-modes--anchors) further.
 
-Using the same dimension for both the window and world, the grid disappears,
-since the pixel size is now `1x1`.
+The `window` and `world` are pre-defined layers, which we can manipulate
+independently.
+We discuss [#Layers](#7-layers) further.
+Using the same dimensions for both makes the grid disappear, since the pixel
+size becomes `1x1`.
 
-The character `'!'` indicates a dimension in "raw mode", which we discuss in
-[#Positioning Modes](#4-positioning-modes--anchors).
-
-We could also use the simpler `pico.set.dim` to set the views at the same time:
+We could also use the simpler `pico.set.dim` to set both views at the same
+time:
 
 <table>
 <tr><td><pre>
@@ -144,8 +145,9 @@ To draw a single pixel, we call `pico.output.draw.pixel`:
 </td></tr>
 </table>
 
-The pixel occupies a physical `5x5` square representing a single world pixel,
-as expected.
+By default, drawing operations target the world layer.
+This way, the pixel is visible for inspection, occupying a physical `5x5`
+square.
 
 To draw a rectangle, we call `pico.output.draw.rect`:
 
@@ -159,11 +161,12 @@ To draw a rectangle, we call `pico.output.draw.rect`:
 </table>
 
 The table specifies a rectangle at position `(20,20)` with size `30x30`.
-
-Unlike most graphics libraries, `pico-lua` **centers** objects by default,
-which we discuss in [#Anchors](#4-positioning-modes--anchors).
 With the aid of the tick marks, we can see that the rectangle is actually
-centered at the given position.
+**centered** at the given position.
+
+Unlike most graphics libraries, by default `pico-lua` anchors an object at its
+center.
+We discuss [#Anchors](#4-positioning-modes--anchors) further.
 
 Note that `pico-lua` retains both shapes on the screen, i.e., drawing
 operations are cumulative.
@@ -205,9 +208,10 @@ passing the `color` attribute:
 
 In the example, we set the background color as yellow, and the drawing color
 for shapes as red.
-A `set` has no immediate effect on the screen, and only affects further
-operations.
-Then, we finally clear the screen and draw a centered rectangle.
+Then, we clear the screen and draw a centered rectangle.
+
+Note that a `set` has no immediate effect on the screen, and only affects
+further operations.
 
 Colors can also be specified as numbers or tables:
 
@@ -217,7 +221,6 @@ Colors can also be specified as numbers or tables:
     color = 0xCCCCCC
   }
   pico.output.draw.pixel { '!', x=26, y=26 }
-
 > pico.set.pencil {       -- percent mode '%' (0.0-1.0)
     color={ '%', r=0, g=0.5, b=0, a=0.5 }
   }
@@ -242,7 +245,7 @@ Let's restart `pico-lua` for the next examples:
 
 ### 3.3. Text, Image and Pixmap
 
-To write text, we call `pico.output.draw.text.fix`:
+To write a constant text, we call `pico.output.draw.text.fix`:
 
 <table>
 <tr><td><pre>
@@ -258,9 +261,9 @@ To write text, we call `pico.output.draw.text.fix`:
 *(You need to save the [font](../../res/DejaVuSans.ttf) on your machine.)*
 
 We first draw `Hello` at the top using the default built-in font.
-Then, we switch a new font and draw `Hello` again at the bottom.
+Then, we switch to a new font and draw `Hello` again at the bottom.
 
-Note that `pico-lua` preserves the correct text aspect ratio when we ommit the
+Note that `pico-lua` preserves the correct text aspect ratio when we omit the
 width `w`.
 
 To draw an [image](../../res/open.png), we call `pico.output.draw.image`:
@@ -308,11 +311,11 @@ dimensions and aspect ratio.
 </table>
 
 The table `PI` determines the color of each pixel to draw.
-We use single-char color variables to initialize the pixmap array: a Greek
-letter `pi`, on top of a blue circle, on top of a black background.
+We use single-char color variables to initialize the pixmap array:
+the "Greek letter PI", on top of a blue circle, on top of a black background.
 
 Note that `pico.output.draw.pixmap` requires a string identifier as first
-parameter for proper caching.
+parameter.
 
 Internally, `pico-lua` caches texts, images and pixmaps such that they are
 reused on subsequent redraws.
@@ -320,23 +323,25 @@ We detail caching in [#Layers](#7-layers).
 
 ## 4. Positioning: Modes & Anchors
 
-The **mode** determines the behavior of coordinate positions within layers:
+In `pico-lua`, we describe positions, dimensions, and shapes using standard Lua
+tables with named fields (e.g., `w` for width).
+In addition to the usual fields, tables also describe
+    a **mode** at index `1`, and
+    an **anchor** at field `anchor`:
+
+- `{ '%', x=0.5, y=0.5 }`:          a centered relative position
+- `{ '!', w=20, h=30 }`:            a raw dimension
+- `{ '#', x=4, y=4, w=2, h=1 }`:    a rectangle spanning 2 tiles horizontally
+- `{ '%', x=0, y=1, anchor='SW' }`: a bottom-left position with *southwest* anchor
+
+The **mode** determines the behavior of coordinates within layers:
 
 - `'!'` - Raw: coordinates are in pixels
 - `'%'` - Percentage: coordinates are relative to layer dimensions
 - `'#'` - Tile: coordinates are based on tile indices
 
-The percentage mode `'%'` is preferable, since it is independent of layer
-dimensions and adapts naturally to resizes.
-For instance, `{ '%', x=0.5, y=0.5 }` always points to the center of the
-layer, regardless of its size.
-
-The mode is set at index `1` in tables representing positions, dimensions, and
-rectangles:
-
-- `{ '%', x=0.5, y=0.5 }`:          a centered relative position
-- `{ '!', w=20, h=30 }`:            a raw dimension
-- `{ '#', x=4, y=4, w=2, h=1 }`:    a rectangle spanning 2 tiles horizontally
+Note that the percentage mode `'%'` is independent of layer dimensions and
+adapts naturally to resizes.
 
 The **anchor** determines the reference point **within** shapes:
 
@@ -348,15 +353,9 @@ The **anchor** determines the reference point **within** shapes:
 +-----------+
 ```
 
-When drawing, the anchor position is pinned to the given coordinate.
+When drawing, the anchor pins an inner shape position to the given coordinate.
 As shown in the previous examples, by default, `pico-lua` uses the center
 anchor `'C'`.
-
-To specify an anchor, we use the field `anchor` in tables representing
-positions:
-
-- `{ '%', x=0.5, y=0.5, w=0.5, h=0.5, anchor='SW' }`:
-    the rectangle's *southwest* corner pinned at center of the screen
 
 Let's draw a pixel and three rectangles, all at the same position, but using
 different anchors:
@@ -380,7 +379,7 @@ different anchors:
 
 The pixel represents the reference position `%(0.5,0.5)` used by the three
 rectangles.
-The `0x80` alpha makes the overlapping regions reveal how the pinned anchors
+The alpha `0x80` makes the overlapping regions reveal how the pinned anchors
 offset each rectangle from the same coordinate:
 
 - the **red** rectangle places its `NW` corner at `(0.5,0.5)`
@@ -409,15 +408,16 @@ dimensions:
 
 In the example, we set each tile to `20x20` and create a world of `5x5` tiles.
 
-We then draw two rectangles using the tile mode `'#'`:
+Then, we draw two rectangles using the tile mode `'#'`:
 
-- The first is centered at `(3,3)` occupying `1x1` tile (`20x20` pixels).
+- The first is centered at `(3,3)` occupying `1x1` tile (`20x20` logical pixels).
 - The second uses anchor `NE`, to properly occupy the top right of the screen
-  with `2x1` tiles (`40x20` pixels).
+  with `2x1` tiles (`40x20` logical pixels).
 
 ## 5. Advanced Views
 
 The scene view controls how the logical world maps to the physical window.
+
 Next, we discuss some advanced properties for `pico.set.scene`:
 
 | Property | Description             |
@@ -494,7 +494,7 @@ the world background when we zoom out):
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.layer("window")            -- (typically grey to distinguish from world)
+> pico.set.layer("window") -- (typically grey to distinguish from world)
   pico.set.effect { color='black' }
 > pico.set.layer("world")
   pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
@@ -656,7 +656,7 @@ Let's draw a centered image and use the key bindings to explore it:
 
 <table>
 <tr><td><pre>
-> pico.output.clear()
+> pico.init(false) ; pico.init(true)
 > pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 > pico.input.loop()
 </pre>
@@ -689,7 +689,7 @@ We use `pico.layer.empty` to create a fresh layer, and `pico.set.layer` to
 redirect further drawing operations to it:
 
 ```lua
-> pico.output.clear()
+> pico.init(false) ; pico.init(true)
 > pico.layer.empty { key="flag", dim={'!', w=300, h=200} }
 > pico.set.layer("flag")
 > pico.set.pencil { color={ r=0x00, g=0x2B, b=0x7F } }
@@ -703,14 +703,8 @@ redirect further drawing operations to it:
 At this point, nothing appears on the screen yet, since we did not update the
 main world view.
 
-We identify the layer as `flag` and then set it as the current drawing layer.
-Then, we paint inside the layer with the colors.
-
-Two notes about `pico.layer.empty` to be discussed further in
-[#Hierarchy](#74-hierarchy):
-
-- the first argument (`nil`) is the optional parent layer
-- the third argument (`false`) determines if layer traversal automatically clears it
+We first identify the layer as `flag` and set it as the current drawing layer.
+Then, we paint shapes inside it with the chosen colors.
 
 ### 7.2. Compositing
 
@@ -754,10 +748,11 @@ order.
 The `rotate` table takes an `angle` in degrees and an `anchor` for the pivot
 point.
 
-We can also set the transparency of layers by lowering their `alpha` field:
+We can also set the transparency of a layer by lowering its `alpha` field:
 
 <table>
 <tr><td><pre>
+> pico.output.clear()
 > pico.set.layer("flag")
 > pico.set.effect {
     rotate = {angle=0},
@@ -806,8 +801,7 @@ Each sub-layer crops a square from each stripe of the flag (blue, yellow, red),
 and then draws each on the screen.
 
 A sub-layer uses the same APIs as layers.
-For instance, the second argument to `pico.layer.sub` identifies the sub-layer
-for further operations.
+For instance, the field `key` identifies the sub-layer for further operations.
 
 ### 7.4. Hierarchy
 
