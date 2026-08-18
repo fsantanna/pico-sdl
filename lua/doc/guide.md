@@ -68,9 +68,9 @@ appropriate layer:
 
 <table>
 <tr><td><pre>
-> pico.set.layer("window")
+> pico.set.layer('window')
   pico.set.scene { dim = { '!', w=200, h=200 } }
-> pico.set.layer("world")
+> pico.set.layer('world')
   pico.set.scene { dim = { '!', w=200, h=200 } }
 </pre>
 </td><td>
@@ -303,7 +303,7 @@ dimensions and aspect ratio.
       {_,o,o,o,o,o,o,o,o,_},
       {_,_,_,o,o,o,o,_,_,_},
   }
-> pico.output.draw.pixmap("pi", PI, {'!', x=50, y=50, w=80})
+> pico.output.draw.pixmap('pi', PI, {'!', x=50, y=50, w=80})
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-03-03-03.png" width="200">
@@ -494,9 +494,9 @@ the world background when we zoom out):
 <table>
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
-> pico.set.layer("window") -- (typically grey to distinguish from world)
+> pico.set.layer('window') -- (typically grey to distinguish from world)
   pico.set.effect { color='black' }
-> pico.set.layer("world")
+> pico.set.layer('world')
   pico.output.draw.image("open.png", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 </pre>
 </td><td>
@@ -690,8 +690,8 @@ redirect further drawing operations to it:
 
 ```lua
 > pico.init(false) ; pico.init(true)
-> pico.layer.empty { key="flag", dim={'!', w=300, h=200} }
-> pico.set.layer("flag")
+> pico.layer.empty { key='flag', dim={'!', w=300, h=200} }
+> pico.set.layer('flag')
 > pico.set.pencil { color={ r=0x00, g=0x2B, b=0x7F } }
   pico.output.draw.rect { '%', x=0.00, y=0.0, w=0.33, h=1.0, anchor='NW' }
   pico.set.pencil { color={ r=0xFC, g=0xD1, b=0x16 } }
@@ -713,16 +713,16 @@ To compose a layer on top of the current layer, we call
 
 <table>
 <tr><td><pre>
-> pico.set.layer("world")      -- back to the world layer
-> pico.output.draw.layer("flag", {'%', x=0.33, y=0.33, w=0.2})
-> pico.output.draw.layer("flag", {'%', x=0.66, y=0.66, w=0.5})
+> pico.set.layer('world')      -- back to the world layer
+> pico.output.draw.layer('flag', {'%', x=0.33, y=0.33, w=0.2})
+> pico.output.draw.layer('flag', {'%', x=0.66, y=0.66, w=0.5})
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-07-02-01.png" width="200">
 </td></tr>
 </table>
 
-We first use `pico.set.layer("world")` to target the world layer.
+We first use `pico.set.layer('world')` to target the world layer.
 Then, we compose the flag twice, with different arguments.
 
 We can also flip and rotate layers when compositing them, by setting their
@@ -730,13 +730,13 @@ We can also flip and rotate layers when compositing them, by setting their
 
 <table>
 <tr><td><pre>
-> pico.set.layer("flag")
+> pico.set.layer('flag')
 > pico.set.effect {
     flip   = 'horizontal',
     rotate = {angle=30, anchor='C'},
   }
-> pico.set.layer("world")
-> pico.output.draw.layer("flag", {'%', x=0.75, y=0.25, w=0.3})
+> pico.set.layer('world')
+> pico.output.draw.layer('flag', {'%', x=0.75, y=0.25, w=0.3})
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-07-02-02.png" width="200">
@@ -753,14 +753,14 @@ We can also set the transparency of a layer by lowering its `alpha` field:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.set.layer("flag")
+> pico.set.layer('flag')
 > pico.set.effect {
     rotate = {angle=0},
     flip   = 'none',
     alpha  = 0x80,
   }
-> pico.set.layer("world")
-> pico.output.draw.layer("flag", {'%', x=0.5, y=0.5, w=0.6})
+> pico.set.layer('world')
+> pico.output.draw.layer('flag', {'%', x=0.5, y=0.5, w=0.6})
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-07-02-03.png" width="200">
@@ -785,12 +785,12 @@ In the next example, we want to isolate each stripe of the flag as a sub layer:
 <table>
 <tr><td><pre>
 > pico.output.clear()
-> pico.layer.sub { key="blue",   sup="flag", crop={'%', x=0.25, y=0.5, w=0.1, h=0.15} }
-> pico.layer.sub { key="yellow", sup="flag", crop={'%', x=0.50, y=0.5, w=0.1, h=0.15} }
-> pico.layer.sub { key="red",    sup="flag", crop={'%', x=0.75, y=0.5, w=0.1, h=0.15} }
-> pico.output.draw.layer("blue",   {'%', x=0.30, y=0.30, w=0.25})
-> pico.output.draw.layer("yellow", {'%', x=0.70, y=0.45, w=0.25})
-> pico.output.draw.layer("red",    {'%', x=0.45, y=0.75, w=0.25})
+> pico.layer.sub { key='blue',   sup='flag', crop={'%', x=0.25, y=0.5, w=0.1, h=0.15} }
+> pico.layer.sub { key='yellow', sup='flag', crop={'%', x=0.50, y=0.5, w=0.1, h=0.15} }
+> pico.layer.sub { key='red',    sup='flag', crop={'%', x=0.75, y=0.5, w=0.1, h=0.15} }
+> pico.output.draw.layer('blue',   {'%', x=0.30, y=0.30, w=0.25})
+> pico.output.draw.layer('yellow', {'%', x=0.70, y=0.45, w=0.25})
+> pico.output.draw.layer('red',    {'%', x=0.45, y=0.75, w=0.25})
 </pre>
 </td><td>
 <img src="../../tst/asr/guide-07-03-01.png" width="200">
@@ -812,9 +812,9 @@ When creating a new layer, we can pass an `up` layer to become its parent:
 
 ```
 -- (this is just a sketch - do not execute)
-pico.layer.empty { up="up", key="me", ... }  -- "up" is parent of "me"
-pico.set.layer("me")                         -- setup "me"
-pico.set.scene {                             -- position "me" within "up"
+pico.layer.empty { up='up', key='me', ... }  -- 'up' is parent of 'me'
+pico.set.layer('me')                         -- setup 'me'
+pico.set.scene {                             -- position 'me' within 'up'
     target = {'%', x=0.5, y=0.5, w=0.5, h=0.5}
 }
 ```
@@ -839,18 +839,18 @@ The next code listing implements this layout:
 <tr><td><pre>
 > pico.init(false) ; pico.init(true)
 > pico.layer.image {    -- image at top-left
-    up="world", key="I", path="open.png", target={'%', x=0.3, y=0.3, w=0.4},
+    up='world', key='I', path="open.png", target={'%', x=0.3, y=0.3, w=0.4},
   }
 > do                    -- panel at bottom-right
-    pico.layer.empty { up="world", key="P", clear=true, dim={'!', w=100, h=50} }
-    pico.set.layer("P")
+    pico.layer.empty { up='world', key='P', clear=true, dim={'!', w=100, h=50} }
+    pico.set.layer('P')
     pico.set.effect { color='silver' }
     pico.set.scene { target = {'%', x=0.7, y=0.7, w=0.4} }
     pico.layer.text {
-        up="P", key="T1", dim={'!', h=20}, text="Hello",  target={'%', x=0.5, y=0.3, h=0.6},
+        up='P', key='T1', dim={'!', h=20}, text="Hello",  target={'%', x=0.5, y=0.3, h=0.6},
     }
     pico.layer.text {
-        up="P", key="T2", dim={'!', h=20}, text="World!", target={'%', x=0.5, y=0.7, h=0.4},
+        up='P', key='T2', dim={'!', h=20}, text="World!", target={'%', x=0.5, y=0.7, h=0.4},
     }
   end
 > pico.output.present()
@@ -1145,7 +1145,7 @@ In the omitted initialization, we use [#sub-layers](#73-sub-layers) to crop the
 
 ```lua
 local frames = pico.layer.images {
-    key="walk", path="img/walk.png", sheet={'#', w=4, h=4},
+    key='walk', path="img/walk.png", sheet={'#', w=4, h=4},
 }
 
 local dirs = {
@@ -1156,7 +1156,7 @@ local dirs = {
 }
 ```
 
-This splits the sprite sheet into layers `"walk-01"` to `"walk-16"`:
+This splits the sprite sheet into layers `'walk-01'` to `'walk-16'`:
 walk down (`01-04`), up (`05-08`), right (`09-12`), left (`13-16`).
 
 Then, at each loop step, the call to `walk` decodes the current state and
@@ -1217,7 +1217,7 @@ Optional layer arguments can test across frames.
 When a rect side is omitted, it defaults to that layer's bounds:
 
 ```lua
-> pico.vs.rect.rect("world", "window", {'%', x=0.5, y=0.5, w=0.5, h=0.5})
+> pico.vs.rect.rect('world', 'window', {'%', x=0.5, y=0.5, w=0.5, h=0.5})
 true
 ```
 
@@ -1280,7 +1280,7 @@ An optional rectangle crops the screenshot:
 > pico.output.screenshot (
     'window',
     "crop.png",
-    {'%', x=0.5, y=0.5, w=0.25, h=0.25},
+    {'%', x=0.5, y=0.5, w=0.25, h=0.25}
   )
 </pre>
 </td><td>
