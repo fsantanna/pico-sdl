@@ -811,7 +811,7 @@ traverses automatically to compose the full scene onto the screen.
 When creating a new layer, we can pass an `up` layer to become its parent:
 
 ```
--- incomplete: dont execute this code
+-- (this is just a sketch - do not execute)
 pico.layer.empty { up="up", key="me", ... }  -- "up" is parent of "me"
 pico.set.layer("me")                         -- setup "me"
 pico.set.scene {                             -- position "me" within "up"
@@ -904,7 +904,7 @@ By default, as seen in previous sections, each drawing operation becomes
 immediately visible on the screen.
 
 However, to keep visual objects in perfect sync, most games and non-trivial
-applications require to draw them simultaneously on every frame.
+applications require to draw them all simultaneously on every frame.
 
 For this reason, `pico-lua` supports an expert mode that buffers drawing
 operations until an explicit call to `pico.output.present`, which updates the
@@ -926,8 +926,8 @@ To enable the expert mode, we call `pico.set.expert`:
 </td></tr>
 </table>
 
-Note that although the code above takes at least `2s` to complete, nothing
-appears on the screen yet, since we have not called `pico.output.present`:
+Note that although the code above takes `2s` to complete, nothing appears on
+the screen, since we have not called `pico.output.present` yet:
 
 <table>
 <tr><td><pre>
@@ -944,7 +944,7 @@ Now, both the rectangles appear at the same time.
 
 Typical games and graphical applications need to deal continually with moving
 objects, input from users, and also the passage of time.
-These applications follow the same structure of a continuous "main loop":
+These applications follow the structure of a continuous "main loop":
     poll user events,
     update the state of objects,
     redraw the whole scene (a frame), and
@@ -1041,7 +1041,7 @@ end
 ```
 
 Since this example does not contain time-based animations, we do not set FPS in
-`pico.set.expert`, so `pico.input.event` awaits until an event occurs.
+`pico.set.expert`, so `pico.input.event` awakes only on events.
 
 The tables `m` and `k` represent the pixels controlled by the mouse and
 keyboard, respectively.
@@ -1052,7 +1052,7 @@ The main loop first draws their initial positions and awaits
 In this example, we only handle `quit`, `mouse.motion` and `key.dn` events:
 
 - on a quit event, we escape the loop to terminate the application;
-- for the mouse, we update `m.x` and `m.y` based on the received event `e`;
+- for the mouse, we update `m.x` and `m.y` to follow `pico.get.mouse`;
 - for the keyboard, we update `k.x` or `k.y` depending on `e.key`.
 
 Then, the loop iterates to redraw the scene and wait for the next event.
@@ -1081,7 +1081,7 @@ The animation in the left is based on the sprite sheet in the right:
 </td></tr>
 </table>
 
-The complete source code is [here](anims.lua) (`~75` lines of code).
+The complete source code is [here](anims.lua) (`~80` lines of code).
 
 Run the program:
 
@@ -1172,30 +1172,30 @@ layers:
 ```lua
 > pos = pico.cv.pos('!', {'%', x=0.5, y=0.5})
 > print(pos.x, pos.y)
-50   50
+50.0    50.0
 ```
 
-In the example, we convert a percentage into raw coordinates, assuming the
-default `100x100` world layer.
+Here, we convert a percentage into raw coordinates, assuming the default
+`100x100` world layer.
 
 Optional layer arguments can project across frames:
 
 ```lua
 > r = pico.cv.rect('world', '%', 'window', {'!', x=250, y=250, w=100, h=100})
 > print(r.x, r.y, r.w, r.h)
-0.5   0.5   0.2   0.2
+0.5     0.5     0.2     0.2
 ```
 
 Here we project a `100x100` rectangle centered in the `500x500` window,
 obtaining a centered-`20%` world rectangle.
 
-`pico.cv.dim` projects dimensions the same way, without a position
+`pico.cv.dim` projects dimensions in the same way, without a position
 component:
 
 ```lua
 > d = pico.cv.dim('world', '!', 'window', {'!', w=100, h=100})
 > print(d.w, d.h)
-20   20
+20.0    20.0
 ```
 
 ### 9.2. Collision Detection
@@ -1210,8 +1210,8 @@ The set of `pico.vs.*` functions tests overlaps between points and rectangles:
 false
 ```
 
-In the example, the point at `(55, 75)` of the world falls outside the
-rectangle, which spans `(40, 40)` to `(60, 60)`.
+Here, the point at `(55,75)` of the world falls outside the rectangle, which
+spans `(40,40)` to `(60,60)`.
 
 Optional layer arguments can test across frames.
 When a rect side is omitted, it defaults to that layer's bounds:
@@ -1221,8 +1221,8 @@ When a rect side is omitted, it defaults to that layer's bounds:
 true
 ```
 
-In the example, we compare the whole world with a centered `50%` region of
-the window, which must overlap since the world is inside the window by default.
+Here, we compare the whole world with a centered `50%` region of the window,
+which must overlap since the world is inside the window by default.
 
 For the sake of completion, `pico-lua` also provides `pico.vs.pos.pos` and
 `pico.vs.rect.pos`.
@@ -1241,8 +1241,8 @@ returning a new flat value re-expressed in the current scene:
 0.25   0.75
 ```
 
-The parent rect is centered in the world with the child point at its south
-(`y=1`) west (`x=0`) boundary, resulting in a new world point at `y=0.75`
+Here, the parent rect is centered in the world with the child point at its
+south (`y=1`) west (`x=0`) boundary, resulting in a new world point at `y=0.75`
 (south) and `x=0.25` (west).
 
 Nesting is useful, for instance, to check mouse collisions against shapes drawn
