@@ -1290,10 +1290,15 @@ An optional rectangle crops the screenshot:
 
 We can also create a new layer from a screenshot with `pico.layer.screenshot`:
 
-```lua
-> pico.layer.screenshot { key="snap", sup='window' }
-> pico.output.draw.layer("snap", {'%', x=0.5, y=0.5, w=0.3})
-```
+<table>
+<tr><td><pre>
+> pico.layer.screenshot { key='snap', sup='window' }
+> pico.output.draw.layer('snap', {'%', x=0.5, y=0.5, w=0.3})
+</pre>
+</td><td>
+<img src="../../tst/asr/guide-10-01-03.png" width="200">
+</td></tr>
+</table>
 
 In the example, we freeze the `window` into `snap`, then compose it back onto
 the world at `30%` size.
