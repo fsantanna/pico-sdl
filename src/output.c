@@ -82,6 +82,13 @@ void pico_output_draw_line (Pico_Rel_Pos p1, Pico_Rel_Pos p2) {
     _pico_output_present(0);
 }
 
+// BUG: restore to the global BLEND
+// SDL2_gfx `*RGBA` primitives set the blend mode from their alpha
+// (NONE when opaque) and never restore it
+static void _output_gfx_alpha (void) {
+    SDL_SetRenderDrawBlendMode(G.window.ren, SDL_BLENDMODE_BLEND);
+}
+
 void pico_output_draw_oval (Pico_Rel_Rect rect) {
     _pico_guard();
     // w or h omitted (0): complete the other as a pixel square (circle)
@@ -105,6 +112,7 @@ void pico_output_draw_oval (Pico_Rel_Rect rect) {
             );
             break;
     }
+    _output_gfx_alpha();
     _pico_output_present(0);
 }
 
@@ -169,6 +177,7 @@ void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
             );
             break;
     }
+    _output_gfx_alpha();
     _pico_output_present(0);
 }
 
@@ -260,6 +269,7 @@ void pico_output_draw_tri (
             );
             break;
     }
+    _output_gfx_alpha();
     _pico_output_present(0);
 }
 

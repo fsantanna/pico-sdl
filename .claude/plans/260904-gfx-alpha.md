@@ -8,7 +8,7 @@
 
 # Repro
 
-- `tst/bug-gfx-alpha.c`
+- `tst/bug-gfx-alpha.c` (`check.h`, in `make tests`)
     - left: translucent rect over red, blends
     - right: opaque oval, then same rect, solid white
 
@@ -20,5 +20,5 @@
 
 # Pending
 
-- run `tst/bug-gfx-alpha.c` before/after
+- `make int T=bug-gfx-alpha`, then `make gen T=bug-gfx-alpha`
 - `make tests`
