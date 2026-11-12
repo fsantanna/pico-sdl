@@ -1,10 +1,10 @@
 #include "pico.h"
 #include "_pico.h"
 
-// Auto-exit aid: a quit event (window close) closes pico and exits the
-// process from inside the input call. The program gets no chance to
-// free its handles, so pico releases them itself: under valgrind this
-// test must exit with no leaks, although nothing is freed here.
+// Auto-exit aid: a quit event (window close) calls pico_close and
+// exits the process from inside the input call. pico_close releases
+// every handle still alive: under valgrind this test must exit with no
+// leaks, although nothing is freed here.
 
 int main (void) {
     pico_open(NULL);

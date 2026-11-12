@@ -64,7 +64,7 @@ static int _event_handler (Pico_Event* pico, int do_exit) {
     switch (pico->type) {
         case PICO_EVENT_QUIT: {
             if (G.flags.aids && !G.flags.expert && do_exit && !G.flags.loop) {
-                _pico_close(0);
+                pico_close();
                 exit(0);
             }
             break;

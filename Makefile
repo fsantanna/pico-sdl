@@ -44,6 +44,7 @@ tests: lib
 	$(EXE) tst/blend_raw.c
 	$(EXE) tst/clear_alpha.c
 	$(EXE) tst/clip-expert.c
+	$(EXE) tst/close.c
 	$(EXE) tst/clip_pct.c
 	$(EXE) tst/clip_raw.c
 	$(EXE) tst/collide_pct.c

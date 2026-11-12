@@ -11,7 +11,7 @@
  *
  * To prove the free actually does something:
  *   - comment out pico_layer_free() → free-02 still has the red box
- *     → fail, and pico_close trips the "still alive" assert
+ *     → fail
  */
 int main (void) {
     pico_open(NULL);

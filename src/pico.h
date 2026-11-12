@@ -258,13 +258,13 @@ typedef struct {
 void pico_open (const Pico_Window* win);
 
 /// @brief Closes pico: destroys the window and terminates the library.
-/// Releases every resource loaded implicitly by path or content
-/// (`pico_output_draw_image`, `pico_output_draw_text`,
+/// Releases every resource still alive: those loaded implicitly by
+/// path or content (`pico_output_draw_image`, `pico_output_draw_text`,
 /// `pico_output_draw_video`, `pico_output_sound_path`,
-/// `pico_set_pencil_font_path`). Resources created explicitly
-/// (`pico_layer_*`, `pico_font_load`, `pico_sound_load`) must have been
-/// freed already (asserted). The automatic exit on window close (see
-/// @ref pico_set_aids) is the exception: it releases them itself.
+/// `pico_set_pencil_font_path`), and those created explicitly and not
+/// yet freed (`pico_layer_*`, `pico_font_load`, `pico_sound_load`).
+/// Every handle is invalid afterwards. The automatic exit on window
+/// close (see @ref pico_set_aids) goes through this same call.
 /// @sa pico_open
 void pico_close (void);
 

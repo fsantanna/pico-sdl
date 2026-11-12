@@ -85,8 +85,8 @@ void _pico_cache_close (void) {
 ///////////////////////////////////////////////////////////////////////////////
 
 // Tracks user-owned resources (pico_layer_*, pico_font_load,
-// pico_sound_load). pico_close asserts none is left; the auto-exit aid
-// (window close) releases whatever the program still holds.
+// pico_sound_load), so that pico_close can release whatever the
+// program still holds.
 
 void _pico_mem_own (Pico_Own* own, int cached, int kind, void* self) {
     if (cached) {

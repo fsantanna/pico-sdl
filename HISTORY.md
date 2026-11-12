@@ -17,8 +17,7 @@ Modifications (C API only, Lua not yet ported):
 - `pico_open(win)`, `pico_close()`: replace `pico_init(on)`
     - `pico_open` receives the initial window state (`NULL` for
       defaults), e.g., to start hidden
-    - `pico_close` asserts that all handles have been freed
-    - automatic exit on window close frees all handles itself
+    - `pico_close` frees all handles still alive
 - `pico_output_draw_text`: renamed from `pico_output_draw_text_fix`
 - `pico_set_pencil_font`, `pico_output_sound`, `pico_get_video`:
   receive a handle

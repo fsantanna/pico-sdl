@@ -16,8 +16,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // Link in the list of user-owned resources (layers, fonts, sounds).
-// The list lets the auto-exit aid release everything the program
-// still holds; pico_close asserts it is empty.
+// The list lets pico_close release everything the program still
+// holds.
 typedef struct Pico_Own {
     int              kind;          // PICO_OWN_*
     void*            self;          // the resource holding this link
@@ -172,7 +172,6 @@ extern PicoState G;
 
 void         _pico_guard      (void);
 SDL_Texture* _pico_tex_create (Pico_Abs_Dim dim);
-void         _pico_close      (int strict);
 
 ///////////////////////////////////////////////////////////////////////////////
 // output
@@ -231,7 +230,7 @@ void* _pico_cache_get   (const char* key);
 void  _pico_cache_put   (const char* key, PICO_CACHE kind, void* value);
 void  _pico_cache_close (void);
 
-// user-owned resource accounting (asserted zero at pico_close)
+// user-owned resource tracking (leftovers are freed at pico_close)
 void  _pico_mem_own      (Pico_Own* own, int cached, int kind, void* self);
 void  _pico_mem_disown   (Pico_Own* own, int cached);
 void  _pico_mem_free_all (void);    // releases every user-owned resource
