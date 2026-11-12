@@ -169,9 +169,17 @@ Pico_Layer* pico_layer_video (Pico_Layer* up, const char* path) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path) {
+Pico_Video pico_get_video_path (Pico_Rel_Rect* rect, const char* path) {
     _pico_guard();
-    Pico_Layer_Video* vs = _layer_video_path(path);
+    return pico_get_video(rect, &_layer_video_path(path)->base);
+}
+
+Pico_Video pico_get_video (Pico_Rel_Rect* rect, Pico_Layer* layer) {
+    _pico_guard();
+    assert(layer != NULL && "layer required");
+    Pico_Layer_Video* vs = (Pico_Layer_Video*)layer;
+    assert(vs->base.type == PICO_LAYER_VIDEO
+        && "not a video layer");
 
     Pico_Video info = {
         .dim   = vs->base.scene.dim,

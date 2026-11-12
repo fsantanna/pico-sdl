@@ -84,20 +84,73 @@ void _pico_cache_close (void) {
 // OWNERSHIP
 ///////////////////////////////////////////////////////////////////////////////
 
-// Counts user-owned resources (pico_layer_*, pico_font_load,
-// pico_sound_load). pico_close asserts the count is back to zero.
+// Tracks user-owned resources (pico_layer_*, pico_font_load,
+// pico_sound_load). pico_close asserts none is left; the auto-exit aid
+// (window close) releases whatever the program still holds.
 
-void _pico_mem_own (int cached) {
-    if (!cached) {
-        G.live++;
+void _pico_mem_own (Pico_Own* own, int cached, int kind, void* self) {
+    if (cached) {
+        return;
     }
+    own->kind = kind;
+    own->self = self;
+    own->prv  = NULL;
+    own->nxt  = G.owned;
+    if (G.owned != NULL) {
+        G.owned->prv = own;
+    }
+    G.owned = own;
+    G.live++;
 }
 
-void _pico_mem_disown (int cached) {
-    if (!cached) {
-        assert(G.live > 0);
-        G.live--;
+void _pico_mem_disown (Pico_Own* own, int cached) {
+    if (cached) {
+        return;
     }
+    assert(G.live > 0);
+    if (own->prv == NULL) {
+        assert(G.owned == own);
+        G.owned = own->nxt;
+    } else {
+        own->prv->nxt = own->nxt;
+    }
+    if (own->nxt != NULL) {
+        own->nxt->prv = own->prv;
+    }
+    G.live--;
+}
+
+static void _layer_release (Pico_Layer* data);
+
+// Releases every user-owned resource, in no particular order and
+// with no hierarchy checks: only for teardown, when nothing is used
+// afterwards.
+void _pico_mem_free_all (void) {
+    Pico_Own* own = G.owned;
+    while (own != NULL) {
+        Pico_Own* nxt = own->nxt;
+        switch (own->kind) {
+            case PICO_OWN_LAYER:
+                _layer_release((Pico_Layer*)own->self);
+                break;
+            case PICO_OWN_FONT: {
+                Pico_Font* font = (Pico_Font*)own->self;
+                _pico_mem_font_done(font);
+                free(font->path);
+                free(font);
+                break;
+            }
+            case PICO_OWN_SOUND: {
+                Pico_Sound* sound = (Pico_Sound*)own->self;
+                Mix_FreeChunk(sound->mix);
+                free(sound);
+                break;
+            }
+        }
+        own = nxt;
+    }
+    G.owned = NULL;
+    G.live  = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,7 +184,7 @@ Pico_Layer* _pico_mem_layer_new (
         },
     };
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-    _pico_mem_own(cached);
+    _pico_mem_own(&data->own, cached, PICO_OWN_LAYER, data);
     return data;
 }
 
@@ -142,17 +195,23 @@ void _pico_mem_layer_free (Pico_Layer* data) {
     assert(data->hier.dn.fst==NULL && "cannot free a layer with children");
     assert(data->subs==0 && "cannot free a layer with live sub-layers");
     _pico_layer_detach(data);
-    if (data->type == PICO_LAYER_VIDEO) {
-        _pico_video_free_layer((Pico_Layer_Video*)data);
-    }
     if (data->type == PICO_LAYER_SUB) {
         Pico_Layer* src = ((Pico_Layer_Sub*)data)->src;
         assert(src->subs > 0);
         src->subs--;
-    } else {
+    }
+    _pico_mem_disown(&data->own, data->cached);
+    _layer_release(data);
+}
+
+// frees the layer's own resources only (texture, video state, struct)
+static void _layer_release (Pico_Layer* data) {
+    if (data->type == PICO_LAYER_VIDEO) {
+        _pico_video_free_layer((Pico_Layer_Video*)data);
+    }
+    if (data->type != PICO_LAYER_SUB) {
         SDL_DestroyTexture(data->tex);
     }
-    _pico_mem_disown(data->cached);
     free(data);
 }
 
@@ -312,7 +371,7 @@ Pico_Font* _pico_mem_font_new (int cached, const char* path) {
     pico_assert(ttf != NULL);
     TTF_CloseFont(ttf);
 
-    _pico_mem_own(cached);
+    _pico_mem_own(&font->own, cached, PICO_OWN_FONT, font);
     return font;
 }
 
@@ -329,7 +388,7 @@ void _pico_mem_font_done (Pico_Font* font) {
 void _pico_mem_font_free (Pico_Font* font) {
     _pico_mem_font_done(font);
     free(font->path);
-    _pico_mem_disown(font->cached);
+    _pico_mem_disown(&font->own, font->cached);
     free(font);
 }
 
@@ -374,12 +433,12 @@ Pico_Sound* _pico_mem_sound_new (int cached, const char* path) {
     assert(sound != NULL);
     sound->cached = cached;
     sound->mix    = mix;
-    _pico_mem_own(cached);
+    _pico_mem_own(&sound->own, cached, PICO_OWN_SOUND, sound);
     return sound;
 }
 
 void _pico_mem_sound_free (Pico_Sound* sound) {
     Mix_FreeChunk(sound->mix);
-    _pico_mem_disown(sound->cached);
+    _pico_mem_disown(&sound->own, sound->cached);
     free(sound);
 }

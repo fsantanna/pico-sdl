@@ -77,6 +77,7 @@ tests: lib
 	$(EXE) tst/pixmap_raw.c
 	$(EXE) tst/pos.c
 	$(EXE) tst/quit.c
+	$(EXE) tst/quit-aid.c
 	$(EXE) tst/rect.c
 	$(EXE) tst/rect-circle.c
 	$(EXE) tst/rot-flip.c

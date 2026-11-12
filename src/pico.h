@@ -263,7 +263,8 @@ void pico_open (const Pico_Window* win);
 /// `pico_output_draw_video`, `pico_output_sound_path`,
 /// `pico_set_pencil_font_path`). Resources created explicitly
 /// (`pico_layer_*`, `pico_font_load`, `pico_sound_load`) must have been
-/// freed already (asserted).
+/// freed already (asserted). The automatic exit on window close (see
+/// @ref pico_set_aids) is the exception: it releases them itself.
 /// @sa pico_open
 void pico_close (void);
 
@@ -467,13 +468,23 @@ PICO_FLIP     pico_get_effect_flip     (void);
 int           pico_get_effect_grid     (void);
 Pico_Rot      pico_get_effect_rotate   (void);
 
-/// @brief Gets video properties.
+/// @brief Gets video properties of a video layer.
+/// @param rect optional rect with w/h to complete (NULL ok)
+/// @param layer video layer (see @ref pico_layer_video)
+/// @return video properties (dim, fps, frame, done)
+/// @sa pico_set_video
+/// @sa pico_get_video_path
+Pico_Video pico_get_video (Pico_Rel_Rect* rect, Pico_Layer* layer);
+
+/// @brief Gets video properties of a video file.
+/// Addresses the video played by @ref pico_output_draw_video for the
+/// same path (opened once, kept until @ref pico_close).
 /// @param rect optional rect with w/h to complete (NULL ok)
 /// @param path path to the Y4M video file
 /// @return video properties (dim, fps, frame, done)
-/// @sa pico_set_video
+/// @sa pico_get_video
 /// @sa pico_get_image
-Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path);
+Pico_Video pico_get_video_path (Pico_Rel_Rect* rect, const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////
 

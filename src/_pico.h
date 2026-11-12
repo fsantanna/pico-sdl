@@ -15,6 +15,18 @@
 // LAYER (types)
 ///////////////////////////////////////////////////////////////////////////////
 
+// Link in the list of user-owned resources (layers, fonts, sounds).
+// The list lets the auto-exit aid release everything the program
+// still holds; pico_close asserts it is empty.
+typedef struct Pico_Own {
+    int              kind;          // PICO_OWN_*
+    void*            self;          // the resource holding this link
+    struct Pico_Own* prv;
+    struct Pico_Own* nxt;
+} Pico_Own;
+
+enum { PICO_OWN_LAYER, PICO_OWN_FONT, PICO_OWN_SOUND };
+
 typedef enum {
     PICO_LAYER_PLAIN,
     PICO_LAYER_VIDEO,
@@ -24,6 +36,7 @@ typedef enum {
 struct Pico_Layer {
     PICO_LAYER            type;
     int                   cached;   // owned by the cache (easy paths)
+    Pico_Own              own;      // user-owned list link (!cached)
     int                   subs;     // live sub-layers borrowing tex
     SDL_Texture*          tex;
     Pico_Layer_Pencil     pencil;
@@ -81,6 +94,7 @@ typedef struct {
 struct Pico_Font {
     int   id;                       // unique serial (text cache keys)
     int   cached;                   // owned by the cache (easy paths)
+    Pico_Own own;                   // user-owned list link (!cached)
     char* path;                     // NULL = built-in font
     int   n;
     struct {
@@ -91,6 +105,7 @@ struct Pico_Font {
 
 struct Pico_Sound {
     int        cached;              // owned by the cache (easy paths)
+    Pico_Own   own;                 // user-owned list link (!cached)
     Mix_Chunk* mix;
 };
 
@@ -126,6 +141,7 @@ typedef struct PicoState {
         unsigned expert: 1;
     } flags;
     int           live;         // user-owned layers/fonts/sounds alive
+    Pico_Own*     owned;        // list of them (see Pico_Own)
     int           fonts;        // font serial counter
     Pico_Font     font;         // built-in font (pencil.font == NULL)
     Pico_Cache_Entry* cache[PICO_HASH_BUK];
@@ -216,8 +232,9 @@ void  _pico_cache_put   (const char* key, PICO_CACHE kind, void* value);
 void  _pico_cache_close (void);
 
 // user-owned resource accounting (asserted zero at pico_close)
-void  _pico_mem_own  (int cached);
-void  _pico_mem_disown (int cached);
+void  _pico_mem_own      (Pico_Own* own, int cached, int kind, void* self);
+void  _pico_mem_disown   (Pico_Own* own, int cached);
+void  _pico_mem_free_all (void);    // releases every user-owned resource
 
 // layers: `cached` marks cache ownership (not counted as live)
 Pico_Layer* _pico_mem_layer_new (

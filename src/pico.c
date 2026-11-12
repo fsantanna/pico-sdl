@@ -197,13 +197,16 @@ void pico_open (const Pico_Window* cfg) {
 }
 
 // strict: assert that every user-owned resource was freed. The
-// auto-exit aid (window close) passes 0, since the program gets no
-// chance to release its resources before the process exits.
+// auto-exit aid (window close) passes 0 and has them released here,
+// since the program gets no chance to free its resources before the
+// process exits.
 void _pico_close (int strict) {
     assert(G.flags.init == 1);
     if (strict) {
         assert(G.live==0 &&
             "pico_close: layers, fonts or sounds still alive");
+    } else {
+        _pico_mem_free_all();
     }
 
     // easy-path resources, then the built-in font sizes

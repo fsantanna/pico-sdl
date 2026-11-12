@@ -11,7 +11,7 @@ int main (void) {
     /* pico_get_video: check Y4M header parsing */
     {
         puts("get_video: dimensions and fps");
-        Pico_Video info = pico_get_video(NULL, VIDEO);
+        Pico_Video info = pico_get_video_path(NULL, VIDEO);
         assert(info.dim.w == 10);
         assert(info.dim.h == 10);
         assert(info.fps == 10);
@@ -82,6 +82,13 @@ int main (void) {
         puts("set_video: past EOF returns 0");
         int ok = pico_set_video(vid, 100);
         assert(ok == 0);
+    }
+
+    /* pico_get_video: state after sync */
+    {
+        puts("get_video: state after sync");
+        Pico_Video info = pico_get_video(NULL, vid);
+        assert(info.done == 1);
     }
 
     /* pico_output_draw_video: all-in-one */

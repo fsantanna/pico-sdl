@@ -10,18 +10,21 @@ Modifications (C API only, Lua not yet ported):
     - `Pico_Sound*`: `pico_sound_load`, `pico_sound_free`
     - every function that received a layer name receives a
       `Pico_Layer*` (`pico_set_layer`, `pico_output_draw_layer`,
-      `pico_output_screenshot`, `pico_get/set_mouse`, `pico_set_video`,
-      `pico_cv_*`, `pico_vs_*`)
+      `pico_output_screenshot`, `pico_get/set_mouse`,
+      `pico_get/set_video`, `pico_cv_*`, `pico_vs_*`)
     - `pico_layer_world`, `pico_layer_window`: root layer handles
       (were the names `"world"`, `"window"`)
 - `pico_open(win)`, `pico_close()`: replace `pico_init(on)`
     - `pico_open` receives the initial window state (`NULL` for
       defaults), e.g., to start hidden
     - `pico_close` asserts that all handles have been freed
+    - automatic exit on window close frees all handles itself
 - `pico_output_draw_text`: renamed from `pico_output_draw_text_fix`
-- `pico_set_pencil_font`, `pico_output_sound`: receive a handle
-    - `pico_set_pencil_font_path`, `pico_output_sound_path`: receive
-      a path (loaded once, released at `pico_close`)
+- `pico_set_pencil_font`, `pico_output_sound`, `pico_get_video`:
+  receive a handle
+    - `pico_set_pencil_font_path`, `pico_output_sound_path`,
+      `pico_get_video_path`: receive a path (loaded once, released at
+      `pico_close`)
 
 Removals (C API only):
 
