@@ -3,12 +3,12 @@
 #include <string.h>
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Get-Set" });
 
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {640, 480} });
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {64, 48} });
 
     // color_clear
@@ -53,19 +53,21 @@ int main (void) {
     // pencil (bulk setter/getter)
     puts("pencil bulk");
     {
+        Pico_Font* font = pico_font_load("../res/tiny.ttf");
         pico_set_pencil((Pico_Layer_Pencil){
-            .color=PICO_COLOR_RED, .font="test.ttf", .style=PICO_STYLE_STROKE
+            .color=PICO_COLOR_RED, .font=font, .style=PICO_STYLE_STROKE
         });
 
         Pico_Layer_Pencil gd = pico_get_pencil();
         assert(gd.color.r == 255 && gd.color.g == 0 && gd.color.b == 0);
-        assert(strcmp(gd.font, "test.ttf") == 0);
+        assert(gd.font == font);
         assert(gd.style == PICO_STYLE_STROKE);
 
         // restore
         pico_set_pencil((Pico_Layer_Pencil){
             .color={0xFF,0xFF,0xFF,0xFF}, .font=NULL, .style=PICO_STYLE_FILL
         });
+        pico_font_free(font);
     }
 
     // effect (individual setters)
@@ -114,21 +116,21 @@ int main (void) {
     // window roundtrip: get -> set -> get must be idempotent
     puts("window roundtrip");
     {
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_effect_color((Pico_Color){0x12, 0x34, 0x56, 0x78});
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         Pico_Window w1 = pico_get_window();
         pico_set_window(w1);
         Pico_Window w2 = pico_get_window();
         assert(w2.fs == w1.fs);
         Pico_Color c1;
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         c1 = pico_get_effect_color();
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         Pico_Abs_Dim d1;
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         d1 = pico_get_scene_dim();
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(c1.r == 0x12 && c1.g == 0x34 && c1.b == 0x56 && c1.a == 0x78);
         assert(d1.w > 0 && d1.h > 0);
     }
@@ -148,6 +150,6 @@ int main (void) {
     }
 
     puts("OK");
-    pico_init(0);
+    pico_close();
     return 0;
 }

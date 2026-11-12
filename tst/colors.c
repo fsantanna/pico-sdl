@@ -2,11 +2,11 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Colors Test");
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {640,480} });
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {64, 48} });
 
     Pico_Anchor C = PICO_ANCHOR_C;
@@ -244,10 +244,12 @@ int main (void) {
         Pico_Rel_Rect r = {
             '%', {0.5, 0.5, 0, 0}, PICO_ANCHOR_C
         };
-        pico_output_draw_pixmap(
-            "alpha", (Pico_Abs_Dim){3,1}, pixmap, r
+        Pico_Layer* alpha = pico_layer_pixmap(
+            NULL, (Pico_Abs_Dim){3,1}, pixmap
         );
+        pico_output_draw_layer(alpha, &r);
         _pico_check("colors-07");
+        pico_layer_free(alpha);
     }
 
     // window letterbox color: shrink dst to expose letterbox area
@@ -260,9 +262,9 @@ int main (void) {
         puts("window color default: gray {0x77,0x77,0x77,0xFF}");
         {
             Pico_Color c;
-            pico_set_layer("window");
+            pico_set_layer(pico_layer_window());
             c = pico_get_effect_color();
-            pico_set_layer("world");
+            pico_set_layer(pico_layer_world());
             assert(c.r==0x77 && c.g==0x77 && c.b==0x77 && c.a==0xFF);
             pico_output_clear();
             pico_set_pencil_color(PICO_COLOR_WHITE);
@@ -273,13 +275,13 @@ int main (void) {
         }
         puts("window color: red letterbox");
         {
-            pico_set_layer("window");
+            pico_set_layer(pico_layer_window());
             pico_set_effect_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
-            pico_set_layer("world");
+            pico_set_layer(pico_layer_world());
             Pico_Color c;
-            pico_set_layer("window");
+            pico_set_layer(pico_layer_window());
             c = pico_get_effect_color();
-            pico_set_layer("world");
+            pico_set_layer(pico_layer_world());
             assert(c.r==0xFF && c.g==0x00 && c.b==0x00 && c.a==0xFF);
             pico_output_clear();
             pico_output_draw_rect (
@@ -289,13 +291,13 @@ int main (void) {
         }
         puts("window color: green via set_layer + set_effect_color");
         {
-            pico_set_layer("window");
+            pico_set_layer(pico_layer_window());
             pico_set_effect_color((Pico_Color){0x00, 0xFF, 0x00, 0xFF});
-            pico_set_layer("world");
+            pico_set_layer(pico_layer_world());
             Pico_Color c;
-            pico_set_layer("window");
+            pico_set_layer(pico_layer_window());
             c = pico_get_effect_color();
-            pico_set_layer("world");
+            pico_set_layer(pico_layer_world());
             assert(c.r==0x00 && c.g==0xFF && c.b==0x00 && c.a==0xFF);
             pico_output_clear();
             pico_output_draw_rect (
@@ -305,17 +307,17 @@ int main (void) {
         }
         puts("window color: alpha preserved by storage");
         {
-            pico_set_layer("window");
+            pico_set_layer(pico_layer_window());
             pico_set_effect_color((Pico_Color){0x00, 0x00, 0xFF, 0x80});
-            pico_set_layer("world");
+            pico_set_layer(pico_layer_world());
             Pico_Color c;
-            pico_set_layer("window");
+            pico_set_layer(pico_layer_window());
             c = pico_get_effect_color();
-            pico_set_layer("world");
+            pico_set_layer(pico_layer_world());
             assert(c.a == 0x80);
         }
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

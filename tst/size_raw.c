@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Size - Fullscreen");
 
     Pico_Abs_Dim phy = PICO_DIM_PHY;
@@ -14,9 +14,9 @@ int main (void) {
     {
         puts("normal");
         Pico_Rel_Dim dim = { '!', {phy.w, phy.h} };
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_scene_dim(dim);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_raw-01");
@@ -24,9 +24,9 @@ int main (void) {
     {
         puts("double");
         Pico_Rel_Dim dim = { '!', {phy.w*2, phy.h*2} };
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_scene_dim(dim);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_raw-02");
@@ -34,9 +34,9 @@ int main (void) {
     {
         puts("half");
         Pico_Rel_Dim dim = { '!', {phy.w/2, phy.h/2} };
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_scene_dim(dim);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_raw-03");
@@ -44,9 +44,9 @@ int main (void) {
     {
         puts("normal");
         Pico_Rel_Dim dim = { '!', {phy.w, phy.h} };
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_scene_dim(dim);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_raw-04");
@@ -105,6 +105,6 @@ int main (void) {
         _pico_check("size_raw-10");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

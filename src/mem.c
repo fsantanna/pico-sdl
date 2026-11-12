@@ -15,120 +15,106 @@ extern unsigned char pico_tiny_ttf[];
 extern unsigned int  pico_tiny_ttf_len;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Free callbacks
+// CACHE
 ///////////////////////////////////////////////////////////////////////////////
 
-void _pico_mem_free_font (int n, const void* key, void* value) {
-    TTF_CloseFont((TTF_Font*)value);
+// Private memo table behind the easy paths (draw_image, draw_text,
+// draw_video, sound_path, pencil_font_path): string key -> resource.
+// Entries are never exposed to the user, never evicted, and released
+// together at pico_close.
+
+static unsigned long _cache_hash (const char* key) {
+    unsigned long hash = 5381;
+    for (const char* p=key; *p!='\0'; p++) {
+        hash = ((hash << 5) + hash) + (unsigned char)*p;
+    }
+    return hash % PICO_HASH_BUK;
 }
 
-// Detach this layer from the parent-child graph before freeing it.
-// Three borrowed-pointer caches reference data->name (which
-// free(data->name) at the bottom of _pico_mem_free_layer will
-// invalidate):
-//   - parent's  hier.dn.fst / hier.dn.lst
-//   - sibling's hier.nxt
-//   - each child's hier.up
-// Runs for realm '~' replace, realm_leave pop, and realm_close.
-// Each block asserts the chain invariants it touches.
-static void _detach_layer (Pico_Layer* data) {
-    // splice self out of parent's child chain
-    if (data->hier.up != NULL) {
-        Pico_Layer* UP = (Pico_Layer*) realm_get(
-            G.realm, strlen(data->hier.up)+1, data->hier.up
-        );
-        assert(UP!=NULL && "bug found");
-        const char* prv = NULL;
-        const char* cur = UP->hier.dn.fst;
-        while (cur!=NULL && cur!=data->name) {
-            Pico_Layer* CUR = (Pico_Layer*) realm_get(
-                G.realm, strlen(cur)+1, cur
-            );
-            assert(CUR!=NULL && "bug found");
-            prv = cur;
-            cur = CUR->hier.nxt;
+void* _pico_cache_get (const char* key) {
+    Pico_Cache_Entry* e = G.cache[_cache_hash(key)];
+    while (e != NULL) {
+        if (strcmp(e->key, key) == 0) {
+            return e->value;
         }
-        assert(cur==data->name && "bug found");
-        if (prv == NULL) {
-            UP->hier.dn.fst = data->hier.nxt;
-        } else {
-            Pico_Layer* PRV = (Pico_Layer*) realm_get(
-                G.realm, strlen(prv)+1, prv
-            );
-            assert(PRV!=NULL && "bug found");
-            PRV->hier.nxt = data->hier.nxt;
-        }
-        if (UP->hier.dn.lst == data->name) {
-            UP->hier.dn.lst = prv;
-        }
+        e = e->next;
     }
-
-    // detach own children — null each child's hier.up so a later
-    // free does not splice against our (soon-to-be freed) name
-    {
-        const char* cur = data->hier.dn.fst;
-        const char* lst = NULL;
-        while (cur != NULL) {
-            Pico_Layer* CUR = (Pico_Layer*) realm_get(
-                G.realm, strlen(cur)+1, cur
-            );
-            assert(CUR!=NULL && "bug found");
-            assert(CUR->hier.up==data->name && "bug found");
-            lst = cur;
-            cur = CUR->hier.nxt;
-            CUR->hier.up = NULL;
-        }
-        assert(lst==data->hier.dn.lst && "bug found");
-    }
+    return NULL;
 }
 
-void _pico_mem_free_layer (int n, const void* key, void* value) {
-    Pico_Layer* data = (Pico_Layer*)value;
-    // '~' replace: realm still has us (entry unlinked only on leave /
-    // close). Refuse to replace a parent — the new layer would silently
-    // orphan the children's subtree. Note: equal-fingerprint '~' hits
-    // return before free/alloc, so an unchanged parent is redrawn
-    // freely; only a REAL content change on a parent asserts here.
-    if (realm_get(G.realm, n, key) == data) {
-        assert(data->hier.dn.fst == NULL
-            && "cannot '~' replace a layer with children");
-    }
-    _detach_layer(data);
-    if (data->type == PICO_LAYER_VIDEO) {
-        _pico_video_free_layer((Pico_Layer_Video*)data);
-    }
-    if (data->type != PICO_LAYER_SUB) {
-        SDL_DestroyTexture(data->tex);
-    }
-    free(data);
+void _pico_cache_put (const char* key, PICO_CACHE kind, void* value) {
+    assert(value != NULL);
+    Pico_Cache_Entry* e = malloc(sizeof(Pico_Cache_Entry));
+    assert(e != NULL);
+    e->key = malloc(strlen(key) + 1);
+    assert(e->key != NULL);
+    strcpy(e->key, key);
+    e->kind  = kind;
+    e->value = value;
+    unsigned long idx = _cache_hash(key);
+    e->next = G.cache[idx];
+    G.cache[idx] = e;
 }
 
-// Detach-only callback for static layers (G.world, G.window.layer).
-// Their struct, texture, and string-literal name are owned by pico
-// itself, not by the realm — so we just disown children / splice
-// from parent, and let pico_init(false) free the rest.
-void _pico_mem_detach_layer (int n, const void* key, void* value) {
-    _detach_layer((Pico_Layer*)value);
-}
-
-void _pico_mem_free_sound (int n, const void* key, void* value) {
-    Mix_FreeChunk((Mix_Chunk*)value);
+void _pico_cache_close (void) {
+    for (int i=0; i<PICO_HASH_BUK; i++) {
+        Pico_Cache_Entry* e = G.cache[i];
+        while (e != NULL) {
+            Pico_Cache_Entry* nxt = e->next;
+            switch (e->kind) {
+                case PICO_CACHE_LAYER:
+                    _pico_mem_layer_free((Pico_Layer*)e->value);
+                    break;
+                case PICO_CACHE_FONT:
+                    _pico_mem_font_free((Pico_Font*)e->value);
+                    break;
+                case PICO_CACHE_SOUND:
+                    _pico_mem_sound_free((Pico_Sound*)e->value);
+                    break;
+            }
+            free(e->key);
+            free(e);
+            e = nxt;
+        }
+        G.cache[i] = NULL;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Alloc helpers
+// OWNERSHIP
+///////////////////////////////////////////////////////////////////////////////
+
+// Counts user-owned resources (pico_layer_*, pico_font_load,
+// pico_sound_load). pico_close asserts the count is back to zero.
+
+void _pico_mem_own (int cached) {
+    if (!cached) {
+        G.live++;
+    }
+}
+
+void _pico_mem_disown (int cached) {
+    if (!cached) {
+        assert(G.live > 0);
+        G.live--;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// LAYERS
 ///////////////////////////////////////////////////////////////////////////////
 
 Pico_Layer* _pico_mem_layer_new (
-    int clear, int type, size_t size,
-    const char* key, SDL_Texture* tex, Pico_Abs_Dim dim
+    int cached, int clear, int type, size_t size,
+    SDL_Texture* tex, Pico_Abs_Dim dim
 ) {
     Pico_Layer* data = calloc(1, size);
     assert(data != NULL);
     *data = (Pico_Layer) {
-        .type = type,
-        .name = (char*)key,
-        .tex  = tex,
+        .type   = type,
+        .cached = cached,
+        .subs   = 0,
+        .tex    = tex,
         .pencil = {
             .color={0xFF, 0xFF, 0xFF, 0xFF}, .font=NULL, .style=PICO_STYLE_FILL
         },
@@ -145,65 +131,81 @@ Pico_Layer* _pico_mem_layer_new (
         },
     };
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+    _pico_mem_own(cached);
     return data;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Alloc callbacks
-///////////////////////////////////////////////////////////////////////////////
+// Releases a layer: splices it out of its parent, drops its claim on a
+// borrowed texture (sub-layer), and frees its own resources. The layer
+// must have no children and no live sub-layers.
+void _pico_mem_layer_free (Pico_Layer* data) {
+    assert(data->hier.dn.fst==NULL && "cannot free a layer with children");
+    assert(data->subs==0 && "cannot free a layer with live sub-layers");
+    _pico_layer_detach(data);
+    if (data->type == PICO_LAYER_VIDEO) {
+        _pico_video_free_layer((Pico_Layer_Video*)data);
+    }
+    if (data->type == PICO_LAYER_SUB) {
+        Pico_Layer* src = ((Pico_Layer_Sub*)data)->src;
+        assert(src->subs > 0);
+        src->subs--;
+    } else {
+        SDL_DestroyTexture(data->tex);
+    }
+    _pico_mem_disown(data->cached);
+    free(data);
+}
 
-void* _pico_mem_alloc_layer_pixmap (int n, const void* key, void* ctx) {
-    _pico_mem_alloc_pixmap_t* c = (_pico_mem_alloc_pixmap_t*)ctx;
+Pico_Layer* _pico_mem_layer_pixmap (
+    int cached, Pico_Abs_Dim dim, const Pico_Color* pixels
+) {
     SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormatFrom(
-        (void*)c->pixels, c->dim.w, c->dim.h,
-        32, 4 * c->dim.w, SDL_PIXELFORMAT_RGBA32
+        (void*)pixels, dim.w, dim.h,
+        32, 4 * dim.w, SDL_PIXELFORMAT_RGBA32
     );
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
     pico_assert(tex != NULL);
     SDL_FreeSurface(sfc);
     return _pico_mem_layer_new (
-        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
-        (const char*)key, tex, c->dim
+        cached, 0, PICO_LAYER_PLAIN, sizeof(Pico_Layer), tex, dim
     );
 }
 
-void* _pico_mem_alloc_layer_shot (int n, const void* key, void* ctx) {
-    _pico_mem_alloc_shot_t* c = (_pico_mem_alloc_shot_t*)ctx;
-
+Pico_Layer* _pico_mem_layer_shot (
+    int cached, Pico_Layer* src, const Pico_Rel_Rect* rect
+) {
     // same capture as pico_output_screenshot, then upload to a texture
     // instead of writing a PNG
-    SDL_Surface* sfc = _pico_shot(c->src, c->rect);
+    SDL_Surface* sfc = _pico_shot(src, rect);
     SDL_Texture* tex = SDL_CreateTextureFromSurface(G.window.ren, sfc);
     pico_assert(tex != NULL);
     Pico_Abs_Dim dim = { sfc->w, sfc->h };
     SDL_FreeSurface(sfc);
 
     return _pico_mem_layer_new (
-        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
-        (const char*)key, tex, dim
+        cached, 0, PICO_LAYER_PLAIN, sizeof(Pico_Layer), tex, dim
     );
 }
 
-void* _pico_mem_alloc_layer_empty (int n, const void* key, void* ctx) {
-    _pico_mem_alloc_empty_t* arg = (_pico_mem_alloc_empty_t*)ctx;
-
+Pico_Layer* _pico_mem_layer_empty (
+    int cached, Pico_Layer* up, int clear,
+    Pico_Rel_Dim rdim, Pico_Rel_Dim* rtile
+) {
     // resolve (dim, tile) jointly; '%' dim against parent's scene.dim
     Pico_Abs_Dim dim, tile;
-    if (arg->up == NULL) {
+    if (up == NULL) {
         // falls back to G.layer->scene.dim
-        _pico_resolve_dim_tile(arg->dim, arg->tile, NULL, &dim, &tile);
+        _pico_resolve_dim_tile(rdim, rtile, NULL, &dim, &tile);
     } else {
-        Pico_Layer* par = _pico_layer_name(arg->up);
         Pico_Abs_Rect base = (Pico_Abs_Rect) {
-            0, 0, par->scene.dim.w, par->scene.dim.h
+            0, 0, up->scene.dim.w, up->scene.dim.h
         };
-        _pico_resolve_dim_tile(arg->dim, arg->tile, &base, &dim, &tile);
+        _pico_resolve_dim_tile(rdim, rtile, &base, &dim, &tile);
     }
 
     SDL_Texture* tex = _pico_tex_create(dim);
     Pico_Layer* lay = _pico_mem_layer_new (
-        arg->clear, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
-        (const char*)key, tex, dim
+        cached, clear, PICO_LAYER_PLAIN, sizeof(Pico_Layer), tex, dim
     );
 
     // clear new layer
@@ -211,35 +213,35 @@ void* _pico_mem_alloc_layer_empty (int n, const void* key, void* ctx) {
     pico_output_clear();
     _pico_set_layer(old);
 
-    if (arg->tile != NULL) {
+    if (rtile != NULL) {
         lay->scene.tile = tile;
     }
     return lay;
 }
 
-void* _pico_mem_alloc_layer_image (int n, const void* key, void* ctx) {
-    const char* path = (const char*)ctx;
+Pico_Layer* _pico_mem_layer_image (int cached, const char* path) {
     SDL_Texture* tex = IMG_LoadTexture(G.window.ren, path);
     pico_assert(tex != NULL);
     Pico_Abs_Dim dim;
     SDL_QueryTexture(tex, NULL, NULL, &dim.w, &dim.h);
     return _pico_mem_layer_new (
-        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
-        (const char*)key, tex, dim
+        cached, 0, PICO_LAYER_PLAIN, sizeof(Pico_Layer), tex, dim
     );
 }
 
-void* _pico_mem_alloc_layer_sub (int n, const void* key, void* ctx) {
-    _pico_mem_alloc_sub_t* c = (_pico_mem_alloc_sub_t*)ctx;
-    Pico_Abs_Rect base = {0, 0, c->par->scene.dim.w, c->par->scene.dim.h};
-    Pico_Abs_Rect abs = _pico_abs_rect(c->crop, &base, NULL);
+Pico_Layer* _pico_mem_layer_sub (
+    int cached, Pico_Layer* src, Pico_Rel_Rect crop
+) {
+    Pico_Abs_Rect base = {0, 0, src->scene.dim.w, src->scene.dim.h};
+    Pico_Abs_Rect abs = _pico_abs_rect(crop, &base, NULL);
     Pico_Layer* data = _pico_mem_layer_new (
-        0, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
-        (const char*)key, c->par->tex,
-        (Pico_Abs_Dim){abs.w, abs.h}
+        cached, 0, PICO_LAYER_SUB, sizeof(Pico_Layer_Sub),
+        src->tex, (Pico_Abs_Dim){abs.w, abs.h}
     );
-    data->scene.src = c->crop;
-    ((Pico_Layer_Sub*)data)->sup = c->par->scene.dim;
+    data->scene.src = crop;
+    ((Pico_Layer_Sub*)data)->src = src;
+    ((Pico_Layer_Sub*)data)->sup = src->scene.dim;
+    src->subs++;
     return data;
 }
 
@@ -259,7 +261,7 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
     // brush/decorative fonts render caps taller than '|'), which bounds
     // any string's raster (metrics under-report the raster, so we
     // measure it).
-    TTF_Font* ttf = _pico_font_get(G.layer->pencil.font, height);
+    TTF_Font* ttf = _pico_font_ttf(G.layer->pencil.font, height);
     int ref;
     TTF_SizeText(ttf, "|gjpqyA", &(int){0}, &ref);
     int H = ref > TTF_FontLineSkip(ttf) ? ref : TTF_FontLineSkip(ttf);
@@ -283,30 +285,101 @@ static SDL_Texture* _tex_text (int height, const char* text, Pico_Abs_Dim* dim) 
     return tex;
 }
 
-void* _pico_mem_alloc_layer_text (int n, const void* key, void* ctx) {
-    _pico_mem_alloc_text_t* c = (_pico_mem_alloc_text_t*)ctx;
+Pico_Layer* _pico_mem_layer_text (int cached, int height, const char* text) {
     Pico_Abs_Dim dim;
-    SDL_Texture* tex = _tex_text(c->height, c->text, &dim);
+    SDL_Texture* tex = _tex_text(height, text, &dim);
     return _pico_mem_layer_new (
-        0, PICO_LAYER_PLAIN, sizeof(Pico_Layer),
-        (const char*)key, tex, dim
+        cached, 0, PICO_LAYER_PLAIN, sizeof(Pico_Layer), tex, dim
     );
 }
 
-void* _pico_mem_alloc_font (int n, const void* key, void* ctx) {
-    _pico_mem_alloc_font_t* c = (_pico_mem_alloc_font_t*)ctx;
+///////////////////////////////////////////////////////////////////////////////
+// FONTS
+///////////////////////////////////////////////////////////////////////////////
+
+Pico_Font* _pico_mem_font_new (int cached, const char* path) {
+    assert(path!=NULL && "font path required");
+    Pico_Font* font = calloc(1, sizeof(Pico_Font));
+    assert(font != NULL);
+    font->id     = ++G.fonts;
+    font->cached = cached;
+    font->path   = malloc(strlen(path) + 1);
+    assert(font->path != NULL);
+    strcpy(font->path, path);
+
+    // fail early on a bad path (sizes are otherwise opened lazily)
+    TTF_Font* ttf = TTF_OpenFont(path, 10);
+    pico_assert(ttf != NULL);
+    TTF_CloseFont(ttf);
+
+    _pico_mem_own(cached);
+    return font;
+}
+
+// closes every opened size (the struct itself stays valid)
+void _pico_mem_font_done (Pico_Font* font) {
+    for (int i=0; i<font->n; i++) {
+        TTF_CloseFont(font->sizes[i].ttf);
+    }
+    free(font->sizes);
+    font->sizes = NULL;
+    font->n = 0;
+}
+
+void _pico_mem_font_free (Pico_Font* font) {
+    _pico_mem_font_done(font);
+    free(font->path);
+    _pico_mem_disown(font->cached);
+    free(font);
+}
+
+// the TTF_Font of `font` at pixel height `h` (NULL = built-in font),
+// opened on first use and kept for the lifetime of the font
+TTF_Font* _pico_font_ttf (Pico_Font* font, int h) {
+    if (font == NULL) {
+        font = &G.font;
+    }
+    for (int i=0; i<font->n; i++) {
+        if (font->sizes[i].h == h) {
+            return font->sizes[i].ttf;
+        }
+    }
+
     TTF_Font* ttf;
-    if (c->path == NULL) {
+    if (font->path == NULL) {
         SDL_RWops* rw = SDL_RWFromConstMem(pico_tiny_ttf, pico_tiny_ttf_len);
-        ttf = TTF_OpenFontRW(rw, 1, c->h);
+        ttf = TTF_OpenFontRW(rw, 1, h);
     } else {
-        ttf = TTF_OpenFont(c->path, c->h);
+        ttf = TTF_OpenFont(font->path, h);
     }
     pico_assert(ttf != NULL);
+
+    font->sizes = realloc(font->sizes, (font->n+1) * sizeof(*font->sizes));
+    assert(font->sizes != NULL);
+    font->sizes[font->n].h   = h;
+    font->sizes[font->n].ttf = ttf;
+    font->n++;
     return ttf;
 }
 
-void* _pico_mem_alloc_sound (int n, const void* key, void* ctx) {
-    const char* path = (const char*)ctx;
-    return Mix_LoadWAV(path);
+///////////////////////////////////////////////////////////////////////////////
+// SOUNDS
+///////////////////////////////////////////////////////////////////////////////
+
+Pico_Sound* _pico_mem_sound_new (int cached, const char* path) {
+    assert(path!=NULL && "sound path required");
+    Mix_Chunk* mix = Mix_LoadWAV(path);
+    pico_assert(mix != NULL);
+    Pico_Sound* sound = calloc(1, sizeof(Pico_Sound));
+    assert(sound != NULL);
+    sound->cached = cached;
+    sound->mix    = mix;
+    _pico_mem_own(cached);
+    return sound;
+}
+
+void _pico_mem_sound_free (Pico_Sound* sound) {
+    Mix_FreeChunk(sound->mix);
+    _pico_mem_disown(sound->cached);
+    free(sound);
 }

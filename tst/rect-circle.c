@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Rect-Circle");
     pico_set_dim((Pico_Rel_Dim){ '!', {200, 100} });
 
@@ -43,6 +43,6 @@ int main (void) {
         _pico_check("rect-circle-05");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

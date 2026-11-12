@@ -1,13 +1,13 @@
 #include "pico.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
 
     Pico_Rel_Dim phy = { '!', {200, 200} };
     Pico_Rel_Dim log = { '!', {100, 100} };
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_scene_dim(phy);
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     pico_set_scene_dim(log);
 
     // pos_rect - cur vs cur (abs)
@@ -81,14 +81,14 @@ int main (void) {
     }
 
     // direct-child layer (sub) attached to world; project value cur<-sub
-    pico_layer_empty("world", "sub_vs", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    Pico_Layer* sub_vs = pico_layer_empty(pico_layer_world(), 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
 
     // pos_rect - p1 in sub, r2 in cur
     {
         puts("vs_pos_rect - p1 in sub (scale 2x) hits r2 in cur");
         Pico_Rel_Pos  p1 = { '!', {10, 20}, PICO_ANCHOR_NW };  // sub abs (10,20) -> cur (20,40)
         Pico_Rel_Rect r2 = { '!', {15, 35, 20, 20}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect("sub_vs", &p1, NULL, &r2) == 1);
+        assert(pico_vs_pos_rect(sub_vs, &p1, NULL, &r2) == 1);
     }
 
     // pos_rect - r2=NULL uses sub's bounds (scene.dst)
@@ -96,7 +96,7 @@ int main (void) {
         puts("vs_pos_rect - r2=NULL uses sub's bounds");
         // sub's scene.dst default is {'%', {.5,.5,1,1}, C} -> fills cur entirely
         Pico_Rel_Pos p1 = { '%', {0.5, 0.5}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect(NULL, &p1, "sub_vs", NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p1, sub_vs, NULL) == 1);
     }
 
     // pos_pos - p1 in sub vs p2 in cur, both land on same pixel
@@ -104,7 +104,7 @@ int main (void) {
         puts("vs_pos_pos - p1 in sub maps to p2 in cur");
         Pico_Rel_Pos p1 = { '!', {10, 20}, PICO_ANCHOR_NW };  // sub -> cur (20,40)
         Pico_Rel_Pos p2 = { '!', {20, 40}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_pos("sub_vs", &p1, NULL, &p2) == 1);
+        assert(pico_vs_pos_pos(sub_vs, &p1, NULL, &p2) == 1);
     }
 
     // pos_rect - r2=NULL, L2=NULL: defaults to cur's bounds
@@ -136,7 +136,7 @@ int main (void) {
         puts("vs_rect_pos - p2 in sub maps into r1 in cur");
         Pico_Rel_Rect r1 = { '!', {15, 35, 20, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Pos  p2 = { '!', {10, 20}, PICO_ANCHOR_NW };  // sub -> cur (20,40)
-        assert(pico_vs_rect_pos(NULL, &r1, "sub_vs", &p2) == 1);
+        assert(pico_vs_rect_pos(NULL, &r1, sub_vs, &p2) == 1);
     }
 
     // % mode out of [0,1] -> projects outside cur's bounds
@@ -186,100 +186,100 @@ int main (void) {
     }
 
     // grandchild of cur: deeper than direct child
-    pico_layer_empty("sub_vs", "sub_sub_vs", 1,
+    Pico_Layer* sub_sub_vs = pico_layer_empty(sub_vs, 1,
                      (Pico_Rel_Dim){'!', {25, 25}}, NULL);
     {
         puts("vs_pos_pos - p1 in grandchild (scale 4x) vs cur");
         // sub_sub:10,10 -> sub_vs:20,20 -> world:40,40
         Pico_Rel_Pos p1 = { '!', {10, 10}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p2 = { '!', {40, 40}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_pos("sub_sub_vs", &p1, NULL, &p2) == 1);
+        assert(pico_vs_pos_pos(sub_sub_vs, &p1, NULL, &p2) == 1);
     }
     {
         puts("vs_pos_pos - p1 in grandchild vs mismatched cur pixel");
         Pico_Rel_Pos p1 = { '!', {10, 10}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p2 = { '!', {50, 50}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_pos("sub_sub_vs", &p1, NULL, &p2) == 0);
+        assert(pico_vs_pos_pos(sub_sub_vs, &p1, NULL, &p2) == 0);
     }
 
     // inverse ancestor (bidirectional): cur = sub_vs, L1 = world
-    pico_set_layer("sub_vs");
+    pico_set_layer(sub_vs);
     {
         puts("vs_pos_pos - L1=world (ancestor of cur=sub_vs)");
         // world:20,40 -> sub_vs:10,20 (sub 50x50 in world 100x100, scale 0.5x)
         Pico_Rel_Pos p1 = { '!', {20, 40}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p2 = { '!', {10, 20}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_pos("world", &p1, NULL, &p2) == 1);
+        assert(pico_vs_pos_pos(pico_layer_world(), &p1, NULL, &p2) == 1);
     }
     {
         puts("vs_rect_rect - L1=world (ancestor of cur=sub_vs)");
         Pico_Rel_Rect r1 = { '!', {20, 40, 10, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Rect r2 = { '!', {10, 20,  5, 10}, PICO_ANCHOR_NW };
-        assert(pico_vs_rect_rect("world", &r1, NULL, &r2) == 1);
+        assert(pico_vs_rect_rect(pico_layer_world(), &r1, NULL, &r2) == 1);
     }
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
 
     // deep descendant w/ NON-full scene.dst: explicit r_pct path.
     // sub_sub_tight (10x10) sits in top-left 10x10 of sub_vs (50x50);
     // projected to world, that's the top-left 20x20.
-    pico_layer_empty("sub_vs", "sub_sub_tight", 1,
+    Pico_Layer* sub_sub_tight = pico_layer_empty(sub_vs, 1,
                      (Pico_Rel_Dim){'!', {10, 10}}, NULL);
-    pico_set_layer("sub_sub_tight");
+    pico_set_layer(sub_sub_tight);
     pico_set_scene_dst((Pico_Rel_Rect){'!', {0, 0, 10, 10}, PICO_ANCHOR_NW});
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     {
         puts("vs_pos_rect - non-full scene.dst, explicit r_pct grandchild");
         Pico_Rel_Pos  p_in  = { '!', {15, 15}, PICO_ANCHOR_NW };
         Pico_Rel_Pos  p_out = { '!', {30, 30}, PICO_ANCHOR_NW };
         Pico_Rel_Rect r_pct = { '%', {0, 0, 1, 1}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect(NULL, &p_in,  "sub_sub_tight", &r_pct) == 1);
-        assert(pico_vs_pos_rect(NULL, &p_out, "sub_sub_tight", &r_pct) == 0);
-        assert(pico_vs_rect_pos("sub_sub_tight", &r_pct, NULL, &p_in)  == 1);
-        assert(pico_vs_rect_pos("sub_sub_tight", &r_pct, NULL, &p_out) == 0);
+        assert(pico_vs_pos_rect(NULL, &p_in,  sub_sub_tight, &r_pct) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, sub_sub_tight, &r_pct) == 0);
+        assert(pico_vs_rect_pos(sub_sub_tight, &r_pct, NULL, &p_in)  == 1);
+        assert(pico_vs_rect_pos(sub_sub_tight, &r_pct, NULL, &p_out) == 0);
     }
     {
         puts("vs_pos_rect - non-full scene.dst, default r2 (grandchild bounds)");
         Pico_Rel_Pos p_in  = { '!', {15, 15}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p_out = { '!', {30, 30}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect(NULL, &p_in,  "sub_sub_tight", NULL) == 1);
-        assert(pico_vs_pos_rect(NULL, &p_out, "sub_sub_tight", NULL) == 0);
-        assert(pico_vs_rect_pos("sub_sub_tight", NULL, NULL, &p_in)  == 1);
-        assert(pico_vs_rect_pos("sub_sub_tight", NULL, NULL, &p_out) == 0);
+        assert(pico_vs_pos_rect(NULL, &p_in,  sub_sub_tight, NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, sub_sub_tight, NULL) == 0);
+        assert(pico_vs_rect_pos(sub_sub_tight, NULL, NULL, &p_in)  == 1);
+        assert(pico_vs_rect_pos(sub_sub_tight, NULL, NULL, &p_out) == 0);
     }
 
     // scene.dst with w=0 or h=0 means aspect-fill, resolved lazily
     // at each use with the layer's dim as ratio (geom.c walks +
     // _root_rect). Without the fill _vs_rect would see an empty rect
     // and no point ever lands inside.
-    pico_layer_empty("world", "sub_aspect", 1,
+    Pico_Layer* sub_aspect = pico_layer_empty(pico_layer_world(), 1,
                      (Pico_Rel_Dim){'!', {50, 50}}, NULL);
-    pico_set_layer("sub_aspect");
+    pico_set_layer(sub_aspect);
     pico_set_scene_dst((Pico_Rel_Rect){'!', {10, 10, 30, 0}, PICO_ANCHOR_NW});
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     {
         puts("vs_pos_rect - scene.dst h=0 aspect-fills (no empty rect)");
         // sub_aspect dim 50x50 (aspect 1:1), scene.dst=(10,10,30,0)
         // aspect-fills to (10,10,30,30) in world.
         Pico_Rel_Pos p_in  = { '!', {20, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p_out = { '!', {20, 50}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect(NULL, &p_in,  "sub_aspect", NULL) == 1);
-        assert(pico_vs_pos_rect(NULL, &p_out, "sub_aspect", NULL) == 0);
+        assert(pico_vs_pos_rect(NULL, &p_in,  sub_aspect, NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, sub_aspect, NULL) == 0);
     }
 
     // detached layer w/ target: the projection reference is the
     // CURRENT layer (world here), resolved at vs time. Mirrors a
     // manual draw.layer(det, target) blit into world.
-    pico_layer_empty(NULL, "det_vs", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
-    pico_set_layer("det_vs");
+    Pico_Layer* det_vs = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer(det_vs);
     pico_set_scene_dst((Pico_Rel_Rect){'!', {10, 10, 40, 40}, PICO_ANCHOR_NW});
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     {
         puts("vs_pos_rect - detached target, p in world vs det bounds");
         // det target = world (10,10,40,40): p_in inside, p_out outside
         Pico_Rel_Pos p_in  = { '!', {20, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p_out = { '!', {60, 60}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect(NULL, &p_in,  "det_vs", NULL) == 1);
-        assert(pico_vs_pos_rect(NULL, &p_out, "det_vs", NULL) == 0);
+        assert(pico_vs_pos_rect(NULL, &p_in,  det_vs, NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, det_vs, NULL) == 0);
     }
     {
         puts("vs_pos_pos - detached, point in det frame maps to world");
@@ -287,68 +287,77 @@ int main (void) {
         // det (25,25) -> world (10+25*0.8, 10+25*0.8) = (30,30)
         Pico_Rel_Pos p1 = { '!', {25, 25}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p2 = { '!', {30, 30}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_pos("det_vs", &p1, NULL, &p2) == 1);
+        assert(pico_vs_pos_pos(det_vs, &p1, NULL, &p2) == 1);
     }
     // parity: an ATTACHED sibling with the same target must collide
     // identically to the detached layer.
-    pico_layer_empty("world", "att_vs", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
-    pico_set_layer("att_vs");
+    Pico_Layer* att_vs = pico_layer_empty(pico_layer_world(), 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer(att_vs);
     pico_set_scene_dst((Pico_Rel_Rect){'!', {10, 10, 40, 40}, PICO_ANCHOR_NW});
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     {
         puts("vs_pos_rect - detached matches attached sibling");
         Pico_Rel_Pos p_in  = { '!', {20, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p_out = { '!', {60, 60}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect(NULL, &p_in,  "det_vs", NULL) ==
-               pico_vs_pos_rect(NULL, &p_in,  "att_vs", NULL));
-        assert(pico_vs_pos_rect(NULL, &p_out, "det_vs", NULL) ==
-               pico_vs_pos_rect(NULL, &p_out, "att_vs", NULL));
+        assert(pico_vs_pos_rect(NULL, &p_in,  det_vs, NULL) ==
+               pico_vs_pos_rect(NULL, &p_in,  att_vs, NULL));
+        assert(pico_vs_pos_rect(NULL, &p_out, det_vs, NULL) ==
+               pico_vs_pos_rect(NULL, &p_out, att_vs, NULL));
     }
 
     // detached target with h=0: lazy aspect-fill from the layer's dim
-    pico_layer_empty(NULL, "det_asp", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
-    pico_set_layer("det_asp");
+    Pico_Layer* det_asp = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer(det_asp);
     pico_set_scene_dst((Pico_Rel_Rect){'!', {10, 10, 40, 0}, PICO_ANCHOR_NW});
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     {
         puts("vs_pos_rect - detached target h=0 aspect-fills lazily");
         // det_asp dim 50x50 (1:1): (10,10,40,0) fills to (10,10,40,40)
         Pico_Rel_Pos p_in  = { '!', {20, 20}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p_out = { '!', {20, 60}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect(NULL, &p_in,  "det_asp", NULL) == 1);
-        assert(pico_vs_pos_rect(NULL, &p_out, "det_asp", NULL) == 0);
+        assert(pico_vs_pos_rect(NULL, &p_in,  det_asp, NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, det_asp, NULL) == 0);
     }
 
     // detached target in '%' mode: resolves against the current layer
-    pico_layer_empty(NULL, "det_pct", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
-    pico_set_layer("det_pct");
+    Pico_Layer* det_pct = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer(det_pct);
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 0.4, 0.4}, PICO_ANCHOR_C});
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     {
         puts("vs_pos_rect - detached '%' target vs world");
         // world 100x100: (0.5,0.5,0.4,0.4) C -> (30,30,40,40)
         Pico_Rel_Pos p_in  = { '!', {35, 35}, PICO_ANCHOR_NW };
         Pico_Rel_Pos p_out = { '!', {75, 75}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect(NULL, &p_in,  "det_pct", NULL) == 1);
-        assert(pico_vs_pos_rect(NULL, &p_out, "det_pct", NULL) == 0);
+        assert(pico_vs_pos_rect(NULL, &p_in,  det_pct, NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p_out, det_pct, NULL) == 0);
     }
 
     // lazy re-resolution: an attached '%' target with w-only tracks a
     // later parent resize (was frozen under eager aspect-fill)
-    pico_layer_empty("world", "att_lazy", 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
-    pico_set_layer("att_lazy");
+    Pico_Layer* att_lazy = pico_layer_empty(pico_layer_world(), 1, (Pico_Rel_Dim){'!', {50, 50}}, NULL);
+    pico_set_layer(att_lazy);
     pico_set_scene_dst((Pico_Rel_Rect){'%', {0, 0, 0.5, 0}, PICO_ANCHOR_NW});
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     {
         puts("vs_pos_rect - attached target re-resolves on parent resize");
         // world 100x100: (0,0,50,50); p (75,75) outside
         Pico_Rel_Pos p = { '!', {75, 75}, PICO_ANCHOR_NW };
-        assert(pico_vs_pos_rect(NULL, &p, "att_lazy", NULL) == 0);
+        assert(pico_vs_pos_rect(NULL, &p, att_lazy, NULL) == 0);
         // world 200x200: same target now (0,0,100,100); p inside
         pico_set_scene_dim((Pico_Rel_Dim){'!', {200, 200}});
-        assert(pico_vs_pos_rect(NULL, &p, "att_lazy", NULL) == 1);
+        assert(pico_vs_pos_rect(NULL, &p, att_lazy, NULL) == 1);
     }
 
-    pico_init(0);
+    pico_layer_free(att_lazy);
+    pico_layer_free(det_pct);
+    pico_layer_free(det_asp);
+    pico_layer_free(att_vs);
+    pico_layer_free(det_vs);
+    pico_layer_free(sub_aspect);
+    pico_layer_free(sub_sub_tight);
+    pico_layer_free(sub_sub_vs);
+    pico_layer_free(sub_vs);
+    pico_close();
     return 0;
 }

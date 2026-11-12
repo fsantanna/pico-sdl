@@ -6,7 +6,7 @@ $ ../../pico-sdl main.c
 #include "pico.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
 
     puts("shows dark screen");
     {
@@ -159,6 +159,6 @@ int main (void) {
     }
 #endif
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

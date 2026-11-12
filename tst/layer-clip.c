@@ -9,16 +9,16 @@
  * center.
  */
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Layer clip");
     pico_set_effect_color(PICO_COLOR_WHITE);
     pico_output_clear();
 
-    pico_layer_image("world", "img", "../res/open.png");
+    Pico_Layer* img = pico_layer_image(pico_layer_world(), "../res/open.png");
 
     // case 1: dst fully inside world (aux no-op)
     {
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
         pico_set_layer(old);
         pico_output_clear();
@@ -28,7 +28,7 @@ int main (void) {
 
     // case 2: dst 4-side overflow (aux must window the center)
     {
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 2.0, 2.0}, PICO_ANCHOR_C});
         pico_set_layer(old);
         pico_output_clear();
@@ -38,13 +38,13 @@ int main (void) {
 
     // case 3: same layer thrice (50x50) - centered + half off-left + half off-right
     {
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
         pico_set_layer(old);
         pico_output_clear();
-        pico_output_draw_layer("img",
+        pico_output_draw_layer(img,
             &(Pico_Rel_Rect){'%', {0, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
-        pico_output_draw_layer("img",
+        pico_output_draw_layer(img,
             &(Pico_Rel_Rect){'%', {1.0, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
         pico_output_present(1);
         _pico_check("layer-clip-03");
@@ -52,7 +52,7 @@ int main (void) {
 
     // case 4: src overflow - scene.src past layer.dim (aux clips src)
     {
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         pico_set_scene_dst((Pico_Rel_Rect){'%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C});
         pico_set_scene_src((Pico_Rel_Rect){'%', {0.5, 0.5, 2.0, 2.0}, PICO_ANCHOR_C});
         pico_set_layer(old);
@@ -79,10 +79,11 @@ int main (void) {
     // L: green bg, black marker. dst fills world. src.y negative.
     // aux: dst shifts down, top of dst empty -> world.tex (white) shows
     // no aux: SDL edge-clamps L.tex top row -> green at top of world.tex
+    Pico_Layer* L;
     {
-        pico_layer_empty("world", "L", 1, (Pico_Rel_Dim){'!', {48, 48}}, NULL);
+        L = pico_layer_empty(pico_layer_world(), 1, (Pico_Rel_Dim){'!', {48, 48}}, NULL);
         {
-            const char* old = pico_set_layer("L");
+            Pico_Layer* old = pico_set_layer(L);
             pico_set_effect_color(PICO_COLOR_GREEN);
             pico_output_clear();
             pico_set_pencil_color(PICO_COLOR_BLACK);
@@ -102,6 +103,8 @@ int main (void) {
         _pico_check("layer-clip-06");
     }
 
-    pico_init(0);
+    pico_layer_free(L);
+    pico_layer_free(img);
+    pico_close();
     return 0;
 }

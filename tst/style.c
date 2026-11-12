@@ -2,12 +2,12 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Style" });
 
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {640, 480} });
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {64, 48} });
 
     // shapes used across tests
@@ -78,6 +78,6 @@ int main (void) {
         assert(pico_get_pencil_style() == PICO_STYLE_FILL);
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

@@ -18,7 +18,7 @@
 #define BAR_H 10
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     int ms = pico_set_expert(1, 60);
 
     Pico_Video info = pico_get_video(NULL, VIDEO_PATH);
@@ -172,6 +172,6 @@ int main (void) {
     }
 
 done:
-    pico_init(0);
+    pico_close();
     return 0;
 }

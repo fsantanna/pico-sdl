@@ -19,7 +19,7 @@ int main (void) {
     Pico_Color green = { 0x00,0xFF,0x00,0xFF };
     Pico_Color red   = { 0xFF,0x00,0x00,0xFF };
 
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Window Clip");
     pico_set_pencil_style(PICO_STYLE_FILL);
 
@@ -28,14 +28,14 @@ int main (void) {
     ///////////////////////////////////////////////////////////////////////////
 
     // GREEN backdrop: the plain present clears the window to this each frame
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_effect_color(green);
 
     // clip the WINDOW to a centred box; the composite should honour it
     pico_set_scene_clip(box);
 
     // WORLD: full red -> should reach the window only inside the box
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     pico_set_pencil_color(red);
     pico_output_draw_rect(full);
 
@@ -50,7 +50,7 @@ int main (void) {
     pico_set_expert(1, 0);
 
     // GREEN background painted on the WINDOW layer (full)
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_scene_clip(full);
     pico_set_pencil_color(green);
     pico_output_draw_rect(full);
@@ -59,7 +59,7 @@ int main (void) {
     pico_set_scene_clip(box);
 
     // WORLD: full red -> should reach the window only inside the box
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     pico_output_clear();
     pico_set_pencil_color(red);
     pico_output_draw_rect(full);
@@ -69,6 +69,6 @@ int main (void) {
     // want: GREEN field, RED centred box
     // now:  full RED (window clip ignored by the composite)
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

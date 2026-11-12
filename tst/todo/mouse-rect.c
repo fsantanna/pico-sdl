@@ -1,7 +1,7 @@
 #include "pico.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
 
     /* World background */
     pico_set_effect_color(PICO_COLOR_BLACK);
@@ -34,6 +34,6 @@ int main (void) {
         );
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

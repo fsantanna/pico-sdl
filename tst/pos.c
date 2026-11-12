@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Pct-To-Pos");
 
     {
@@ -88,6 +88,6 @@ int main (void) {
         _pico_check("pos-07");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

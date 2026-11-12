@@ -3,7 +3,7 @@
 #include <assert.h>
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     Pico_Rel_Dim log = { '!', {100, 100} };
     pico_set_scene_dim(log);
 
@@ -53,6 +53,6 @@ int main (void) {
     }
 
     printf("\n=== ALL TESTS PASSED ===\n");
-    pico_init(0);
+    pico_close();
     return 0;
 }

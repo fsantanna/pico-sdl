@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Expert FPS");
 
     // test 1: set.expert returns ms
@@ -60,6 +60,6 @@ int main (void) {
     int dt2 = pico_input_event(&e3, PICO_EVENT_ANY);
     assert(dt2>=25 && dt2<=30);
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

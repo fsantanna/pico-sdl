@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Expert");
 
     Pico_Rel_Rect r = { '%', {0.5,0.5, 0.5,0.5}, PICO_ANCHOR_C };
@@ -13,7 +13,7 @@ int main (void) {
     pico_output_clear();
     _pico_check("expert-02");
 
-    const char* prev = pico_set_layer("window");
+    Pico_Layer* prev = pico_set_layer(pico_layer_window());
     pico_output_draw_layers();
     pico_set_layer(prev);
 
@@ -24,6 +24,6 @@ int main (void) {
     int dt = pico_input_delay(100);
     assert(dt>=100 && dt<=105);
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

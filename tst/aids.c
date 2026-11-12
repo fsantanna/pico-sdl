@@ -10,7 +10,7 @@ static void _push_ctrl_g (void) {
 }
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     assert(pico_get_aids() == 1);
 
     // aids on: ctrl+g is consumed and toggles the grid
@@ -45,6 +45,6 @@ int main (void) {
         assert(e.type == PICO_EVENT_QUIT);
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

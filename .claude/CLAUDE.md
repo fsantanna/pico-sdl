@@ -2,7 +2,7 @@
 
 - In `valgrind.supp`, last clause `sdl-init`, line `src:pico.c:N`.
     - `src:pico.c:N` points to file `src/pico.c` at line `N`
-    - `N` is the line in `pico_init` that calls `SDL_Init`
+    - `N` is the line in `pico_open` that calls `SDL_Init`
     - **update `N` whenever `src/pico.c` changes**
 
 ## Build & Run

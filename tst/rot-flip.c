@@ -2,56 +2,56 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Rotate / Flip");
     pico_set_effect_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
     // Create a layer from image for rotation/flip tests
-    pico_layer_image(NULL, "img", "../res/open.png");
+    Pico_Layer* img = pico_layer_image(NULL, "../res/open.png");
 
     // ROTATION - center anchor
     {
         puts("rotate 0 degrees (no rotation)");
         pico_output_clear();
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         Pico_Rot rot = {0, PICO_ANCHOR_C};
         pico_set_effect_rotate(rot);
         pico_set_layer(old);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
-        pico_output_draw_layer("img", &r);
+        pico_output_draw_layer(img, &r);
         _pico_check("rot-flip-01");
     }
     {
         puts("rotate 45 degrees");
         pico_output_clear();
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         Pico_Rot rot = {45, PICO_ANCHOR_C};
         pico_set_effect_rotate(rot);
         pico_set_layer(old);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
-        pico_output_draw_layer("img", &r);
+        pico_output_draw_layer(img, &r);
         _pico_check("rot-flip-02");
     }
     {
         puts("rotate 90 degrees");
         pico_output_clear();
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         Pico_Rot rot = {90, PICO_ANCHOR_C};
         pico_set_effect_rotate(rot);
         pico_set_layer(old);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
-        pico_output_draw_layer("img", &r);
+        pico_output_draw_layer(img, &r);
         _pico_check("rot-flip-03");
     }
     {
         puts("rotate 180 degrees");
         pico_output_clear();
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         Pico_Rot rot = {180, PICO_ANCHOR_C};
         pico_set_effect_rotate(rot);
         pico_set_layer(old);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
-        pico_output_draw_layer("img", &r);
+        pico_output_draw_layer(img, &r);
         _pico_check("rot-flip-04");
     }
 
@@ -59,18 +59,18 @@ int main (void) {
     {
         puts("rotate 45 degrees, anchor NW");
         pico_output_clear();
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         Pico_Rot rot = {45, PICO_ANCHOR_NW};
         pico_set_effect_rotate(rot);
         pico_set_layer(old);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
-        pico_output_draw_layer("img", &r);
+        pico_output_draw_layer(img, &r);
         _pico_check("rot-flip-05");
     }
 
     // Reset rotation for flip tests
     {
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         Pico_Rot rot = {0, PICO_ANCHOR_C};
         pico_set_effect_rotate(rot);
         pico_set_layer(old);
@@ -80,34 +80,34 @@ int main (void) {
     {
         puts("flip horizontal");
         pico_output_clear();
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         PICO_FLIP flip = PICO_FLIP_HORIZONTAL;
         pico_set_effect_flip(flip);
         pico_set_layer(old);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
-        pico_output_draw_layer("img", &r);
+        pico_output_draw_layer(img, &r);
         _pico_check("rot-flip-06");
     }
     {
         puts("flip vertical");
         pico_output_clear();
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         PICO_FLIP flip = PICO_FLIP_VERTICAL;
         pico_set_effect_flip(flip);
         pico_set_layer(old);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
-        pico_output_draw_layer("img", &r);
+        pico_output_draw_layer(img, &r);
         _pico_check("rot-flip-07");
     }
     {
         puts("flip both");
         pico_output_clear();
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         PICO_FLIP flip = PICO_FLIP_BOTH;
         pico_set_effect_flip(flip);
         pico_set_layer(old);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
-        pico_output_draw_layer("img", &r);
+        pico_output_draw_layer(img, &r);
         _pico_check("rot-flip-08");
     }
 
@@ -115,13 +115,13 @@ int main (void) {
     {
         puts("rotate 45 + flip horizontal");
         pico_output_clear();
-        const char* old = pico_set_layer("img");
+        Pico_Layer* old = pico_set_layer(img);
         Pico_Rot rot = {45, PICO_ANCHOR_C};
         PICO_FLIP flip = PICO_FLIP_HORIZONTAL;
         pico_set_effect_rotate(rot); pico_set_effect_flip(flip);
         pico_set_layer(old);
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
-        pico_output_draw_layer("img", &r);
+        pico_output_draw_layer(img, &r);
         _pico_check("rot-flip-09");
     }
 
@@ -131,11 +131,11 @@ int main (void) {
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
         for (int angle = 0; angle < 360; angle += 5) {
             pico_output_clear();
-            const char* old = pico_set_layer("img");
+            Pico_Layer* old = pico_set_layer(img);
             Pico_Rot rot = {angle, PICO_ANCHOR_C};
             pico_set_effect_rotate(rot);
             pico_set_layer(old);
-            pico_output_draw_layer("img", &r);
+            pico_output_draw_layer(img, &r);
             if (angle == 180) {
                 _pico_check("rot-flip-10");
             }
@@ -149,11 +149,11 @@ int main (void) {
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
         for (int angle = 0; angle < 360; angle += 5) {
             pico_output_clear();
-            const char* old = pico_set_layer("img");
+            Pico_Layer* old = pico_set_layer(img);
             Pico_Rot rot = {angle, {1.1, 1.1}};
             pico_set_effect_rotate(rot);
             pico_set_layer(old);
-            pico_output_draw_layer("img", &r);
+            pico_output_draw_layer(img, &r);
             if (angle == 180) {
                 _pico_check("rot-flip-11");
             }
@@ -167,11 +167,11 @@ int main (void) {
         Pico_Rel_Rect r = {'!', {50, 50, 48, 48}, PICO_ANCHOR_C};
         for (int angle = 0; angle < 360; angle += 5) {
             pico_output_clear();
-            const char* old = pico_set_layer("img");
+            Pico_Layer* old = pico_set_layer(img);
             Pico_Rot rot = {angle, {-0.1, -0.1}};
             pico_set_effect_rotate(rot);
             pico_set_layer(old);
-            pico_output_draw_layer("img", &r);
+            pico_output_draw_layer(img, &r);
             if (angle == 180) {
                 _pico_check("rot-flip-12");
             }
@@ -179,6 +179,7 @@ int main (void) {
         }
     }
 
-    pico_init(0);
+    pico_layer_free(img);
+    pico_close();
     return 0;
 }

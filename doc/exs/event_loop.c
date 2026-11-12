@@ -2,7 +2,7 @@
 #include <pico.h>
 
 int main() {
-    pico_init(1);
+    pico_open(NULL);
 
     while (1) {
         int timeout = 16, accum = 0; // timeout is 1000 / FRAMERATE
@@ -26,6 +26,6 @@ int main() {
         pico_output_present(0);
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

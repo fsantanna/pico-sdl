@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Size - Fullscreen");
 
     Pico_Rel_Rect r = { '%', {0.5, 0.5, 0.5, 0.5}, PICO_ANCHOR_C };
@@ -12,11 +12,11 @@ int main (void) {
     {
         puts("normal");
         Pico_Abs_Dim cur;
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 1, cur.h * 1} };
         pico_set_scene_dim(dim);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_pct-01");
@@ -24,11 +24,11 @@ int main (void) {
     {
         puts("double");
         Pico_Abs_Dim cur;
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2} };
         pico_set_scene_dim(dim);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_pct-02");
@@ -36,11 +36,11 @@ int main (void) {
     {
         puts("half");
         Pico_Abs_Dim cur;
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 0.25, cur.h * 0.25} };
         pico_set_scene_dim(dim);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_pct-03");
@@ -48,11 +48,11 @@ int main (void) {
     {
         puts("normal");
         Pico_Abs_Dim cur;
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         cur = pico_get_scene_dim();
         Pico_Rel_Dim dim = { '!', {cur.w * 2, cur.h * 2} };
         pico_set_scene_dim(dim);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
         pico_output_draw_rect(r);
         _pico_check("size_pct-04");
@@ -117,6 +117,6 @@ int main (void) {
         _pico_check("size_pct-10");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

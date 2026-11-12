@@ -13,7 +13,7 @@ void push_key (SDL_Keycode key) {
 }
 
 int main() {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {1000, 1000} });
 
     // draw
@@ -74,6 +74,6 @@ int main() {
     }
     _pico_check("navigate-07");
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

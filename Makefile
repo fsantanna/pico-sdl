@@ -7,7 +7,7 @@ GEN = PICO_TESTS=1 PICO_CHECK_INT= PICO_CHECK_ASR= xvfb-run -a ./pico-sdl
 OBJS = src/colors.o src/geom.o src/get-set.o src/input.o \
 	   src/layer.o src/mem.o src/output.o src/pico.o src/video.o
 
-.PHONY: realm tests lua clean lib
+.PHONY: tests lua clean lib
 
 all: tests
 
@@ -16,12 +16,8 @@ lib: src/libpico-sdl.a
 src/libpico-sdl.a: $(OBJS)
 	ar rcs $@ $^
 
-src/%.o: src/%.c $(wildcard src/*.h) $(wildcard src/*.hc)
+src/%.o: src/%.c $(wildcard src/*.h)
 	gcc -Wall -Werror -g -fPIC -I src -c -o $@ $<
-
-realm:
-	curl -sL https://raw.githubusercontent.com/fsantanna/realm-allocator/v0.2/realm.h \
-		-o src/realm.hc
 
 lua:
 	sudo luarocks make lua/pico-sdl-0.7-1.rockspec --lua-version=5.4
@@ -60,6 +56,8 @@ tests: lib
 	$(EXE) tst/expert_fps.c
 	$(EXE) tst/bug-gfx-alpha.c
 	$(EXE) tst/font.c
+	$(EXE) tst/free.c
+	$(EXE) tst/free-recycle.c
 	$(EXE) tst/get-set.c
 	$(EXE) tst/image_pct.c
 	$(EXE) tst/image_raw.c
@@ -87,12 +85,11 @@ tests: lib
 	$(EXE) tst/size_pct.c
 	$(EXE) tst/size_raw.c
 	$(EXE) tst/style.c
-	$(EXE) tst/text-dyn.c
+	$(EXE) tst/text-cache.c
 	$(EXE) tst/text_empty.c
 	$(EXE) tst/text-sizes.c
 	$(EXE) tst/tile-grid.c
 	$(EXE) tst/tiles.c
-	$(EXE) tst/unique.c
 	$(EXE) tst/video.c
 	$(EXE) tst/view-target.c
 	$(EXE) tst/view_raw.c

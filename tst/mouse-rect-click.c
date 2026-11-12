@@ -3,28 +3,28 @@
 #include <assert.h>
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
 
     /* Layer 120x50 with 3 centered buttons equally spaced */
     Pico_Rel_Rect btn1 = { '%', {0.25, 0.50, 0.15, 0.30}, PICO_ANCHOR_C };
     Pico_Rel_Rect btn2 = { '%', {0.50, 0.50, 0.15, 0.30}, PICO_ANCHOR_C };
     Pico_Rel_Rect btn3 = { '%', {0.75, 0.50, 0.15, 0.30}, PICO_ANCHOR_C };
 
-    pico_layer_empty(NULL, "A", 1, (Pico_Rel_Dim){'!', {120, 50}}, NULL);
-    pico_set_layer("A");
+    Pico_Layer* A = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {120, 50}}, NULL);
+    pico_set_layer(A);
     pico_set_effect_color(PICO_COLOR_NAVY);
     pico_output_clear();
     pico_set_pencil_color(PICO_COLOR_WHITE);
     pico_output_draw_rect(btn1);
     pico_output_draw_rect(btn2);
     pico_output_draw_rect(btn3);
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
 
     /* Draw layer at bottom-right, 35%x35% of screen (distorted) */
     Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE };
     pico_set_effect_color(PICO_COLOR_BLACK);
     pico_output_clear();
-    pico_output_draw_layer("A", &r);
+    pico_output_draw_layer(A, &r);
     _pico_check("mouse-rect-click-01");
 
     /* re-express buttons within r (layer's composite rect) for
@@ -36,9 +36,9 @@ int main (void) {
     /* no collision */
     puts("no collision (394,355)");
     {
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_mouse(NULL, (Pico_Rel_Pos){'!', {394, 355}, PICO_ANCHOR_C});
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         Pico_Mouse pct = pico_get_mouse(NULL, &(Pico_Rel_Pos){.mode='%', .anchor=PICO_ANCHOR_NW});
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
@@ -53,9 +53,9 @@ int main (void) {
     /* click 3 */
     puts("click 3 (457,431)");
     {
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_mouse(NULL, (Pico_Rel_Pos){'!', {457, 431}, PICO_ANCHOR_C});
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         Pico_Mouse pct = pico_get_mouse(NULL, &(Pico_Rel_Pos){.mode='%', .anchor=PICO_ANCHOR_NW});
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
@@ -70,9 +70,9 @@ int main (void) {
     /* click 1 */
     puts("click 1 (362,405)");
     {
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_mouse(NULL, (Pico_Rel_Pos){'!', {362, 405}, PICO_ANCHOR_C});
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         Pico_Mouse pct = pico_get_mouse(NULL, &(Pico_Rel_Pos){.mode='%', .anchor=PICO_ANCHOR_NW});
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
@@ -87,9 +87,9 @@ int main (void) {
     /* click 2 */
     puts("click 2 (415,392)");
     {
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_mouse(NULL, (Pico_Rel_Pos){'!', {419, 392}, PICO_ANCHOR_C});
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         Pico_Mouse pct = pico_get_mouse(NULL, &(Pico_Rel_Pos){.mode='%', .anchor=PICO_ANCHOR_NW});
         Pico_Rel_Pos pos = { '%', {pct.x, pct.y}, PICO_ANCHOR_C };
         printf("  pct %5.3f %5.3f\n", pct.x, pct.y);
@@ -101,6 +101,7 @@ int main (void) {
         _pico_check("mouse-rect-click-05");
     }
 
-    pico_init(0);
+    pico_layer_free(A);
+    pico_close();
     return 0;
 }

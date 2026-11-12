@@ -1,7 +1,7 @@
 #include "pico.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
 
     // Test 1: filter matches within timeout
     // Move the mouse during the 5s window
@@ -53,6 +53,6 @@ int main (void) {
         }
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

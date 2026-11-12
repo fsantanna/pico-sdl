@@ -2,7 +2,7 @@
 #include <pico.h>
 
 int main() {
-    pico_init(1);
+    pico_open(NULL);
 
     Pico_Event event;
 
@@ -14,6 +14,6 @@ int main() {
         printf("No event detected in those 2 seconds\n");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

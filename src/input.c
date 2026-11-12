@@ -23,7 +23,7 @@ Pico_Keyboard pico_get_keyboard (void) {
     _pico_guard();
     return _keyboard(0, SDL_GetModState());
 }
-Pico_Mouse pico_get_mouse (const char* layer, Pico_Rel_Pos* pos) {
+Pico_Mouse pico_get_mouse (Pico_Layer* layer, Pico_Rel_Pos* pos) {
     _pico_guard();
     assert((pos->mode=='!' || pos->mode=='%' || pos->mode=='#'));
 
@@ -39,7 +39,7 @@ Pico_Mouse pico_get_mouse (const char* layer, Pico_Rel_Pos* pos) {
     };
 
     pico_cv_pos (
-        layer, pos, "window",
+        layer, pos, &G.window.layer,
         &(Pico_Rel_Pos){'!', {phy.x, phy.y}, PICO_ANCHOR_NW}
     );
     m.x = pos->x;
@@ -47,10 +47,10 @@ Pico_Mouse pico_get_mouse (const char* layer, Pico_Rel_Pos* pos) {
 
     return m;
 }
-void pico_set_mouse (const char* layer, Pico_Rel_Pos pos) {
+void pico_set_mouse (Pico_Layer* layer, Pico_Rel_Pos pos) {
     _pico_guard();
     Pico_Rel_Pos w = {'!', {}, PICO_ANCHOR_NW};
-    pico_cv_pos("window", &w, layer, &pos);
+    pico_cv_pos(&G.window.layer, &w, layer, &pos);
     Pico_Abs_Pos wi = _pico_abs_pos(w, NULL);
     SDL_WarpMouseInWindow(G.window.win, wi.x, wi.y);
     SDL_PumpEvents();
@@ -64,7 +64,7 @@ static int _event_handler (Pico_Event* pico, int do_exit) {
     switch (pico->type) {
         case PICO_EVENT_QUIT: {
             if (G.flags.aids && !G.flags.expert && do_exit && !G.flags.loop) {
-                pico_init(0);
+                _pico_close(0);
                 exit(0);
             }
             break;
@@ -158,7 +158,7 @@ static int _event_handler (Pico_Event* pico, int do_exit) {
                     return 1;
                 }
                 case SDLK_s: {
-                    pico_output_screenshot("window", NULL, NULL);
+                    pico_output_screenshot(&G.window.layer, NULL, NULL);
                     return 1;
                 }
             }
@@ -219,7 +219,7 @@ static void _sdl_to_pico (SDL_Event* sdl, Pico_Event* pico) {
         case PICO_EVENT_MOUSE_BUTTON_UP: {
             // report mouse pos in window pixels regardless of current layer
             Pico_Rel_Pos tmpl = { .mode='!', .anchor=PICO_ANCHOR_C };
-            pico->mouse = pico_get_mouse("window", &tmpl);
+            pico->mouse = pico_get_mouse(&G.window.layer, &tmpl);
             break;
         }
 

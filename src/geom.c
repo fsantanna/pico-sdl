@@ -15,7 +15,7 @@ static Pico_Abs_Pos  _rnd_pos  (SDL_FPoint f);
 static Pico_Abs_Rect _rnd_rect (SDL_FRect  f);
 
 ///////////////////////////////////////////////////////////////////////////////
-// CV: named-layer projection (cv_pos_to / cv_pos_from)
+// CV: layer projection (cv_pos_to / cv_pos_from)
 ///////////////////////////////////////////////////////////////////////////////
 
 // Root-mediated walk: fromL → root → toL.
@@ -32,7 +32,7 @@ static int _is_root (Pico_Layer* L) {
 // The parent layer for the walk: hier.up if attached, else the current
 // layer (reference frame for a detached layer's scene.dst).
 static Pico_Layer* _walk_up (Pico_Layer* L) {
-    return (L->hier.up == NULL) ? G.layer : _pico_layer_name(L->hier.up);
+    return (L->hier.up == NULL) ? G.layer : L->hier.up;
 }
 
 // up: walk d (in L's frame) to root; *out is d in root's frame.
@@ -152,12 +152,12 @@ static Pico_Layer* _rect_root_fr (Pico_Layer* L, SDL_FRect r, SDL_FRect* out) {
 // Public unified cv: project fr (in L_fr) into to (in L_to).
 // L_fr / L_to == NULL means cur. Layers must share a root.
 void pico_cv_dim (
-    const char* L_to, Pico_Rel_Dim* to,
-    const char* L_fr, const Pico_Rel_Dim* fr
+    Pico_Layer* L_to, Pico_Rel_Dim* to,
+    Pico_Layer* L_fr, const Pico_Rel_Dim* fr
 ) {
     _pico_guard();
-    Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
-    Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
+    Pico_Layer* T = (L_to == NULL) ? G.layer : L_to;
+    Pico_Layer* S = (L_fr == NULL) ? G.layer : L_fr;
 
     SDL_FDim d1,d2,d3;
     Pico_Rel_Dim fr_copy = *fr;
@@ -171,12 +171,12 @@ void pico_cv_dim (
 }
 
 void pico_cv_pos (
-    const char* L_to, Pico_Rel_Pos* to,
-    const char* L_fr, const Pico_Rel_Pos* fr
+    Pico_Layer* L_to, Pico_Rel_Pos* to,
+    Pico_Layer* L_fr, const Pico_Rel_Pos* fr
 ) {
     _pico_guard();
-    Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
-    Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
+    Pico_Layer* T = (L_to == NULL) ? G.layer : L_to;
+    Pico_Layer* S = (L_fr == NULL) ? G.layer : L_fr;
 
     SDL_FPoint p1,p2,p3;
     p1 = _raw_pos(*fr, &(Pico_Abs_Rect){0, 0, S->scene.dim.w, S->scene.dim.h});
@@ -189,12 +189,12 @@ void pico_cv_pos (
 }
 
 void pico_cv_rect (
-    const char* L_to, Pico_Rel_Rect* to,
-    const char* L_fr, const Pico_Rel_Rect* fr
+    Pico_Layer* L_to, Pico_Rel_Rect* to,
+    Pico_Layer* L_fr, const Pico_Rel_Rect* fr
 ) {
     _pico_guard();
-    Pico_Layer* T = (L_to == NULL) ? G.layer : _pico_layer_name(L_to);
-    Pico_Layer* S = (L_fr == NULL) ? G.layer : _pico_layer_name(L_fr);
+    Pico_Layer* T = (L_to == NULL) ? G.layer : L_to;
+    Pico_Layer* S = (L_fr == NULL) ? G.layer : L_fr;
 
     SDL_FRect r1,r2,r3;
     r1 = _raw_rect(*fr, &(Pico_Abs_Rect){0, 0, S->scene.dim.w, S->scene.dim.h}, NULL);
@@ -248,24 +248,24 @@ static Pico_Layer* _root_of (Pico_Layer* L) {
 }
 
 // Project p (in `layer`'s frame; NULL == cur) up to its root, as '!'.
-static Pico_Rel_Pos _root_pos (const char* layer, const Pico_Rel_Pos* p) {
-    Pico_Layer* L = (layer == NULL) ? G.layer : _pico_layer_name(layer);
+static Pico_Rel_Pos _root_pos (Pico_Layer* layer, const Pico_Rel_Pos* p) {
+    Pico_Layer* L = (layer == NULL) ? G.layer : layer;
     Pico_Layer* R = _root_of(L);
     Pico_Rel_Pos ret = {'!', {}, PICO_ANCHOR_C};
-    pico_cv_pos(R->name, &ret, L->name, p);
+    pico_cv_pos(R, &ret, L, p);
     return ret;
 }
 
 // Project r (in `layer`; NULL r == layer's scene.dst in parent frame)
 // up to its root, as '!'.
-static Pico_Rel_Rect _root_rect (const char* layer, const Pico_Rel_Rect* r) {
-    Pico_Layer* L = (layer == NULL) ? G.layer : _pico_layer_name(layer);
+static Pico_Rel_Rect _root_rect (Pico_Layer* layer, const Pico_Rel_Rect* r) {
+    Pico_Layer* L = (layer == NULL) ? G.layer : layer;
     Pico_Layer* R = _root_of(L);
 
     Pico_Rel_Rect ret = {'!', {}, PICO_ANCHOR_C};
 
     if (r != NULL) {
-        pico_cv_rect(R->name, &ret, L->name, r);
+        pico_cv_rect(R, &ret, L, r);
     } else if (L == R) {
         // L is R: no parent placement; use L's own interior.
         ret.x = 0;
@@ -283,15 +283,15 @@ static Pico_Rel_Rect _root_rect (const char* layer, const Pico_Rel_Rect* r) {
         Pico_Rel_Rect dst = {
             '!', {f.x, f.y, f.w, f.h}, PICO_ANCHOR_NW
         };
-        pico_cv_rect(R->name, &ret, P->name, &dst);
+        pico_cv_rect(R, &ret, P, &dst);
     }
 
     return ret;
 }
 
 int pico_vs_pos_pos (
-    const char* L1, Pico_Rel_Pos* p1,
-    const char* L2, Pico_Rel_Pos* p2
+    Pico_Layer* L1, Pico_Rel_Pos* p1,
+    Pico_Layer* L2, Pico_Rel_Pos* p2
 ) {
     _pico_guard();
     assert(p1 != NULL && p2 != NULL);
@@ -303,8 +303,8 @@ int pico_vs_pos_pos (
 }
 
 int pico_vs_pos_rect (
-    const char* L1, Pico_Rel_Pos*  p1,
-    const char* L2, Pico_Rel_Rect* r2
+    Pico_Layer* L1, Pico_Rel_Pos*  p1,
+    Pico_Layer* L2, Pico_Rel_Rect* r2
 ) {
     _pico_guard();
     assert(p1 != NULL);
@@ -316,15 +316,15 @@ int pico_vs_pos_rect (
 }
 
 int pico_vs_rect_pos (
-    const char* L1, Pico_Rel_Rect* r1,
-    const char* L2, Pico_Rel_Pos*  p2
+    Pico_Layer* L1, Pico_Rel_Rect* r1,
+    Pico_Layer* L2, Pico_Rel_Pos*  p2
 ) {
     return pico_vs_pos_rect(L2, p2, L1, r1);
 }
 
 int pico_vs_rect_rect (
-    const char* L1, Pico_Rel_Rect* r1,
-    const char* L2, Pico_Rel_Rect* r2
+    Pico_Layer* L1, Pico_Rel_Rect* r1,
+    Pico_Layer* L2, Pico_Rel_Rect* r2
 ) {
     _pico_guard();
     Pico_Rel_Rect r1_cur = _root_rect(L1, r1);

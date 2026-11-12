@@ -20,7 +20,7 @@ void init_drop (Drop* drop) {
 
 int main(void) {
     srand(time(NULL));
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Rain Simulation");
     pico_set_expert(1, 60);
 
@@ -60,6 +60,6 @@ int main(void) {
         pico_output_present(1);
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

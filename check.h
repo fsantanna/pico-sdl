@@ -85,12 +85,12 @@
  *   #include "check.h"
  *
  *   int main(void) {
- *       pico_init(1);
+ *       pico_open(NULL);
  *       pico_output_clear();
  *       pico_output_draw_rect_pct(&(Pico_Rect_Pct){
  *           0.5, 0.5, 0.4, 0.4, PICO_ANCHOR_C, NULL});
  *       _pico_check("anchor_pct-01");  // Writes to out/, compares with asr/
- *       pico_init(0);
+ *       pico_close();
  *       return 0;
  *   }
  */
@@ -149,7 +149,7 @@ void _pico_check (const char* msg) {
     // Always write to out/
     char fmt_out[256];
     sprintf(fmt_out, "out/%s.png", msg);
-    pico_output_screenshot("window", fmt_out, NULL);
+    pico_output_screenshot(pico_layer_window(), fmt_out, NULL);
     printf("Testing: %s\n", msg);
 
     #ifdef PICO_CHECK_INT

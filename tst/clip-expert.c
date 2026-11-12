@@ -10,7 +10,7 @@ int main (void) {
     Pico_Rel_Rect full = { '%', {0.5,0.5, 1.0,1.0}, PICO_ANCHOR_C };
     Pico_Rel_Rect box  = { '%', {0.5,0.5, 0.5,0.5}, PICO_ANCHOR_C };
 
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Clip x Expert");
     pico_set_pencil_style(PICO_STYLE_FILL);
 
@@ -34,6 +34,6 @@ int main (void) {
     pico_output_present(1);
     _pico_check("clip-expert-02");   // BUG: full blue -> clip not applied
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

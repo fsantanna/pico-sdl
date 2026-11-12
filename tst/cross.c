@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Hello World!");
     for (int i=0; i<100; i++) {
         pico_output_draw_pixel (
@@ -24,6 +24,6 @@ int main (void) {
                 break;
         }
     }
-    pico_init(0);
+    pico_close();
     return 0;
 }

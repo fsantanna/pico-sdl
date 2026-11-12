@@ -2,14 +2,14 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
 
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Grid" });
 
 
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {480, 480} });
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
 
     // Test 1: main layer, no tile mode, pixel grid only
     {
@@ -76,11 +76,13 @@ int main (void) {
         pico_set_effect_grid(0); pico_set_scene_dim(log);
     }
 
+    Pico_Layer *layerA, *layerB, *layerC;
+
     // Layer A: 4x4 tiles of 4x4 pixels, grid enabled
     {
         puts("layer A: 4x4 tiles, grid on");
-        pico_layer_empty(NULL, "layerA", 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL);
-        const char* old = pico_set_layer("layerA");
+        layerA = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL);
+        Pico_Layer* old = pico_set_layer(layerA);
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };
         pico_set_effect_color(PICO_COLOR_BLACK);
@@ -94,8 +96,8 @@ int main (void) {
     // Layer B: 8x4 tiles of 2x4 pixels, grid enabled
     {
         puts("layer B: 8x4 non-square tiles, grid on");
-        pico_layer_empty(NULL, "layerB", 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL);
-        const char* old = pico_set_layer("layerB");
+        layerB = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL);
+        Pico_Layer* old = pico_set_layer(layerB);
         Pico_Rel_Dim log = { '#', {8, 4} };
         Pico_Abs_Dim tile = { 2, 4 };
         pico_set_effect_color(PICO_COLOR_BLACK);
@@ -109,8 +111,8 @@ int main (void) {
     // Layer C: 4x4 tiles of 4x4 pixels, grid disabled
     {
         puts("layer C: 4x4 tiles, grid off");
-        pico_layer_empty(NULL, "layerC", 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL);
-        const char* old = pico_set_layer("layerC");
+        layerC = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {16, 16}}, NULL);
+        Pico_Layer* old = pico_set_layer(layerC);
         Pico_Rel_Dim log = { '#', {4, 4} };
         Pico_Abs_Dim tile = { 4, 4 };
         pico_set_effect_color(PICO_COLOR_BLACK);
@@ -125,9 +127,9 @@ int main (void) {
     {
         puts("3 layers: A(grid on) B(grid on) C(grid off)");
         pico_output_clear();
-        pico_output_draw_layer("layerA", &(Pico_Rel_Rect){ '!', {0,   0, 150, 150}, PICO_ANCHOR_NW });
-        pico_output_draw_layer("layerB", &(Pico_Rel_Rect){ '!', {160, 0, 150, 150}, PICO_ANCHOR_NW });
-        pico_output_draw_layer("layerC", &(Pico_Rel_Rect){ '!', {320, 0, 150, 150}, PICO_ANCHOR_NW });
+        pico_output_draw_layer(layerA, &(Pico_Rel_Rect){ '!', {0,   0, 150, 150}, PICO_ANCHOR_NW });
+        pico_output_draw_layer(layerB, &(Pico_Rel_Rect){ '!', {160, 0, 150, 150}, PICO_ANCHOR_NW });
+        pico_output_draw_layer(layerC, &(Pico_Rel_Rect){ '!', {320, 0, 150, 150}, PICO_ANCHOR_NW });
         _pico_check("tile-grid-06");
     }
 
@@ -135,12 +137,15 @@ int main (void) {
     {
         puts("3 layers: different scales");
         pico_output_clear();
-        pico_output_draw_layer("layerA", &(Pico_Rel_Rect){ '!', {0,   170, 120, 120}, PICO_ANCHOR_NW });
-        pico_output_draw_layer("layerB", &(Pico_Rel_Rect){ '!', {140, 170, 200, 200}, PICO_ANCHOR_NW });
-        pico_output_draw_layer("layerC", &(Pico_Rel_Rect){ '!', {0,   310, 240, 120}, PICO_ANCHOR_NW });
+        pico_output_draw_layer(layerA, &(Pico_Rel_Rect){ '!', {0,   170, 120, 120}, PICO_ANCHOR_NW });
+        pico_output_draw_layer(layerB, &(Pico_Rel_Rect){ '!', {140, 170, 200, 200}, PICO_ANCHOR_NW });
+        pico_output_draw_layer(layerC, &(Pico_Rel_Rect){ '!', {0,   310, 240, 120}, PICO_ANCHOR_NW });
         _pico_check("tile-grid-07");
     }
 
-    pico_init(0);
+    pico_layer_free(layerA);
+    pico_layer_free(layerB);
+    pico_layer_free(layerC);
+    pico_close();
     return 0;
 }

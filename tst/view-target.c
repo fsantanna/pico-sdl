@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("View Target");
 
     // 01: target = bottom-right quadrant, draw centered rect
@@ -40,11 +40,13 @@ int main (void) {
         _pico_check("view-target-03");
     }
 
+    Pico_Layer *bg, *bg2;
+
     // 04: explicit layer with view target, drawn with rect=NULL
     {
         puts("target: explicit layer");
-        pico_layer_empty(NULL, "bg", 1, (Pico_Rel_Dim){'!', {32, 32}}, NULL);
-        const char* old = pico_set_layer("bg");
+        bg = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {32, 32}}, NULL);
+        Pico_Layer* old = pico_set_layer(bg);
         pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
         pico_output_clear();
         pico_set_pencil_color(PICO_COLOR_WHITE);
@@ -55,30 +57,30 @@ int main (void) {
         pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
         pico_output_clear();
         Pico_Rel_Rect bg_at = {'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE};
-        pico_output_draw_layer("bg", &bg_at);
+        pico_output_draw_layer(bg, &bg_at);
         _pico_check("view-target-04");
     }
 
-    // 04b: detached stored target == explicit-rect draw. Storing "bg"'s
+    // 04b: detached stored target == explicit-rect draw. Storing bg's
     // target and drawing with rect=NULL must render identically to the
     // explicit-rect blit of case 04. Runs before bg2 (an attached child
     // of world) exists, so the cascade adds nothing.
     {
         puts("target: detached stored target matches explicit rect (04)");
-        const char* old = pico_set_layer("bg");
+        Pico_Layer* old = pico_set_layer(bg);
         pico_set_scene_dst((Pico_Rel_Rect){'%', {1, 1, 0.5, 0.5}, PICO_ANCHOR_SE});
         pico_set_layer(old);
         pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
         pico_output_clear();
-        pico_output_draw_layer("bg", NULL);
+        pico_output_draw_layer(bg, NULL);
         _pico_check("view-target-04");
     }
 
     // 05: target h only, w=0 -> w inferred from 2:1 layer aspect
     {
         puts("target: h only, w inferred");
-        pico_layer_empty("world", "bg2", 1, (Pico_Rel_Dim){'!', {80, 40}}, NULL);
-        const char* old = pico_set_layer("bg2");
+        bg2 = pico_layer_empty(pico_layer_world(), 1, (Pico_Rel_Dim){'!', {80, 40}}, NULL);
+        Pico_Layer* old = pico_set_layer(bg2);
         pico_set_scene_dst(
             (Pico_Rel_Rect){'%', {0.5, 0.5, 0, 0.4}, PICO_ANCHOR_C});
         pico_set_effect_color((Pico_Color){0x80, 0x00, 0x00, 0xFF});
@@ -86,34 +88,36 @@ int main (void) {
         pico_set_layer(old);
         pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
         pico_output_clear();
-        pico_output_draw_layer("bg2", NULL);
+        pico_output_draw_layer(bg2, NULL);
         _pico_check("view-target-05");
     }
 
     // 06: target w only, h=0 -> h inferred from 2:1 layer aspect
     {
         puts("target: w only, h inferred");
-        const char* old = pico_set_layer("bg2");
+        Pico_Layer* old = pico_set_layer(bg2);
         pico_set_scene_dst(
             (Pico_Rel_Rect){'%', {0.5, 0.5, 0.4, 0}, PICO_ANCHOR_C});
         pico_set_layer(old);
         pico_output_clear();
-        pico_output_draw_layer("bg2", NULL);
+        pico_output_draw_layer(bg2, NULL);
         _pico_check("view-target-06");
     }
 
     // 07: target w=h=0 -> full layer dim
     {
         puts("target: w=h=0, full layer dim");
-        const char* old = pico_set_layer("bg2");
+        Pico_Layer* old = pico_set_layer(bg2);
         pico_set_scene_dst(
             (Pico_Rel_Rect){'%', {0, 0, 0, 0}, PICO_ANCHOR_NW});
         pico_set_layer(old);
         pico_output_clear();
-        pico_output_draw_layer("bg2", NULL);
+        pico_output_draw_layer(bg2, NULL);
         _pico_check("view-target-07");
     }
 
-    pico_init(0);
+    pico_layer_free(bg);
+    pico_layer_free(bg2);
+    pico_close();
     return 0;
 }

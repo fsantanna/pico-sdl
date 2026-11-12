@@ -1,7 +1,7 @@
 #include "pico.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
 
     /* Layer 120x50 with 3 centered buttons equally spaced */
     Pico_Rel_Rect btn1 = { '%', {0.25, 0.50, 0.15, 0.30}, PICO_ANCHOR_C };
@@ -49,6 +49,6 @@ int main (void) {
         printf("\n");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

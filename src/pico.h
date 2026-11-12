@@ -135,11 +135,17 @@ extern const Pico_Color PICO_COLOR_TRANSPARENT;
 #define pico_assert_0(x) pico_assert((x) == 0)
 #define pico_assert_X(x) pico_assert((x) != NULL)
 
-#define pico_assert_key(x, key) \
-    if ((x) == NULL) { \
-        fprintf(stderr, "invalid key : %s\n", key); \
-        assert(0 && "invalid key"); \
-    }
+/// @brief Opaque layer handle: a texture plus its pencil, effect and
+/// scene state. Created by `pico_layer_*`, released by @ref pico_layer_free.
+typedef struct Pico_Layer Pico_Layer;
+
+/// @brief Opaque font handle. Created by @ref pico_font_load, released by
+/// @ref pico_font_free.
+typedef struct Pico_Font Pico_Font;
+
+/// @brief Opaque sound handle. Created by @ref pico_sound_load, released
+/// by @ref pico_sound_free.
+typedef struct Pico_Sound Pico_Sound;
 
 typedef struct {
     float w;
@@ -210,7 +216,7 @@ typedef struct {
 
 typedef struct {
     Pico_Color    color;
-    const char*   font;
+    Pico_Font*    font;         // NULL = built-in font
     PICO_STYLE    style;
 } Pico_Layer_Pencil;
 
@@ -243,22 +249,26 @@ typedef struct {
 /// @brief Functions and values used in initialization.
 /// @{
 
-/// @brief Initializes and terminates pico.
+/// @brief Opens pico: initializes the library and creates the window.
 /// @include init.c
-/// @param on 1 to initialize, or 0 to terminate
-void pico_init (int on);
+/// @param win initial window state (fs, show, title), or NULL for the
+///            defaults (windowed, shown, PICO_TITLE). With `show=0` the
+///            window is created hidden; a NULL title uses PICO_TITLE.
+/// @sa pico_close
+void pico_open (const Pico_Window* win);
+
+/// @brief Closes pico: destroys the window and terminates the library.
+/// Releases every resource loaded implicitly by path or content
+/// (`pico_output_draw_image`, `pico_output_draw_text`,
+/// `pico_output_draw_video`, `pico_output_sound_path`,
+/// `pico_set_pencil_font_path`). Resources created explicitly
+/// (`pico_layer_*`, `pico_font_load`, `pico_sound_load`) must have been
+/// freed already (asserted).
+/// @sa pico_open
+void pico_close (void);
 
 /// @brief Pushes a quit event.
 void pico_quit (void);
-
-/// @brief Opens a new scope. Entries created until the matching
-///        `pico_pop` are released together when it runs.
-void pico_push (void);
-
-/// @brief Closes the current scope, freeing every entry created
-///        since the matching `pico_push`. Requires the current
-///        target layer to be `world` or `window` (depth-0 statics).
-void pico_pop (void);
 
 /// @}
 
@@ -310,20 +320,11 @@ void pico_input_loop (void);
 /// descendant layer flagged with scene.clear (see @ref pico_layer_empty).
 void pico_output_clear (void);
 
-/// @brief Draws an RGBA pixmap.
-/// @param key layer key for caching (required)
-/// @param dim pixmap dimensions in pixels
-/// @param pixmap the RGBA pixel data
-/// @param rect drawing rectangle (mode determines coordinate interpretation)
-/// @sa pico_output_draw_image
-void pico_output_draw_pixmap (const char* key, Pico_Abs_Dim dim,
-                              const Pico_Color pixmap[],
-                              Pico_Rel_Rect rect);
-
 /// @brief Draws an image.
 /// @param path path to the image file
+/// The image is loaded once per path and kept until @ref pico_close.
 /// @param rect target position and dimension (mode determines coordinates)
-/// @sa pico_output_draw_pixmap
+/// @sa pico_layer_image
 void pico_output_draw_image (const char* path, Pico_Rel_Rect rect);
 
 /// @brief Draws a line.
@@ -341,11 +342,11 @@ void pico_output_draw_pixel (Pico_Rel_Pos pos);
 void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps);
 
 /// @brief Draws a layer onto the current layer.
-/// @param key layer key (must exist)
+/// @param layer layer to draw
 /// @param rect target position and dimension (mode determines
 ///        coordinates); NULL uses the layer's scene.dst defaults
 ///        (full bounds in cur).
-void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect);
+void pico_output_draw_layer (Pico_Layer* layer, const Pico_Rel_Rect* rect);
 
 /// @brief Draws a rectangle.
 /// @param rect rectangle to draw (mode determines coordinates);
@@ -370,37 +371,14 @@ void pico_output_draw_oval (Pico_Rel_Rect rect);
 /// @param ps array of vertex positions (mode determines coordinates)
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps);
 
-/// @brief Draws fixed text (shared caching by text content).
-/// Each distinct (font, height, color, text) is rasterized once
-/// and cached for the enclosing scope. Do NOT use for varying
-/// text (clock, counters): every distinct string accumulates a
-/// texture — use pico_output_draw_text_dyn instead.
+/// @brief Draws text.
+/// Each distinct (font, height, color, text) is rasterized once and
+/// kept until @ref pico_close. For text that keeps changing (clock,
+/// counters), every distinct string accumulates a texture: prefer
+/// @ref pico_layer_text and free each layer when its text changes.
 /// @param text text to draw
 /// @param rect drawing rectangle (mode determines coordinates)
-void pico_output_draw_text_fix (const char* text, Pico_Rel_Rect rect);
-
-/// @brief Draws dynamic text under a caller key.
-/// Re-rasterizes only when (font, height, color, text) changes;
-/// unchanged calls are cache hits. Keeps a single texture per
-/// key regardless of how often the text varies.
-/// @param key layer key (required)
-/// @param text text to draw
-/// @param rect drawing rectangle (mode determines coordinates)
-void pico_output_draw_text_dyn (const char* key, const char* text, Pico_Rel_Rect rect);
-
-/// @brief Draws text with explicit realm mode and layer key.
-/// Underlies pico_output_draw_text_fix ('=', NULL) and
-/// pico_output_draw_text_dyn ('~', key).
-/// @param mode realm mode ('!' exclusive, '=' shared,
-///             '~' replace-if-changed)
-/// @param key layer key
-/// @param text text to draw
-/// @param rect drawing rectangle (mode determines coordinates)
-void pico_output_draw_text_mode (
-    int mode,
-    const char* key, const char* text,
-    Pico_Rel_Rect rect
-);
+void pico_output_draw_text (const char* text, Pico_Rel_Rect rect);
 
 /// @brief Shows what has been drawn onto the screen.
 /// Only does anything on expert mode.
@@ -416,22 +394,30 @@ void pico_output_present (int layers);
 void pico_output_draw_layers (void);
 
 /// @brief Draws a video frame (all-in-one).
-/// Auto-syncs to elapsed time internally.
+/// Auto-syncs to elapsed time internally. The video is opened once per
+/// path and kept until @ref pico_close.
 /// @param path path to the Y4M video file
 /// @param rect target position and dimension
 /// @return 1 if frame drawn, or 0 at EOF
 int pico_output_draw_video (const char* path, Pico_Rel_Rect rect);
 
 /// @brief Takes a screenshot of a layer.
-/// @param layer layer name to capture (NULL uses current layer)
+/// @param layer layer to capture (NULL uses current layer)
 /// @param path screenshot filepath (NULL uses timestamp in the name)
 /// @param rect region to capture (NULL captures full layer)
 /// @return the filepath of the screenshot
-const char* pico_output_screenshot (const char* layer, const char* path, const Pico_Rel_Rect* rect);
+const char* pico_output_screenshot (Pico_Layer* layer, const char* path, const Pico_Rel_Rect* rect);
 
 /// @brief Plays a sound.
+/// @param sound sound to play
+/// @sa pico_sound_load
+void pico_output_sound (Pico_Sound* sound);
+
+/// @brief Plays a sound from an audio file.
+/// The file is loaded once per path and kept until @ref pico_close.
 /// @param path path to the audio file
-void pico_output_sound (const char* path);
+/// @sa pico_output_sound
+void pico_output_sound_path (const char* path);
 
 /// @}
 
@@ -446,7 +432,7 @@ void pico_output_sound (const char* path);
 /// @sa pico_set_pencil
 Pico_Layer_Pencil pico_get_pencil       (void);
 Pico_Color  pico_get_pencil_color (void);
-const char* pico_get_pencil_font  (void);
+Pico_Font*  pico_get_pencil_font  (void);
 PICO_STYLE  pico_get_pencil_style (void);
 
 /// @brief Gets the state of auto aids.
@@ -466,10 +452,10 @@ int pico_get_expert (int* fps);
 /// @return absolute dimensions (missing w or h filled based on aspect ratio)
 Pico_Abs_Dim pico_get_image (Pico_Rel_Dim* dim, const char* path);
 
-/// @brief Gets current layer key.
-/// @return layer key
+/// @brief Gets the current layer.
+/// @return current layer
 /// @sa pico_set_layer
-const char* pico_get_layer (void);
+Pico_Layer* pico_get_layer (void);
 
 /// @brief Gets the entire effect state of the current layer.
 /// @param effect output struct populated with effect state
@@ -491,149 +477,103 @@ Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// @brief Returns a unique monotonic id.
-/// Starts at 1 and is never reset, not even by @ref pico_init.
-/// Used internally to auto-generate layer keys `/unique/N` when a
-/// constructor receives a NULL key.
-/// @return unique id
-int pico_unique (void);
+/// @brief Gets the world layer (the default drawing target).
+Pico_Layer* pico_layer_world (void);
 
-/// @brief Creates a layer from a pixmap (exclusive mode).
-/// @param key layer key (NULL auto-generates; must not start with '/')
-/// @param dim pixmap dimensions
-/// @param pixels RGBA pixel data (must remain valid while layer
-///               exists)
-/// @return stored layer key
-const char* pico_layer_pixmap (const char* up, const char* key,
-                        Pico_Abs_Dim dim,
-                        const Pico_Color* pixels);
+/// @brief Gets the window layer (root of the layer hierarchy).
+Pico_Layer* pico_layer_window (void);
 
 /// @brief Creates a layer from a pixmap.
-/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (NULL auto-generates; must not start with '/')
+/// @param up parent layer to attach to (NULL leaves it detached)
 /// @param dim pixmap dimensions
-/// @param pixels RGBA pixel data (must remain valid while layer
-///               exists)
-/// @return stored layer key
-const char* pico_layer_pixmap_mode (int mode, const char* up, const char* key,
-                             Pico_Abs_Dim dim,
-                             const Pico_Color* pixels);
-
-/// @brief Creates an empty layer (exclusive mode).
-/// @param key   layer key (NULL auto-generates; must not start with '/')
-/// @param clear cascade-clear flag: when set, the layer is cleared
-///              whenever an ancestor's @ref pico_output_clear cascades
-/// @param dim   layer dimensions; '%' resolves against parent
-///              `up`'s scene.dim (or current layer if up==NULL)
-/// @return stored layer key
-const char* pico_layer_empty (
-    const char* up, const char* key, int clear,
-    Pico_Rel_Dim dim, Pico_Rel_Dim* tile
-);
+/// @param pixels RGBA pixel data (copied)
+/// @return new layer; release with @ref pico_layer_free
+Pico_Layer* pico_layer_pixmap (Pico_Layer* up, Pico_Abs_Dim dim,
+                               const Pico_Color* pixels);
 
 /// @brief Creates an empty layer.
-/// @param mode  realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key   layer key (NULL auto-generates; must not start with '/')
+/// @param up    parent layer to attach to (NULL leaves it detached)
 /// @param clear cascade-clear flag: when set, the layer is cleared
 ///              whenever an ancestor's @ref pico_output_clear cascades
 /// @param dim   layer dimensions; '%' resolves against parent
 ///              `up`'s scene.dim (or current layer if up==NULL)
-/// @return stored layer key
-const char* pico_layer_empty_mode (
-    int mode, const char* up, const char* key, int clear,
-    Pico_Rel_Dim dim, Pico_Rel_Dim* tile
+/// @param tile  optional tile dimensions (NULL for none)
+/// @return new layer; release with @ref pico_layer_free
+Pico_Layer* pico_layer_empty (
+    Pico_Layer* up, int clear, Pico_Rel_Dim dim, Pico_Rel_Dim* tile
 );
 
-/// @brief Creates a layer from an image file (exclusive mode).
-/// @param key layer key (NULL uses path, otherwise must not start with '/')
-/// @param path path to the image file
-/// @return stored layer key
-const char* pico_layer_image (const char* up, const char* key, const char* path);
-
 /// @brief Creates a layer from an image file.
-/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (NULL uses path, otherwise must not start with '/')
+/// @param up parent layer to attach to (NULL leaves it detached)
 /// @param path path to the image file
-/// @return stored layer key
-const char* pico_layer_image_mode (int mode,
-    const char* up, const char* key, const char* path);
-
-/// @brief Creates a layer from a screenshot of a layer (exclusive
-///        mode).
-/// Captures the same pixels as pico_output_screenshot, but stores
-/// them in a new layer instead of a PNG file.
-/// @param key layer key (NULL auto-generates; must not start with '/')
-/// @param src layer to capture (NULL uses current layer)
-/// @param rect region to capture (NULL captures full layer)
-/// @return stored layer key
-const char* pico_layer_screenshot (const char* up, const char* key,
-    const char* src, const Pico_Rel_Rect* rect);
+/// @return new layer; release with @ref pico_layer_free
+Pico_Layer* pico_layer_image (Pico_Layer* up, const char* path);
 
 /// @brief Creates a layer from a screenshot of a layer.
 /// Captures the same pixels as pico_output_screenshot, but stores
 /// them in a new layer instead of a PNG file.
-/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (NULL auto-generates; must not start with '/')
+/// @param up parent layer to attach to (NULL leaves it detached)
 /// @param src layer to capture (NULL uses current layer)
 /// @param rect region to capture (NULL captures full layer)
-/// @return stored layer key
-const char* pico_layer_screenshot_mode (int mode, const char* up, const char* key,
-    const char* src, const Pico_Rel_Rect* rect);
-
-/// @brief Creates a sub-layer (crop) from an existing layer
-///        (exclusive mode).
-/// Shares the parent's texture — no copy.
-/// @param key layer key (NULL auto-generates)
-/// @param parent parent layer key (must exist, must not be a
-///               sub-layer)
-/// @param crop source rectangle within the parent
-/// @return stored layer key
-const char* pico_layer_sub (const char* up, const char* key,
-    const char* parent, const Pico_Rel_Rect* crop);
+/// @return new layer; release with @ref pico_layer_free
+Pico_Layer* pico_layer_screenshot (Pico_Layer* up, Pico_Layer* src,
+                                   const Pico_Rel_Rect* rect);
 
 /// @brief Creates a sub-layer (crop) from an existing layer.
-/// Shares the parent's texture — no copy.
-/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (NULL auto-generates)
-/// @param parent parent layer key (must exist, must not be a
-///               sub-layer)
-/// @param crop source rectangle within the parent
-/// @return stored layer key
-const char* pico_layer_sub_mode (int mode, const char* up, const char* key,
-    const char* parent, const Pico_Rel_Rect* crop);
-
-/// @brief Creates a layer from text (exclusive mode).
-/// @param key layer key (NULL auto-generates; must not start with '/')
-/// @param dim text dimensions; `h` is the font height
-/// @param text the text to render
-/// @note Uses current font and draw color
-/// @return stored layer key
-const char* pico_layer_text (const char* up, const char* key, Pico_Rel_Dim dim, const char* text);
+/// Shares the source's texture — no copy. The source cannot be freed
+/// while a sub-layer of it is alive.
+/// @param up parent layer to attach to (NULL leaves it detached)
+/// @param src source layer (must not be a sub-layer)
+/// @param crop source rectangle within `src`
+/// @return new layer; release with @ref pico_layer_free
+Pico_Layer* pico_layer_sub (Pico_Layer* up, Pico_Layer* src,
+                            const Pico_Rel_Rect* crop);
 
 /// @brief Creates a layer from text.
-/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (NULL auto-generates; must not start with '/')
+/// @param up parent layer to attach to (NULL leaves it detached)
 /// @param dim text dimensions; `h` is the font height
 /// @param text the text to render
 /// @note Uses current font and draw color
-/// @return stored layer key
-const char* pico_layer_text_mode (int mode, const char* up, const char* key, Pico_Rel_Dim dim, const char* text);
-
-/// @brief Creates a video layer from a Y4M file (exclusive mode).
-/// @param key layer key (NULL uses path, otherwise must not
-///            start with '/')
-/// @param path path to the Y4M video file
-/// @return stored layer key
-const char* pico_layer_video (const char* up, const char* key, const char* path);
+/// @return new layer; release with @ref pico_layer_free
+Pico_Layer* pico_layer_text (Pico_Layer* up, Pico_Rel_Dim dim,
+                             const char* text);
 
 /// @brief Creates a video layer from a Y4M file.
-/// @param mode realm mode ('!' exclusive, '=' shared, '~' replace)
-/// @param key layer key (NULL uses path, otherwise must not
-///            start with '/')
+/// @param up parent layer to attach to (NULL leaves it detached)
 /// @param path path to the Y4M video file
-/// @return stored layer key
-const char* pico_layer_video_mode (int mode,
-    const char* up, const char* key, const char* path);
+/// @return new layer; release with @ref pico_layer_free
+/// @sa pico_set_video
+Pico_Layer* pico_layer_video (Pico_Layer* up, const char* path);
+
+/// @brief Frees a layer created by `pico_layer_*`.
+/// The layer is removed from its parent, if attached. Asserts that it
+/// has no children, is not the current layer, has no live sub-layers,
+/// and is neither the world nor the window layer.
+/// @param layer layer to free
+void pico_layer_free (Pico_Layer* layer);
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// @brief Loads a font from a TTF file.
+/// @param path path to the font file
+/// @return new font; release with @ref pico_font_free
+/// @sa pico_set_pencil_font
+Pico_Font* pico_font_load (const char* path);
+
+/// @brief Frees a font created by @ref pico_font_load.
+/// No layer pencil may still reference it.
+/// @param font font to free
+void pico_font_free (Pico_Font* font);
+
+/// @brief Loads a sound from an audio file.
+/// @param path path to the audio file
+/// @return new sound; release with @ref pico_sound_free
+/// @sa pico_output_sound
+Pico_Sound* pico_sound_load (const char* path);
+
+/// @brief Frees a sound created by @ref pico_sound_load.
+/// @param sound sound to free
+void pico_sound_free (Pico_Sound* sound);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -642,40 +582,24 @@ const char* pico_layer_video_mode (int mode,
 Pico_Keyboard pico_get_keyboard (void);
 
 /// @brief Gets the mouse state.
-/// @param layer layer name; NULL = cur
+/// @param layer layer; NULL = cur
 /// @param pos template: `pos->mode` ('!','%','#') and `pos->anchor` are
 ///            read on input; `pos->x` / `pos->y` are filled on output.
 /// @return mouse state (mode + anchor + x/y + buttons) expressed in `layer`'s frame
 /// @sa pico_set_mouse
-Pico_Mouse pico_get_mouse (const char* layer, Pico_Rel_Pos* pos);
+Pico_Mouse pico_get_mouse (Pico_Layer* layer, Pico_Rel_Pos* pos);
 
 /// @brief Gets the amount of ticks that passed since pico was initialized.
 /// @return elapsed time in milliseconds
 Uint32 pico_get_now (void);
 
-/// @brief Gets the dimensions of the given text (shared caching).
+/// @brief Gets the dimensions of the given text.
+/// Shares the cache of @ref pico_output_draw_text.
 /// @param dim dim with h for font size (mode '!' or '%'),
 ///            w filled in
 /// @param text text to measure
 /// @return absolute dimensions
-/// @sa pico_get_text_mode
 Pico_Abs_Dim pico_get_text (Pico_Rel_Dim* dim, const char* text);
-
-/// @brief Gets text dimensions with explicit realm mode and
-///        layer key.
-/// @param mode realm mode ('!' exclusive, '=' shared,
-///             '~' replace)
-/// @param key layer key
-/// @param dim dim with h for font size (mode '!' or '%'),
-///            w filled in
-/// @param text text to measure
-/// @return absolute dimensions
-/// @sa pico_get_text
-Pico_Abs_Dim pico_get_text_mode (
-    int mode,
-    const char* key, Pico_Rel_Dim* dim,
-    const char* text
-);
 
 /// @brief Gets the entire scene state of the current layer.
 /// @param scene output struct populated with scene state
@@ -709,7 +633,11 @@ void pico_set_dim (Pico_Rel_Dim dim);
 /// @sa pico_get_pencil
 void pico_set_pencil       (Pico_Layer_Pencil pencil);
 void pico_set_pencil_color (Pico_Color color);
-void pico_set_pencil_font  (const char* path);
+void pico_set_pencil_font  (Pico_Font* font);
+/// @brief Sets the pencil font from a TTF file.
+/// The font is loaded once per path and kept until @ref pico_close.
+/// @param path path to the font file (NULL selects the built-in font)
+void pico_set_pencil_font_path (const char* path);
 void pico_set_pencil_style (PICO_STYLE style);
 
 /// @brief Toggles auto aids (quit/exit, window resize, ctrl+keys).
@@ -725,19 +653,19 @@ void pico_set_aids (int on);
 int pico_set_expert (int on, int fps);
 
 /// @brief Switches the current render-target layer.
-/// @param key layer key
-/// @return previous layer name
+/// @param layer layer to draw onto
+/// @return previous layer
 /// @sa pico_get_layer
-const char* pico_set_layer (const char* key);
+Pico_Layer* pico_set_layer (Pico_Layer* layer);
 
 /// @brief Warps the mouse cursor to the given relative position.
 /// Symmetric to @ref pico_get_mouse: a Pos returned by `pico_get_mouse`
 /// (any mode) round-trips through `pico_set_mouse`.
-/// @param layer layer name; NULL = cur. `pos` is interpreted in `layer`'s frame.
+/// @param layer layer; NULL = cur. `pos` is interpreted in `layer`'s frame.
 /// @param pos target position; `pos->mode` is one of '!' pixels,
 ///        '%' percentage, '#' tiles.
 /// @sa pico_get_mouse
-void pico_set_mouse (const char* layer, Pico_Rel_Pos pos);
+void pico_set_mouse (Pico_Layer* layer, Pico_Rel_Pos pos);
 
 /// @brief Sets the entire effect state of the current layer.
 /// @param effect new effect state
@@ -751,11 +679,11 @@ void pico_set_effect_rotate   (Pico_Rot rotate);
 
 /// @brief Syncs a video layer to a target frame.
 /// Supports forward and backward seeking.
-/// @param key layer key (must exist as video layer)
+/// @param layer video layer (see @ref pico_layer_video)
 /// @param frame target frame number
 /// @return 1 if frame is valid, or 0 past EOF
 /// @sa pico_get_video
-int pico_set_video (const char* key, int frame);
+int pico_set_video (Pico_Layer* layer, int frame);
 
 /// @brief Sets the entire scene state of the current layer.
 /// @param scene new scene state
@@ -789,38 +717,38 @@ void pico_set_window_title (const char* title);
 /// @{
 
 /// @brief Projects a dimension from `L_fr`'s frame into `L_to`'s frame.
-/// Either layer name may be NULL (== cur). Each layer must be cur, an
+/// Either layer may be NULL (== cur). Each layer must be cur, an
 /// ancestor, or a descendant of cur via `hier.up`. Siblings (neither
 /// is ancestor of the other) project via cur in two steps.
-/// @param L_to target layer name; NULL = cur
+/// @param L_to target layer; NULL = cur
 /// @param to result template (mode set on input); written in L_to's frame
-/// @param L_fr source layer name; NULL = cur
+/// @param L_fr source layer; NULL = cur
 /// @param fr dimension in L_fr's frame
 void pico_cv_dim (
-    const char* L_to, Pico_Rel_Dim* to,
-    const char* L_fr, const Pico_Rel_Dim* fr
+    Pico_Layer* L_to, Pico_Rel_Dim* to,
+    Pico_Layer* L_fr, const Pico_Rel_Dim* fr
 );
 
 /// @brief Projects a position from `L_fr`'s frame into `L_to`'s frame.
-/// Either layer name may be NULL (== cur). Siblings project via cur.
-/// @param L_to target layer name; NULL = cur
+/// Either layer may be NULL (== cur). Siblings project via cur.
+/// @param L_to target layer; NULL = cur
 /// @param to result template (mode/anchor set on input); written in L_to
-/// @param L_fr source layer name; NULL = cur
+/// @param L_fr source layer; NULL = cur
 /// @param fr position in L_fr's frame
 void pico_cv_pos (
-    const char* L_to, Pico_Rel_Pos* to,
-    const char* L_fr, const Pico_Rel_Pos* fr
+    Pico_Layer* L_to, Pico_Rel_Pos* to,
+    Pico_Layer* L_fr, const Pico_Rel_Pos* fr
 );
 
 /// @brief Projects a rectangle from `L_fr`'s frame into `L_to`'s frame.
-/// Either layer name may be NULL (== cur). Siblings project via cur.
-/// @param L_to target layer name; NULL = cur
+/// Either layer may be NULL (== cur). Siblings project via cur.
+/// @param L_to target layer; NULL = cur
 /// @param to result template (mode/anchor set on input); written in L_to
-/// @param L_fr source layer name; NULL = cur
+/// @param L_fr source layer; NULL = cur
 /// @param fr rectangle in L_fr's frame
 void pico_cv_rect (
-    const char* L_to, Pico_Rel_Rect* to,
-    const char* L_fr, const Pico_Rel_Rect* fr
+    Pico_Layer* L_to, Pico_Rel_Rect* to,
+    Pico_Layer* L_fr, const Pico_Rel_Rect* fr
 );
 
 /// @brief Composes a child rect onto a parent rect.
@@ -853,42 +781,42 @@ Pico_Rel_Dim pico_in_dim (Pico_Rel_Rect out, Pico_Rel_Dim in);
 /// @return 1 if rounded (x,y) of p1 equals that of p2, or 0 otherwise
 /// @sa pico_vs_pos_rect
 int pico_vs_pos_pos (
-    const char* L1, Pico_Rel_Pos* p1,
-    const char* L2, Pico_Rel_Pos* p2
+    Pico_Layer* L1, Pico_Rel_Pos* p1,
+    Pico_Layer* L2, Pico_Rel_Pos* p2
 );
 
 /// @brief Checks if a point is inside a rectangle.
 /// Each side can be expressed in cur (Lx=NULL) or in a descendant of
-/// cur (Lx=layer name). With L2 set and r2=NULL, the named layer's
+/// cur (Lx=layer). With L2 set and r2=NULL, the given layer's
 /// bounds (scene.dst in its parent) act as the rect. p1 must not be
 /// NULL.
 /// @return 1 if p1 is inside r2, or 0 otherwise
 /// @sa pico_vs_pos_pos pico_vs_rect_rect
 int pico_vs_pos_rect (
-    const char* L1, Pico_Rel_Pos*  p1,
-    const char* L2, Pico_Rel_Rect* r2
+    Pico_Layer* L1, Pico_Rel_Pos*  p1,
+    Pico_Layer* L2, Pico_Rel_Rect* r2
 );
 
 /// @brief Checks if a point is inside a rectangle (mirror of pos_rect).
 /// Equivalent to pico_vs_pos_rect(L2, p2, L1, r1). r1 may be NULL with
-/// L1 set (uses the named layer's bounds) or both NULL (uses cur's
+/// L1 set (uses the given layer's bounds) or both NULL (uses cur's
 /// bounds). p2 must not be NULL.
 /// @return 1 if p2 is inside r1, or 0 otherwise
 /// @sa pico_vs_pos_rect
 int pico_vs_rect_pos (
-    const char* L1, Pico_Rel_Rect* r1,
-    const char* L2, Pico_Rel_Pos*  p2
+    Pico_Layer* L1, Pico_Rel_Rect* r1,
+    Pico_Layer* L2, Pico_Rel_Pos*  p2
 );
 
 /// @brief Checks if two rectangles overlap.
 /// Each side can be expressed in cur (Lx=NULL) or in a descendant of
-/// cur. With Lx set and the rect NULL, the named layer's bounds act
+/// cur. With Lx set and the rect NULL, the given layer's bounds act
 /// as the rect for that side.
 /// @return 1 if r1 and r2 overlap, or 0 otherwise
 /// @sa pico_vs_pos_rect
 int pico_vs_rect_rect (
-    const char* L1, Pico_Rel_Rect* r1,
-    const char* L2, Pico_Rel_Rect* r2
+    Pico_Layer* L1, Pico_Rel_Rect* r1,
+    Pico_Layer* L2, Pico_Rel_Rect* r2
 );
 
 /// @brief Makes a color darker by the specified percentage.

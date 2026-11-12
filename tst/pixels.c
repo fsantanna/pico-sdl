@@ -2,12 +2,12 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="pixels" });
 
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {100, 100} });
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {5, 5} });
 
     {
@@ -42,6 +42,6 @@ int main (void) {
         _pico_check("pixels-02");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

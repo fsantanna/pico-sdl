@@ -2,7 +2,7 @@
 #include <pico.h>
 
 int main() {
-    pico_init(1);
+    pico_open(NULL);
 
     SDL_Event event;
 
@@ -10,6 +10,6 @@ int main() {
     pico_input_event(&event, 0);
     printf("Event detected! Type: %d\n", event.type);
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

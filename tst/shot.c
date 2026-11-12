@@ -7,8 +7,10 @@ void check (const char* out, const char* asr) {
 }
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_output_clear();
+    Pico_Layer *empty1, *pmap1, *sub1, *img1, *txt1, *vid1,
+               *snap_empty, *red, *blue, *snap_scene, *snap_half;
 
     // PICO_OUTPUT_SCREENSHOT
 
@@ -16,9 +18,9 @@ int main (void) {
         puts("entire screen - 01");
         Pico_Rel_Rect r = { '!', {10, 10, 20, 20}, PICO_ANCHOR_NW };
         pico_output_draw_rect(r);
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         const char* f = pico_output_screenshot(NULL, NULL, NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(f != NULL);
         check(f, "asr/shot-01.png");
         assert(remove(f) == 0);
@@ -29,9 +31,9 @@ int main (void) {
         pico_set_pencil_color((Pico_Color){200, 0, 0, 0xFF});
         Pico_Rel_Rect r = { '!', {30, 30, 10, 10}, PICO_ANCHOR_NW };
         pico_output_draw_rect(r);
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         const char* f = pico_output_screenshot(NULL, "out/shot-02.png", NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(!strcmp(f, "out/shot-02.png"));
         check(f, "asr/shot-02.png");
     }
@@ -42,9 +44,9 @@ int main (void) {
         Pico_Rel_Rect r = { '!', {40, 5, 10, 10}, PICO_ANCHOR_NW };
         pico_output_draw_rect(r);
         Pico_Rel_Rect clip = { '!', {0, 0, 250, 150}, PICO_ANCHOR_NW };
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         const char* f = pico_output_screenshot(NULL, NULL, &clip);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(f != NULL);
         check(f, "asr/shot-03.png");
         assert(remove(f) == 0);
@@ -56,11 +58,11 @@ int main (void) {
         pico_output_draw_rect (
             (Pico_Rel_Rect) { '!', {50, 50, 10, 10}, PICO_ANCHOR_NW }
         );
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         const char* f = pico_output_screenshot(NULL, NULL,
             &(Pico_Rel_Rect) { '%', {0, 0, 0.5, 0.3}, PICO_ANCHOR_NW }
         );
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(f != NULL);
         check(f, "asr/shot-04.png");
         assert(remove(f) == 0);
@@ -81,8 +83,8 @@ int main (void) {
 
     {
         puts("empty layer");
-        pico_layer_empty(NULL, "empty1", 1, (Pico_Rel_Dim){'!', {64, 32}}, NULL);
-        pico_set_layer("empty1");
+        empty1 = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {64, 32}}, NULL);
+        pico_set_layer(empty1);
         pico_set_effect_color((Pico_Color){0x00, 0x80, 0x00, 0xFF});
         pico_output_clear();
         pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0x00, 0xFF});
@@ -90,7 +92,7 @@ int main (void) {
             (Pico_Rel_Rect) { '!', {5, 5, 10, 10}, PICO_ANCHOR_NW }
         );
         const char* f = pico_output_screenshot(NULL, "out/shot-empty.png", NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(!strcmp(f, "out/shot-empty.png"));
         check(f, "asr/shot-empty.png");
     }
@@ -101,32 +103,32 @@ int main (void) {
             {255,   0,   0, 255}, {  0, 255,   0, 255},
             {  0,   0, 255, 255}, {255, 255,   0, 255}
         };
-        pico_layer_pixmap(NULL, "pmap1", (Pico_Abs_Dim){2, 2}, buf);
-        pico_set_layer("pmap1");
+        pmap1 = pico_layer_pixmap(NULL, (Pico_Abs_Dim){2, 2}, buf);
+        pico_set_layer(pmap1);
         const char* f = pico_output_screenshot(NULL, "out/shot-pixmap.png", NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(!strcmp(f, "out/shot-pixmap.png"));
         check(f, "asr/shot-pixmap.png");
     }
 
     {
         puts("sub layer");
-        pico_layer_sub(NULL, "sub1", "empty1",
+        sub1 = pico_layer_sub(NULL, empty1,
             &(Pico_Rel_Rect) { '!', {0, 0, 32, 16}, PICO_ANCHOR_NW }
         );
-        pico_set_layer("sub1");
+        pico_set_layer(sub1);
         const char* f = pico_output_screenshot(NULL, "out/shot-sub.png", NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(!strcmp(f, "out/shot-sub.png"));
         check(f, "asr/shot-sub.png");
     }
 
     {
         puts("image layer");
-        pico_layer_image(NULL, "img1", "../res/open.png");
-        pico_set_layer("img1");
+        img1 = pico_layer_image(NULL, "../res/open.png");
+        pico_set_layer(img1);
         const char* f = pico_output_screenshot(NULL, "out/shot-image.png", NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(!strcmp(f, "out/shot-image.png"));
         check(f, "asr/shot-image.png");
     }
@@ -134,21 +136,21 @@ int main (void) {
     {
         puts("text layer");
         pico_set_pencil_color((Pico_Color){0xFF, 0xFF, 0xFF, 0xFF});
-        pico_layer_text(NULL, "txt1", (Pico_Rel_Dim){'!', {0, 16}}, "hello");
-        pico_set_layer("txt1");
+        txt1 = pico_layer_text(NULL, (Pico_Rel_Dim){'!', {0, 16}}, "hello");
+        pico_set_layer(txt1);
         const char* f = pico_output_screenshot(NULL, "out/shot-text.png", NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(!strcmp(f, "out/shot-text.png"));
         check(f, "asr/shot-text.png");
     }
 
     {
         puts("video layer");
-        pico_layer_video(NULL, "vid1", "../res/video.y4m");
-        pico_set_layer("vid1");
-        assert(pico_set_video("vid1", 0) == 1);
+        vid1 = pico_layer_video(NULL, "../res/video.y4m");
+        pico_set_layer(vid1);
+        assert(pico_set_video(vid1, 0) == 1);
         const char* f = pico_output_screenshot(NULL, "out/shot-video.png", NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(!strcmp(f, "out/shot-video.png"));
         check(f, "asr/shot-video.png");
     }
@@ -159,10 +161,10 @@ int main (void) {
     // hold the same pixels, so its screenshot matches empty1's reference
     {
         puts("screenshot layer - reuse empty1");
-        pico_layer_screenshot(NULL, "snap_empty", "empty1", NULL);
-        pico_set_layer("snap_empty");
+        snap_empty = pico_layer_screenshot(NULL, empty1, NULL);
+        pico_set_layer(snap_empty);
         const char* f = pico_output_screenshot(NULL, "out/shot-snap-empty.png", NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(!strcmp(f, "out/shot-snap-empty.png"));
         check(f, "asr/shot-empty.png");
     }
@@ -172,44 +174,44 @@ int main (void) {
     {
         puts("screenshot layer - scene round-trip");
 
-        pico_layer_empty(NULL, "red", 1, (Pico_Rel_Dim){'!', {20, 20}}, NULL);
-        pico_set_layer("red");
+        red = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {20, 20}}, NULL);
+        pico_set_layer(red);
         pico_set_effect_color((Pico_Color){0xFF, 0, 0, 0xFF});
         pico_output_clear();
 
-        pico_layer_empty(NULL, "blue", 1, (Pico_Rel_Dim){'!', {20, 20}}, NULL);
-        pico_set_layer("blue");
+        blue = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {20, 20}}, NULL);
+        pico_set_layer(blue);
         pico_set_effect_color((Pico_Color){0, 0, 0xFF, 0xFF});
         pico_output_clear();
 
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_set_effect_color((Pico_Color){0x20, 0x20, 0x20, 0xFF});
         pico_output_clear();
-        pico_output_draw_layer("red", &(Pico_Rel_Rect){ '!', {20, 20, 20, 20}, PICO_ANCHOR_NW });
-        pico_output_draw_layer("blue", &(Pico_Rel_Rect){ '!', {50, 40, 20, 20}, PICO_ANCHOR_NW });
+        pico_output_draw_layer(red, &(Pico_Rel_Rect){ '!', {20, 20, 20, 20}, PICO_ANCHOR_NW });
+        pico_output_draw_layer(blue, &(Pico_Rel_Rect){ '!', {50, 40, 20, 20}, PICO_ANCHOR_NW });
 
-        const char* f1 = pico_output_screenshot("world", "out/shot-scene.png", NULL);
+        const char* f1 = pico_output_screenshot(pico_layer_world(), "out/shot-scene.png", NULL);
         check(f1, "asr/shot-scene.png");
 
-        pico_layer_screenshot(NULL, "snap_scene", "world", NULL);
-        pico_set_layer("world");
+        snap_scene = pico_layer_screenshot(NULL, pico_layer_world(), NULL);
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
-        pico_output_draw_layer("snap_scene", NULL);
-        const char* f2 = pico_output_screenshot("world", "out/shot-scene-2.png", NULL);
+        pico_output_draw_layer(snap_scene, NULL);
+        const char* f2 = pico_output_screenshot(pico_layer_world(), "out/shot-scene-2.png", NULL);
         check(f2, "asr/shot-scene.png");
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
     }
 
     // 3. capture a relative region of a layer; the rect resolves against
     // the source layer (empty1 = 64x32), so this yields its left half
     {
         puts("screenshot layer - region (pct)");
-        pico_layer_screenshot(NULL, "snap_half", "empty1",
+        snap_half = pico_layer_screenshot(NULL, empty1,
             &(Pico_Rel_Rect){ '%', {0, 0, 0.5, 1.0}, PICO_ANCHOR_NW }
         );
-        pico_set_layer("snap_half");
+        pico_set_layer(snap_half);
         const char* f = pico_output_screenshot(NULL, "out/shot-snap-half.png", NULL);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         assert(!strcmp(f, "out/shot-snap-half.png"));
         check(f, "asr/shot-snap-half.png");
     }
@@ -221,7 +223,7 @@ int main (void) {
     {
         puts("world layer (expert auto-clear)");
         pico_set_expert(1, 0);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
 
         pico_set_effect_color((Pico_Color){0x10, 0x10, 0x10, 0xFF});
         pico_output_clear();
@@ -232,14 +234,25 @@ int main (void) {
         pico_output_present(1);
 
         const char* f =
-            pico_output_screenshot("world", "out/shot-world-expert.png", NULL);
+            pico_output_screenshot(pico_layer_world(), "out/shot-world-expert.png", NULL);
         assert(!strcmp(f, "out/shot-world-expert.png"));
         check(f, "asr/shot-world.png");
 
         pico_set_expert(0, 0);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
     }
 
-    pico_init(0);
+    pico_layer_free(snap_half);
+    pico_layer_free(snap_scene);
+    pico_layer_free(blue);
+    pico_layer_free(red);
+    pico_layer_free(snap_empty);
+    pico_layer_free(vid1);
+    pico_layer_free(txt1);
+    pico_layer_free(img1);
+    pico_layer_free(sub1);
+    pico_layer_free(pmap1);
+    pico_layer_free(empty1);
+    pico_close();
     return 0;
 }

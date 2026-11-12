@@ -56,7 +56,7 @@ The following example draws an `X` on screen gradually, pixel by pixel:
 ```c
 #include "pico.h"
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     for (int i=0; i<100; i++) {
         pico_output_draw_pixel (
             (Pico_Rel_Pos) { '!', {i, i}, PICO_ANCHOR_C }
@@ -66,13 +66,13 @@ int main (void) {
         );
         pico_input_delay(30);
     }
-    pico_init(0);
+    pico_close();
     return 0;
 }
 ```
 
-We start with `pico_init(1)` to open the library, terminating with
-`pico_init(0)` to close it.
+We start with `pico_open(NULL)` to open the library, terminating with
+`pico_close()` to close it.
 Then, we run `100` loop iterations to draw pixels in opposite directions to
 form the animated `X` shown on the right.
 

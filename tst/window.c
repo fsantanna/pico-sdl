@@ -1,33 +1,32 @@
 #include "pico.h"
-#include <string.h>
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_expert(1, 0);    // expert: window-direct draws + manual present
 
     // initial current layer is world (not window)
     {
         puts("init: current layer is world");
-        assert(!strcmp(pico_get_layer(), "world"));
+        assert(pico_get_layer() == pico_layer_world());
     }
 
     // switching to the predefined window layer
     {
         puts("set.layer(\"window\")");
-        const char* prev = pico_set_layer("window");
-        assert(!strcmp(prev, "world"));
-        assert(!strcmp(pico_get_layer(), "window"));
-        pico_set_layer("world");
+        Pico_Layer* prev = pico_set_layer(pico_layer_window());
+        assert(prev == pico_layer_world());
+        assert(pico_get_layer() == pico_layer_window());
+        pico_set_layer(pico_layer_world());
     }
 
     // dims: window=500x500 (physical), world=100x100 (logical)
     {
         puts("dims: window vs world");
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         Pico_Abs_Dim w = pico_get_scene_dim();
         assert(w.w == 500 && w.h == 500);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         Pico_Abs_Dim l = pico_get_scene_dim();
         assert(l.w == 100 && l.h == 100);
     }
@@ -42,7 +41,7 @@ int main (void) {
         puts("window red @33% + world blue @66%");
 
         // configure world: blue, dst at (66%, 66%)
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_set_scene_dst (
             (Pico_Rel_Rect){'%', {0.66, 0.66, 0.4, 0.4}, PICO_ANCHOR_C}
         );
@@ -50,7 +49,7 @@ int main (void) {
         pico_output_clear();
 
         // direct draw on window: gray bg + red rect at (33%, 33%)
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_effect_color((Pico_Color){0x80, 0x80, 0x80, 0xFF});
         pico_output_clear();
         pico_set_pencil_color((Pico_Color){0xFF, 0x00, 0x00, 0xFF});
@@ -61,9 +60,9 @@ int main (void) {
         pico_output_draw_layers();   // expert: compose world onto window.tex
         pico_output_present(0);      // expert: manual present before screenshot
         _pico_check("window-01");
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

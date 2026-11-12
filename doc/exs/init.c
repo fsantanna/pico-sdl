@@ -2,8 +2,8 @@
 #include <pico.h>
 
 int main() {
-    pico_init(1);
+    pico_open(NULL);
     // ...
-    pico_init(0);
+    pico_close();
     return 0;
 }

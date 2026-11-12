@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <alloca.h>
 
 #include <SDL2/SDL.h>
 
@@ -20,7 +21,7 @@ Pico_Color pico_get_pencil_color (void) {
     return G.layer->pencil.color;
 }
 
-const char* pico_get_pencil_font (void) {
+Pico_Font* pico_get_pencil_font (void) {
     _pico_guard();
     return G.layer->pencil.font;
 }
@@ -46,10 +47,10 @@ int pico_get_expert (int* fps) {
 Pico_Abs_Dim pico_get_image (Pico_Rel_Dim* rel, const char* path) {
     _pico_guard();
     if (rel == NULL) {
-        Pico_Layer* layer = _pico_layer_image('=', NULL, path);
+        Pico_Layer* layer = _pico_layer_image_path(path);
         return layer->scene.dim;
     } else if (rel->w==0 || rel->h==0) {
-        Pico_Layer* layer = _pico_layer_image('=', NULL, path);
+        Pico_Layer* layer = _pico_layer_image_path(path);
         return _pico_abs_dim(rel, NULL, &layer->scene.dim);
     } else {
         return _pico_abs_dim(rel, NULL, NULL);
@@ -57,9 +58,9 @@ Pico_Abs_Dim pico_get_image (Pico_Rel_Dim* rel, const char* path) {
 }
 
 
-const char* pico_get_layer (void) {
+Pico_Layer* pico_get_layer (void) {
     _pico_guard();
-    return G.layer->name;
+    return G.layer;
 }
 
 
@@ -100,25 +101,17 @@ Pico_Rot pico_get_effect_rotate (void) {
 
 Pico_Abs_Dim pico_get_text (Pico_Rel_Dim* rel, const char* text) {
     _pico_guard();
-    return pico_get_text_mode('=', NULL, rel, text);
-}
-
-Pico_Abs_Dim pico_get_text_mode (
-    int mode, const char* key,
-    Pico_Rel_Dim* rel, const char* text
-) {
-    _pico_guard();
     if (text[0] == '\0') return (Pico_Abs_Dim){0, 0};
 
     assert(rel!=NULL && rel->h!=0);
     if (rel->w == 0) {
         // auto-width: report the NATIVE drawn size (same as
-        // pico_output_draw_text_mode blits) so measured == drawn. the
+        // pico_output_draw_text blits) so measured == drawn. the
         // requested height only picks the ptsize; the box height is the
         // font's content-independent cell (>= requested).
         Pico_Rel_Dim rel_h = { rel->mode, {0, rel->h} };
         int h = _pico_abs_dim(&rel_h, NULL, NULL).h;
-        Pico_Layer* layer = _pico_layer_text(mode, key, h, text);
+        Pico_Layer* layer = _pico_layer_text_fp(h, text);
         Pico_Abs_Dim nat = layer->scene.dim;
         *rel = _pico_rel_dim(nat, rel->mode);
         return nat;
@@ -209,9 +202,26 @@ void pico_set_pencil_color (Pico_Color color) {
     G.layer->pencil.color = color;
 }
 
-void pico_set_pencil_font (const char* path) {
+void pico_set_pencil_font (Pico_Font* font) {
     _pico_guard();
-    G.layer->pencil.font = path;
+    G.layer->pencil.font = font;
+}
+
+void pico_set_pencil_font_path (const char* path) {
+    _pico_guard();
+    if (path == NULL) {
+        G.layer->pencil.font = NULL;
+        return;
+    }
+    int n = strlen("/font/") + strlen(path) + 1;
+    char* key = alloca(n);
+    snprintf(key, n, "/font/%s", path);
+    Pico_Font* font = (Pico_Font*) _pico_cache_get(key);
+    if (font == NULL) {
+        font = _pico_mem_font_new(1, path);
+        _pico_cache_put(key, PICO_CACHE_FONT, font);
+    }
+    G.layer->pencil.font = font;
 }
 
 void pico_set_pencil_style (PICO_STYLE style) {
@@ -243,12 +253,11 @@ int pico_set_expert (int on, int fps) {
     return G.expert.ms;
 }
 
-const char* pico_set_layer (const char* key) {
+Pico_Layer* pico_set_layer (Pico_Layer* layer) {
     _pico_guard();
-    Pico_Layer* data = _pico_layer_name(key);
-    //assert(data->type!=PICO_LAYER_SUB && "cannot set render target to sub-layer");
-    Pico_Layer* old = _pico_set_layer(data);
-    return (old == NULL) ? NULL : old->name;
+    assert(layer!=NULL && "layer required");
+    //assert(layer->type!=PICO_LAYER_SUB && "cannot set render target to sub-layer");
+    return _pico_set_layer(layer);
 }
 
 

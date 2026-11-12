@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <alloca.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -51,7 +52,7 @@ void pico_output_clear (void) {
 
 void pico_output_draw_image (const char* path, Pico_Rel_Rect rect) {
     _pico_guard();
-    Pico_Layer* layer = _pico_layer_image('=', NULL, path);
+    Pico_Layer* layer = _pico_layer_image_path(path);
     Pico_Abs_Dim* orig = (rect.w==0 || rect.h==0) ? &layer->scene.dim : NULL;
     Pico_Rel_Dim rel = { rect.mode, {rect.w, rect.h} };
     _pico_abs_dim(&rel, NULL, orig);
@@ -60,14 +61,9 @@ void pico_output_draw_image (const char* path, Pico_Rel_Rect rect) {
     _pico_layer_output(layer, &rect);
 }
 
-void pico_output_draw_layer (const char* key, const Pico_Rel_Rect* rect) {
+void pico_output_draw_layer (Pico_Layer* layer, const Pico_Rel_Rect* rect) {
     _pico_guard();
-    assert(key!=NULL && "layer key required");
-
-    Pico_Layer* layer = (Pico_Layer*)realm_get(
-        G.realm, strlen(key)+1, key);
-    assert(layer!=NULL && "layer does not exist");
-
+    assert(layer!=NULL && "layer required");
     _pico_layer_output(layer, rect);
 }
 
@@ -140,18 +136,6 @@ void pico_output_draw_pixels (int n, const Pico_Rel_Pos* ps) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_pixmap (
-    const char* key,
-    Pico_Abs_Dim dim,
-    const Pico_Color pixmap[],
-    Pico_Rel_Rect rect
-) {
-    _pico_guard();
-    assert(key!=NULL && "layer key required");
-    pico_layer_pixmap_mode('=', NULL, key, dim, pixmap);
-    pico_output_draw_layer(key, &rect);
-}
-
 void pico_output_draw_poly (int n, const Pico_Rel_Pos* ps) {
     _pico_guard();
     Sint16 xs[n], ys[n];
@@ -202,21 +186,7 @@ void pico_output_draw_rect (Pico_Rel_Rect rect) {
     _pico_output_present(0);
 }
 
-void pico_output_draw_text_fix (const char* text, Pico_Rel_Rect rect) {
-    _pico_guard();
-    pico_output_draw_text_mode('=', NULL, text, rect);
-}
-
-void pico_output_draw_text_dyn (const char* key, const char* text, Pico_Rel_Rect rect) {
-    _pico_guard();
-    assert(key!=NULL && "layer key required");
-    pico_output_draw_text_mode('~', key, text, rect);
-}
-
-void pico_output_draw_text_mode (
-    int mode, const char* key,
-    const char* text, Pico_Rel_Rect rect
-) {
+void pico_output_draw_text (const char* text, Pico_Rel_Rect rect) {
     _pico_guard();
     assert(rect.h != 0);
     if (text[0] == '\0') return;
@@ -225,7 +195,7 @@ void pico_output_draw_text_mode (
         &(Pico_Rel_Dim){ rect.mode, {0, rect.h} }, NULL, NULL
     );
 
-    Pico_Layer* layer = _pico_layer_text(mode, key, dim.h, text);
+    Pico_Layer* layer = _pico_layer_text_fp(dim.h, text);
 
     if (rect.w == 0) {
         // auto-width: blit the glyph layer at its NATIVE size so the
@@ -324,31 +294,10 @@ void pico_output_draw_layers (void) {
     SDL_SetRenderTarget(G.window.ren, G.window.layer.tex);
 }
 
-static void _output_sound_cache (const char* path, int cache) {
-    Mix_Chunk* mix = NULL;
-
-    if (cache) {
-        int n = strlen(path) + 1;
-        mix = (Mix_Chunk*)realm_put(
-            G.realm, '=', n, (const void**)&path, 0, NULL,
-            _pico_mem_free_sound, _pico_mem_alloc_sound, (void*)path
-        );
-    } else {
-        mix = Mix_LoadWAV(path);
-    }
-    pico_assert(mix != NULL);
-
-    Mix_PlayChannel(-1, mix, 0);
-
-    if (!cache) {
-        Mix_FreeChunk(mix);
-    }
-}
-
-// captures region rect of named layer (NULL == current) into a fresh RGBA32
+// captures region rect of the given layer (NULL == current) into a fresh RGBA32
 // surface that owns its pixels (NULL rect captures the whole layer)
-SDL_Surface* _pico_shot (const char* layer, const Pico_Rel_Rect* rect) {
-    Pico_Layer* L = (layer != NULL) ? _pico_layer_name(layer) : G.layer;
+SDL_Surface* _pico_shot (Pico_Layer* layer, const Pico_Rel_Rect* rect) {
+    Pico_Layer* L = (layer != NULL) ? layer : G.layer;
     Pico_Abs_Rect lr = {0, 0, L->scene.dim.w, L->scene.dim.h};
     Pico_Abs_Rect ri = (rect == NULL) ? lr : _pico_abs_rect(*rect, &lr, NULL);
 
@@ -389,7 +338,7 @@ SDL_Surface* _pico_shot (const char* layer, const Pico_Rel_Rect* rect) {
     return sfc;
 }
 
-const char* pico_output_screenshot (const char* layer, const char* path, const Pico_Rel_Rect* rect) {
+const char* pico_output_screenshot (Pico_Layer* layer, const char* path, const Pico_Rel_Rect* rect) {
     _pico_guard();
 
     SDL_Surface* sfc = _pico_shot(layer, rect);
@@ -409,7 +358,22 @@ const char* pico_output_screenshot (const char* layer, const char* path, const P
     return ret;
 }
 
-void pico_output_sound (const char* path) {
+void pico_output_sound (Pico_Sound* sound) {
     _pico_guard();
-    _output_sound_cache(path, 1);
+    assert(sound!=NULL && "sound required");
+    Mix_PlayChannel(-1, sound->mix, 0);
+}
+
+void pico_output_sound_path (const char* path) {
+    _pico_guard();
+    assert(path!=NULL && "sound path required");
+    int n = strlen("/sound/") + strlen(path) + 1;
+    char* key = alloca(n);
+    snprintf(key, n, "/sound/%s", path);
+    Pico_Sound* sound = (Pico_Sound*) _pico_cache_get(key);
+    if (sound == NULL) {
+        sound = _pico_mem_sound_new(1, path);
+        _pico_cache_put(key, PICO_CACHE_SOUND, sound);
+    }
+    pico_output_sound(sound);
 }

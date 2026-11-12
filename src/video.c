@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <alloca.h>
 
 #include <SDL2/SDL.h>
 
@@ -85,7 +86,7 @@ static void _y4m_update_texture (Pico_Layer_Video* vs) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/* Free video-specific resources (called from _pico_mem_free_layer) */
+/* Free video-specific resources (called from _pico_mem_layer_free) */
 void _pico_video_free_layer (Pico_Layer_Video* vs) {
     free(vs->plane.y);
     free(vs->plane.u);
@@ -93,8 +94,8 @@ void _pico_video_free_layer (Pico_Layer_Video* vs) {
     fclose(vs->fp);
 }
 
-static void* _alloc_layer_video (int n, const void* key, void* ctx) {
-    const char* path = (const char*)ctx;
+Pico_Layer* _pico_mem_layer_video (int cached, const char* path) {
+    assert(path!=NULL && "video path required");
 
     FILE* fp = fopen(path, "rb");
     pico_assert(fp != NULL);
@@ -112,8 +113,8 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
     pico_assert(tex != NULL);
 
     Pico_Layer_Video* vs = (Pico_Layer_Video*)_pico_mem_layer_new (
-        0, PICO_LAYER_VIDEO, sizeof(Pico_Layer_Video),
-        (const char*)key, tex, (Pico_Abs_Dim){w, h}
+        cached, 0, PICO_LAYER_VIDEO, sizeof(Pico_Layer_Video),
+        tex, (Pico_Abs_Dim){w, h}
     );
 
     vs->fp = fp;
@@ -138,46 +139,39 @@ static void* _alloc_layer_video (int n, const void* key, void* ctx) {
     vs->frame.total =
         (int)((end - vs->data_offset) / vs->size.frame);
 
-    return vs;
+    return &vs->base;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static Pico_Layer_Video* _layer_video (
-    int mode, const char* key, const char* path
-) {
+// cache-owned video (easy path): opened once, kept until pico_close
+static Pico_Layer_Video* _layer_video_path (const char* path) {
     assert(path!=NULL && "video path required");
-    const char* str = (key != NULL) ? key : path;
-    Pico_Layer_Video* ret = (Pico_Layer_Video*) realm_put(
-        G.realm, mode, strlen(str)+1, (const void**)&str, 0, NULL,
-        _pico_mem_free_layer, _alloc_layer_video, (void*)path
-    );
-    pico_assert_key(ret, str);
-    return ret;
-}
-
-const char* pico_layer_video (const char* up, const char* key, const char* path) {
-    _pico_guard();
-    return pico_layer_video_mode('!', up, key, path);
-}
-
-const char* pico_layer_video_mode (
-    int mode, const char* up, const char* key, const char* path
-) {
-    _pico_guard();
-    assert(path != NULL && "video path required");
-    Pico_Layer_Video* ret = _layer_video(mode, key, path);
-    if (up != NULL) {
-        _pico_layer_attach(up, ret->base.name);
+    int n = strlen("/video/") + strlen(path) + 1;
+    char* key = alloca(n);
+    snprintf(key, n, "/video/%s", path);
+    Pico_Layer* ret = (Pico_Layer*) _pico_cache_get(key);
+    if (ret == NULL) {
+        ret = _pico_mem_layer_video(1, path);
+        _pico_cache_put(key, PICO_CACHE_LAYER, ret);
     }
-    return ret->base.name;
+    return (Pico_Layer_Video*) ret;
+}
+
+Pico_Layer* pico_layer_video (Pico_Layer* up, const char* path) {
+    _pico_guard();
+    Pico_Layer* ret = _pico_mem_layer_video(0, path);
+    if (up != NULL) {
+        _pico_layer_attach(up, ret);
+    }
+    return ret;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path) {
     _pico_guard();
-    Pico_Layer_Video* vs = _layer_video('=', path, path);
+    Pico_Layer_Video* vs = _layer_video_path(path);
 
     Pico_Video info = {
         .dim   = vs->base.scene.dim,
@@ -197,15 +191,9 @@ Pico_Video pico_get_video (Pico_Rel_Rect* rect, const char* path) {
     return info;
 }
 
-int pico_set_video (const char* key, int frame) {
+int pico_set_video (Pico_Layer* layer, int frame) {
     _pico_guard();
-    assert(key != NULL && "layer key required");
-
-    /* Find layer by key */
-    int n = strlen(key) + 1;
-    Pico_Layer* layer = (Pico_Layer*)realm_get(
-        G.realm, n, key);
-    assert(layer != NULL && "layer does not exist");
+    assert(layer != NULL && "layer required");
 
     /* Get video state from layer */
     Pico_Layer_Video* vs = (Pico_Layer_Video*)layer;
@@ -259,7 +247,8 @@ int pico_set_video (const char* key, int frame) {
 }
 
 int pico_output_draw_video (const char* path, Pico_Rel_Rect rect) {
-    Pico_Layer_Video* vs = _layer_video('=', path, path);
+    _pico_guard();
+    Pico_Layer_Video* vs = _layer_video_path(path);
 
     /* Auto-sync: calculate frame from elapsed time */
     if (vs->t0 == 0) {
@@ -268,7 +257,7 @@ int pico_output_draw_video (const char* path, Pico_Rel_Rect rect) {
     int dt = SDL_GetTicks() - vs->t0;
     int frame = dt * vs->fps / 1000;
 
-    if (!pico_set_video(path, frame)) {
+    if (!pico_set_video(&vs->base, frame)) {
         return 0;
     }
 

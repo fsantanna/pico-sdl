@@ -1,7 +1,7 @@
 #include "pico.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Show - Hide");
     pico_input_event(NULL, PICO_EVENT_KEY_DN);
 
@@ -17,6 +17,6 @@ int main (void) {
     puts("hidden");
     pico_input_delay(1000);
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

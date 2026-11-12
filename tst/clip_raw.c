@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Clip");
 
     puts("rect at 30%");
@@ -35,6 +35,6 @@ int main (void) {
     pico_output_draw_rect(r4);
     _pico_check("clip-05"); // same as pct
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

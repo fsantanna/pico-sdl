@@ -2,13 +2,13 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     Pico_Rel_Dim log = { '!', { 10, 10} };
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Anchoring Pct..." });
 
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {200, 200} });
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     pico_set_scene_dim(log);
 
     // PIXELS
@@ -94,6 +94,6 @@ int main (void) {
         _pico_check("anchor-10");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

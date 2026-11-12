@@ -4,7 +4,7 @@
 #define VIDEO "../res/video.y4m"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Video");
     pico_set_effect_color((Pico_Color){0x00, 0x00, 0x00, 0xFF});
 
@@ -19,21 +19,23 @@ int main (void) {
         assert(info.done == 0);
     }
 
+    Pico_Layer* vid;
+
     /* pico_layer_video: create layer */
     {
         puts("layer_video: create");
-        pico_layer_video(NULL, "vid", VIDEO);
+        vid = pico_layer_video(NULL, VIDEO);
     }
 
     /* pico_set_video: first frame (0) */
     {
         puts("set_video: frame 0 (top-left)");
-        pico_set_layer("vid");
-        int ok = pico_set_video("vid", 0);
+        pico_set_layer(vid);
+        int ok = pico_set_video(vid, 0);
         assert(ok == 1);
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_output_clear();
-        pico_output_draw_layer("vid",
+        pico_output_draw_layer(vid,
             &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         _pico_check("video-01");
@@ -42,10 +44,10 @@ int main (void) {
     /* pico_set_video: middle frame (25) */
     {
         puts("set_video: frame 25 (bottom-middle)");
-        int ok = pico_set_video("vid", 25);
+        int ok = pico_set_video(vid, 25);
         assert(ok == 1);
         pico_output_clear();
-        pico_output_draw_layer("vid",
+        pico_output_draw_layer(vid,
             &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         _pico_check("video-02");
@@ -54,10 +56,10 @@ int main (void) {
     /* pico_set_video: last frame (49) */
     {
         puts("set_video: frame 49 (top-right)");
-        int ok = pico_set_video("vid", 49);
+        int ok = pico_set_video(vid, 49);
         assert(ok == 1);
         pico_output_clear();
-        pico_output_draw_layer("vid",
+        pico_output_draw_layer(vid,
             &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         _pico_check("video-03");
@@ -66,10 +68,10 @@ int main (void) {
     /* pico_set_video: backward seek */
     {
         puts("set_video: backward seek to frame 10");
-        int ok = pico_set_video("vid", 10);
+        int ok = pico_set_video(vid, 10);
         assert(ok == 1);
         pico_output_clear();
-        pico_output_draw_layer("vid",
+        pico_output_draw_layer(vid,
             &(Pico_Rel_Rect){ '%', {0.5, 0.5, 1, 1}, PICO_ANCHOR_C }
         );
         _pico_check("video-04");
@@ -78,15 +80,8 @@ int main (void) {
     /* pico_set_video: past EOF */
     {
         puts("set_video: past EOF returns 0");
-        int ok = pico_set_video("vid", 100);
+        int ok = pico_set_video(vid, 100);
         assert(ok == 0);
-    }
-
-    /* pico_get_video: check state after sync */
-    {
-        puts("get_video: state after sync");
-        Pico_Video info = pico_get_video(NULL, "vid");
-        assert(info.done == 1);
     }
 
     /* pico_output_draw_video: all-in-one */
@@ -100,6 +95,7 @@ int main (void) {
         _pico_check("video-05");
     }
 
-    pico_init(0);
+    pico_layer_free(vid);
+    pico_close();
     return 0;
 }

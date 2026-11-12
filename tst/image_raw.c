@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Image - Size - Crop");
     pico_set_effect_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
@@ -76,15 +76,15 @@ int main (void) {
     {
         puts("show big croped");
         pico_output_clear();
-        pico_layer_image(NULL, "crop", "../res/open.png");
-        pico_set_layer("crop");
+        Pico_Layer* crop = pico_layer_image(NULL, "../res/open.png");
+        pico_set_layer(crop);
         pico_set_scene_src((Pico_Rel_Rect){'!', {9, 9, 30, 30},
                 PICO_ANCHOR_NW});
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         Pico_Rel_Rect r1 = {
             '!', {50-24, 50-24, 0, 0}, PICO_ANCHOR_NW
         };
-        pico_output_draw_layer("crop", &r1);
+        pico_output_draw_layer(crop, &r1);
         _pico_check("image_raw-07");
 
         puts("show medium normal");
@@ -94,6 +94,8 @@ int main (void) {
         };
         pico_output_draw_image("../res/open.png", r2);
         _pico_check("image_raw-08");
+
+        pico_layer_free(crop);
     }
 
     // OFF-SCREEN: draws beyond bounds by more than the image width
@@ -120,6 +122,6 @@ int main (void) {
         _pico_check("image_raw-11");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

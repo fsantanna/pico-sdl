@@ -1,7 +1,7 @@
 #include "pico.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_expert(1, 0);
 
     pico_quit();
@@ -10,6 +10,6 @@ int main (void) {
     pico_input_event_timeout(&e, PICO_EVENT_QUIT, 0);
     assert(e.type == PICO_EVENT_QUIT);
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

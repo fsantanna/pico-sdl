@@ -5,21 +5,21 @@
 
 // helper: window-pixel mouse set (NW anchor)
 static void mouse_w (int x, int y) {
-    const char* old = pico_set_layer("window");
+    Pico_Layer* old = pico_set_layer(pico_layer_window());
     pico_set_mouse(NULL, (Pico_Rel_Pos){'!', {x, y}, PICO_ANCHOR_NW});
     pico_set_layer(old);
 }
 
 int main(void) {
-    pico_init(1);
+    pico_open(NULL);
 
     puts("phy (500,500) -> log (50,50)");
     {
         pico_set_window((Pico_Window){ .fs=0, .show=1, .title="Mouse" });
 
-        pico_set_layer("window");
+        pico_set_layer(pico_layer_window());
         pico_set_scene_dim((Pico_Rel_Dim){ '!', {500, 500} });
-        pico_set_layer("world");
+        pico_set_layer(pico_layer_world());
         pico_set_scene_dim((Pico_Rel_Dim){ '!', {50, 50} });
 
         // phy (0,0) -> log (0,0)
@@ -166,7 +166,7 @@ int main(void) {
     puts("window mode (raw phy)");
     {
         mouse_w(123, 456);
-        const char* old = pico_set_layer("window");
+        Pico_Layer* old = pico_set_layer(pico_layer_window());
         Pico_Mouse pos = pico_get_mouse(NULL, &(Pico_Rel_Pos){.mode='!', .anchor=PICO_ANCHOR_NW});
         pico_set_layer(old);
         assert(pos.x==123 && pos.y==456);
@@ -203,6 +203,6 @@ int main(void) {
         assert(pos.x==25 && pos.y==25);
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

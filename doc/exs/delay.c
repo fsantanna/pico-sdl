@@ -2,12 +2,12 @@
 #include <pico.h>
 
 int main() {
-    pico_init(1);
+    pico_open(NULL);
 
     printf("Waiting for 2 seconds...\n");
     pico_input_delay(5000);
     printf("Done waiting. Exitting...\n");
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

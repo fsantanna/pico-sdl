@@ -11,9 +11,6 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
-#define REALM_C
-#include "realm.hc"
-#undef REALM_C
 #include "tiny_ttf.h"
 #include "pico.h"
 #include "_pico.h"
@@ -70,44 +67,20 @@ SDL_Texture* _pico_tex_create (Pico_Abs_Dim dim) {
     return tex;
 }
 
-TTF_Font* _pico_font_get (const char* path, int h) {
-    const char* path_str = path ? path : "null";
-    char key[256];
-    snprintf(key, sizeof(key), "/font/%s/%d", path_str, h);
-    int n = strlen(key) + 1;
-    _pico_mem_alloc_font_t ctx = { path, h };
-    TTF_Font* ret = realm_put(
-        G.realm, '=', n, (const void**)&(const char*){key}, 0, NULL,
-        _pico_mem_free_font, _pico_mem_alloc_font, &ctx
-    );
-    assert(ret != NULL);
-    return ret;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // INIT
 ///////////////////////////////////////////////////////////////////////////////
 
-void pico_init (int on) {
-    if (on) {
+void pico_open (const Pico_Window* cfg) {
+    {
         assert(G.flags.init == 0);
 
-        realm_t* realm = realm_open(PICO_HASH_BUK);
-        {
-            assert(realm != NULL);
-            realm_enter(realm);
-            void* win = realm_put (
-                realm, '!', strlen("window")+1,
-                (const void**)&(const char*){"window"}, 0, NULL,
-                _pico_mem_detach_layer, NULL, &G.window.layer
-            );
-            pico_assert_key(win, "window");
-            void* wld = realm_put (
-                realm, '!', strlen("world")+1,
-                (const void**)&(const char*){"world"}, 0, NULL,
-                _pico_mem_detach_layer, NULL, &G.world
-            );
-            pico_assert_key(wld, "world");
+        Pico_Window xcfg = { .fs=0, .show=1, .title=PICO_TITLE };
+        if (cfg != NULL) {
+            xcfg = *cfg;
+            if (xcfg.title == NULL) {
+                xcfg.title = PICO_TITLE;
+            }
         }
 
         pico_assert_0(SDL_Init(SDL_INIT_EVERYTHING));
@@ -121,10 +94,10 @@ void pico_init (int on) {
         {
             // window
             win = SDL_CreateWindow (
-                PICO_TITLE,
+                xcfg.title,
                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                 PICO_DIM_PHY.w, PICO_DIM_PHY.h,
-                SDL_WINDOW_SHOWN
+                xcfg.show ? SDL_WINDOW_SHOWN : SDL_WINDOW_HIDDEN
             );
             pico_assert_X(win);
 
@@ -148,10 +121,8 @@ void pico_init (int on) {
 
         G = (typeof(G)) {
             .flags = { .init=1, .aids=1 },
-            .realm = realm,
             .world = {
                 .type = PICO_LAYER_PLAIN,
-                .name = "world",
                 .tex  = log,
                 .pencil = {
                     .color = PICO_COLOR_WHITE,
@@ -182,7 +153,6 @@ void pico_init (int on) {
                 .ren = ren,
                 .layer = {
                     .type = PICO_LAYER_PLAIN,
-                    .name = "window",
                     .tex  = phy,
                     .pencil = {
                         .color = PICO_COLOR_WHITE,
@@ -211,7 +181,7 @@ void pico_init (int on) {
             },
         };
 
-        _pico_layer_attach("window", "world");
+        _pico_layer_attach(&G.window.layer, &G.world);
         _pico_set_layer(&G.world);
         pico_output_clear();
 
@@ -219,31 +189,50 @@ void pico_init (int on) {
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
         SDL_SetWindowResizable(G.window.win, 1);
+
+        if (xcfg.fs) {
+            pico_set_window_fs(1);
+        }
     }
-    else {
-        assert(G.flags.init == 1);
-        G.flags.init = 0;
+}
 
-        assert(G.realm != NULL);
-        realm_close(G.realm);
-
-        Mix_CloseAudio();
-        TTF_Quit();
-
-        assert(G.world.tex != NULL);
-        SDL_DestroyTexture(G.world.tex);
-
-        assert(G.window.layer.tex != NULL);
-        SDL_DestroyTexture(G.window.layer.tex);
-
-        assert(G.window.ren != NULL);
-        SDL_DestroyRenderer(G.window.ren);
-
-        assert(G.window.win != NULL);
-        SDL_DestroyWindow(G.window.win);
-
-        SDL_Quit();
+// strict: assert that every user-owned resource was freed. The
+// auto-exit aid (window close) passes 0, since the program gets no
+// chance to release its resources before the process exits.
+void _pico_close (int strict) {
+    assert(G.flags.init == 1);
+    if (strict) {
+        assert(G.live==0 &&
+            "pico_close: layers, fonts or sounds still alive");
     }
+
+    // easy-path resources, then the built-in font sizes
+    _pico_cache_close();
+    _pico_mem_font_done(&G.font);
+
+    G.flags.init = 0;
+
+    Mix_CloseAudio();
+    TTF_Quit();
+
+    assert(G.world.tex != NULL);
+    SDL_DestroyTexture(G.world.tex);
+
+    assert(G.window.layer.tex != NULL);
+    SDL_DestroyTexture(G.window.layer.tex);
+
+    assert(G.window.ren != NULL);
+    SDL_DestroyRenderer(G.window.ren);
+
+    assert(G.window.win != NULL);
+    SDL_DestroyWindow(G.window.win);
+
+    SDL_Quit();
+}
+
+void pico_close (void) {
+    _pico_guard();
+    _pico_close(1);
 }
 
 void pico_quit (void) {
@@ -251,18 +240,3 @@ void pico_quit (void) {
     SDL_Event e = { .type = SDL_QUIT };
     SDL_PushEvent(&e);
 }
-
-void pico_push (void) {
-    _pico_guard();
-    realm_enter(G.realm);
-}
-
-void pico_pop (void) {
-    _pico_guard();
-    assert((G.layer==&G.world || G.layer==&G.window.layer) &&
-        "pop: target must be world or window"
-    );
-    assert(G.realm->depth>1 && "pop without matching push");
-    realm_leave(G.realm);
-}
-

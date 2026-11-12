@@ -3,13 +3,13 @@
 #include <assert.h>
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
 
     Pico_Rel_Rect btn = { '%', {0.5, 0.5, 0.15, 0.30}, PICO_ANCHOR_C };
 
     /* Draw btn into layer A. */
-    pico_layer_empty(NULL, "A", 1, (Pico_Rel_Dim){'!', {120, 50}}, NULL);
-    const char* old = pico_set_layer("A");
+    Pico_Layer* A = pico_layer_empty(NULL, 1, (Pico_Rel_Dim){'!', {120, 50}}, NULL);
+    Pico_Layer* old = pico_set_layer(A);
     pico_set_effect_color(PICO_COLOR_NAVY);
     pico_output_clear();
     pico_set_pencil_color(PICO_COLOR_WHITE);
@@ -20,7 +20,7 @@ int main (void) {
     Pico_Rel_Rect r = { '%', {0.99, 0.99, 0.35, 0.35}, PICO_ANCHOR_SE };
     pico_set_effect_color(PICO_COLOR_BLACK);
     pico_output_clear();
-    pico_output_draw_layer("A", &r);
+    pico_output_draw_layer(A, &r);
 
     /* btn was drawn in layer A's frame; re-express btn within r (the
        layer's composite rect on screen) for collision against a mouse
@@ -40,6 +40,7 @@ int main (void) {
     pico_output_draw_pixel(pos);
     _pico_check("mouse-w-click-01");
 
-    pico_init(0);
+    pico_layer_free(A);
+    pico_close();
     return 0;
 }

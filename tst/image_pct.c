@@ -2,7 +2,7 @@
 #include "../check.h"
 
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window_title("Image - Size - Crop");
     pico_set_effect_color((Pico_Color){0xFF,0xFF,0xFF, 0xFF});
 
@@ -84,6 +84,6 @@ int main (void) {
         _pico_check("image_pct-05");
     }
 
-    pico_init(0);
+    pico_close();
     return 0;
 }

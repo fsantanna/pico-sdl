@@ -6,11 +6,11 @@
 // After an opaque oval, later semi-transparent draws must still blend.
 // Expected: both halves show a translucent white overlay over red.
 int main (void) {
-    pico_init(1);
+    pico_open(NULL);
     pico_set_window((Pico_Window){ .fs=0, .show=1, .title="gfx-alpha" });
-    pico_set_layer("window");
+    pico_set_layer(pico_layer_window());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {640, 360} });
-    pico_set_layer("world");
+    pico_set_layer(pico_layer_world());
     pico_set_scene_dim((Pico_Rel_Dim){ '!', {64, 36} });
     pico_set_pencil_style(PICO_STYLE_FILL);
     pico_output_clear();
@@ -32,6 +32,6 @@ int main (void) {
 
     _pico_check("bug-gfx-alpha-01");
 
-    pico_init(0);
+    pico_close();
     return 0;
 }
